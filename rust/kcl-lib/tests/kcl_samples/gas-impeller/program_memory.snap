@@ -7407,54 +7407,6 @@ description: Variables in memory after executing gas-impeller.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "from": [
-            79.99999999999983,
-            1.9999999999984652
-          ],
-          "tag": {
-            "commentStart": 1165,
-            "end": 1177,
-            "moduleId": 0,
-            "start": 1165,
-            "type": "TagDeclarator",
-            "value": "outerLipDrop"
-          },
-          "to": [
-            79.99999999999993,
-            -0.0000000000014114097004801805
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            79.99999999999993,
-            -0.0000000000014114097004801805
-          ],
-          "tag": {
-            "commentStart": 1243,
-            "end": 1252,
-            "moduleId": 0,
-            "start": 1243,
-            "type": "TagDeclarator",
-            "value": "baseFloor"
-          },
-          "to": [
-            4.40000000000073,
-            -0.0000000000011645030125513935
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
           "ccw": true,
           "center": [
             79.99999999999919,
@@ -7769,34 +7721,6 @@ description: Variables in memory after executing gas-impeller.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1165,
-            "end": 1177,
-            "moduleId": 0,
-            "start": 1165,
-            "type": "TagDeclarator",
-            "value": "outerLipDrop"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1243,
-            "end": 1252,
-            "moduleId": 0,
-            "start": 1243,
-            "type": "TagDeclarator",
-            "value": "baseFloor"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 2178,
             "end": 2194,
             "moduleId": 0,
@@ -7976,54 +7900,6 @@ description: Variables in memory after executing gas-impeller.kcl
             "to": [
               79.99999999999993,
               -0.0000000000014114097004801805
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              79.99999999999983,
-              1.9999999999984652
-            ],
-            "tag": {
-              "commentStart": 1165,
-              "end": 1177,
-              "moduleId": 0,
-              "start": 1165,
-              "type": "TagDeclarator",
-              "value": "outerLipDrop"
-            },
-            "to": [
-              79.99999999999993,
-              -0.0000000000014114097004801805
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              79.99999999999993,
-              -0.0000000000014114097004801805
-            ],
-            "tag": {
-              "commentStart": 1243,
-              "end": 1252,
-              "moduleId": 0,
-              "start": 1243,
-              "type": "TagDeclarator",
-              "value": "baseFloor"
-            },
-            "to": [
-              4.40000000000073,
-              -0.0000000000011645030125513935
             ],
             "type": "ToPoint",
             "units": "mm"

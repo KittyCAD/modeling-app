@@ -1413,62 +1413,6 @@ description: Variables in memory after executing enclosure.kcl
             "value": "line4"
           },
           "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 10702,
-            "end": 10715,
-            "moduleId": 0,
-            "start": 10702,
-            "type": "TagDeclarator",
-            "value": "holeFrontLeft"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 11252,
-            "end": 11266,
-            "moduleId": 0,
-            "start": 11252,
-            "type": "TagDeclarator",
-            "value": "holeFrontRight"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 11803,
-            "end": 11816,
-            "moduleId": 0,
-            "start": 11803,
-            "type": "TagDeclarator",
-            "value": "holeBackRight"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 12344,
-            "end": 12356,
-            "moduleId": 0,
-            "start": 12344,
-            "type": "TagDeclarator",
-            "value": "holeBackLeft"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1570,126 +1514,6 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              163.0,
-              13.0
-            ],
-            "from": [
-              170.0,
-              13.0
-            ],
-            "radius": 7.0,
-            "tag": {
-              "commentStart": 10702,
-              "end": 10715,
-              "moduleId": 0,
-              "start": 10702,
-              "type": "TagDeclarator",
-              "value": "holeFrontLeft"
-            },
-            "to": [
-              170.0,
-              13.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              262.0,
-              13.0
-            ],
-            "from": [
-              269.0,
-              13.0
-            ],
-            "radius": 7.0,
-            "tag": {
-              "commentStart": 11252,
-              "end": 11266,
-              "moduleId": 0,
-              "start": 11252,
-              "type": "TagDeclarator",
-              "value": "holeFrontRight"
-            },
-            "to": [
-              269.0,
-              13.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              262.0,
-              162.0
-            ],
-            "from": [
-              269.0,
-              162.0
-            ],
-            "radius": 7.0,
-            "tag": {
-              "commentStart": 11803,
-              "end": 11816,
-              "moduleId": 0,
-              "start": 11803,
-              "type": "TagDeclarator",
-              "value": "holeBackRight"
-            },
-            "to": [
-              269.0,
-              162.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              163.0,
-              162.0
-            ],
-            "from": [
-              170.0,
-              162.0
-            ],
-            "radius": 7.0,
-            "tag": {
-              "commentStart": 12344,
-              "end": 12356,
-              "moduleId": 0,
-              "start": 12344,
-              "type": "TagDeclarator",
-              "value": "holeBackLeft"
-            },
-            "to": [
-              170.0,
-              162.0
-            ],
-            "type": "Circle",
             "units": "mm"
           }
         ],
@@ -1970,126 +1794,6 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            163.0,
-            13.0
-          ],
-          "from": [
-            170.0,
-            13.0
-          ],
-          "radius": 7.0,
-          "tag": {
-            "commentStart": 10702,
-            "end": 10715,
-            "moduleId": 0,
-            "start": 10702,
-            "type": "TagDeclarator",
-            "value": "holeFrontLeft"
-          },
-          "to": [
-            170.0,
-            13.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            262.0,
-            13.0
-          ],
-          "from": [
-            269.0,
-            13.0
-          ],
-          "radius": 7.0,
-          "tag": {
-            "commentStart": 11252,
-            "end": 11266,
-            "moduleId": 0,
-            "start": 11252,
-            "type": "TagDeclarator",
-            "value": "holeFrontRight"
-          },
-          "to": [
-            269.0,
-            13.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            262.0,
-            162.0
-          ],
-          "from": [
-            269.0,
-            162.0
-          ],
-          "radius": 7.0,
-          "tag": {
-            "commentStart": 11803,
-            "end": 11816,
-            "moduleId": 0,
-            "start": 11803,
-            "type": "TagDeclarator",
-            "value": "holeBackRight"
-          },
-          "to": [
-            269.0,
-            162.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            163.0,
-            162.0
-          ],
-          "from": [
-            170.0,
-            162.0
-          ],
-          "radius": 7.0,
-          "tag": {
-            "commentStart": 12344,
-            "end": 12356,
-            "moduleId": 0,
-            "start": 12344,
-            "type": "TagDeclarator",
-            "value": "holeBackLeft"
-          },
-          "to": [
-            170.0,
-            162.0
-          ],
-          "type": "Circle",
           "units": "mm"
         }
       ],
@@ -4680,62 +4384,6 @@ description: Variables in memory after executing enclosure.kcl
             "value": "line4"
           },
           "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 5815,
-            "end": 5828,
-            "moduleId": 0,
-            "start": 5815,
-            "type": "TagDeclarator",
-            "value": "holeFrontLeft"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 6349,
-            "end": 6363,
-            "moduleId": 0,
-            "start": 6349,
-            "type": "TagDeclarator",
-            "value": "holeFrontRight"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 6886,
-            "end": 6899,
-            "moduleId": 0,
-            "start": 6886,
-            "type": "TagDeclarator",
-            "value": "holeBackRight"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 7411,
-            "end": 7423,
-            "moduleId": 0,
-            "start": 7411,
-            "type": "TagDeclarator",
-            "value": "holeBackLeft"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -4837,126 +4485,6 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              13.0,
-              13.0
-            ],
-            "from": [
-              17.0,
-              13.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 5815,
-              "end": 5828,
-              "moduleId": 0,
-              "start": 5815,
-              "type": "TagDeclarator",
-              "value": "holeFrontLeft"
-            },
-            "to": [
-              17.0,
-              13.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              112.0,
-              13.0
-            ],
-            "from": [
-              116.0,
-              13.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 6349,
-              "end": 6363,
-              "moduleId": 0,
-              "start": 6349,
-              "type": "TagDeclarator",
-              "value": "holeFrontRight"
-            },
-            "to": [
-              116.0,
-              13.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              112.0,
-              162.0
-            ],
-            "from": [
-              116.0,
-              162.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 6886,
-              "end": 6899,
-              "moduleId": 0,
-              "start": 6886,
-              "type": "TagDeclarator",
-              "value": "holeBackRight"
-            },
-            "to": [
-              116.0,
-              162.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              13.0,
-              162.0
-            ],
-            "from": [
-              17.0,
-              162.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 7411,
-              "end": 7423,
-              "moduleId": 0,
-              "start": 7411,
-              "type": "TagDeclarator",
-              "value": "holeBackLeft"
-            },
-            "to": [
-              17.0,
-              162.0
-            ],
-            "type": "Circle",
             "units": "mm"
           }
         ],
@@ -5210,126 +4738,6 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            13.0,
-            13.0
-          ],
-          "from": [
-            17.0,
-            13.0
-          ],
-          "radius": 4.0,
-          "tag": {
-            "commentStart": 5815,
-            "end": 5828,
-            "moduleId": 0,
-            "start": 5815,
-            "type": "TagDeclarator",
-            "value": "holeFrontLeft"
-          },
-          "to": [
-            17.0,
-            13.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            112.0,
-            13.0
-          ],
-          "from": [
-            116.0,
-            13.0
-          ],
-          "radius": 4.0,
-          "tag": {
-            "commentStart": 6349,
-            "end": 6363,
-            "moduleId": 0,
-            "start": 6349,
-            "type": "TagDeclarator",
-            "value": "holeFrontRight"
-          },
-          "to": [
-            116.0,
-            13.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            112.0,
-            162.0
-          ],
-          "from": [
-            116.0,
-            162.0
-          ],
-          "radius": 4.0,
-          "tag": {
-            "commentStart": 6886,
-            "end": 6899,
-            "moduleId": 0,
-            "start": 6886,
-            "type": "TagDeclarator",
-            "value": "holeBackRight"
-          },
-          "to": [
-            116.0,
-            162.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            13.0,
-            162.0
-          ],
-          "from": [
-            17.0,
-            162.0
-          ],
-          "radius": 4.0,
-          "tag": {
-            "commentStart": 7411,
-            "end": 7423,
-            "moduleId": 0,
-            "start": 7411,
-            "type": "TagDeclarator",
-            "value": "holeBackLeft"
-          },
-          "to": [
-            17.0,
-            162.0
-          ],
-          "type": "Circle",
           "units": "mm"
         }
       ],
@@ -7783,20 +7191,6 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2833,
-            "end": 2844,
-            "moduleId": 0,
-            "start": 2833,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -7829,36 +7223,6 @@ description: Variables in memory after executing enclosure.kcl
             },
             "to": [
               7.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              4.0,
-              0.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 2833,
-              "end": 2844,
-              "moduleId": 0,
-              "start": 2833,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              4.0,
               0.0
             ],
             "type": "Circle",
@@ -7974,36 +7338,6 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "type": "Circle",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              4.0,
-              0.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 2833,
-              "end": 2844,
-              "moduleId": 0,
-              "start": 2833,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              4.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "mm"
           }
         ],
         "on": {
@@ -8094,20 +7428,6 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2833,
-            "end": 2844,
-            "moduleId": 0,
-            "start": 2833,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -8140,36 +7460,6 @@ description: Variables in memory after executing enclosure.kcl
             },
             "to": [
               7.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              4.0,
-              0.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 2833,
-              "end": 2844,
-              "moduleId": 0,
-              "start": 2833,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              4.0,
               0.0
             ],
             "type": "Circle",
@@ -8264,20 +7554,6 @@ description: Variables in memory after executing enclosure.kcl
             "value": "outerCircle"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2833,
-            "end": 2844,
-            "moduleId": 0,
-            "start": 2833,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -8310,36 +7586,6 @@ description: Variables in memory after executing enclosure.kcl
             },
             "to": [
               7.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              4.0,
-              0.0
-            ],
-            "radius": 4.0,
-            "tag": {
-              "commentStart": 2833,
-              "end": 2844,
-              "moduleId": 0,
-              "start": 2833,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              4.0,
               0.0
             ],
             "type": "Circle",
@@ -8565,36 +7811,6 @@ description: Variables in memory after executing enclosure.kcl
           },
           "to": [
             7.0,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            4.0,
-            0.0
-          ],
-          "radius": 4.0,
-          "tag": {
-            "commentStart": 2833,
-            "end": 2844,
-            "moduleId": 0,
-            "start": 2833,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "to": [
-            4.0,
             0.0
           ],
           "type": "Circle",

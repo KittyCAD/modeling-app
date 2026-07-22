@@ -305,20 +305,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerCircle"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 8485,
-            "end": 8496,
-            "moduleId": 0,
-            "start": 8485,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -351,36 +337,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "to": [
               0.74,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              0.625,
-              0.0
-            ],
-            "radius": 0.625,
-            "tag": {
-              "commentStart": 8485,
-              "end": 8496,
-              "moduleId": 0,
-              "start": 8485,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              0.625,
               0.0
             ],
             "type": "Circle",
@@ -486,36 +442,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           },
           "to": [
             0.74,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            0.625,
-            0.0
-          ],
-          "radius": 0.625,
-          "tag": {
-            "commentStart": 8485,
-            "end": 8496,
-            "moduleId": 0,
-            "start": 8485,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "to": [
-            0.625,
             0.0
           ],
           "type": "Circle",
@@ -1246,20 +1172,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": "outerCircle"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 8485,
-            "end": 8496,
-            "moduleId": 0,
-            "start": 8485,
-            "type": "TagDeclarator",
-            "value": "innerCircle"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -1292,36 +1204,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             },
             "to": [
               0.74,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              0.625,
-              0.0
-            ],
-            "radius": 0.625,
-            "tag": {
-              "commentStart": 8485,
-              "end": 8496,
-              "moduleId": 0,
-              "start": 8485,
-              "type": "TagDeclarator",
-              "value": "innerCircle"
-            },
-            "to": [
-              0.625,
               0.0
             ],
             "type": "Circle",
@@ -8627,20 +8509,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
-            "moduleId": 0,
-            "start": 2272,
-            "type": "TagDeclarator",
-            "value": "innerHole"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 2860,
             "end": 2869,
             "moduleId": 0,
@@ -8756,36 +8624,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0000000000033333336074679032,
-              0.0
-            ],
-            "from": [
-              0.625000000015,
-              0.0
-            ],
-            "radius": 0.6250000000116667,
-            "tag": {
-              "commentStart": 2272,
-              "end": 2281,
-              "moduleId": 0,
-              "start": 2272,
-              "type": "TagDeclarator",
-              "value": "innerHole"
-            },
-            "to": [
-              0.625000000015,
-              0.0
-            ],
-            "type": "Circle",
             "units": "in"
           }
         ],
@@ -8999,20 +8837,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
-            "moduleId": 0,
-            "start": 2272,
-            "type": "TagDeclarator",
-            "value": "innerHole"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 2860,
             "end": 2869,
             "moduleId": 0,
@@ -9128,36 +8952,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0000000000033333336074679032,
-              0.0
-            ],
-            "from": [
-              0.625000000015,
-              0.0
-            ],
-            "radius": 0.6250000000116667,
-            "tag": {
-              "commentStart": 2272,
-              "end": 2281,
-              "moduleId": 0,
-              "start": 2272,
-              "type": "TagDeclarator",
-              "value": "innerHole"
-            },
-            "to": [
-              0.625000000015,
-              0.0
-            ],
-            "type": "Circle",
             "units": "in"
           }
         ],
@@ -9403,36 +9197,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0000000000033333336074679032,
-            0.0
-          ],
-          "from": [
-            0.625000000015,
-            0.0
-          ],
-          "radius": 0.6250000000116667,
-          "tag": {
-            "commentStart": 2272,
-            "end": 2281,
-            "moduleId": 0,
-            "start": 2272,
-            "type": "TagDeclarator",
-            "value": "innerHole"
-          },
-          "to": [
-            0.625000000015,
-            0.0
-          ],
-          "type": "Circle",
           "units": "in"
         }
       ],
@@ -10788,20 +10552,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
-            "moduleId": 0,
-            "start": 2272,
-            "type": "TagDeclarator",
-            "value": "innerHole"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 2860,
             "end": 2869,
             "moduleId": 0,
@@ -10917,36 +10667,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0000000000033333336074679032,
-              0.0
-            ],
-            "from": [
-              0.625000000015,
-              0.0
-            ],
-            "radius": 0.6250000000116667,
-            "tag": {
-              "commentStart": 2272,
-              "end": 2281,
-              "moduleId": 0,
-              "start": 2272,
-              "type": "TagDeclarator",
-              "value": "innerHole"
-            },
-            "to": [
-              0.625000000015,
-              0.0
-            ],
-            "type": "Circle",
             "units": "in"
           }
         ],
@@ -11102,20 +10822,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
-            "moduleId": 0,
-            "start": 2272,
-            "type": "TagDeclarator",
-            "value": "innerHole"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 2860,
             "end": 2869,
             "moduleId": 0,
@@ -11231,36 +10937,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0000000000033333336074679032,
-              0.0
-            ],
-            "from": [
-              0.625000000015,
-              0.0
-            ],
-            "radius": 0.6250000000116667,
-            "tag": {
-              "commentStart": 2272,
-              "end": 2281,
-              "moduleId": 0,
-              "start": 2272,
-              "type": "TagDeclarator",
-              "value": "innerHole"
-            },
-            "to": [
-              0.625000000015,
-              0.0
-            ],
-            "type": "Circle",
             "units": "in"
           }
         ],

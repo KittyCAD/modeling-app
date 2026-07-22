@@ -10843,20 +10843,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 10045,
-                "end": 10052,
-                "moduleId": 0,
-                "start": 10045,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -10890,36 +10876,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "to": [
                   0.34999999977499996,
                   0.34999999959999994
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.00000000015500001109003403,
-                  0.34999999987999997
-                ],
-                "from": [
-                  0.17499999984999998,
-                  0.34999999998
-                ],
-                "radius": 0.175000000005,
-                "tag": {
-                  "commentStart": 10045,
-                  "end": 10052,
-                  "moduleId": 0,
-                  "start": 10045,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.17499999984999998,
-                  0.34999999998
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -11144,20 +11100,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 10045,
-                "end": 10052,
-                "moduleId": 0,
-                "start": 10045,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -11191,36 +11133,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "to": [
                   0.34999999977499996,
                   0.34999999959999994
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.00000000015500001109003403,
-                  0.34999999987999997
-                ],
-                "from": [
-                  0.17499999984999998,
-                  0.34999999998
-                ],
-                "radius": 0.175000000005,
-                "tag": {
-                  "commentStart": 10045,
-                  "end": 10052,
-                  "moduleId": 0,
-                  "start": 10045,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.17499999984999998,
-                  0.34999999998
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -11457,36 +11369,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "type": "Circle",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            -0.00000000015500001109003403,
-            0.34999999987999997
-          ],
-          "from": [
-            0.17499999984999998,
-            0.34999999998
-          ],
-          "radius": 0.175000000005,
-          "tag": {
-            "commentStart": 10045,
-            "end": 10052,
-            "moduleId": 0,
-            "start": 10045,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "to": [
-            0.17499999984999998,
-            0.34999999998
-          ],
-          "type": "Circle",
-          "units": "m"
         }
       ],
       "on": {
@@ -11575,20 +11457,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 10045,
-                "end": 10052,
-                "moduleId": 0,
-                "start": 10045,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -11622,36 +11490,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "to": [
                   0.34999999977499996,
                   0.34999999959999994
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.00000000015500001109003403,
-                  0.34999999987999997
-                ],
-                "from": [
-                  0.17499999984999998,
-                  0.34999999998
-                ],
-                "radius": 0.175000000005,
-                "tag": {
-                  "commentStart": 10045,
-                  "end": 10052,
-                  "moduleId": 0,
-                  "start": 10045,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.17499999984999998,
-                  0.34999999998
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -11876,20 +11714,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 10045,
-                "end": 10052,
-                "moduleId": 0,
-                "start": 10045,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -11923,36 +11747,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "to": [
                   0.34999999977499996,
                   0.34999999959999994
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.00000000015500001109003403,
-                  0.34999999987999997
-                ],
-                "from": [
-                  0.17499999984999998,
-                  0.34999999998
-                ],
-                "radius": 0.175000000005,
-                "tag": {
-                  "commentStart": 10045,
-                  "end": 10052,
-                  "moduleId": 0,
-                  "start": 10045,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.17499999984999998,
-                  0.34999999998
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12694,20 +12488,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 10045,
-            "end": 10052,
-            "moduleId": 0,
-            "start": 10045,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -12741,36 +12521,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "to": [
               0.34999999977499996,
               0.34999999959999994
-            ],
-            "type": "Circle",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -0.00000000015500001109003403,
-              0.34999999987999997
-            ],
-            "from": [
-              0.17499999984999998,
-              0.34999999998
-            ],
-            "radius": 0.175000000005,
-            "tag": {
-              "commentStart": 10045,
-              "end": 10052,
-              "moduleId": 0,
-              "start": 10045,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              0.17499999984999998,
-              0.34999999998
             ],
             "type": "Circle",
             "units": "m"

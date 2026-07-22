@@ -11753,20 +11753,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 9929,
-                "end": 9936,
-                "moduleId": 0,
-                "start": 9929,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -11800,36 +11786,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "to": [
                   0.32005605008993004,
                   0.20997628963868833
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
-                ],
-                "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
-                ],
-                "radius": 0.17500000013007633,
-                "tag": {
-                  "commentStart": 9929,
-                  "end": 9936,
-                  "moduleId": 0,
-                  "start": 9929,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12054,20 +12010,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 9929,
-                "end": 9936,
-                "moduleId": 0,
-                "start": 9929,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -12101,36 +12043,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "to": [
                   0.32005605008993004,
                   0.20997628963868833
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
-                ],
-                "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
-                ],
-                "radius": 0.17500000013007633,
-                "tag": {
-                  "commentStart": 9929,
-                  "end": 9936,
-                  "moduleId": 0,
-                  "start": 9929,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12376,36 +12288,6 @@ description: Variables in memory after executing stylized-car.kcl
           ],
           "type": "Circle",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            -0.0007138995114735852,
-            0.35000000000005294
-          ],
-          "from": [
-            0.1520856467161471,
-            0.43530708480641545
-          ],
-          "radius": 0.17500000013007633,
-          "tag": {
-            "commentStart": 9929,
-            "end": 9936,
-            "moduleId": 0,
-            "start": 9929,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "to": [
-            0.1520856467161471,
-            0.43530708480641545
-          ],
-          "type": "Circle",
-          "units": "m"
         }
       ],
       "on": {
@@ -12494,20 +12376,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 9929,
-                "end": 9936,
-                "moduleId": 0,
-                "start": 9929,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -12541,36 +12409,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "to": [
                   0.32005605008993004,
                   0.20997628963868833
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
-                ],
-                "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
-                ],
-                "radius": 0.17500000013007633,
-                "tag": {
-                  "commentStart": 9929,
-                  "end": 9936,
-                  "moduleId": 0,
-                  "start": 9929,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12795,20 +12633,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "circle1"
               },
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 9929,
-                "end": 9936,
-                "moduleId": 0,
-                "start": 9929,
-                "type": "TagDeclarator",
-                "value": "circle2"
-              },
-              "type": "extrudeArc"
             }
           ],
           "sketch": {
@@ -12842,36 +12666,6 @@ description: Variables in memory after executing stylized-car.kcl
                 "to": [
                   0.32005605008993004,
                   0.20997628963868833
-                ],
-                "type": "Circle",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
-                ],
-                "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
-                ],
-                "radius": 0.17500000013007633,
-                "tag": {
-                  "commentStart": 9929,
-                  "end": 9936,
-                  "moduleId": 0,
-                  "start": 9929,
-                  "type": "TagDeclarator",
-                  "value": "circle2"
-                },
-                "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -13613,20 +13407,6 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 9929,
-            "end": 9936,
-            "moduleId": 0,
-            "start": 9929,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -13660,36 +13440,6 @@ description: Variables in memory after executing stylized-car.kcl
             "to": [
               0.32005605008993004,
               0.20997628963868833
-            ],
-            "type": "Circle",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              -0.0007138995114735852,
-              0.35000000000005294
-            ],
-            "from": [
-              0.1520856467161471,
-              0.43530708480641545
-            ],
-            "radius": 0.17500000013007633,
-            "tag": {
-              "commentStart": 9929,
-              "end": 9936,
-              "moduleId": 0,
-              "start": 9929,
-              "type": "TagDeclarator",
-              "value": "circle2"
-            },
-            "to": [
-              0.1520856467161471,
-              0.43530708480641545
             ],
             "type": "Circle",
             "units": "m"

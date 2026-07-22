@@ -3292,20 +3292,6 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7207,
-            "end": 7223,
-            "moduleId": 0,
-            "start": 7207,
-            "type": "TagDeclarator",
-            "value": "centerBoreCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 8212,
             "end": 8224,
             "moduleId": 0,
@@ -3370,36 +3356,6 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "to": [
               3.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              1.5,
-              0.0
-            ],
-            "radius": 1.5,
-            "tag": {
-              "commentStart": 7207,
-              "end": 7223,
-              "moduleId": 0,
-              "start": 7207,
-              "type": "TagDeclarator",
-              "value": "centerBoreCircle"
-            },
-            "to": [
-              1.5,
               0.0
             ],
             "type": "Circle",
@@ -3524,20 +3480,6 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7207,
-            "end": 7223,
-            "moduleId": 0,
-            "start": 7207,
-            "type": "TagDeclarator",
-            "value": "centerBoreCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 8212,
             "end": 8224,
             "moduleId": 0,
@@ -3602,36 +3544,6 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "to": [
               3.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              1.5,
-              0.0
-            ],
-            "radius": 1.5,
-            "tag": {
-              "commentStart": 7207,
-              "end": 7223,
-              "moduleId": 0,
-              "start": 7207,
-              "type": "TagDeclarator",
-              "value": "centerBoreCircle"
-            },
-            "to": [
-              1.5,
               0.0
             ],
             "type": "Circle",
@@ -7509,20 +7421,6 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7207,
-            "end": 7223,
-            "moduleId": 0,
-            "start": 7207,
-            "type": "TagDeclarator",
-            "value": "centerBoreCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 8212,
             "end": 8224,
             "moduleId": 0,
@@ -7587,36 +7485,6 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "to": [
               3.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              1.5,
-              0.0
-            ],
-            "radius": 1.5,
-            "tag": {
-              "commentStart": 7207,
-              "end": 7223,
-              "moduleId": 0,
-              "start": 7207,
-              "type": "TagDeclarator",
-              "value": "centerBoreCircle"
-            },
-            "to": [
-              1.5,
               0.0
             ],
             "type": "Circle",
@@ -7755,20 +7623,6 @@ description: Variables in memory after executing wheel-hub.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7207,
-            "end": 7223,
-            "moduleId": 0,
-            "start": 7207,
-            "type": "TagDeclarator",
-            "value": "centerBoreCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 8212,
             "end": 8224,
             "moduleId": 0,
@@ -7833,36 +7687,6 @@ description: Variables in memory after executing wheel-hub.kcl
             },
             "to": [
               3.0,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              1.5,
-              0.0
-            ],
-            "radius": 1.5,
-            "tag": {
-              "commentStart": 7207,
-              "end": 7223,
-              "moduleId": 0,
-              "start": 7207,
-              "type": "TagDeclarator",
-              "value": "centerBoreCircle"
-            },
-            "to": [
-              1.5,
               0.0
             ],
             "type": "Circle",
@@ -8617,36 +8441,6 @@ description: Variables in memory after executing wheel-hub.kcl
           },
           "to": [
             3.0,
-            0.0
-          ],
-          "type": "Circle",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "ccw": true,
-          "center": [
-            0.0,
-            0.0
-          ],
-          "from": [
-            1.5,
-            0.0
-          ],
-          "radius": 1.5,
-          "tag": {
-            "commentStart": 7207,
-            "end": 7223,
-            "moduleId": 0,
-            "start": 7207,
-            "type": "TagDeclarator",
-            "value": "centerBoreCircle"
-          },
-          "to": [
-            1.5,
             0.0
           ],
           "type": "Circle",
