@@ -26,6 +26,7 @@ import {
 } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
+  clonedRegionBody,
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
   enginelessExecutor,
@@ -33,6 +34,7 @@ import {
   getAstAndSketchSelections,
   getCapFromCylinder,
   getKclCommandValue,
+  getSweepEdgesForBody,
   getWalls,
   runNewAstAndCheckForSweep,
   runNewAstAndCountSweeps,
@@ -916,6 +918,49 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`extrude002 = extrude(
   getOppositeEdge(extrude001.sketch.tags.line1),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
+    })
+
+    it('should add a surface extrude from an edge on a cloned body', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        clonedRegionBody,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = getSweepEdgesForBody(
+        clonedRegionBody,
+        'cube2',
+        artifactGraph
+      )[0]
+      if (!edge) throw new Error('Expected a cloned sweep edge')
+
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: createSelectionFromArtifacts([edge], artifactGraph),
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`extrude001 = extrude(
+  getOppositeEdge(cube2.sketch.tags.line2),
   length = 2,
   method = NEW,
   bodyType = SURFACE,
