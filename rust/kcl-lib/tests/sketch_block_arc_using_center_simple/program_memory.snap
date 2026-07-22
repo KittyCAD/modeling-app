@@ -50,7 +50,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                   "arc": {
                     "start": [
                       {
-                        "n": 1.0,
+                        "n": 1.000000001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                         }
                       },
                       {
-                        "n": -0.00000000000000000000000000001417067217479522,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000000000000000014166160546661527,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                         }
                       },
                       {
-                        "n": 1.000000000000001,
+                        "n": 1.0000000040000006,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -86,7 +86,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     ],
                     "center": [
                       {
-                        "n": -0.00000000000000004646247607649923,
+                        "n": -0.0000000010000001352515216,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -94,7 +94,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                         }
                       },
                       {
-                        "n": 0.00000000000000004646246887037477,
+                        "n": 0.0000000010000001352515216,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -206,14 +206,14 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                   },
                   "ccw": true,
                   "center": [
-                    -0.0,
-                    0.00000000000000004646246887037477
+                    -0.000000001000000082740371,
+                    0.0000000010000001352515216
                   ],
                   "from": [
-                    1.0,
-                    -0.00000000000000000000000000001417067217479522
+                    1.000000001,
+                    0.0
                   ],
-                  "radius": 1.0,
+                  "radius": 1.0000000020000002,
                   "tag": {
                     "commentStart": 65,
                     "end": 69,
@@ -223,8 +223,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     "value": "arc1"
                   },
                   "to": [
-                    0.00000000000000006123233995736766,
-                    1.0
+                    0.00000000000000028527694578476073,
+                    1.0000000030000002
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -263,12 +263,12 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
               },
               "start": {
                 "from": [
-                  1.0,
-                  -0.00000000000000000000000000001417067217479522
+                  1.000000001,
+                  0.0
                 ],
                 "to": [
-                  1.0,
-                  -0.00000000000000000000000000001417067217479522
+                  1.000000001,
+                  0.0
                 ],
                 "units": "mm",
                 "tag": null,

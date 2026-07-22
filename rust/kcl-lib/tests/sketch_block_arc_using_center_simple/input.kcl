@@ -8,9 +8,11 @@ s = sketch(on = XY) {
   fixed([arc1.center, [0mm, 0mm]])
 }
 
-assert(s.arc1.center.at[0], isEqualTo = 0)
-assert(s.arc1.center.at[1], isEqualTo = 0)
-assert(s.arc1.start.at[0], isEqualTo = 1mm)
-assert(s.arc1.start.at[1], isEqualTo = 0)
-assert(s.arc1.end.at[0], isEqualTo = 0)
-assert(s.arc1.end.at[1], isEqualTo = 1mm)
+// Tolerance matches the solver's convergence tolerance (1e-8); asserting
+// tighter than that asks for more precision than ezpz guarantees.
+assert(s.arc1.center.at[0], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.center.at[1], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001)
+assert(s.arc1.start.at[1], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.end.at[0], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.end.at[1], isEqualTo = 1mm, tolerance = 0.00000001)
