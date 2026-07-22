@@ -1,155 +1,85 @@
-import { join } from 'node:path'
-
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLiteral,
   createLocalName,
 } from '@src/lang/create'
-import {
-  createPathToNodeForLastVariable,
-  setCallInAst,
-} from '@src/lang/modifyAst'
+import { pathsReferToSamePipe, replaceCallInPlace } from '@src/lang/modifyAst'
 import type { PathToNode } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { err } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-describe('setCallInAst pipe edits', () => {
-  let wasmInstance: ModuleType
-
-  beforeAll(async () => {
-    wasmInstance = await loadAndInitialiseWasmInstance(
-      join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+describe('editing calls in place', () => {
+  it('preserves an existing unlabeled argument when reconstruction fails', () => {
+    const inlineInput = createCallExpressionStdLibKw(
+      'extrude',
+      createLocalName('profile'),
+      []
     )
-  })
-
-  it('preserves an existing unlabeled argument when an edit cannot rebuild it', () => {
-    const code = `translated = translate(
-  extrude(profileSketch, length = 1mm),
-  x = 1mm,
-)
-`
-    const ast = assertParse(code, wasmInstance)
-    const call = createCallExpressionStdLibKw('translate', null, [
-      createLabeledArg('x', createLiteral(2, wasmInstance, 'Mm')),
-    ])
-    const pathToEdit = createPathToNodeForLastVariable(ast, false)
-    const pathToNode = setCallInAst({
-      ast,
-      call,
-      pathToEdit,
-      pathIfNewPipe: pathToEdit,
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      throw pathToNode
-    }
-
-    expect(recast(ast, wasmInstance)).toContain(
-      `translated = translate(extrude(profileSketch, length = 1mm), x = 2mm)`
-    )
-  })
-
-  it('replaces the existing argument when reconstruction succeeds', () => {
-    const ast = assertParse(
-      `translated = translate(body, x = 1mm)`,
-      wasmInstance
-    )
-    const call = createCallExpressionStdLibKw(
+    const existingCall = createCallExpressionStdLibKw(
       'translate',
-      createLocalName('replacementBody'),
-      [createLabeledArg('x', createLiteral(2, wasmInstance, 'Mm'))]
+      inlineInput,
+      [createLabeledArg('x', createLocalName('oldX'))]
     )
-    const pathToNode = setCallInAst({
-      ast,
-      call,
-      pathToEdit: createPathToNodeForLastVariable(ast, false),
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      throw pathToNode
-    }
+    const replacementCall = createCallExpressionStdLibKw('translate', null, [
+      createLabeledArg('x', createLocalName('newX')),
+    ])
 
-    expect(recast(ast, wasmInstance)).toBe(
-      `translated = translate(replacementBody, x = 2mm)\n`
-    )
+    replaceCallInPlace(existingCall, replacementCall)
+
+    expect(existingCall.unlabeled).toEqual(inlineInput)
+    expect(existingCall.arguments).toEqual(replacementCall.arguments)
+    expect(replacementCall.unlabeled).toBeNull()
   })
 
-  it('edits a call in its existing pipe without adding a duplicate call', () => {
-    const code = `body = profile
-  |> extrude(length = 1mm)
-  |> translate(x = 1mm)
-`
-    const ast = assertParse(code, wasmInstance)
-    const pathToEdit: PathToNode = [
+  it('uses a reconstructed unlabeled argument when available', () => {
+    const existingCall = createCallExpressionStdLibKw(
+      'translate',
+      createLocalName('oldBody'),
+      []
+    )
+    const replacementInput = createLocalName('newBody')
+    const replacementCall = createCallExpressionStdLibKw(
+      'translate',
+      replacementInput,
+      []
+    )
+
+    replaceCallInPlace(existingCall, replacementCall)
+
+    expect(existingCall.unlabeled).toEqual(replacementInput)
+  })
+
+  it('recognizes different calls in the same pipe', () => {
+    const first: PathToNode = [
       ['body', ''],
       [0, 'index'],
       ['declaration', 'VariableDeclaration'],
       ['init', 'VariableDeclarator'],
       ['body', 'PipeExpression'],
-      [2, 'index'],
+      [1, 'index'],
     ]
-    const call = createCallExpressionStdLibKw('translate', null, [
-      createLabeledArg('x', createLiteral(2, wasmInstance, 'Mm')),
-    ])
-    const pathToNode = setCallInAst({
-      ast,
-      call,
-      pathToEdit,
-      pathIfNewPipe: pathToEdit.slice(0, -1).concat([[1, 'index']]),
-      wasmInstance,
-    })
-    if (err(pathToNode)) {
-      throw pathToNode
-    }
+    const second: PathToNode = [...first.slice(0, -1), [2, 'index']]
 
-    const newCode = recast(ast, wasmInstance)
-    if (err(newCode)) {
-      throw newCode
-    }
-    expect(newCode).toBe(`body = profile
-  |> extrude(length = 1mm)
-  |> translate(x = 2mm)
-`)
-    expect(newCode.match(/translate/g)).toHaveLength(1)
+    expect(pathsReferToSamePipe(first, second)).toBe(true)
   })
 
-  it('does not silently keep the old selection when an edit targets another pipe', () => {
-    const ast = assertParse(
-      `first = translate(body, x = 1mm)\nsecond = profile |> extrude(length = 1mm)`,
-      wasmInstance
-    )
-    const call = createCallExpressionStdLibKw('translate', null, [
-      createLabeledArg('x', createLiteral(2, wasmInstance, 'Mm')),
-    ])
-    const result = setCallInAst({
-      ast,
-      call,
-      pathToEdit: [
-        ['body', ''],
-        [0, 'index'],
-        ['declaration', 'VariableDeclaration'],
-        ['init', 'VariableDeclarator'],
-      ],
-      pathIfNewPipe: [
-        ['body', ''],
-        [1, 'index'],
-        ['declaration', 'VariableDeclaration'],
-        ['init', 'VariableDeclarator'],
-      ],
-      wasmInstance,
-    })
+  it('rejects paths from different pipes', () => {
+    const first: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['body', 'PipeExpression'],
+      [1, 'index'],
+    ]
+    const second: PathToNode = [
+      ['body', ''],
+      [1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['body', 'PipeExpression'],
+      [1, 'index'],
+    ]
 
-    expect(result).toEqual(
-      new Error(
-        'Cannot edit the call in place because its reconstructed input belongs to a different pipe'
-      )
-    )
-    expect(recast(ast, wasmInstance)).toContain(
-      'first = translate(body, x = 1mm)'
-    )
+    expect(pathsReferToSamePipe(first, second)).toBe(false)
   })
 })

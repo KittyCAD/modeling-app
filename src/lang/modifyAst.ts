@@ -1285,7 +1285,10 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
-function pathsReferToSamePipe(first: PathToNode, second: PathToNode): boolean {
+export function pathsReferToSamePipe(
+  first: PathToNode,
+  second: PathToNode
+): boolean {
   if (stringifyPathToNode(first) === stringifyPathToNode(second)) {
     return true
   }
@@ -1297,6 +1300,17 @@ function pathsReferToSamePipe(first: PathToNode, second: PathToNode): boolean {
     secondPipe.index !== -1 &&
     stringifyPathToNode(firstPipe.path) === stringifyPathToNode(secondPipe.path)
   )
+}
+
+export function replaceCallInPlace(
+  existingCall: CallExpressionKw,
+  replacementCall: CallExpressionKw
+) {
+  const unlabeled =
+    replacementCall.unlabeled === null
+      ? structuredClone(existingCall.unlabeled)
+      : replacementCall.unlabeled
+  Object.assign(existingCall, replacementCall, { unlabeled })
 }
 
 export function setCallInAst({
@@ -1332,11 +1346,7 @@ export function setCallInAst({
       return result
     }
 
-    if (call.unlabeled === null && result.node.unlabeled !== null) {
-      call.unlabeled = structuredClone(result.node.unlabeled)
-    }
-
-    Object.assign(result.node, call)
+    replaceCallInPlace(result.node, call)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(
