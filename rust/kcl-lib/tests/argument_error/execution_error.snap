@@ -2,24 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing argument_error.kcl
 ---
-KCL Argument error
+[31mKCL EngineHangup error[0m
 
-  × argument: f requires a value with type `fn(any): any`, but found an array
-  │ of `number`, `number` (with type `[any; 2]`).
-   ╭─[5:1]
- 4 │ 
- 5 │ map(f, f = [0, 1])
-   · ─────────┬────────┬
-   ·          │        ╰── tests/argument_error/input.kcl
-   ·          ╰── tests/argument_error/input.kcl
+  [31m×[0m engine hangup: could not
+  [31m│[0m send request to the
+  [31m│[0m engine: could not send
+  [31m│[0m json over websocket:
+  [31m│[0m Trying to work with
+  [31m│[0m closed connection
+   ╭─[1:1]
+ [2m1[0m │ fn f(@i) {
+   · [35;1m▲[0m
+   · [35;1m╰── [35;1mmain[0m[0m
+ [2m2[0m │   return 5
    ╰────
-  ╰─▶ KCL Argument error
-      
-        × argument: f requires a value with type `fn(any): any`, but found an
-        │ array of `number`, `number` (with type `[any; 2]`).
-         ╭─[5:12]
-       4 │
-       5 │ map(f, f = [0, 1])
-         ·            ───┬──
-         ·               ╰── tests/argument_error/input.kcl
-         ╰────
