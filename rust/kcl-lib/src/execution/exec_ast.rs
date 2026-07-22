@@ -726,8 +726,12 @@ impl ExecutorContext {
         body_type: BodyType,
     ) -> Result<Option<KclValueControlFlow>, KclError>
     where
-        B: CodeBlock + Sync,
+        B: CodeBlock + crate::execution::machine::ToMachineBlock + Sync,
     {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_block(self, block.to_machine_block(), exec_state, body_type).await;
+        }
+
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in block.body() {
@@ -1635,7 +1639,7 @@ impl ExecutorContext {
 
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
-fn sketch_mode_should_skip(expr: &Expr) -> bool {
+pub(super) fn sketch_mode_should_skip(expr: &Expr) -> bool {
     match expr {
         Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
         _ => true,
@@ -1780,8 +1784,6 @@ impl Node<SketchBlock> {
                 self,
             ));
         };
-        let mut sketch_block_state = sketch_block_state;
-
         let return_value = self
             .finalize_sketch_block(
                 sketch_id,
@@ -1816,8 +1818,6 @@ impl Node<SketchBlock> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        let range = SourceRange::from(self);
-
         if !exec_state.sketch_mode() {
             // Evaluate arguments.
             //
@@ -2060,9 +2060,6 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let range = SourceRange::from(self);
-        let metadata = Metadata {
-            source_range: SourceRange::from(self),
-        };
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
@@ -2219,7 +2216,7 @@ impl Node<SketchBlock> {
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
-                &sketch_surface,
+                sketch_surface,
                 sketch_engine_id,
                 None,
                 &solve_outcome,
@@ -2240,7 +2237,7 @@ impl Node<SketchBlock> {
 
         // Build the sketch and send everything to the engine.
         let sketch = create_segments_in_engine(
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             &mut solved_segments,
             &sketch_block_state.segment_tags,
@@ -2269,7 +2266,7 @@ impl Node<SketchBlock> {
         // the same.
         let variables = substitute_sketch_vars(
             variables,
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             sketch.as_ref(),
             &solve_outcome,
@@ -2375,7 +2372,7 @@ impl Node<SketchBlock> {
         Ok(())
     }
 
-    async fn load_sketch2_into_current_scope(
+    pub(super) async fn load_sketch2_into_current_scope(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -2435,7 +2432,7 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+    pub(super) fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
         exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
@@ -2479,7 +2476,7 @@ impl Node<SketchVar> {
     }
 }
 
-fn apply_ascription(
+pub(super) fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
@@ -5762,7 +5759,24 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start_val = control_continue!(start_val);
+        let start_val_for_build = control_continue!(start_val);
+        let metadata = Metadata::from(&self.end_element);
+        let end_val = ctx
+            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?;
+        let end_val = control_continue!(end_val);
+        self.build_range(start_val_for_build, end_val, exec_state)
+            .map(KclValue::continue_)
+    }
+
+    /// Build the range value from evaluated endpoints. The evaluation-free
+    /// second half of range execution, shared by both executors.
+    pub(super) fn build_range(
+        &self,
+        start_val: KclValue,
+        end_val: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
         let start = start_val
             .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
@@ -5772,11 +5786,6 @@ impl Node<ArrayRangeExpression> {
                 ),
                 vec![self.into()],
             )))?;
-        let metadata = Metadata::from(&self.end_element);
-        let end_val = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let end_val = control_continue!(end_val);
         let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Expected number for range end but found {}",
@@ -5826,8 +5835,7 @@ impl Node<ArrayRangeExpression> {
                 })
                 .collect(),
             ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
-        }
-        .continue_())
+        })
     }
 }
 
@@ -6257,6 +6265,8 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: Default::default(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

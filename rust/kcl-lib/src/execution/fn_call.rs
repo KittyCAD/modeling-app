@@ -1204,7 +1204,7 @@ fn type_check_params_kw(
     Ok(result)
 }
 
-fn assign_args_to_params_kw(
+pub(super) fn assign_args_to_params_kw(
     fn_def: &FunctionSource,
     args: Args<Desugared>,
     exec_state: &mut ExecState,
@@ -1516,6 +1516,8 @@ mod test {
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
+                executor_kind: Default::default(),
+                machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
