@@ -5,36 +5,124 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
-import { readAppSettingsFile } from '@src/lib/desktop'
+import {
+  getInitialDefaultDir,
+  getProjectInfo,
+  readAppSettingsFile,
+} from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  PATHS,
   getParentAbsolutePath,
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
+  PATHS,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
+  DEFAULT_PROJECT_LIBRARY_TITLE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultDirectoryProjectLibrarySetting,
   isPathInDirectoryProjectLibrary,
+  type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  type AppSettings,
+  loadAndValidateSettings,
+} from '@src/lib/settings/settingsUtils'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectLibrarySettingDefaultsValueSpec } from '@src/registry/contracts/projectLibraries'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
+
+type CanonicalWebProjectLibrary = {
+  library: ProjectLibrarySetting
+  projectPath: string
+  defaultFilePath: string
+}
+
+function loadRouteSettings(
+  app: App,
+  wasmInstance: Awaited<App['wasmPromise']>,
+  projectPath?: string
+) {
+  return loadAndValidateSettings(wasmInstance, {
+    defaultProjectLibraries: app.registry.get(
+      projectLibrarySettingDefaultsValueSpec
+    ),
+    extensionSettings: app.registry.get(settingsValueSpec),
+    projectPath,
+  })
+}
+
+async function getCanonicalWebProjectLibrary(
+  settings: AppSettings['settings']
+): Promise<CanonicalWebProjectLibrary> {
+  const fallbackLibraryPath =
+    settings.app.projectDirectory.current.trim() ||
+    (await getInitialDefaultDir())
+  const configuredLibrary = getDefaultDirectoryProjectLibrarySetting(
+    settings.app.libraries?.current
+  )
+  const libraryPath = configuredLibrary?.path.trim()
+    ? configuredLibrary.path
+    : fallbackLibraryPath
+  const library = {
+    title: configuredLibrary?.title || DEFAULT_PROJECT_LIBRARY_TITLE,
+    path: libraryPath,
+    type: configuredLibrary?.type || DIRECTORY_PROJECT_LIBRARY_TYPE,
+  }
+
+  return {
+    library,
+    projectPath: fsZds.resolve(library.path, DEFAULT_WEB_PROJECT_NAME),
+    defaultFilePath: fsZds.resolve(
+      library.path,
+      DEFAULT_WEB_PROJECT_NAME,
+      PROJECT_ENTRYPOINT
+    ),
+  }
+}
+
+async function maybeGetExistingDefaultFilePath(
+  projectPath: string,
+  wasmInstance: Awaited<App['wasmPromise']>
+) {
+  try {
+    const project = await getProjectInfo(projectPath, wasmInstance)
+    return project.default_file
+  } catch {
+    return undefined
+  }
+}
+
+async function fileExists(filePath: string) {
+  try {
+    await fsZds.stat(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function redirectToFile(filePath: string, routerSearch: string) {
+  return redirect(
+    `${PATHS.FILE}/${encodeURIComponent(filePath)}${routerSearch}`
+  )
+}
 
 /**
  * The base loader is used to reroute `/` root path requests,
@@ -68,38 +156,24 @@ export const baseLoader =
     // Web, make a default project and redirect to it.
     const wasmInstance = await app.singletons.kclManager.wasmInstancePromise
 
-    const settings = await loadAndValidateSettings(wasmInstance, undefined)
+    const { settings } = await loadRouteSettings(app, wasmInstance)
+    const canonicalLibrary = await getCanonicalWebProjectLibrary(settings)
+    let defaultFilePath =
+      (await maybeGetExistingDefaultFilePath(
+        canonicalLibrary.projectPath,
+        wasmInstance
+      )) ?? canonicalLibrary.defaultFilePath
 
-    const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
-      settings.settings.app.libraries?.current
-    )
-    const requestedProjectName = fsZds.resolve(
-      defaultDirectoryLibraryPath ?? '',
-      DEFAULT_WEB_PROJECT_NAME
-    )
-
-    // We have to create and/or navigate to a project on web.
-    try {
-      await fsZds.stat(requestedProjectName)
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToProject,
-        data: { requestedProjectName },
-      })
-    } catch {
+    if (!(await fileExists(defaultFilePath))) {
       await projectSkeletonCreate(
-        fsZds.resolve(
-          await getInitialDefaultDir(),
-          DEFAULT_WEB_PROJECT_NAME,
-          'main.kcl'
-        ),
-        settings.settings.modeling.defaultUnit.current ??
-          DEFAULT_DEFAULT_LENGTH_UNIT,
+        canonicalLibrary.defaultFilePath,
+        settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
         wasmInstance
       )
-
-      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}`
-      return redirect(fileURLPath + routerSearch)
+      defaultFilePath = canonicalLibrary.defaultFilePath
     }
+
+    return redirectToFile(defaultFilePath, routerSearch)
   }
 
 export const fileLoader =
@@ -125,7 +199,8 @@ export const fileLoader =
 
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    const settings = await loadAndValidateSettings(
+    const settings = await loadRouteSettings(
+      app,
       wasmInstance,
       heuristicProjectFilePath
     )
