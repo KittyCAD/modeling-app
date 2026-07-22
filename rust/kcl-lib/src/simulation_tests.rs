@@ -6524,3 +6524,24 @@ mod runtime_exit_in_imported_module {
         super::execute(TEST_NAME, false).await
     }
 }
+mod runtime_exit_in_index {
+    const TEST_NAME: &str = "runtime_exit_in_index";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}

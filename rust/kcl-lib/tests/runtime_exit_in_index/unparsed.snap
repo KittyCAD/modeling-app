@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing runtime_exit_in_index.kcl
+---
+@settings(experimentalFeatures = allow)
+
+arr = [1, 2, 3]
+first = arr[0]
+assert(first, isEqualTo = 1)
+
+x = arr[if first == 1 {
+  exit()
+} else {
+  0
+}]
+
+// We should never reach this.
+assert(1, isEqualTo = 2)

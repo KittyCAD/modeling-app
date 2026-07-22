@@ -21,7 +21,6 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
 use crate::execution::ConstraintKind;
-use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
@@ -2512,7 +2511,7 @@ impl Node<MemberExpression> {
         };
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
-        let property = Property::try_from(
+        let property = match Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -2522,7 +2521,14 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await?;
+        .await
+        {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
         let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
@@ -5785,7 +5791,7 @@ impl Property {
         metadata: &Metadata,
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
-    ) -> Result<Self, KclError> {
+    ) -> Result<Self, EarlyReturn> {
         let property_sr = vec![sr];
         if !computed {
             let Expr::Name(identifier) = value else {
@@ -5794,7 +5800,8 @@ impl Property {
                     "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
                         .to_owned(),
                     property_sr,
-                )));
+                ))
+                .into());
             };
             return Ok(Property::String(identifier.to_string()));
         }
@@ -5802,14 +5809,9 @@ impl Property {
         let prop_value = ctx
             .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
             .await?;
-        let prop_value = match prop_value.control {
-            ControlFlowKind::Continue => prop_value.into_value(),
-            ControlFlowKind::Exit => {
-                let message = "Early return inside array brackets is currently not supported".to_owned();
-                debug_assert!(false, "{}", &message);
-                return Err(internal_err(message, sr));
-            }
-        };
+        // If the property expression exited, e.g. by calling exit(), propagate
+        // the exit so that it terminates the enclosing module.
+        let prop_value = early_return!(prop_value);
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -5823,7 +5825,8 @@ impl Property {
                             "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
                         ),
                         property_sr,
-                    )));
+                    ))
+                    .into());
                 }
                 if let Some(x) = crate::try_f64_to_usize(value) {
                     Ok(Property::UInt(x))
@@ -5831,13 +5834,15 @@ impl Property {
                     Err(KclError::new_semantic(KclErrorDetails::new(
                         format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                         property_sr,
-                    )))
+                    ))
+                    .into())
                 }
             }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Only numbers (>= 0) can be indexes".to_owned(),
                 vec![sr],
-            ))),
+            ))
+            .into()),
         }
     }
 }
