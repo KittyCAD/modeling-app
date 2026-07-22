@@ -256,6 +256,22 @@ describe('ProjectCard', () => {
     )
   })
 
+  test('selects the project title when opening rename from the context menu', async () => {
+    renderProjectCard()
+
+    clickRenameProject()
+
+    const input = screen.getByTestId('project-rename-input')
+    if (!(input instanceof HTMLInputElement)) {
+      throw new Error('Expected project rename input to be an input element')
+    }
+
+    await waitFor(() => expect(input).toHaveFocus())
+
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
+  })
+
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
     vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
     const projectActions = createProjectActions()

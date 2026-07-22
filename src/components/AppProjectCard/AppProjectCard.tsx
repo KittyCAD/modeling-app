@@ -171,10 +171,20 @@ function AppProjectCard({
   }
 
   useEffect(() => {
-    if (inputRef.current && isEditing) {
+    if (!isEditing) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      if (!inputRef.current) {
+        return
+      }
+
       inputRef.current.focus()
       inputRef.current.select()
-    }
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [isEditing])
 
   useEffect(() => {
