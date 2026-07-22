@@ -18,7 +18,7 @@ measurements = { package = "kittycad-measurements", version = "0.11.2" }
 parse-display = "0.11.0"
 parse-display-derive = "0.11.0"
 pyo3 = { version = "0.28.3", optional = true }
-pyo3-stub-gen = { version = "0.22.3", optional = true, default-features = false, features = ["either", "numpy", "ordered-float"] }
+pyo3-stub-gen = { version = "0.23.0", optional = true, default-features = false, features = ["either", "numpy", "ordered-float"] }
 schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
 serde = { workspace = true }
 ts-rs = { version = "12.0.1", features = ["uuid-impl", "url-impl", "chrono-impl", "indexmap-impl", "no-serde-warnings", "serde-json-impl"] }

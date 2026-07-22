@@ -1048,9 +1048,9 @@ checksum = "e1d926b4d407d372f141f93bb444696142c29d32962ccbd3531117cf3aa0bfa9"
 
 [[package]]
 name = "either"
-version = "1.15.0"
+version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 
 [[package]]
 name = "embedded-io"
@@ -2341,7 +2341,7 @@ dependencies = [
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "schemars 0.8.22",
  "serde",
  "ts-rs",
@@ -2500,7 +2500,7 @@ dependencies = [
  "pretty_assertions",
  "proptest",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "rayon",
  "regex",
  "reqwest",
@@ -2546,7 +2546,7 @@ dependencies = [
  "kittycad-modeling-cmds",
  "miette",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "serde",
  "serde_json",
  "tokio",
@@ -2672,7 +2672,7 @@ dependencies = [
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.22.4",
  "schemars 0.8.22",
  "serde",
  "serde_bytes",
@@ -3906,9 +3906,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.22.3"
+version = "0.22.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1242a6080f45edcfaf3be3b9968914dd47a408c5590aea22770b978f7c36ffa7"
+checksum = "fea98776c32736ebba63cc6dc3d4b5c67933446e39aa378a49b1652fb1e9a6cc"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3922,7 +3922,33 @@ dependencies = [
  "numpy",
  "ordered-float",
  "pyo3",
- "pyo3-stub-gen-derive",
+ "pyo3-stub-gen-derive 0.22.4",
+ "rustpython-parser",
+ "serde",
+ "serde_json",
+ "time",
+ "toml",
+]
+
+[[package]]
+name = "pyo3-stub-gen"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a267ea4da9a831f534def7f1d8e14f581d5640d3e5af6527072724f216f4dbbf"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "either",
+ "indexmap 2.14.0",
+ "inventory",
+ "itertools 0.14.0",
+ "log",
+ "maplit",
+ "num-complex",
+ "numpy",
+ "ordered-float",
+ "pyo3",
+ "pyo3-stub-gen-derive 0.23.0",
  "rustpython-parser",
  "serde",
  "serde_json",
@@ -3932,9 +3958,23 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.22.3"
+version = "0.22.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd9a73abe6f57890e657c265b86805637138f83203e1a56bc156078abf215e36"
+checksum = "643db6033267fd2f875fc8970d76bef247bbcdfcffe3ea5c6cd40424024f6c89"
+dependencies = [
+ "heck",
+ "indexmap 2.14.0",
+ "proc-macro2",
+ "quote",
+ "rustpython-parser",
+ "syn 2.0.118",
+]
+
+[[package]]
+name = "pyo3-stub-gen-derive"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6573423a5e8cc43ec7565eccccbc2dd35e1fc9032d9ca404afab875429eb8cf0"
 dependencies = [
  "heck",
  "indexmap 2.14.0",

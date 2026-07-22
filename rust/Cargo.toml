@@ -40,7 +40,7 @@ proptest = "1"
 
 pyo3 = { version = "0.28.3" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
-pyo3-stub-gen = { version = "0.22.3", default-features = false, features = [
+pyo3-stub-gen = { version = "0.23.0", default-features = false, features = [
   "either",
   "numpy",
   "ordered-float",
