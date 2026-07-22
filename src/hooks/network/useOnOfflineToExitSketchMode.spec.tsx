@@ -1,5 +1,5 @@
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
-import { EngineConnectionEvents } from '@src/network/utils'
+import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -19,7 +19,7 @@ describe('useOnOfflineToExitSketchMode', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
     })
-    test('should add and remove offline listener on engine command manager', async () => {
+    test('should add and remove offline listener on engine connection manager', async () => {
       const callback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
