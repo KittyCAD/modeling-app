@@ -1726,6 +1726,29 @@ fn mirror_3d_artifact_updates(
     Ok(return_arr)
 }
 
+fn edge_specifier_source_id(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    specifier: &kittycad_modeling_cmds::shared::EdgeSpecifier,
+) -> Option<ArtifactId> {
+    // The engine is authoritative for resolving the edge used by the operation.
+    // Reconstruct its source here only so the artifact graph can retain lineage
+    // for selection and feature-tree actions when the command has no target UUID.
+    let required_faces = specifier.side_faces.iter().chain(&specifier.end_faces);
+    let mut matching_edges = artifacts.values().filter_map(|artifact| {
+        let (id, common_surface_ids) = match artifact {
+            Artifact::Segment(segment) => (segment.id, &segment.common_surface_ids),
+            Artifact::SweepEdge(edge) => (edge.id, &edge.common_surface_ids),
+            _ => return None,
+        };
+        required_faces
+            .clone()
+            .all(|face_id| common_surface_ids.contains(&ArtifactId::new(*face_id)))
+            .then_some(id)
+    });
+
+    matching_edges.nth(specifier.index.unwrap_or_default() as usize)
+}
+
 #[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -2197,15 +2220,21 @@ fn artifacts_to_update(
             let target = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude {
                     target: Some(target), ..
-                }) => target,
-                // An edge-reference extrusion has no stable path UUID until the
-                // engine resolves the topology payload, so there is no source
-                // path artifact to mark as consumed here.
+                }) => cmd_id_ref_to_artifact_id(target),
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: None,
+                    target_reference: Some(target_reference),
+                    ..
+                }) => edge_specifier_source_id(artifacts, target_reference)
+                    .or_else(|| target_reference.side_faces.first().copied().map(ArtifactId::new))
+                    .unwrap_or(id),
                 ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
                 | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+                    cmd_id_ref_to_artifact_id(target)
+                }
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
             };
             // Determine the resulting method from the specific command, if provided
@@ -2231,7 +2260,6 @@ fn artifacts_to_update(
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
-            let target = cmd_id_ref_to_artifact_id(target);
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,

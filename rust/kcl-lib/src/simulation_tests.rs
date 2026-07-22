@@ -6440,7 +6440,6 @@ mod surface_extrude_edge_specifier_input {
         super::execute(TEST_NAME, true).await
     }
 }
-
 mod sketch_block_exit {
     const TEST_NAME: &str = "sketch_block_exit";
 

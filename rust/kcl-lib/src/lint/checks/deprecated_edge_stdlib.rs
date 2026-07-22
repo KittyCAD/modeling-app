@@ -87,10 +87,19 @@ fn get_arg<'a>(call: &'a CallExpressionKw, label: &str) -> Option<&'a Expr> {
     Some(&arg.arg)
 }
 
+fn get_unlabeled_arg(call: &CallExpressionKw) -> Option<&Expr> {
+    call.unlabeled.as_ref().or_else(|| {
+        call.arguments
+            .iter()
+            .find(|arg| arg.label.is_none())
+            .map(|arg| &arg.arg)
+    })
+}
+
 fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
     let mut arguments = Vec::with_capacity(3);
-    if call.unlabeled.as_ref().is_some_and(|expr| {
-        is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
+    if get_unlabeled_arg(call).is_some_and(|expr| {
+        contains_deprecated_edge_stdlib(expr, prog)
             || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
     }) {
         arguments.push("target");
@@ -98,29 +107,12 @@ fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Pro
     for label in ["to", "direction"] {
         if get_arg(call, label).is_some_and(|expr| {
             is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
-                || (label == "direction" && is_direct_sketch_segment_ref(expr, prog))
+                || (label == "direction" && is_qualified_tag_ref(expr))
         }) {
             arguments.push(label);
         }
     }
     arguments
-}
-
-fn is_direct_sketch_segment_ref(expr: &Expr, prog: &AstNode<Program>) -> bool {
-    let Expr::MemberExpression(member) = expr else {
-        return false;
-    };
-    let (Expr::Name(object), Expr::Name(_)) = (&member.object, &member.property) else {
-        return false;
-    };
-    let Some(init) = top_level_variable_init(prog, object.name.name.as_str()) else {
-        return false;
-    };
-    match init {
-        Expr::SketchBlock(_) => true,
-        Expr::CallExpressionKw(call) => call.callee.name.name == "startSketchOn",
-        _ => false,
-    }
 }
 
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
@@ -153,6 +145,20 @@ fn is_deprecated_edge_stdlib_or_variable_expr(expr: &Expr, prog: &AstNode<Progra
         return false;
     };
     top_level_variable_init(prog, name.name.name.as_str()).is_some_and(is_deprecated_edge_stdlib_expr)
+}
+
+fn contains_deprecated_edge_stdlib(expr: &Expr, prog: &AstNode<Program>) -> bool {
+    match expr {
+        Expr::ArrayExpression(array) => array
+            .elements
+            .iter()
+            .any(|element| is_deprecated_edge_stdlib_or_variable_expr(element, prog)),
+        Expr::Name(name) => top_level_variable_init(prog, name.name.name.as_str()).is_some_and(|init| match init {
+            Expr::ArrayExpression(_) => contains_deprecated_edge_stdlib(init, prog),
+            _ => is_deprecated_edge_stdlib_expr(init),
+        }),
+        _ => is_deprecated_edge_stdlib_or_variable_expr(expr, prog),
+    }
 }
 
 /// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
@@ -556,6 +562,69 @@ extrude(cylinder3, to = targetEdge)
     }
 
     #[test]
+    fn z0006_fires_for_extrude_target_after_commented_argument() {
+        let kcl = r#"surface001 = extrude(
+  // { sideFaces = [region001.tags.line1, endFace] },
+  getOppositeEdge(body001.sketch.tags.line1),
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "comments do not hide a deprecated extrude target");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target_array() {
+        let kcl = r#"surface001 = extrude(
+  [
+    getOppositeEdge(body001.sketch.tags.line1),
+    getOppositeEdge(body001.sketch.tags.line3),
+  ],
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for an array of deprecated extrude targets");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target_array_variable() {
+        let kcl = r#"targets = [
+  getOppositeEdge(body001.sketch.tags.line1),
+  getOppositeEdge(body001.sketch.tags.line3),
+]
+surface001 = extrude(targets, length = 5mm, bodyType = SURFACE, method = NEW)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 follows a top-level array variable");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target_variable() {
+        let kcl = r#"target = getOppositeEdge(body001.sketch.tags.line1)
+surface001 = extrude(target, length = 5mm, bodyType = SURFACE, method = NEW)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 follows a top-level helper variable");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
     fn z0006_fires_for_extrude_with_direct_tagged_edge_target() {
         let kcl = r#"extrude(body.sketch.tags.edge1, length = 5, bodyType = SURFACE)
 "#;
@@ -583,14 +652,36 @@ extrude(profile, length = 5, direction = directionEdge)
     }
 
     #[test]
-    fn z0006_fires_for_extrude_with_direct_segment_direction() {
-        let kcl = r#"sketch001 = sketch(on = XY) {}
-extrude(profile, length = 5, direction = sketch001.line3)
+    fn z0006_does_not_fire_for_extrude_with_direct_segment_direction() {
+        let kcl = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  directionLine = line(start = [0mm, 10mm], end = [0mm, 0mm])
+  targetLine = line(start = [0mm, 0mm], end = [10mm, 0mm])
+}
+
+surface001 = extrude(
+  sketch001.targetLine,
+  length = 5mm,
+  direction = sketch001.directionLine,
+  bodyType = SURFACE,
+  method = NEW,
+)
 "#;
         let prog = crate::Program::parse_no_errs(kcl).unwrap();
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
-        assert_eq!(z0006.len(), 1, "Z0006 fires for a direct segment direction");
+        assert!(z0006.is_empty(), "sketch segments remain valid extrude directions");
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_direct_solid_edge_direction() {
+        let kcl = r#"extrude(profile, length = 5, direction = body.sketch.tags.line3)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a direct solid-edge direction");
         assert!(z0006[0].description.contains("direction"));
     }
 
