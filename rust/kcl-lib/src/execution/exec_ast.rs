@@ -1704,72 +1704,7 @@ impl Node<SketchBlock> {
                 EarlyReturn::Error(err) => return Err(err),
             },
         };
-        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
-            object_id
-        } else {
-            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
-            debug_assert!(false, "{message}");
-            return Err(internal_err(message, range));
-        };
-        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
-        let sketch_block_artifact_id = {
-            use crate::execution::CodeRef;
-            use crate::execution::SketchBlock;
-            use crate::front::Plane;
-            use crate::front::SourceRef;
-
-            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
-
-            // Get the plane artifact ID so that we can do an exclusive borrow.
-            let plane_artifact_id = on_object.map(|object| object.artifact_id);
-            let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(plane.info.clone()),
-                SketchSurface::Face(_) => None,
-            };
-
-            let standard_plane = match &sketch_ctor_on {
-                Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) => None,
-            };
-
-            let artifact_id = ArtifactId::from(exec_state.next_uuid());
-            // Create the sketch scene object and replace its placeholder.
-            let sketch_scene_object = Object {
-                id: sketch_id,
-                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: sketch_ctor_on },
-                    plane: on_object_id,
-                    segments: Default::default(),
-                    constraints: Default::default(),
-                }),
-                label: Default::default(),
-                comments: Default::default(),
-                artifact_id,
-                source: SourceRef::new(self.into(), self.node_path.clone()),
-            };
-            exec_state.set_scene_object(sketch_scene_object);
-
-            // Create and add the sketch block artifact.
-            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
-                id: artifact_id,
-                standard_plane,
-                plane_id: plane_artifact_id,
-                plane_info,
-                // Fill this in later once we create the path. We can't just add
-                // the artifact later because order relative to constraint
-                // artifacts is significant.
-                path_id: None,
-                code_ref: CodeRef::placeholder(range),
-                sketch_id,
-            }));
-
-            exec_state.push_op(Operation::GroupBegin {
-                group: Group::SketchBlock { sketch_id },
-                node_path: NodePath::placeholder(),
-                source_range: range,
-            });
-            artifact_id
-        };
+        let sketch_block_artifact_id = self.scene_setup(sketch_id, &sketch_surface, exec_state)?;
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
@@ -1847,6 +1782,287 @@ impl Node<SketchBlock> {
         };
         let mut sketch_block_state = sketch_block_state;
 
+        let return_value = self
+            .finalize_sketch_block(
+                sketch_id,
+                &sketch_surface,
+                sketch_block_artifact_id,
+                variables,
+                sketch_block_state,
+                exec_state,
+                ctx,
+            )
+            .await?;
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
+        })
+    }
+
+    /// Executes the arguments of the sketch block and returns the sketch ID and
+    /// surface. The surface is the `on` argument, which is basically a Plane or
+    /// Face.
+    ///
+    /// In sketch mode, the execution cache is used to look up the sketch
+    /// surface.
+    ///
+    /// The sketch ID is generated in either case so that it's stable. But only
+    /// a placeholder scene object is created for it.
+    async fn exec_arguments(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+
+        if !exec_state.sketch_mode() {
+            // Evaluate arguments.
+            //
+            // Sketch mode only executes the sketch block body. Arguments must
+            // be evaluated in engine execution so that things like Planes and
+            // Faces can be created in the engine.
+            let mut labeled = IndexMap::new();
+            for labeled_arg in &self.arguments {
+                let source_range = SourceRange::from(labeled_arg.arg.clone());
+                let metadata = Metadata { source_range };
+                let value_cf = ctx
+                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                    .await?;
+                let value = early_return!(value_cf);
+                let arg = Arg::new(value, source_range);
+                match &labeled_arg.label {
+                    Some(label) => {
+                        labeled.insert(label.name.clone(), arg);
+                    }
+                    None => {
+                        let name = labeled_arg.arg.ident_name();
+                        if let Some(name) = name {
+                            labeled.insert(name.to_owned(), arg);
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                                vec![SourceRange::from(&labeled_arg.arg)],
+                            ))
+                            .into());
+                        }
+                    }
+                }
+            }
+            self.finish_arguments_after_eval(labeled, exec_state, ctx).await
+        } else {
+            self.arguments_from_cache(exec_state)
+        }
+    }
+
+    /// The evaluation-free tail of sketch-block argument handling: validate
+    /// the arguments, resolve the `on` surface, ensure it exists in the
+    /// engine, and mint the stable sketch id. Shared by both executors.
+    pub(super) async fn finish_arguments_after_eval(
+        &self,
+        labeled: IndexMap<String, Arg>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        let mut args = Args::new_no_args(
+            range,
+            self.node_path.clone(),
+            ctx.clone(),
+            Some(SketchBlock::CALLEE_NAME.to_owned()),
+        );
+        args.labeled = labeled;
+
+        // Report any arguments that aren't valid sketch block parameters.
+        // This is non-fatal so that the rest of the block still executes,
+        // matching how unexpected keyword arguments are handled for
+        // function calls.
+        //
+        // Checking arguments should be done after evaluating them, the same
+        // order as if we were calling a function.
+        self.check_for_unexpected_arguments(&args, exec_state)?;
+
+        let arg_on_value: KclValue =
+            args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
+
+        let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+            let message = "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+        };
+        let mut sketch_surface = arg_on.into_sketch_surface();
+
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        match &mut sketch_surface {
+            SketchSurface::Plane(plane) => {
+                // Ensure that it's been created in the engine.
+                ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
+            }
+            SketchSurface::Face(_) => {
+                // All faces should already be created in the engine.
+            }
+        }
+
+        // Generate an ID for the sketch block. This must be done after
+        // arguments so that we get the same result when the arguments are
+        // cached. This must be done before the sketch block body so that no
+        // matter how many IDs are generated due to objects in the body, the
+        // sketch ID is always stable.
+        let sketch_id = exec_state.next_object_id();
+        exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+        let on_cache_name = sketch_on_cache_name(sketch_id);
+        // Store in memory so that it's cached.
+        exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
+
+        Ok((sketch_id, sketch_surface))
+    }
+
+    /// Sketch-mode path: arguments cannot be re-evaluated, so look the `on`
+    /// surface up from the execution cache. Flat; shared by both executors.
+    pub(super) fn arguments_from_cache(
+        &self,
+        exec_state: &mut ExecState,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        {
+            // In sketch mode, we can't re-evaluate arguments. Instead, look
+            // them up from cache.
+
+            // Generate an ID for the sketch block. This must be done before the
+            // sketch block body so that no matter how many IDs are generated
+            // due to objects in the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
+
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            if sketch_surface.object_id().is_none() {
+                // Look up the last object. Since this is where we would have
+                // created it in real execution, it will be the last object.
+                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                    return Err(internal_err(
+                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
+                        range,
+                    )
+                    .into());
+                };
+                sketch_surface.set_object_id(last_object.id);
+            }
+
+            Ok((sketch_id, sketch_surface))
+        }
+    }
+
+    /// Create the sketch scene object and sketch-block artifact, and open
+    /// the feature-tree group. Flat; shared by both executors.
+    pub(super) fn scene_setup(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        exec_state: &mut ExecState,
+    ) -> Result<ArtifactId, KclError> {
+        let range = SourceRange::from(self);
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(internal_err(message, range));
+        };
+        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
+        let sketch_block_artifact_id = {
+            use crate::execution::CodeRef;
+            use crate::execution::SketchBlock;
+            use crate::front::Plane;
+            use crate::front::SourceRef;
+
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
+
+            let standard_plane = match &sketch_ctor_on {
+                Plane::Default(plane) => Some(*plane),
+                Plane::Object(_) => None,
+            };
+
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            // Create the sketch scene object and replace its placeholder.
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchCtor { on: sketch_ctor_on },
+                    plane: on_object_id,
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id,
+                source: SourceRef::new(self.into(), self.node_path.clone()),
+            };
+            exec_state.set_scene_object(sketch_scene_object);
+
+            // Create and add the sketch block artifact.
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                standard_plane,
+                plane_id: plane_artifact_id,
+                plane_info,
+                // Fill this in later once we create the path. We can't just add
+                // the artifact later because order relative to constraint
+                // artifacts is significant.
+                path_id: None,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id,
+            }));
+
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
+            artifact_id
+        };
+        Ok(sketch_block_artifact_id)
+    }
+
+    /// Solve constraints, send segments to the engine, update artifacts and
+    /// scene objects, close the feature-tree group, and build the sketch's
+    /// result object. Flat (the body has already executed); shared by both
+    /// executors.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) async fn finalize_sketch_block(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        sketch_block_artifact_id: ArtifactId,
+        variables: IndexMap<String, KclValue>,
+        mut sketch_block_state: SketchBlockState,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValue, KclError> {
+        let range = SourceRange::from(self);
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
@@ -2133,153 +2349,7 @@ impl Node<SketchBlock> {
             object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
-        Ok(if self.is_being_edited {
-            // When the sketch block is being edited, we exit the program
-            // immediately.
-            return_value.exit()
-        } else {
-            return_value.continue_()
-        })
-    }
-
-    /// Executes the arguments of the sketch block and returns the sketch ID and
-    /// surface. The surface is the `on` argument, which is basically a Plane or
-    /// Face.
-    ///
-    /// In sketch mode, the execution cache is used to look up the sketch
-    /// surface.
-    ///
-    /// The sketch ID is generated in either case so that it's stable. But only
-    /// a placeholder scene object is created for it.
-    async fn exec_arguments(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        let range = SourceRange::from(self);
-
-        if !exec_state.sketch_mode() {
-            // Evaluate arguments.
-            //
-            // Sketch mode only executes the sketch block body. Arguments must
-            // be evaluated in engine execution so that things like Planes and
-            // Faces can be created in the engine.
-            let mut labeled = IndexMap::new();
-            for labeled_arg in &self.arguments {
-                let source_range = SourceRange::from(labeled_arg.arg.clone());
-                let metadata = Metadata { source_range };
-                let value_cf = ctx
-                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                    .await?;
-                let value = early_return!(value_cf);
-                let arg = Arg::new(value, source_range);
-                match &labeled_arg.label {
-                    Some(label) => {
-                        labeled.insert(label.name.clone(), arg);
-                    }
-                    None => {
-                        let name = labeled_arg.arg.ident_name();
-                        if let Some(name) = name {
-                            labeled.insert(name.to_owned(), arg);
-                        } else {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                                vec![SourceRange::from(&labeled_arg.arg)],
-                            ))
-                            .into());
-                        }
-                    }
-                }
-            }
-            let mut args = Args::new_no_args(
-                range,
-                self.node_path.clone(),
-                ctx.clone(),
-                Some(SketchBlock::CALLEE_NAME.to_owned()),
-            );
-            args.labeled = labeled;
-
-            // Report any arguments that aren't valid sketch block parameters.
-            // This is non-fatal so that the rest of the block still executes,
-            // matching how unexpected keyword arguments are handled for
-            // function calls.
-            //
-            // Checking arguments should be done after evaluating them, the same
-            // order as if we were calling a function.
-            self.check_for_unexpected_arguments(&args, exec_state)?;
-
-            let arg_on_value: KclValue =
-                args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            match &mut sketch_surface {
-                SketchSurface::Plane(plane) => {
-                    // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
-                }
-                SketchSurface::Face(_) => {
-                    // All faces should already be created in the engine.
-                }
-            }
-
-            // Generate an ID for the sketch block. This must be done after
-            // arguments so that we get the same result when the arguments are
-            // cached. This must be done before the sketch block body so that no
-            // matter how many IDs are generated due to objects in the body, the
-            // sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            // Store in memory so that it's cached.
-            exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
-
-            Ok((sketch_id, sketch_surface))
-        } else {
-            // In sketch mode, we can't re-evaluate arguments. Instead, look
-            // them up from cache.
-
-            // Generate an ID for the sketch block. This must be done before the
-            // sketch block body so that no matter how many IDs are generated
-            // due to objects in the body, the sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            if sketch_surface.object_id().is_none() {
-                // Look up the last object. Since this is where we would have
-                // created it in real execution, it will be the last object.
-                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
-                    return Err(internal_err(
-                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
-                        range,
-                    )
-                    .into());
-                };
-                sketch_surface.set_object_id(last_object.id);
-            }
-
-            Ok((sketch_id, sketch_surface))
-        }
+        Ok(return_value)
     }
 
     /// Report a non-fatal error for each argument that isn't a valid sketch
