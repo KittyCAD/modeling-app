@@ -470,18 +470,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'app', field: 'showAllFiles' },
       'show_all_files'
     ),
-    defineMappedAppOnlyField(
-      { category: 'app', field: 'libraries' },
-      'libraries',
-      {
-        fromToml: (value) =>
-          isProjectLibrarySettings(value) ? value : undefined,
-        toToml: (value) =>
-          isProjectLibrarySettings(value)
-            ? (value as unknown as JsonValue)
-            : undefined,
-      }
-    ),
   ]),
   defineAppOnlySection('debug', [
     defineBooleanAppOnlyField(

@@ -2,7 +2,7 @@ import {
   ProjectLibrariesSettingInput,
   projectLibraryTypeOptionsFromContributions,
   type ProjectLibraryTypeOption,
-} from '@src/components/Settings/ProjectLibrariesSettingInput'
+} from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'

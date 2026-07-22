@@ -3,7 +3,7 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { Suspense, lazy, useRef } from 'react'
+import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -14,13 +14,9 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
-  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  isProjectLibrarySettings,
-  type ProjectLibrarySetting,
-} from '@src/lib/projectLibraries'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
@@ -35,12 +31,6 @@ import { Themes } from '@src/lib/theme'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
-
-const ProjectLibrariesSetting = lazy(() =>
-  import('@src/components/Settings/ProjectLibrariesSetting').then((module) => ({
-    default: module.ProjectLibrariesSetting,
-  }))
-)
 
 /**
  * A setting that can be set at the user or project level
@@ -262,22 +252,6 @@ function createCoreSettings() {
         hideOnPlatform: 'both',
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
-      }),
-      libraries: new Setting<ProjectLibrarySetting[]>({
-        defaultValue: [],
-        description: 'Project libraries shown on the home page.',
-        hideOnLevel: 'project',
-        hideWithoutFeatureOnPlatform: {
-          web: OPFS_CLOUD_FEATURE_FLAG,
-        },
-        validate: isProjectLibrarySettings,
-        Component: (props) => {
-          return (
-            <Suspense fallback={null}>
-              <ProjectLibrariesSetting {...props} />
-            </Suspense>
-          )
-        },
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
@@ -838,6 +812,9 @@ function instantiateExtensionSettings(
 type CoreSettingsType = ReturnType<typeof createCoreSettings>
 
 export type SettingsType = CoreSettingsType & {
+  app: CoreSettingsType['app'] & {
+    libraries: Setting<ProjectLibrarySetting[]>
+  }
   plugins: Record<string, Setting<boolean>>
 }
 

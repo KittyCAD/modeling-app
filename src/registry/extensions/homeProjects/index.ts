@@ -16,8 +16,8 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
-import { createProjectInLocalDirectory } from '@src/lib/projectLibraryOperations'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,

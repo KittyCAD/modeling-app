@@ -5,7 +5,7 @@ import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLib
 import {
   ProjectLibrariesSettingInput,
   projectLibraryTypeOptionsFromContributions,
-} from '@src/components/Settings/ProjectLibrariesSettingInput'
+} from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 
 export function ProjectLibrariesSetting({
   value,
