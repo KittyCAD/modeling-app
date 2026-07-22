@@ -1814,6 +1814,27 @@ forever(1)
         assert!(err.to_string().contains("Call depth limit"), "actual: {err:?}");
     }
 
+    /// Compare wall time of the two executors on a large, engine-free
+    /// workload (mock engine). Not a gate: the machine merges regardless of
+    /// speed; a <=10% overhead gates the default flip later. Run manually:
+    /// cargo nextest run -p kcl-lib --run-ignored all -E 'test(perf_compare_executors)' --no-capture
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "manual perf measurement, prints timings"]
+    async fn perf_compare_executors() {
+        let code = include_str!("../../tests/mike_stress_test/input.kcl");
+        const RUNS: usize = 5;
+        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
+            // Warm up once.
+            parse_execute_with_executor_kind(code, None, kind).await.unwrap();
+            let start = std::time::Instant::now();
+            for _ in 0..RUNS {
+                parse_execute_with_executor_kind(code, None, kind).await.unwrap();
+            }
+            let avg = start.elapsed() / RUNS as u32;
+            println!("{kind:?}: {avg:?} per run over {RUNS} runs");
+        }
+    }
+
     /// Deep pipelines ride the continuation stack, not the native stack.
     #[tokio::test(flavor = "multi_thread")]
     async fn long_pipeline() {
