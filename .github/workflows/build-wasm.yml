@@ -101,6 +101,15 @@ jobs:
           cargo test -p kcl-lib --features artifact-graph export_bindings
           cd ..
 
+      - name: Check TypeScript-facing bindings against expected
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        shell: bash
+        run: |
+          ./scripts/update-expected-bindings.sh
+          git diff --exit-code -- rust/kcl-lib/expected-bindings/ \
+            || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
+                     'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
+
       - name: Copy Wasm to public
         run: |
           ls -R rust/kcl-wasm-lib/pkg
