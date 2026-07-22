@@ -273,6 +273,12 @@ export const settingsMachine = setup({
         return
       }
       const eventParts = settingPath.split('.') as [keyof SettingsType, string]
+      if (settingPath === 'app.libraries') {
+        toast.success('Updated projects library.', {
+          id: `${event.type}.success`,
+        })
+        return
+      }
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
       const message =
         `Set ${decamelize(eventParts[1], { separator: ' ' })}` +

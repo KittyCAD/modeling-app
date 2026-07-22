@@ -3,6 +3,7 @@ import {
   combineProjectLibraryTypes,
   combineProjectLibraries,
   getHomeProjectEntriesForLibrary,
+  getProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
@@ -11,6 +12,7 @@ import {
   getDefaultDirectoryProjectLibraryPath,
   getProjectLibraryIdFromSetting,
   projectLibraryFromSetting,
+  updateDefaultDirectoryProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
@@ -102,6 +104,55 @@ describe('project library settings', () => {
       )
     ).toBe('/projects/client')
   })
+
+  test('does not treat an empty directory library path as containing every path', () => {
+    expect(
+      getContainingDirectoryProjectLibraryPath(
+        [
+          {
+            title: 'Empty Projects',
+            path: '',
+            type: 'directory',
+          },
+        ],
+        '/projects/client/bracket'
+      )
+    ).toBeUndefined()
+  })
+
+  test('updates the first directory library without changing other libraries', () => {
+    expect(
+      updateDefaultDirectoryProjectLibrarySetting(
+        [
+          {
+            title: 'Default',
+            path: '/projects',
+            type: 'directory',
+          },
+          {
+            title: 'External',
+            path: 'external://projects',
+            type: 'external',
+          },
+        ],
+        {
+          title: 'Renamed',
+          path: '/renamed',
+        }
+      )
+    ).toEqual([
+      {
+        title: 'Renamed',
+        path: '/renamed',
+        type: 'directory',
+      },
+      {
+        title: 'External',
+        path: 'external://projects',
+        type: 'external',
+      },
+    ])
+  })
 })
 
 describe('combineProjectLibraries', () => {
@@ -149,6 +200,15 @@ describe('combineProjectLibraryTypes', () => {
     const createProject = {
       run: async () => undefined,
     }
+    const openProject = {
+      run: async () => undefined,
+    }
+    const renameProject = {
+      run: async () => undefined,
+    }
+    const deleteProject = {
+      run: async () => undefined,
+    }
 
     expect(
       combineProjectLibraryTypes([
@@ -158,12 +218,17 @@ describe('combineProjectLibraryTypes', () => {
           icon: 'folder',
           operations: {
             createProject,
+            openProject,
           },
         },
         {
           type: 'directory',
           title: 'Folder',
           readEntries,
+          operations: {
+            renameProject,
+            deleteProject,
+          },
         },
       ]).get('directory')
     ).toEqual({
@@ -172,9 +237,38 @@ describe('combineProjectLibraryTypes', () => {
       icon: 'folder',
       operations: {
         createProject,
+        openProject,
+        renameProject,
+        deleteProject,
       },
       readEntries,
     })
+  })
+
+  test('omits unavailable library type operations', () => {
+    const library = {
+      id: 'default-project-directory',
+      title: 'Default Projects Directory',
+      path: '/projects',
+      type: 'directory',
+    }
+
+    expect(
+      getProjectLibraryOperation(
+        {
+          type: 'directory',
+          title: 'Directory',
+          operations: {
+            deleteProject: {
+              isAvailable: () => false,
+              run: async () => undefined,
+            },
+          },
+        },
+        library,
+        'deleteProject'
+      )
+    ).toBeUndefined()
   })
 })
 
