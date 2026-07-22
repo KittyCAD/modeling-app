@@ -1750,7 +1750,19 @@ impl Node<SketchBlock> {
         };
 
         // Propagate errors.
-        return_result?;
+        let return_control_flow = return_result?;
+        // If the sketch block body exited early (e.g. via `exit()`), propagate
+        // the exit so that the rest of the program terminates instead of only
+        // ending this sketch block. Without this, execution would fall through,
+        // solve the partial sketch, and continue on to later statements.
+        if let Some(control_flow) = return_control_flow
+            && control_flow.is_some_return()
+        {
+            // Balance the GroupBegin operation pushed above so the feature tree
+            // stays well-formed.
+            exec_state.push_op(Operation::GroupEnd);
+            return Ok(control_flow);
+        }
         let Some(sketch_block_state) = sketch_block_state else {
             debug_assert!(false, "Sketch block state should still be set to Some from just above");
             return Err(internal_err(
