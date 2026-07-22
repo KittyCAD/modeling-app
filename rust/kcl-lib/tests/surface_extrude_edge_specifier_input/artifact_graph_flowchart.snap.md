@@ -46,20 +46,22 @@ flowchart LR
   23["SweepEdge Adjacent"]
   24["SweepEdge Opposite"]
   25["SweepEdge Adjacent"]
-  26["SketchBlock<br>[143, 493, 0]"]
+  26["Sweep Extrusion<br>[674, 788, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  27["SketchBlock<br>[143, 493, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  27["SketchBlockConstraint Horizontal<br>[250, 286, 0]"]
+  28["SketchBlockConstraint Horizontal<br>[250, 286, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  28["SketchBlockConstraint Vertical<br>[374, 408, 0]"]
+  29["SketchBlockConstraint Vertical<br>[374, 408, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 6
-  1 <--x 26
+  1 <--x 27
   2 --- 3
   2 --- 4
   2 --- 5
   2 <--x 6
-  26 --- 2
+  27 --- 2
   3 <--x 7
   3 <--x 8
   4 <--x 9
@@ -69,14 +71,14 @@ flowchart LR
   6 <--x 9
   6 <--x 10
   6 ---- 11
-  7 --- 12
+  7 --- 13
   7 x--> 16
-  7 --- 18
-  7 --- 19
-  8 --- 13
+  7 --- 20
+  7 --- 21
+  8 --- 12
   8 x--> 16
-  8 --- 20
-  8 --- 21
+  8 --- 18
+  8 --- 19
   9 --- 14
   9 x--> 16
   9 --- 22
@@ -115,4 +117,5 @@ flowchart LR
   20 <--x 17
   22 <--x 17
   24 <--x 17
+  20 <--x 26
 ```
