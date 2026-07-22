@@ -1635,6 +1635,28 @@ function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
   return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
 }
 
+function resolveTopLevelArrayExpression(
+  program: Program,
+  expr: Expr,
+  referencePath: PathToNode
+): Extract<Expr, { type: 'ArrayExpression' }> | null {
+  if (expr.type === 'ArrayExpression') return expr
+  if (expr.type !== 'Name' || isNestedScopePath(referencePath)) return null
+
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === expr.name.name
+  )
+  if (
+    declaration?.type !== 'VariableDeclaration' ||
+    declaration.declaration.init.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+  return declaration.declaration.init
+}
+
 export function findExtrudeEdgeCallsToFix(
   program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1657,8 +1679,12 @@ export function findExtrudeEdgeCallsToFix(
           continue
         }
         const expr = findExtrudeEdgeArgumentExpr(call, argument)
-        if (argument === 'target' && expr?.type === 'ArrayExpression') {
-          const payloads = expr.elements.map((element) => {
+        const targetArray =
+          argument === 'target' && expr
+            ? resolveTopLevelArrayExpression(program, expr, pathToNode)
+            : null
+        if (targetArray) {
+          const payloads = targetArray.elements.map((element) => {
             const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
               program,
               element,
