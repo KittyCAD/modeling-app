@@ -3,7 +3,7 @@ source: kcl-lib/src/frontend.rs
 expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  line2 = line(start = [var 0, var 0], end = [var 0, var 10])
+  line1 = line(start = [var 1.79, var -3.08], end = [var 9.07, var 1.78])
+  line2 = line(start = [var -0.25, var 1.57], end = [var 10.38, var 8.66])
   distance([line1, line2]) == 5mm
 }

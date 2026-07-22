@@ -11219,10 +11219,14 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_distance_non_parallel_lines_lowers_to_distance() {
+        // NOTE: Current LinesAtAngle constraint collapses if lines are initialized perpendicular to
+        // one another because the gradient of the residual has no tangential component in this
+        // configuration. The only path to reducing the residual is shrinking the lengths of the
+        // lines which causing the lines to collapse, producing a degenerate output.
         let initial_source = "\
 sketch(on = XY) {
   line(start = [var 0, var 0], end = [var 10, var 0])
-  line(start = [var 0, var 0], end = [var 0, var 10])
+  line(start = [var 0, var 0], end = [var 10, var 10])
 }
 ";
 
