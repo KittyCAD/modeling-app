@@ -1159,7 +1159,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2250,7 +2250,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2380,11 +2380,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.169"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b5a1ff4c0d1144670357aa7fdc8b4a8ae32f570a9580904d7850c7ec0ad05d4"
+version = "0.2.170"
 dependencies = [
  "miette",
+ "pyo3",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2395,9 +2394,10 @@ dependencies = [
 [[package]]
 name = "kcl-error"
 version = "0.2.170"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39149a2390900e7ee349fe2ad371f4fe15f8cd6521be7c3554bbffd6d0fa792d"
 dependencies = [
  "miette",
- "pyo3",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2665,7 +2665,7 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.4.2",
- "kcl-error 0.2.169",
+ "kcl-error 0.2.170 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
@@ -4023,7 +4023,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.3",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4405,7 +4405,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5211,7 +5211,7 @@ dependencies = [
  "getrandom 0.4.1",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6244,7 +6244,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
