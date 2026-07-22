@@ -14,7 +14,7 @@ import type {
   HomeProjectThumbnail,
 } from '@src/registry/contracts/homeProjects'
 import type { FormEvent, HTMLAttributes } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -132,7 +132,6 @@ function AppProjectCard({
     modified: number
   } | null>(null)
 
-  const inputRef = useRef<HTMLInputElement>(null)
   const projectDisplayName = getHomeProjectDisplayName(project)
   const displayedProject =
     optimisticProjectName?.projectId === project.id
@@ -169,23 +168,6 @@ function AppProjectCard({
         reportRejection(error)
       })
   }
-
-  useEffect(() => {
-    if (!isEditing) {
-      return
-    }
-
-    const timeout = window.setTimeout(() => {
-      if (!inputRef.current) {
-        return
-      }
-
-      inputRef.current.focus()
-      inputRef.current.select()
-    }, 0)
-
-    return () => window.clearTimeout(timeout)
-  }, [isEditing])
 
   useEffect(() => {
     setOptimisticProjectName((optimisticName) => {
@@ -340,7 +322,6 @@ function AppProjectCard({
           onClick={(e) => e.stopPropagation()}
           projectName={projectName}
           onDismiss={() => setIsEditing(false)}
-          ref={inputRef}
         />
       }
       dialogs={dialogs}

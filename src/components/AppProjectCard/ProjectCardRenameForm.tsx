@@ -26,7 +26,9 @@ export const ProjectCardRenameForm = forwardRef(
           name="newProjectName"
           required
           defaultValue={projectName}
+          autoFocus
           ref={ref}
+          onFocus={(e) => e.currentTarget.select()}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
               onDismiss()
