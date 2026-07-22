@@ -109,7 +109,7 @@ Cloud sync state is stored outside React state so it can survive page reloads an
 - `ProjectMetadata.baseManifest` stores the last cloud-acknowledged local file manifest.
 - `ProjectMetadata.tombstone` records an explicit local project delete.
 - `ProjectMetadata.conflict` records a blocked sync and the local path of the remote conflict copy.
-- `ProjectMetadata.lastFailure` records the latest sync error without clearing dirty state.
+- `ProjectMetadata.lastFailure` records the latest sync error without clearing dirty state. `lastFailure.kind = 'remote-upload-forbidden'` identifies a readable cloud project that the current account cannot update.
 - The outbox records durable `upsert` and `delete` work by project path.
 
 ## Versioning Considerations
