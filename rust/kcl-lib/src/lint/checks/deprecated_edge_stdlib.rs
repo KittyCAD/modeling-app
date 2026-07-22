@@ -82,9 +82,18 @@ fn get_arg<'a>(call: &'a CallExpressionKw, label: &str) -> Option<&'a Expr> {
     Some(&arg.arg)
 }
 
+fn get_unlabeled_arg(call: &CallExpressionKw) -> Option<&Expr> {
+    call.unlabeled.as_ref().or_else(|| {
+        call.arguments
+            .iter()
+            .find(|arg| arg.label.is_none())
+            .map(|arg| &arg.arg)
+    })
+}
+
 fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
     let mut arguments = Vec::with_capacity(3);
-    if call.unlabeled.as_ref().is_some_and(|expr| {
+    if get_unlabeled_arg(call).is_some_and(|expr| {
         is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
             || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
     }) {
@@ -502,6 +511,23 @@ extrude(cylinder3, to = targetEdge)
             1,
             "Z0006 fires for an extrude target using deprecated edge stdlib"
         );
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_target_after_commented_argument() {
+        let kcl = r#"surface001 = extrude(
+  // { sideFaces = [region001.tags.line1, endFace] },
+  getOppositeEdge(body001.sketch.tags.line1),
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "comments do not hide a deprecated extrude target");
         assert!(z0006[0].description.contains("target"));
     }
 

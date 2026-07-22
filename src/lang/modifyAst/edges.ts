@@ -1620,7 +1620,13 @@ function findExtrudeEdgeArgumentExpr(
   call: Node<CallExpressionKw>,
   argument: ExtrudeEdgeArgument
 ): Expr | null {
-  if (argument === 'target') return call.unlabeled ?? null
+  if (argument === 'target') {
+    return (
+      call.unlabeled ??
+      call.arguments?.find((arg) => getLabelName(arg) === undefined)?.arg ??
+      null
+    )
+  }
   const arg = call.arguments?.find((a) => getLabelName(a) === argument)
   return arg?.arg ?? null
 }
@@ -2021,7 +2027,14 @@ function refactorExtrudeEdgeArgumentsInPlace(
     const callNode = nodeResult.node
     for (const { argument, expr } of replacementExprs) {
       if (argument === 'target') {
-        callNode.unlabeled = expr
+        if (callNode.unlabeled) {
+          callNode.unlabeled = expr
+        } else {
+          const unlabeledArg = callNode.arguments.find(
+            (arg) => getLabelName(arg) === undefined
+          )
+          if (unlabeledArg) unlabeledArg.arg = expr
+        }
         continue
       }
       const existingArg = callNode.arguments.find(
