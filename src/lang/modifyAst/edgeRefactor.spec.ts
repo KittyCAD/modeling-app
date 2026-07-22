@@ -1836,15 +1836,17 @@ surface001 = extrude(
     )
 
     it(
-      'refactors a direct sketch segment used as the extrude direction',
+      'preserves a direct sketch segment direction while refactoring the extrude target',
       { timeout: 30_000 },
       async () => {
         const refactored = await runIntegrationRefactor(
           KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION
         )
         const normalized = norm(refactored)
-        expect(normalized).not.toContain('direction = sketch001.line3')
-        expect(normalized).toContain('direction = { sideFaces = [')
+        expect(normalized).toContain('direction = sketch001.line3')
+        expect(normalized).not.toContain('direction = { sideFaces = [')
+        expect(normalized).not.toContain('getNextAdjacentEdge(')
+        expect(normalized).toContain('extrude( { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
