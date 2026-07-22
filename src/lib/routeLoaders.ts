@@ -71,7 +71,7 @@ export const baseLoader =
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
     const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
-      settings.settings.app.libraries.current
+      settings.settings.app.libraries?.current
     )
     const requestedProjectName = fsZds.resolve(
       defaultDirectoryLibraryPath ?? '',
@@ -231,7 +231,7 @@ export const fileLoader =
 
     const appProjectDir =
       getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries.current
+        settings.settings.app.libraries?.current
       ) ?? ''
     const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
       project.path,

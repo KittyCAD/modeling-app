@@ -84,6 +84,11 @@ describe('project library settings', () => {
     })
   })
 
+  test('allows the project libraries setting to be absent', () => {
+    expect(getDefaultDirectoryProjectLibraryPath(undefined)).toBeUndefined()
+    expect(getDefaultDirectoryProjectLibrarySetting(undefined)).toBeUndefined()
+  })
+
   test('finds the most specific directory library containing a project path', () => {
     expect(
       getContainingDirectoryProjectLibraryPath(

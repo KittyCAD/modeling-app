@@ -188,6 +188,45 @@ describe('project command config', () => {
     expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
+  it('creates projects through the only library target when the picker is hidden', async () => {
+    const systemIOActor = createSystemIOActor()
+    const library = createLibrary('client-projects', 'Client Projects')
+    const createProjectOperation = {
+      run: vi.fn(async () => createProject({ name: 'client-gear' })),
+    }
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+      getCreateProjectLibraryTargets: () => [
+        {
+          library,
+          createProject: createProjectOperation,
+        },
+      ],
+    })
+    const createCommand = commands.find(
+      (command) => command.name === 'Create project'
+    )
+    const libraryArg = createCommand?.args?.libraryId as unknown as {
+      hidden: () => boolean
+      required: () => boolean
+    }
+
+    expect(libraryArg.hidden()).toBe(true)
+    expect(libraryArg.required()).toBe(false)
+
+    await createCommand?.onSubmit({
+      name: ' Client Gear! ',
+    })
+
+    expect(createProjectOperation.run).toHaveBeenCalledWith({
+      library,
+      requestedProjectName: 'client-gear',
+      requestedProjectTitle: 'Client Gear!',
+    })
+    expect(systemIOActor.send).not.toHaveBeenCalled()
+  })
+
   it('defaults create project to the current library context', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),

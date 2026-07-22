@@ -33,15 +33,15 @@ export function getDefaultProjectLibrarySettings(
 }
 
 export function getDefaultDirectoryProjectLibrarySetting(
-  libraries: readonly ProjectLibrarySetting[]
+  libraries: readonly ProjectLibrarySetting[] | undefined
 ) {
-  return libraries.find(
+  return libraries?.find(
     (library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
   )
 }
 
 export function getDefaultDirectoryProjectLibraryPath(
-  libraries: readonly ProjectLibrarySetting[]
+  libraries: readonly ProjectLibrarySetting[] | undefined
 ) {
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
