@@ -840,7 +840,11 @@ pub enum BeingExtruded {
 /// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
 /// It can be any edge of the body, but if our body is a clone, we should use an edge of
 /// the original body, not the new cloned body.
-fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: Option<&HashMap<Uuid, Uuid>>) -> Option<Uuid> {
+fn get_extrusion_info_edge_id(
+    sketch: &Sketch,
+    any_edge_id: Uuid,
+    clone_id_map: Option<&HashMap<Uuid, Uuid>>,
+) -> Option<Uuid> {
     // If this isn't a clone, there's no old/new body distinction.
     // So just use the edge.
     if sketch.clone.is_none() {
@@ -999,7 +1003,7 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
     // So let's find an edge of the old body.
-    let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);    
+    let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);
 
     let mut sketch = sketch.clone();
     match body_type {
