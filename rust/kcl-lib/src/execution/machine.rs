@@ -108,6 +108,7 @@ impl ExecutorKind {
     /// (`machine` or `recursive`). Used only by test context factories so the
     /// simulation suite can run under both executors; production contexts are
     /// never configured from the environment.
+    #[cfg(not(target_arch = "wasm32"))]
     pub(crate) fn from_test_env() -> Self {
         match std::env::var("KCL_EXECUTOR").as_deref() {
             Ok("machine") => ExecutorKind::Machine,

@@ -1076,6 +1076,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: Default::default(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1095,6 +1097,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: Default::default(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
 
