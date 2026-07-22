@@ -288,6 +288,15 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
+            // Depth survey: when KCL_DEPTH_HIGH_WATER_FILE is set, append the
+            // machine executor's high-water call depth for this program, to
+            // validate the runaway guard's default limit against real code.
+            if let Ok(path) = std::env::var("KCL_DEPTH_HIGH_WATER_FILE") {
+                use std::io::Write;
+                if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                    let _ = writeln!(f, "{}\t{}", exec_state.machine_depth_high_water(), test.name);
+                }
+            }
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(

@@ -74,6 +74,11 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
+    /// The deepest machine-executor call depth reached anywhere in this
+    /// execution (across modules and callbacks). Used to survey real-world
+    /// depth against the runaway guard's limit; see
+    /// `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
+    pub(crate) machine_depth_high_water: usize,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -621,6 +626,13 @@ impl ExecState {
     /// In sketch mode, we still want to execute the prelude and other stdlib
     /// modules as normal, so it can vary per module within a single overall
     /// execution.
+    /// The deepest machine-executor call depth reached in this execution.
+    /// Only the test harnesses' depth survey reads this today.
+    #[cfg(test)]
+    pub(crate) fn machine_depth_high_water(&self) -> usize {
+        self.global.machine_depth_high_water
+    }
+
     pub(crate) fn sketch_mode(&self) -> bool {
         self.mod_local.sketch_mode
             && match &self.mod_local.path {
@@ -1170,6 +1182,7 @@ impl FromStr for KclVersion {
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
+            machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
