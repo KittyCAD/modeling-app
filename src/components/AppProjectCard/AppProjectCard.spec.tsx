@@ -82,13 +82,8 @@ function renderProjectCard({
 }
 
 function clickRenameProject() {
-  const renameButton = screen.getByText('Rename project').closest('button')
-  expect(renameButton).not.toBeNull()
-  if (!renameButton) {
-    return
-  }
-
-  fireEvent.click(renameButton)
+  fireEvent.contextMenu(screen.getByTestId('project-link'))
+  fireEvent.click(screen.getByTestId('project-card-context-rename'))
 }
 
 function submitRenameProject() {
@@ -243,6 +238,39 @@ describe('ProjectCard', () => {
 
     expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
     expect(screen.queryByTestId('cloud-conflict-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows project actions in the card context menu', () => {
+    renderProjectCard()
+
+    expect(screen.queryByText('Rename project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Delete project')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+
+    expect(screen.getByTestId('project-card-context-rename')).toHaveTextContent(
+      'Rename project'
+    )
+    expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
+      'Delete project'
+    )
+  })
+
+  test('selects the project title when opening rename from the context menu', async () => {
+    renderProjectCard()
+
+    clickRenameProject()
+
+    const input = screen.getByTestId('project-rename-input')
+    if (!(input instanceof HTMLInputElement)) {
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      return
+    }
+
+    await waitFor(() => expect(input).toHaveFocus())
+
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
