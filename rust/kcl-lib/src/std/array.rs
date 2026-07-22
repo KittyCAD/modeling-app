@@ -5,8 +5,9 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::ControlFlowKind;
 use crate::execution::ExecState;
+use crate::execution::KclValueControlFlow;
+use crate::execution::control_continue;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
@@ -14,14 +15,10 @@ use crate::execution::kcl_value::KclValue;
 use crate::execution::types::RuntimeType;
 
 /// Apply a function to each element of an array.
-pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
     let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
     let f: FunctionSource = args.get_kw_arg("f", &RuntimeType::function(), exec_state)?;
-    let new_array = inner_map(array, f, exec_state, &args).await?;
-    Ok(KclValue::HomArray {
-        value: new_array,
-        ty: RuntimeType::any(),
-    })
+    inner_map(array, f, exec_state, &args).await
 }
 
 async fn inner_map(
@@ -29,10 +26,10 @@ async fn inner_map(
     f: FunctionSource,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<KclValue>, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(
+        let new_elem_cf = call_map_closure(
             elem,
             &f,
             args.source_range,
@@ -41,9 +38,16 @@ async fn inner_map(
             &args.ctx,
         )
         .await?;
+        // If the callback exited, e.g. by calling exit(), stop mapping, and
+        // propagate the exit so that it terminates the enclosing module.
+        let new_elem = control_continue!(new_elem_cf);
         new_array.push(new_elem);
     }
-    Ok(new_array)
+    Ok(KclValue::HomArray {
+        value: new_array,
+        ty: RuntimeType::any(),
+    }
+    .continue_())
 }
 
 async fn call_map_closure(
@@ -53,7 +57,7 @@ async fn call_map_closure(
     node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     let args = Args::new(
         Default::default(),
         vec![(None, Arg::new(input, source_range))],
@@ -71,22 +75,11 @@ async fn call_map_closure(
             source_ranges,
         ))
     })?;
-    let output = match output.control {
-        ControlFlowKind::Continue => output.into_value(),
-        ControlFlowKind::Exit => {
-            let message = "Early return inside map function is currently not supported".to_owned();
-            debug_assert!(false, "{}", &message);
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                message,
-                vec![source_range],
-            )));
-        }
-    };
     Ok(output)
 }
 
 /// For each item in an array, update a value.
-pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
     let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array", &RuntimeType::any_array(), exec_state)?;
     let f: FunctionSource = args.get_kw_arg("f", &RuntimeType::function(), exec_state)?;
     let initial: KclValue = args.get_kw_arg("initial", &RuntimeType::any(), exec_state)?;
@@ -99,10 +92,10 @@ async fn inner_reduce(
     f: FunctionSource,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     let mut reduced = initial;
     for elem in array {
-        reduced = call_reduce_closure(
+        let reduced_cf = call_reduce_closure(
             elem,
             reduced,
             &f,
@@ -112,9 +105,12 @@ async fn inner_reduce(
             &args.ctx,
         )
         .await?;
+        // If the callback exited, e.g. by calling exit(), stop reducing, and
+        // propagate the exit so that it terminates the enclosing module.
+        reduced = control_continue!(reduced_cf);
     }
 
-    Ok(reduced)
+    Ok(reduced.continue_())
 }
 
 async fn call_reduce_closure(
@@ -125,7 +121,7 @@ async fn call_reduce_closure(
     node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     // Call the reduce fn for this repetition.
     let mut labeled = IndexMap::with_capacity(1);
     labeled.insert("accum".to_string(), Arg::new(accum, source_range));
@@ -147,20 +143,9 @@ async fn call_reduce_closure(
     let out = transform_fn_return.ok_or_else(|| {
         KclError::new_semantic(KclErrorDetails::new(
             "Reducer function must return a value".to_string(),
-            source_ranges.clone(),
+            source_ranges,
         ))
     })?;
-    let out = match out.control {
-        ControlFlowKind::Continue => out.into_value(),
-        ControlFlowKind::Exit => {
-            let message = "Early return inside reduce function is currently not supported".to_owned();
-            debug_assert!(false, "{}", &message);
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                message,
-                vec![source_range],
-            )));
-        }
-    };
     Ok(out)
 }
 

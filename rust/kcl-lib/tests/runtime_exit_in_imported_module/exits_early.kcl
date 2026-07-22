@@ -1,0 +1,9 @@
+@settings(experimentalFeatures = allow)
+
+export partial = 1
+
+// Stop this module, but not the module importing it.
+exit()
+
+// We should never reach this.
+assert(1, isEqualTo = 2)

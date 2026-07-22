@@ -1,0 +1,25 @@
+@settings(experimentalFeatures = allow)
+
+fn transform(@i) {
+  offset = if i == 2 {
+    // Stop the whole program.
+    exit()
+  } else {
+    30 * i
+  }
+  return { translate = [offset, 0, 0] }
+}
+
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> polygon(
+       radius = 10,
+       numSides = 4,
+       center = [0, 0],
+       inscribed = false,
+     )
+  |> extrude(length = 4)
+  |> patternTransform(instances = 3, transform = transform)
+
+// We should never reach this.
+assert(1, isEqualTo = 2)

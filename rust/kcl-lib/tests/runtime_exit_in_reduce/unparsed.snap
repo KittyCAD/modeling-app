@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing runtime_exit_in_reduce.kcl
+---
+@settings(experimentalFeatures = allow)
+
+fn add(@x, accum) {
+  y = if x == 2 {
+    // Stop the whole program.
+    exit()
+  } else {
+    accum + x
+  }
+  return y
+}
+
+total = reduce([1, 2, 3], initial = 0, f = add)
+
+// We should never reach this.
+assert(1, isEqualTo = 2)
