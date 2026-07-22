@@ -6,7 +6,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { type MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { type RequestedKCLFileDelete } from '@src/machines/systemIO/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
 

@@ -1,20 +1,21 @@
-import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib/dist/types/src'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { EngineDebugger } from '@src/lib/debugger'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { Themes } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
-import type { Connection } from '@src/network/connection'
+import type { Connection } from '@src/lib/engineConnection/connection'
 import type {
   IEventListenerTracked,
   NewTrackArgs,
   UnreliableResponses,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import {
-  EngineCommandManagerEvents,
   EngineConnectionEvents,
-} from '@src/network/utils'
+  EngineConnectionManagerEvents,
+  isHighlightSetEntity_type,
+} from '@src/lib/engineConnection/utils'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,
@@ -23,7 +24,7 @@ export const createOnEngineConnectionRestartRequest = ({
 }) => {
   const onEngineConnectionRestartRequest = () => {
     dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest)
+      new CustomEvent(EngineConnectionManagerEvents.EngineRestartRequest)
     )
   }
   return onEngineConnectionRestartRequest
@@ -35,7 +36,7 @@ export const createOnEngineOffline = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onEngineOffline = () => {
-    dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline))
+    dispatchEvent(new CustomEvent(EngineConnectionManagerEvents.Offline))
   }
   return onEngineOffline
 }
@@ -142,7 +143,7 @@ export const createOnEngineConnectionOpened = ({
     })
 
     dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+      new CustomEvent(EngineConnectionManagerEvents.SceneReady, {
         detail: connection,
       })
     )
@@ -234,17 +235,17 @@ export const createOnEngineConnectionStarted = ({
           Object.values(
             getUnreliableSubscriptions()[result.type] || {}
           ).forEach((callback) => {
-            // Hover/highlight responses may arrive out of order on the unreliable
-            // channel. Only apply the newest sequenced result we have seen.
+            // TODO: There is only one response that uses the unreliable channel atm,
+            // highlight_set_entity, if there are more it's likely they will all have the same
+            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+            // per unreliable subscription.
             const data = result.data
-            const sequence = (data as { sequence?: number } | undefined)
-              ?.sequence
-            if (
-              result.type === 'highlight_set_entity' &&
-              typeof sequence === 'number'
-            ) {
-              if (sequence > getInSequence()) {
-                setInSequence(sequence)
+            if (isHighlightSetEntity_type(data)) {
+              if (
+                data.sequence !== undefined &&
+                data.sequence > getInSequence()
+              ) {
+                setInSequence(data.sequence)
                 callback(result)
               }
             }

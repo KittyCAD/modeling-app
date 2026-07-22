@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import type {
   AnchorHTMLAttributes,
   HTMLAttributes,
   MouseEventHandler,
+  RefObject,
   ReactNode,
 } from 'react'
 
@@ -17,7 +19,6 @@ export type ProjectCardClassNameSlot =
   | 'badges'
   | 'body'
   | 'title'
-  | 'actions'
 
 export type ProjectCardClassNames = Partial<
   Record<ProjectCardClassNameSlot, string>
@@ -33,6 +34,10 @@ export type ProjectCardOpenLinkRenderProps = Omit<
   onClick: MouseEventHandler<HTMLAnchorElement>
 }
 
+export interface ProjectCardContextMenuRenderProps {
+  menuTargetElement: RefObject<HTMLLIElement | null>
+}
+
 export interface ProjectCardProps
   extends Omit<HTMLAttributes<HTMLLIElement>, 'title'> {
   title: ReactNode
@@ -45,8 +50,7 @@ export interface ProjectCardProps
   thumbnailFallback?: ReactNode
   badges?: ReactNode
   details?: ReactNode
-  actions?: ReactNode
-  actionsLabel?: string
+  renderContextMenu?: (props: ProjectCardContextMenuRenderProps) => ReactNode
   renameForm?: ReactNode
   dialogs?: ReactNode
   openLinkTestId?: string
@@ -72,8 +76,6 @@ export const defaultProjectCardClassNames: Record<
     'absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none',
   body: 'pb-2 flex flex-col flex-grow flex-auto gap-2 rounded-b-sm',
   title: 'font-sans relative z-0 p-2 truncate',
-  actions:
-    'absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100',
 }
 
 function getProjectCardClassNames(overrides?: ProjectCardClassNames) {
@@ -106,8 +108,7 @@ export function ProjectCard({
   thumbnailFallback,
   badges,
   details,
-  actions,
-  actionsLabel,
+  renderContextMenu,
   renameForm,
   dialogs,
   openLinkTestId = 'project-link',
@@ -117,6 +118,7 @@ export function ProjectCard({
   renderOpenLink = defaultRenderOpenLink,
   ...props
 }: ProjectCardProps) {
+  const rootRef = useRef<HTMLLIElement>(null)
   const classes = getProjectCardClassNames(classNames)
   const openLinkClassName = joinClassNames(
     classes.openLink,
@@ -166,13 +168,13 @@ export function ProjectCard({
   })
 
   return (
-    <li {...props} className={joinClassNames(classes.root, className)}>
+    <li
+      {...props}
+      ref={rootRef}
+      className={joinClassNames(classes.root, className)}
+    >
       {openLink}
-      {!isEditing && actions && (
-        <div className={classes.actions} data-edit-buttons-for={actionsLabel}>
-          {actions}
-        </div>
-      )}
+      {!isEditing && renderContextMenu?.({ menuTargetElement: rootRef })}
       {dialogs}
     </li>
   )

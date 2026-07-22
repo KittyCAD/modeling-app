@@ -1,6 +1,10 @@
 import { describe, expect, test, vi } from 'vitest'
 
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
+import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
@@ -18,7 +22,6 @@ import {
 } from '@src/lib/selections'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [105.55, 105.55])
@@ -1191,7 +1194,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   // Build the index locally instead of using engineCommandManager
   const artifactIndex = buildArtifactIndex(___artifactGraph)
 
-  function createPrimitiveEngineCommandManager({
+  function createPrimitiveEngineConnectionManager({
     parentEntityId,
     primitiveIndex,
     primitiveType,
@@ -1412,7 +1415,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       ],
       enginePrimitives: [],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 2,
         primitiveType: 'edge',
@@ -1464,7 +1467,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         },
       ],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 3,
         primitiveType: 'face',
@@ -1512,7 +1515,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         },
       ],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 1,
         primitiveType: 'edge',

@@ -3614,6 +3614,9 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             if *result == PrimitiveType::None {
                 ParseContext::experimental("none type", result.as_source_range());
             }
+            if *result == PrimitiveType::Never {
+                ParseContext::experimental("never type", result.as_source_range());
+            }
 
             result
         }),
@@ -6333,6 +6336,29 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         let (_, errs) = assert_no_err(code);
         assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
+    fn never_type_is_experimental() {
+        let code = "fn stop(): never {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [11, 16],
+        );
+
+        let code = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {}"#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+fn stop(): never {}"#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(
+            errs[0].message,
+            "Use of never type is experimental and may change or be removed."
+        );
     }
 
     #[test]

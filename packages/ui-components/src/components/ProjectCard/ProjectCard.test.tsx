@@ -1,10 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
-import { ProjectCard } from '@kittycad/ui-components'
+import {
+  ProjectCard,
+  type ProjectCardContextMenuRenderProps,
+} from '@kittycad/ui-components'
 
 describe('ProjectCard', () => {
   test('renders caller-provided project card slots', () => {
+    const renderContextMenu = vi.fn(
+      (_props: ProjectCardContextMenuRenderProps) => (
+        <div data-testid="project-context-menu" />
+      )
+    )
     render(
       <ProjectCard
         title="Remote bracket"
@@ -12,7 +20,7 @@ describe('ProjectCard', () => {
         thumbnailAlt="Remote bracket thumbnail"
         badges={<span data-testid="badge">Synced</span>}
         details={<span data-testid="details">2 files</span>}
-        actions={<button type="button">Rename</button>}
+        renderContextMenu={renderContextMenu}
       />
     )
 
@@ -24,7 +32,10 @@ describe('ProjectCard', () => {
     ).toHaveAttribute('src', 'https://example.com/thumbnail.png')
     expect(screen.getByTestId('badge')).toHaveTextContent('Synced')
     expect(screen.getByTestId('details')).toHaveTextContent('2 files')
-    expect(screen.getByRole('button', { name: 'Rename' })).toBeInTheDocument()
+    expect(screen.getByTestId('project-context-menu')).toBeInTheDocument()
+    expect(renderContextMenu.mock.calls[0]?.[0].menuTargetElement.current).toBe(
+      screen.getByRole('listitem')
+    )
   })
 
   test('lets callers render the open link and intercept opens', () => {

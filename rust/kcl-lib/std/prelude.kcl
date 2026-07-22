@@ -16,6 +16,7 @@
 export import * from "std::types"
 export import "std::gdt"
 export import "std::units"
+export import "std::string"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"

@@ -246,7 +246,7 @@ import type {
   UpdateSketchOutcomeEvent,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { EditorView } from 'codemirror'
 
 function sourceRangesEqual(
