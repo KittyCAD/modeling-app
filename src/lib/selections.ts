@@ -517,6 +517,13 @@ function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
     return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
   }
 
+  if (
+    artifact.type === 'sweepEdge' &&
+    artifact.subType === 'previousAdjacent'
+  ) {
+    return createCallExpressionStdLibKw('getPreviousAdjacentEdge', tag, [])
+  }
+
   return tag
 }
 
