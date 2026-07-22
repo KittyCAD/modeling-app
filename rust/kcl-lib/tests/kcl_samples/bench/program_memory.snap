@@ -17484,106 +17484,7 @@ description: Variables in memory after executing bench.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14388,
-            "end": 14393,
-            "moduleId": 0,
-            "start": 14388,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14465,
-            "end": 14470,
-            "moduleId": 0,
-            "start": 14465,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14542,
-            "end": 14547,
-            "moduleId": 0,
-            "start": 14542,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14619,
-            "end": 14624,
-            "moduleId": 0,
-            "start": 14619,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14699,
-            "end": 14704,
-            "moduleId": 0,
-            "start": 14699,
-            "type": "TagDeclarator",
-            "value": "line5"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14778,
-            "end": 14783,
-            "moduleId": 0,
-            "start": 14778,
-            "type": "TagDeclarator",
-            "value": "line6"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14857,
-            "end": 14862,
-            "moduleId": 0,
-            "start": 14857,
-            "type": "TagDeclarator",
-            "value": "line7"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -17840,8 +17741,8 @@ description: Variables in memory after executing bench.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
@@ -17922,106 +17823,7 @@ description: Variables in memory after executing bench.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14388,
-            "end": 14393,
-            "moduleId": 0,
-            "start": 14388,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14465,
-            "end": 14470,
-            "moduleId": 0,
-            "start": 14465,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14542,
-            "end": 14547,
-            "moduleId": 0,
-            "start": 14542,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14619,
-            "end": 14624,
-            "moduleId": 0,
-            "start": 14619,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14699,
-            "end": 14704,
-            "moduleId": 0,
-            "start": 14699,
-            "type": "TagDeclarator",
-            "value": "line5"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14778,
-            "end": 14783,
-            "moduleId": 0,
-            "start": 14778,
-            "type": "TagDeclarator",
-            "value": "line6"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 14857,
-            "end": 14862,
-            "moduleId": 0,
-            "start": 14857,
-            "type": "TagDeclarator",
-            "value": "line7"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -18278,8 +18080,8 @@ description: Variables in memory after executing bench.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

@@ -28,15 +28,11 @@ flowchart LR
   10["SweepEdge Adjacent"]
   14["Sweep Extrusion<br>[245, 266, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-  15[Wall]
-    %% face_code_ref=Missing NodePath
-  16["Cap End"]
-    %% face_code_ref=Missing NodePath
-  17["SweepEdge Opposite"]
-  18["SweepEdge Adjacent"]
-  19["EdgeCut Fillet<br>[332, 382, 0]"]
+  15["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  17["EdgeCut Fillet<br>[332, 382, 0]"]
     %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr]
-  20["StartSketchOnFace<br>[183, 217, 0]"]
+  18["StartSketchOnFace<br>[183, 217, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -46,29 +42,25 @@ flowchart LR
   3 x--> 7
   3 --- 9
   3 --- 10
-  3 --- 19
+  3 --- 15
+  3 --- 16
+  3 --- 17
   5 --- 6
   5 --- 7
   5 --- 8
   5 --- 9
   5 --- 10
+  5 --- 15
+  5 --- 16
   6 --- 9
   6 --- 10
+  6 --- 15
+  6 --- 16
   9 <--x 8
   8 --- 11
-  12 <--x 8
-  8 <--x 20
+  15 <--x 8
+  8 <--x 18
   11 --- 12
   11 --- 13
   11 ---- 14
-  12 --- 15
-  12 --- 17
-  12 --- 18
-  14 --- 15
-  14 --- 16
-  14 --- 17
-  14 --- 18
-  15 --- 17
-  15 --- 18
-  17 <--x 16
 ```

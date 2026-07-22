@@ -228,64 +228,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2898,
-            "end": 2903,
-            "moduleId": 0,
-            "start": 2898,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2967,
-            "end": 2972,
-            "moduleId": 0,
-            "start": 2967,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3075,
-            "end": 3080,
-            "moduleId": 0,
-            "start": 3075,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3183,
-            "end": 3188,
-            "moduleId": 0,
-            "start": 3183,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -458,8 +401,8 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

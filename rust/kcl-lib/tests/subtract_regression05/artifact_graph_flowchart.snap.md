@@ -24,20 +24,20 @@ flowchart LR
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }, CallKwArg { index: 0 }]
     12[Solid2d]
   end
-  subgraph path20 [Path]
-    20["Path<br>[579, 625, 0]<br>Consumed: true"]
+  subgraph path15 [Path]
+    15["Path<br>[579, 625, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    21["Segment<br>[631, 653, 0]"]
+    16["Segment<br>[631, 653, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    22["Segment<br>[659, 681, 0]"]
+    17["Segment<br>[659, 681, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    23["Segment<br>[687, 708, 0]"]
+    18["Segment<br>[687, 708, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    24["Segment<br>[714, 735, 0]"]
+    19["Segment<br>[714, 735, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    25["Segment<br>[741, 748, 0]"]
+    20["Segment<br>[741, 748, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    26[Solid2d]
+    21[Solid2d]
   end
   1["Plane<br>[47, 64, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -45,31 +45,23 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   13["Sweep Sweep<br>[464, 524, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  14[Wall]
-    %% face_code_ref=Missing NodePath
-  15["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  16["Cap End"]
-    %% face_code_ref=Missing NodePath
-  17["SweepEdge Opposite"]
-  18["SweepEdge Adjacent"]
-  19["Plane<br>[538, 555, 0]"]
+  14["Plane<br>[538, 555, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  27["Sweep Revolve<br>[773, 824, 0]<br>Consumed: true"]
+  22["Sweep Revolve<br>[773, 824, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  28[Wall]
+  23[Wall]
     %% face_code_ref=Missing NodePath
-  29[Wall]
+  24[Wall]
     %% face_code_ref=Missing NodePath
-  30[Wall]
+  25[Wall]
     %% face_code_ref=Missing NodePath
-  31[Wall]
+  26[Wall]
     %% face_code_ref=Missing NodePath
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Adjacent"]
-  36["CompositeSolid Subtract<br>[842, 897, 0]<br>Consumed: false"]
+  27["SweepEdge Adjacent"]
+  28["SweepEdge Adjacent"]
+  29["SweepEdge Adjacent"]
+  30["SweepEdge Adjacent"]
+  31["CompositeSolid Subtract<br>[842, 897, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -82,57 +74,45 @@ flowchart LR
   7 --- 9
   10 --- 7
   7 ---- 13
-  7 --- 36
-  8 --- 14
-  8 x--> 15
-  8 --- 17
-  8 --- 18
+  7 --- 31
   10 --- 11
   10 --- 12
   10 x---> 13
-  13 --- 14
-  13 --- 15
-  13 --- 16
-  13 --- 17
-  13 --- 18
-  14 --- 17
-  14 --- 18
-  17 <--x 16
-  19 --- 20
-  20 --- 21
-  20 --- 22
-  20 --- 23
-  20 --- 24
-  20 --- 25
-  20 --- 26
-  20 ---- 27
-  20 --- 36
-  27 <--x 21
-  21 --- 28
-  21 --- 32
-  27 <--x 22
+  14 --- 15
+  15 --- 16
+  15 --- 17
+  15 --- 18
+  15 --- 19
+  15 --- 20
+  15 --- 21
+  15 ---- 22
+  15 --- 31
+  22 <--x 16
+  16 --- 23
+  16 --- 27
+  22 <--x 17
+  17 --- 24
+  17 --- 28
+  22 <--x 18
+  18 --- 25
+  18 --- 29
+  22 <--x 19
+  19 --- 26
+  19 --- 30
+  22 --- 23
+  22 --- 24
+  22 --- 25
+  22 --- 26
+  22 --- 27
+  22 --- 28
   22 --- 29
-  22 --- 33
-  27 <--x 23
-  23 --- 30
-  23 --- 34
+  22 --- 30
+  23 --- 27
+  30 <--x 23
   27 <--x 24
-  24 --- 31
-  24 --- 35
-  27 --- 28
-  27 --- 29
-  27 --- 30
-  27 --- 31
-  27 --- 32
-  27 --- 33
-  27 --- 34
-  27 --- 35
-  28 --- 32
-  35 <--x 28
-  32 <--x 29
-  29 --- 33
-  33 <--x 30
-  30 --- 34
-  34 <--x 31
-  31 --- 35
+  24 --- 28
+  28 <--x 25
+  25 --- 29
+  29 <--x 26
+  26 --- 30
 ```

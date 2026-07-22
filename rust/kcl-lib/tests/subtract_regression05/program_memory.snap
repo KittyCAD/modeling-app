@@ -9,15 +9,7 @@ description: Variables in memory after executing subtract_regression05.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -123,8 +115,8 @@ description: Variables in memory after executing subtract_regression05.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }
@@ -752,15 +744,7 @@ description: Variables in memory after executing subtract_regression05.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -866,8 +850,8 @@ description: Variables in memory after executing subtract_regression05.kcl
         "originalId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }

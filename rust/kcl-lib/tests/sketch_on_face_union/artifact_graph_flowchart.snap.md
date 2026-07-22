@@ -176,29 +176,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   102["Sweep Extrusion<br>[1863, 1898, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  103[Wall]
-    %% face_code_ref=Missing NodePath
-  104[Wall]
-    %% face_code_ref=Missing NodePath
-  105[Wall]
-    %% face_code_ref=Missing NodePath
-  106[Wall]
-    %% face_code_ref=Missing NodePath
-  107["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  108["Cap End"]
-    %% face_code_ref=Missing NodePath
-  109["SweepEdge Opposite"]
-  110["SweepEdge Adjacent"]
-  111["SweepEdge Opposite"]
-  112["SweepEdge Adjacent"]
-  113["SweepEdge Opposite"]
-  114["SweepEdge Adjacent"]
-  115["SweepEdge Opposite"]
-  116["SweepEdge Adjacent"]
-  117["StartSketchOnPlane<br>[1027, 1070, 0]"]
+  103["StartSketchOnPlane<br>[1027, 1070, 0]"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  118["StartSketchOnFace<br>[1639, 1682, 0]"]
+  104["StartSketchOnFace<br>[1639, 1682, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 9
@@ -309,7 +289,7 @@ flowchart LR
   26 --- 41
   26 --- 42
   26 --- 96
-  26 <--x 118
+  26 <--x 104
   27 --- 43
   27 --- 44
   50 <--x 27
@@ -333,7 +313,7 @@ flowchart LR
   49 <--x 32
   51 --- 52
   51 --- 73
-  51 <--x 117
+  51 <--x 103
   52 --- 53
   52 --- 54
   52 --- 55
@@ -447,50 +427,4 @@ flowchart LR
   96 --- 100
   96 --- 101
   96 ---- 102
-  97 --- 103
-  97 x--> 107
-  97 --- 109
-  97 --- 110
-  98 --- 104
-  98 x--> 107
-  98 --- 111
-  98 --- 112
-  99 --- 105
-  99 x--> 107
-  99 --- 113
-  99 --- 114
-  100 --- 106
-  100 x--> 107
-  100 --- 115
-  100 --- 116
-  102 --- 103
-  102 --- 104
-  102 --- 105
-  102 --- 106
-  102 --- 107
-  102 --- 108
-  102 --- 109
-  102 --- 110
-  102 --- 111
-  102 --- 112
-  102 --- 113
-  102 --- 114
-  102 --- 115
-  102 --- 116
-  103 --- 109
-  103 --- 110
-  116 <--x 103
-  110 <--x 104
-  104 --- 111
-  104 --- 112
-  112 <--x 105
-  105 --- 113
-  105 --- 114
-  114 <--x 106
-  106 --- 115
-  106 --- 116
-  109 <--x 108
-  111 <--x 108
-  113 <--x 108
-  115 <--x 108
 ```

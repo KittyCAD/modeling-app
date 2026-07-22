@@ -230,29 +230,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": null,
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -358,7 +336,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

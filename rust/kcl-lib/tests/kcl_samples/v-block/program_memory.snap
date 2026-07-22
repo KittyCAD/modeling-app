@@ -738,15 +738,7 @@ description: Variables in memory after executing v-block.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -821,8 +813,8 @@ description: Variables in memory after executing v-block.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }
@@ -833,15 +825,7 @@ description: Variables in memory after executing v-block.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -916,8 +900,8 @@ description: Variables in memory after executing v-block.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
         }

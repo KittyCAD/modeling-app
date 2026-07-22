@@ -101,22 +101,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2032,
-            "end": 2039,
-            "moduleId": 0,
-            "start": 2032,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -208,7 +193,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
@@ -769,92 +754,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1148,
-            "end": 1153,
-            "moduleId": 0,
-            "start": 1148,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1230,
-            "end": 1235,
-            "moduleId": 0,
-            "start": 1230,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1349,
-            "end": 1354,
-            "moduleId": 0,
-            "start": 1349,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1469,
-            "end": 1474,
-            "moduleId": 0,
-            "start": 1469,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1592,
-            "end": 1597,
-            "moduleId": 0,
-            "start": 1592,
-            "type": "TagDeclarator",
-            "value": "line5"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1710,
-            "end": 1715,
-            "moduleId": 0,
-            "start": 1710,
-            "type": "TagDeclarator",
-            "value": "line6"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1081,7 +981,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": "in"
       },
       "startCapId": "[uuid]",
-      "endCapId": null,
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }

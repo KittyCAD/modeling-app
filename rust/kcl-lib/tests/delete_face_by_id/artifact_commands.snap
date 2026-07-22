@@ -154,8 +154,7 @@ description: Artifact commands delete_face_by_id.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     },
     {
@@ -163,8 +162,7 @@ description: Artifact commands delete_face_by_id.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     },
     {
@@ -360,8 +358,7 @@ description: Artifact commands delete_face_by_id.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     },
     {
@@ -369,8 +366,7 @@ description: Artifact commands delete_face_by_id.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     },
     {

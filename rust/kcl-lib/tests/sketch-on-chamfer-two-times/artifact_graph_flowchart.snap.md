@@ -77,27 +77,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   41["Sweep Extrusion<br>[1611, 1642, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  42[Wall]
-    %% face_code_ref=Missing NodePath
-  43[Wall]
-    %% face_code_ref=Missing NodePath
-  44[Wall]
-    %% face_code_ref=Missing NodePath
-  45[Wall]
-    %% face_code_ref=Missing NodePath
-  46["Cap End"]
-    %% face_code_ref=Missing NodePath
-  47["SweepEdge Opposite"]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Opposite"]
-  50["SweepEdge Adjacent"]
-  51["SweepEdge Opposite"]
-  52["SweepEdge Adjacent"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Adjacent"]
-  55["StartSketchOnFace<br>[674, 713, 0]"]
+  42["StartSketchOnFace<br>[674, 713, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  56["StartSketchOnFace<br>[1141, 1180, 0]"]
+  43["StartSketchOnFace<br>[1141, 1180, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -156,13 +138,9 @@ flowchart LR
   20 <--x 15
   22 <--x 15
   25 --- 27
-  25 <--x 55
+  25 <--x 42
   26 --- 34
-  35 <--x 26
-  36 <--x 26
-  37 <--x 26
-  38 <--x 26
-  26 <--x 56
+  26 <--x 43
   27 --- 28
   27 --- 29
   27 --- 30
@@ -176,45 +154,4 @@ flowchart LR
   34 --- 39
   34 --- 40
   34 ---- 41
-  35 --- 45
-  35 --- 53
-  35 --- 54
-  36 --- 44
-  36 --- 51
-  36 --- 52
-  37 --- 43
-  37 --- 49
-  37 --- 50
-  38 --- 42
-  38 --- 47
-  38 --- 48
-  41 --- 42
-  41 --- 43
-  41 --- 44
-  41 --- 45
-  41 --- 46
-  41 --- 47
-  41 --- 48
-  41 --- 49
-  41 --- 50
-  41 --- 51
-  41 --- 52
-  41 --- 53
-  41 --- 54
-  42 --- 47
-  42 --- 48
-  50 <--x 42
-  43 --- 49
-  43 --- 50
-  52 <--x 43
-  44 --- 51
-  44 --- 52
-  54 <--x 44
-  48 <--x 45
-  45 --- 53
-  45 --- 54
-  47 <--x 46
-  49 <--x 46
-  51 <--x 46
-  53 <--x 46
 ```

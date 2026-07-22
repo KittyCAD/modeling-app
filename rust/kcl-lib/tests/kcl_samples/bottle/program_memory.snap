@@ -1637,20 +1637,6 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
-            "moduleId": 0,
-            "start": 2805,
-            "type": "TagDeclarator",
-            "value": "neckCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 3457,
             "end": 3465,
             "moduleId": 0,
@@ -1759,7 +1745,7 @@ description: Variables in memory after executing bottle.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -1777,20 +1763,6 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
-            "moduleId": 0,
-            "start": 2805,
-            "type": "TagDeclarator",
-            "value": "neckCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 3457,
             "end": 3465,
             "moduleId": 0,
@@ -1899,7 +1871,7 @@ description: Variables in memory after executing bottle.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -1926,20 +1898,6 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
-            "moduleId": 0,
-            "start": 2805,
-            "type": "TagDeclarator",
-            "value": "neckCircle"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
             "commentStart": 3457,
             "end": 3465,
             "moduleId": 0,
@@ -2048,7 +2006,7 @@ description: Variables in memory after executing bottle.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

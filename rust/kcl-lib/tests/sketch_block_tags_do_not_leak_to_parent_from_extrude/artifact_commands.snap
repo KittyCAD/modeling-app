@@ -210,8 +210,7 @@ description: Artifact commands sketch_block_tags_do_not_leak_to_parent_from_extr
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     },
     {
@@ -219,8 +218,7 @@ description: Artifact commands sketch_block_tags_do_not_leak_to_parent_from_extr
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "[uuid]"
       }
     }
   ]

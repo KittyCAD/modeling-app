@@ -66,10 +66,12 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   37["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  38[Wall]
-    %% face_code_ref=Missing NodePath
-  39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
+  38["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+  39["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+  40["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   41["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   42["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
@@ -122,13 +124,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   66["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  67["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  68["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  69["Sweep Extrusion<br>[630, 651, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-  70["StartSketchOnFace<br>[351, 390, 0]"]
+  67["StartSketchOnFace<br>[351, 390, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -180,15 +176,13 @@ flowchart LR
   11 --- 19
   21 <--x 11
   11 --- 28
-  29 <--x 11
-  11 <--x 70
+  11 <--x 67
   12 --- 20
   12 --- 21
   23 <--x 12
   13 --- 22
   13 --- 23
   25 <--x 13
-  39 <--x 13
   14 --- 24
   14 --- 25
   27 <--x 14
@@ -205,12 +199,4 @@ flowchart LR
   28 --- 31
   28 --- 32
   28 ---- 37
-  29 --- 38
-  29 --- 39
-  29 --- 40
-  37 --- 38
-  37 --- 39
-  37 --- 40
-  38 --- 39
-  38 --- 40
 ```

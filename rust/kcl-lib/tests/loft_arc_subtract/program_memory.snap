@@ -790,64 +790,7 @@ description: Variables in memory after executing loft_arc_subtract.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 61,
-            "end": 65,
-            "moduleId": 0,
-            "start": 61,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 191,
-            "end": 195,
-            "moduleId": 0,
-            "start": 191,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 321,
-            "end": 326,
-            "moduleId": 0,
-            "start": 321,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 470,
-            "end": 475,
-            "moduleId": 0,
-            "start": 470,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1032,8 +975,8 @@ description: Variables in memory after executing loft_arc_subtract.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

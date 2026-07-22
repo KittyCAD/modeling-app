@@ -295,64 +295,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 657,
-            "end": 662,
-            "moduleId": 0,
-            "start": 657,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 738,
-            "end": 743,
-            "moduleId": 0,
-            "start": 738,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 819,
-            "end": 824,
-            "moduleId": 0,
-            "start": 819,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 900,
-            "end": 905,
-            "moduleId": 0,
-            "start": 900,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -519,7 +462,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

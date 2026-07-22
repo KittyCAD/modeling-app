@@ -765,64 +765,7 @@ description: Variables in memory after executing teapot.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3325,
-            "end": 3329,
-            "moduleId": 0,
-            "start": 3325,
-            "type": "TagDeclarator",
-            "value": "arc1"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3434,
-            "end": 3438,
-            "moduleId": 0,
-            "start": 3434,
-            "type": "TagDeclarator",
-            "value": "arc2"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3579,
-            "end": 3583,
-            "moduleId": 0,
-            "start": 3579,
-            "type": "TagDeclarator",
-            "value": "arc3"
-          },
-          "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 3725,
-            "end": 3729,
-            "moduleId": 0,
-            "start": 3725,
-            "type": "TagDeclarator",
-            "value": "arc4"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1019,8 +962,8 @@ description: Variables in memory after executing teapot.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
@@ -7572,22 +7515,7 @@ description: Variables in memory after executing teapot.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1013,
-            "end": 1020,
-            "moduleId": 0,
-            "start": 1013,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -7686,8 +7614,8 @@ description: Variables in memory after executing teapot.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

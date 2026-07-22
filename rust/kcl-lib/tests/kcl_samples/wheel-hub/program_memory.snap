@@ -2139,22 +2139,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 12388,
-                "end": 12395,
-                "moduleId": 0,
-                "start": 12388,
-                "type": "TagDeclarator",
-                "value": "circle1"
-              },
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2243,7 +2228,7 @@ description: Variables in memory after executing wheel-hub.kcl
             "originSketchId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
+          "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
@@ -2255,22 +2240,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 12388,
-                "end": 12395,
-                "moduleId": 0,
-                "start": 12388,
-                "type": "TagDeclarator",
-                "value": "circle1"
-              },
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2359,7 +2329,7 @@ description: Variables in memory after executing wheel-hub.kcl
             "originSketchId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
+          "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
@@ -2371,22 +2341,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 12388,
-                "end": 12395,
-                "moduleId": 0,
-                "start": 12388,
-                "type": "TagDeclarator",
-                "value": "circle1"
-              },
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2475,7 +2430,7 @@ description: Variables in memory after executing wheel-hub.kcl
             "originSketchId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
+          "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
@@ -2487,22 +2442,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 12388,
-                "end": 12395,
-                "moduleId": 0,
-                "start": 12388,
-                "type": "TagDeclarator",
-                "value": "circle1"
-              },
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2591,7 +2531,7 @@ description: Variables in memory after executing wheel-hub.kcl
             "originSketchId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
+          "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
           "sectional": false
@@ -2603,22 +2543,7 @@ description: Variables in memory after executing wheel-hub.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 12388,
-                "end": 12395,
-                "moduleId": 0,
-                "start": 12388,
-                "type": "TagDeclarator",
-                "value": "circle1"
-              },
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2707,7 +2632,7 @@ description: Variables in memory after executing wheel-hub.kcl
             "originSketchId": "[uuid]",
             "units": "in"
           },
-          "startCapId": null,
+          "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": "in",
           "sectional": false

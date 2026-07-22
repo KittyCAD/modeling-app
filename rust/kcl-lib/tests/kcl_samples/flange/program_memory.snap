@@ -2720,22 +2720,7 @@ description: Variables in memory after executing flange.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 5623,
-            "end": 5630,
-            "moduleId": 0,
-            "start": 5623,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2824,7 +2809,7 @@ description: Variables in memory after executing flange.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
@@ -2974,22 +2959,7 @@ description: Variables in memory after executing flange.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 5623,
-            "end": 5630,
-            "moduleId": 0,
-            "start": 5623,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3078,7 +3048,7 @@ description: Variables in memory after executing flange.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
@@ -3090,22 +3060,7 @@ description: Variables in memory after executing flange.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 4905,
-            "end": 4912,
-            "moduleId": 0,
-            "start": 4905,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3194,7 +3149,7 @@ description: Variables in memory after executing flange.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "in",
       "sectional": false

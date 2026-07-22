@@ -326,64 +326,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 779,
-            "end": 784,
-            "moduleId": 0,
-            "start": 779,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 848,
-            "end": 853,
-            "moduleId": 0,
-            "start": 848,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 957,
-            "end": 962,
-            "moduleId": 0,
-            "start": 957,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1067,
-            "end": 1072,
-            "moduleId": 0,
-            "start": 1067,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -555,8 +498,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
@@ -588,64 +531,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -817,8 +703,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -829,64 +715,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1058,8 +887,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1070,64 +899,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1299,8 +1071,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1311,64 +1083,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1540,8 +1255,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1552,64 +1267,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1781,8 +1439,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1793,64 +1451,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2022,8 +1623,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2034,64 +1635,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2263,8 +1807,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2275,64 +1819,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2504,8 +1991,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2516,64 +2003,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2745,8 +2175,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2757,64 +2187,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2986,8 +2359,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2998,64 +2371,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -3227,8 +2543,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -3239,64 +2555,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 779,
-                "end": 784,
-                "moduleId": 0,
-                "start": 779,
-                "type": "TagDeclarator",
-                "value": "line1"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 848,
-                "end": 853,
-                "moduleId": 0,
-                "start": 848,
-                "type": "TagDeclarator",
-                "value": "line2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 957,
-                "end": 962,
-                "moduleId": 0,
-                "start": 957,
-                "type": "TagDeclarator",
-                "value": "line3"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1067,
-                "end": 1072,
-                "moduleId": 0,
-                "start": 1067,
-                "type": "TagDeclarator",
-                "value": "line4"
-              },
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -3468,8 +2727,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -4135,22 +3394,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2975,
-            "end": 2982,
-            "moduleId": 0,
-            "start": 2975,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -4239,7 +3483,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -4512,22 +3756,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 2975,
-            "end": 2982,
-            "moduleId": 0,
-            "start": 2975,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -4616,7 +3845,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
+      "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -5321,26 +4550,6 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       }
     }
   },
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
-  },
-  "line4": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line4"
-  },
   "od": {
     "type": "Number",
     "value": 150.0,
@@ -5356,64 +4565,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 779,
-            "end": 784,
-            "moduleId": 0,
-            "start": 779,
-            "type": "TagDeclarator",
-            "value": "line1"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 848,
-            "end": 853,
-            "moduleId": 0,
-            "start": 848,
-            "type": "TagDeclarator",
-            "value": "line2"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 957,
-            "end": 962,
-            "moduleId": 0,
-            "start": 957,
-            "type": "TagDeclarator",
-            "value": "line3"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1067,
-            "end": 1072,
-            "moduleId": 0,
-            "start": 1067,
-            "type": "TagDeclarator",
-            "value": "line4"
-          },
-          "type": "extrudePlane"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -5585,8 +4737,8 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

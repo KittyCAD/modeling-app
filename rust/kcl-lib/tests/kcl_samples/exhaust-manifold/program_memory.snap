@@ -11413,22 +11413,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1863,
-            "end": 1870,
-            "moduleId": 0,
-            "start": 1863,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -11527,8 +11512,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }
@@ -11539,22 +11524,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1863,
-            "end": 1870,
-            "moduleId": 0,
-            "start": 1863,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -11653,8 +11623,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }
@@ -11665,22 +11635,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 4898,
-            "end": 4905,
-            "moduleId": 0,
-            "start": 4898,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -11779,8 +11734,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }
@@ -11791,22 +11746,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 4898,
-            "end": 4905,
-            "moduleId": 0,
-            "start": 4898,
-            "type": "TagDeclarator",
-            "value": "circle1"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -11905,8 +11845,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }

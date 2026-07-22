@@ -46,15 +46,15 @@ flowchart LR
   22["SweepEdge Adjacent"]
   26["Sweep Extrusion<br>[375, 394, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  27[Wall]
-    %% face_code_ref=Missing NodePath
-  28["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  29["Cap End"]
-    %% face_code_ref=Missing NodePath
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["StartSketchOnFace<br>[275, 311, 0]"]
+  27["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
+  31["SweepEdge Opposite"]
+  32["SweepEdge Adjacent"]
+  33["SweepEdge Opposite"]
+  34["SweepEdge Adjacent"]
+  35["StartSketchOnFace<br>[275, 311, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -67,18 +67,26 @@ flowchart LR
   3 x--> 13
   3 --- 21
   3 --- 22
+  3 --- 33
+  3 --- 34
   4 --- 11
   4 x--> 13
   4 --- 19
   4 --- 20
+  4 --- 31
+  4 --- 32
   5 --- 10
   5 x--> 13
   5 --- 17
   5 --- 18
+  5 --- 29
+  5 --- 30
   6 --- 9
   6 x--> 13
   6 --- 15
   6 --- 16
+  6 --- 27
+  6 --- 28
   8 --- 9
   8 --- 10
   8 --- 11
@@ -93,37 +101,49 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  8 --- 27
+  8 --- 28
+  8 --- 29
+  8 --- 30
+  8 --- 31
+  8 --- 32
+  8 --- 33
+  8 --- 34
   9 --- 15
   9 --- 16
   18 <--x 9
+  9 --- 27
+  9 --- 28
+  30 <--x 9
   10 --- 17
   10 --- 18
   20 <--x 10
+  10 --- 29
+  10 --- 30
+  32 <--x 10
   11 --- 19
   11 --- 20
   22 <--x 11
+  11 --- 31
+  11 --- 32
+  34 <--x 11
   16 <--x 12
   12 --- 21
   12 --- 22
+  28 <--x 12
+  12 --- 33
+  12 --- 34
   15 <--x 14
   17 <--x 14
   19 <--x 14
   21 <--x 14
   14 --- 23
-  14 <--x 32
+  27 <--x 14
+  29 <--x 14
+  31 <--x 14
+  33 <--x 14
+  14 <--x 35
   23 --- 24
   23 --- 25
   23 ---- 26
-  24 --- 27
-  24 x--> 28
-  24 --- 30
-  24 --- 31
-  26 --- 27
-  26 --- 28
-  26 --- 29
-  26 --- 30
-  26 --- 31
-  27 --- 30
-  27 --- 31
-  30 <--x 29
 ```
