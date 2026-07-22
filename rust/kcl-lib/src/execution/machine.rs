@@ -1690,6 +1690,10 @@ async fn machine_call(
             Err(e) => return Err(decorate(e, &completion)),
         };
         exec_state.mod_local.machine_call_depth += 1;
+        exec_state.global.machine_depth_high_water = exec_state
+            .global
+            .machine_depth_high_water
+            .max(exec_state.mod_local.machine_call_depth);
         konts.push(Kont::CallBoundary(Box::new(BoundaryState {
             state: call_state,
             fn_src: fn_src.clone(),
@@ -1740,6 +1744,10 @@ async fn machine_call(
                 return Err(decorate(e, &completion));
             }
             exec_state.mod_local.machine_call_depth += 1;
+            exec_state.global.machine_depth_high_water = exec_state
+                .global
+                .machine_depth_high_water
+                .max(exec_state.mod_local.machine_call_depth);
             let body = BlockRef::FnBody(fn_src.ast.arc());
             konts.push(Kont::CallBoundary(Box::new(BoundaryState {
                 state: call_state,
@@ -2378,6 +2386,50 @@ forever(1)
             let avg = start.elapsed() / RUNS as u32;
             println!("{kind:?}: {avg:?} per run over {RUNS} runs");
         }
+    }
+
+    /// The design must hold at 50,000 call depth with the limit raised
+    /// internally (the production default stays at
+    /// DEFAULT_MACHINE_CALL_DEPTH_LIMIT): depth is heap-bounded, so the limit
+    /// is policy, not a native-stack constraint.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn depth_50k_with_raised_limit() {
+        let code = r#"fn countdown(@n) {
+  return if n == 0 {
+    0
+  } else {
+    countdown(n - 1)
+  }
+}
+result = countdown(50000)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let exec_ctxt = ExecutorContext {
+            engine: std::sync::Arc::new(crate::engine::engine_manager::EngineManager::new_mock()),
+            engine_batch: crate::engine::EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: crate::execution::ExecutorSettings::default(),
+            context_type: crate::execution::ContextType::Mock,
+            execution_callbacks: Default::default(),
+            executor_kind: ExecutorKind::Machine,
+            machine_call_depth_limit: 60_000,
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+        let (env_ref, _) = exec_ctxt.run(&program, &mut exec_state).await.unwrap();
+        let value = exec_state
+            .stack()
+            .memory
+            .get_from_owned("result", env_ref, SourceRange::default(), 0)
+            .unwrap();
+        let KclValue::Number { value, .. } = value else {
+            panic!("expected a number, found {value:?}");
+        };
+        assert_eq!(value, 0.0);
+        assert!(
+            exec_state.machine_depth_high_water() >= 50_000,
+            "high water: {}",
+            exec_state.machine_depth_high_water()
+        );
     }
 
     /// The key requirement of the resumable-callback protocol: map calling a
