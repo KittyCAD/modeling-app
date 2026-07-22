@@ -1,7 +1,6 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
-  lowerRightMasks,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -14,9 +13,14 @@ function screenshotName(step: number, name: string, mode: Themes) {
   return `${String(step).padStart(2, '0')}-${name}-${mode}.png`
 }
 
+const screenshotMasks = (page: Page) => [
+  page.getByTestId(/network-toggle/),
+  page.getByTestId('user-sidebar-toggle').locator('.avatar'),
+]
+
 const screenshotOptions = (page: Page) => ({
   maxDiffPixelRatio: 0.001,
-  mask: lowerRightMasks(page),
+  mask: screenshotMasks(page),
 })
 
 async function waitForThemeApplied(page: Page, mode: Themes) {
@@ -27,18 +31,6 @@ async function waitForThemeApplied(page: Page, mode: Themes) {
     )
     .toBe(expectDark)
 }
-
-test.beforeEach(async ({ page }) => {
-  // Make the user avatar image always 404
-  // so we see the fallback menu icon for all snapshot tests
-  await page.route('https://lh3.googleusercontent.com/**', async (route) => {
-    await route.fulfill({
-      status: 404,
-      contentType: 'text/plain',
-      body: 'Not Found!',
-    })
-  })
-})
 
 test(
   'Create a sketch in a new project: light theme',

@@ -263,7 +263,8 @@ describe('ProjectCard', () => {
 
     const input = screen.getByTestId('project-rename-input')
     if (!(input instanceof HTMLInputElement)) {
-      throw new Error('Expected project rename input to be an input element')
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      return
     }
 
     await waitFor(() => expect(input).toHaveFocus())
