@@ -32,6 +32,7 @@ use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -1734,7 +1735,7 @@ async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclE
 /// An AST node for a plane with the given name.
 fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
     ast::Node::new(
-        ast::Expr::Name(Box::new(ast::Node::new(
+        ast::Expr::Name(BoxNode::new(ast::Node::new(
             ast::Name {
                 name: ast::Identifier::new(plane_name),
                 path: Vec::new(),
