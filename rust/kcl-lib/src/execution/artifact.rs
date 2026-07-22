@@ -1730,6 +1730,9 @@ fn edge_specifier_source_id(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     specifier: &kittycad_modeling_cmds::shared::EdgeSpecifier,
 ) -> Option<ArtifactId> {
+    // The engine is authoritative for resolving the edge used by the operation.
+    // Reconstruct its source here only so the artifact graph can retain lineage
+    // for selection and feature-tree actions when the command has no target UUID.
     let required_faces = specifier.side_faces.iter().chain(&specifier.end_faces);
     let mut matching_edges = artifacts.values().filter_map(|artifact| {
         let (id, common_surface_ids) = match artifact {
