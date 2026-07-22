@@ -278,6 +278,39 @@ impl FunctionSource {
         args: Args<Sugary>,
         callsite: SourceRange,
     ) -> Result<Option<KclValueControlFlow>, KclError> {
+        let (state, args) = self.call_setup(&fn_name, exec_state, args, callsite)?;
+        // Do not early return via ? or something until we've called
+        // call_finish (or call_abort_on_arg_binding_failure), so that the
+        // ambient flags are restored and the callee env is popped.
+        let result = match &self.body {
+            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
+            FunctionBody::Kcl(_) => {
+                if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
+                    return Err(Self::call_abort_on_arg_binding_failure(state, e, exec_state));
+                }
+
+                let block_result = ctx.exec_block(&self.ast.body, exec_state, BodyType::Block).await;
+                self.kcl_body_result(block_result, exec_state)
+            }
+        };
+        self.call_finish(state, result, exec_state)
+    }
+
+    /// The first half of a function call: warnings, argument type checking,
+    /// operation setup, pushing the callee environment, and stdlib
+    /// ambient-flag tracking. After this succeeds, the callee environment is
+    /// pushed and the ambient flags are set, so every path must reach
+    /// [`Self::call_finish`] (or [`Self::call_abort_on_arg_binding_failure`])
+    /// to balance them. The recursive executor keeps the returned [`CallState`]
+    /// across the body await; the machine executor parks it in a call-boundary
+    /// continuation.
+    pub(super) fn call_setup(
+        &self,
+        fn_name: &Option<String>,
+        exec_state: &mut ExecState,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<(CallState, Args), KclError> {
         // The KCL stdlib is allowed to use deprecated sketch1 functions inside.
         let warn_on_deprecated_usage = !exec_state.mod_local.inside_stdlib;
         if warn_on_deprecated_usage && self.deprecated {
@@ -451,36 +484,89 @@ impl FunctionSource {
             &mut exec_state.mod_local.stdlib_entry_source_range,
             stdlib_entry_source_range,
         );
-        // Do not early return via ? or something until we've
-        // - put this `prev_inside_stdlib` value back.
-        // - called the pop_env.
-        let result = match &self.body {
-            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
-            FunctionBody::Kcl(_) => {
-                if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
-                    exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
-                    exec_state.mut_stack().pop_env()?;
-                    return Err(e);
-                }
 
-                ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
-                    .await
-                    .map(|cf| {
-                        if let Some(cf) = cf
-                            && cf.is_some_return()
-                        {
-                            return Some(cf);
-                        }
-                        // Ignore the block's value and extract the return value
-                        // from memory.
-                        exec_state
-                            .stack()
-                            .get(memory::RETURN_NAME, self.ast.as_source_range())
-                            .ok()
-                            .map(KclValue::continue_)
-                    })
+        Ok((
+            CallState {
+                prev_inside_stdlib,
+                prev_stdlib_entry_source_range,
+                op,
+                should_track_operation,
+                is_calling_into_stdlib,
+                face_tag_names,
+            },
+            args,
+        ))
+    }
+
+    /// Compute a KCL function body's result while the callee environment is
+    /// still pushed: an `Exit` passes through untouched; otherwise the
+    /// function's result is the `__return` value recorded in the callee
+    /// environment, if any.
+    ///
+    /// NOTE: a `return` statement does NOT stop the body -- it records
+    /// `__return` and execution continues to the following statements (see
+    /// exec_block's ReturnStatement arm). The block's own trailing value is
+    /// deliberately ignored here; only `__return` counts.
+    pub(super) fn kcl_body_result(
+        &self,
+        block_result: Result<Option<KclValueControlFlow>, KclError>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        block_result.map(|cf| {
+            if let Some(cf) = cf
+                && cf.is_some_return()
+            {
+                return Some(cf);
             }
-        };
+            // Ignore the block's value and extract the return value
+            // from memory.
+            exec_state
+                .stack()
+                .get(memory::RETURN_NAME, self.ast.as_source_range())
+                .ok()
+                .map(KclValue::continue_)
+        })
+    }
+
+    /// The failure path when binding a KCL function's arguments fails, before
+    /// the body ran: restore `inside_stdlib` and pop the callee environment.
+    /// Deliberately asymmetric with [`Self::call_finish`] -- it does not
+    /// restore `stdlib_entry_source_range` and does not finalize the
+    /// operation -- preserving the recursive executor's historical behavior
+    /// exactly.
+    pub(super) fn call_abort_on_arg_binding_failure(
+        state: CallState,
+        e: KclError,
+        exec_state: &mut ExecState,
+    ) -> KclError {
+        exec_state.mod_local.inside_stdlib = state.prev_inside_stdlib;
+        match exec_state.mut_stack().pop_env() {
+            Ok(_) => e,
+            Err(pop_err) => pop_err,
+        }
+    }
+
+    /// The second half of a function call: restore the ambient stdlib flags,
+    /// pop the callee environment, finalize the operation, and then -- for
+    /// normal completions only -- apply tag updates and return-type coercion.
+    /// `Exit` control flow bypasses tags and coercion (it terminates the whole
+    /// evaluation rather than completing this function normally), and errors
+    /// skip them too; both still restore ambient state and finalize the
+    /// operation.
+    pub(super) fn call_finish(
+        &self,
+        state: CallState,
+        result: Result<Option<KclValueControlFlow>, KclError>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        let CallState {
+            prev_inside_stdlib,
+            prev_stdlib_entry_source_range,
+            op,
+            should_track_operation,
+            is_calling_into_stdlib,
+            face_tag_names,
+        } = state;
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
         exec_state.mut_stack().pop_env()?;
@@ -525,6 +611,20 @@ impl FunctionSource {
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
     }
+}
+
+/// State captured by [`FunctionSource::call_setup`] that
+/// [`FunctionSource::call_finish`] needs to complete the call: the ambient
+/// flags to restore, the deferred operation, and details of what was called.
+#[derive(Debug)]
+pub(super) struct CallState {
+    prev_inside_stdlib: bool,
+    prev_stdlib_entry_source_range: Option<SourceRange>,
+    /// Deferred stdlib-call operation, pushed by call_finish.
+    op: Option<Operation>,
+    should_track_operation: bool,
+    is_calling_into_stdlib: bool,
+    face_tag_names: Vec<String>,
 }
 
 impl FunctionBody {
