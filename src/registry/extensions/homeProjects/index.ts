@@ -48,10 +48,14 @@ import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
-const configuredProjectLibraryEntriesRefreshToken = signal(0)
+const configuredProjectLibraryEntriesInvalidation = signal(0)
 
-function refreshConfiguredProjectLibraryEntries() {
-  configuredProjectLibraryEntriesRefreshToken.value += 1
+function invalidateConfiguredProjectLibraryEntries() {
+  configuredProjectLibraryEntriesInvalidation.value += 1
+}
+
+function readConfiguredProjectLibraryEntriesInvalidation() {
+  return configuredProjectLibraryEntriesInvalidation.value
 }
 
 function localHomeProjectEntriesFromProjects(
@@ -374,7 +378,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
-                refreshConfiguredProjectLibraryEntries()
+                invalidateConfiguredProjectLibraryEntries()
 
                 return project
               },
@@ -401,7 +405,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
-                refreshConfiguredProjectLibraryEntries()
+                invalidateConfiguredProjectLibraryEntries()
               },
             },
             deleteProject: {
@@ -416,7 +420,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
-                refreshConfiguredProjectLibraryEntries()
+                invalidateConfiguredProjectLibraryEntries()
               },
             },
           },
@@ -450,8 +454,11 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
     disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
       const currentSettings = settings.value?.current.value
       const typeById = libraryTypes.value
-      const refreshCount = configuredProjectLibraryEntriesRefreshToken.value
-      const nextLoadId = ++loadId + refreshCount * 0
+      // Directory library operations mutate the filesystem without changing
+      // settings or library type registrations. Read this signal so known
+      // mutations can invalidate and rescan configured library entries.
+      readConfiguredProjectLibraryEntriesInvalidation()
+      const nextLoadId = ++loadId
 
       abortController?.abort()
       const loadController = new AbortController()
