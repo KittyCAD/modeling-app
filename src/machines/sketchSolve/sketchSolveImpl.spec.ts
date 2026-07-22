@@ -481,7 +481,8 @@ describe('updateSketchOutcome', () => {
     )
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'new code',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
     expect(updateCodeEditor.mock.invocationCallOrder[0]).toBeLessThan(
       syncSketchSolveOutcome.mock.invocationCallOrder[0]
@@ -523,7 +524,8 @@ describe('updateSketchOutcome', () => {
     expect(updateCodeEditor).not.toHaveBeenCalled()
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'executed editor snapshot',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
   })
 
@@ -566,7 +568,8 @@ describe('updateSketchOutcome', () => {
       expect(updateCodeEditor).toHaveBeenCalled()
       expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
         'new code',
-        sceneGraphDelta
+        sceneGraphDelta,
+        { refreshLintDiagnostics: true }
       )
     } finally {
       vi.useRealTimers()
@@ -617,7 +620,8 @@ describe('updateSketchOutcome', () => {
     )
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'last good preview',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
   })
 
@@ -655,6 +659,7 @@ describe('updateSketchOutcome', () => {
             sourceDelta: { text: 'new code' },
             sceneGraphDelta,
             suppressExecOutcomeIssues: true,
+            refreshLintDiagnostics: false,
           },
         },
       } as any)
@@ -670,6 +675,11 @@ describe('updateSketchOutcome', () => {
             severity: 'warning',
           }),
         ])
+      )
+      expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+        'new code',
+        sceneGraphDelta,
+        { refreshLintDiagnostics: false }
       )
     } finally {
       toastErrorSpy.mockRestore()

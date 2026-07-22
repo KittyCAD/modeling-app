@@ -645,7 +645,6 @@ export class ZDSProject {
 const PERSIST_CODE_KEY = 'persistCode'
 const RECOVERY_SNAPSHOT_VERSION = 1
 const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
-const SKETCH_SOLVE_LINT_DEBOUNCE_MS = 200
 
 const keymapCompartment = new Compartment()
 const executionCompartment = new Compartment()
@@ -923,9 +922,6 @@ export class KclManager extends File {
   private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
   private _sketchSolveDiagnostics = signal<Diagnostic[]>([])
-  private sketchSolveLintDebounceTimer:
-    | ReturnType<typeof setTimeout>
-    | undefined
   private _allDiagnostics = computed(() =>
     this.makeUniqueDiagnostics([
       ...this._diagnostics.value,
@@ -1354,11 +1350,17 @@ export class KclManager extends File {
     this.setDiagnosticsForCurrentErrors()
   }
 
-  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+  syncSketchSolveOutcome(
+    code: string,
+    sceneGraphDelta: SceneGraphDelta,
+    options: { refreshLintDiagnostics?: boolean } = {}
+  ): void {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
     this.diagnostics = []
-    this.scheduleSketchSolveLintDiagnostics(code, execState)
+    if (options.refreshLintDiagnostics !== false) {
+      void this.refreshSketchSolveLintDiagnostics(code, execState)
+    }
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1373,20 +1375,6 @@ export class KclManager extends File {
       })
     )
     void this.updateArtifactGraph(execState.artifactGraph)
-  }
-
-  private scheduleSketchSolveLintDiagnostics(
-    code: string,
-    execState: ExecState
-  ): void {
-    if (this.sketchSolveLintDebounceTimer !== undefined) {
-      clearTimeout(this.sketchSolveLintDebounceTimer)
-    }
-
-    this.sketchSolveLintDebounceTimer = setTimeout(() => {
-      this.sketchSolveLintDebounceTimer = undefined
-      void this.refreshSketchSolveLintDiagnostics(code, execState)
-    }, SKETCH_SOLVE_LINT_DEBOUNCE_MS)
   }
 
   private async refreshSketchSolveLintDiagnostics(

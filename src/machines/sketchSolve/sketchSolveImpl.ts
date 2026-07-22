@@ -203,6 +203,11 @@ export type UpdateSketchOutcomeEvent = {
      * attach a history entry to.
      */
     addToHistory?: boolean
+    /**
+     * Defaults to true. Drag previews set this false and let the final drag
+     * outcome refresh lint diagnostics using the committed source and metadata.
+     */
+    refreshLintDiagnostics?: boolean
     checkpointId?: number | null
   }
 }
@@ -1319,6 +1324,7 @@ const debouncedEditorUpdate = deferredCallback(
     sceneGraphDelta,
     shouldWriteToDisk,
     shouldAddToHistory,
+    refreshLintDiagnostics,
     spec,
   }: {
     text: string
@@ -1326,6 +1332,7 @@ const debouncedEditorUpdate = deferredCallback(
     sceneGraphDelta: SceneGraphDelta
     shouldWriteToDisk: boolean
     shouldAddToHistory: boolean
+    refreshLintDiagnostics: boolean
     spec: { effects: StateEffect<unknown>[] }
   }) => {
     kclManager.updateCodeEditor(
@@ -1337,7 +1344,9 @@ const debouncedEditorUpdate = deferredCallback(
       },
       spec
     )
-    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta)
+    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta, {
+      refreshLintDiagnostics,
+    })
   },
   200
 )
@@ -1393,6 +1402,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     shouldUpdateEditor && event.data.writeToDisk !== false
   const shouldAddToHistory =
     shouldUpdateEditor && (event.data.addToHistory ?? shouldWriteToDisk)
+  const refreshLintDiagnostics = event.data.refreshLintDiagnostics !== false
   const isCheckpointOnlyCommit =
     shouldAddToHistory &&
     event.data.checkpointId != null &&
@@ -1430,7 +1440,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
      */
     context.kclManager.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics }
     )
 
     return {
@@ -1456,6 +1467,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       sceneGraphDelta,
       shouldWriteToDisk,
       shouldAddToHistory,
+      refreshLintDiagnostics,
       spec: editorAdditionalSpec,
     })
   } else {
@@ -1471,7 +1483,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     )
     context.kclManager.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics }
     )
   }
 
