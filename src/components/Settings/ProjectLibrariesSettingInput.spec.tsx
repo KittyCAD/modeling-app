@@ -1,5 +1,6 @@
 import {
   ProjectLibrariesSettingInput,
+  projectLibraryTypeOptionsFromContributions,
   type ProjectLibraryTypeOption,
 } from '@src/components/Settings/ProjectLibrariesSettingInput'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
@@ -52,6 +53,23 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
 ]
 
 describe('ProjectLibrariesSettingInput', () => {
+  test('does not invent a directory library type when none are registered', () => {
+    const updateValue = vi.fn()
+
+    expect(projectLibraryTypeOptionsFromContributions(new Map())).toEqual([])
+
+    render(
+      <ProjectLibrariesSettingInput value={[]} updateValue={updateValue} />
+    )
+
+    const addButton = screen.getByTestId('project-library-add')
+    expect(addButton).toBeDisabled()
+
+    fireEvent.click(addButton)
+
+    expect(updateValue).not.toHaveBeenCalled()
+  })
+
   test('does not update project libraries when blurring unchanged fields', () => {
     const updateValue = vi.fn()
     render(

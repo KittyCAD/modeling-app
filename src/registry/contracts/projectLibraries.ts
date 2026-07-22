@@ -58,6 +58,13 @@ export interface ProjectLibraryTypeOperations {
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
 }
 
+export interface ProjectLibraryTypePathInput {
+  kind: 'directory'
+  icon?: string
+  dialogTitle?: string
+  buttonLabel?: string
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
@@ -67,6 +74,8 @@ export interface ProjectLibraryTypeContribution {
   defaultSetting?: ProjectLibrarySetting
   /** Template used when a user manually adds a new library of this type. */
   newLibrarySetting?: ProjectLibrarySetting
+  /** Optional UI behavior for editing the library path in settings. */
+  pathInput?: ProjectLibraryTypePathInput
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary

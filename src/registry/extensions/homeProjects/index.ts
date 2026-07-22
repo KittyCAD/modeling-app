@@ -343,6 +343,12 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             path: 'projects',
             type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           },
+          pathInput: {
+            kind: 'directory',
+            icon: 'folder',
+            dialogTitle: 'Choose a project library folder',
+            buttonLabel: 'Choose folder',
+          },
           readEntries: async ({ library, signal }) => {
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
