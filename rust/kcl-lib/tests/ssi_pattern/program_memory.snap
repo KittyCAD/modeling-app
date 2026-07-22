@@ -395,7 +395,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -470,8 +478,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -482,7 +490,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -557,8 +573,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -569,7 +585,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -644,8 +668,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -656,7 +680,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -731,8 +763,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -743,7 +775,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -818,8 +858,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -830,7 +870,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -905,8 +953,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -917,7 +965,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -992,8 +1048,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1004,7 +1060,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1079,8 +1143,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1091,7 +1155,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1166,8 +1238,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1178,7 +1250,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1253,8 +1333,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1265,7 +1345,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1340,8 +1428,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1352,7 +1440,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1427,8 +1523,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1439,7 +1535,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1514,8 +1618,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1526,7 +1630,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1601,8 +1713,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1613,7 +1725,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1688,8 +1808,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1700,7 +1820,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1775,8 +1903,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1787,7 +1915,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1862,8 +1998,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1874,7 +2010,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -1949,8 +2093,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -1961,7 +2105,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2036,8 +2188,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2048,7 +2200,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2123,8 +2283,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2135,7 +2295,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2210,8 +2378,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2222,7 +2390,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2297,8 +2473,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2309,7 +2485,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2384,8 +2568,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2396,7 +2580,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2471,8 +2663,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2483,7 +2675,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2558,8 +2758,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2570,7 +2770,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2645,8 +2853,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2657,7 +2865,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2732,8 +2948,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2744,7 +2960,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2819,8 +3043,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2831,7 +3055,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2906,8 +3138,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }
@@ -2918,7 +3150,15 @@ description: Variables in memory after executing ssi_pattern.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -2993,8 +3233,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "originalId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "mm",
           "sectional": false
         }

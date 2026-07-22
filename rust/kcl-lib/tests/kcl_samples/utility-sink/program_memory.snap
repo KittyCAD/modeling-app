@@ -3375,7 +3375,22 @@ description: Variables in memory after executing utility-sink.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 25791,
+                "end": 25804,
+                "moduleId": 0,
+                "start": 25791,
+                "type": "TagDeclarator",
+                "value": "sectionCircle"
+              },
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -3470,8 +3485,8 @@ description: Variables in memory after executing utility-sink.kcl
             "originSketchId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -3482,7 +3497,22 @@ description: Variables in memory after executing utility-sink.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 25791,
+                "end": 25804,
+                "moduleId": 0,
+                "start": 25791,
+                "type": "TagDeclarator",
+                "value": "sectionCircle"
+              },
+              "type": "extrudeArc"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -3577,8 +3607,8 @@ description: Variables in memory after executing utility-sink.kcl
             "originSketchId": "[uuid]",
             "units": "mm"
           },
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": "mm",
           "sectional": false
         }
@@ -5739,7 +5769,22 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 25791,
+            "end": 25804,
+            "moduleId": 0,
+            "start": 25791,
+            "type": "TagDeclarator",
+            "value": "sectionCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -5834,8 +5879,8 @@ description: Variables in memory after executing utility-sink.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -15592,7 +15637,64 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 12196,
+            "end": 12204,
+            "moduleId": 0,
+            "start": 12196,
+            "type": "TagDeclarator",
+            "value": "leftEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 12275,
+            "end": 12282,
+            "moduleId": 0,
+            "start": 12275,
+            "type": "TagDeclarator",
+            "value": "topEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 12354,
+            "end": 12363,
+            "moduleId": 0,
+            "start": 12354,
+            "type": "TagDeclarator",
+            "value": "rightEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 12434,
+            "end": 12444,
+            "moduleId": 0,
+            "start": 12434,
+            "type": "TagDeclarator",
+            "value": "bottomEdge"
+          },
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -15760,7 +15862,7 @@ description: Variables in memory after executing utility-sink.kcl
         "units": "mm"
       },
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
@@ -15771,7 +15873,64 @@ description: Variables in memory after executing utility-sink.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 10550,
+            "end": 10558,
+            "moduleId": 0,
+            "start": 10550,
+            "type": "TagDeclarator",
+            "value": "leftEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 10631,
+            "end": 10638,
+            "moduleId": 0,
+            "start": 10631,
+            "type": "TagDeclarator",
+            "value": "topEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 10712,
+            "end": 10721,
+            "moduleId": 0,
+            "start": 10712,
+            "type": "TagDeclarator",
+            "value": "rightEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 10794,
+            "end": 10804,
+            "moduleId": 0,
+            "start": 10794,
+            "type": "TagDeclarator",
+            "value": "bottomEdge"
+          },
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -15938,7 +16097,7 @@ description: Variables in memory after executing utility-sink.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

@@ -2086,7 +2086,64 @@ description: Variables in memory after executing lego.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1784,
+            "end": 1789,
+            "moduleId": 0,
+            "start": 1784,
+            "type": "TagDeclarator",
+            "value": "line1"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1866,
+            "end": 1871,
+            "moduleId": 0,
+            "start": 1866,
+            "type": "TagDeclarator",
+            "value": "line2"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1985,
+            "end": 1990,
+            "moduleId": 0,
+            "start": 1985,
+            "type": "TagDeclarator",
+            "value": "line3"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2104,
+            "end": 2109,
+            "moduleId": 0,
+            "start": 2104,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2254,7 +2311,7 @@ description: Variables in memory after executing lego.kcl
         "units": "in"
       },
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": "in",
       "sectional": false
     }

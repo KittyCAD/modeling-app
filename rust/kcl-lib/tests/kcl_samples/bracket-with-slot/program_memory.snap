@@ -2034,7 +2034,22 @@ description: Variables in memory after executing bracket-with-slot.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 5004,
+            "end": 5013,
+            "moduleId": 0,
+            "start": 5004,
+            "type": "TagDeclarator",
+            "value": "topCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2129,8 +2144,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

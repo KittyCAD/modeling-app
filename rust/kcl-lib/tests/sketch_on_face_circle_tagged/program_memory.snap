@@ -184,7 +184,22 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 359,
+            "end": 368,
+            "moduleId": 0,
+            "start": 359,
+            "type": "TagDeclarator",
+            "value": "myCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

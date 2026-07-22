@@ -29,8 +29,6 @@ flowchart LR
   subgraph path39 [Path]
     39["Path<br>[706, 765, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    40["Segment<br>[706, 765, 0]"]
-      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     41[Solid2d]
   end
   subgraph path43 [Path]
@@ -78,15 +76,23 @@ flowchart LR
   37["SweepEdge Adjacent"]
   38["Plane<br>[651, 681, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
+  40["SweepEdge Opposite"]
   42["Plane<br>[793, 822, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   46["Sweep Loft<br>[927, 975, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  47["CompositeSolid Subtract<br>[991, 1039, 0]<br>Consumed: false"]
+  47[Wall]
+    %% face_code_ref=Missing NodePath
+  48["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  49["Cap End"]
+    %% face_code_ref=Missing NodePath
+  50["SweepEdge Adjacent"]
+  51["CompositeSolid Subtract<br>[991, 1039, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  48["StartSketchOnPlane<br>[637, 682, 0]"]
+  52["StartSketchOnPlane<br>[637, 682, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  49["StartSketchOnPlane<br>[779, 823, 0]"]
+  53["StartSketchOnPlane<br>[779, 823, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 11
@@ -100,7 +106,7 @@ flowchart LR
   2 --- 10
   11 --- 2
   2 ---- 14
-  2 --- 47
+  2 --- 51
   3 --- 15
   3 x--> 22
   3 --- 24
@@ -183,14 +189,26 @@ flowchart LR
   34 <--x 23
   36 <--x 23
   38 --- 39
-  38 <--x 48
-  39 --- 40
+  38 <--x 52
+  39 x--> 40
   39 --- 41
   39 x---> 46
+  44 --- 40
+  46 --- 40
+  40 --- 47
+  40 x--> 49
   42 --- 43
-  42 <--x 49
+  42 <--x 53
   43 --- 44
   43 --- 45
   43 ---- 46
-  46 <--x 47
+  44 --- 47
+  44 x--> 48
+  44 --- 50
+  46 --- 47
+  46 --- 48
+  46 --- 49
+  46 --- 50
+  46 <--x 51
+  47 --- 50
 ```

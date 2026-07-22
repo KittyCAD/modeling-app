@@ -16129,7 +16129,22 @@ description: Variables in memory after executing cold-plate.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 17960,
+            "end": 17971,
+            "moduleId": 0,
+            "start": 17960,
+            "type": "TagDeclarator",
+            "value": "outerCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -16228,8 +16243,8 @@ description: Variables in memory after executing cold-plate.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }
@@ -16240,7 +16255,22 @@ description: Variables in memory after executing cold-plate.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 17960,
+            "end": 17971,
+            "moduleId": 0,
+            "start": 17960,
+            "type": "TagDeclarator",
+            "value": "outerCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -16339,8 +16369,8 @@ description: Variables in memory after executing cold-plate.kcl
         "originSketchId": "[uuid]",
         "units": "in"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "in",
       "sectional": false
     }

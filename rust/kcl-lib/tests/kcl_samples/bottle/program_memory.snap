@@ -1637,127 +1637,15 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3457,
-            "end": 3465,
+            "commentStart": 2805,
+            "end": 2815,
             "moduleId": 0,
-            "start": 3457,
+            "start": 2805,
             "type": "TagDeclarator",
-            "value": "neckTop"
-          },
-          "type": "extrudePlane"
-        }
-      ],
-      "faces": {
-        "neckTop": {
-          "type": "TagIdentifier",
-          "value": "neckTop"
-        }
-      },
-      "sketch": {
-        "creatorType": "sketch",
-        "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "ccw": true,
-            "center": [
-              0.0,
-              0.0
-            ],
-            "from": [
-              22.5,
-              0.0
-            ],
-            "radius": 22.5,
-            "tag": {
-              "commentStart": 2805,
-              "end": 2815,
-              "moduleId": 0,
-              "start": 2805,
-              "type": "TagDeclarator",
-              "value": "neckCircle"
-            },
-            "to": [
-              22.5,
-              0.0
-            ],
-            "type": "Circle",
-            "units": "mm"
-          }
-        ],
-        "on": {
-          "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 49,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
-        },
-        "start": {
-          "from": [
-            22.5,
-            0.0
-          ],
-          "to": [
-            22.5,
-            0.0
-          ],
-          "units": "mm",
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          }
-        },
-        "tags": {
-          "neckCircle": {
-            "type": "TagIdentifier",
             "value": "neckCircle"
           },
-          "neckTop": {
-            "type": "TagIdentifier",
-            "value": "neckTop"
-          }
+          "type": "extrudeArc"
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
-      },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
-      "units": "mm",
-      "sectional": false
-    }
-  },
-  "bottleShellSolid": {
-    "type": "Solid",
-    "value": {
-      "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "value": [
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -1871,7 +1759,147 @@ description: Variables in memory after executing bottle.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": "[uuid]",
+      "units": "mm",
+      "sectional": false
+    }
+  },
+  "bottleShellSolid": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2805,
+            "end": 2815,
+            "moduleId": 0,
+            "start": 2805,
+            "type": "TagDeclarator",
+            "value": "neckCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3457,
+            "end": 3465,
+            "moduleId": 0,
+            "start": 3457,
+            "type": "TagDeclarator",
+            "value": "neckTop"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "faces": {
+        "neckTop": {
+          "type": "TagIdentifier",
+          "value": "neckTop"
+        }
+      },
+      "sketch": {
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              22.5,
+              0.0
+            ],
+            "radius": 22.5,
+            "tag": {
+              "commentStart": 2805,
+              "end": 2815,
+              "moduleId": 0,
+              "start": 2805,
+              "type": "TagDeclarator",
+              "value": "neckCircle"
+            },
+            "to": [
+              22.5,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "type": "face",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "objectId": 49,
+          "value": "end",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": null
+          },
+          "parentSolid": {
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
+          },
+          "units": "mm"
+        },
+        "start": {
+          "from": [
+            22.5,
+            0.0
+          ],
+          "to": [
+            22.5,
+            0.0
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "neckCircle": {
+            "type": "TagIdentifier",
+            "value": "neckCircle"
+          },
+          "neckTop": {
+            "type": "TagIdentifier",
+            "value": "neckTop"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "originSketchId": "[uuid]",
+        "units": "mm"
+      },
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -1898,6 +1926,20 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2805,
+            "end": 2815,
+            "moduleId": 0,
+            "start": 2805,
+            "type": "TagDeclarator",
+            "value": "neckCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 3457,
             "end": 3465,
             "moduleId": 0,
@@ -2006,7 +2048,7 @@ description: Variables in memory after executing bottle.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false

@@ -8745,7 +8745,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4870,
+            "end": 4875,
+            "moduleId": 0,
+            "start": 4870,
+            "type": "TagDeclarator",
+            "value": "edge1"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4938,
+            "end": 4943,
+            "moduleId": 0,
+            "start": 4938,
+            "type": "TagDeclarator",
+            "value": "edge2"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 5004,
+            "end": 5009,
+            "moduleId": 0,
+            "start": 5004,
+            "type": "TagDeclarator",
+            "value": "edge3"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 5070,
+            "end": 5075,
+            "moduleId": 0,
+            "start": 5070,
+            "type": "TagDeclarator",
+            "value": "edge4"
+          },
+          "type": "extrudePlane"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -8913,7 +8970,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "units": "m"
       },
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": "m",
       "sectional": false
     }
@@ -8927,7 +8984,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9095,7 +9209,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -9106,7 +9220,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9274,7 +9445,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -9285,7 +9456,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9453,7 +9681,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -9464,7 +9692,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9632,7 +9917,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -9643,7 +9928,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9811,7 +10153,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -9822,7 +10164,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -9990,7 +10389,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10001,7 +10400,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -10169,7 +10625,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10180,7 +10636,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -10348,7 +10861,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10359,7 +10872,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -10527,7 +11097,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10538,7 +11108,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -10706,7 +11333,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10717,7 +11344,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -10885,7 +11569,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -10896,7 +11580,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11064,7 +11805,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -11075,7 +11816,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11243,7 +12041,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -11254,7 +12052,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11422,7 +12277,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -11433,7 +12288,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11601,7 +12513,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -11612,7 +12524,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11780,7 +12749,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }
@@ -11791,7 +12760,64 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4870,
+                "end": 4875,
+                "moduleId": 0,
+                "start": 4870,
+                "type": "TagDeclarator",
+                "value": "edge1"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 4938,
+                "end": 4943,
+                "moduleId": 0,
+                "start": 4938,
+                "type": "TagDeclarator",
+                "value": "edge2"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5004,
+                "end": 5009,
+                "moduleId": 0,
+                "start": 5004,
+                "type": "TagDeclarator",
+                "value": "edge3"
+              },
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": {
+                "commentStart": 5070,
+                "end": 5075,
+                "moduleId": 0,
+                "start": 5070,
+                "type": "TagDeclarator",
+                "value": "edge4"
+              },
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -11959,7 +12985,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "units": "m"
           },
           "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "endCapId": null,
           "units": "m",
           "sectional": false
         }

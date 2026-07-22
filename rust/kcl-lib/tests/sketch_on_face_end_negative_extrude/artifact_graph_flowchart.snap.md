@@ -52,15 +52,27 @@ flowchart LR
   22["SweepEdge Adjacent"]
   29["Sweep Extrusion<br>[438, 458, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
+  30[Wall]
+    %% face_code_ref=Missing NodePath
+  31[Wall]
+    %% face_code_ref=Missing NodePath
+  32[Wall]
+    %% face_code_ref=Missing NodePath
+  33[Wall]
+    %% face_code_ref=Missing NodePath
+  34["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  35["Cap End"]
+    %% face_code_ref=Missing NodePath
   36["SweepEdge Opposite"]
   37["SweepEdge Adjacent"]
-  38["StartSketchOnFace<br>[275, 311, 0]"]
+  38["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
+  40["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
+  42["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
+  44["StartSketchOnFace<br>[275, 311, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -73,26 +85,18 @@ flowchart LR
   3 x--> 13
   3 --- 21
   3 --- 22
-  3 --- 36
-  3 --- 37
   4 --- 11
   4 x--> 13
   4 --- 19
   4 --- 20
-  4 --- 34
-  4 --- 35
   5 --- 10
   5 x--> 13
   5 --- 17
   5 --- 18
-  5 --- 32
-  5 --- 33
   6 --- 9
   6 x--> 13
   6 --- 15
   6 --- 16
-  6 --- 30
-  6 --- 31
   8 --- 9
   8 --- 10
   8 --- 11
@@ -107,52 +111,74 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
-  8 --- 30
-  8 --- 31
-  8 --- 32
-  8 --- 33
-  8 --- 34
-  8 --- 35
-  8 --- 36
-  8 --- 37
   9 --- 15
   9 --- 16
   18 <--x 9
-  9 --- 30
-  9 --- 31
-  33 <--x 9
   10 --- 17
   10 --- 18
   20 <--x 10
-  10 --- 32
-  10 --- 33
-  35 <--x 10
   11 --- 19
   11 --- 20
   22 <--x 11
-  11 --- 34
-  11 --- 35
-  37 <--x 11
   16 <--x 12
   12 --- 21
   12 --- 22
-  31 <--x 12
-  12 --- 36
-  12 --- 37
   15 <--x 14
   17 <--x 14
   19 <--x 14
   21 <--x 14
   14 --- 23
-  30 <--x 14
-  32 <--x 14
-  34 <--x 14
-  36 <--x 14
-  14 <--x 38
+  14 <--x 44
   23 --- 24
   23 --- 25
   23 --- 26
   23 --- 27
   23 --- 28
   23 ---- 29
+  24 --- 33
+  24 x--> 35
+  24 --- 42
+  24 --- 43
+  25 --- 32
+  25 x--> 35
+  25 --- 40
+  25 --- 41
+  26 --- 31
+  26 x--> 35
+  26 --- 38
+  26 --- 39
+  27 --- 30
+  27 x--> 35
+  27 --- 36
+  27 --- 37
+  29 --- 30
+  29 --- 31
+  29 --- 32
+  29 --- 33
+  29 --- 34
+  29 --- 35
+  29 --- 36
+  29 --- 37
+  29 --- 38
+  29 --- 39
+  29 --- 40
+  29 --- 41
+  29 --- 42
+  29 --- 43
+  30 --- 36
+  30 --- 37
+  39 <--x 30
+  31 --- 38
+  31 --- 39
+  41 <--x 31
+  32 --- 40
+  32 --- 41
+  43 <--x 32
+  37 <--x 33
+  33 --- 42
+  33 --- 43
+  36 <--x 34
+  38 <--x 34
+  40 <--x 34
+  42 <--x 34
 ```

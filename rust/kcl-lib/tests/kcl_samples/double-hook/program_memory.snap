@@ -100,7 +100,22 @@ description: Variables in memory after executing double-hook.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 3855,
+            "end": 3868,
+            "moduleId": 0,
+            "start": 3855,
+            "type": "TagDeclarator",
+            "value": "sectionCircle"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -195,8 +210,8 @@ description: Variables in memory after executing double-hook.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
