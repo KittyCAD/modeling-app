@@ -10,11 +10,11 @@ import type {
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
 } from '@src/lang/constants'
-import type { ToolTip } from '@src/lang/langHelpers'
 import type {
   ConstrainInfoType,
   LineInputsType,
 } from '@src/lang/std/sketchcombos'
+import type { ToolTip } from '@src/lang/toolTips'
 import type { Coords2d } from '@src/lang/util'
 import type {
   BinaryPart,

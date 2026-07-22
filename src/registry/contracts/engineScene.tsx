@@ -1,4 +1,4 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -19,6 +19,8 @@ export const engineSceneViewExtensionZones = [
 
 export type EngineSceneViewExtensionZone =
   (typeof engineSceneViewExtensionZones)[number]
+
+export const engineSceneRuntimeExtensionsSlot = new Slot()
 
 export type EngineSceneExtensionContext = {
   modelingState: StateFrom<typeof modelingMachine>

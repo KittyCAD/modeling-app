@@ -283,7 +283,7 @@ describe('Layout utils', () => {
       // Verify a few nested properties to know that we didn't error out while validating it
       expect(parsedDefaultLayout).toHaveProperty('type', 'split')
       expect(parsedDefaultLayout).toHaveProperty(
-        'children.0.children.0.type',
+        'children.0.children.0.children.0.type',
         'simple'
       )
       expect(parsedDefaultLayout).toHaveProperty('children.2.type', 'panes')

@@ -2206,6 +2206,36 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  gem: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gem"
+    >
+      <path
+        d="M6.75 4.75H13.25L15.75 8.25L10 15.5L4.25 8.25L6.75 4.75Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 4.75L7.5 8.25L10 15.5L12.5 8.25L11 4.75"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M4.25 8.25H15.75"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
   infinity: (
     <svg
       viewBox="0 0 13 6"

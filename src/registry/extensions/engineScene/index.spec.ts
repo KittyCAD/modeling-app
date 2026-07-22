@@ -22,11 +22,15 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -82,7 +86,7 @@ function createEngineSceneViewExtensionContext(
 }
 
 describe('engineScene extension', () => {
-  it('bundles the execution indicator plugin off by default', () => {
+  it('bundles the execution indicator without a plugin or setting', () => {
     const registry = new Registry()
     registry.configure([engineSceneExtension])
 
@@ -90,24 +94,13 @@ describe('engineScene extension', () => {
       .get(pluginsValueSpec)
       .find((plugin) => plugin.id === 'execution-indicator')
 
-    expect(executionIndicatorPlugin).toBeDefined()
-    if (!executionIndicatorPlugin) {
-      throw new Error('Expected execution indicator plugin')
-    }
+    expect(executionIndicatorPlugin).toBeUndefined()
     expect(
-      registry
-        .get(settingsValueSpec)
-        .modeling.executionIndicator.createSetting().default
-    ).toBe(false)
-    expect(
-      registry.get(settingsValueSpec).plugins?.['execution-indicator']
+      registry.get(settingsValueSpec).modeling?.executionIndicator
     ).toBeUndefined()
-    expect(registry.get(executionIndicatorPlugin.service).active.value).toBe(
-      false
-    )
   })
 
-  it('contributes ordered engine scene local status bar items', () => {
+  it('contributes ordered engine scene status bar items', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -134,6 +127,12 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
     ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+    expect(registry.get(statusBarGlobalItemsValueSpec)).toMatchObject([
+      {
+        id: 'capture-screenshot',
+        scopes: ['file'],
+      },
+    ])
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -167,6 +166,27 @@ describe('engineScene extension', () => {
     expect(measurementToolService.isOpen.value).toBe(true)
 
     measurementToolService.close()
+  })
+
+  it('contributes the capture screenshot command', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.captureScreenshot
+      )
+
+    expect(command).toMatchObject({
+      displayName: 'Capture screenshot',
+      description: 'Save the current modeling viewport as a PNG image.',
+      icon: 'camera',
+      needsReview: false,
+      onSubmit: saveViewportScreenshot,
+    })
+    expect(command?.hideFromSearch).not.toBe(true)
   })
 
   it('hides the experimental features item when file settings deny it', () => {

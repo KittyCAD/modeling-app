@@ -45,6 +45,7 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -146,8 +147,21 @@ export function profileSelectionRequiresBodyType({
   const sketches = argumentsToSubmit.sketches
   if (!isSelections(sketches)) return false
 
-  return sketches.graphSelections.some(
-    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+  const hasOpenGraphSelection = sketches.graphSelections.some(
+    (selection) =>
+      !selection.artifact ||
+      selection.artifact.type === 'segment' ||
+      selection.artifact.type === 'sweepEdge' ||
+      selection.artifact.type === 'primitiveEdge'
+  )
+
+  return (
+    hasOpenGraphSelection ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    )
   )
 }
 
@@ -159,6 +173,32 @@ export function extrudeSelectionRequiresBodyType(context: {
   }
 
   return profileSelectionRequiresBodyType(context)
+}
+
+export function extrudeSelectionRequiresMethod({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+    return false
+  }
+
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) return false
+
+  return (
+    sketches.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'sweepEdge' ||
+        selection.artifact?.type === 'primitiveEdge'
+    ) ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    )
+  )
 }
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
@@ -621,6 +661,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: [
               'solid2d',
               'segment',
+              'sweepEdge',
+              'primitiveEdge',
+              'enginePrimitiveEdge',
               'cap',
               'wall',
               'pathRegion',
@@ -693,12 +736,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
+          direction: {
+            inputType: 'selection',
+            selectionTypes: [
+              'segment',
+              'sweepEdge',
+              'primitiveEdge',
+              'enginePrimitiveEdge',
+            ],
+            multiple: false,
+            clearSelectionFirst: true,
+          },
           method: {
             inputType: 'options',
             dialog: {
               group: 'advanced',
               controlStyle: 'segmented',
             },
+            required: extrudeSelectionRequiresMethod,
             options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
               name: capitaliseFC(value.toLowerCase()),
               value,
@@ -850,11 +905,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'X Axis', isCurrent: true, value: 'X' },
               { name: 'Y Axis', isCurrent: false, value: 'Y' },
             ],
-            hidden: (context) =>
-              isEditingNode(context) ||
-              !['Axis'].includes(
-                context.argumentsToSubmit.axisOrEdge as string
-              ),
           },
           edge: {
             required: (context) =>
@@ -2300,6 +2350,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: [
               'cap',
               'wall',
+              'edgeCut',
               'primitiveFace',
               'enginePrimitiveFace',
             ],

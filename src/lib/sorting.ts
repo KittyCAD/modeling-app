@@ -1,8 +1,15 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 const DESC = ':desc'
+
+type SortableProject = {
+  name?: string
+  title?: string
+  modified?: number | null
+  metadata?: {
+    modified?: number | null
+  } | null
+}
 
 export function getSortIcon(
   currentSort: string,
@@ -17,27 +24,39 @@ export function getSortIcon(
 }
 
 export function getNextSearchParams(currentSort: string, newSort: string) {
-  if (currentSort === null || !currentSort)
+  if (currentSort === null || !currentSort) {
     return { sort_by: newSort + (newSort !== 'modified' ? DESC : '') }
-  if (currentSort.includes(newSort) && !currentSort.includes(DESC))
+  }
+  if (currentSort.includes(newSort) && !currentSort.includes(DESC)) {
     return { sort_by: '' }
+  }
   return {
     sort_by: newSort + (currentSort.includes(DESC) ? '' : DESC),
   }
 }
 
-export function getSortFunction(sortBy: string) {
-  const sortByName = (a: Project, b: Project) => {
-    const aName = getProjectDisplayName(a)
-    const bName = getProjectDisplayName(b)
+function getSortableProjectName(project: SortableProject) {
+  return project.title?.trim() || project.name || 'project'
+}
+
+function getSortableProjectModified(project: SortableProject) {
+  return (
+    project.modified ?? project.metadata?.modified ?? Number.NEGATIVE_INFINITY
+  )
+}
+
+export function getSortFunction<T extends SortableProject>(sortBy: string) {
+  const sortByName = (a: T, b: T) => {
+    const aName = getSortableProjectName(a)
+    const bName = getSortableProjectName(b)
     return sortBy.includes('desc')
       ? aName.localeCompare(bName)
       : bName.localeCompare(aName)
   }
 
-  const sortByModified = (a: Project, b: Project) => {
-    const aModified = a.metadata?.modified ?? Number.NEGATIVE_INFINITY
-    const bModified = b.metadata?.modified ?? Number.NEGATIVE_INFINITY
+  const sortByModified = (a: T, b: T) => {
+    const aModified = getSortableProjectModified(a)
+    const bModified = getSortableProjectModified(b)
     const modifiedComparison =
       !sortBy || sortBy.includes('desc')
         ? bModified - aModified
@@ -46,7 +65,7 @@ export function getSortFunction(sortBy: string) {
       return modifiedComparison
     }
 
-    return getProjectDisplayName(a).localeCompare(getProjectDisplayName(b))
+    return getSortableProjectName(a).localeCompare(getSortableProjectName(b))
   }
 
   if (sortBy?.includes('name')) {

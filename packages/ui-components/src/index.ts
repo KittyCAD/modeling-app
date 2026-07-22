@@ -37,6 +37,8 @@ export {
   defaultMarkdownEditorFeatures,
   defaultNormalizeMarkdownLinkHref,
   MarkdownEditor,
+  type MarkdownEditorActionName,
+  type MarkdownEditorActions,
   type MarkdownEditorFeature,
   type MarkdownEditorNormalizeLinkHref,
   type MarkdownEditorProps,
@@ -49,6 +51,14 @@ export type {
 export { SelectionList } from './components/SelectionList/SelectionList'
 export type { SubmitButtonProps } from './components/SubmitButton/SubmitButton'
 export { SubmitButton } from './components/SubmitButton/SubmitButton'
+export {
+  ProjectCard,
+  defaultProjectCardClassNames,
+  type ProjectCardClassNameSlot,
+  type ProjectCardClassNames,
+  type ProjectCardOpenLinkRenderProps,
+  type ProjectCardProps,
+} from './components/ProjectCard'
 export {
   BillingError,
   EBillingError,

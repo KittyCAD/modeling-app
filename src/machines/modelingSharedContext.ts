@@ -37,6 +37,7 @@ export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
     artifactGraph: { map: {}, itemCount: 0 },
     filenames: {},
     defaultPlanes: null,
+    refactorMetadata: [],
   },
 })
 

@@ -425,14 +425,21 @@ test(
 
     page.on('console', console.log)
 
+    async function projectCardForTitle(projectTitle: string) {
+      const projectTitleElement = page.getByText(projectTitle)
+      await projectTitleElement.hover()
+      await projectTitleElement.focus()
+      return projectTitleElement.locator('xpath=ancestor::li[1]')
+    }
+
+    async function openProjectRenameForm(projectTitle: string) {
+      const projectCard = await projectCardForTitle(projectTitle)
+      await expect(projectCard.getByLabel('sketch')).toBeVisible()
+      await projectCard.getByLabel('sketch').click()
+    }
+
     await test.step('rename a project clicking buttons checking left and right arrow does not impact the text', async () => {
-      const routerTemplate = page.getByText('router-template-slate')
-
-      await routerTemplate.hover()
-      await routerTemplate.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('router-template-slate')
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -462,13 +469,7 @@ test(
     })
 
     await test.step('update a project by hitting enter', async () => {
-      const project = page.getByText('updated project name')
-
-      await project.hover()
-      await project.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('updated project name')
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -490,13 +491,7 @@ test(
     })
 
     await test.step('Cancel and edit by clicking the x button', async () => {
-      const project = page.getByText('updated name again')
-
-      await project.hover()
-      await project.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('updated name again')
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -514,13 +509,7 @@ test(
     })
 
     await test.step('Cancel and edit by pressing esc', async () => {
-      const project = page.getByText('updated name again')
-
-      await project.hover()
-      await project.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('updated name again')
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -538,13 +527,9 @@ test(
     })
 
     await test.step('delete a project by clicking the trash button', async () => {
-      const project = page.getByText('updated name again')
-
-      await project.hover()
-      await project.focus()
-
-      await expect(page.getByLabel('trash').last()).toBeVisible()
-      await page.getByLabel('trash').last().click()
+      const projectCard = await projectCardForTitle('updated name again')
+      await expect(projectCard.getByLabel('trash')).toBeVisible()
+      await projectCard.getByLabel('trash').click()
 
       await expect(page.getByText('This will permanently delete')).toBeVisible()
 
@@ -557,13 +542,7 @@ test(
     })
 
     await test.step('rename a project to an empty string should make the field complain', async () => {
-      const routerTemplate = page.getByText('bracket')
-
-      await routerTemplate.hover()
-      await routerTemplate.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('bracket')
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -586,13 +565,7 @@ test(
     })
 
     await test.step(`rename a project to a duplicate name should error toast`, async () => {
-      const routerTemplate = page.getByText('bracket')
-
-      await routerTemplate.hover()
-      await routerTemplate.focus()
-
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await openProjectRenameForm('bracket')
 
       const inputField = page.getByTestId('project-rename-input')
       await expect(inputField).toBeVisible()
@@ -1394,7 +1367,7 @@ test(
 
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
       originalProjectDirName = await page
-        .locator('section#projectDirectory input')
+        .getByTestId('project-directory-input')
         .inputValue()
 
       const handleFile = tronApp.electron.evaluate(
@@ -1408,7 +1381,7 @@ test(
       await handleFile
 
       await expect
-        .poll(() => page.locator('section#projectDirectory input').inputValue())
+        .poll(() => page.getByTestId('project-directory-input').inputValue())
         .toContain(newProjectDirName)
 
       await page.getByTestId('settings-close-button').click()
@@ -1442,7 +1415,7 @@ test(
       await handleFile
 
       await homePage.projectsLoaded()
-      await expect(page.locator('section#projectDirectory input')).toHaveValue(
+      await expect(page.getByTestId('project-directory-input')).toHaveValue(
         originalProjectDirName
       )
 

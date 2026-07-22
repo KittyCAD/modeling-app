@@ -1,21 +1,22 @@
 import { Combobox } from '@headlessui/react'
+import type { Feature } from '@kittycad/lib'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
 import Fuse from 'fuse.js'
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
-import { isDesktop } from '@src/lib/isDesktop'
 import { settingsSearchFocusRequest } from '@src/lib/searchFocusRequests'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
   formatSettingsLabel,
-  hiddenOnPlatform,
+  shouldHideSetting,
 } from '@src/lib/settings/settingsUtils'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   KEYMAP_SCHEMA_VERSION,
   type KeymapScope,
@@ -29,6 +30,7 @@ type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
 interface SettingsSearchBarProps {
   keybinding?: string
+  hasOpenProject: boolean
 }
 
 export type SettingsSearchItem = {
@@ -39,9 +41,12 @@ export type SettingsSearchItem = {
   level: ExtendedSettingsLevel
 }
 
-export function SettingsSearchBar({ keybinding }: SettingsSearchBarProps) {
+export function SettingsSearchBar({
+  keybinding,
+  hasOpenProject,
+}: SettingsSearchBarProps) {
   useSignals()
-  const { settings, registry } = useApp()
+  const { settings, registry, userFeatures } = useApp()
   const keymap = registry.optional(keymapService)
   const contributedKeymap = registry.signal(keymapValueSpec).value
   const persistedKeymap = keymap?.persistedKeymap.value ?? {
@@ -66,16 +71,24 @@ export function SettingsSearchBar({ keybinding }: SettingsSearchBarProps) {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const settingsValues = settings.useSettings()
+  const userFeaturesContext = userFeatures.useContext()
+  const hasFeature = useCallback(
+    (feature: Feature) =>
+      userFeaturesContextHas(userFeaturesContext, feature, false),
+    [userFeaturesContext]
+  )
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
       ...Object.entries(settingsValues).flatMap(
         ([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {
             const s = setting
-            return (['project', 'user'] satisfies SettingsLevel[])
-              .filter(
-                (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
-              )
+            return (
+              hasOpenProject
+                ? (['project', 'user'] satisfies SettingsLevel[])
+                : (['user'] satisfies SettingsLevel[])
+            )
+              .filter((l) => !shouldHideSetting(s, l, hasFeature))
               .map((l) => ({
                 category: formatSettingsLabel(category),
                 name: settingName,
@@ -99,7 +112,7 @@ export function SettingsSearchBar({ keybinding }: SettingsSearchBarProps) {
           }) satisfies SettingsSearchItem
       ),
     ],
-    [settingsValues, keybindingRows, keymapScopes]
+    [settingsValues, keybindingRows, keymapScopes, hasOpenProject, hasFeature]
   )
   const fuse = useMemo(
     () =>

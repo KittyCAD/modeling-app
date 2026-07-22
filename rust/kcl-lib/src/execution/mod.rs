@@ -55,10 +55,16 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
+pub use state::DirectTagFilletMeta;
+pub use state::DirectTagFilletTagEntry;
+pub use state::EdgeRefactorMeta;
+pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::PendingEdgeRefactorMeta;
+pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
 use crate::CompilationIssue;
@@ -313,6 +319,8 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    /// Execution-backed metadata used by Z0006 and future auto-refactors.
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
@@ -2220,6 +2228,12 @@ mod tests {
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
+    macro_rules! kcl_input {
+        ($file:literal) => {
+            include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
+        };
+    }
+
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
@@ -2342,6 +2356,48 @@ mod tests {
         keys
     }
 
+    async fn collect_backend_results<T, Fut>(
+        mut run: impl FnMut(memory::MemoryBackendKind) -> Fut,
+    ) -> Vec<(memory::MemoryBackendKind, T)>
+    where
+        Fut: std::future::Future<Output = T>,
+    {
+        let all = memory::MemoryBackendKind::all();
+        let mut results = Vec::with_capacity(all.len());
+        for &kind in all {
+            results.push((kind, run(kind).await));
+        }
+        results
+    }
+
+    fn assert_backend_results_match<T>(results: &[(memory::MemoryBackendKind, T)])
+    where
+        T: std::fmt::Debug + PartialEq,
+    {
+        let (first, rest) = results.split_first().expect("expected at least one memory backend");
+        let (first_kind, first_result) = first;
+        for (kind, result) in rest {
+            assert_eq!(
+                result, first_result,
+                "memory kind {kind:?} doesn't match {first_kind:?}"
+            );
+        }
+    }
+
+    fn assert_backend_variable_results_match_expected_keys(
+        results: &[(memory::MemoryBackendKind, IndexMap<String, KclValueView>)],
+        expected_keys: &[&str],
+    ) {
+        let (first_kind, first_variables) = results.first().expect("expected at least one memory backend");
+        let expected_keys = expected_keys.iter().map(|key| (*key).to_owned()).collect::<Vec<_>>();
+        assert_eq!(
+            sorted_variable_keys(first_variables),
+            expected_keys,
+            "memory kind {first_kind:?} doesn't match expected variables"
+        );
+        assert_backend_results_match(results);
+    }
+
     fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
         let KclValueView::Number { value, .. } = value else {
@@ -2354,44 +2410,36 @@ mod tests {
     async fn exec_outcome_variables_match_between_memory_backends() {
         let code = "x = 2\ny = x + 1\narr = [x, y]";
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["arr", "x", "y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["arr", "x", "y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn error_output_variables_match_between_memory_backends() {
         let code = "x = 2\ny = missing + 1";
 
-        let legacy = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_error_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["x"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["x"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn cached_execution_variables_match_between_memory_backends() {
         let code = "x = 2\ny = x + 1";
 
-        let legacy = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| run_with_caching_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["x", "y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["x", "y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_execution_variables_match_between_memory_backends() {
         let code = "y = x + 1";
 
-        let legacy = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| run_mock_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2412,23 +2460,15 @@ qualified = math::addBase(n = 1)
 direct = math::base
 "#;
 
-        let legacy = execute_project_variables_with_backend(
-            main_code,
-            &[("math.kcl", module_code)],
-            memory::MemoryBackendKind::Legacy,
-        )
-        .await;
-        let arena = execute_project_variables_with_backend(
-            main_code,
-            &[("math.kcl", module_code)],
-            memory::MemoryBackendKind::Arena,
-        )
-        .await;
+        let files = [("math.kcl", module_code)];
+        let results =
+            collect_backend_results(|kind| execute_project_variables_with_backend(main_code, &files, kind)).await;
 
-        assert_number_variable(&legacy, "named", 42.0);
-        assert_number_variable(&legacy, "qualified", 41.0);
-        assert_number_variable(&legacy, "direct", 40.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert_number_variable(first_variables, "named", 42.0);
+        assert_number_variable(first_variables, "qualified", 41.0);
+        assert_number_variable(first_variables, "direct", 40.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2441,12 +2481,12 @@ sketch001 = sketch(on = XY) {
 lineCount = 2
 "#;
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert!(legacy.contains_key("sketch001"), "actual: {legacy:?}");
-        assert_number_variable(&legacy, "lineCount", 2.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert!(first_variables.contains_key("sketch001"), "actual: {first_variables:?}");
+        assert_number_variable(first_variables, "lineCount", 2.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2459,11 +2499,11 @@ sketch001 = startSketchOn(XY)
 segLength = segLen(seg01)
 "#;
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert_number_variable(&legacy, "segLength", 10.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert_number_variable(first_variables, "segLength", 10.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2475,12 +2515,14 @@ sketch001 = startSketchOn(XY)
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
 
-        let legacy = execute_outcome_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_outcome_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let outcomes = collect_backend_results(|kind| execute_outcome_with_backend(code, kind)).await;
+        let mut transpiled = Vec::with_capacity(outcomes.len());
+        for (kind, outcome) in &outcomes {
+            let sketch = transpile_old_sketch_to_new(outcome, &program, "sketch001").unwrap();
+            transpiled.push((*kind, sketch));
+        }
 
-        let legacy_transpiled = transpile_old_sketch_to_new(&legacy, &program, "sketch001").unwrap();
-        let arena_transpiled = transpile_old_sketch_to_new(&arena, &program, "sketch001").unwrap();
-        assert_eq!(arena_transpiled, legacy_transpiled);
+        assert_backend_results_match(&transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3033,6 +3075,357 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_uppercase() {
+        let composed = "\u{e9}";
+        let uppercase_composed = "\u{c9}";
+        let decomposed = "e\u{301}";
+        let uppercase_decomposed = "E\u{301}";
+        let code = format!(
+            r#"
+ascii = string::uppercase("Kcl")
+unicode_expansion = string::uppercase("Straße")
+uncased = string::uppercase("東京")
+empty = string::uppercase("")
+composed = string::uppercase("{composed}")
+decomposed = string::uppercase("{decomposed}")
+piped = "ready" |> string::uppercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("unicode_expansion", "STRASSE"),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", uppercase_composed),
+            ("decomposed", uppercase_decomposed),
+            ("piped", "READY"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_lowercase() {
+        let composed = "\u{c9}";
+        let lowercase_composed = "\u{e9}";
+        let decomposed = "E\u{301}";
+        let lowercase_decomposed = "e\u{301}";
+        let expanded = "i\u{307}";
+        let code = format!(
+            r#"
+ascii = string::lowercase("KCL")
+final_sigma = string::lowercase("ΟΣ")
+medial_sigma = string::lowercase("ΟΣΑ")
+unicode_expansion = string::lowercase("İ")
+uncased = string::lowercase("東京")
+empty = string::lowercase("")
+composed = string::lowercase("{composed}")
+decomposed = string::lowercase("{decomposed}")
+piped = "READY" |> string::lowercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "kcl"),
+            ("final_sigma", "ος"),
+            ("medial_sigma", "οσα"),
+            ("unicode_expansion", expanded),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", lowercase_composed),
+            ("decomposed", lowercase_decomposed),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+exact_same = string::isEqual("KCL", to = "KCL")
+exact_different_case = string::isEqual("KCL", to = "kcl")
+explicit_case_sensitive = string::isEqual("KCL", to = "kcl", caseInsensitive = false)
+case_insensitive_ascii = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+case_fold_expansion = string::isEqual("Straße", to = "STRASSE", caseInsensitive = true)
+case_fold_expansion_reversed = string::isEqual("STRASSE", to = "Straße", caseInsensitive = true)
+case_fold_sigma = string::isEqual("ος", to = "οσ", caseInsensitive = true)
+case_fold_non_turkic = string::isEqual("I", to = "i", caseInsensitive = true)
+case_fold_not_turkic = string::isEqual("I", to = "ı", caseInsensitive = true)
+empty_same = string::isEqual("", to = "")
+empty_different = string::isEqual("", to = "KCL")
+exact_without_normalization = string::isEqual("{composed}", to = "{decomposed}")
+case_fold_without_normalization = string::isEqual("{composed}", to = "{decomposed}", caseInsensitive = true)
+piped = "ready" |> string::isEqual(to = "READY", caseInsensitive = true)
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("exact_same", true),
+            ("exact_different_case", false),
+            ("explicit_case_sensitive", false),
+            ("case_insensitive_ascii", true),
+            ("case_fold_expansion", true),
+            ("case_fold_expansion_reversed", true),
+            ("case_fold_sigma", true),
+            ("case_fold_non_turkic", true),
+            ("case_fold_not_turkic", false),
+            ("empty_same", true),
+            ("empty_different", false),
+            ("exact_without_normalization", false),
+            ("case_fold_without_normalization", false),
+            ("piped", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal_inside_sketch_block_is_predicate() {
+        let code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+}
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trim("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trim("  KCL{tab}strings  ")
+unicode = string::trim("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trim("{ascii_whitespace}{non_breaking_space}")
+empty = string::trim("")
+unchanged = string::trim("KCL")
+without_normalization = string::trim(" {decomposed} ")
+non_whitespace = string::trim("{zero_width_space}KCL{zero_width_space}")
+piped = "  ready  " |> string::trim()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let non_whitespace = format!("{zero_width_space}KCL{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("internal", "KCL\tstrings"),
+            ("unicode", "KCL"),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace", non_whitespace.as_str()),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_start() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimStart("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimStart("  KCL{tab}strings")
+unicode = string::trimStart("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trimStart("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimStart("")
+unchanged = string::trimStart("KCL")
+without_normalization = string::trimStart(" {decomposed}")
+non_whitespace_prefix = string::trimStart("{zero_width_space}{ascii_whitespace}KCL")
+piped = "  ready  " |> string::trimStart()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("KCL{ascii_whitespace}");
+        let unicode = format!("KCL{ideographic_space}");
+        let non_whitespace_prefix = format!("{zero_width_space}{ascii_whitespace}KCL");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_prefix", non_whitespace_prefix.as_str()),
+            ("piped", "ready  "),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_end() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimEnd("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimEnd("KCL{tab}strings  ")
+unicode = string::trimEnd("{non_breaking_space}KCL{em_space}{ideographic_space}")
+all_whitespace = string::trimEnd("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimEnd("")
+unchanged = string::trimEnd("KCL")
+without_normalization = string::trimEnd("{decomposed} ")
+non_whitespace_suffix = string::trimEnd("KCL{ascii_whitespace}{zero_width_space}")
+piped = "  ready  " |> string::trimEnd()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("{ascii_whitespace}KCL");
+        let unicode = format!("{non_breaking_space}KCL");
+        let non_whitespace_suffix = format!("KCL{ascii_whitespace}{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_suffix", non_whitespace_suffix.as_str()),
+            ("piped", "  ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_operators() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+equal_same_ascii = "KCL" == "KCL"
+equal_different_case = "KCL" == "kcl"
+not_equal_same_ascii = "KCL" != "KCL"
+not_equal_different_case = "KCL" != "kcl"
+equal_same_unicode = "{composed}" == "{composed}"
+not_equal_same_unicode = "{composed}" != "{composed}"
+equal_without_normalization = "{composed}" == "{decomposed}"
+not_equal_without_normalization = "{composed}" != "{decomposed}"
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("equal_same_ascii", true),
+            ("equal_different_case", false),
+            ("not_equal_same_ascii", false),
+            ("not_equal_different_case", true),
+            ("equal_same_unicode", true),
+            ("not_equal_same_unicode", false),
+            ("equal_without_normalization", false),
+            ("not_equal_without_normalization", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_inside_sketch_block_fails_like_number_equality() {
+        let string_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = "KCL" == "KCL"
+}
+"#;
+        let number_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  numbersAreEqual = 1 == 1
+}
+"#;
+
+        assert_eq!(
+            parse_execute(string_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a string and a string"
+        );
+        assert_eq!(
+            parse_execute(number_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a number and a number"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"myVar = -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
@@ -3575,6 +3968,18 @@ w = f() + f()
         ctx2.close().await;
     }
 
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/12498
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_succeeds_after_split() {
+        let code = kcl_input!("repro_mock_extrude");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let _result = match ctx.run_mock(&program, &MockConfig::default()).await {
+            Ok(res) => res,
+            Err(e) => panic!("{}", e.error),
+        };
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
         let code = "s = sketch(on = XY) {
@@ -3589,7 +3994,7 @@ w = f() + f()
         let ctx = ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
-        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+        assert!(result.variables.contains_key("s"), "actual: {:?}", result.variables);
 
         let code2 = code.to_owned()
             + "
@@ -3601,7 +4006,7 @@ extrude001 = extrude(region001, length = 1)
         assert!(
             result.variables.contains_key("region001"),
             "actual: {:?}",
-            &result.variables
+            result.variables
         );
 
         ctx.close().await;

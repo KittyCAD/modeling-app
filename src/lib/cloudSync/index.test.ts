@@ -1,7 +1,4 @@
 import {
-  type OutboxEntry,
-  type ProjectArchiveFile,
-  type ProjectManifest,
   filterCloudSyncProjectFilesForSync,
   getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
@@ -14,11 +11,18 @@ import {
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
   isCloudSyncConflictCopyProjectName,
+  type OutboxEntry,
+  type ProjectArchiveFile,
+  type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
   shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
-import { withRemoteProjectMetadataInArchiveFiles } from '@src/lib/cloudSync/projectArchive'
+import {
+  normalizeProjectArchiveFilesForCloudSync,
+  projectManifestFromFiles,
+  withRemoteProjectMetadataInArchiveFiles,
+} from '@src/lib/cloudSync/projectArchive'
 import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -33,6 +37,12 @@ function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
     relativePath,
     data: encoder.encode(contents),
   }
+}
+
+function readProjectFile(files: ProjectArchiveFile[], relativePath: string) {
+  return new TextDecoder().decode(
+    files.find((file) => file.relativePath === relativePath)?.data
+  )
 }
 
 describe('cloudSync sync helpers', () => {
@@ -148,6 +158,40 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "bracket"')
   })
 
+  it('normalizes project.toml table order before cloud sync upload and manifest hashing', async () => {
+    const localOrderFiles = normalizeProjectArchiveFilesForCloudSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile(
+        PROJECT_SETTINGS_FILE_NAME,
+        'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+      ),
+    ])
+    const cloudOrderFiles = normalizeProjectArchiveFilesForCloudSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile(
+        PROJECT_SETTINGS_FILE_NAME,
+        'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
+      ),
+    ])
+    const uploadPayload = prepareProjectFilesForCloudUpload(
+      '/projects/demo-project',
+      cloudOrderFiles
+    )
+
+    expect(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME)).toBe(
+      readProjectFile(cloudOrderFiles, PROJECT_SETTINGS_FILE_NAME)
+    )
+    expect(
+      readProjectFile(uploadPayload.files, PROJECT_SETTINGS_FILE_NAME)
+    ).toBe(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME))
+    expect(
+      projectManifestsEqual(
+        await projectManifestFromFiles(localOrderFiles),
+        await projectManifestFromFiles(cloudOrderFiles)
+      )
+    ).toBe(true)
+  })
+
   it('adds an Untitled project.toml title when remote project metadata has no title', () => {
     const files = withRemoteProjectMetadataInArchiveFiles(
       [projectFile('main.kcl')],
@@ -215,7 +259,7 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "New cloud title"')
   })
 
-  it('clones remote projects that exist in cloud but have no local match', () => {
+  it('indexes remote projects that exist in cloud but have no local match', () => {
     expect(
       getCloudSyncRemoteIndexAction({
         hasRemoteProjectId: true,
@@ -223,7 +267,7 @@ describe('cloudSync sync helpers', () => {
         hasKnownLocalMetadata: false,
         hasMatchingLocalProject: false,
       })
-    ).toBe('clone-remote')
+    ).toBe('index-remote')
   })
 
   it('skips remote projects that were tombstoned locally', () => {

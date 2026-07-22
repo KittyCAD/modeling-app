@@ -7,7 +7,6 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
-import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -23,7 +22,7 @@ import {
   engineSceneViewExtensionsValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -112,15 +111,6 @@ export const useDefaultAreaLibrary = () => {
         modeling: {
           hide: () => false,
           Component: ModelingArea,
-        },
-        ttc: {
-          hide: () => false,
-          shortcut: 'Ctrl + T',
-          cssClassOverrides: {
-            button:
-              'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
-          },
-          Component: MlEphantConversationPaneWrapper,
         },
         codeEditor: {
           hide: () => false,

@@ -19,8 +19,10 @@ use winnow::{self};
 
 use crate::CompilationIssue;
 use crate::ModuleId;
+use crate::RuntimeFlag;
 use crate::SourceRange;
 use crate::errors::KclError;
+use crate::kcl_runtime_flags;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::VariableKind;
 
@@ -601,8 +603,8 @@ pub(crate) const KCL_LEXER_ENV_VAR: &str = "KCL_LEXER";
 /// `KCL_LEXER` environment variable, so a process can pick either lexer without a
 /// rebuild.
 ///
-/// Precedence: test override > `KCL_LEXER` > [`LexerMode::DEFAULT`]. This mirrors
-/// the existing `KCL_MEMORY_IMPL` selector in `execution::memory`.
+/// Precedence: runtime flags > test override > `KCL_LEXER` >
+/// [`LexerMode::DEFAULT`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum LexerMode {
     Old,
@@ -615,14 +617,9 @@ impl LexerMode {
 
     /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
     pub(crate) fn resolve() -> Self {
-        #[cfg(test)]
-        if let Some(mode) = Self::test_override() {
-            return mode;
-        }
-
-        match env::var(KCL_LEXER_ENV_VAR) {
-            Ok(value) => Self::parse(&value),
-            Err(env::VarError::NotPresent) => Self::DEFAULT,
+        let env_value = match env::var(KCL_LEXER_ENV_VAR) {
+            Ok(value) => Some(value),
+            Err(env::VarError::NotPresent) => None,
             Err(env::VarError::NotUnicode(value)) => {
                 // Invalid-unicode env var: warn and fall back rather than crash.
                 Self::warn_once(|| {
@@ -631,9 +628,39 @@ impl LexerMode {
                         value.to_string_lossy()
                     )
                 });
-                Self::Old
+                None
             }
+        };
+
+        Self::resolve_from_sources(
+            kcl_runtime_flags().use_new_lexer_parser,
+            Self::test_override_for_resolve(),
+            env_value.as_deref(),
+        )
+    }
+
+    fn resolve_from_sources(runtime_flag: RuntimeFlag, test_override: Option<Self>, env_value: Option<&str>) -> Self {
+        match runtime_flag {
+            RuntimeFlag::On => return Self::New,
+            RuntimeFlag::Off => return Self::Old,
+            RuntimeFlag::Unset => {}
         }
+
+        if let Some(mode) = test_override {
+            return mode;
+        }
+
+        env_value.map(Self::parse).unwrap_or(Self::DEFAULT)
+    }
+
+    #[cfg(test)]
+    fn test_override_for_resolve() -> Option<Self> {
+        Self::test_override()
+    }
+
+    #[cfg(not(test))]
+    fn test_override_for_resolve() -> Option<Self> {
+        None
     }
 
     fn parse(value: &str) -> Self {
@@ -759,10 +786,23 @@ fn lex_legacy(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
 mod lexer_mode_tests {
     use super::LexerMode;
     use super::lex;
+    use crate::KclRuntimeFlags;
     use crate::ModuleId;
+    use crate::RuntimeFlag;
+
+    fn set_runtime_lexer_flag(flag: RuntimeFlag) {
+        crate::set_kcl_runtime_flags(KclRuntimeFlags {
+            use_new_lexer_parser: flag,
+        });
+    }
+
+    fn reset_runtime_lexer_flags() {
+        crate::set_kcl_runtime_flags(KclRuntimeFlags::DEFAULT);
+    }
 
     #[test]
     fn default_mode_is_old() {
+        reset_runtime_lexer_flags();
         assert_eq!(LexerMode::DEFAULT, LexerMode::Old);
     }
 
@@ -780,6 +820,7 @@ mod lexer_mode_tests {
 
     #[test]
     fn override_guard_sets_and_restores_mode() {
+        reset_runtime_lexer_flags();
         // Reserved for dispatch/integration tests; relies on the process-global
         // atomic, which is race-free under nextest's process isolation.
         {
@@ -788,6 +829,75 @@ mod lexer_mode_tests {
         }
         let _guard = LexerMode::override_for_test(LexerMode::Old);
         assert_eq!(LexerMode::resolve(), LexerMode::Old);
+    }
+
+    #[test]
+    fn runtime_flags_default_to_unset() {
+        reset_runtime_lexer_flags();
+        assert_eq!(
+            crate::kcl_runtime_flags(),
+            KclRuntimeFlags {
+                use_new_lexer_parser: RuntimeFlag::Unset,
+            }
+        );
+    }
+
+    #[test]
+    fn runtime_flag_on_selects_new_lexer() {
+        reset_runtime_lexer_flags();
+        set_runtime_lexer_flag(RuntimeFlag::On);
+        assert_eq!(LexerMode::resolve(), LexerMode::New);
+    }
+
+    #[test]
+    fn runtime_flag_off_selects_old_lexer() {
+        reset_runtime_lexer_flags();
+        set_runtime_lexer_flag(RuntimeFlag::Off);
+        assert_eq!(LexerMode::resolve(), LexerMode::Old);
+    }
+
+    #[test]
+    fn runtime_flag_takes_priority_over_test_override_and_env() {
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Off, Some(LexerMode::New), Some("new")),
+            LexerMode::Old
+        );
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::On, Some(LexerMode::Old), Some("old")),
+            LexerMode::New
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_allows_env_to_select_lexer() {
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, Some("new")),
+            LexerMode::New
+        );
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, Some("old")),
+            LexerMode::Old
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_and_missing_env_selects_default_lexer() {
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, None),
+            LexerMode::DEFAULT
+        );
+    }
+
+    #[test]
+    fn test_override_takes_priority_over_env() {
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Unset, Some(LexerMode::Old), Some("new")),
+            LexerMode::Old
+        );
+        assert_eq!(
+            LexerMode::resolve_from_sources(RuntimeFlag::Unset, Some(LexerMode::New), Some("old")),
+            LexerMode::New
+        );
     }
 
     /// Exercises the `New` arm of `lex` in default CI: no `KCL_LEXER` env var is
@@ -801,6 +911,7 @@ mod lexer_mode_tests {
     /// not merely that some lexer ran.
     #[test]
     fn lex_dispatches_to_new_lexer() {
+        reset_runtime_lexer_flags();
         let _guard = LexerMode::override_for_test(LexerMode::New);
         assert_eq!(LexerMode::resolve(), LexerMode::New);
 

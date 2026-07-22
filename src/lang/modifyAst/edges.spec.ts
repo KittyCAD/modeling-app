@@ -1357,13 +1357,20 @@ ${extrudedTriangle}`
     it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - third sweepEdge', async () => {
       await runAddBlendAndCheckCode(
         4,
-        'getOppositeEdge(extrude002.sketch.tags.line2)'
+        'getPreviousAdjacentEdge(extrude002.sketch.tags.line1)'
       )
     })
 
     it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - fourth sweepEdge', async () => {
       await runAddBlendAndCheckCode(
         5,
+        'getOppositeEdge(extrude002.sketch.tags.line2)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - fifth sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        6,
         'getNextAdjacentEdge(extrude002.sketch.tags.line2)'
       )
     })
