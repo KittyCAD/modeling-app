@@ -11,8 +11,12 @@ import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   NEW_PROJECT_LIBRARY_TITLE,
+  areProjectLibrarySettingsEqual,
+  moveProjectLibrarySetting,
+  normalizeProjectLibrarySetting,
   type ProjectLibrarySetting,
   type ProjectLibraryType,
+  updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -129,64 +133,7 @@ function normalizeLibrary(
 ): ProjectLibrarySetting {
   const fallback = defaultLibraryForType(library.type, libraryTypeOptions)
 
-  return {
-    title: library.title.trim() || fallback.title,
-    path: library.path.trim() || fallback.path,
-    type: library.type || fallback.type,
-  }
-}
-
-function updateLibraryAt(
-  libraries: ProjectLibrarySetting[],
-  index: number,
-  update: (library: ProjectLibrarySetting) => ProjectLibrarySetting
-) {
-  return libraries.map((library, currentIndex) =>
-    currentIndex === index ? update(library) : library
-  )
-}
-
-function areProjectLibrariesEqual(
-  left: readonly ProjectLibrarySetting[],
-  right: readonly ProjectLibrarySetting[]
-) {
-  return (
-    left.length === right.length &&
-    left.every((library, index) => {
-      const otherLibrary = right[index]
-      return (
-        otherLibrary !== undefined &&
-        library.title === otherLibrary.title &&
-        library.path === otherLibrary.path &&
-        library.type === otherLibrary.type
-      )
-    })
-  )
-}
-
-function moveLibrary(
-  libraries: ProjectLibrarySetting[],
-  fromIndex: number,
-  toIndex: number
-) {
-  if (
-    fromIndex === toIndex ||
-    fromIndex < 0 ||
-    toIndex < 0 ||
-    fromIndex >= libraries.length ||
-    toIndex >= libraries.length
-  ) {
-    return libraries
-  }
-
-  const nextLibraries = [...libraries]
-  const [library] = nextLibraries.splice(fromIndex, 1)
-  if (!library) {
-    return libraries
-  }
-
-  nextLibraries.splice(toIndex, 0, library)
-  return nextLibraries
+  return normalizeProjectLibrarySetting(library, fallback)
 }
 
 function ProjectLibraryTypeSelect({
@@ -322,7 +269,7 @@ export function ProjectLibrariesSettingInput({
     )
     setDraftLibraries(normalizedLibraries)
     if (
-      areProjectLibrariesEqual(
+      areProjectLibrarySettingsEqual(
         normalizedLibraries,
         committedLibrariesRef.current
       )
@@ -340,7 +287,7 @@ export function ProjectLibrariesSettingInput({
     nextValue: string
   ) {
     setDraftLibraries((libraries) =>
-      updateLibraryAt(libraries, index, (library) => ({
+      updateProjectLibrarySettingAt(libraries, index, (library) => ({
         ...library,
         [field]: nextValue,
       }))
@@ -349,7 +296,7 @@ export function ProjectLibrariesSettingInput({
 
   function commitDraftLibrary(index: number) {
     commit(
-      updateLibraryAt(draftLibraries, index, (library) =>
+      updateProjectLibrarySettingAt(draftLibraries, index, (library) =>
         normalizeLibrary(library, libraryTypeOptions)
       )
     )
@@ -362,7 +309,7 @@ export function ProjectLibrariesSettingInput({
       libraryTypeOptions
     )
     commit(
-      updateLibraryAt(draftLibraries, index, (library) => ({
+      updateProjectLibrarySettingAt(draftLibraries, index, (library) => ({
         title:
           library.title === previousFallback.title
             ? fallback.title
@@ -453,7 +400,7 @@ export function ProjectLibrariesSettingInput({
       return
     }
 
-    commit(moveLibrary(draftLibraries, fromIndex, index))
+    commit(moveProjectLibrarySetting(draftLibraries, fromIndex, index))
   }
 
   function handleDragEnd() {
@@ -478,7 +425,7 @@ export function ProjectLibrariesSettingInput({
     }
 
     commit(
-      updateLibraryAt(draftLibraries, index, (library) => ({
+      updateProjectLibrarySettingAt(draftLibraries, index, (library) => ({
         ...library,
         path: selectedPath,
       }))

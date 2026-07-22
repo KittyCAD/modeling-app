@@ -7,12 +7,16 @@ import {
 } from '@src/registry/contracts/projectLibraries'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
+  areProjectLibrarySettingsEqual,
   getContainingDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
   getProjectLibraryIdFromSetting,
+  moveProjectLibrarySetting,
+  normalizeProjectLibrarySetting,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
+  updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
@@ -150,6 +154,92 @@ describe('project library settings', () => {
         title: 'External',
         path: 'external://projects',
         type: 'external',
+      },
+    ])
+  })
+
+  test('normalizes project library settings using the matching type fallback', () => {
+    expect(
+      normalizeProjectLibrarySetting(
+        {
+          title: '  ',
+          path: '  ',
+          type: 'cloud',
+        },
+        {
+          title: 'Cloud',
+          path: 'zoo-cloud',
+          type: 'cloud',
+        }
+      )
+    ).toEqual({
+      title: 'Cloud',
+      path: 'zoo-cloud',
+      type: 'cloud',
+    })
+  })
+
+  test('compares project library settings by persisted fields and order', () => {
+    const libraries = [
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ]
+
+    expect(areProjectLibrarySettingsEqual(libraries, [...libraries])).toBe(true)
+    expect(
+      areProjectLibrarySettingsEqual(libraries, [libraries[1], libraries[0]])
+    ).toBe(false)
+  })
+
+  test('updates and moves project library settings without mutating the source list', () => {
+    const libraries = [
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ]
+
+    expect(
+      updateProjectLibrarySettingAt(libraries, 1, (library) => ({
+        ...library,
+        title: 'Personal Cloud',
+      }))
+    ).toEqual([
+      libraries[0],
+      {
+        title: 'Personal Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ])
+    expect(moveProjectLibrarySetting(libraries, 1, 0)).toEqual([
+      libraries[1],
+      libraries[0],
+    ])
+    expect(libraries).toEqual([
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
       },
     ])
   })

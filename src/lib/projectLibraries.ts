@@ -95,6 +95,70 @@ export function mergeProjectLibrarySettings(
   return Array.from(librariesByKey.values())
 }
 
+export function normalizeProjectLibrarySetting(
+  library: ProjectLibrarySetting,
+  fallback: ProjectLibrarySetting
+): ProjectLibrarySetting {
+  return {
+    title: library.title.trim() || fallback.title,
+    path: library.path.trim() || fallback.path,
+    type: library.type || fallback.type,
+  }
+}
+
+export function updateProjectLibrarySettingAt(
+  libraries: readonly ProjectLibrarySetting[],
+  index: number,
+  update: (library: ProjectLibrarySetting) => ProjectLibrarySetting
+): ProjectLibrarySetting[] {
+  return libraries.map((library, currentIndex) =>
+    currentIndex === index ? update(library) : library
+  )
+}
+
+export function areProjectLibrarySettingsEqual(
+  left: readonly ProjectLibrarySetting[],
+  right: readonly ProjectLibrarySetting[]
+) {
+  return (
+    left.length === right.length &&
+    left.every((library, index) => {
+      const otherLibrary = right[index]
+      return (
+        otherLibrary !== undefined &&
+        library.title === otherLibrary.title &&
+        library.path === otherLibrary.path &&
+        library.type === otherLibrary.type
+      )
+    })
+  )
+}
+
+export function moveProjectLibrarySetting(
+  libraries: readonly ProjectLibrarySetting[],
+  fromIndex: number,
+  toIndex: number
+): ProjectLibrarySetting[] {
+  if (
+    fromIndex === toIndex ||
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= libraries.length ||
+    toIndex >= libraries.length
+  ) {
+    return [...libraries]
+  }
+
+  const nextLibraries = [...libraries]
+  const [library] = nextLibraries.splice(fromIndex, 1)
+  if (!library) {
+    return [...libraries]
+  }
+
+  nextLibraries.splice(toIndex, 0, library)
+  return nextLibraries
+}
+
 export function getProjectLibraryIdFromSetting(library: ProjectLibrarySetting) {
   return `${library.type}-${hashString(`${library.type}:${library.path}`)}`
 }
