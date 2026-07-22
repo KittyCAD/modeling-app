@@ -12,7 +12,7 @@ import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
