@@ -395,6 +395,9 @@ enum Kont {
 }
 
 /// Which resumable builtin is mid-iteration, with its loop state.
+// Variant sizes intentionally differ: these are the machine's heap frames,
+// and boxing every payload would add an allocation per step.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug)]
 enum ResumeState {
     Map(MapResume),
@@ -574,6 +577,9 @@ pub(crate) async fn run_expr(
 }
 
 /// How a fresh root ended.
+// Variant sizes intentionally differ: these are the machine's heap frames,
+// and boxing every payload would add an allocation per step.
+#[allow(clippy::large_enum_variant)]
 enum RootResult {
     /// The root computation finished with this result.
     Done(Applied),
@@ -1630,6 +1636,9 @@ async fn dispatch_call(
 }
 
 /// What a machine call produced immediately.
+// Variant sizes intentionally differ: these are the machine's heap frames,
+// and boxing every payload would add an allocation per step.
+#[allow(clippy::large_enum_variant)]
 enum MachineCallOutcome {
     /// Continue the machine with this control.
     Control(Control),
@@ -1821,6 +1830,9 @@ async fn resumable_entry(
 }
 
 /// What drives the next resume step.
+// Variant sizes intentionally differ: these are the machine's heap frames,
+// and boxing every payload would add an allocation per step.
+#[allow(clippy::large_enum_variant)]
 enum Feed {
     /// Start the builtin's next iteration (entry).
     Advance,
@@ -1857,6 +1869,9 @@ async fn resume_drive(
     }
 }
 
+// Variant sizes intentionally differ: these are the machine's heap frames,
+// and boxing every payload would add an allocation per step.
+#[allow(clippy::large_enum_variant)]
 enum ResumeOutcome {
     /// The machine continues with this control (a callback was started on
     /// the continuation stack, or the builtin finished and its value was
