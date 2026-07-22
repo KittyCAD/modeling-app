@@ -7,6 +7,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::front::find_defined_names;
 use crate::frontend::modify::next_free_name_with_padding;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::LabeledArg;
@@ -255,12 +256,12 @@ fn migrate_call(context: &mut Context, node: &mut ast::Node<ast::CallExpressionK
                 if let Some(seg2) = seg2 {
                     args.push(name_dot_name_ast(sketch_name, seg2));
                 }
-                let region_call = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
+                let region_call = ast::Expr::CallExpressionKw(BoxNode::new(ast::CallExpressionKw::new(
                     "region",
                     None,
                     vec![LabeledArg {
                         label: Some(ast::Identifier::new("segments")),
-                        arg: ast::Expr::ArrayExpression(Box::new(ast::ArrayExpression::new(args))),
+                        arg: ast::Expr::ArrayExpression(BoxNode::new(ast::ArrayExpression::new(args))),
                     }],
                 )));
                 let var_decl = ast::Node::boxed(
@@ -278,7 +279,7 @@ fn migrate_call(context: &mut Context, node: &mut ast::Node<ast::CallExpressionK
                     .new_declarations
                     .push(ast::BodyItem::VariableDeclaration(var_decl));
                 // Replace the unlabeled arg with the name of the region.
-                node.unlabeled = Some(ast::Expr::Name(Box::new(ast::Name::new(&region_name))));
+                node.unlabeled = Some(ast::Expr::Name(BoxNode::new(ast::Name::new(&region_name))));
             }
         }
         _ => {}
@@ -360,8 +361,8 @@ fn name_dot_name_ast<S1: Into<String>, S2: Into<String>>(name: S1, property: S2)
         Default::default(),
         Default::default(),
         ast::MemberExpression {
-            object: ast::Expr::Name(Box::new(ast::Name::new(name))),
-            property: ast::Expr::Name(Box::new(ast::Name::new(property))),
+            object: ast::Expr::Name(BoxNode::new(ast::Name::new(name))),
+            property: ast::Expr::Name(BoxNode::new(ast::Name::new(property))),
             computed: false,
             digest: None,
         },

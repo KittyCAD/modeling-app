@@ -1877,7 +1877,9 @@ mod test {
                 object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
-            KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
+            KclValue::TagDeclarator(crate::parsing::ast::types::BoxNode::new(
+                crate::parsing::ast::types::TagDeclarator::new("foo"),
+            )),
             KclValue::Plane {
                 value: Box::new(
                     Plane::from_plane_data_skipping_engine(crate::std::sketch::PlaneData::XY, exec_state).unwrap(),

@@ -12,6 +12,7 @@ use crate::lint::rule::FindingFamily;
 use crate::lint::rule::def_finding;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ItemVisibility;
@@ -93,7 +94,7 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
                 (call, result)
             } else {
                 let result = add_unlabeled_arg_to_first_call(&mut rest, unlabeled_arg);
-                (Expr::PipeExpression(Box::new(PipeExpression::new(rest))), result)
+                (Expr::PipeExpression(BoxNode::new(PipeExpression::new(rest))), result)
             };
             if result.is_err() {
                 // We needed an unlabeled arg, but we don't have one. We aren't
@@ -112,7 +113,7 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             };
             new_program.body.insert(
                 item_index + 1,
-                BodyItem::VariableDeclaration(Box::new(AstNode::no_src(VariableDeclaration::new(
+                BodyItem::VariableDeclaration(BoxNode::new(AstNode::no_src(VariableDeclaration::new(
                     VariableDeclarator::new(&new_var_name, next_expr),
                     ItemVisibility::Default,
                     VariableKind::Const,
@@ -158,7 +159,7 @@ fn check_body_item_for_pipe(node: Node) -> (Option<Expr>, Vec<(usize, SourceRang
             // entire pipeline as the unlabeled arg.
             (
                 unlabeled.or_else(|| {
-                    Some(Expr::Name(Box::new(AstNode::<Name>::from(
+                    Some(Expr::Name(BoxNode::new(AstNode::<Name>::from(
                         var_decl.declaration.id.clone(),
                     ))))
                 }),
@@ -331,12 +332,12 @@ fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str)
     if let Some(unlabeled) = &mut call.unlabeled {
         match unlabeled {
             Expr::ArrayExpression(array) => {
-                array.elements.push(Expr::Name(Box::new(Name::new(new_var_name))));
+                array.elements.push(Expr::Name(BoxNode::new(Name::new(new_var_name))));
             }
             _ => {
                 let first = unlabeled.clone();
-                let new_array = vec![first, Expr::Name(Box::new(Name::new(new_var_name)))];
-                *unlabeled = Expr::ArrayExpression(Box::new(ArrayExpression::new(new_array)));
+                let new_array = vec![first, Expr::Name(BoxNode::new(Name::new(new_var_name)))];
+                *unlabeled = Expr::ArrayExpression(BoxNode::new(ArrayExpression::new(new_array)));
             }
         }
         return true;

@@ -126,7 +126,7 @@ impl<T> Node<T> {
     }
 
     pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
-        Box::new(Node {
+        BoxNode::new(Node {
             inner,
             start,
             end,
@@ -146,7 +146,7 @@ impl<T> Node<T> {
         node_path: NodePath,
         inner: T,
     ) -> BoxNode<T> {
-        Box::new(Node {
+        BoxNode::new(Node {
             inner,
             start,
             end,
@@ -257,7 +257,173 @@ impl<T> From<&BoxNode<T>> for SourceRange {
     }
 }
 
-pub type BoxNode<T> = Box<Node<T>>;
+/// Counts how many times [`BoxNode`]'s copy-on-write `DerefMut` had to
+/// deep-clone a node because its `Arc` was shared at mutation time. Parse,
+/// execute, and digest workloads are expected to keep this at 0 (they only
+/// mutate exclusively owned trees); editing workloads that mutate a shared
+/// tree may see bounded nonzero counts.
+#[cfg(debug_assertions)]
+#[doc(hidden)]
+pub static BOX_NODE_COW_CLONES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+/// An AST node shared behind an [`Arc`], so owned handles to subtrees (e.g. a
+/// function body held by a closure value) are cheap to clone and carry no
+/// lifetimes.
+///
+/// This is a newtype rather than a bare `Arc<Node<T>>` so that:
+///
+/// - `DerefMut` keeps every existing in-place mutation site (digests, node
+///   paths, code-mod edits) compiling, via copy-on-write ([`Arc::make_mut`]).
+///   Mutating an exclusively owned tree (refcount 1, the common case) stays
+///   in place with no copying.
+/// - The serde and ts-rs impls stay transparent: `BoxNode<T>` serializes
+///   exactly like `Node<T>` did when this was `Box<Node<T>>`. (The workspace
+///   does not enable serde's `rc` feature, so `Arc<Node<T>>` has no serde
+///   impls of its own.)
+///
+/// Caveat: if a node's `Arc` is shared at mutation time (e.g. a function AST
+/// kept alive by a `FunctionSource` clone from a previous run), `DerefMut`
+/// silently deep-clones that node. [`BOX_NODE_COW_CLONES`] counts those
+/// clones in debug builds.
+pub struct BoxNode<T>(Arc<Node<T>>);
+
+impl<T> BoxNode<T> {
+    pub fn new(node: Node<T>) -> Self {
+        Self(Arc::new(node))
+    }
+
+    /// A cheap owned handle to the shared node.
+    pub fn arc(&self) -> Arc<Node<T>> {
+        self.0.clone()
+    }
+}
+
+impl<T: Clone> BoxNode<T> {
+    /// Take the node out, cloning only if the `Arc` is shared (it usually is
+    /// not). The successor of moving out of the old `Box<Node<T>>`.
+    pub fn into_node(self) -> Node<T> {
+        Arc::unwrap_or_clone(self.0)
+    }
+}
+
+impl<T> AsRef<Node<T>> for BoxNode<T> {
+    fn as_ref(&self) -> &Node<T> {
+        &self.0
+    }
+}
+
+impl<T: Clone> AsMut<Node<T>> for BoxNode<T> {
+    /// Copy-on-write, like `DerefMut`.
+    fn as_mut(&mut self) -> &mut Node<T> {
+        self
+    }
+}
+
+impl<T> Clone for BoxNode<T> {
+    fn clone(&self) -> Self {
+        // Cheap: clones the Arc, not the node.
+        Self(self.0.clone())
+    }
+}
+
+impl<T: fmt::Debug> fmt::Debug for BoxNode<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Delegate so output matches the old Box<Node<T>>.
+        self.0.fmt(f)
+    }
+}
+
+impl<T: fmt::Display> fmt::Display for BoxNode<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl<T: PartialEq> PartialEq for BoxNode<T> {
+    fn eq(&self, other: &Self) -> bool {
+        // Arc compares by pointee, same as Box did.
+        self.0 == other.0
+    }
+}
+
+impl<T> Deref for BoxNode<T> {
+    type Target = Node<T>;
+
+    fn deref(&self) -> &Node<T> {
+        &self.0
+    }
+}
+
+impl<T: Clone> DerefMut for BoxNode<T> {
+    fn deref_mut(&mut self) -> &mut Node<T> {
+        #[cfg(debug_assertions)]
+        if Arc::strong_count(&self.0) > 1 || Arc::weak_count(&self.0) > 0 {
+            // Arc::make_mut below will deep-clone this node.
+            BOX_NODE_COW_CLONES.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+// Serialize as the inner Node<T>, not the Arc, keeping the serialized form
+// (JSON, MessagePack, ts-rs) byte-identical to the old Box<Node<T>>.
+impl<T> Serialize for BoxNode<T>
+where
+    Node<T>: Serialize,
+{
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T> Deserialize<'de> for BoxNode<T>
+where
+    Node<T>: Deserialize<'de>,
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Node::<T>::deserialize(deserializer).map(BoxNode::new)
+    }
+}
+
+// Transparent ts-rs impl, mirroring ts-rs's own wrapper impls (e.g. TS for
+// Box<T>), so the generated TypeScript is unchanged from Box<Node<T>>.
+impl<T> ts_rs::TS for BoxNode<T>
+where
+    Node<T>: ts_rs::TS,
+{
+    type WithoutGenerics = Self;
+    type OptionInnerType = Self;
+
+    fn name(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::name(cfg)
+    }
+    fn inline(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::inline(cfg)
+    }
+    fn inline_flattened(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::inline_flattened(cfg)
+    }
+    fn visit_dependencies(v: &mut impl ts_rs::TypeVisitor)
+    where
+        Self: 'static,
+    {
+        <Node<T> as ts_rs::TS>::visit_dependencies(v);
+    }
+    fn visit_generics(v: &mut impl ts_rs::TypeVisitor)
+    where
+        Self: 'static,
+    {
+        <Node<T> as ts_rs::TS>::visit_generics(v);
+        v.visit::<Node<T>>();
+    }
+    fn decl(_: &ts_rs::Config) -> String {
+        panic!("wrapper type cannot be declared")
+    }
+    fn decl_concrete(_: &ts_rs::Config) -> String {
+        panic!("wrapper type cannot be declared")
+    }
+}
+
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 pub type NodeRefMut<'a, T> = &'a mut Node<T>;
@@ -331,7 +497,7 @@ fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
         ))
     })?;
 
-    Ok(Expr::Literal(Box::new(Node::no_src(Literal {
+    Ok(Expr::Literal(BoxNode::new(Node::no_src(Literal {
         value: LiteralValue::Number {
             value,
             suffix: NumericSuffix::None,
@@ -453,7 +619,7 @@ impl Node<Program> {
                 if let Some(len) = length_units {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
-                        Expr::Name(Box::new(Name::new(len.to_string()))),
+                        Expr::Name(BoxNode::new(Name::new(len.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -469,7 +635,7 @@ impl Node<Program> {
             if let Some(len) = length_units {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
-                    Expr::Name(Box::new(Name::new(len.to_string()))),
+                    Expr::Name(BoxNode::new(Name::new(len.to_string()))),
                 );
             }
 
@@ -536,7 +702,7 @@ impl Node<Program> {
                 if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                        Expr::Name(Box::new(Name::new(level.as_str()))),
+                        Expr::Name(BoxNode::new(Name::new(level.as_str()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -552,7 +718,7 @@ impl Node<Program> {
             if let Some(level) = warning_level {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                    Expr::Name(Box::new(Name::new(level.as_str()))),
+                    Expr::Name(BoxNode::new(Name::new(level.as_str()))),
                 );
             }
 
@@ -2608,7 +2774,7 @@ pub struct LabeledArg {
 
 impl From<Node<CallExpressionKw>> for Expr {
     fn from(call_expression: Node<CallExpressionKw>) -> Self {
-        Expr::CallExpressionKw(Box::new(call_expression))
+        Expr::CallExpressionKw(BoxNode::new(call_expression))
     }
 }
 
@@ -3194,7 +3360,7 @@ impl From<&BoxNode<TagDeclarator>> for KclValue {
 
 impl From<&Node<TagDeclarator>> for KclValue {
     fn from(tag: &Node<TagDeclarator>) -> Self {
-        KclValue::TagDeclarator(Box::new(tag.clone()))
+        KclValue::TagDeclarator(BoxNode::new(tag.clone()))
     }
 }
 
@@ -3289,7 +3455,7 @@ impl PipeSubstitution {
 
 impl From<Node<PipeSubstitution>> for Expr {
     fn from(pipe_substitution: Node<PipeSubstitution>) -> Self {
-        Expr::PipeSubstitution(Box::new(pipe_substitution))
+        Expr::PipeSubstitution(BoxNode::new(pipe_substitution))
     }
 }
 
@@ -3308,7 +3474,7 @@ pub struct ArrayExpression {
 
 impl From<Node<ArrayExpression>> for Expr {
     fn from(array_expression: Node<ArrayExpression>) -> Self {
-        Expr::ArrayExpression(Box::new(array_expression))
+        Expr::ArrayExpression(BoxNode::new(array_expression))
     }
 }
 
@@ -3368,7 +3534,7 @@ pub struct ArrayRangeExpression {
 
 impl From<Node<ArrayRangeExpression>> for Expr {
     fn from(array_expression: Node<ArrayRangeExpression>) -> Self {
-        Expr::ArrayRangeExpression(Box::new(array_expression))
+        Expr::ArrayRangeExpression(BoxNode::new(array_expression))
     }
 }
 
@@ -3796,7 +3962,7 @@ pub struct PipeExpression {
 
 impl From<Node<PipeExpression>> for Expr {
     fn from(pipe_expression: Node<PipeExpression>) -> Self {
-        Expr::PipeExpression(Box::new(pipe_expression))
+        Expr::PipeExpression(BoxNode::new(pipe_expression))
     }
 }
 
@@ -4300,8 +4466,8 @@ impl FunctionExpression {
     }
 
     #[cfg(test)]
-    pub fn dummy() -> Box<Node<Self>> {
-        Box::new(Node::new(
+    pub fn dummy() -> BoxNode<Self> {
+        BoxNode::new(Node::new(
             FunctionExpression {
                 name: None,
                 params: Vec::new(),
@@ -5459,5 +5625,32 @@ fn demo(a) {
         assert!(meta.start_nodes.is_empty());
         assert_eq!(meta.non_code_nodes.len(), 1);
         assert_eq!(meta.non_code_nodes[&0][0].value(), "after 1");
+    }
+    #[test]
+    fn box_node_cow_clones_zero_for_parse_digest_node_paths() {
+        // compute_digest and fill_node_paths mutate the AST in place through
+        // BoxNode's copy-on-write DerefMut. On an exclusively owned tree
+        // (fresh from the parser), make_mut must never deep-clone; a nonzero
+        // delta here means some pass left an Arc shared before mutating.
+        let code = r#"fn cube(@side, center) {
+  x = if side > 1 { side * 2 } else { side + 1 }
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - side, center[1] - side])
+    |> line(end = [side * 2, 0], tag = $edge1)
+    |> line(end = [0, x])
+    |> close()
+    |> extrude(length = side)
+}
+part = cube(10, [0, 0])
+"#;
+        let before = BOX_NODE_COW_CLONES.load(std::sync::atomic::Ordering::Relaxed);
+        let (program, issues) = crate::Program::parse(code).unwrap();
+        assert!(issues.is_empty(), "{issues:?}");
+        let mut program = program.unwrap();
+        program.compute_digest();
+        let program = program.fill_node_paths();
+        drop(program);
+        let after = BOX_NODE_COW_CLONES.load(std::sync::atomic::Ordering::Relaxed);
+        assert_eq!(after, before, "BoxNode COW deep-cloned on an exclusively owned AST");
     }
 }

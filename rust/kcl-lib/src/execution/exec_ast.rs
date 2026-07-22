@@ -3528,7 +3528,7 @@ impl Node<BinaryExpression> {
                     match left_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromLeft { node });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let left_value = part.get_result(exec_state, ctx).await?;
@@ -3548,7 +3548,7 @@ impl Node<BinaryExpression> {
                     match right_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromRight { node, left });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let right_value = part.get_result(exec_state, ctx).await?;

@@ -231,7 +231,7 @@ pub struct KclFunctionSourceParams {
 impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
-        ast: Box<Node<FunctionExpression>>,
+        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
@@ -251,7 +251,11 @@ impl FunctionSource {
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+    pub fn kcl(
+        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        memory: EnvironmentRef,
+        params: KclFunctionSourceParams,
+    ) -> Self {
         let KclFunctionSourceParams {
             std_props,
             experimental,

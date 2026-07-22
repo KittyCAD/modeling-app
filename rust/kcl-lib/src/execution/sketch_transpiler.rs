@@ -32,6 +32,7 @@ use crate::frontend::create_vertical_ast;
 use crate::frontend::sketch::Point2d;
 use crate::frontend::to_ast_point2d;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
 
 mod intermediate_var;
 mod region;
@@ -120,7 +121,7 @@ pub fn transpile_all_old_sketches_to_new(
         if let ast::BodyItem::VariableDeclaration(var_decl) = item
             && let Some(sketch_block) = sketch_blocks.get(&var_decl.declaration.id.name)
         {
-            var_decl.declaration.init = ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block.clone())));
+            var_decl.declaration.init = ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_block.clone())));
         }
     }
     if !sketch_blocks.is_empty() {
@@ -159,7 +160,7 @@ pub fn transpile_old_sketch_to_new(
     let program = ast::Program {
         body: vec![ast::BodyItem::ExpressionStatement(ast::Node::no_src(
             ast::ExpressionStatement {
-                expression: ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_block))),
+                expression: ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_block))),
                 digest: None,
             },
         ))],
@@ -528,7 +529,7 @@ fn transpiler_create_segment_declaration(
         ),
     };
 
-    Ok(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+    Ok(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
         ast::VariableDeclaration {
             kind: ast::VariableKind::Const,
             declaration: ast::Node::no_src(ast::VariableDeclarator {
@@ -725,7 +726,7 @@ fn create_arc_size_constraint_ast_from_name(
     num: Number,
 ) -> Result<ast::Expr, KclError> {
     let segment_expr = ast_name_expr(segment_name.to_string());
-    let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    let call_ast = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast::Name {
             name: ast::Node::no_src(ast::Identifier {
                 name: function_name.to_owned(),
@@ -747,11 +748,11 @@ fn create_arc_size_constraint_ast_from_name(
         ))
     })?;
 
-    Ok(ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(
         ast::BinaryExpression {
             left: call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: num.value,
                     suffix: num.units,
@@ -852,7 +853,7 @@ fn extract_sketch_surface_expr_from_start_sketch_on(
         return Ok(surface_expr.clone());
     }
 
-    Ok(ast::Expr::CallExpressionKw(Box::new(call.clone())))
+    Ok(ast::Expr::CallExpressionKw(BoxNode::new(call.clone())))
 }
 
 /// Get a Sketch value from ExecOutcome's variables.
