@@ -5,8 +5,11 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
-import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
-import type { IErrorType } from '@src/network/utils'
+import {
+  CONNECTION_ERROR_TEXT,
+  ConnectionError,
+} from '@src/lib/engineConnection/utils'
+import type { IErrorType } from '@src/lib/engineConnection/utils'
 
 import { ActionButton } from '@src/components/ActionButton'
 

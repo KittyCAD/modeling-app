@@ -1,10 +1,8 @@
 import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
-import { ActionButton } from '@src/components/ActionButton'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
-import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { FILE_EXT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
@@ -173,10 +171,23 @@ function AppProjectCard({
   }
 
   useEffect(() => {
-    if (inputRef.current && isEditing) {
+    if (!isEditing) {
+      return
+    }
+
+    // Context menu actions run before the Headless UI dialog finishes closing.
+    // Select after that focus restoration so project rename behaves like the
+    // old hover action buttons.
+    const timeout = window.setTimeout(() => {
+      if (!inputRef.current) {
+        return
+      }
+
       inputRef.current.focus()
       inputRef.current.select()
-    }
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [isEditing])
 
   useEffect(() => {
@@ -266,45 +277,6 @@ function AppProjectCard({
     </>
   )
 
-  const actions = (
-    <>
-      <ActionButton
-        disabled={!canRename}
-        Element="button"
-        iconStart={{
-          icon: 'sketch',
-          iconClassName: 'dark:!text-chalkboard-20',
-          bgClassName: '!bg-transparent',
-        }}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsEditing(true)
-        }}
-        className="!p-0"
-      >
-        <Tooltip position="top-right">Rename project</Tooltip>
-      </ActionButton>
-      <ActionButton
-        disabled={!canDelete}
-        Element="button"
-        iconStart={{
-          icon: 'trash',
-          iconClassName: 'dark:!text-chalkboard-30',
-          bgClassName: '!bg-transparent',
-        }}
-        className="!p-0"
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsConfirmingDelete(true)
-        }}
-      >
-        <Tooltip position="top-right">Delete project</Tooltip>
-      </ActionButton>
-    </>
-  )
-
   const dialogs = (
     <>
       {isConfirmingDelete && (
@@ -339,8 +311,31 @@ function AppProjectCard({
       thumbnailUrl={imageUrl}
       badges={badges}
       details={details}
-      actions={actions}
-      actionsLabel={project.name?.replace(FILE_EXT, '')}
+      renderContextMenu={({ menuTargetElement }) => (
+        <ContextMenu
+          menuTargetElement={menuTargetElement}
+          items={[
+            <ContextMenuItem
+              key="rename"
+              icon="sketch"
+              disabled={!canRename}
+              data-testid="project-card-context-rename"
+              onClick={() => setIsEditing(true)}
+            >
+              Rename project
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="delete"
+              icon="trash"
+              disabled={!canDelete}
+              data-testid="project-card-context-delete"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete project
+            </ContextMenuItem>,
+          ]}
+        />
+      )}
       renameForm={
         <ProjectCardRenameForm
           onSubmit={handleSave}

@@ -2,7 +2,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 /**
  * Reset the camera position to a baseline, which is isometric for

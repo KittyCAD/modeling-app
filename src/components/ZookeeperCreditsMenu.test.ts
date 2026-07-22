@@ -1,7 +1,8 @@
+import {
+  type BillingContext,
+  getEstimatedBillingBalance,
+} from '@src/lib/billing'
 import { expect, test } from 'vitest'
-
-import { getEstimatedBillingBalance } from '@src/lib/billingEstimate'
-import type { BillingContext } from '@src/machines/billingMachine'
 
 const BILLING_CONTEXT_DEFAULTS: BillingContext = {
   balance: undefined,
