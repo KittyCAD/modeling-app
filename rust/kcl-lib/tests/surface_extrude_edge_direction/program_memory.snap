@@ -66,10 +66,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 155,
-            "end": 162,
+            "commentStart": 125,
+            "end": 132,
             "moduleId": 0,
-            "start": 155,
+            "start": 125,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 155,
-            "end": 162,
+            "commentStart": 125,
+            "end": 132,
             "moduleId": 0,
-            "start": 155,
+            "start": 125,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 281,
-            "end": 288,
+            "commentStart": 251,
+            "end": 258,
             "moduleId": 0,
-            "start": 281,
+            "start": 251,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 403,
-            "end": 408,
+            "commentStart": 373,
+            "end": 378,
             "moduleId": 0,
-            "start": 403,
+            "start": 373,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +139,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 155,
-              "end": 162,
+              "commentStart": 125,
+              "end": 132,
               "moduleId": 0,
-              "start": 155,
+              "start": 125,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -169,10 +169,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 155,
-              "end": 162,
+              "commentStart": 125,
+              "end": 132,
               "moduleId": 0,
-              "start": 155,
+              "start": 125,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -199,10 +199,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
             ],
             "radius": 3.4399127895922015,
             "tag": {
-              "commentStart": 281,
-              "end": 288,
+              "commentStart": 251,
+              "end": 258,
               "moduleId": 0,
-              "start": 281,
+              "start": 251,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -223,10 +223,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
               -3.01
             ],
             "tag": {
-              "commentStart": 403,
-              "end": 408,
+              "commentStart": 373,
+              "end": 378,
               "moduleId": 0,
-              "start": 403,
+              "start": 373,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -358,10 +358,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 155,
-            "end": 162,
+            "commentStart": 125,
+            "end": 132,
             "moduleId": 0,
-            "start": 155,
+            "start": 125,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -405,10 +405,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 281,
-            "end": 288,
+            "commentStart": 251,
+            "end": 258,
             "moduleId": 0,
-            "start": 281,
+            "start": 251,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -446,10 +446,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
             -3.01
           ],
           "tag": {
-            "commentStart": 403,
-            "end": 408,
+            "commentStart": 373,
+            "end": 378,
             "moduleId": 0,
-            "start": 403,
+            "start": 373,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -555,10 +555,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 155,
-            "end": 162,
+            "commentStart": 125,
+            "end": 132,
             "moduleId": 0,
-            "start": 155,
+            "start": 125,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 155,
-            "end": 162,
+            "commentStart": 125,
+            "end": 132,
             "moduleId": 0,
-            "start": 155,
+            "start": 125,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -615,10 +615,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 281,
-            "end": 288,
+            "commentStart": 251,
+            "end": 258,
             "moduleId": 0,
-            "start": 281,
+            "start": 251,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -639,10 +639,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
             -3.01
           ],
           "tag": {
-            "commentStart": 403,
-            "end": 408,
+            "commentStart": 373,
+            "end": 378,
             "moduleId": 0,
-            "start": 403,
+            "start": 373,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1109,10 +1109,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
                   ],
                   "radius": 3.1761612049768506,
                   "tag": {
-                    "commentStart": 155,
-                    "end": 162,
+                    "commentStart": 125,
+                    "end": 132,
                     "moduleId": 0,
-                    "start": 155,
+                    "start": 125,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
                   ],
                   "radius": 3.4399127895922015,
                   "tag": {
-                    "commentStart": 281,
-                    "end": 288,
+                    "commentStart": 251,
+                    "end": 258,
                     "moduleId": 0,
-                    "start": 281,
+                    "start": 251,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1197,10 +1197,10 @@ description: Variables in memory after executing surface_extrude_edge_direction.
                     -3.01
                   ],
                   "tag": {
-                    "commentStart": 403,
-                    "end": 408,
+                    "commentStart": 373,
+                    "end": 378,
                     "moduleId": 0,
-                    "start": 403,
+                    "start": 373,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

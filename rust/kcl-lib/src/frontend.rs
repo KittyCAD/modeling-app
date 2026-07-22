@@ -746,7 +746,7 @@ impl SketchApi for FrontendState {
             web_sys::console::warn_1(
                 &format!(
                     "WARNING: exit_sketch: current state's sketch mode ID doesn't match the given sketch ID; state={:#?}, given={sketch:?}",
-                    &self.scene_graph.sketch_mode
+                    self.scene_graph.sketch_mode
                 )
                 .into(),
             );
@@ -1925,6 +1925,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             filenames,
             default_planes,
             ..
@@ -1944,6 +1945,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             issues: non_fatal,
             default_planes,
         })
@@ -1976,7 +1978,7 @@ impl FrontendState {
             web_sys::console::error_1(
                 &format!(
                     "Sketch not found; sketch_id={sketch_id:?}, self.scene_graph.objects={:#?}",
-                    &self.scene_graph.objects
+                    self.scene_graph.objects
                 )
                 .into(),
             );
@@ -5049,7 +5051,7 @@ fn only_sketch_block(
         web_sys::console::warn_1(
             &format!(
                 "only_sketch_block: target sketch block ref doesn't have node path; sketch_block_ref={:#?}, edit_kind={edit_kind:#?}",
-                &sketch_block_ref
+                sketch_block_ref
             )
             .into(),
         );
@@ -7323,6 +7325,43 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_constraint_array_index_oob_fails_in_sketch_mode() {
+        let initial_source = "\
+arr = [0]
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        // In sketch mode execution, an out-of-bounds array index is an error.
+        // It should not fall back to the first element of the array the way
+        // plain mock execution does.
+        let err = frontend
+            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
+            .await
+            .expect_err("expected out-of-bounds array index to be an error in sketch mode execution");
+        let message = err.error.message();
+        assert!(
+            message.contains("The array doesn't have any item at index 5"),
+            "unexpected error message: {message}"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoint_round_trip_restores_state() {
         let mut frontend = FrontendState::new();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
@@ -7658,13 +7697,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  point(at = [1in, 2in])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_point_edit_point_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
@@ -7693,13 +7726,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  point(at = [3in, 4in])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_point_edit_point_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
@@ -7770,13 +7797,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_edit_line_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
@@ -7817,13 +7838,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [1mm, 2mm], end = [13mm, 14mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_edit_line_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -7904,13 +7919,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_arc_edit_arc_1", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_objects,
             vec![ObjectId(2), ObjectId(3), ObjectId(4), ObjectId(5)]
@@ -7964,13 +7973,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_arc_edit_arc_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 6);
 
@@ -8026,13 +8029,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_circle_edit_circle_1", src_delta.text.as_str());
         // The new objects are start, center, and then the circle segment.
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
@@ -8071,13 +8068,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_circle_edit_circle_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -8113,12 +8104,7 @@ bad = missing_name
             .delete_objects(&mock_ctx, version, sketch_id, vec![], vec![circle_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_circle", src_delta.text.as_str());
         let new_sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let new_sketch = expect_sketch(new_sketch_object);
         assert_eq!(new_sketch.segments.len(), 0);
@@ -8189,13 +8175,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle(start = [var 7mm, var 1mm], center = [var 0mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_circle_via_point", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -8246,13 +8226,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "s = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_line_when_sketch_block_uses_variable", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -8323,17 +8297,11 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_delete_sketch_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(src_delta.text.as_str(), "");
+        insta::assert_snapshot!("test_new_sketch_add_line_delete_sketch_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8357,7 +8325,10 @@ bad = missing_name
         let sketch_id = sketch_object.id;
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(src_delta.text.as_str(), "");
+        insta::assert_snapshot!(
+            "test_delete_sketch_when_sketch_block_uses_variable",
+            src_delta.text.as_str()
+        );
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8397,7 +8368,7 @@ sketch001 = sketch(on = XZ) {
             src_delta.text
         );
         // The leading line comment must survive deletion.
-        assert_eq!(src_delta.text.as_str(), "// test 1\n");
+        insta::assert_snapshot!("test_delete_sketch_after_comment", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8430,7 +8401,10 @@ foo = 1
 
         let (src_delta, _scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
         // The leading comment should remain, now attached to the following body item.
-        assert_eq!(src_delta.text.as_str(), "// keep me\nfoo = 1\n");
+        insta::assert_snapshot!(
+            "test_delete_sketch_preserves_pre_comment_when_followed_by_code",
+            src_delta.text.as_str()
+        );
 
         ctx.close().await;
     }
@@ -8466,16 +8440,7 @@ sketch(on = XY) {
             .unwrap();
         // The line comment on the line above the deleted point must be preserved.
         // It is reattached to the next surviving body item.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  // describe the middle point
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_segment_preserves_pre_comment", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -8511,14 +8476,9 @@ sketch(on = XY) {
             .unwrap();
         // No following item to attach to; the comment is kept inside the sketch
         // block as trailing non-code metadata so the user does not lose it.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  // describe the trailing point
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_last_segment_preserves_pre_comment",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -8609,16 +8569,9 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  /* above first - moves to middle */
-  /* above middle - stays */
-  point(at = [var 3, var 4])
-  /* above last - moves to trailing meta */
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_segments_preserves_block_comments_across_positions",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -8668,14 +8621,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line(start = [var 5in, var 6in], end = [var 3, var 4])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_when_editing_its_start_point", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -8725,14 +8671,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line(start = [var 1, var 2], end = [var 5in, var 6in])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_when_editing_its_end_point", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -8790,18 +8729,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])
-  line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])
-  fixed([line1.start, [0, 0]])
-  coincident([line1.end, line2.start])
-  equalLength([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_with_coincident_feedback", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             11,
@@ -9007,6 +8935,7 @@ cylinder = startSketchOn(XY)
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
@@ -9159,6 +9088,7 @@ sketch(on = XY) {
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
@@ -9194,13 +9124,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 25mm, var 0])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_by_node_path_updates_sketch_var",
+            source_delta.text
         );
     }
 
@@ -9258,16 +9184,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-// added comment
-// added comment
-
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_survives_whitespace_shift_earlier_in_file",
+            source_delta.text
         );
     }
 
@@ -9307,13 +9226,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 33mm, var 0mm], end = [var 20mm, var 0mm])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_node_path_wins_when_source_range_points_at_wrong_var",
+            source_delta.text
         );
     }
 
@@ -9360,16 +9275,7 @@ sketch(on = XY) {
         // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
         // written as an explicit suffix so the bare var commits with units.
         // The recast adds a blank line after the `@settings` annotation.
-        assert_eq!(
-            source_delta.text,
-            "\
-@settings(experimentalFeatures = allow, kclVersion = 2.0)
-
-sketch(on = XY) {
-  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
-}
-",
-        );
+        insta::assert_snapshot!("test_commit_var_solution_writes_back_into_bare_var", source_delta.text);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -9401,15 +9307,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_point_without_var", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
@@ -9446,15 +9344,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_point_with_var", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
@@ -9493,14 +9383,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point1_id, point2_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_multiple_points", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
@@ -9538,16 +9421,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_coincident_constraint", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -9583,13 +9457,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_coincident_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9630,13 +9500,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_distance_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9678,13 +9544,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point2_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_point_cascades_to_horizontal_distance_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9725,14 +9587,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line1_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_line_cascades_to_fixed_constraint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -9772,13 +9627,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line1_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_midpoint_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9883,15 +9734,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  equalLength([line1, line2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_preserves_multiline_equal_length_constraint",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10109,13 +9954,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line2_id, line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_lines_removes_multiline_equal_length_constraint_below_minimum",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10155,15 +9996,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  parallel([line1, line2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_preserves_multiline_parallel_constraint",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10213,13 +10048,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line2_id, line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_lines_removes_multiline_parallel_constraint_below_minimum",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10259,15 +10090,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_line_line_coincident_constraint", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
@@ -10306,16 +10129,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 3, var 4])
-  point2 = point(at = [3, 4])
-  coincident([point1, point2])
-}
-"
-        );
+        insta::assert_snapshot!("test_two_points_coincident", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -10365,17 +10179,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 3, var 4])
-  point2 = point(at = [var 3, var 4])
-  point3 = point(at = [var 3, var 4])
-  coincident([point1, point2, point3])
-}
-"
-        );
+        insta::assert_snapshot!("test_three_points_coincident", src_delta.text.as_str());
 
         let constraint_object = scene_delta
             .new_graph
@@ -10451,25 +10255,9 @@ sketch(on = XY) {
 }
 ";
 
-        for (origin_first, expected_source) in [
-            (
-                true,
-                "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 0])
-  coincident([ORIGIN, point1])
-}
-",
-            ),
-            (
-                false,
-                "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 0])
-  coincident([point1, ORIGIN])
-}
-",
-            ),
+        for (origin_first, snapshot_name) in [
+            (true, "test_point_origin_coincident_preserves_order_origin_first"),
+            (false, "test_point_origin_coincident_preserves_order_point_first"),
         ] {
             let program = Program::parse(initial_source).unwrap().0.unwrap();
 
@@ -10497,7 +10285,7 @@ sketch(on = XY) {
                 .add_constraint(&mock_ctx, version, sketch_id, constraint)
                 .await
                 .unwrap();
-            assert_eq!(src_delta.text.as_str(), expected_source);
+            insta::assert_snapshot!(snapshot_name, src_delta.text.as_str());
 
             let constraint_object = scene_delta
                 .new_graph
@@ -10548,16 +10336,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 4, var 5])
-  line2 = line(start = [var 4, var 5], end = [var 7, var 8])
-  coincident([line1.end, line2.start])
-}
-"
-        );
+        insta::assert_snapshot!("test_coincident_of_line_end_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -10629,15 +10408,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  circle1 = circle(start = [var 7.02mm, var 0mm], center = [var -0.01mm, var 0.22mm])
-  line1 = line(start = [var 7mm, var 0.78mm], end = [var 10mm, var 2mm])
-  coincident([line1.start, circle1])
-}
-"
+        insta::assert_snapshot!(
+            "test_coincident_of_line_point_and_circle_segment",
+            src_delta.text.as_str()
         );
 
         mock_ctx.close().await;
@@ -10835,17 +10608,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1.29, var 2.29])
-  point2 = point(at = [var 2.71, var 3.71])
-  distance([point1, point2]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -10905,16 +10668,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1.29, var 2.29])
-  point2 = point(at = [var 2.71, var 3.71])
-  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_two_points_with_label", src_delta.text.as_str());
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
@@ -10993,16 +10747,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 2])
-  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_distance_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11155,16 +10900,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 5])
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  distance([point1, line1], labelPosition = [10mm, 11mm]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_point_line", src_delta.text.as_str());
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
         let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
@@ -11228,16 +10964,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 8])
-  arc1 = arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
-  distance([point1, arc1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_point_arc", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11290,15 +11017,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -4.16mm, var -0.43mm], end = [var -3.53mm, var 3.28mm], center = [var -4.91mm, var 1.61mm])
-  distance([arc1, ORIGIN]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_arc_origin", src_delta.text.as_str());
 
         mock_ctx.close().await;
     }
@@ -11350,15 +11069,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 5, var 0], end = [var 5, var 10])
-  distance([ORIGIN, line1]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_line_origin", src_delta.text.as_str());
 
         mock_ctx.close().await;
     }
@@ -11422,16 +11133,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var -10, var 8], end = [var 10, var 8])
-  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
-  distance([line1, circle1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_line_circle", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11496,16 +11198,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  circle1 = circle(start = [var 4.33, var 0], center = [var -0.34, var -0.09])
-  arc1 = arc(start = [var 15.33, var -0.01], end = [var 10.01, var 4.33], center = [var 11.34, var 0.53])
-  distance([circle1, arc1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_circle_arc", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11559,16 +11252,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
-  distance([line1, line2]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_parallel_lines", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11622,15 +11306,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 4.98, var -0.07], end = [var 4.98, var 0.14])
-  line2 = line(start = [var 0.02, var 4.3], end = [var 0.03, var 5.65])
-  distance([line1, line2]) == 5mm
-}
-"
+        insta::assert_snapshot!(
+            "test_distance_non_parallel_lines_lowers_to_distance",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -11685,17 +11363,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  horizontalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_horizontal_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -11764,16 +11432,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  radius(arc1) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_radius_single_arc_segment", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
@@ -11841,14 +11500,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
-}
-"
+        insta::assert_snapshot!(
+            "test_radius_single_arc_segment_with_label_position",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -11908,15 +11562,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
-  radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_radius_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11978,17 +11624,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  verticalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_vertical_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -12054,15 +11690,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2, var 3])
-  fixed([point1, [2mm, 3mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_standalone_point", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             4,
@@ -12136,17 +11764,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2, var 3])
-  point2 = point(at = [var 4, var 5])
-  fixed([point1, [2mm, 3mm]])
-  fixed([point2, [4mm, 5mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_multiple_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12203,15 +11821,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 3], end = [var 3, var 4])
-  fixed([line1.start, [2mm, 3mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_owned_point", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12337,16 +11947,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  diameter(arc1) == 10mm
-}
-"
-        );
+        insta::assert_snapshot!("test_diameter_single_arc_segment", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
@@ -12414,14 +12015,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
-}
-"
+        insta::assert_snapshot!(
+            "test_diameter_single_arc_segment_with_label_position",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -12481,15 +12077,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
-  diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_diameter_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -12596,15 +12184,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 3], end = [var 3, var 3])
-  horizontal(line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_line_horizontal", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12991,15 +12571,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 2], end = [var 2, var 4])
-  vertical(line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_line_vertical", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -13044,16 +12616,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var 4mm, var 3.1mm])
-  pf = point(at = [4, 4])
-  vertical([p0, pf])
-}
-"
-        );
+        insta::assert_snapshot!("test_points_vertical", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -13098,16 +12661,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 4mm])
-  pf = point(at = [4, 4])
-  horizontal([p0, pf])
-}
-"
-        );
+        insta::assert_snapshot!("test_points_horizontal", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -13148,15 +12702,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 0mm])
-  horizontal([p0, ORIGIN])
-}
-"
-        );
+        insta::assert_snapshot!("test_point_horizontal_with_origin", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             4,
@@ -13199,16 +12745,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  equalLength([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_equal_length", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13252,17 +12789,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
-  equalLength([line1, line2, line3])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_constraint_multi_line_equal_length", src_delta.text.as_str());
         let constraints = scene_delta
             .new_graph
             .objects
@@ -13316,16 +12843,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  parallel([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_parallel", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13370,17 +12888,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
-  parallel([line1, line2, line3])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_parallel_multiline", src_delta.text.as_str());
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
@@ -13430,16 +12938,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 3], end = [var 2, var 3])
-  line2 = line(start = [var 6, var 7], end = [var 6, var 7])
-  perpendicular([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_perpendicular", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13487,17 +12986,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0.9, var 2.36], end = [var 3.1, var 3.64])
-  line2 = line(start = [var 5.36, var 5.9], end = [var 6.64, var 8.1])
-  angle([line1, line2]) == 30deg
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_angle", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13540,16 +13029,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.27])
-  arc1 = arc(start = [var 4.51, var 2.03], end = [var 7.05, var 2.02], center = [var 5.78, var 2.55])
-  tangent([line1, arc1])
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_tangent", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             10,
@@ -13594,16 +13074,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2.33, var 1.67])
-  line1 = line(start = [var -0.67, var -0.33], end = [var 5.33, var 3.67])
-  midpoint(line1, point = point1)
-}
-"
-        );
+        insta::assert_snapshot!("test_point_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7,
@@ -13649,17 +13120,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 0, var 4])
-  line2 = line(start = [var 4, var 0], end = [var 4, var 4])
-  line3 = line(start = [var 2, var -1], end = [var 2, var 5])
-  symmetric([line1, line2], axis = line3)
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_symmetric", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             12,
@@ -13703,16 +13164,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 6, var 2.35])
-  arc1 = arc(start = [var 6, var 2.35], end = [var 6, var 2.35], center = [var 6, var 1.94])
-  midpoint(arc1, point = point1)
-}
-"
-        );
+        insta::assert_snapshot!("test_point_arc_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             8,
@@ -13754,15 +13206,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var -3, var -2], end = [var 3, var 2])
-  midpoint(line1, point = ORIGIN)
-}
-"
-        );
+        insta::assert_snapshot!("test_origin_line_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -13804,15 +13248,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 0.35, var 2.24], end = [var 1.62, var -1.58], center = [var 2.34, var 0.78])
-  midpoint(arc1, point = ORIGIN)
-}
-"
-        );
+        insta::assert_snapshot!("test_origin_arc_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7,
@@ -13858,17 +13294,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
-  arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
-  line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
-  symmetric([arc1, arc2], axis = line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_symmetric_arcs", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             14,
@@ -14294,24 +13720,7 @@ plane = planeOf(cube, face = side)
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-len = 2mm
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [len, 0], tag = $side)
-  |> line(end = [0, len])
-  |> line(end = [-len, 0])
-  |> line(end = [0, -len])
-  |> close()
-  |> extrude(length = len)
-
-plane = planeOf(cube, face = side)
-sketch001 = sketch(on = plane) {
-}
-"
-        );
+        insta::assert_snapshot!("test_sketch_on_plane_incremental", src_delta.text.as_str());
         assert_eq!(sketch_id, ObjectId(2));
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
         let sketch_object = &scene_delta.new_graph.objects[2];
@@ -14360,15 +13769,7 @@ sketch1 = sketch(on = XY) {
             .await
             .unwrap();
 
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch1 = sketch(on = XY) {
-}
-sketch001 = sketch(on = YZ) {
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_uses_unique_variable_name", src_delta.text.as_str());
 
         ctx.close().await;
     }
@@ -14396,15 +13797,7 @@ sketch1 = sketch(on = XY) {
             .await
             .unwrap();
 
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch1 = sketch(on = XY) {
-}
-sketch001 = sketch(on = XY) {
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_twice_using_same_plane", src_delta.text.as_str());
 
         ctx.close().await;
     }
@@ -14552,43 +13945,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        insta::assert_snapshot!("test_multiple_sketch_blocks_1", src_delta.text.as_str());
         let edited_sketch1_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
@@ -14644,43 +14001,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        insta::assert_snapshot!("test_multiple_sketch_blocks_2", src_delta.text.as_str());
         let edited_sketch2_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
@@ -14761,8 +14082,6 @@ sketch002 = sketch(on = XY) {
         // Extra newlines after @settings line - this shifts all source ranges.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
   point(at = [1in, 2in])
 }
@@ -14836,8 +14155,6 @@ sketch001 = sketch(on = XY) {
         // Extra newlines after @settings, with an empty sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 s = sketch(on = XY) {}
 ";
 
@@ -14896,7 +14213,6 @@ s = sketch(on = XY) {}
     async fn test_extra_newlines_between_operations_edit_line() {
         // Extra newlines between @settings and sketch, and inside the sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
 
 sketch001 = sketch(on = XY) {
 
@@ -14989,8 +14305,6 @@ sketch001 = sketch(on = XY) {
         // Extra whitespace before and after the sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
   circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
@@ -15034,9 +14348,6 @@ sketch001 = sketch(on = XY) {
     async fn test_unformatted_source_add_arc() {
         // Source with inconsistent whitespace - tabs, extra spaces, multiple blank lines.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
-
 
 sketch001 = sketch(on = XY) {
 }
@@ -15109,8 +14420,6 @@ sketch001 = sketch(on = XY) {
         // Extra blank lines between settings and sketch.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
 }
 ";
@@ -15171,8 +14480,6 @@ sketch001 = sketch(on = XY) {
     async fn test_extra_newlines_add_constraint() {
         // Extra newlines with a sketch containing two lines - add a coincident constraint.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])
@@ -15253,8 +14560,6 @@ sketch001 = sketch(on = XY) {
     async fn test_extra_newlines_add_line_then_edit_line() {
         // Extra newlines after @settings - add a line, then edit it.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
 
 sketch001 = sketch(on = XY) {
 }

@@ -8,6 +8,9 @@ lint:
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
+    # kcl-wasm-lib
+    # TODO: Add --all-targets. It currently has a bunch of failures.
+    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix
@@ -89,11 +92,15 @@ bump-kcl-crate-versions bump='patch':
     ./target/debug/kcl-bumper --bump {{ bump }}
     cargo check -p kcl-bumper # this way Cargo.lock gets updated
 
-publish-kcl version:
+publish-kcl-part1:
+    cargo publish -p kcl-error
+    @echo "You should now update the transitive kcl-error dependency and commit this."
+    @echo "    cargo update -p kcl-error@<old-version>"
+
+publish-kcl-part2 version:
     git tag kcl-{{ version }} -m "Release kcl-{{ version }}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
-    cargo publish -p kcl-error
     cargo publish -p kcl-api
     cargo publish -p kcl-syntax
     cargo publish -p kcl-lib

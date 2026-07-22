@@ -2339,11 +2339,37 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
         },
         commandName: 'Revolve',
       })
+      await cmdBar.clickOptionalArgument('axis')
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'Sketch Axis',
+        currentArgValue: '',
+        headerArguments: {
+          'Sketch Axis': '',
+          Angle: newAngle,
+        },
+        highlightedHeaderArg: 'Sketch Axis',
+        stage: 'arguments',
+      })
+      await cmdBar.selectOption({ name: 'X Axis' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          'Sketch Axis': 'X',
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
       await cmdBar.progressCmdBar()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        newCodeToFind
+          .replace('angle = 360deg', 'angle = angle001')
+          .replace(
+            'axis = getCommonEdge(faces = [region001.tags.line1, capEnd001])',
+            'axis = X'
+          )
       )
     })
   })

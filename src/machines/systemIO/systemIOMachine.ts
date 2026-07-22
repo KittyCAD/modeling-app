@@ -2,6 +2,7 @@ import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
+  ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -79,12 +80,19 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.createProject
-          data: { requestedProjectName: string }
+          data: {
+            /** Local project directory name used as the stable identifier. */
+            requestedProjectName: string
+            /** Human-facing project title to write to project.toml. */
+            requestedProjectTitle?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.renameProject
           data: {
+            /** New human-facing project title to write to project.toml. */
             requestedProjectName: string
+            /** Existing local project directory name used as the stable identifier. */
             projectName: string
             redirect: boolean
           }
@@ -169,6 +177,8 @@ export const systemIOMachine = setup({
             fileName: string
             shouldNavigate: boolean
             onProjectLoaderComplete?: () => void
+            message?: string
+            toastId?: string
           }
         }
       | {
@@ -385,6 +395,17 @@ export const systemIOMachine = setup({
       },
     }),
     [SystemIOMachineActions.toastSuccess]: ({ event }) => {
+      // Operations may carry a stable `toastId` on their output so repeated
+      // completions collapse into a single updating toast instead of stacking
+      // duplicates (e.g. Zookeeper streams several bulk writes per edit).
+      const toastId =
+        'output' in event &&
+        event.output !== null &&
+        typeof event.output === 'object' &&
+        'toastId' in event.output &&
+        typeof event.output.toastId === 'string'
+          ? event.output.toastId
+          : undefined
       toast.success(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
@@ -392,7 +413,8 @@ export const systemIOMachine = setup({
             'message' in event.output &&
             typeof event.output.message === 'string' &&
             event.output.message) ||
-          ''
+          '',
+        toastId ? { id: toastId } : undefined
       )
     },
     [SystemIOMachineActions.toastError]: ({ event }) => {
@@ -405,6 +427,18 @@ export const systemIOMachine = setup({
             event.error instanceof Error &&
             event.error.message) ||
           'Unknown error in SystemIOMachine.'
+      )
+    },
+    // Zookeeper streams several bulk writes per edit; a failing edit can reject
+    // each one back-to-back. Share a stable toast id so those errors collapse
+    // into a single toast instead of stacking duplicates.
+    [SystemIOMachineActions.toastErrorZookeeperFileWrite]: ({ event }) => {
+      toast.error(
+        ('error' in event &&
+          event.error instanceof Error &&
+          event.error.message) ||
+          'Unknown error in SystemIOMachine.',
+        { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
       )
     },
     [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({
@@ -453,9 +487,13 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
-        input: { context, requestedProjectName },
+        input: { context, requestedProjectName, requestedProjectTitle },
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectTitle?: string
+        }
       }) => {
         return { message: '', name: '' }
       }
@@ -1071,6 +1109,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectTitle: event.data.requestedProjectTitle,
           }
         },
         onDone: {
@@ -1657,7 +1696,7 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.toastError],
+          actions: [SystemIOMachineActions.toastErrorZookeeperFileWrite],
         },
       },
     },

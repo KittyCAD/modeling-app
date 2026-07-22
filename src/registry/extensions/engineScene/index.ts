@@ -21,11 +21,13 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   nullableStatusBarItem,
+  statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
@@ -37,8 +39,20 @@ const ENGINE_SCENE_COMMAND_GROUP_ID = 'engineScene'
 const ENGINE_SCENE_KEYMAP_SOURCE = 'Engine scene'
 
 export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
+  captureScreenshot: 'zds.engineScene.captureScreenshot',
   openMeasureTool: 'zds.engineScene.openMeasureTool',
 } as const)
+
+const captureScreenshotCommand: Command = {
+  id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
+  displayName: 'Capture screenshot',
+  description: 'Save the current modeling viewport as a PNG image.',
+  icon: 'camera',
+  needsReview: false,
+  onSubmit: saveViewportScreenshot,
+}
 
 const openMeasureToolCommand: Command = {
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
@@ -100,6 +114,11 @@ const SelectionReferencesPopover = lazy(async () => {
 const MeasurementStatusBarItem = lazy(async () => {
   const { MeasurementStatusBarItem } = await import('./MeasurementTool')
   return { default: MeasurementStatusBarItem }
+})
+
+const ScreenshotStatusBarItem = lazy(async () => {
+  const { ScreenshotStatusBarItem } = await import('./ScreenshotStatusBarItem')
+  return { default: ScreenshotStatusBarItem }
 })
 
 const EngineSceneUnitsMenu = () =>
@@ -181,6 +200,13 @@ const EngineSceneMeasurementStatusBarItem = () =>
     createElement(MeasurementStatusBarItem)
   )
 
+const EngineSceneScreenshotStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(ScreenshotStatusBarItem)
+  )
+
 /**
  * Engine scene extension.
  *
@@ -213,6 +239,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'measure',
             component: EngineSceneMeasurementStatusBarItem,
             order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
+  const screenshotStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'capture-screenshot',
+            component: EngineSceneScreenshotStatusBarItem,
+            order: 8,
             scopes: ['file'],
           }
         : null
@@ -259,8 +297,10 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provideCommand(captureScreenshotCommand),
         provideCommand(openMeasureToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),
+        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
         provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),

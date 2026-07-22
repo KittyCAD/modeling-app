@@ -1367,7 +1367,7 @@ test(
 
       await expect(page.getByTestId('project-directory-button')).toBeVisible()
       originalProjectDirName = await page
-        .locator('section#projectDirectory input')
+        .getByTestId('project-directory-input')
         .inputValue()
 
       const handleFile = tronApp.electron.evaluate(
@@ -1381,7 +1381,7 @@ test(
       await handleFile
 
       await expect
-        .poll(() => page.locator('section#projectDirectory input').inputValue())
+        .poll(() => page.getByTestId('project-directory-input').inputValue())
         .toContain(newProjectDirName)
 
       await page.getByTestId('settings-close-button').click()
@@ -1415,7 +1415,7 @@ test(
       await handleFile
 
       await homePage.projectsLoaded()
-      await expect(page.locator('section#projectDirectory input')).toHaveValue(
+      await expect(page.getByTestId('project-directory-input')).toHaveValue(
         originalProjectDirName
       )
 

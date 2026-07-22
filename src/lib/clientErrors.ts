@@ -13,6 +13,7 @@ type ReportClientErrorParams = {
 }
 
 export enum ClientErrorCode {
+  EngineDisconnect = 'engine_disconnect',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',

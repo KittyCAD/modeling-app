@@ -8,7 +8,9 @@ use std::task::Poll;
 pub struct JsFuture(pub Option<wasm_bindgen_futures::JsFuture>);
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
+#[expect(unsafe_code)]
 unsafe impl Send for JsFuture {}
+#[expect(unsafe_code)]
 unsafe impl Sync for JsFuture {}
 
 impl std::future::Future for JsFuture {
@@ -46,7 +48,9 @@ impl From<js_sys::Promise> for JsFuture {
 pub struct Promise(pub Option<js_sys::Promise>);
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
+#[expect(unsafe_code)]
 unsafe impl Send for Promise {}
+#[expect(unsafe_code)]
 unsafe impl Sync for Promise {}
 
 impl From<js_sys::Promise> for Promise {

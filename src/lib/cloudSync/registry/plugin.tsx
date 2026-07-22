@@ -35,6 +35,7 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
@@ -53,6 +54,7 @@ import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, useEffect, useState } from 'react'
@@ -207,7 +209,11 @@ function CloudSyncDisconnectProjectDialog({
   )
 }
 
-function CloudSyncProjectMenuDialogHost() {
+function CloudSyncProjectMenuDialogHost({
+  resolvedTheme,
+}: {
+  resolvedTheme: ResolvedTheme
+}) {
   useSignals()
   const dialog = cloudSyncProjectMenuDialog.value
 
@@ -220,6 +226,7 @@ function CloudSyncProjectMenuDialogHost() {
       <CloudConflictDialog
         projectPath={dialog.projectPath}
         projectName={dialog.projectName}
+        resolvedTheme={resolvedTheme}
         onDismiss={() => {
           cloudSyncProjectMenuDialog.value = null
         }}
@@ -397,7 +404,11 @@ export function getCloudSyncStatusBarPresentation(
   }
 }
 
-function CloudSyncStatusBarItem() {
+function CloudSyncStatusBarItem({
+  resolvedTheme,
+}: {
+  resolvedTheme: ResolvedTheme
+}) {
   useSignals()
   const location = useLocation()
   const status = cloudSyncStatus.value
@@ -419,11 +430,6 @@ function CloudSyncStatusBarItem() {
     isFileRoute &&
     status.activeProjectPath &&
     conflictMetadata?.conflict
-  const projectName = status.activeProjectPath
-    ?.split(/[\\/]/)
-    .filter(Boolean)
-    .at(-1)
-  const selectedConflictProjectName = selectedConflict?.projectName
   const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
@@ -511,29 +517,40 @@ function CloudSyncStatusBarItem() {
       {isInspectingConflict && status.activeProjectPath && (
         <CloudConflictDialog
           projectPath={status.activeProjectPath}
-          projectName={projectName || 'this project'}
+          resolvedTheme={resolvedTheme}
           onDismiss={() => setIsInspectingConflict(false)}
           onResolved={() => setIsInspectingConflict(false)}
         />
       )}
-      {selectedConflictProjectPath && selectedConflictProjectName && (
+      {selectedConflictProjectPath && (
         <CloudConflictDialog
           projectPath={selectedConflictProjectPath}
-          projectName={selectedConflictProjectName}
+          resolvedTheme={resolvedTheme}
           onDismiss={() => setSelectedConflict(undefined)}
           onResolved={() => setSelectedConflict(undefined)}
         />
       )}
-      <CloudSyncProjectMenuDialogHost />
+      <CloudSyncProjectMenuDialogHost resolvedTheme={resolvedTheme} />
     </>
   )
 }
 
 const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
   const userFeatures = ctx.services.signal(userFeaturesService)
+  function CloudSyncStatusBarItemWithSettings() {
+    const settingsValues = settings.value!.useSettings()
+    return (
+      <CloudSyncStatusBarItem
+        resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
+      />
+    )
+  }
+
   const statusBarItem = computed(() =>
     nullableStatusBarItem(
-      userFeatures.value &&
+      settings.value &&
+        userFeatures.value &&
         userFeaturesContextHas(
           userFeatures.value.context.value,
           OPFS_CLOUD_FEATURE_FLAG,
@@ -542,7 +559,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
         cloudSyncStatus.value.enabled
         ? {
             id: 'cloud-sync',
-            component: CloudSyncStatusBarItem,
+            component: CloudSyncStatusBarItemWithSettings,
             scopes: ['home', 'file'],
             order: 2,
           }
