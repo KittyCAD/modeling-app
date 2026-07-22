@@ -17,6 +17,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
@@ -204,6 +205,7 @@ describe('project system', () => {
       const registryEngineConnectionManager = app.registry.get(
         engineConnectionService
       )
+      const registryBilling = app.registry.get(billingService)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -211,6 +213,7 @@ describe('project system', () => {
       expect(app.engineCommandManager).toBe(
         registryEngineConnectionManager.manager
       )
+      expect(app.billing.actor).toBe(registryBilling.actor)
     } finally {
       app.dispose()
     }
