@@ -2522,6 +2522,7 @@ dependencies = [
  "twenty-twenty",
  "tynm",
  "typed-path",
+ "unicase",
  "url",
  "uuid",
  "validator",
@@ -2652,9 +2653,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.213"
+version = "0.2.215"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cbe49a08187e35a2ef6429c7eb9eae843334cfeff8f7879e4ad22ff4a0c360e3"
+checksum = "60867eef38988d7c60cab62a315c7626afd50025945791aefc6c34a8fdde7e6e"
 dependencies = [
  "anyhow",
  "bon",

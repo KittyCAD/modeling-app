@@ -774,7 +774,7 @@ impl SketchApi for FrontendState {
             web_sys::console::warn_1(
                 &format!(
                     "WARNING: exit_sketch: current state's sketch mode ID doesn't match the given sketch ID; state={:#?}, given={sketch:?}",
-                    &self.scene_graph.sketch_mode
+                    self.scene_graph.sketch_mode
                 )
                 .into(),
             );
@@ -2060,7 +2060,7 @@ impl FrontendState {
             web_sys::console::error_1(
                 &format!(
                     "Sketch not found; sketch_id={sketch_id:?}, self.scene_graph.objects={:#?}",
-                    &self.scene_graph.objects
+                    self.scene_graph.objects
                 )
                 .into(),
             );
@@ -5163,7 +5163,7 @@ fn only_sketch_block(
         web_sys::console::warn_1(
             &format!(
                 "only_sketch_block: target sketch block ref doesn't have node path; sketch_block_ref={:#?}, edit_kind={edit_kind:#?}",
-                &sketch_block_ref
+                sketch_block_ref
             )
             .into(),
         );

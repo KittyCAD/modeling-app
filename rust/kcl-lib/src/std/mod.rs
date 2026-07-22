@@ -29,6 +29,7 @@ pub mod shell;
 pub mod sketch;
 pub(crate) mod solid_consumption;
 pub(crate) mod solver;
+pub mod string;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -299,6 +300,30 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("runtime", "exit") => (
             |e, a| Box::pin(crate::std::runtime::exit(e, a)),
             StdFnProps::default("std::runtime::exit"),
+        ),
+        ("string", "uppercase") => (
+            |e, a| Box::pin(crate::std::string::uppercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::uppercase"),
+        ),
+        ("string", "lowercase") => (
+            |e, a| Box::pin(crate::std::string::lowercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::lowercase"),
+        ),
+        ("string", "isEqual") => (
+            |e, a| Box::pin(crate::std::string::is_equal(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::isEqual"),
+        ),
+        ("string", "trim") => (
+            |e, a| Box::pin(crate::std::string::trim(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trim"),
+        ),
+        ("string", "trimStart") => (
+            |e, a| Box::pin(crate::std::string::trim_start(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimStart"),
+        ),
+        ("string", "trimEnd") => (
+            |e, a| Box::pin(crate::std::string::trim_end(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimEnd"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),

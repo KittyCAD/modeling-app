@@ -509,6 +509,9 @@ impl FunctionSource {
         let mut result = match result {
             Ok(Some(value)) => {
                 if value.is_some_return() {
+                    // `Exit` terminates the whole evaluation rather than completing this
+                    // function normally, so it bypasses return-type validation, including
+                    // the `never` contract.
                     return Ok(Some(value));
                 } else {
                     Ok(Some(value.into_value()))
@@ -1167,28 +1170,45 @@ fn coerce_result_type(
     fn_def: &FunctionSource,
     exec_state: &mut ExecState,
 ) -> Result<Option<KclValue>, KclError> {
-    if let Ok(Some(val)) = result {
-        if let Some(ret_ty) = &fn_def.return_type {
-            // Suppress warnings about types because they should only be warned
-            // about once for the function definition.
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
-                .map_err(|e| KclError::new_semantic(e.into()))?;
-            let val = val.coerce(&ty, true, exec_state).map_err(|_| {
-                KclError::new_type(KclErrorDetails::new(
-                    format!(
-                        "This function requires its result to be {}",
-                        type_err_str(ret_ty, &val, &(&val).into(), exec_state)
-                    ),
-                    ret_ty.as_source_ranges(),
-                ))
-            })?;
-            Ok(Some(val))
+    let result = result?;
+
+    let Some(ret_ty) = &fn_def.return_type else {
+        return Ok(result);
+    };
+
+    // Suppress warnings about types because they should only be warned
+    // about once for the function definition.
+    let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
+        .map_err(|e| KclError::new_semantic(e.into()))?;
+
+    // `never` describes the absence of normal completion, so either successful
+    // result shape violates the function's declared contract.
+    if ty.subtype(&RuntimeType::never()) {
+        let message = if result.is_some() {
+            "This function is declared to return `never`, but it returned a value."
         } else {
-            Ok(Some(val))
-        }
-    } else {
-        result
+            "This function is declared to return `never`, but it completed without returning a value."
+        };
+        return Err(KclError::new_type(KclErrorDetails::new(
+            message.to_owned(),
+            ret_ty.as_source_ranges(),
+        )));
     }
+
+    let Some(val) = result else {
+        return Ok(None);
+    };
+
+    let val = val.coerce(&ty, true, exec_state).map_err(|_| {
+        KclError::new_type(KclErrorDetails::new(
+            format!(
+                "This function requires its result to be {}",
+                type_err_str(ret_ty, &val, &(&val).into(), exec_state)
+            ),
+            ret_ty.as_source_ranges(),
+        ))
+    })?;
+    Ok(Some(val))
 }
 
 #[cfg(test)]
@@ -1439,6 +1459,106 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
             err.message(),
             "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_cannot_return_a_value() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn bad(): never {
+  return 42
+}
+
+bad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function is declared to return `never`, but it returned a value."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_cannot_fall_through() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn alsoBad(): never {
+  x = 42
+}
+
+alsoBad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function is declared to return `never`, but it completed without returning a value."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_union_function_cannot_return_a_value() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn bad(): never | never {
+  return 42
+}
+
+bad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function is declared to return `never`, but it returned a value."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_union_function_cannot_fall_through() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn alsoBad(): never | never {
+  x = 42
+}
+
+alsoBad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function is declared to return `never`, but it completed without returning a value."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_contract_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn pathDependent(@propagateError: bool): never {
+  return if propagateError {
+    missingValue
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\npathDependent(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UndefinedValue { .. }));
+        assert_eq!(err.message(), "`missingValue` is not defined");
+
+        let err = parse_execute(&format!("{function}\npathDependent(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function is declared to return `never`, but it returned a value."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

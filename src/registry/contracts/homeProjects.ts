@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export type HomeProjectSource = 'local' | 'remote' | 'both'
@@ -92,12 +93,6 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
   return `${entry.source}:${entry.id ?? entry.name}`
 }
 
-function uniqueStrings(values: readonly (string | undefined)[]) {
-  return Array.from(
-    new Set(values.filter((value): value is string => Boolean(value)))
-  )
-}
-
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
   return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])])
 }
@@ -155,6 +150,11 @@ function mergeHomeProjectEntries(
   }
 }
 
+/**
+ * Same-source entries can overlap when multiple libraries point at the same
+ * local or remote project. Keep the newest display data while preserving every
+ * library membership so library-filtered views can still find the project.
+ */
 function mergeSameSourceHomeProjectEntries(
   existing: HomeProjectEntry | undefined,
   next: HomeProjectEntry
