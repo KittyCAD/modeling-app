@@ -60,8 +60,17 @@ import {
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -160,6 +169,8 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public currentProjectLibraryIdSignal: Signal<string | undefined> =
+    signal(undefined)
   public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
@@ -477,6 +488,18 @@ export class App implements AppSubsystems {
     setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
   }
 
+  getCreateProjectLibraryTargets = () => {
+    const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
+    return this.registry.get(projectLibrariesValueSpec).flatMap((library) => {
+      const createProject = getProjectLibraryCreateProjectOperation(
+        libraryTypes.get(library.type),
+        library
+      )
+
+      return createProject ? [{ library, createProject }] : []
+    })
+  }
+
   syncAppCommands = () => {
     const enableProjectDirectoryCommands =
       typeof window !== 'undefined' &&
@@ -499,6 +522,13 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectLibraryId: () =>
+              this.currentProjectLibraryIdSignal.value,
+            getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getHomeProjectActions: () =>
+              this.registry.get(homeProjectActionsService),
+            getHomeProjectEntries: () =>
+              this.registry.get(homeProjectEntriesValueSpec),
           }).map(provideCommand),
         ],
       }),
