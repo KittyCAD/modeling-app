@@ -14,8 +14,8 @@ import {
 } from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
 import {
-  CLOUD_PROJECT_LIBRARY_ID,
   CLOUD_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
@@ -321,8 +321,8 @@ describe('cloud sync project library', () => {
       })
       expect(registry.get(projectLibrariesValueSpec)).toEqual([
         expect.objectContaining({
-          id: CLOUD_PROJECT_LIBRARY_ID,
-          title: 'Cloud',
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Personal Cloud',
           path: getDefaultCloudProjectLibrarySetting().path,
           type: CLOUD_PROJECT_LIBRARY_TYPE,
           icon: 'network',
@@ -435,7 +435,7 @@ describe('cloud sync home project entries', () => {
           expect.objectContaining({
             source: 'remote',
             status: 'cloud-only',
-            libraryIds: [CLOUD_PROJECT_LIBRARY_ID],
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
             name: 'Remote title',
             title: 'Remote title',
             remoteProjectId: 'remote-123',

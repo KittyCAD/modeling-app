@@ -37,9 +37,8 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
-  CLOUD_PROJECT_LIBRARY_ID,
-  CLOUD_PROJECT_LIBRARY_TITLE,
   CLOUD_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   areProjectLibrarySettingsEqual,
   getDefaultCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
@@ -648,7 +647,7 @@ function homeProjectEntryCloudSyncFields(
   metadata: CloudSyncProjectMetadataIndexEntry | undefined
 ): Pick<
   HomeProjectEntryContribution,
-  'conflict' | 'localProjectPath' | 'status' | 'syncFailure'
+  'conflict' | 'libraryId' | 'localProjectPath' | 'status' | 'syncFailure'
 > {
   const syncFailure =
     metadata?.lastFailure?.kind === 'remote-upload-forbidden'
@@ -656,6 +655,7 @@ function homeProjectEntryCloudSyncFields(
       : undefined
   if (!metadata?.conflict) {
     return {
+      libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
       status: 'cloud-only',
       ...(syncFailure
         ? { syncFailure, localProjectPath: metadata?.localProjectPath }
@@ -664,6 +664,7 @@ function homeProjectEntryCloudSyncFields(
   }
 
   return {
+    libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
     status: 'conflicted',
     conflict: metadata.conflict,
     localProjectPath: metadata.localProjectPath,
@@ -918,7 +919,7 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
       {
         ...defaultCloudLibrary,
         ...configuredCloudLibrary,
-        id: CLOUD_PROJECT_LIBRARY_ID,
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
         icon: 'network',
         order: 10,
       },
@@ -949,7 +950,7 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
 
   const cloudLibraryType: ProjectLibraryTypeContribution = {
     type: CLOUD_PROJECT_LIBRARY_TYPE,
-    title: CLOUD_PROJECT_LIBRARY_TITLE,
+    title: 'Cloud',
     icon: 'network',
     order: 10,
     defaultSetting: getDefaultCloudProjectLibrarySetting(),

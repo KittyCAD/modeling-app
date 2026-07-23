@@ -5,10 +5,10 @@ export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
 export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
 export const NEW_PROJECT_LIBRARY_TITLE = 'Project Library'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
-export const CLOUD_PROJECT_LIBRARY_ID = 'cloud'
-export const CLOUD_PROJECT_LIBRARY_TITLE = 'Cloud'
+export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
+export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
 export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
-export const DEFAULT_CLOUD_PROJECT_LIBRARY_PATH = 'zoo://user/projects'
+export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
 
 export type ProjectLibraryType = string
 
@@ -38,8 +38,8 @@ export function getDefaultProjectLibrarySettings(
 
 export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
   return {
-    title: CLOUD_PROJECT_LIBRARY_TITLE,
-    path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+    title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
+    path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   }
 }
@@ -213,8 +213,8 @@ export function projectLibraryFromSetting(
       library.path === options.defaultProjectDirectory
         ? DEFAULT_PROJECT_LIBRARY_ID
         : library.type === CLOUD_PROJECT_LIBRARY_TYPE &&
-            library.path === DEFAULT_CLOUD_PROJECT_LIBRARY_PATH
-          ? CLOUD_PROJECT_LIBRARY_ID
+            library.path === DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH
+          ? PERSONAL_CLOUD_PROJECT_LIBRARY_ID
           : getProjectLibraryIdFromSetting(library),
     order: index,
   }

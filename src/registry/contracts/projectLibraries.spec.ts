@@ -6,9 +6,9 @@ import {
   getProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
 import {
-  CLOUD_PROJECT_LIBRARY_ID,
-  DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
   DEFAULT_PROJECT_LIBRARY_ID,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
   areProjectLibrarySettingsEqual,
   getContainingDirectoryProjectLibraryPath,
@@ -63,8 +63,8 @@ describe('project library settings', () => {
       projectLibraryFromSetting(getDefaultCloudProjectLibrarySetting())
     ).toEqual(
       expect.objectContaining({
-        id: CLOUD_PROJECT_LIBRARY_ID,
-        path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
         type: 'cloud',
       })
     )
