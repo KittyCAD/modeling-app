@@ -1,0 +1,330 @@
+// Compact Camera Mounting Plate
+// 70 x 40 x 8 mm plate with central hole, slots, and underside pocket
+
+plateLength = 70
+plateWidth = 40
+plateThickness = 8
+cornerRadius = 6
+centerHoleDiameter = 6.3
+slotLength = 18
+slotWidth = 7
+slotOffsetX = 18
+pocketLength = 50
+pocketWidth = 20
+pocketDepth = 2
+pocketCornerRadius = 3
+csgOverlap = 0.1
+
+outerSketch = sketch(on = XY) {
+  bottom = line(start = [var -35mm, var -20mm], end = [var 35mm, var -20mm])
+  right = line(start = [var 35mm, var -20mm], end = [var 35mm, var 20mm])
+  top = line(start = [var 35mm, var 20mm], end = [var -35mm, var 20mm])
+  left = line(start = [var -35mm, var 20mm], end = [var -35mm, var -20mm])
+
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+
+  horizontal(bottom)
+  vertical(right)
+  horizontal(top)
+  vertical(left)
+
+  widthGuide = line(start = [var -35mm, var -20mm], end = [var 35mm, var -20mm], construction = true)
+  heightGuide = line(start = [var 35mm, var -20mm], end = [var 35mm, var 20mm], construction = true)
+
+  coincident([widthGuide.start, bottom.start])
+  coincident([widthGuide.end, bottom.end])
+  coincident([heightGuide.start, right.start])
+  coincident([heightGuide.end, right.end])
+
+  horizontal(widthGuide)
+  vertical(heightGuide)
+
+  horizontalDistance([widthGuide.start, widthGuide.end]) == plateLength
+  verticalDistance([heightGuide.start, heightGuide.end]) == plateWidth
+  horizontalDistance([ORIGIN, top.start]) == plateLength / 2
+  verticalDistance([ORIGIN, top.start]) == plateWidth / 2
+}
+
+outerRegion = region(point = [0mm, 0mm], sketch = outerSketch)
+plateBlank = extrude(outerRegion, length = plateThickness, symmetric = true)
+plateBody = fillet(
+  plateBlank,
+  radius = cornerRadius,
+  tags = [
+    edgeId(plateBlank, closestTo = [35mm, 20mm, 0mm]),
+    edgeId(plateBlank, closestTo = [-35mm, 20mm, 0mm]),
+    edgeId(plateBlank, closestTo = [-35mm, -20mm, 0mm]),
+    edgeId(plateBlank, closestTo = [35mm, -20mm, 0mm])
+  ],
+)
+
+centerHoleSketch = sketch(on = XY) {
+  centerHole = circle(start = [var 3.15mm, var 0mm], center = [var 0mm, var 0mm])
+  holeGuide = line(start = [var 0mm, var 0mm], end = [var 3.15mm, var 0mm], construction = true)
+
+  coincident([centerHole.center, ORIGIN])
+  coincident([holeGuide.start, centerHole.center])
+  coincident([holeGuide.end, centerHole.start])
+  horizontal(holeGuide)
+  horizontalDistance([holeGuide.start, holeGuide.end]) == centerHoleDiameter / 2
+}
+
+centerHoleRegion = region(point = [0mm, 0mm], sketch = centerHoleSketch)
+centerHoleCut = extrude(
+  centerHoleRegion,
+  length = plateThickness + 2 * csgOverlap,
+  symmetric = true,
+  method = NEW,
+)
+
+rightSlotSketch = sketch(on = XY) {
+  top = line(start = [var 12.5mm, var 3.5mm], end = [var 23.5mm, var 3.5mm])
+  rightArc = arc(start = [var 23.5mm, var 3.5mm], end = [var 23.5mm, var -3.5mm], center = [var 23.5mm, var 0mm])
+  bottom = line(start = [var 23.5mm, var -3.5mm], end = [var 12.5mm, var -3.5mm])
+  leftArc = arc(start = [var 12.5mm, var -3.5mm], end = [var 12.5mm, var 3.5mm], center = [var 12.5mm, var 0mm])
+
+  coincident([top.end, rightArc.start])
+  coincident([rightArc.end, bottom.start])
+  coincident([bottom.end, leftArc.start])
+  coincident([leftArc.end, top.start])
+
+  horizontal(top)
+  horizontal(bottom)
+
+  tangent([top, rightArc])
+  tangent([rightArc, bottom])
+  tangent([bottom, leftArc])
+  tangent([leftArc, top])
+
+  radius(rightArc) == slotWidth / 2
+  radius(leftArc) == slotWidth / 2
+
+  leftTopGuide = line(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var 3.5mm], construction = true)
+  leftBottomGuide = line(start = [var 12.5mm, var 0mm], end = [var 12.5mm, var -3.5mm], construction = true)
+  rightTopGuide = line(start = [var 23.5mm, var 0mm], end = [var 23.5mm, var 3.5mm], construction = true)
+  rightBottomGuide = line(start = [var 23.5mm, var 0mm], end = [var 23.5mm, var -3.5mm], construction = true)
+
+  coincident([leftTopGuide.start, leftArc.center])
+  coincident([leftTopGuide.end, leftArc.end])
+  coincident([leftBottomGuide.start, leftArc.center])
+  coincident([leftBottomGuide.end, leftArc.start])
+  coincident([rightTopGuide.start, rightArc.center])
+  coincident([rightTopGuide.end, rightArc.start])
+  coincident([
+    rightBottomGuide.start,
+    rightArc.center
+  ])
+  coincident([rightBottomGuide.end, rightArc.end])
+
+  vertical(leftTopGuide)
+  vertical(leftBottomGuide)
+  vertical(rightTopGuide)
+  vertical(rightBottomGuide)
+
+  centerline = line(start = [var 12.5mm, var 0mm], end = [var 23.5mm, var 0mm], construction = true)
+  coincident([centerline.start, leftArc.center])
+  coincident([centerline.end, rightArc.center])
+  horizontal(centerline)
+  horizontalDistance([centerline.start, centerline.end]) == slotLength - slotWidth
+  horizontalDistance([ORIGIN, centerline.start]) == slotOffsetX - ((slotLength - slotWidth) / 2)
+  verticalDistance([ORIGIN, centerline.start]) == 0mm
+}
+
+rightSlotRegion = region(point = [18mm, 0mm], sketch = rightSlotSketch)
+rightSlotCut = extrude(
+  rightSlotRegion,
+  length = plateThickness + 2 * csgOverlap,
+  symmetric = true,
+  method = NEW,
+)
+
+leftSlotSketch = sketch(on = XY) {
+  top = line(start = [var -23.5mm, var 3.5mm], end = [var -12.5mm, var 3.5mm])
+  rightArc = arc(start = [var -12.5mm, var 3.5mm], end = [var -12.5mm, var -3.5mm], center = [var -12.5mm, var 0mm])
+  bottom = line(start = [var -12.5mm, var -3.5mm], end = [var -23.5mm, var -3.5mm])
+  leftArc = arc(start = [var -23.5mm, var -3.5mm], end = [var -23.5mm, var 3.5mm], center = [var -23.5mm, var 0mm])
+
+  coincident([top.end, rightArc.start])
+  coincident([rightArc.end, bottom.start])
+  coincident([bottom.end, leftArc.start])
+  coincident([leftArc.end, top.start])
+
+  horizontal(top)
+  horizontal(bottom)
+
+  tangent([top, rightArc])
+  tangent([rightArc, bottom])
+  tangent([bottom, leftArc])
+  tangent([leftArc, top])
+
+  radius(rightArc) == slotWidth / 2
+  radius(leftArc) == slotWidth / 2
+
+  leftTopGuide = line(start = [var -23.5mm, var 0mm], end = [var -23.5mm, var 3.5mm], construction = true)
+  leftBottomGuide = line(start = [var -23.5mm, var 0mm], end = [var -23.5mm, var -3.5mm], construction = true)
+  rightTopGuide = line(start = [var -12.5mm, var 0mm], end = [var -12.5mm, var 3.5mm], construction = true)
+  rightBottomGuide = line(start = [var -12.5mm, var 0mm], end = [var -12.5mm, var -3.5mm], construction = true)
+
+  coincident([leftTopGuide.start, leftArc.center])
+  coincident([leftTopGuide.end, leftArc.end])
+  coincident([leftBottomGuide.start, leftArc.center])
+  coincident([leftBottomGuide.end, leftArc.start])
+  coincident([rightTopGuide.start, rightArc.center])
+  coincident([rightTopGuide.end, rightArc.start])
+  coincident([
+    rightBottomGuide.start,
+    rightArc.center
+  ])
+  coincident([rightBottomGuide.end, rightArc.end])
+
+  vertical(leftTopGuide)
+  vertical(leftBottomGuide)
+  vertical(rightTopGuide)
+  vertical(rightBottomGuide)
+
+  centerline = line(start = [var -23.5mm, var 0mm], end = [var -12.5mm, var 0mm], construction = true)
+  coincident([centerline.start, leftArc.center])
+  coincident([centerline.end, rightArc.center])
+  horizontal(centerline)
+  horizontalDistance([centerline.start, centerline.end]) == slotLength - slotWidth
+  horizontalDistance([centerline.end, ORIGIN]) == slotOffsetX - ((slotLength - slotWidth) / 2)
+  verticalDistance([centerline.end, ORIGIN]) == 0mm
+}
+
+leftSlotRegion = region(point = [-18mm, 0mm], sketch = leftSlotSketch)
+leftSlotCut = extrude(
+  leftSlotRegion,
+  length = plateThickness + 2 * csgOverlap,
+  symmetric = true,
+  method = NEW,
+)
+
+pocketPlane = {
+  origin = [0mm, 0mm, -4.1mm],
+  xAxis = [1, 0, 0],
+  yAxis = [0, 1, 0]
+}
+
+pocketSketch = sketch(on = pocketPlane) {
+  top = line(start = [var -22mm, var 10mm], end = [var 22mm, var 10mm])
+  topRight = arc(start = [var 22mm, var 10mm], end = [var 25mm, var 7mm], center = [var 22mm, var 7mm])
+  right = line(start = [var 25mm, var 7mm], end = [var 25mm, var -7mm])
+  bottomRight = arc(end = [var 25mm, var -7mm], start = [var 22mm, var -10mm], center = [var 22mm, var -7mm])
+  bottom = line(start = [var 22mm, var -10mm], end = [var -22mm, var -10mm])
+  bottomLeft = arc(end = [var -22mm, var -10mm], start = [var -25mm, var -7mm], center = [var -22mm, var -7mm])
+  left = line(start = [var -25mm, var -7mm], end = [var -25mm, var 7mm])
+  topLeft = arc(end = [var -25mm, var 7mm], start = [var -22mm, var 10mm], center = [var -22mm, var 7mm])
+
+  coincident([top.end, topRight.end])
+  coincident([topRight.start, right.start])
+  coincident([right.end, bottomRight.end])
+  coincident([bottomRight.start, bottom.start])
+  coincident([bottom.end, bottomLeft.end])
+  coincident([bottomLeft.start, left.start])
+  coincident([left.end, topLeft.end])
+  coincident([topLeft.start, top.start])
+
+  horizontal(top)
+  vertical(right)
+  horizontal(bottom)
+  vertical(left)
+
+  tangent([top, topRight])
+  tangent([topRight, right])
+  tangent([right, bottomRight])
+  tangent([bottomRight, bottom])
+  tangent([bottom, bottomLeft])
+  tangent([bottomLeft, left])
+  tangent([left, topLeft])
+  tangent([topLeft, top])
+
+  radius(topRight) == pocketCornerRadius
+  radius(bottomRight) == pocketCornerRadius
+  radius(bottomLeft) == pocketCornerRadius
+  radius(topLeft) == pocketCornerRadius
+
+  centerTop = line(start = [var -22mm, var 7mm], end = [var 22mm, var 7mm], construction = true)
+  centerRight = line(start = [var 22mm, var 7mm], end = [var 22mm, var -7mm], construction = true)
+  centerBottom = line(start = [var 22mm, var -7mm], end = [var -22mm, var -7mm], construction = true)
+  centerLeft = line(start = [var -22mm, var -7mm], end = [var -22mm, var 7mm], construction = true)
+
+  coincident([centerTop.start, topLeft.center])
+  coincident([centerTop.end, topRight.center])
+  coincident([centerRight.start, topRight.center])
+  coincident([centerRight.end, bottomRight.center])
+  coincident([centerBottom.start, bottomRight.center])
+  coincident([centerBottom.end, bottomLeft.center])
+  coincident([centerLeft.start, bottomLeft.center])
+  coincident([centerLeft.end, topLeft.center])
+
+  horizontal(centerTop)
+  vertical(centerRight)
+  horizontal(centerBottom)
+  vertical(centerLeft)
+
+  horizontalDistance([centerTop.start, centerTop.end]) == pocketLength - (2 * pocketCornerRadius)
+  verticalDistance([centerRight.end, centerRight.start]) == pocketWidth - (2 * pocketCornerRadius)
+  horizontalDistance([ORIGIN, topRight.center]) == pocketLength / 2 - pocketCornerRadius
+  verticalDistance([ORIGIN, topRight.center]) == pocketWidth / 2 - pocketCornerRadius
+
+  trTopGuide = line(start = [var 22mm, var 7mm], end = [var 22mm, var 10mm], construction = true)
+  trSideGuide = line(start = [var 22mm, var 7mm], end = [var 25mm, var 7mm], construction = true)
+  brSideGuide = line(start = [var 22mm, var -7mm], end = [var 25mm, var -7mm], construction = true)
+  brBottomGuide = line(start = [var 22mm, var -7mm], end = [var 22mm, var -10mm], construction = true)
+  blBottomGuide = line(start = [var -22mm, var -7mm], end = [var -22mm, var -10mm], construction = true)
+  blSideGuide = line(start = [var -22mm, var -7mm], end = [var -25mm, var -7mm], construction = true)
+  tlSideGuide = line(start = [var -22mm, var 7mm], end = [var -25mm, var 7mm], construction = true)
+  tlTopGuide = line(start = [var -22mm, var 7mm], end = [var -22mm, var 10mm], construction = true)
+
+  coincident([trTopGuide.start, topRight.center])
+  coincident([trTopGuide.end, topRight.end])
+  coincident([trSideGuide.start, topRight.center])
+  coincident([trSideGuide.end, topRight.start])
+  coincident([brSideGuide.start, bottomRight.center])
+  coincident([brSideGuide.end, bottomRight.end])
+  coincident([
+    brBottomGuide.start,
+    bottomRight.center
+  ])
+  coincident([brBottomGuide.end, bottomRight.start])
+  coincident([blBottomGuide.start, bottomLeft.center])
+  coincident([blBottomGuide.end, bottomLeft.end])
+  coincident([blSideGuide.start, bottomLeft.center])
+  coincident([blSideGuide.end, bottomLeft.start])
+  coincident([tlSideGuide.start, topLeft.center])
+  coincident([tlSideGuide.end, topLeft.end])
+  coincident([tlTopGuide.start, topLeft.center])
+  coincident([tlTopGuide.end, topLeft.start])
+
+  vertical(trTopGuide)
+  horizontal(trSideGuide)
+  horizontal(brSideGuide)
+  vertical(brBottomGuide)
+  vertical(blBottomGuide)
+  horizontal(blSideGuide)
+  horizontal(tlSideGuide)
+  vertical(tlTopGuide)
+}
+
+pocketRegion = region(point = [0mm, 0mm], sketch = pocketSketch)
+pocketCut = extrude(pocketRegion, length = pocketDepth + csgOverlap, method = NEW)
+
+plateFinal = subtract(
+  [plateBody],
+  tools = [
+    centerHoleCut,
+    rightSlotCut,
+    leftSlotCut,
+    pocketCut
+  ],
+)
+
+hiddenOuter = hide(outerSketch)
+hiddenCenterHole = hide(centerHoleSketch)
+hiddenRightSlot = hide(rightSlotSketch)
+hiddenLeftSlot = hide(leftSlotSketch)
+hiddenPocket = hide(pocketSketch)
+
