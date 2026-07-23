@@ -706,7 +706,12 @@ export class App implements AppSubsystems {
           }
 
           hasPersonalCloudLibrary = true
-          return [defaultCloudLibrary]
+          return [
+            {
+              ...defaultCloudLibrary,
+              title: library.title || defaultCloudLibrary.title,
+            },
+          ]
         }
 
         return [library]
