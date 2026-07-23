@@ -179,27 +179,28 @@ async fn inner_chamfer(
     };
 
     let mut solid = solid.clone();
+    let mut edge_ids = Vec::new();
     let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
     for (edge_ref, source_range) in &tags {
-        let edge_id = match edge_ref {
-            EdgeReference::Uuid(u) => *u,
-            EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
+        let ids = edge_ref.get_all_engine_ids(exec_state, &args)?;
+        edge_ids.extend(ids.iter().copied());
+        let tag_identifier = match edge_ref {
+            EdgeReference::Tag(t) => t.value.clone(),
+            EdgeReference::Uuid(_) => String::new(),
         };
-        if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
-            && let [a, b] = face_ids.as_slice()
-        {
-            let tag_identifier = match edge_ref {
-                EdgeReference::Tag(t) => t.value.clone(),
-                EdgeReference::Uuid(_) => String::new(),
-            };
-            if !tag_identifier.is_empty() {
-                tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                    tag_identifier,
-                    edge_id,
-                    face_ids: [*a, *b],
-                });
-            } else {
-                exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
+        for edge_id in ids {
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                && let [a, b] = face_ids.as_slice()
+            {
+                if !tag_identifier.is_empty() {
+                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                        tag_identifier: tag_identifier.clone(),
+                        edge_id,
+                        face_ids: [*a, *b],
+                    });
+                } else {
+                    exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
+                }
             }
         }
     }
@@ -209,47 +210,49 @@ async fn inner_chamfer(
             tags: tag_entries,
         });
     }
-    for (edge_tag, _) in tags {
-        let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
-        for edge_id in edge_ids {
-            let id = exec_state.next_uuid();
-            exec_state
-                .batch_end_cmd(
-                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                    ModelingCmd::from(
-                        mcmd::Solid3dCutEdges::builder()
-                            .use_legacy(csg_algorithm.is_legacy())
-                            .edge_ids(vec![edge_id])
-                            .extra_face_ids(vec![])
-                            .strategy(strategy)
-                            .object_id(solid.id)
-                            // We can let the user set this in the future.
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
-                            .cut_type(cut_type)
-                            .version(edge_cut_version)
-                            .build(),
-                    ),
-                )
-                .await?;
 
-            solid.edge_cuts.push(EdgeCut::Chamfer {
+    let id = exec_state.next_uuid();
+    let num_extra_ids = edge_ids.len() - 1;
+    let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdges::builder()
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .edge_ids(edge_ids.clone())
+                    .extra_face_ids(extra_face_ids)
+                    .strategy(strategy)
+                    .object_id(solid.id)
+                    // We can let the user set this in the future.
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .cut_type(cut_type)
+                    .version(edge_cut_version)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Chamfer {
+        id,
+        edge_id,
+        length: length.clone(),
+        tag: Box::new(tag.clone()),
+    });
+    solid.edge_cuts.extend(new_edge_cuts);
+
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
                 id,
-                edge_id,
-                length: length.clone(),
-                tag: Box::new(tag.clone()),
-            });
-
-            if let Some(ref tag) = tag {
-                solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                    face_id: id,
-                    tag: Some(tag.clone()),
-                    geo_meta: GeoMeta {
-                        id,
-                        metadata: args.source_range.into(),
-                    },
-                }));
-            }
-        }
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(solid)
