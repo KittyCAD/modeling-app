@@ -76,6 +76,7 @@ const projectWellFormed = {
 } satisfies Project
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
+const originalElectron = window.electron
 
 type TestSettings = {
   app: {
@@ -228,6 +229,7 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
 }
 
 afterEach(() => {
+  window.electron = originalElectron
   cloudSyncStatus.value = {
     enabled: false,
     state: 'disabled',
@@ -413,6 +415,54 @@ describe('cloud sync project library', () => {
           order: 1,
         }),
       ])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('reveals the resolved local storage path from settings details', async () => {
+    const registry = new Registry()
+    const showInFolder = vi.fn()
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
+    window.electron = {
+      os: {
+        isMac: true,
+      },
+      showInFolder,
+    } as unknown as Window['electron']
+
+    registry.configure([cloudSyncPlugin])
+
+    try {
+      enableCloudSyncPlugin(registry)
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType?.settingsDetails).toBeDefined()
+      const SettingsDetails = cloudLibraryType?.settingsDetails
+      if (!SettingsDetails) {
+        return
+      }
+
+      render(
+        <SettingsDetails
+          library={getDefaultCloudProjectLibrarySetting()}
+          index={0}
+          updateLibrary={vi.fn()}
+          commitLibrary={vi.fn()}
+        />
+      )
+
+      const revealButton = await screen.findByRole('button', {
+        name: 'Show in Finder',
+      })
+      await waitFor(() => expect(revealButton).not.toBeDisabled())
+
+      fireEvent.click(revealButton)
+
+      expect(showInFolder).toHaveBeenCalledWith(
+        expect.stringMatching(/Zoo.*personal/)
+      )
     } finally {
       registry[Symbol.dispose]()
     }
