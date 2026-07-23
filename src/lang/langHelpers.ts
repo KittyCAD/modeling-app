@@ -3,7 +3,6 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
-import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
@@ -38,9 +37,6 @@ function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
     defaultValue
   )
 }
-
-const sourceRangesEqual = (left: SourceRange, right: SourceRange) =>
-  left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
 
 interface ExecutionResult {
   logs: string[]
