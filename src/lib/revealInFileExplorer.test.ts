@@ -1,5 +1,7 @@
 import {
+  canOpenPathInFileExplorer,
   canRevealInFileExplorer,
+  openPathInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -32,6 +34,20 @@ describe('revealInFileExplorer', () => {
     expect(showInFolder).toHaveBeenCalledWith('/project/main.kcl')
   })
 
+  it('uses the Electron folder open bridge', () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
+    const openPath = vi.fn()
+    window.electron = {
+      openPath,
+    } as unknown as Window['electron']
+
+    expect(canOpenPathInFileExplorer()).toBe(true)
+
+    openPathInFileExplorer('/project-library')
+
+    expect(openPath).toHaveBeenCalledWith('/project-library')
+  })
+
   it('hides reveal support outside the desktop app', () => {
     const showInFolder = vi.fn()
     window.electron = {
@@ -39,5 +55,6 @@ describe('revealInFileExplorer', () => {
     } as unknown as Window['electron']
 
     expect(canRevealInFileExplorer()).toBe(false)
+    expect(canOpenPathInFileExplorer()).toBe(false)
   })
 })

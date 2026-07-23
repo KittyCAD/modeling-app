@@ -207,6 +207,7 @@ function getCloudSyncPluginSetting(app: App) {
           string,
           {
             current?: unknown
+            default?: unknown
             user?: unknown
           }
         >
@@ -439,6 +440,7 @@ describe('project system', () => {
       await expect
         .poll(() => ({
           active: getPluginToggle(app, 'cloud-sync').active.value,
+          default: getCloudSyncPluginSetting(app)?.default,
           current: getCloudSyncPluginSetting(app)?.current,
           user: getCloudSyncPluginSetting(app)?.user,
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
@@ -450,8 +452,9 @@ describe('project system', () => {
         }))
         .toEqual({
           active: true,
+          default: true,
           current: true,
-          user: true,
+          user: undefined,
           hasPersonalCloudLibrarySetting: true,
           hasPersonalCloudLibrary: true,
         })
@@ -468,6 +471,11 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
       userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
 
+      expect(
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
+      ).toEqual({
+        'cloud-sync': false,
+      })
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)

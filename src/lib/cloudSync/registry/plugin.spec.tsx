@@ -12,6 +12,7 @@ import {
   cloudSyncPlugin,
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -420,15 +421,16 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('reveals the resolved local storage path from settings details', async () => {
+  test('opens the resolved local storage path from settings details', async () => {
     const registry = new Registry()
-    const showInFolder = vi.fn()
+    const openPath = vi.fn().mockResolvedValue('')
+    const mkdir = vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     window.electron = {
       os: {
         isMac: true,
       },
-      showInFolder,
+      openPath,
     } as unknown as Window['electron']
 
     registry.configure([cloudSyncPlugin])
@@ -460,8 +462,16 @@ describe('cloud sync project library', () => {
 
       fireEvent.click(revealButton)
 
-      expect(showInFolder).toHaveBeenCalledWith(
-        expect.stringMatching(/Zoo.*personal/)
+      await waitFor(() =>
+        expect(openPath).toHaveBeenCalledWith(
+          expect.stringMatching(/Zoo.*personal/)
+        )
+      )
+      expect(mkdir).toHaveBeenCalledWith(
+        expect.stringMatching(/Zoo.*personal/),
+        {
+          recursive: true,
+        }
       )
     } finally {
       registry[Symbol.dispose]()

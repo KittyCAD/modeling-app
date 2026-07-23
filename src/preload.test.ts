@@ -40,7 +40,7 @@ vi.mock('chokidar', () => ({
   },
 }))
 
-import { move, openExternal } from '@src/preload'
+import { move, openExternal, openPath } from '@src/preload'
 
 describe('move', () => {
   beforeEach(() => {
@@ -143,5 +143,22 @@ describe('openExternal', () => {
     )
 
     expect(ipcRendererMock.invoke).not.toHaveBeenCalled()
+  })
+})
+
+describe('openPath', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('invokes the main process folder open channel', async () => {
+    ipcRendererMock.invoke.mockResolvedValue('')
+
+    await expect(openPath('/project-library')).resolves.toBe('')
+
+    expect(ipcRendererMock.invoke).toHaveBeenCalledWith(
+      'shell.openPath',
+      '/project-library'
+    )
   })
 })

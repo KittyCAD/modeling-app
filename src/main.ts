@@ -582,6 +582,10 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
   return shell.showItemInFolder(data)
 })
 
+ipcMain.handle('shell.openPath', (_event, data) => {
+  return shell.openPath(data)
+})
+
 ipcMain.handle('shell.openExternal', (_event, data) => {
   const allowedURL = getAllowedExternalURL(data)
   if (allowedURL instanceof Error) {

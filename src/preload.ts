@@ -36,6 +36,8 @@ export const openExternal = (url: unknown) => {
   return ipcRenderer.invoke('shell.openExternal', allowedURL)
 }
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
+export const openPath = (path: string) =>
+  ipcRenderer.invoke('shell.openPath', path)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
 const pluginIpc = {
@@ -336,6 +338,7 @@ contextBridge.exposeInMainWorld('electron', {
   // opens the URL
   openExternal,
   openInNewWindow,
+  openPath,
   showInFolder,
   pluginIpc,
   getPath,

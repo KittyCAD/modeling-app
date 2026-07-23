@@ -29,6 +29,7 @@ export interface IElectronAPI {
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
   openInNewWindow: (name: string) => void
+  openPath: typeof shell.openPath
   showInFolder: typeof shell.showItemInFolder
   pluginIpc: {
     invoke: <T>(channel: PluginIpcChannel, payload?: unknown) => Promise<T>

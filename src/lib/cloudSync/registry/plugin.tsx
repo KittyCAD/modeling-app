@@ -34,6 +34,7 @@ import {
 } from '@src/lib/cloudSync'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
@@ -44,8 +45,8 @@ import {
 } from '@src/lib/projectLibraries'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
-  canRevealInFileExplorer,
-  revealInFileExplorer,
+  canOpenPathInFileExplorer,
+  openPathInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -94,6 +95,10 @@ function CloudProjectLibrarySettingsDetails({
   library,
 }: ProjectLibrarySettingsDetailsProps) {
   const [storagePath, setStoragePath] = useState<string>()
+  const revealLabel =
+    typeof window !== 'undefined' && window.electron?.os.isMac
+      ? 'Show in Finder'
+      : 'Show in Folder'
 
   useEffect(() => {
     let disposed = false
@@ -122,11 +127,12 @@ function CloudProjectLibrarySettingsDetails({
           ? `Stored locally at ${storagePath}`
           : 'Resolving local storage path...'}
       </p>
-      {canRevealInFileExplorer() && (
+      {canOpenPathInFileExplorer() && (
         <ActionButton
           Element="button"
           type="button"
           tabIndex={0}
+          aria-label={revealLabel}
           className="!p-0"
           iconStart={{
             icon: 'folder',
@@ -135,11 +141,14 @@ function CloudProjectLibrarySettingsDetails({
           disabled={!storagePath}
           onClick={() => {
             if (storagePath) {
-              revealInFileExplorer(storagePath)
+              void fsZds
+                .mkdir(storagePath, { recursive: true })
+                .then(() => openPathInFileExplorer(storagePath))
+                .catch(reportRejection)
             }
           }}
         >
-          <Tooltip position="top-right">Reveal in file explorer</Tooltip>
+          <Tooltip position="top-right">{revealLabel}</Tooltip>
         </ActionButton>
       )}
     </div>
