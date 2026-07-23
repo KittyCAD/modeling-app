@@ -43,6 +43,10 @@ import {
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
@@ -112,15 +116,32 @@ function CloudProjectLibrarySettingsDetails({
   }, [])
 
   return (
-    <div className="min-w-0 rounded-sm border border-chalkboard-30 bg-chalkboard-10 px-2 py-1 text-xs leading-5 dark:border-chalkboard-70 dark:bg-chalkboard-90">
-      <p className="truncate font-medium text-chalkboard-90 dark:text-chalkboard-10">
-        {library.title || 'Personal Cloud'}
-      </p>
-      <p className="truncate text-chalkboard-70 dark:text-chalkboard-30">
+    <div className="min-w-0 text-sm m-0 flex items-stretch gap-2">
+      <p className="min-w-0 px-2 py-1 flex-1 truncate text-2">
         {storagePath
           ? `Stored locally at ${storagePath}`
           : 'Resolving local storage path...'}
       </p>
+      {canRevealInFileExplorer() && (
+        <ActionButton
+          Element="button"
+          type="button"
+          tabIndex={0}
+          className="!p-0"
+          iconStart={{
+            icon: 'folder',
+            bgClassName: '!bg-transparent',
+          }}
+          disabled={!storagePath}
+          onClick={() => {
+            if (storagePath) {
+              revealInFileExplorer(storagePath)
+            }
+          }}
+        >
+          <Tooltip position="top-right">Reveal in file explorer</Tooltip>
+        </ActionButton>
+      )}
     </div>
   )
 }
