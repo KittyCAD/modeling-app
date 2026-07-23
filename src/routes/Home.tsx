@@ -28,6 +28,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -46,7 +47,6 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,

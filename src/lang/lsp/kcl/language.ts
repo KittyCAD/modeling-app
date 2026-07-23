@@ -7,8 +7,8 @@ import type {
 } from '@kittycad/codemirror-lsp-client'
 import type * as LSP from 'vscode-languageserver-protocol'
 
-import { kclPlugin } from '@src/editor/plugins/lsp/kcl'
-import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
+import { kclPlugin } from '@src/lang/lsp/kcl'
+import { colorPicker } from '@src/lang/lsp/kcl/colors'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]

@@ -1,6 +1,6 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { EngineDebugger } from '@src/lib/debugger'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { useEffect } from 'react'
 
 export interface IUseOnPageExit {

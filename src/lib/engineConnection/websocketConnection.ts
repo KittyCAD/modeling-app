@@ -13,7 +13,7 @@ import {
   EngineConnectionStateType,
   type ManagerTearDown,
   toRTCSessionDescriptionInit,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 
 /**
  * 4 different event listeners to clean up

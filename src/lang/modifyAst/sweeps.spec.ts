@@ -43,7 +43,7 @@ import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -531,6 +531,41 @@ extrude001 = extrude(region001, length = 1)`
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`extrude001 = extrude(region001, length = 2)`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should edit an extrude call with an inline region selection', async () => {
+      const code = `${triangleRegion}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const region = [...artifactGraph.values()].findLast(
+        (artifact) => artifact.type === 'path'
+      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 2)`
+      )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
