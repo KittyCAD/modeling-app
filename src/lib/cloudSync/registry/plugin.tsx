@@ -39,9 +39,7 @@ import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  areProjectLibrarySettingsEqual,
   getDefaultCloudProjectLibrarySetting,
-  mergeProjectLibrarySettings,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
@@ -986,11 +984,6 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
 }, 'cloud-sync.project-library')
 
 const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  let disposed = false
-  let didReconcile = false
-  let disposeEffect: (() => void) | undefined
-
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
@@ -1028,54 +1021,6 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     },
   }
 
-  queueMicrotask(() => {
-    if (disposed) {
-      return
-    }
-
-    disposeEffect = effect(() => {
-      const service = settings.value
-      if (!service || didReconcile) {
-        return
-      }
-
-      const currentSettings = service.current.value
-      const cloudSyncPluginEnabled =
-        currentSettings.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current !== false
-      if (
-        !cloudSyncPluginEnabled ||
-        !service.actor.getSnapshot().matches('idle')
-      ) {
-        return
-      }
-
-      didReconcile = true
-      const currentLibraries = currentSettings.app.libraries?.current ?? []
-      const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
-      const hasDefaultCloudLibrary = currentLibraries.some(
-        (library) =>
-          library.type === defaultCloudLibrary.type &&
-          library.path === defaultCloudLibrary.path
-      )
-      const nextLibraries = mergeProjectLibrarySettings(
-        currentLibraries,
-        hasDefaultCloudLibrary ? [] : [defaultCloudLibrary]
-      )
-
-      if (areProjectLibrarySettingsEqual(nextLibraries, currentLibraries)) {
-        return
-      }
-
-      service.send({
-        type: 'set.app.libraries',
-        data: {
-          level: 'user',
-          value: nextLibraries,
-        },
-      })
-    })
-  })
-
   return {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync.project-library-type',
@@ -1084,10 +1029,6 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           key: 'cloud-sync.project-library-type',
         }),
       ],
-      dispose: () => {
-        disposed = true
-        disposeEffect?.()
-      },
     }),
   }
 }, 'cloud-sync.project-library-type')
@@ -1103,5 +1044,5 @@ export const cloudSyncPlugin = createZdsPlugin({
     cloudSyncProjectMenuItem,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],
-  defaultSetting: 'core',
+  defaultSetting: 'off',
 })

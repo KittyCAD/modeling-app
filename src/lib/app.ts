@@ -24,6 +24,11 @@ import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  areProjectLibrarySettingsEqual,
+  getDefaultCloudProjectLibrarySetting,
+  mergeProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -91,6 +96,7 @@ import {
 import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
 
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
@@ -248,6 +254,7 @@ export class App implements AppSubsystems {
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.userFeatures.actor.subscribe(this.syncPluginSettingsFromCurrent)
     this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
       this.setActiveWasmInstance
     )
@@ -261,8 +268,9 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.settings.actor.subscribe(this.syncPluginSettings)
-    this.syncPluginSettings(this.settings.actor.getSnapshot())
+    this.syncPluginSettingsFromCurrent()
   }
 
   /**
@@ -458,6 +466,7 @@ export class App implements AppSubsystems {
       : undefined
     const enabled =
       Boolean(token) &&
+      this.cloudSyncPluginSettingEnabled() &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
@@ -469,6 +478,17 @@ export class App implements AppSubsystems {
       token,
       syncExistingLocalProjects: !window.electron,
     })
+  }
+
+  private cloudSyncPluginSettingEnabled = () => {
+    const cloudSyncSetting = (
+      this.settings.actor.getSnapshot().context as unknown as Record<
+        string,
+        Record<string, { current?: unknown } | undefined> | undefined
+      >
+    ).plugins?.[CLOUD_SYNC_PLUGIN_ID]
+
+    return cloudSyncSetting?.current === true
   }
 
   setActiveWasmInstance = (wasmInstance: ModuleType) => {
@@ -531,13 +551,138 @@ export class App implements AppSubsystems {
     ])
   }
 
+  syncPluginSettingsFromCurrent = () => {
+    this.syncPluginSettings(this.settings.actor.getSnapshot())
+  }
+
+  private getPluginActivationSettingValue = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    activationSetting: {
+      category: string
+      settingName: string
+    }
+  ) => {
+    return (
+      snapshot.context as unknown as Record<
+        string,
+        | Record<string, { current?: unknown; user?: unknown } | undefined>
+        | undefined
+      >
+    )[activationSetting.category]?.[activationSetting.settingName]
+  }
+
+  /**
+   * Product policy: Cloud sync is feature-gated, but feature-flagged users
+   * should get the plugin enabled by default until they explicitly opt out.
+   *
+   * Keep the plugin's static default off so registry startup stays
+   * deterministic. Once settings and user features are both settled in the app
+   * runtime, this writes the first user-level enablement only when there is no
+   * existing user preference.
+   */
+  private maybeEnableCloudSyncPluginForFeature = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    pluginActivationSettings: Map<
+      string,
+      {
+        category: string
+        settingName: string
+      }
+    >
+  ) => {
+    if (!snapshot.matches('idle')) {
+      return false
+    }
+
+    const activationSetting = pluginActivationSettings.get(CLOUD_SYNC_PLUGIN_ID)
+    if (!activationSetting) {
+      return false
+    }
+
+    const settingValue = this.getPluginActivationSettingValue(
+      snapshot,
+      activationSetting
+    )
+    if (!settingValue || settingValue.current === true) {
+      return false
+    }
+
+    if (settingValue.user !== undefined) {
+      return false
+    }
+
+    if (
+      !userFeaturesContextHas(
+        this.userFeatures.actor.getSnapshot().context,
+        OPFS_CLOUD_FEATURE_FLAG,
+        false
+      )
+    ) {
+      return false
+    }
+
+    this.settings.actor.send({
+      type: `set.${activationSetting.category}.${activationSetting.settingName}`,
+      data: {
+        level: 'user',
+        value: true,
+      },
+    } as never)
+    return true
+  }
+
+  /**
+   * Product policy: enabling Cloud sync materializes the explicit Personal
+   * Cloud library row in user settings.
+   *
+   * This is intentionally tied to the plugin activation lifecycle instead of a
+   * plugin-side startup reconciliation pass. Users can reorder, rename, or
+   * remove the library without an always-on boot effect fighting their settings;
+   * toggling the plugin on again is the action that restores the default row.
+   */
+  private materializePersonalCloudLibraryOnEnable = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>
+  ) => {
+    if (!snapshot.matches('idle')) {
+      return false
+    }
+
+    const currentLibraries = snapshot.context.app.libraries?.current ?? []
+    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+    const hasDefaultCloudLibrary = currentLibraries.some(
+      (library) =>
+        library.type === defaultCloudLibrary.type &&
+        library.path === defaultCloudLibrary.path
+    )
+    const nextLibraries = mergeProjectLibrarySettings(
+      currentLibraries,
+      hasDefaultCloudLibrary ? [] : [defaultCloudLibrary]
+    )
+
+    if (
+      hasDefaultCloudLibrary ||
+      areProjectLibrarySettingsEqual(nextLibraries, currentLibraries)
+    ) {
+      return false
+    }
+
+    this.settings.actor.send({
+      type: 'set.app.libraries',
+      data: {
+        level: 'user',
+        value: nextLibraries,
+      },
+    })
+    return true
+  }
+
   /**
    * Keep plugin runtime state aligned with the persisted settings model.
    *
-   * For now the settings actor is the source of truth and plugin toggle
-   * services are an imperative projection of that state. A narrower follow-up
-   * can invert this by deriving both the UI and persistence model directly from
-   * extension-owned settings state.
+   * Settings stay the source of truth. Plugin toggle services are an imperative
+   * projection of settled settings, and cloud-sync's feature-flag auto-enable
+   * policy is applied here so plugins do not mutate settings while the registry
+   * graph is being built.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
     const pluginActivationSettings = new Map(
@@ -545,7 +690,22 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+
+    if (!snapshot.matches('idle')) {
+      return
+    }
+
+    if (
+      this.maybeEnableCloudSyncPluginForFeature(
+        snapshot,
+        pluginActivationSettings
+      )
+    ) {
+      return
+    }
+
     const activePluginIds: string[] = []
+    let shouldMaterializePersonalCloudLibrary = false
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -553,26 +713,37 @@ export class App implements AppSubsystems {
         continue
       }
 
-      const desiredActive = (
-        snapshot.context as unknown as Record<
-          string,
-          Record<string, { current: unknown } | undefined> | undefined
-        >
-      )[activationSetting.category]?.[activationSetting.settingName]?.current
-      if (typeof desiredActive !== 'boolean') {
+      const settingValue = this.getPluginActivationSettingValue(
+        snapshot,
+        activationSetting
+      )
+      const settingDesiredActive = settingValue?.current
+      if (typeof settingDesiredActive !== 'boolean') {
         continue
       }
+      const featureAllowsCloudSyncPlugin =
+        plugin.id !== CLOUD_SYNC_PLUGIN_ID ||
+        userFeaturesContextHas(
+          this.userFeatures.actor.getSnapshot().context,
+          OPFS_CLOUD_FEATURE_FLAG,
+          false
+        )
+      const desiredActive = settingDesiredActive && featureAllowsCloudSyncPlugin
       if (desiredActive) {
         activePluginIds.push(plugin.id)
       }
 
       const toggle = this.registry.get(plugin.service)
+      const wasActive = toggle.active.value
       if (toggle.active.value === desiredActive) {
         continue
       }
 
       if (desiredActive) {
         toggle.enable()
+        if (plugin.id === CLOUD_SYNC_PLUGIN_ID && !wasActive) {
+          shouldMaterializePersonalCloudLibrary = true
+        }
         continue
       }
 
@@ -585,6 +756,10 @@ export class App implements AppSubsystems {
         : undefined
     if (syncActivePlugins) {
       void syncActivePlugins(activePluginIds).catch(reportRejection)
+    }
+
+    if (shouldMaterializePersonalCloudLibrary) {
+      this.materializePersonalCloudLibraryOnEnable(snapshot)
     }
   }
 

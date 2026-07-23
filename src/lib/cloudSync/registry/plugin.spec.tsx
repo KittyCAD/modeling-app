@@ -170,6 +170,19 @@ function createSettingsService({
   }
 }
 
+function enableCloudSyncPlugin(registry: Registry) {
+  const plugin = registry
+    .get(pluginsValueSpec)
+    .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+  const pluginService = plugin?.service
+  expect(pluginService).toBeDefined()
+  if (!pluginService) {
+    return
+  }
+
+  registry.get(pluginService).enable()
+}
+
 function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
   const registry = new Registry()
   const cloudSyncServiceExtension = defineRegistryItem({
@@ -177,6 +190,7 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
     providesServices: [provideService(cloudSyncService, cloudSync)],
   })
   registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+  enableCloudSyncPlugin(registry)
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -310,6 +324,26 @@ describe('cloud sync project library', () => {
     registry.configure([cloudSyncPlugin])
 
     try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      const pluginToggle = registry.get(pluginService)
+      expect(pluginToggle.active.value).toBe(false)
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .has(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toBe(false)
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+
+      pluginToggle.enable()
+
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
@@ -329,16 +363,7 @@ describe('cloud sync project library', () => {
         }),
       ])
 
-      const plugin = registry
-        .get(pluginsValueSpec)
-        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
-      const pluginService = plugin?.service
-      expect(pluginService).toBeDefined()
-      if (!pluginService) {
-        return
-      }
-
-      registry.get(pluginService).disable()
+      pluginToggle.disable()
 
       expect(
         registry
@@ -371,6 +396,17 @@ describe('cloud sync project library', () => {
     registry.configure([settingsExtension, cloudSyncPlugin])
 
     try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      registry.get(pluginService).enable()
+
       expect(registry.get(projectLibrariesValueSpec)).toEqual([
         expect.objectContaining({
           id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -382,7 +418,7 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('adds the default cloud library to user settings when enabled', async () => {
+  test('does not mutate project library settings from plugin activation', async () => {
     const registry = new Registry()
     const settings = createSettingsService({})
     const settingsExtension = defineRegistryItem({
@@ -393,38 +429,19 @@ describe('cloud sync project library', () => {
     registry.configure([settingsExtension, cloudSyncPlugin])
 
     try {
-      registry.get(projectLibraryTypesValueSpec)
-      await waitFor(() =>
-        expect(settings.send).toHaveBeenCalledWith({
-          type: 'set.app.libraries',
-          data: {
-            level: 'user',
-            value: [getDefaultCloudProjectLibrarySetting()],
-          },
-        })
-      )
-      expect(settings.settingsSignal.value.app.libraries.current).toEqual([
-        getDefaultCloudProjectLibrarySetting(),
-      ])
-    } finally {
-      registry[Symbol.dispose]()
-    }
-  })
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
 
-  test('does not add the default cloud library when settings disable the plugin', async () => {
-    const registry = new Registry()
-    const settings = createSettingsService({ cloudSyncEnabled: false })
-    const settingsExtension = defineRegistryItem({
-      id: 'test-settings-service',
-      providesServices: [provideService(settingsService, settings.service)],
-    })
-
-    registry.configure([settingsExtension, cloudSyncPlugin])
-
-    try {
-      registry.get(projectLibraryTypesValueSpec)
+      registry.get(pluginService).enable()
       await Promise.resolve()
       await Promise.resolve()
+
       expect(settings.send).not.toHaveBeenCalled()
       expect(settings.settingsSignal.value.app.libraries.current).toEqual([])
     } finally {
@@ -459,6 +476,7 @@ describe('cloud sync home project entries', () => {
     })
 
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
 
     try {
       await waitFor(() =>
@@ -525,6 +543,7 @@ describe('cloud sync home project entries', () => {
     })
 
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
 
     try {
       await waitFor(() =>
@@ -592,6 +611,7 @@ describe('cloud sync home project entries', () => {
     })
 
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
 
     try {
       await waitFor(() =>

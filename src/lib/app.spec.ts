@@ -10,6 +10,10 @@ import {
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -23,6 +27,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -196,6 +201,43 @@ function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   })
 }
 
+function getCloudSyncPluginSetting(app: App) {
+  return (
+    app.settings.get().plugins as
+      | Record<
+          string,
+          {
+            current?: unknown
+            user?: unknown
+          }
+        >
+      | undefined
+  )?.['cloud-sync']
+}
+
+function getPluginToggle(app: App, pluginId: string) {
+  const plugin = app.registry
+    .get(pluginsValueSpec)
+    .find((plugin) => plugin.id === pluginId)
+  expect(plugin).toBeDefined()
+  if (!plugin) {
+    throw new Error(`Missing ${pluginId} plugin registry item`)
+  }
+
+  return app.registry.get(plugin.service)
+}
+
+function hasPersonalCloudLibrarySetting(app: App) {
+  const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === defaultCloudLibrary.type &&
+        library.path === defaultCloudLibrary.path
+    )
+}
+
 describe('project system', () => {
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -362,6 +404,78 @@ describe('project system', () => {
     } finally {
       app.dispose()
       window.electron = previousElectron
+    }
+  })
+
+  it('keeps cloud sync disabled by default without the cloud projects feature', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
+      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
+      expect(
+        app.registry
+          .get(projectLibrariesValueSpec)
+          .some((library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+      ).toBe(false)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('auto-enables cloud sync for feature-flagged users and materializes Personal Cloud', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasPersonalCloudLibrary: app.registry
+            .get(projectLibrariesValueSpec)
+            .some(
+              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          active: true,
+          current: true,
+          user: true,
+          hasPersonalCloudLibrarySetting: true,
+          hasPersonalCloudLibrary: true,
+        })
+
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
+    } finally {
+      app.dispose()
     }
   })
 
