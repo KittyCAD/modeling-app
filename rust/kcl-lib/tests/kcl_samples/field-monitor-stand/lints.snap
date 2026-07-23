@@ -13,8 +13,8 @@ description: Lints field-monitor-stand.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4351,
-      4667,
+      4414,
+      4730,
       0
     ],
     "overridden": false,
