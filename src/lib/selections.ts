@@ -2018,10 +2018,7 @@ export function handleSelectionBatch({
   if (ranges.length)
     return {
       engineEvents,
-      codeMirrorSelection: EditorSelection.create(
-        ranges,
-        ranges.length - 1
-      ),
+      codeMirrorSelection: EditorSelection.create(ranges, ranges.length - 1),
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
