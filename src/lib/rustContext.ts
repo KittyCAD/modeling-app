@@ -11,6 +11,7 @@ import type {
   ApiPoint2d,
   ApiProjectId,
   ApiVersion,
+  ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
@@ -537,7 +538,7 @@ export default class RustContext {
     }
   }
 
-  /** Edit a segment in a sketch. */
+  /** Edit segments and optional constraint label positions in one sketch execution. */
   async editSegments(
     version: ApiVersion,
     sketch: ApiObjectId,
@@ -546,7 +547,8 @@ export default class RustContext {
     createCheckpoint = false,
     anchorSegmentIds?: ApiObjectId[],
     commitSolverResults = true,
-    dragAnchors: SegmentDragAnchor[] = []
+    dragAnchors: SegmentDragAnchor[] = [],
+    constraintLabelEdits: ConstraintLabelPositionEdit[] = []
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
@@ -569,7 +571,8 @@ export default class RustContext {
         createCheckpoint,
         JSON.stringify(anchorSegmentIds ?? null),
         JSON.stringify(dragAnchors),
-        commitSolverResults
+        commitSolverResults,
+        JSON.stringify(constraintLabelEdits)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
