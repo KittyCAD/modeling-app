@@ -61,6 +61,7 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
+  type ProjectLibrarySettingsDetailsProps,
   type ProjectLibraryTypeContribution,
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
@@ -85,6 +86,45 @@ type CloudSyncStatusBarPresentation = {
   iconClassName: string
   isBlocked: boolean
   tooltip: string
+}
+
+function CloudProjectLibrarySettingsDetails({
+  library,
+}: ProjectLibrarySettingsDetailsProps) {
+  const [storagePath, setStoragePath] = useState<string>()
+
+  useEffect(() => {
+    let disposed = false
+
+    getDefaultCloudProjectDirectoryPath()
+      .then((projectDirectoryPath) => {
+        if (!disposed) {
+          setStoragePath(projectDirectoryPath)
+        }
+      })
+      .catch(() => {
+        if (!disposed) {
+          setStoragePath(undefined)
+        }
+      })
+
+    return () => {
+      disposed = true
+    }
+  }, [])
+
+  return (
+    <div className="min-w-0 rounded-sm border border-chalkboard-30 bg-chalkboard-10 px-2 py-1 text-xs leading-5 dark:border-chalkboard-70 dark:bg-chalkboard-90">
+      <p className="truncate font-medium text-chalkboard-90 dark:text-chalkboard-10">
+        {library.title || 'Personal Cloud'}
+      </p>
+      <p className="truncate text-chalkboard-70 dark:text-chalkboard-30">
+        {storagePath
+          ? `Stored locally at ${storagePath}`
+          : 'Resolving local storage path...'}
+      </p>
+    </div>
+  )
 }
 
 type CloudSyncProjectMenuDialog =
@@ -962,6 +1002,7 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     order: 10,
     defaultSetting: getDefaultCloudProjectLibrarySetting(),
     newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
+    settingsDetails: CloudProjectLibrarySettingsDetails,
     operations: {
       createProject: {
         isAvailable: () => cloudSyncStatus.value.enabled,
