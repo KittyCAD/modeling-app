@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing fail_user_defined_error.kcl
+---
+KCL UserDefined error
+
+  × user-defined: custom failure
+   ╭─[3:1]
+ 2 │ 
+ 3 │ fail("custom failure")
+   · ───────────┬──────────
+   ·            ╰── tests/fail_user_defined_error/input.kcl
+   ╰────
