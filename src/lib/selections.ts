@@ -3138,9 +3138,10 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
-  const offsetResult = await getOffsetSketchPlaneData(artifact, {
-    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+  const offsetResult = getStableOffsetPlaneData(artifact, {
+    execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
+    sketchBlock,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -3182,6 +3183,43 @@ export function selectDefaultSketchPlane(
   return true
 }
 
+// Uses the executed sketch `on` plane so editing an offset-plane sketch is
+// independent of camera-facing scene data.
+export function getStableOffsetPlaneData(
+  artifact: Artifact | undefined,
+  systemDeps: {
+    execState: ExecState
+    sceneInfra: SceneInfra
+    sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
+  }
+): Error | false | OffsetPlane {
+  if (artifact?.type !== 'plane') {
+    return false
+  }
+
+  const planeInfo = systemDeps.sketchBlock?.planeInfo
+
+  if (!planeInfo) {
+    return false
+  }
+
+  return {
+    type: 'offsetPlane',
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    position: [
+      planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.z / systemDeps.sceneInfra.baseUnitMultiplier,
+    ],
+    planeId: artifact.id,
+    pathToNode: artifact.codeRef.pathToNode,
+    negated: false,
+  }
+}
+
+// Uses engine sketch-mode plane data so selecting a new offset plane can keep
+// the current camera-facing side.
 export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
