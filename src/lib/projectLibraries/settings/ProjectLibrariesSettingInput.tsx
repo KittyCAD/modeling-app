@@ -19,10 +19,16 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
+  ProjectLibrarySettingsDetailsProps,
   ProjectLibraryTypeContribution,
-  ProjectLibraryTypePathInput,
 } from '@src/registry/contracts/projectLibraries'
-import { type DragEvent, useEffect, useRef, useState } from 'react'
+import {
+  type ComponentType,
+  type DragEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 interface ProjectLibrariesSettingInputProps {
   value: ProjectLibrarySetting[]
@@ -36,12 +42,7 @@ export interface ProjectLibraryTypeOption {
   value: ProjectLibraryType
   defaultLibrary: ProjectLibrarySetting
   newLibrary: ProjectLibrarySetting
-  pathInput?: ProjectLibraryTypeOptionPathInput
-}
-
-interface ProjectLibraryTypeOptionPathInput
-  extends Omit<ProjectLibraryTypePathInput, 'icon'> {
-  icon: CustomIconName
+  settingsDetails: ComponentType<ProjectLibrarySettingsDetailsProps>
 }
 
 const defaultProjectLibraryTypeIcon: CustomIconName = 'folder'
@@ -56,19 +57,8 @@ function libraryTypeIconFromContribution(
   return defaultProjectLibraryTypeIcon
 }
 
-function libraryTypePathInputFromContribution(
-  pathInput: ProjectLibraryTypePathInput | undefined
-): ProjectLibraryTypeOptionPathInput | undefined {
-  if (!pathInput) {
-    return undefined
-  }
-
-  return {
-    ...pathInput,
-    icon: isCustomIconName(pathInput.icon)
-      ? pathInput.icon
-      : defaultProjectLibraryTypeIcon,
-  }
+function DefaultProjectLibrarySettingsDetails() {
+  return <></>
 }
 
 export function projectLibraryTypeOptionsFromContributions(
@@ -93,7 +83,8 @@ export function projectLibraryTypeOptionsFromContributions(
         value: libraryType.type,
         defaultLibrary: libraryType.defaultSetting ?? fallbackLibrary,
         newLibrary: libraryType.newLibrarySetting ?? fallbackLibrary,
-        pathInput: libraryTypePathInputFromContribution(libraryType.pathInput),
+        settingsDetails:
+          libraryType.settingsDetails ?? DefaultProjectLibrarySettingsDetails,
       }
     })
 }
@@ -158,6 +149,7 @@ function ProjectLibraryTypeSelect({
             path: 'projects',
             type: value,
           },
+          settingsDetails: DefaultProjectLibrarySettingsDetails,
         },
       ]
 
@@ -225,6 +217,72 @@ function ProjectLibraryTypeSelect({
         </Listbox.Options>
       </div>
     </Listbox>
+  )
+}
+
+export function DirectoryProjectLibrarySettingsDetails({
+  library,
+  index,
+  updateLibrary,
+  commitLibrary,
+  chooseDirectory,
+}: ProjectLibrarySettingsDetailsProps) {
+  async function chooseLibraryPath() {
+    if (!chooseDirectory) {
+      return
+    }
+
+    const selectedPath = await chooseDirectory({
+      defaultPath: library.path,
+      title: 'Choose a project library folder',
+    })
+    if (!selectedPath) {
+      return
+    }
+
+    commitLibrary({
+      ...library,
+      path: selectedPath,
+    })
+  }
+
+  return (
+    <div className="flex min-w-0 gap-1">
+      <input
+        value={library.path}
+        onChange={(event) =>
+          updateLibrary({
+            ...library,
+            path: event.target.value,
+          })
+        }
+        onBlur={() => commitLibrary()}
+        className="min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
+        data-testid={
+          index === 0 ? 'project-directory-input' : 'project-library-path'
+        }
+      />
+      {chooseDirectory && (
+        <ActionButton
+          Element="button"
+          type="button"
+          tabIndex={0}
+          onClick={toSync(chooseLibraryPath, reportRejection)}
+          className="!p-0"
+          iconStart={{
+            icon: 'folder',
+            bgClassName: '!bg-transparent',
+          }}
+          data-testid={
+            index === 0
+              ? 'project-directory-button'
+              : 'project-library-folder-button'
+          }
+        >
+          <Tooltip position="top-right">Choose folder</Tooltip>
+        </ActionButton>
+      )}
+    </div>
   )
 }
 
@@ -316,18 +374,17 @@ export function ProjectLibrariesSettingInput({
     )
   }
 
-  async function choosePathWithInput(
-    pathInput: ProjectLibraryTypeOptionPathInput,
+  async function chooseDirectory({
+    defaultPath,
+    title,
+  }: {
     defaultPath?: string
-  ) {
-    if (pathInput.kind !== 'directory') {
-      return defaultPath
-    }
-
+    title?: string
+  }) {
     const result = await electron?.open({
       properties: ['openDirectory', 'createDirectory'],
       defaultPath,
-      title: pathInput.dialogTitle ?? 'Choose a project library path',
+      title: title ?? 'Choose a project library folder',
     })
 
     if (!result || result.canceled) {
@@ -344,25 +401,7 @@ export function ProjectLibrariesSettingInput({
     }
 
     const newLibrary = libraryTypeOption.newLibrary
-    const selectedPath =
-      electron && libraryTypeOption.pathInput
-        ? await choosePathWithInput(
-            libraryTypeOption.pathInput,
-            newLibrary.path
-          )
-        : newLibrary.path
-
-    if (!selectedPath) {
-      return
-    }
-
-    commit([
-      ...draftLibraries,
-      {
-        ...newLibrary,
-        path: selectedPath,
-      },
-    ])
+    commit([...draftLibraries, newLibrary])
   }
 
   function removeLibrary(index: number) {
@@ -426,33 +465,6 @@ export function ProjectLibrariesSettingInput({
     dragPreviewIdRef.current = null
   }
 
-  async function chooseLibraryPath(index: number) {
-    const library = draftLibraries[index]
-    if (!library) {
-      return
-    }
-
-    const pathInput = libraryTypeOptionForType(
-      library.type,
-      libraryTypeOptions
-    )?.pathInput
-    if (!pathInput) {
-      return
-    }
-
-    const selectedPath = await choosePathWithInput(pathInput, library.path)
-    if (!selectedPath) {
-      return
-    }
-
-    commit(
-      updateProjectLibrarySettingAt(draftLibraries, index, (library) => ({
-        ...library,
-        path: selectedPath,
-      }))
-    )
-  }
-
   return (
     <div
       className="flex flex-col gap-3"
@@ -461,10 +473,9 @@ export function ProjectLibrariesSettingInput({
       {draftLibraries.length > 0 && (
         <ul className="flex flex-col gap-2">
           {draftLibraries.map((library, index) => {
-            const pathInput = libraryTypeOptionForType(
-              library.type,
-              libraryTypeOptions
-            )?.pathInput
+            const SettingsDetails =
+              libraryTypeOptionForType(library.type, libraryTypeOptions)
+                ?.settingsDetails ?? DefaultProjectLibrarySettingsDetails
 
             return (
               <li
@@ -505,46 +516,31 @@ export function ProjectLibrariesSettingInput({
                   className="min-w-0 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
                   data-testid="project-library-title"
                 />
-                <div className="flex min-w-0 gap-1">
-                  <input
-                    value={library.path}
-                    onChange={(event) =>
-                      updateDraftField(index, 'path', event.target.value)
-                    }
-                    onBlur={() => commitDraftLibrary(index)}
-                    className="min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
-                    data-testid={
-                      index === 0
-                        ? 'project-directory-input'
-                        : 'project-library-path'
-                    }
-                  />
-                  {electron && pathInput && (
-                    <ActionButton
-                      Element="button"
-                      type="button"
-                      tabIndex={0}
-                      onClick={toSync(
-                        () => chooseLibraryPath(index),
-                        reportRejection
-                      )}
-                      className="!p-0"
-                      iconStart={{
-                        icon: pathInput.icon,
-                        bgClassName: '!bg-transparent',
-                      }}
-                      data-testid={
-                        index === 0
-                          ? 'project-directory-button'
-                          : 'project-library-folder-button'
-                      }
-                    >
-                      <Tooltip position="top-right">
-                        {pathInput.buttonLabel ?? 'Choose path'}
-                      </Tooltip>
-                    </ActionButton>
-                  )}
-                </div>
+                <SettingsDetails
+                  library={library}
+                  index={index}
+                  updateLibrary={(nextLibrary) =>
+                    setDraftLibraries((libraries) =>
+                      updateProjectLibrarySettingAt(
+                        libraries,
+                        index,
+                        () => nextLibrary
+                      )
+                    )
+                  }
+                  commitLibrary={(nextLibrary) =>
+                    commit(
+                      nextLibrary
+                        ? updateProjectLibrarySettingAt(
+                            draftLibraries,
+                            index,
+                            () => nextLibrary
+                          )
+                        : draftLibraries
+                    )
+                  }
+                  chooseDirectory={electron ? chooseDirectory : undefined}
+                />
                 <ActionButton
                   Element="button"
                   type="button"
