@@ -1553,16 +1553,6 @@ export function createOnDragCallback({
               objectsBeforeDrag: objects,
               objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
               units,
-            }).filter(({ constraintId }) => {
-              if (dragAnchors.length === 0) {
-                return true
-              }
-
-              const constraint = objects[constraintId]
-              return (
-                !isRadiusConstraint(constraint) &&
-                !isDiameterConstraint(constraint)
-              )
             })
           const constraintLabelEdits = mergeConstraintLabelPreviewEdits({
             // A sub-threshold endpoint movement produces no new transform.
