@@ -296,6 +296,35 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "VariableDeclaration",
+      "name": "cutoutDiameter",
+      "value": {
+        "type": "Number",
+        "value": 1.1,
+        "ty": {
+          "type": "Default",
+          "len": "in",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
       "name": "exteriorBendRadius",
       "value": {
         "type": "Number",
@@ -311,7 +340,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -340,7 +369,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -369,7 +398,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -398,7 +427,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -420,7 +449,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -494,7 +523,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -607,7 +636,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -654,7 +683,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -738,7 +767,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -785,7 +814,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -895,7 +924,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -942,7 +971,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1026,7 +1055,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1073,7 +1102,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1183,7 +1212,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1230,7 +1259,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1314,7 +1343,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1361,7 +1390,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1471,7 +1500,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1518,7 +1547,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1602,7 +1631,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1649,7 +1678,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1733,7 +1762,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1780,7 +1809,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1864,7 +1893,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1911,7 +1940,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2021,7 +2050,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2068,7 +2097,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2152,7 +2181,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2199,7 +2228,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2309,7 +2338,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2356,7 +2385,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2440,7 +2469,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2487,7 +2516,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2597,7 +2626,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2644,7 +2673,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2728,7 +2757,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2775,7 +2804,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2885,7 +2914,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2932,7 +2961,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3016,7 +3045,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3063,7 +3092,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3147,7 +3176,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3194,7 +3223,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3278,7 +3307,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3325,7 +3354,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3369,7 +3398,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3413,7 +3442,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3457,7 +3486,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3501,7 +3530,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3545,7 +3574,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3589,7 +3618,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3633,7 +3662,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3677,7 +3706,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3721,7 +3750,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3765,7 +3794,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3809,7 +3838,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3853,7 +3882,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3897,7 +3926,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3941,7 +3970,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3985,7 +4014,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4029,7 +4058,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4073,7 +4102,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4117,7 +4146,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4153,7 +4182,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4189,7 +4218,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4225,7 +4254,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4261,7 +4290,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4297,7 +4326,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4333,7 +4362,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4383,7 +4412,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4433,7 +4462,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4477,7 +4506,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4568,7 +4597,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4615,7 +4644,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4659,7 +4688,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4703,7 +4732,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4750,7 +4779,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4794,7 +4823,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4830,7 +4859,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4866,7 +4895,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4917,7 +4946,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4980,7 +5009,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5009,7 +5038,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5031,7 +5060,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5061,7 +5090,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5070,7 +5099,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": -1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5087,7 +5116,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5096,7 +5125,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": -1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5112,7 +5141,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5155,7 +5184,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5164,7 +5193,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5181,7 +5210,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5190,7 +5219,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": -1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5206,7 +5235,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5249,7 +5278,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5258,7 +5287,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5275,7 +5304,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5284,7 +5313,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5300,7 +5329,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5343,7 +5372,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5352,7 +5381,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": -1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5369,7 +5398,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5378,7 +5407,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5394,7 +5423,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5441,7 +5470,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5485,7 +5514,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5529,7 +5558,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5573,7 +5602,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5617,7 +5646,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5661,7 +5690,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5705,7 +5734,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5741,7 +5770,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5781,7 +5810,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5790,7 +5819,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5807,7 +5836,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5816,7 +5845,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5832,7 +5861,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5875,7 +5904,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5884,7 +5913,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5901,7 +5930,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5910,7 +5939,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5926,7 +5955,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5969,7 +5998,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5978,7 +6007,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5995,7 +6024,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6004,7 +6033,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6020,7 +6049,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6063,7 +6092,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6072,7 +6101,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6089,7 +6118,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6098,7 +6127,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6114,7 +6143,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6161,7 +6190,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6205,7 +6234,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6249,7 +6278,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6293,7 +6322,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6337,7 +6366,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6381,7 +6410,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6425,7 +6454,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6461,7 +6490,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6501,7 +6530,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6510,7 +6539,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6527,7 +6556,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6536,7 +6565,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6552,7 +6581,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6599,7 +6628,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6663,7 +6692,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6703,7 +6732,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6712,7 +6741,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6729,7 +6758,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6738,7 +6767,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6754,7 +6783,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6801,7 +6830,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6845,7 +6874,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6885,7 +6914,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6894,7 +6923,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6911,7 +6940,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6920,7 +6949,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -6936,7 +6965,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6983,7 +7012,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7027,7 +7056,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7067,7 +7096,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7076,7 +7105,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": -1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7093,7 +7122,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7102,7 +7131,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -0.0,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7118,7 +7147,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7165,7 +7194,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7209,7 +7238,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7253,7 +7282,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7297,7 +7326,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7341,7 +7370,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7385,7 +7414,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7429,7 +7458,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7476,7 +7505,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7523,7 +7552,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7570,7 +7599,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7606,7 +7635,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7615,7 +7644,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7632,7 +7661,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -20.7,
+                "value": -3.25,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7641,7 +7670,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 15.39,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7657,7 +7686,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7704,7 +7733,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7728,94 +7757,7 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "circle",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -16.76,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -13.56,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -19.36,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -17.22,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 46
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -7835,7 +7777,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7848,7 +7790,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 47
+            "index": 46
           },
           {
             "type": "ExpressionStatementExpr"
@@ -7868,7 +7810,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": -3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7877,7 +7819,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7894,7 +7836,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 20.08,
+                "value": -3.25,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7903,7 +7845,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -16.61,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -7919,7 +7861,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7932,7 +7874,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 48
+            "index": 47
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7966,7 +7908,51 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 48
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontal",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7999,7 +7985,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 16.76,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8008,7 +7994,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 13.56,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8025,7 +8011,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 21.35,
+                "value": 3.75,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8034,7 +8020,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 10.44,
+                "value": -2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8050,7 +8036,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8097,7 +8083,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8121,94 +8107,7 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "circle",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 7.55,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.79,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 10.28,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 3.88,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 52
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
           "type": "Array",
@@ -8228,7 +8127,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8241,7 +8140,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 53
+            "index": 52
           },
           {
             "type": "ExpressionStatementExpr"
@@ -8261,7 +8160,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": 3.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8270,7 +8169,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 5.79,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8287,7 +8186,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -9.18,
+                "value": 3.75,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8296,7 +8195,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 3.96,
+                "value": 2.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8312,7 +8211,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8325,7 +8224,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 54
+            "index": 53
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8359,7 +8258,51 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 54
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontal",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8392,7 +8335,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -7.55,
+                "value": 1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8401,7 +8344,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8418,7 +8361,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -6.26,
+                "value": 1.1875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8427,7 +8370,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -8.07,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8443,7 +8386,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8490,7 +8433,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8514,6 +8457,50 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
+      "name": "horizontal",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 58
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
       "labeledArgs": {
@@ -8523,7 +8510,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.55,
+                "value": -1.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8532,7 +8519,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -5.79,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8549,7 +8536,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 7.14,
+                "value": -0.8125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8558,7 +8545,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -8.3,
+                "value": 1.5,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -8574,7 +8561,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8587,7 +8574,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 58
+            "index": 59
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8621,43 +8608,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 59
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "radius",
-      "unlabeledArg": {
-        "value": {
-          "type": "KclNone"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8674,9 +8625,6 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -8684,10 +8632,18 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -8696,7 +8652,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8713,9 +8669,6 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -8723,19 +8676,67 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
-      "unlabeledArg": {
-        "value": {
-          "type": "KclNone"
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -0.8125,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8751,10 +8752,10 @@ description: Operations executed sheet-metal-bracket.kcl
             "index": 62
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
           },
           {
-            "type": "BinaryLeft"
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -8762,10 +8763,18 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -8774,7 +8783,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8791,9 +8800,6 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -8801,10 +8807,18 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "horizontal",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -8813,7 +8827,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8830,9 +8844,6 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -8840,19 +8851,67 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
-      "unlabeledArg": {
-        "value": {
-          "type": "KclNone"
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 1.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 1.1875,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8868,10 +8927,10 @@ description: Operations executed sheet-metal-bracket.kcl
             "index": 65
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
           },
           {
-            "type": "BinaryLeft"
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -8879,10 +8938,18 @@ description: Operations executed sheet-metal-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -8891,7 +8958,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8908,6 +8975,86 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontal",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 67
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 68
+          },
+          {
+            "type": "ExpressionStatementExpr"
           },
           {
             "type": "BinaryLeft"
@@ -8930,7 +9077,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8943,7 +9090,241 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 67
+            "index": 69
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 70
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 71
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 72
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 73
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 74
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 75
           },
           {
             "type": "ExpressionStatementExpr"
@@ -8992,7 +9373,7 @@ description: Operations executed sheet-metal-bracket.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -0.14,
+                "value": 1.1,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -9001,7 +9382,7 @@ description: Operations executed sheet-metal-bracket.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 1.01,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -9017,7 +9398,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9030,7 +9411,7 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 68
+            "index": 76
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9064,7 +9445,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9077,10 +9458,93 @@ description: Operations executed sheet-metal-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 69
+            "index": 77
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontal",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 78
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 79
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
           }
         ]
       },
@@ -9228,7 +9692,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9379,7 +9843,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9530,7 +9994,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9681,7 +10145,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9832,7 +10296,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9983,7 +10447,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10134,7 +10598,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10285,7 +10749,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10436,7 +10900,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10538,7 +11002,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10567,7 +11031,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10659,7 +11123,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10729,7 +11193,7 @@ description: Operations executed sheet-metal-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
