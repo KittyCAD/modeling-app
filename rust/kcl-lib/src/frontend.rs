@@ -98,6 +98,7 @@ use crate::walk::Visitable;
 pub(crate) mod api;
 pub(crate) mod modify;
 pub(crate) mod sketch;
+pub(crate) mod sketch_svg;
 
 pub const MAX_SKETCH_CHECKPOINTS: usize = 100;
 
@@ -308,6 +309,13 @@ impl FrontendState {
             .flatten()
             .map(|settings| settings.default_length_units)
             .unwrap_or(UnitLength::Millimeters)
+    }
+
+    pub fn export_sketch_svg(
+        &self,
+        options: crate::front::SketchSvgOptions,
+    ) -> api::Result<crate::front::SketchSvgExport> {
+        crate::frontend::sketch_svg::export_sketch_svg(&self.scene_graph, options)
     }
 
     pub async fn create_sketch_checkpoint(&mut self, exec_outcome: ExecOutcome) -> api::Result<SketchCheckpointId> {

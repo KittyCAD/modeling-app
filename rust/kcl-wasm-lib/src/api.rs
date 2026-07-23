@@ -165,6 +165,28 @@ impl Context {
             .map_err(|e| format!("Could not serialize hack set program result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Export the current frontend sketch scene graph to SVG without executing KCL or touching the engine.
+    #[wasm_bindgen]
+    pub async fn export_sketch_svg(&self, options_json: &str) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let options: kcl_lib::front::SketchSvgOptions = if options_json.trim().is_empty() {
+            Default::default()
+        } else {
+            serde_json::from_str(options_json)
+                .map_err(|e| JsValue::from_str(&format!("Could not deserialize SketchSvgOptions: {e}")))?
+        };
+
+        let frontend = Arc::clone(&self.frontend);
+        let guard = frontend.read().await;
+        let result = guard
+            .export_sketch_svg(options)
+            .map_err(|e: Error| js_value_from_serde(&e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize sketch SVG export. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Execute the sketch in mock mode, without changing anything. This is
     /// useful after editing segments, and the user releases the mouse button.
     #[wasm_bindgen]
