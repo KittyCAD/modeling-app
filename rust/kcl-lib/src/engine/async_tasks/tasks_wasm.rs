@@ -24,7 +24,9 @@ pub struct AsyncTasks {
 }
 
 // Safety: single-threaded wasm ⇒ these are sound.
+#[expect(unsafe_code)]
 unsafe impl Send for AsyncTasks {}
+#[expect(unsafe_code)]
 unsafe impl Sync for AsyncTasks {}
 
 impl Default for AsyncTasks {

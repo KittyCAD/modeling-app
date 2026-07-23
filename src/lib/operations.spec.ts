@@ -24,6 +24,7 @@ import {
   groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
+import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -417,6 +418,49 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
+    it('continues when the unlabeled selection cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: { type: 'Number', value: 0, ty: { type: 'Any' } },
+        sourceRange: rangeOfText(code, 'region(point = [1, 1], sketch = s)'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        length?: { valueText: string }
+      }
+      expect(argDefaultValues.sketches).toEqual({
+        graphSelections: [],
+        otherSelections: [],
+      })
+      expect(argDefaultValues.length?.valueText).toBe('10')
+    })
+
     it('preserves draftAngle in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
@@ -511,13 +555,15 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{
+            entityRef?: { type: string; segment_id?: string }
+          }>
         }
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'segment-id'
-      )
+      expect(
+        argDefaultValues.direction?.graphSelections[0].entityRef?.segment_id
+      ).toBe('segment-id')
     })
 
     it('preserves sweep edge profiles and direction in the command defaults', async () => {

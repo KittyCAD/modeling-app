@@ -454,6 +454,7 @@ pub struct SweepEdge {
 pub enum SweepEdgeSubType {
     Opposite,
     Adjacent,
+    PreviousAdjacent,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -1725,6 +1726,29 @@ fn mirror_3d_artifact_updates(
     Ok(return_arr)
 }
 
+fn edge_specifier_source_id(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    specifier: &kittycad_modeling_cmds::shared::EdgeSpecifier,
+) -> Option<ArtifactId> {
+    // The engine is authoritative for resolving the edge used by the operation.
+    // Reconstruct its source here only so the artifact graph can retain lineage
+    // for selection and feature-tree actions when the command has no target UUID.
+    let required_faces = specifier.side_faces.iter().chain(&specifier.end_faces);
+    let mut matching_edges = artifacts.values().filter_map(|artifact| {
+        let (id, common_surface_ids) = match artifact {
+            Artifact::Segment(segment) => (segment.id, &segment.common_surface_ids),
+            Artifact::SweepEdge(edge) => (edge.id, &edge.common_surface_ids),
+            _ => return None,
+        };
+        required_faces
+            .clone()
+            .all(|face_id| common_surface_ids.contains(&ArtifactId::new(*face_id)))
+            .then_some(id)
+    });
+
+    matching_edges.nth(specifier.index.unwrap_or_default() as usize)
+}
+
 #[allow(clippy::too_many_arguments)]
 fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
@@ -2196,15 +2220,21 @@ fn artifacts_to_update(
             let target = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude {
                     target: Some(target), ..
-                }) => target,
-                // An edge-reference extrusion has no stable path UUID until the
-                // engine resolves the topology payload, so there is no source
-                // path artifact to mark as consumed here.
+                }) => cmd_id_ref_to_artifact_id(target),
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: None,
+                    target_reference: Some(target_reference),
+                    ..
+                }) => edge_specifier_source_id(artifacts, target_reference)
+                    .or_else(|| target_reference.side_faces.first().copied().map(ArtifactId::new))
+                    .unwrap_or(id),
                 ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
                 | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+                    cmd_id_ref_to_artifact_id(target)
+                }
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
             };
             // Determine the resulting method from the specific command, if provided
@@ -2230,7 +2260,6 @@ fn artifacts_to_update(
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
-            let target = cmd_id_ref_to_artifact_id(target);
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,
@@ -2530,6 +2559,11 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
+            let adjacent_edge_ids = info
+                .edges
+                .iter()
+                .filter_map(|edge| edge.adjacent_info.as_ref().map(|info| info.edge_id))
+                .collect::<AHashSet<_>>();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
@@ -2608,6 +2642,34 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Sweep(new_sweep));
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                // Internal edges are already represented as the next adjacent edge of
+                // the preceding segment. Only add the open component's start edge.
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info
+                    && !adjacent_edge_ids.contains(&previous_adjacent_info.edge_id)
+                {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: previous_adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::PreviousAdjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: previous_adjacent_info
+                            .faces
+                            .iter()
+                            .map(|face| ArtifactId::new(*face))
+                            .collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![previous_adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
             }

@@ -1610,7 +1610,7 @@ interface ExtrudeEdgeCallToFix {
   range: Z0006SourceRange
   replacements: Array<{
     argument: ExtrudeEdgeArgument
-    payload: FilletEdgeRefPayload
+    payload: FilletEdgeRefPayload | FilletEdgeRefPayload[]
   }>
   pathToCall?: PathToNode
 }
@@ -1742,9 +1742,41 @@ function findExtrudeEdgeArgumentExpr(
   call: Node<CallExpressionKw>,
   argument: ExtrudeEdgeArgument
 ): Expr | null {
-  if (argument === 'target') return call.unlabeled ?? null
+  if (argument === 'target') {
+    return (
+      call.unlabeled ??
+      call.arguments?.find((arg) => getLabelName(arg) === undefined)?.arg ??
+      null
+    )
+  }
   const arg = call.arguments?.find((a) => getLabelName(a) === argument)
   return arg?.arg ?? null
+}
+
+function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
+  return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
+}
+
+function resolveTopLevelArrayExpression(
+  program: Program,
+  expr: Expr,
+  referencePath: PathToNode
+): Extract<Expr, { type: 'ArrayExpression' }> | null {
+  if (expr.type === 'ArrayExpression') return expr
+  if (expr.type !== 'Name' || isNestedScopePath(referencePath)) return null
+
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === expr.name.name
+  )
+  if (
+    declaration?.type !== 'VariableDeclaration' ||
+    declaration.declaration.init.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+  return declaration.declaration.init
 }
 
 export function findExtrudeEdgeCallsToFix(
@@ -1769,7 +1801,46 @@ export function findExtrudeEdgeCallsToFix(
     }
     const replacements: ExtrudeEdgeCallToFix['replacements'] = []
     for (const argument of ['target', 'to', 'direction'] as const) {
+      if (argument === 'target' && extrudeRequiresConcreteTarget(call)) {
+        continue
+      }
       const argumentExpr = findExtrudeEdgeArgumentExpr(call, argument)
+      const targetArray =
+        argument === 'target' && argumentExpr
+          ? resolveTopLevelArrayExpression(
+              program,
+              argumentExpr,
+              pathPrefix ?? []
+            )
+          : null
+      if (targetArray) {
+        const payloads = targetArray.elements.map((element) => {
+          const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+            program,
+            element,
+            pathPrefix ?? []
+          )
+          if (!deprecatedCall) return null
+          const meta = edgeRefactorMetadata.find((candidate) =>
+            sourceRangeMatch(
+              candidate,
+              deprecatedCall.call.start,
+              deprecatedCall.call.end,
+              deprecatedCall.call.moduleId
+            )
+          )
+          return hasFaceIds(meta) ? edgeRefactorMetaToPayload(meta) : null
+        })
+        if (
+          payloads.length > 0 &&
+          payloads.every(
+            (payload): payload is FilletEdgeRefPayload => payload !== null
+          )
+        ) {
+          replacements.push({ argument, payload: payloads })
+        }
+        continue
+      }
       const deprecatedCall = argumentExpr
         ? findDeprecatedEdgeStdlibCallFromExpr(
             program,
@@ -1782,7 +1853,11 @@ export function findExtrudeEdgeCallsToFix(
           (argument === 'target' || argument === 'direction') &&
           argumentExpr &&
           artifactGraph &&
-          wasmInstance
+          wasmInstance &&
+          // Sketch segments are already stable directions. Only generated
+          // solid-edge tags should be converted to a face API selector.
+          (argument !== 'direction' ||
+            getTagInfoFromExpr(argumentExpr)?.tagsBaseExpr != null)
         ) {
           const payload = directSketchSegmentEdgePayload(
             program,
@@ -1942,7 +2017,7 @@ export function findExtrudeToCallsToFix(
   return findExtrudeEdgeCallsToFix(program, edgeRefactorMetadata).flatMap(
     ({ range, replacements, pathToCall }) => {
       const replacement = replacements.find(({ argument }) => argument === 'to')
-      if (!replacement) return []
+      if (!replacement || isArray(replacement.payload)) return []
       const [firstFaceId, secondFaceId] = replacement.payload.side_faces
       if (!firstFaceId || !secondFaceId) return []
       return [
@@ -2168,18 +2243,27 @@ function refactorExtrudeEdgeArgumentsInPlace(
     let failedToCreateEdgeRef = false
 
     for (const { argument, payload } of replacements) {
-      const result = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        nextAst,
-        artifactGraph
-      )
-      if (err(result)) {
-        failedToCreateEdgeRef = true
-        break
+      const payloads = isArray(payload) ? payload : [payload]
+      const exprs: Expr[] = []
+      for (const item of payloads) {
+        const result = createEdgeRefObjectExpression(
+          item,
+          wasmInstance,
+          nextAst,
+          artifactGraph
+        )
+        if (err(result)) {
+          failedToCreateEdgeRef = true
+          break
+        }
+        exprs.push(result.expr)
+        nextAst = result.modifiedAst
       }
-      replacementExprs.push({ argument, expr: result.expr })
-      nextAst = result.modifiedAst
+      if (failedToCreateEdgeRef) break
+      replacementExprs.push({
+        argument,
+        expr: isArray(payload) ? createArrayExpression(exprs) : exprs[0],
+      })
     }
 
     if (failedToCreateEdgeRef || replacementExprs.length === 0) continue
@@ -2195,7 +2279,14 @@ function refactorExtrudeEdgeArgumentsInPlace(
     const callNode = nodeResult.node
     for (const { argument, expr } of replacementExprs) {
       if (argument === 'target') {
-        callNode.unlabeled = expr
+        if (callNode.unlabeled) {
+          callNode.unlabeled = expr
+        } else {
+          const unlabeledArg = callNode.arguments.find(
+            (arg) => getLabelName(arg) === undefined
+          )
+          if (unlabeledArg) unlabeledArg.arg = expr
+        }
         continue
       }
       const existingArg = callNode.arguments.find(

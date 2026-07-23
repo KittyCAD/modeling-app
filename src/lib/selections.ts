@@ -122,7 +122,7 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -623,6 +623,13 @@ function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
 
   if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
     return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
+  }
+
+  if (
+    artifact.type === 'sweepEdge' &&
+    artifact.subType === 'previousAdjacent'
+  ) {
+    return createCallExpressionStdLibKw('getPreviousAdjacentEdge', tag, [])
   }
 
   return tag

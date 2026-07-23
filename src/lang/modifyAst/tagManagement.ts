@@ -24,7 +24,6 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
-  getEdgeCutMeta,
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
   isSketchSegmentCallName,
@@ -40,6 +39,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
+  addTagToSingletonEdgeCut,
   isTaggableSketchSegment,
 } from '@src/lang/std/sketchTaggingHelpers'
 import type {
@@ -378,13 +378,12 @@ function modifyAstWithTagForFaceSelection(
       expr: createLocalName(result.tag),
     }
   }
-  // CASE 3: Handle edgeCut face - tag the underlying segment
+  // CASE 3: Handle an edgeCut face by tagging its operation.
   else if (selection.artifact.type === 'edgeCut') {
     // Each handler function creates its own clone and returns a new AST
     const result = modifyAstWithTagForEdgeCutFace(
       ast,
       selection.artifact,
-      artifactGraph,
       wasmInstance
     )
     if (err(result)) return result
@@ -628,43 +627,28 @@ export function mutateAstWithTagForSketchSegment(
 
 /**
  * Handler for edgeCut face selection.
- * Tags the underlying sketch segment that was used to create the edge cut.
+ * Tags a singleton chamfer or fillet operation directly.
  *
  * @param ast - The AST to modify
  * @param edgeCutFace - The edgeCut artifact representing the face
- * @param artifactGraph - The artifact graph for context
  * @returns Modified AST with tag and the tag name, or an Error
  */
 function modifyAstWithTagForEdgeCutFace(
   ast: Node<Program>,
   edgeCutFace: Artifact,
-  artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   if (edgeCutFace.type !== 'edgeCut') {
     return new Error('Selection artifact is not a valid edgeCut type')
   }
 
-  // Clone AST
   const astClone = structuredClone(ast)
-
-  // Get edge cut metadata to understand the underlying segment
-  const edgeCutMeta = getEdgeCutMeta(
-    edgeCutFace,
-    astClone,
-    artifactGraph,
+  return addTagToSingletonEdgeCut(
+    {
+      node: astClone,
+      pathToNode: edgeCutFace.codeRef.pathToNode,
+      wasmInstance,
+    },
     wasmInstance
   )
-
-  // Tag the underlying segment using the edgeCut artifact's codeRef
-  const tagResult = mutateAstWithTagForSketchSegment(
-    astClone,
-    edgeCutFace.codeRef.pathToNode,
-    wasmInstance,
-    edgeCutMeta
-  )
-  if (err(tagResult)) return tagResult
-
-  const { modifiedAst, tag } = tagResult
-  return { modifiedAst, tag }
 }

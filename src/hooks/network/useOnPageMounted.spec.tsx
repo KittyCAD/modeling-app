@@ -8,7 +8,11 @@ import { describe, expect, test, vi } from 'vitest'
 describe('useOnPageMounted', () => {
   const singletons = App.fromProvided({
     registryOverrides: [
-      createTestWasmRegistryItem(Promise.resolve({} as ModuleType)),
+      createTestWasmRegistryItem(
+        Promise.resolve({
+          set_kcl_runtime_flags: vi.fn(),
+        } as unknown as ModuleType)
+      ),
     ],
   }).singletons
 
@@ -24,7 +28,7 @@ describe('useOnPageMounted', () => {
       expect(callback).toHaveBeenCalledTimes(1)
 
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })
@@ -38,7 +42,7 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
       rerender({ callback: callback_2 })
@@ -46,7 +50,7 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })
@@ -65,7 +69,7 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })

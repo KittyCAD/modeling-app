@@ -86,6 +86,52 @@ describe('testing parseProjectRoute', () => {
     })
   })
 
+  it('should prefer the default directory library over the legacy project directory', async () => {
+    let config = {
+      settings: {
+        app: {
+          libraries: [
+            {
+              title: 'Projects',
+              path: '/home/somebody/library-projects',
+              type: 'directory',
+            },
+          ],
+        },
+        project: {
+          directory: '/home/somebody/legacy-projects',
+        },
+      },
+    }
+    const route = '/home/somebody/library-projects/assembly/main.kcl'
+    expect(parseProjectRoute(config, route)).toEqual({
+      projectName: 'assembly',
+      projectPath: '/home/somebody/library-projects/assembly',
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should respect an explicit empty libraries setting', async () => {
+    let config = {
+      settings: {
+        app: {
+          libraries: [],
+        },
+        project: {
+          directory: '/home/somebody/legacy-projects',
+        },
+      },
+    }
+    const route = '/home/somebody/legacy-projects/assembly/subdir/main.kcl'
+    expect(parseProjectRoute(config, route)).toEqual({
+      projectName: 'subdir',
+      projectPath: '/home/somebody/legacy-projects/assembly/subdir',
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+
   it('should not parse a sibling path with the same prefix as inside the project dir', async () => {
     let config = {
       settings: {

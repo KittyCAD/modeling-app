@@ -108,6 +108,43 @@ export function addTagKw(): AddTagFn {
   }
 }
 
+export function addTagToSingletonEdgeCut(
+  tagInfo: AddTagInfo,
+  wasmInstance: ModuleType
+): { modifiedAst: Node<Program>; tag: string } | Error {
+  const call = getNodeFromPath<Node<CallExpressionKw>>(
+    tagInfo.node,
+    tagInfo.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (err(call)) return call
+
+  const operation = call.node.callee.name.name
+  if (operation !== 'chamfer' && operation !== 'fillet') {
+    return new Error('Edge cut must refer to a chamfer or fillet operation')
+  }
+
+  const edges = findKwArg('edges', call.node)
+  const tags = findKwArg('tags', call.node)
+  if ((!edges && !tags) || (edges && tags)) {
+    return new Error(
+      'Edge cut operation must have exactly one edges or tags argument'
+    )
+  }
+
+  const selectors = edges ?? tags
+  const selectorCount =
+    selectors?.type === 'ArrayExpression' ? selectors.elements.length : 1
+  if (selectorCount !== 1) {
+    return new Error(
+      'Cannot tag an edge cut from an operation with multiple selectors until source-selector metadata is available'
+    )
+  }
+
+  return addTagKw()(tagInfo)
+}
+
 function addTagToEdgeCut(
   tagInfo: AddTagInfo,
   edgeCutMeta: EdgeCutInfo,
