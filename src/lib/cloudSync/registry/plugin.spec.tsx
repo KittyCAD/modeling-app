@@ -351,6 +351,37 @@ describe('cloud sync project library', () => {
     }
   })
 
+  test('preserves configured personal cloud library order', () => {
+    const registry = new Registry()
+    const settings = createSettingsService({
+      libraries: [
+        {
+          title: 'Directory',
+          path: '/projects',
+          type: 'directory',
+        },
+        getDefaultCloudProjectLibrarySetting(),
+      ],
+    })
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          order: 1,
+        }),
+      ])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   test('adds the default cloud library to user settings when enabled', async () => {
     const registry = new Registry()
     const settings = createSettingsService({})
