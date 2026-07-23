@@ -273,6 +273,44 @@ describe('ProjectCard', () => {
     expect(input.selectionEnd).toBe(input.value.length)
   })
 
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
     vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
     const projectActions = createProjectActions()

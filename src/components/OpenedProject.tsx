@@ -1,7 +1,6 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
@@ -34,6 +33,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -83,7 +83,7 @@ export function OpenedProject() {
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
-  const { onProjectOpen } = useLspContext()
+  const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
@@ -164,11 +164,11 @@ export function OpenedProject() {
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen(
+    lsp.onProjectOpen(
       { name: projectName, path: projectPath },
       project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, project])
+  }, [lsp, projectName, projectPath, project])
 
   useHotKeyListener(kclManager)
 

@@ -20,6 +20,7 @@ import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
+import Tooltip from '@src/components/Tooltip'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -45,6 +46,13 @@ const compactProjectCardClassNames: ProjectCardClassNames = {
     'h-24 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
   body: 'pb-2 flex flex-col flex-grow flex-auto gap-1 rounded-b-sm',
   title: 'font-sans relative z-0 p-2 text-sm truncate',
+}
+
+function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
+  return (
+    project.syncFailure?.message ||
+    'Cloud sync cannot upload local changes right now.'
+  )
 }
 
 function getDisplayedTime(dateTimeMs: number) {
@@ -140,6 +148,7 @@ function AppProjectCard({
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
+  const hasCloudSyncFailure = Boolean(showCloudSyncUi && project.syncFailure)
   const imageUrl = useProjectThumbnailUrl(project.thumbnail)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
@@ -236,6 +245,7 @@ function AppProjectCard({
 
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
+    hasCloudSyncFailure ||
     hasChangesRequested) && (
     <>
       {statusBadgeLabel && (
@@ -252,6 +262,15 @@ function AppProjectCard({
           data-testid="cloud-conflict-badge"
         >
           Cloud conflict
+        </span>
+      )}
+      {hasCloudSyncFailure && (
+        <span
+          className="rounded bg-destroy-10 px-1.5 py-0.5 text-[10px] font-medium text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10"
+          data-testid="cloud-sync-blocked-badge"
+        >
+          Cloud sync blocked
+          <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
       {hasChangesRequested && (
