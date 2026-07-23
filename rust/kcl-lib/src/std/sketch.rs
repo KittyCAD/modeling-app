@@ -28,6 +28,7 @@ use super::shapes::get_radius_labelled;
 use super::utils::untype_array;
 use crate::ExecutorContext;
 use crate::NodePath;
+use crate::collections::AhashIndexSet;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
@@ -3212,16 +3213,19 @@ async fn inner_region(
 /// complicated since we also sort region segments, but in practice, there
 /// should be very few of these.
 pub(crate) fn build_reverse_region_mapping(
-    region_mapping: &HashMap<Uuid, Uuid>,
+    region_mapping: &HashMap<Uuid, Vec<Uuid>>,
     original_segments: &[Uuid],
 ) -> IndexMap<Uuid, Vec<Uuid>> {
-    let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::default();
+    // Use a set to guard against duplicates in the region mapping values.
+    let mut reverse: HashMap<Uuid, AhashIndexSet<Uuid>> = HashMap::default();
     #[expect(
         clippy::iter_over_hash_type,
         reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice. This function exists to work around that."
     )]
-    for (region_id, original_id) in region_mapping {
-        reverse.entry(*original_id).or_default().push(*region_id);
+    for (region_id, original_ids) in region_mapping {
+        for original_id in original_ids {
+            reverse.entry(*original_id).or_default().insert(*region_id);
+        }
     }
     #[expect(
         clippy::iter_over_hash_type,
@@ -3232,12 +3236,13 @@ pub(crate) fn build_reverse_region_mapping(
     }
     let mut ordered = IndexMap::with_capacity(original_segments.len());
     for original_id in original_segments {
-        let mut region_ids = Vec::new();
+        let mut region_ids = AhashIndexSet::default();
         reverse.entry(*original_id).and_modify(|entry_value| {
             region_ids = std::mem::take(entry_value);
         });
         if !region_ids.is_empty() {
-            ordered.insert(*original_id, region_ids);
+            let entry_region_ids: &mut Vec<Uuid> = ordered.entry(*original_id).or_default();
+            entry_region_ids.extend(region_ids.into_iter());
         }
     }
     ordered
