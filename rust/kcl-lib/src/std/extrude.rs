@@ -50,6 +50,7 @@ use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
 use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
@@ -62,7 +63,14 @@ use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::any_array(), exec_state)?;
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
 
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to_raw = args.get_kw_arg_opt(
@@ -1572,6 +1580,14 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
                 .contains("`bidirectionalLength` must be greater than or equal to 0"),
             "{err:?}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_an_empty_target_array() {
+        let err = parse_execute("nothing = extrude([], length = 5)").await.unwrap_err();
+
+        assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
+        assert!(err.message().contains("requires one or more"), "{err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
