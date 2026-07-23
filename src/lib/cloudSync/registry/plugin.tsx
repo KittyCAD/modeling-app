@@ -32,9 +32,20 @@ import {
   type RemoteProjectSummary,
   retryCloudSync,
 } from '@src/lib/cloudSync'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import {
+  CLOUD_PROJECT_LIBRARY_ID,
+  CLOUD_PROJECT_LIBRARY_TITLE,
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  areProjectLibrarySettingsEqual,
+  getDefaultCloudProjectLibrarySetting,
+  mergeProjectLibrarySettings,
+  type ProjectLibrary,
+} from '@src/lib/projectLibraries'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
@@ -51,15 +62,23 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
+  type ProjectLibraryTypeContribution,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation } from 'react-router-dom'
+
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 
 type CloudSyncStatusBarPresentation = {
   label: string
@@ -884,11 +903,153 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
+const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const library = computed<ProjectLibrary[]>(() => {
+    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+    const configuredCloudLibrary =
+      settings.value?.current.value.app.libraries?.current.find(
+        (library) =>
+          library.type === defaultCloudLibrary.type &&
+          library.path === defaultCloudLibrary.path
+      )
+
+    return [
+      {
+        ...defaultCloudLibrary,
+        ...configuredCloudLibrary,
+        id: CLOUD_PROJECT_LIBRARY_ID,
+        icon: 'network',
+        order: 10,
+      },
+    ]
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.project-library',
+      provides: [
+        provide(projectLibrariesValueSpec, library, {
+          key: 'cloud-sync.project-library',
+        }),
+      ],
+    }),
+  }
+}, 'cloud-sync.project-library')
+
+const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  let disposed = false
+  let didReconcile = false
+  let disposeEffect: (() => void) | undefined
+
+  const getWasmPromise = () =>
+    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+    Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  const cloudLibraryType: ProjectLibraryTypeContribution = {
+    type: CLOUD_PROJECT_LIBRARY_TYPE,
+    title: CLOUD_PROJECT_LIBRARY_TITLE,
+    icon: 'network',
+    order: 10,
+    defaultSetting: getDefaultCloudProjectLibrarySetting(),
+    newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
+    operations: {
+      createProject: {
+        isAvailable: () => cloudSyncStatus.value.enabled,
+        run: async ({ requestedProjectName, requestedProjectTitle }) => {
+          if (!cloudSyncStatus.value.enabled) {
+            return Promise.reject(new Error('Cloud sync is not enabled.'))
+          }
+
+          const project = await createProjectInLocalDirectory({
+            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            requestedProjectName,
+            requestedProjectTitle,
+            wasmInstancePromise: getWasmPromise(),
+          })
+
+          await ctx.services
+            .get(cloudSyncService)
+            .startProjectSync(project.path)
+
+          return project
+        },
+      },
+    },
+  }
+
+  queueMicrotask(() => {
+    if (disposed) {
+      return
+    }
+
+    disposeEffect = effect(() => {
+      const service = settings.value
+      if (!service || didReconcile) {
+        return
+      }
+
+      const currentSettings = service.current.value
+      const cloudSyncPluginEnabled =
+        currentSettings.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current !== false
+      if (
+        !cloudSyncPluginEnabled ||
+        !service.actor.getSnapshot().matches('idle')
+      ) {
+        return
+      }
+
+      didReconcile = true
+      const currentLibraries = currentSettings.app.libraries?.current ?? []
+      const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+      const hasDefaultCloudLibrary = currentLibraries.some(
+        (library) =>
+          library.type === defaultCloudLibrary.type &&
+          library.path === defaultCloudLibrary.path
+      )
+      const nextLibraries = mergeProjectLibrarySettings(
+        currentLibraries,
+        hasDefaultCloudLibrary ? [] : [defaultCloudLibrary]
+      )
+
+      if (areProjectLibrarySettingsEqual(nextLibraries, currentLibraries)) {
+        return
+      }
+
+      service.send({
+        type: 'set.app.libraries',
+        data: {
+          level: 'user',
+          value: nextLibraries,
+        },
+      })
+    })
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.project-library-type',
+      provides: [
+        provide(projectLibraryTypesValueSpec, cloudLibraryType, {
+          key: 'cloud-sync.project-library-type',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        disposeEffect?.()
+      },
+    }),
+  }
+}, 'cloud-sync.project-library-type')
+
 export const cloudSyncPlugin = createZdsPlugin({
-  id: 'cloud-sync',
+  id: CLOUD_SYNC_PLUGIN_ID,
   title: 'Cloud sync',
   description: 'Cloud-backed project sync controls and status.',
   items: [
+    cloudSyncProjectLibraryContribution,
+    cloudSyncProjectLibraryType,
     cloudSyncStatusBarItemContribution,
     cloudSyncProjectMenuItem,
     cloudSyncRemoteHomeProjectEntryContribution,

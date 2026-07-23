@@ -1,5 +1,6 @@
 import {
   defineRegistryItem,
+  pluginsValueSpec,
   provideService,
   Registry,
 } from '@kittycad/registry'
@@ -12,9 +13,23 @@ import {
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
+import {
+  CLOUD_PROJECT_LIBRARY_ID,
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  getDefaultCloudProjectLibrarySetting,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
+import {
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
@@ -60,6 +75,21 @@ const projectWellFormed = {
   default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
 } satisfies Project
 
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
+
+type TestSettings = {
+  app: {
+    libraries: {
+      current: ProjectLibrarySetting[]
+    }
+  }
+  plugins: {
+    [CLOUD_SYNC_PLUGIN_ID]: {
+      current: boolean
+    }
+  }
+}
+
 function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
 }
@@ -79,6 +109,64 @@ function createCloudSyncService(): CloudSyncRegistryService {
     getProjectMetadataIndex: vi.fn().mockResolvedValue(new Map()),
     getProjectModifiedTime: vi.fn((_metadata, localModified) => localModified),
     resolveProjectConflict: vi.fn().mockResolvedValue(undefined),
+  }
+}
+
+function createSettingsService({
+  cloudSyncEnabled = true,
+  libraries = [],
+}: {
+  cloudSyncEnabled?: boolean
+  libraries?: ProjectLibrarySetting[]
+}) {
+  const settingsSignal = signal<TestSettings>({
+    app: {
+      libraries: {
+        current: libraries,
+      },
+    },
+    plugins: {
+      [CLOUD_SYNC_PLUGIN_ID]: {
+        current: cloudSyncEnabled,
+      },
+    },
+  })
+  const send = vi.fn(
+    (event: {
+      type: 'set.app.libraries'
+      data: { value: ProjectLibrarySetting[] }
+    }) => {
+      if (event.type !== 'set.app.libraries') {
+        return
+      }
+
+      settingsSignal.value = {
+        ...settingsSignal.value,
+        app: {
+          ...settingsSignal.value.app,
+          libraries: {
+            current: event.data.value,
+          },
+        },
+      }
+    }
+  )
+  const service = {
+    actor: {
+      getSnapshot: () => ({
+        matches: (state: string) => state === 'idle',
+      }),
+    },
+    current: settingsSignal,
+    get: () => settingsSignal.value,
+    send,
+    useSettings: () => settingsSignal.value,
+  } as unknown as SettingsRegistryService
+
+  return {
+    service,
+    settingsSignal,
+    send,
   }
 }
 
@@ -216,6 +304,104 @@ describe('cloud sync project menu item', () => {
   })
 })
 
+describe('cloud sync project library', () => {
+  test('contributes the cloud project library type while the plugin is active', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncPlugin])
+
+    try {
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toMatchObject({
+        title: 'Cloud',
+        icon: 'network',
+        defaultSetting: getDefaultCloudProjectLibrarySetting(),
+      })
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Cloud',
+          path: getDefaultCloudProjectLibrarySetting().path,
+          type: CLOUD_PROJECT_LIBRARY_TYPE,
+          icon: 'network',
+        }),
+      ])
+
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      registry.get(pluginService).disable()
+
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .has(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toBe(false)
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('adds the default cloud library to user settings when enabled', async () => {
+    const registry = new Registry()
+    const settings = createSettingsService({})
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      registry.get(projectLibraryTypesValueSpec)
+      await waitFor(() =>
+        expect(settings.send).toHaveBeenCalledWith({
+          type: 'set.app.libraries',
+          data: {
+            level: 'user',
+            value: [getDefaultCloudProjectLibrarySetting()],
+          },
+        })
+      )
+      expect(settings.settingsSignal.value.app.libraries.current).toEqual([
+        getDefaultCloudProjectLibrarySetting(),
+      ])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not add the default cloud library when settings disable the plugin', async () => {
+    const registry = new Registry()
+    const settings = createSettingsService({ cloudSyncEnabled: false })
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      registry.get(projectLibraryTypesValueSpec)
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(settings.send).not.toHaveBeenCalled()
+      expect(settings.settingsSignal.value.app.libraries.current).toEqual([])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+})
+
 describe('cloud sync home project entries', () => {
   test('contributes remote thumbnails for cloud-only home entries', async () => {
     cloudSyncStatus.value = {
@@ -249,6 +435,7 @@ describe('cloud sync home project entries', () => {
           expect.objectContaining({
             source: 'remote',
             status: 'cloud-only',
+            libraryIds: [CLOUD_PROJECT_LIBRARY_ID],
             name: 'Remote title',
             title: 'Remote title',
             remoteProjectId: 'remote-123',

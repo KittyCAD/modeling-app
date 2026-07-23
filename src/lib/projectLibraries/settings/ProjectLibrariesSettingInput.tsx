@@ -177,7 +177,7 @@ function ProjectLibraryTypeSelect({
     <Listbox value={value} onChange={onChange}>
       <div className="relative self-start">
         <Listbox.Button
-          className="relative flex h-8 w-8 items-center justify-center rounded-sm border border-chalkboard-30 text-chalkboard-70 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:text-chalkboard-30 dark:hover:bg-chalkboard-90"
+          className="relative flex h-8 w-8 p-0 items-center justify-center rounded-sm border border-chalkboard-30 text-chalkboard-70 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:text-chalkboard-30 dark:hover:bg-chalkboard-90"
           data-testid="project-library-type"
           aria-label={`Library type: ${selectedOption?.label ?? value}`}
           title={selectedOption?.label ?? value}
