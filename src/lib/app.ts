@@ -19,6 +19,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -591,6 +592,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    this.registry.get(lspService).attachKclManager(kclManager)
 
     if (typeof window !== 'undefined') {
       window.engineCommandManager = kclManager.engineCommandManager
