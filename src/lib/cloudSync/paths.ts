@@ -1,7 +1,20 @@
 import { PROJECT_FOLDER } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 
 export const INTERNAL_OPFS_META_FILE = '._meta'
+export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
+  'documents',
+  PROJECT_FOLDER,
+])}`
+
+export async function getDefaultCloudProjectDirectoryPath() {
+  try {
+    return fsZds.join(await fsZds.getPath('documents'), PROJECT_FOLDER)
+  } catch {
+    return DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH
+  }
+}
 
 export function normalizePathForSync(targetPath: string) {
   const normalized = targetPath.replaceAll('\\', '/')
