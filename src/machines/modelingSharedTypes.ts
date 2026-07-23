@@ -193,7 +193,6 @@ export type ExtrudeFacePlane = {
 }
 
 export type PrimitiveFaceSketchTarget = {
-  type: 'primitiveFace'
   face: PrimitiveFacePlane
   plane: ExtrudeFacePlane
 }

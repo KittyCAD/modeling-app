@@ -1942,7 +1942,13 @@ export function getSelectedSketchTarget(
     return defaultPlane.id
   }
 
-  const primitiveFace = getSelectedEnginePrimitiveFace(selectionRanges)
+  const primitiveFace = selectionRanges.otherSelections.find(
+    (selection): selection is EnginePrimitiveSelection =>
+      typeof selection !== 'string' &&
+      'type' in selection &&
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'face'
+  )
   if (primitiveFace) {
     return primitiveFace.entityId
   }
@@ -1961,16 +1967,6 @@ export function getSelectedSketchTarget(
   }
 
   return null
-}
-
-export function getSelectedEnginePrimitiveFace(selectionRanges: Selections) {
-  return selectionRanges.otherSelections.find(
-    (selection): selection is EnginePrimitiveSelection =>
-      typeof selection !== 'string' &&
-      'type' in selection &&
-      selection.type === 'enginePrimitive' &&
-      selection.primitiveType === 'face'
-  )
 }
 
 export function getSelectedPlaneAsNode(

@@ -5,7 +5,7 @@ import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { type Artifact, codeRefFromRange } from '@src/lang/std/artifactGraph'
+import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
@@ -1921,18 +1921,6 @@ describe('selectSketchPlane', () => {
   })
 
   test('routes an unmaterialized shell face to the frontend sketch API', async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const extrudeCall = 'extrude(sketch001, length = 1)'
-    const shellCall = 'shell(extrude001, faces = capEnd001, thickness = .1)'
-    const code = `extrude001 = ${extrudeCall}
-shell001 = ${shellCall}`
-    const ast = assertParse(code, instance)
-    const extrudeStart = code.indexOf(extrudeCall)
-    const extrudeRange: SourceRange = [
-      extrudeStart,
-      extrudeStart + extrudeCall.length,
-      0,
-    ]
     const shellId = 'shell-artifact-id'
     const faceId = 'inner-face-id'
     const modelingSend = vi.fn()
@@ -1967,29 +1955,8 @@ shell001 = ${shellCall}`
     })
 
     await selectSketchPlane(faceId, true, {
-      artifactGraph: new Map([
-        [
-          shellId,
-          {
-            type: 'sweep',
-            id: shellId,
-            codeRef: codeRefFromRange(extrudeRange, ast),
-          } as Artifact,
-        ],
-      ]),
-      ast,
-      variables: {
-        extrude001: {
-          type: 'Solid',
-          value: { id: shellId },
-        },
-        shell001: {
-          type: 'Solid',
-          value: { id: shellId },
-        },
-      },
+      artifactGraph: new Map(),
       rustContext: { defaultPlanes: {} },
-      wasmInstancePromise: Promise.resolve(instance),
       engineCommandManager: { sendSceneCommand },
       sceneEntitiesManager: { getFaceDetails },
       sceneInfra: { modelingSend, baseUnitMultiplier: 1 },
@@ -1998,9 +1965,8 @@ shell001 = ${shellCall}`
     expect(modelingSend).toHaveBeenCalledWith({
       type: 'Select sketch solve plane',
       data: {
-        type: 'primitiveFace',
         face: {
-          solid: 'shell001',
+          solidId: shellId,
           index: 6,
         },
         plane: {

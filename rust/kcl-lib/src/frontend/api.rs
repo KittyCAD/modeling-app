@@ -225,10 +225,8 @@ pub enum Plane {
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct PrimitiveFacePlane {
-    pub solid: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub solid_output_index: Option<usize>,
+    /// Engine ID of the solid which owns the face.
+    pub solid_id: uuid::Uuid,
     pub index: usize,
 }
 

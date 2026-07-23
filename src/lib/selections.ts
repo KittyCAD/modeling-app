@@ -77,7 +77,6 @@ import type {
   Expr,
   Program,
   SourceRange,
-  VariableMap,
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
@@ -801,50 +800,8 @@ function createPrimitiveIndexReferenceExpr({
   kclManager,
   wasmInstance,
 }: SelectionExpressionBuilderContext): Expr | null {
-  const bodyExpr = getPrimitiveBodyReferenceExpr({
-    primitiveSelection,
-    artifactGraph,
-    ast: kclManager.ast,
-    variables: kclManager.variables,
-    wasmInstance,
-  })
-  if (!bodyExpr) return null
-
-  const functionName =
-    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
-  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
-    createLabeledArg(
-      'index',
-      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
-    ),
-  ])
-}
-
-function getPrimitiveBodyReferenceExpr({
-  primitiveSelection,
-  artifactGraph,
-  ast,
-  variables,
-  wasmInstance,
-}: {
-  primitiveSelection: ReferenceablePrimitiveSelection
-  artifactGraph: ArtifactGraph
-  ast: Node<Program>
-  variables?: VariableMap
-  wasmInstance: ModuleType
-}): Expr | null {
   if (!primitiveSelection.parentEntityId) {
     return null
-  }
-
-  const runtimeBodyExpr = getPrimitiveBodyReferenceExprFromVariables(
-    primitiveSelection.parentEntityId,
-    ast,
-    variables,
-    wasmInstance
-  )
-  if (runtimeBodyExpr) {
-    return runtimeBodyExpr
   }
 
   const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
@@ -863,7 +820,7 @@ function getPrimitiveBodyReferenceExpr({
   const bodyVariables = getVariableExprsFromSelection(
     { graphSelections: [bodySelection], otherSelections: [] },
     artifactGraph,
-    ast,
+    kclManager.ast,
     wasmInstance,
     undefined,
     {
@@ -875,43 +832,15 @@ function getPrimitiveBodyReferenceExpr({
     return null
   }
 
-  return bodyVariables.exprs[0]
-}
-
-function getPrimitiveBodyReferenceExprFromVariables(
-  parentEntityId: string,
-  ast: Node<Program>,
-  variables: VariableMap | undefined,
-  wasmInstance: ModuleType
-): Expr | null {
-  if (!variables) return null
-
-  // In-place operations such as shell reuse their input solid's engine ID.
-  // Prefer the last variable with that ID so generated code targets the result.
-  for (let index = ast.body.length - 1; index >= 0; index--) {
-    const item = ast.body[index]
-    if (item?.type !== 'VariableDeclaration') continue
-
-    const name = item.declaration.id.name
-    const value = variables[name]
-    if (value?.type === 'Solid' && value.value.id === parentEntityId) {
-      return createLocalName(name)
-    }
-    if (value?.type !== 'HomArray' && value?.type !== 'Tuple') continue
-
-    const solidOutputIndex = value.value.findIndex(
-      (entry) => entry.type === 'Solid' && entry.value.id === parentEntityId
-    )
-    if (solidOutputIndex >= 0) {
-      return createMemberExpression(
-        name,
-        createLiteral(solidOutputIndex, wasmInstance),
-        true
-      )
-    }
-  }
-
-  return null
+  const bodyExpr = bodyVariables.exprs[0]
+  const functionName =
+    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
+  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
+    createLabeledArg(
+      'index',
+      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+    ),
+  ])
 }
 
 const selectionExpressionApproaches: SelectionExpressionApproach[] = [
@@ -2597,35 +2526,22 @@ async function getPrimitiveFaceSketchTarget(
   primitiveSelection: ReferenceablePrimitiveSelection,
   kclManager: KclManager
 ): Promise<PrimitiveFaceSketchTarget | Error> {
-  const [wasmInstance, faceInfo] = await Promise.all([
-    kclManager.wasmInstancePromise,
-    kclManager.sceneEntitiesManager.getFaceDetails(primitiveSelection.entityId),
-  ])
-  const bodyExpr = getPrimitiveBodyReferenceExpr({
-    primitiveSelection,
-    ast: kclManager.ast,
-    artifactGraph: kclManager.artifactGraph,
-    variables: kclManager.variables,
-    wasmInstance,
-  })
-  if (!bodyExpr) {
+  if (!primitiveSelection.parentEntityId) {
     return new Error('Could not resolve the selected primitive face in KCL.')
   }
 
-  const solidReference = getPrimitiveFaceSolidReference(bodyExpr)
-  if (!solidReference) {
-    return new Error('Could not resolve the selected solid in KCL.')
-  }
+  const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
+    primitiveSelection.entityId
+  )
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
     return new Error('Could not get details for the selected primitive face.')
   }
 
   const { origin, z_axis, y_axis } = faceInfo
   return {
-    type: 'primitiveFace',
     face: {
+      solidId: primitiveSelection.parentEntityId,
       index: primitiveSelection.primitiveIndex,
-      ...solidReference,
     },
     plane: {
       type: 'extrudeFace',
@@ -2640,31 +2556,6 @@ async function getPrimitiveFaceSketchTarget(
       extrudePathToNode: [],
     },
   }
-}
-
-function getPrimitiveFaceSolidReference(
-  bodyExpr: Expr
-): Pick<
-  PrimitiveFaceSketchTarget['face'],
-  'solid' | 'solidOutputIndex'
-> | null {
-  if (bodyExpr.type === 'Name') {
-    return { solid: bodyExpr.name.name }
-  }
-  if (
-    bodyExpr.type === 'MemberExpression' &&
-    bodyExpr.computed &&
-    bodyExpr.object.type === 'Name' &&
-    bodyExpr.property.type === 'Literal' &&
-    typeof bodyExpr.property.value === 'object'
-  ) {
-    return {
-      solid: bodyExpr.object.name.name,
-      solidOutputIndex: bodyExpr.property.value.value,
-    }
-  }
-
-  return null
 }
 
 export async function selectionBodyFace(
