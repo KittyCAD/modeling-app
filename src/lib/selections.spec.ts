@@ -1922,13 +1922,15 @@ describe('selectSketchPlane', () => {
 
   test('routes an unmaterialized shell face to the frontend sketch API', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
+    const extrudeCall = 'extrude(sketch001, length = 1)'
     const shellCall = 'shell(extrude001, faces = capEnd001, thickness = .1)'
-    const code = `shell001 = ${shellCall}`
+    const code = `extrude001 = ${extrudeCall}
+shell001 = ${shellCall}`
     const ast = assertParse(code, instance)
-    const shellStart = code.indexOf(shellCall)
-    const shellRange: SourceRange = [
-      shellStart,
-      shellStart + shellCall.length,
+    const extrudeStart = code.indexOf(extrudeCall)
+    const extrudeRange: SourceRange = [
+      extrudeStart,
+      extrudeStart + extrudeCall.length,
       0,
     ]
     const shellId = 'shell-artifact-id'
@@ -1969,13 +1971,23 @@ describe('selectSketchPlane', () => {
         [
           shellId,
           {
-            type: 'compositeSolid',
+            type: 'sweep',
             id: shellId,
-            codeRef: codeRefFromRange(shellRange, ast),
+            codeRef: codeRefFromRange(extrudeRange, ast),
           } as Artifact,
         ],
       ]),
       ast,
+      variables: {
+        extrude001: {
+          type: 'Solid',
+          value: { id: shellId },
+        },
+        shell001: {
+          type: 'Solid',
+          value: { id: shellId },
+        },
+      },
       rustContext: { defaultPlanes: {} },
       wasmInstancePromise: Promise.resolve(instance),
       engineCommandManager: { sendSceneCommand },

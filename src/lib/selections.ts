@@ -77,6 +77,7 @@ import type {
   Expr,
   Program,
   SourceRange,
+  VariableMap,
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
@@ -804,6 +805,7 @@ function createPrimitiveIndexReferenceExpr({
     primitiveSelection,
     artifactGraph,
     ast: kclManager.ast,
+    variables: kclManager.variables,
     wasmInstance,
   })
   if (!bodyExpr) return null
@@ -822,15 +824,27 @@ function getPrimitiveBodyReferenceExpr({
   primitiveSelection,
   artifactGraph,
   ast,
+  variables,
   wasmInstance,
 }: {
   primitiveSelection: ReferenceablePrimitiveSelection
   artifactGraph: ArtifactGraph
   ast: Node<Program>
+  variables?: VariableMap
   wasmInstance: ModuleType
 }): Expr | null {
   if (!primitiveSelection.parentEntityId) {
     return null
+  }
+
+  const runtimeBodyExpr = getPrimitiveBodyReferenceExprFromVariables(
+    primitiveSelection.parentEntityId,
+    ast,
+    variables,
+    wasmInstance
+  )
+  if (runtimeBodyExpr) {
+    return runtimeBodyExpr
   }
 
   const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
@@ -862,6 +876,42 @@ function getPrimitiveBodyReferenceExpr({
   }
 
   return bodyVariables.exprs[0]
+}
+
+function getPrimitiveBodyReferenceExprFromVariables(
+  parentEntityId: string,
+  ast: Node<Program>,
+  variables: VariableMap | undefined,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (!variables) return null
+
+  // In-place operations such as shell reuse their input solid's engine ID.
+  // Prefer the last variable with that ID so generated code targets the result.
+  for (let index = ast.body.length - 1; index >= 0; index--) {
+    const item = ast.body[index]
+    if (item?.type !== 'VariableDeclaration') continue
+
+    const name = item.declaration.id.name
+    const value = variables[name]
+    if (value?.type === 'Solid' && value.value.id === parentEntityId) {
+      return createLocalName(name)
+    }
+    if (value?.type !== 'HomArray' && value?.type !== 'Tuple') continue
+
+    const solidOutputIndex = value.value.findIndex(
+      (entry) => entry.type === 'Solid' && entry.value.id === parentEntityId
+    )
+    if (solidOutputIndex >= 0) {
+      return createMemberExpression(
+        name,
+        createLiteral(solidOutputIndex, wasmInstance),
+        true
+      )
+    }
+  }
+
+  return null
 }
 
 const selectionExpressionApproaches: SelectionExpressionApproach[] = [
@@ -2495,6 +2545,7 @@ export async function selectSketchPlane(
           primitiveSelection,
           kclManager
         )
+        if (err(primitiveFaceTarget)) return primitiveFaceTarget
         kclManager.sceneInfra.modelingSend({
           type: 'Select sketch solve plane',
           data: primitiveFaceTarget,
@@ -2545,7 +2596,7 @@ export async function selectSketchPlane(
 async function getPrimitiveFaceSketchTarget(
   primitiveSelection: ReferenceablePrimitiveSelection,
   kclManager: KclManager
-): Promise<PrimitiveFaceSketchTarget> {
+): Promise<PrimitiveFaceSketchTarget | Error> {
   const [wasmInstance, faceInfo] = await Promise.all([
     kclManager.wasmInstancePromise,
     kclManager.sceneEntitiesManager.getFaceDetails(primitiveSelection.entityId),
@@ -2554,18 +2605,19 @@ async function getPrimitiveFaceSketchTarget(
     primitiveSelection,
     ast: kclManager.ast,
     artifactGraph: kclManager.artifactGraph,
+    variables: kclManager.variables,
     wasmInstance,
   })
   if (!bodyExpr) {
-    throw new Error('Could not resolve the selected primitive face in KCL.')
+    return new Error('Could not resolve the selected primitive face in KCL.')
   }
 
   const solidReference = getPrimitiveFaceSolidReference(bodyExpr)
   if (!solidReference) {
-    throw new Error('Could not resolve the selected solid in KCL.')
+    return new Error('Could not resolve the selected solid in KCL.')
   }
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
-    throw new Error('Could not get details for the selected primitive face.')
+    return new Error('Could not get details for the selected primitive face.')
   }
 
   const { origin, z_axis, y_axis } = faceInfo

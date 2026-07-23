@@ -472,18 +472,42 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.6, {
+    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
       format: 'ratio',
     })
 
-    await toolbar.startSketchPlaneSelection()
     await clickOnInnerFace()
+    await expect(toolbar.selectionStatus).toHaveText(
+      '1 faceCurrently selected geometry'
+    )
+    await toolbar.startSketchPlaneSelection()
 
-    await expect(toolbar.exitSketchBtn).toBeEnabled()
-    await editor.expectEditor.toBe(`${code}
-face001 = faceOf(shell001, face = faceId(shell001, index = 6))
+    await expect(toolbar.lineBtn).toBeEnabled()
+    await expect
+      .poll(() => editor.getCurrentCode())
+      .toBe(`@settings(kclVersion = 2.0)
+
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
+  line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
+  line3 = line(start = [var 3.1mm, var 4.36mm], end = [var 0.42mm, var 4.36mm])
+  line4 = line(start = [var 0.42mm, var 4.36mm], end = [var 0.42mm, var 0.91mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = .1)
+face001 = faceOf(shell001, face = faceId(shell001, index = 7))
 sketch001 = sketch(on = face001) {
 }
+
 `)
   })
 
