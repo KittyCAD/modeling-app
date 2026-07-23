@@ -1773,18 +1773,42 @@ impl Node<SketchBlock> {
         let mut sketch_block_state = sketch_block_state;
 
         // Translate sketch variables and constraints to solver input.
+        //
+        // Coincident constraints get a heavier weight so they hold up under stress — e.g. when the
+        // user drags a sketch into a configuration that can't be fully satisfied, we'd rather see
+        // other constraints absorb the error than have shared points come apart.
+        //
+        // The same should be applied to any transient constraints associated with mouse
+        // interactions once drag improvements are ready.
+        //
+        const COINCIDENT_WEIGHT: f64 = 100.0;
+        const FIXED_WEIGHT: f64 = 100.0;
         let constraints = sketch_block_state
             .solver_constraints
             .iter()
             .cloned()
-            .map(ezpz::ConstraintRequest::highest_priority)
+            .map(|c| {
+                let req = ezpz::ConstraintRequest::highest_priority(c);
+                match c {
+                    ezpz::Constraint::PointsCoincident(..) => req.with_weight(COINCIDENT_WEIGHT),
+                    ezpz::Constraint::Fixed(..) => req.with_weight(FIXED_WEIGHT),
+                    _ => req,
+                }
+            })
             .chain(
                 // Optional constraints have a lower priority.
                 sketch_block_state
                     .solver_optional_constraints
                     .iter()
                     .cloned()
-                    .map(|c| ezpz::ConstraintRequest::new(c, 1)),
+                    .map(|c| {
+                        let req = ezpz::ConstraintRequest::new(c, 1);
+                        match c {
+                            ezpz::Constraint::PointsCoincident(..) => req.with_weight(COINCIDENT_WEIGHT),
+                            ezpz::Constraint::Fixed(..) => req.with_weight(FIXED_WEIGHT),
+                            _ => req,
+                        }
+                    }),
             )
             .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
