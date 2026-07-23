@@ -470,18 +470,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       { category: 'app', field: 'showAllFiles' },
       'show_all_files'
     ),
-    defineMappedAppOnlyField(
-      { category: 'app', field: 'libraries' },
-      'libraries',
-      {
-        fromToml: (value) =>
-          isProjectLibrarySettings(value) ? value : undefined,
-        toToml: (value) =>
-          isProjectLibrarySettings(value)
-            ? (value as unknown as JsonValue)
-            : undefined,
-      }
-    ),
   ]),
   defineAppOnlySection('debug', [
     defineBooleanAppOnlyField(
@@ -1008,10 +996,12 @@ export async function loadAndValidateSettings(
 
   let settingsNext = createSettings(extensionSettings)
   settingsNext.app.projectDirectory.default = initialDefaultDir
-  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
-    getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
-    defaultProjectLibraries
-  )
+  if (settingsNext.app.libraries) {
+    settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+      getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
+      defaultProjectLibraries
+    )
+  }
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
@@ -1128,9 +1118,9 @@ export async function saveSettings(
 
   // Get the user settings.
   const userSettingsChanges = getChangedSettingsAtLevel(allSettings, 'user')
-  const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
-    allSettings.app.libraries.current
-  )
+  const defaultDirectoryLibraryPath = allSettings.app.libraries
+    ? getDefaultDirectoryProjectLibraryPath(allSettings.app.libraries.current)
+    : undefined
   const jsAppSettings = defaultDirectoryLibraryPath
     ? mergeSettingsPayloads(userSettingsChanges, {
         app: {

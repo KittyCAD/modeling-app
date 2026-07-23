@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { useMemo } from 'react'
 import type { EventFrom } from 'xstate'
 
@@ -27,7 +28,8 @@ export function SettingsFieldInput({
   settingsLevel,
   setting,
 }: SettingsFieldInputProps) {
-  const { settings } = useApp()
+  useSignals()
+  const { settings, registry } = useApp()
   const context = settings.useSettings()
   const send = settings.send
   const options = useMemo(() => {
@@ -63,6 +65,11 @@ export function SettingsFieldInput({
                 },
               } as unknown as EventFrom<WildcardSetEvent>)
             }}
+            category={category}
+            settingName={settingName}
+            settingsLevel={settingsLevel}
+            settingsContext={context}
+            registry={registry}
           />
         )
       )
