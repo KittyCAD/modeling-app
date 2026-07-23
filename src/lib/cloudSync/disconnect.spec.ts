@@ -156,11 +156,15 @@ function createStat(mode: number, size = 0): IStat {
   }
 }
 
-function createTestFs(files: Map<string, string>) {
+function createTestFs(
+  files: Map<string, string>,
+  extraDirectories: string[] = []
+) {
   const directories = new Set([
     '/documents',
     '/documents/Projects',
     projectPath,
+    ...extraDirectories,
   ])
   function normalizeDirectory(path: string) {
     const normalizedPath = normalizePath(path)
@@ -611,5 +615,57 @@ describe('moveCloudSyncProjectToDirectory', () => {
         sourcePath: projectPath,
       }),
     ])
+  })
+
+  it('does not move a project when Personal Cloud already has the same remote project', async () => {
+    const personalCloudProjectPath = '/documents/Zoo/personal/bracket'
+    const files = new Map([
+      [
+        projectTomlPath,
+        `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      ],
+      [`${projectPath}/main.kcl`, 'cube(1)'],
+      [
+        `${personalCloudProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+        `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      ],
+      [`${personalCloudProjectPath}/main.kcl`, 'cube(2)'],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createTestFs(files, [
+        '/documents/Zoo',
+        '/documents/Zoo/personal',
+        personalCloudProjectPath,
+      ])
+    )
+    await seedLinkedProject()
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: personalCloudProjectPath,
+      projectName: 'bracket',
+      remoteProjectId,
+      remoteRevision: 'target-revision',
+      baseManifest: {
+        files: {},
+      },
+    })
+
+    await expect(
+      moveCloudSyncProjectToDirectory({
+        projectPath,
+        projectDirectoryPath: '/documents/Zoo/personal',
+      })
+    ).rejects.toThrow(
+      'Personal Cloud already has a local copy of this cloud project at /documents/Zoo/personal/bracket.'
+    )
+
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('cube(1)')
+    expect(files.get(`${personalCloudProjectPath}/main.kcl`)).toBe('cube(2)')
+    expect(files.has('/documents/Zoo/personal/bracket 2/main.kcl')).toBe(false)
+    expect(await getCloudSyncProjectMetadata(projectPath)).toMatchObject({
+      localProjectPath: projectPath,
+      remoteProjectId,
+    })
+    expect(await getAllOutboxEntries()).toEqual([])
   })
 })
