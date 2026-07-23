@@ -1686,6 +1686,204 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('mixed entity-reference selection highlighting', () => {
+  test('keeps engine primitive selections when graph selections use entity references', () => {
+    const graphFaceId = 'graph-face-id'
+    const primitiveFaceId = 'primitive-face-id'
+    const graphCodeRef = {
+      range: [10, 20, 0] as SourceRange,
+      pathToNode: [],
+    }
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: graphFaceId },
+            codeRef: graphCodeRef,
+          },
+        ],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: primitiveFaceId,
+            parentEntityId: 'body-id',
+            primitiveIndex: 2,
+            primitiveType: 'face',
+          },
+        ],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectEntity = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_entity'
+    )
+    expect(selectEntity?.type).toBe('modeling_cmd_req')
+    if (selectEntity?.type !== 'modeling_cmd_req') return
+    expect(selectEntity.cmd.type).toBe('select_entity')
+    if (selectEntity.cmd.type !== 'select_entity') return
+    expect(selectEntity.cmd.entities).toEqual([
+      { type: 'face', face_id: graphFaceId },
+    ])
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([primitiveFaceId])
+  })
+
+  test('creates a valid editor selection when only some graph selections have code refs', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'tagged-face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            entityRef: { type: 'face', face_id: 'primitive-face-id' },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.mainIndex).toBe(0)
+    expect(result.codeMirrorSelection.main.head).toBe(20)
+  })
+
+  test('does not send a legacy select_add for an entity-reference edge', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: ['side-face-1', 'side-face-2'],
+              end_faces: ['end-face-1'],
+            },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' &&
+          event.cmd.type === 'select_entity'
+      )
+    ).toBe(true)
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+      )
+    ).toBe(false)
+  })
+
+  test('retains legacy selection for a code-only graph selection mixed with an entity reference', () => {
+    const codeOnlyArtifact: Artifact = {
+      type: 'segment',
+      id: 'code-only-segment',
+      pathId: 'path-id',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [30, 40, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [codeOnlyArtifact.id, codeOnlyArtifact],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            codeRef: codeOnlyArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([codeOnlyArtifact.id])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
   test('normalizes region entity references', () => {
     expect(

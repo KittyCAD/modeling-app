@@ -1931,18 +1931,41 @@ export function handleSelectionBatch({
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
-    const fallbackSelections = selections.graphSelections
-      .map((selection) => {
-        const entityId = getEngineEntityIdForSelection(selection, artifactGraph)
-        if (!entityId) return undefined
-        return {
-          id: entityId,
-          range:
-            getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
-            defaultSourceRange(),
-        }
-      })
-      .filter(isNonNullable)
+    const fallbackSelections = [
+      ...selections.graphSelections
+        .map((selection) => {
+          if (selection.entityRef) return undefined
+          const entityId = getEngineEntityIdForSelection(
+            selection,
+            artifactGraph
+          )
+          if (!entityId) return undefined
+          return {
+            id: entityId,
+            range:
+              getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
+              defaultSourceRange(),
+          }
+        })
+        .filter(isNonNullable),
+      ...selections.otherSelections
+        .map((selection) => {
+          if (isEnginePrimitiveSelection(selection)) {
+            return {
+              id: selection.entityId,
+              range: defaultSourceRange(),
+            }
+          }
+          if (isEngineRegionSelection(selection)) {
+            return {
+              id: selection.id,
+              range: defaultSourceRange(),
+            }
+          }
+          return undefined
+        })
+        .filter(isNonNullable),
+    ]
 
     if (fallbackSelections.length > 0) {
       engineEvents.push(
@@ -1992,13 +2015,12 @@ export function handleSelectionBatch({
     }
   })
 
-  const totalSelections = selections.graphSelections.length
   if (ranges.length)
     return {
       engineEvents,
       codeMirrorSelection: EditorSelection.create(
         ranges,
-        totalSelections > 0 ? totalSelections - 1 : 0
+        ranges.length - 1
       ),
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
