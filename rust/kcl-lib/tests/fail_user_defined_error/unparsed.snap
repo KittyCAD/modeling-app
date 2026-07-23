@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing fail_user_defined_error.kcl
+---
+@settings(experimentalFeatures = allow)
+
+fail("custom failure")
