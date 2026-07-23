@@ -25,6 +25,7 @@ use crate::execution::ArtifactGraph;
 use crate::execution::DefaultPlanes;
 use crate::execution::KclValueView;
 use crate::execution::OperationsByModule;
+use crate::execution::RefactorMetadata;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -159,6 +160,7 @@ pub struct KclErrorWithOutputs {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    pub refactor_metadata: Vec<RefactorMetadata>,
     pub scene_graph: Option<crate::front::SceneGraph>,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -177,6 +179,7 @@ impl KclErrorWithOutputs {
         scene_objects: Vec<Object>,
         source_range_to_object: BTreeMap<SourceRange, ObjectId>,
         var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+        refactor_metadata: Vec<RefactorMetadata>,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
@@ -192,6 +195,7 @@ impl KclErrorWithOutputs {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             scene_graph: Default::default(),
             filenames,
             source_files,
@@ -210,6 +214,7 @@ impl KclErrorWithOutputs {
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
+            refactor_metadata: Default::default(),
             scene_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
@@ -229,6 +234,7 @@ impl KclErrorWithOutputs {
             scene_objects: outcome.scene_objects,
             source_range_to_object: outcome.source_range_to_object,
             var_solutions: outcome.var_solutions,
+            refactor_metadata: outcome.refactor_metadata,
             scene_graph: Default::default(),
             filenames: outcome.filenames,
             source_files: Default::default(),
@@ -371,6 +377,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::ImportCycle { .. } => "ImportCycle",
             KclError::Argument { .. } => "Argument",
             KclError::Type { .. } => "Type",
+            KclError::UserDefined { .. } => "UserDefined",
             KclError::Io { .. } => "I/O",
             KclError::Unexpected { .. } => "Unexpected",
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
@@ -425,6 +432,7 @@ impl miette::Diagnostic for Report {
             KclError::ImportCycle { .. } => "ImportCycle",
             KclError::Argument { .. } => "Argument",
             KclError::Type { .. } => "Type",
+            KclError::UserDefined { .. } => "UserDefined",
             KclError::Io { .. } => "I/O",
             KclError::Unexpected { .. } => "Unexpected",
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",

@@ -3,6 +3,15 @@ import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { BillingTransition } from '@src/lib/billing'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { isCodeTheSame } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
 import {
   useProjectIdToConversationId,
@@ -12,31 +21,22 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { browserSaveFile } from '@src/lib/browserSaveFile'
-import { isCodeTheSame } from '@src/lib/codeEditor'
-import { isPathNotFoundError } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import {
-  type ZookeeperEditPatch,
-  type ZookeeperEditPatchFile,
-  mergeZookeeperEditPatches,
-  normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeper/zookeeperEditPatch'
-import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
-  SystemIOMachineEvents,
+  mergeZookeeperEditPatches,
+  normalizeZookeeperPatchPath,
+  type ZookeeperEditPatch,
+  type ZookeeperEditPatchFile,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
   normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
+  SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
@@ -181,9 +181,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           normalizeKCLFileDeletePath(file.requestedFileName) ===
           activeRelativePath
       )
-      const shouldRefreshActiveEditorAfterPlainOutput = Boolean(
-        !shouldRecordZookeeperHistory &&
-          !activeFileDeleted &&
+      const shouldRefreshActiveEditor = Boolean(
+        !activeFileDeleted &&
           activeFileOutput &&
           project?.name === payload.requestedProjectName &&
           activeFilePath === kclManager.path
@@ -315,28 +314,25 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     ...(shouldRecordZookeeperHistory ||
-                    (shouldRefreshActiveEditorAfterPlainOutput &&
-                      activeFileOutput)
+                    shouldRefreshActiveEditor
                       ? {
                           onSuccess: () => {
-                            if (shouldRecordZookeeperHistory) {
-                              postWriteCompleted = true
-                              settleRequest()
-                              return
-                            }
-                            if (!activeFileOutput) return
-                            if (kclManager.path !== activeFilePath) return
                             if (
+                              shouldRefreshActiveEditor &&
+                              activeFileOutput &&
+                              kclManager.path === activeFilePath &&
                               kclManager.code !== activeFileOutput.requestedCode
                             ) {
                               kclManager.updateCodeEditor(
                                 activeFileOutput.requestedCode,
                                 {
                                   shouldAddToHistory: false,
-                                  shouldClearHistory: true,
+                                  shouldClearHistory:
+                                    !shouldRecordZookeeperHistory,
                                   shouldExecute: true,
                                   shouldResetCamera: true,
-                                  shouldWriteToDisk: true,
+                                  shouldWriteToDisk:
+                                    !shouldRecordZookeeperHistory,
                                 }
                               )
                             }
@@ -951,7 +947,7 @@ function useFlushZookeeperHistoryOnResponseEnd(
   tryFlushPendingZookeeperHistory: (exchangeId: number) => void
 ) {
   useEffect(() => {
-    let lastId: number | undefined = undefined
+    let lastId: number | undefined
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId

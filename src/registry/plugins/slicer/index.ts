@@ -11,7 +11,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
-import { EngineConnectionStateType } from '@src/network/utils'
+import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import {
   commandSystemService,
   provideCommand,
@@ -19,7 +19,7 @@ import {
 import {
   layoutActionLibraryValueSpec,
   layoutContributionsValueSpec,
-} from '@src/registry/contracts/layout'
+} from '@src/lib/layout/registry/contract'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,

@@ -1,11 +1,8 @@
 import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
-import { ActionButton } from '@src/components/ActionButton'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
-import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
-import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { FILE_EXT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
@@ -20,6 +17,7 @@ import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
+import Tooltip from '@src/components/Tooltip'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -36,6 +34,13 @@ const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
     synced: 'Synced',
     conflicted: 'Conflicted',
   }
+
+function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
+  return (
+    project.syncFailure?.message ||
+    'Cloud sync cannot upload local changes right now.'
+  )
+}
 
 function getDisplayedTime(dateTimeMs: number) {
   const date = new Date(dateTimeMs)
@@ -122,12 +127,12 @@ function AppProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const hasChangesRequested =
     projectStatus?.publicationStatus === 'changes_requested'
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
+  const hasCloudSyncFailure = Boolean(showCloudSyncUi && project.syncFailure)
   const imageUrl = useProjectThumbnailUrl(project.thumbnail)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
@@ -175,10 +180,23 @@ function AppProjectCard({
   }
 
   useEffect(() => {
-    if (inputRef.current && isEditing) {
+    if (!isEditing) {
+      return
+    }
+
+    // Context menu actions run before the Headless UI dialog finishes closing.
+    // Select after that focus restoration so project rename behaves like the
+    // old hover action buttons.
+    const timeout = window.setTimeout(() => {
+      if (!inputRef.current) {
+        return
+      }
+
       inputRef.current.focus()
       inputRef.current.select()
-    }
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [isEditing])
 
   useEffect(() => {
@@ -199,7 +217,7 @@ function AppProjectCard({
   const projectName = getHomeProjectDisplayName(displayedProject)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
-  const canOpen = projectActions.canOpen(project) || hasCloudConflict
+  const canOpen = projectActions.canOpen(project)
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
@@ -211,6 +229,7 @@ function AppProjectCard({
 
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
+    hasCloudSyncFailure ||
     hasChangesRequested) && (
     <>
       {statusBadgeLabel && (
@@ -226,7 +245,16 @@ function AppProjectCard({
           className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"
           data-testid="cloud-conflict-badge"
         >
-          Inspect Conflicts
+          Cloud conflict
+        </span>
+      )}
+      {hasCloudSyncFailure && (
+        <span
+          className="rounded bg-destroy-10 px-1.5 py-0.5 text-[10px] font-medium text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10"
+          data-testid="cloud-sync-blocked-badge"
+        >
+          Cloud sync blocked
+          <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
       {hasChangesRequested && (
@@ -268,45 +296,6 @@ function AppProjectCard({
     </>
   )
 
-  const actions = (
-    <>
-      <ActionButton
-        disabled={!canRename}
-        Element="button"
-        iconStart={{
-          icon: 'sketch',
-          iconClassName: 'dark:!text-chalkboard-20',
-          bgClassName: '!bg-transparent',
-        }}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsEditing(true)
-        }}
-        className="!p-0"
-      >
-        <Tooltip position="top-right">Rename project</Tooltip>
-      </ActionButton>
-      <ActionButton
-        disabled={!canDelete}
-        Element="button"
-        iconStart={{
-          icon: 'trash',
-          iconClassName: 'dark:!text-chalkboard-30',
-          bgClassName: '!bg-transparent',
-        }}
-        className="!p-0"
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsConfirmingDelete(true)
-        }}
-      >
-        <Tooltip position="top-right">Delete project</Tooltip>
-      </ActionButton>
-    </>
-  )
-
   const dialogs = (
     <>
       {isConfirmingDelete && (
@@ -328,14 +317,6 @@ function AppProjectCard({
           </p>
         </DeleteConfirmationDialog>
       )}
-      {isInspectingConflict && project.localProjectPath && (
-        <CloudConflictDialog
-          projectPath={project.localProjectPath}
-          projectName={projectName}
-          onDismiss={() => setIsInspectingConflict(false)}
-          onResolved={() => setIsInspectingConflict(false)}
-        />
-      )}
     </>
   )
 
@@ -349,8 +330,31 @@ function AppProjectCard({
       thumbnailUrl={imageUrl}
       badges={badges}
       details={details}
-      actions={actions}
-      actionsLabel={project.name?.replace(FILE_EXT, '')}
+      renderContextMenu={({ menuTargetElement }) => (
+        <ContextMenu
+          menuTargetElement={menuTargetElement}
+          items={[
+            <ContextMenuItem
+              key="rename"
+              icon="sketch"
+              disabled={!canRename}
+              data-testid="project-card-context-rename"
+              onClick={() => setIsEditing(true)}
+            >
+              Rename project
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="delete"
+              icon="trash"
+              disabled={!canDelete}
+              data-testid="project-card-context-delete"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete project
+            </ContextMenuItem>,
+          ]}
+        />
+      )}
       renameForm={
         <ProjectCardRenameForm
           onSubmit={handleSave}
@@ -365,10 +369,6 @@ function AppProjectCard({
       onOpen={(e) => {
         e.preventDefault()
         if (!canOpen) {
-          return
-        }
-        if (hasCloudConflict) {
-          setIsInspectingConflict(true)
           return
         }
 

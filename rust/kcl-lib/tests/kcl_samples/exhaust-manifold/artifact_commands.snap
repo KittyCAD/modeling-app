@@ -1974,31 +1974,11 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_cut_edges",
+        "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "fillet": {
-            "radius": 38.099999999999994,
-            "second_length": null
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -2029,6 +2009,56 @@ description: Artifact commands exhaust-manifold.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_cut_edges",
+        "object_id": "[uuid]",
+        "edge_ids": [
+          "[uuid]"
+        ],
+        "cut_type": {
+          "fillet": {
+            "radius": 38.099999999999994,
+            "second_length": null
+          }
+        },
+        "tolerance": 0.0000001,
+        "strategy": "automatic",
+        "extra_face_ids": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_next_adjacent_edge",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]",
+        "face_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -2059,6 +2089,16 @@ description: Artifact commands exhaust-manifold.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

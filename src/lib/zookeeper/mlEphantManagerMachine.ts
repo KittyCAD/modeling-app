@@ -267,6 +267,9 @@ export interface Exchange {
   // BELOW:
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
+
+  // Client-side start time for an in-progress response.
+  startedAt?: Date
 }
 
 export type Conversation = {
@@ -292,6 +295,7 @@ export interface MlEphantManagerContext {
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
+    activeExchangeStartedAt?: Date
   }
 }
 
@@ -673,23 +677,29 @@ export const mlEphantManagerMachine = setup({
         context.ws?.close()
       }
     },
-    cacheSetup: assign({
-      conversationId: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+    prepareSetup: assign(({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
 
-        if (event.conversationId) {
-          return event.conversationId
-        }
-
-        return undefined
-      },
-      cachedSetup: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
-        return {
+      return {
+        abruptlyClosed: false,
+        lastMessageId: undefined,
+        lastMessageType: undefined,
+        conversation: undefined,
+        conversationId: event.conversationId || undefined,
+        defaultMode: undefined,
+        modeOptions: undefined,
+        awaitingResponse: false,
+        attachmentsLoadedForCurrentPrompt: true,
+        pendingBackendShutdown: false,
+        cachedSetup: {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
-        }
-      },
+          activeExchangeStartedAt:
+            context.conversation?.exchanges.findLast((exchange) =>
+              isMlCopilotUserRequest(exchange.request)
+            )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt,
+        },
+      }
     }),
     clearCacheSetup: assign({
       cachedSetup: undefined,
@@ -937,6 +947,14 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              const activeExchange = maybeReplayedExchanges.findLast(
+                (exchange) => isMlCopilotUserRequest(exchange.request)
+              )
+              if (activeExchange) {
+                activeExchange.startedAt =
+                  args.input.context.cachedSetup?.activeExchangeStartedAt
+              }
+
               setupResolved = true
               onFulfilled({
                 abruptlyClosed: false,
@@ -1064,6 +1082,7 @@ export const mlEphantManagerMachine = setup({
         request,
         responses: [],
         deltasAggregated: '',
+        startedAt: new Date(),
       })
 
       return {
@@ -1133,6 +1152,7 @@ export const mlEphantManagerMachine = setup({
 
       return {
         awaitingResponse: true,
+        projectNameCurrentlyOpened: event.projectName,
       }
     }),
     [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
@@ -1187,21 +1207,7 @@ export const mlEphantManagerMachine = setup({
       on: {
         [MlEphantManagerTransitions.CacheSetupAndConnect]: {
           target: MlEphantManagerStates.Setup,
-          actions: [
-            assign({
-              abruptlyClosed: false,
-              lastMessageId: undefined,
-              lastMessageType: undefined,
-              conversation: undefined,
-              conversationId: undefined,
-              defaultMode: undefined,
-              modeOptions: undefined,
-              awaitingResponse: false,
-              attachmentsLoadedForCurrentPrompt: true,
-              pendingBackendShutdown: false,
-            }),
-            'cacheSetup',
-          ],
+          actions: ['prepareSetup'],
         },
         ...transitions([MlEphantManagerStates.Setup]),
       },
@@ -1256,6 +1262,8 @@ export const mlEphantManagerMachine = setup({
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
+                    activeExchangeStartedAt:
+                      context.cachedSetup?.activeExchangeStartedAt,
                   },
                 }
               }
@@ -1265,6 +1273,8 @@ export const mlEphantManagerMachine = setup({
                 cachedSetup: {
                   refParentSend: context.cachedSetup?.refParentSend,
                   conversationId: context.cachedSetup?.conversationId,
+                  activeExchangeStartedAt:
+                    context.cachedSetup?.activeExchangeStartedAt,
                 },
               }
             }),
@@ -1306,6 +1316,12 @@ export const mlEphantManagerMachine = setup({
             assign({
               awaitingResponse({ event }) {
                 return event.output.awaitingResponse ?? false
+              },
+              projectNameCurrentlyOpened({ context, event }) {
+                return (
+                  event.output.projectNameCurrentlyOpened ??
+                  context.projectNameCurrentlyOpened
+                )
               },
             }),
           ],

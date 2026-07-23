@@ -7,11 +7,13 @@ import {
 } from '@kittycad/ui-components'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { getEstimatedBillingBalance } from '@src/lib/billingEstimate'
+import {
+  type BillingContext,
+  getEstimatedBillingBalance,
+} from '@src/lib/billing'
 import { useApp } from '@src/lib/boot'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import type { BillingContext } from '@src/machines/billingMachine'
 import { useEffect, useState } from 'react'
 
 const BILLING_BALANCE_TICK_MS = 1000

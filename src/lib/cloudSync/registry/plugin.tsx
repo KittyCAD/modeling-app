@@ -35,6 +35,7 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
@@ -53,6 +54,7 @@ import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, useEffect, useState } from 'react'
@@ -207,7 +209,11 @@ function CloudSyncDisconnectProjectDialog({
   )
 }
 
-function CloudSyncProjectMenuDialogHost() {
+function CloudSyncProjectMenuDialogHost({
+  resolvedTheme,
+}: {
+  resolvedTheme: ResolvedTheme
+}) {
   useSignals()
   const dialog = cloudSyncProjectMenuDialog.value
 
@@ -220,6 +226,7 @@ function CloudSyncProjectMenuDialogHost() {
       <CloudConflictDialog
         projectPath={dialog.projectPath}
         projectName={dialog.projectName}
+        resolvedTheme={resolvedTheme}
         onDismiss={() => {
           cloudSyncProjectMenuDialog.value = null
         }}
@@ -365,12 +372,16 @@ export function getCloudSyncStatusBarPresentation(
   const isSyncing = status.state === 'syncing'
   const isBlocked = status.state === 'failed' || status.state === 'conflict'
   const hasPendingChanges = status.pendingCount > 0
+  const isRemoteUploadBlocked =
+    status.lastFailureKind === 'remote-upload-forbidden'
   const label = isSyncing
     ? 'Cloud syncing'
     : status.state === 'conflict'
       ? 'Cloud conflict'
       : status.state === 'failed'
-        ? 'Cloud sync failed'
+        ? isRemoteUploadBlocked
+          ? 'Cloud sync blocked'
+          : 'Cloud sync failed'
         : hasPendingChanges
           ? 'Cloud sync pending'
           : 'Cloud synced'
@@ -397,7 +408,11 @@ export function getCloudSyncStatusBarPresentation(
   }
 }
 
-function CloudSyncStatusBarItem() {
+function CloudSyncStatusBarItem({
+  resolvedTheme,
+}: {
+  resolvedTheme: ResolvedTheme
+}) {
   useSignals()
   const location = useLocation()
   const status = cloudSyncStatus.value
@@ -419,11 +434,6 @@ function CloudSyncStatusBarItem() {
     isFileRoute &&
     status.activeProjectPath &&
     conflictMetadata?.conflict
-  const projectName = status.activeProjectPath
-    ?.split(/[\\/]/)
-    .filter(Boolean)
-    .at(-1)
-  const selectedConflictProjectName = selectedConflict?.projectName
   const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
@@ -511,29 +521,40 @@ function CloudSyncStatusBarItem() {
       {isInspectingConflict && status.activeProjectPath && (
         <CloudConflictDialog
           projectPath={status.activeProjectPath}
-          projectName={projectName || 'this project'}
+          resolvedTheme={resolvedTheme}
           onDismiss={() => setIsInspectingConflict(false)}
           onResolved={() => setIsInspectingConflict(false)}
         />
       )}
-      {selectedConflictProjectPath && selectedConflictProjectName && (
+      {selectedConflictProjectPath && (
         <CloudConflictDialog
           projectPath={selectedConflictProjectPath}
-          projectName={selectedConflictProjectName}
+          resolvedTheme={resolvedTheme}
           onDismiss={() => setSelectedConflict(undefined)}
           onResolved={() => setSelectedConflict(undefined)}
         />
       )}
-      <CloudSyncProjectMenuDialogHost />
+      <CloudSyncProjectMenuDialogHost resolvedTheme={resolvedTheme} />
     </>
   )
 }
 
 const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
   const userFeatures = ctx.services.signal(userFeaturesService)
+  function CloudSyncStatusBarItemWithSettings() {
+    const settingsValues = settings.value!.useSettings()
+    return (
+      <CloudSyncStatusBarItem
+        resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
+      />
+    )
+  }
+
   const statusBarItem = computed(() =>
     nullableStatusBarItem(
-      userFeatures.value &&
+      settings.value &&
+        userFeatures.value &&
         userFeaturesContextHas(
           userFeatures.value.context.value,
           OPFS_CLOUD_FEATURE_FLAG,
@@ -542,7 +563,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
         cloudSyncStatus.value.enabled
         ? {
             id: 'cloud-sync',
-            component: CloudSyncStatusBarItem,
+            component: CloudSyncStatusBarItemWithSettings,
             scopes: ['home', 'file'],
             order: 2,
           }
@@ -604,19 +625,40 @@ function getCloudSyncHomeProjectModifiedTime(
   return Number.isNaN(modified) ? undefined : modified
 }
 
-function homeProjectEntryConflictFields(
+function homeProjectEntryCloudSyncFields(
   metadata: CloudSyncProjectMetadataIndexEntry | undefined
 ): Pick<
   HomeProjectEntryContribution,
-  'conflict' | 'localProjectPath' | 'status'
+  'conflict' | 'localProjectPath' | 'status' | 'syncFailure'
 > {
-  return metadata?.conflict
-    ? {
-        status: 'conflicted',
-        conflict: metadata.conflict,
-        localProjectPath: metadata.localProjectPath,
-      }
-    : { status: 'cloud-only' }
+  const syncFailure =
+    metadata?.lastFailure?.kind === 'remote-upload-forbidden'
+      ? metadata.lastFailure
+      : undefined
+  if (!metadata?.conflict) {
+    return {
+      status: 'cloud-only',
+      ...(syncFailure
+        ? { syncFailure, localProjectPath: metadata?.localProjectPath }
+        : {}),
+    }
+  }
+
+  return {
+    status: 'conflicted',
+    conflict: metadata.conflict,
+    localProjectPath: metadata.localProjectPath,
+    ...(syncFailure ? { syncFailure } : {}),
+  }
+}
+
+function shouldContributeCloudSyncMetadata(
+  metadata: CloudSyncProjectMetadataIndexEntry
+) {
+  return (
+    Boolean(metadata.conflict) ||
+    metadata.lastFailure?.kind === 'remote-upload-forbidden'
+  )
 }
 
 function remoteThumbnailCacheKey(project: RemoteProjectSummary) {
@@ -669,7 +711,7 @@ function pruneRemoteThumbnailState({
 const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   (ctx) => {
     const cloudSync = ctx.services.signal(cloudSyncService)
-    const conflictMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
+    const cloudSyncMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
     const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
     const requestedThumbnailKeys = new Map<string, string>()
     let disposed = false
@@ -683,8 +725,8 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         return []
       }
 
-      const conflictMetadataByRemoteProjectId = new Map(
-        conflictMetadata.value.flatMap((metadata) =>
+      const cloudSyncMetadataByRemoteProjectId = new Map(
+        cloudSyncMetadata.value.flatMap((metadata) =>
           metadata.remoteProjectId
             ? ([[metadata.remoteProjectId, metadata]] as const)
             : []
@@ -695,13 +737,13 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
       )
       const remoteProjectEntries = cloudSyncRemoteProjects.value.map(
         (project) => {
-          const metadata = conflictMetadataByRemoteProjectId.get(project.id)
+          const metadata = cloudSyncMetadataByRemoteProjectId.get(project.id)
           const name = metadata?.projectName || project.title || project.id
           const thumbnailUrl = remoteThumbnailUrls.value.get(project.id)
 
           return {
             source: 'remote',
-            ...homeProjectEntryConflictFields(metadata),
+            ...homeProjectEntryCloudSyncFields(metadata),
             name,
             title: metadata?.projectName || project.title,
             remoteProjectId: project.id,
@@ -718,7 +760,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           } satisfies HomeProjectEntryContribution
         }
       )
-      const localOnlyConflictEntries = conflictMetadata.value
+      const localOnlyCloudSyncEntries = cloudSyncMetadata.value
         .filter(
           (metadata) =>
             !metadata.remoteProjectId ||
@@ -728,18 +770,17 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           (metadata) =>
             ({
               source: 'remote',
-              status: 'conflicted',
+              ...homeProjectEntryCloudSyncFields(metadata),
               name: metadata.projectName,
               title: metadata.projectName,
               localProjectPath: metadata.localProjectPath,
               remoteProjectId: metadata.remoteProjectId,
               modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
               readWriteAccess: true,
-              conflict: metadata.conflict,
             }) satisfies HomeProjectEntryContribution
         )
 
-      return [...remoteProjectEntries, ...localOnlyConflictEntries]
+      return [...remoteProjectEntries, ...localOnlyCloudSyncEntries]
     })
 
     // Defer because `effect` runs immediately, and service reads are blocked
@@ -749,7 +790,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         return
       }
 
-      // Keep Home conflict badges in sync with cloud sync metadata, even
+      // Keep Home cloud sync badges in sync with cloud sync metadata, even
       // before System IO rereads local project folders.
       disposeEffect = effect(() => {
         const service = cloudSync.value
@@ -757,7 +798,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         const nextLoadId = ++loadId
 
         if (!service || !status.enabled) {
-          conflictMetadata.value = []
+          cloudSyncMetadata.value = []
           remoteThumbnailUrls.value = new Map()
           requestedThumbnailKeys.clear()
           return
@@ -809,16 +850,16 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
               return
             }
 
-            conflictMetadata.value = Array.from(metadataIndex.values()).filter(
+            cloudSyncMetadata.value = Array.from(metadataIndex.values()).filter(
               (metadata) =>
-                Boolean(metadata.conflict) &&
+                shouldContributeCloudSyncMetadata(metadata) &&
                 !metadata.tombstone &&
                 !metadata.syncExcluded
             )
           })
           .catch((error: unknown) => {
             if (!disposed && nextLoadId === loadId) {
-              conflictMetadata.value = []
+              cloudSyncMetadata.value = []
             }
             reportRejection(error)
           })

@@ -55,17 +55,6 @@ const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
 
-export const headerMasks = (page: Page) => [
-  page.locator('#app-header'),
-  page.locator('#sidebar-top-ribbon'),
-  page.locator('#sidebar-bottom-ribbon'),
-]
-
-export const lowerRightMasks = (page: Page) => [
-  page.getByTestId(/network-toggle/),
-  page.getByTestId('billing-remaining-bar'),
-]
-
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
   WHITE: [249, 249, 249],
@@ -1203,7 +1192,7 @@ export async function createProject({
 }) {
   await test.step(`Create project and navigate to it`, async () => {
     await page.getByRole('button', { name: 'Create project' }).click()
-    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByTestId('cmd-bar-arg-value').fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
     await closeOnboardingModalIfPresent(page)

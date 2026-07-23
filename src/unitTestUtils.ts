@@ -22,7 +22,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { createActor } from 'xstate'
 
@@ -74,6 +74,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
@@ -179,6 +180,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,

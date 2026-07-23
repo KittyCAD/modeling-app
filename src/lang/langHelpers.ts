@@ -1,61 +1,40 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
+import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
+import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
+import {
+  type Z0006RefactorCache,
+  resolveRefactorLintActions,
+} from '@src/lang/lintRefactorActions'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import type {
+  DirectTagFilletMeta,
+  EdgeRefactorMeta,
+  ExecCallbacks,
+  ExecState,
+  Program,
+} from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
+import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/utils'
 import type { EditorView } from 'codemirror'
+export type { ToolTip } from '@src/lang/toolTips'
+export { isToolTip, toolTips } from '@src/lang/toolTips'
 
-export type ToolTip =
-  | 'lineTo'
-  | 'line'
-  | 'angledLine'
-  | 'angledLineOfXLength'
-  | 'angledLineOfYLength'
-  | 'angledLineToX'
-  | 'angledLineToY'
-  | 'xLine'
-  | 'yLine'
-  | 'xLineTo'
-  | 'yLineTo'
-  | 'angledLineThatIntersects'
-  | 'tangentialArc'
-  | 'tangentialArcTo'
-  | 'circle'
-  | 'circleThreePoint'
-  | 'arcTo'
-  | 'arc'
-  | 'startProfile'
+const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
 
-export const toolTips: Array<ToolTip> = [
-  'line',
-  'lineTo',
-  'angledLine',
-  'angledLineOfXLength',
-  'angledLineOfYLength',
-  'angledLineToX',
-  'angledLineToY',
-  'xLine',
-  'yLine',
-  'xLineTo',
-  'yLineTo',
-  'angledLineThatIntersects',
-  'tangentialArc',
-  'tangentialArcTo',
-  'circleThreePoint',
-  'arc',
-  'arcTo',
-  'startProfile',
-]
-
-export function isToolTip(value: string): value is ToolTip {
-  return toolTips.includes(value as ToolTip)
+function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
+  return (
+    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
+    defaultValue
+  )
 }
 
 interface ExecutionResult {
@@ -86,47 +65,37 @@ export async function executeAst({
       execState,
       isInterrupted: false,
     }
-  } catch (e: any) {
+  } catch (e) {
     return handleExecuteError(e)
   }
 }
 
-export async function executeAstMock({
-  ast,
-  rustContext,
-  path,
-  usePrevMemory,
-  callbacks,
-}: {
-  ast: Node<Program>
-  rustContext: RustContext
-  path?: string
-  usePrevMemory?: boolean
-  callbacks?: ExecCallbacks
-}): Promise<ExecutionResult> {
-  try {
-    const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.executeMock(
-      ast,
-      settings,
-      path,
-      usePrevMemory,
-      callbacks
-    )
+export const executeAstMock = executeAstMockImpl
 
-    await rustContext.waitForAllEngineModelingCommands()
-    return {
-      logs: [],
-      errors: [],
-      execState,
-      isInterrupted: false,
-    }
-  } catch (e: any) {
-    return handleExecuteError(e)
+function getFirstExecutionErrorMessage(e: unknown): string | undefined {
+  if (!isArray(e)) return undefined
+  const firstErrorResult = e[0]
+  if (
+    !firstErrorResult ||
+    typeof firstErrorResult !== 'object' ||
+    !('errors' in firstErrorResult) ||
+    !isArray(firstErrorResult.errors)
+  ) {
+    return undefined
   }
+  const firstError = firstErrorResult.errors[0]
+  if (
+    !firstError ||
+    typeof firstError !== 'object' ||
+    !('message' in firstError) ||
+    typeof firstError.message !== 'string'
+  ) {
+    return undefined
+  }
+  return firstError.message
 }
 
-function handleExecuteError(e: any): ExecutionResult {
+function handleExecuteError(e: unknown): ExecutionResult {
   let isInterrupted = false
 
   if (e instanceof KCLError) {
@@ -153,23 +122,21 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted,
     }
   } else {
-    if (e && e.length > 0 && e[0].errors && e[0].errors.length > 0) {
-      if (
-        e[0].errors[0].message.includes(
+    const executionErrorMessage = getFirstExecutionErrorMessage(e)
+    if (executionErrorMessage) {
+      isInterrupted =
+        executionErrorMessage.includes(
           'no connection to send on, connection manager called tearDown()'
         ) ||
-        e[0].errors[0].message.includes(
+        executionErrorMessage.includes(
           'Failed to wait for promise from send modeling command'
         ) ||
-        e[0].errors[0].message.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
-      ) {
-        isInterrupted = true
-      }
+        executionErrorMessage.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
     }
 
     console.log(e)
     return {
-      logs: [e],
+      logs: [String(e)],
       errors: [],
       execState: emptyExecState(),
       isInterrupted,
@@ -182,15 +149,20 @@ export async function lintAst({
   sourceCode,
   instance,
   rustContext,
+  edgeRefactorMetadata,
+  directTagFilletMetadata,
+  artifactGraph,
 }: {
-  ast: Program
+  ast: Node<Program>
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
+  directTagFilletMetadata?: DirectTagFilletMeta[]
+  artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
     let discovered_findings = await kclLint(ast, instance)
-
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
@@ -210,11 +182,17 @@ export async function lintAst({
       )
     }
 
+    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
+    if (!shouldShowZ0006) {
+      discovered_findings = discovered_findings.filter(
+        (lint) => lint.finding.code !== 'Z0006'
+      )
+    }
+
     // Process findings - for Z0005 without suggestion, we'll create actions async
+    const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
-      const transpilationFailMessage =
-        'Deprecated sketch syntax. This sketch cannot be converted to new sketch block syntax at this time.'
       let message = lint.finding.title
       const suggestion = lint.suggestion
 
@@ -234,98 +212,22 @@ export async function lintAst({
             },
           },
         ]
-      } else if (
-        lint.finding.code === 'Z0005' &&
-        rustContext &&
-        shouldShowZ0005
-      ) {
-        // For Z0005 without suggestion, try to transpile using WASM
-        // Extract variable name from the AST at the lint position
-        try {
-          const lintStart = lint.pos[0]
-          const lintEnd = lint.pos[1]
-
-          // Find the variable declaration that contains this range
-          let variableName: string | null = null
-          for (const item of ast.body) {
-            if (item.type === 'VariableDeclaration') {
-              const varDecl = item.declaration
-
-              // Check if lint range is within this variable's init expression
-              if (
-                lintStart >= varDecl.init.start &&
-                lintEnd <= varDecl.init.end
-              ) {
-                variableName = varDecl.id.name
-                break
-              }
-            }
-          }
-
-          if (variableName) {
-            // Create a temporary context for transpilation
-            // Note: This creates a new context each time, but transpile_old_sketch
-            // uses the execution cache, so it should be fast
-            // The ExecutorContext inside transpile_old_sketch is closed automatically,
-            // but we still need to ensure the WASM Context reference is released
-            let ctx: Awaited<
-              ReturnType<typeof rustContext.createNewContext>
-            > | null = null
-            try {
-              const settings = jsAppSettings(rustContext.settingsActor)
-
-              ctx = await rustContext.createNewContext()
-
-              const transpiledCodeResult = await ctx.transpile_old_sketch(
-                JSON.stringify(ast),
-                variableName,
-                null, // path
-                JSON.stringify(settings)
-              )
-
-              const transpiledCode =
-                typeof transpiledCodeResult === 'string'
-                  ? transpiledCodeResult
-                  : String(transpiledCodeResult)
-
-              if (transpiledCode?.trim()) {
-                actions = [
-                  {
-                    name: `convert '${variableName}' to new sketch block syntax`,
-                    apply: (view: EditorView, from: number, to: number) => {
-                      view.dispatch({
-                        changes: {
-                          from: toUtf16(lint.pos[0], sourceCode),
-                          to: toUtf16(lint.pos[1], sourceCode),
-                          insert: transpiledCode.trim(),
-                        },
-                        annotations: [lspCodeActionEvent],
-                      })
-                    },
-                  },
-                ]
-              } else {
-                // Transpilation returned empty result - update message
-                message = transpilationFailMessage
-                console.warn(
-                  '[lintAst] Z0005 transpilation returned empty result'
-                )
-              }
-            } catch (transpileError) {
-              // Transpilation failed - update message
-              message = transpilationFailMessage
-              console.warn(
-                '[lintAst] Z0005 transpilation failed:',
-                transpileError
-              )
-            } finally {
-              // Explicitly clear the context reference to help GC
-              // The ExecutorContext inside transpile_old_sketch is already closed by Rust code
-              ctx = null
-            }
-          }
-        } catch (e) {
-          console.warn('[lintAst] Error processing Z0005:', e)
+      } else {
+        const refactorResult = await resolveRefactorLintActions({
+          lint,
+          ast,
+          sourceCode,
+          instance,
+          rustContext,
+          shouldShowZ0005,
+          edgeRefactorMetadata,
+          directTagFilletMetadata,
+          artifactGraph,
+          z0006RefactorCache,
+        })
+        actions = refactorResult.actions
+        if (refactorResult.messageOverride) {
+          message = refactorResult.messageOverride
         }
       }
 
@@ -341,7 +243,7 @@ export async function lintAst({
     })
 
     return await Promise.all(diagnosticsPromises)
-  } catch (e: any) {
+  } catch (e) {
     console.log(e)
     return []
   }

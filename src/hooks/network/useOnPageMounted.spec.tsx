@@ -24,7 +24,7 @@ describe('useOnPageMounted', () => {
       expect(callback).toHaveBeenCalledTimes(1)
 
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })
@@ -38,7 +38,7 @@ describe('useOnPageMounted', () => {
           }),
         { initialProps: { callback: callback_1 } }
       )
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
       rerender({ callback: callback_2 })
@@ -46,7 +46,7 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })
@@ -65,7 +65,7 @@ describe('useOnPageMounted', () => {
       expect(callback_1).toHaveBeenCalledTimes(1)
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
-      result.current.resetGlobalEngineCommandManager(
+      result.current.resetGlobalEngineConnectionManager(
         singletons.kclManager.engineCommandManager
       )
     })
