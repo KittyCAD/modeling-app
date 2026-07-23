@@ -47,8 +47,10 @@ function readProjectFile(files: ProjectArchiveFile[], relativePath: string) {
 }
 
 describe('cloudSync sync helpers', () => {
-  it('uses a personal Zoo folder as the default cloud project directory fallback', () => {
-    expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe('/documents/Zoo/personal')
+  it('uses the web project directory as the default cloud project directory fallback', () => {
+    expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
+      `/documents/${PROJECT_FOLDER}`
+    )
   })
 
   it('identifies project roots beneath the personal Zoo cloud directory', () => {

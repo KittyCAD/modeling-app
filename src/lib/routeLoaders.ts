@@ -40,7 +40,10 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { projectLibrarySettingDefaultsValueSpec } from '@src/registry/contracts/projectLibraries'
+import {
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibrarySettingDefaultsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
@@ -62,6 +65,9 @@ function loadRouteSettings(
   return loadAndValidateSettings(wasmInstance, {
     defaultProjectLibraries: app.registry.get(
       projectLibrarySettingDefaultsValueSpec
+    ),
+    projectLibrarySettingDefaultPolicies: app.registry.get(
+      projectLibrarySettingDefaultPoliciesValueSpec
     ),
     extensionSettings: app.registry.get(settingsValueSpec),
     projectPath,

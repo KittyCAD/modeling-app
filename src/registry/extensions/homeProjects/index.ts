@@ -24,6 +24,7 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   NEW_PROJECT_LIBRARY_TITLE,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultProjectLibrarySettings,
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
@@ -41,6 +42,7 @@ import {
 import {
   getProjectLibraryOperation,
   projectLibrariesValueSpec,
+  projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
   type ProjectLibraryTypeOperations,
 } from '@src/registry/contracts/projectLibraries'
@@ -349,6 +351,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           },
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
+          hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
@@ -425,6 +428,26 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
     }),
   }
 }, 'home-projects.directory-library-type')
+
+const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
+  id: 'home-projects.directory-library-default-policy',
+  provides: [
+    provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+      id: 'home-projects.directory-library-default-policy',
+      priority: 0,
+      /**
+       * Product policy: the directory library owns the legacy default project
+       * directory fallback. Other library systems can contribute
+       * higher-priority policies without `loadAndValidateSettings()` knowing
+       * about their storage type.
+       */
+      getDefaultLibraries: ({ legacyProjectDirectory, initialDefaultDir }) =>
+        getDefaultProjectLibrarySettings(
+          legacyProjectDirectory ?? initialDefaultDir
+        ),
+    }),
+  ],
+})
 
 const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
@@ -538,6 +561,7 @@ const homeProjectsExtension = defineRegistryItem({
   uses: [
     configuredProjectLibraries,
     configuredProjectLibraryEntries,
+    directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,
     homeProjectActions,
     systemIOLocalHomeProjectEntries,
