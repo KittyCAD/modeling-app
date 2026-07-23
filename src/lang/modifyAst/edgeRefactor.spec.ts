@@ -1285,6 +1285,144 @@ part = bracket()
       expect(n).not.toContain('getCommonEdge')
     })
 
+    it('preserves comments between arguments when refactoring fillet tags', () => {
+      const code = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $baseInside)
+  |> yLine(length = 10, tag = $hookInside)
+  |> close()
+  |> extrude(length = 5)
+
+rounded = fillet(
+  body,
+  radius = 1,
+  // Keep this comment
+  tags = [
+    // Keep this inner comment
+    getCommonEdge(faces = [baseInside, hookInside])
+  ],
+)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      expect(result).toContain('// Keep this comment')
+      // The comment stays where it was written: before the converted arg.
+      expect(result.indexOf('// Keep this comment')).toBeLessThan(
+        result.indexOf('edges = [')
+      )
+      // Comments between the old tags elements move to the new edges array.
+      expect(result).toContain('// Keep this inner comment')
+      expect(result.indexOf('// Keep this inner comment')).toBeLessThan(
+        result.indexOf('sideFaces')
+      )
+      const n = norm(result)
+      expect(n).toContain('sideFaces = [baseInside, hookInside]')
+      expect(n).not.toContain('getCommonEdge')
+    })
+
+    it('keeps the comment on the converted arg when it is not the last arg', () => {
+      // The converted `tags` arg is followed by `tolerance`, so a naive
+      // filter-and-append would leave the comment above `tolerance`.
+      const code = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $baseInside)
+  |> yLine(length = 10, tag = $hookInside)
+  |> close()
+  |> extrude(length = 5)
+
+rounded = fillet(
+  body,
+  radius = 1,
+  // Comment for converted edges
+  tags = [getCommonEdge(faces = [baseInside, hookInside])],
+  tolerance = 0.01,
+)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      expect(result).toContain('// Comment for converted edges')
+      // The comment stays attached to the converted arg: above `edges`, not
+      // above the surviving `tolerance` arg.
+      expect(result.indexOf('// Comment for converted edges')).toBeLessThan(
+        result.indexOf('edges = [')
+      )
+      expect(result.indexOf('edges = [')).toBeLessThan(
+        result.indexOf('tolerance')
+      )
+      const n = norm(result)
+      expect(n).toContain('sideFaces = [baseInside, hookInside]')
+      expect(n).toContain('tolerance = 0.01')
+      expect(n).not.toContain('getCommonEdge')
+    })
+
+    it('keeps the comment on the converted GD&T edges arg when it is not last', () => {
+      const code = `base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $cap1)
+
+first = gdt::straightness(
+  base,
+  // Comment for converted edges
+  edges = [getCommonEdge(faces = [e1, cap1])],
+  tolerance = 0.1mm,
+)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(ast, code, {
+        segmentId: 'segment-e1',
+        wallId: 'wall-e1',
+        capId: 'cap-1',
+        pathId: 'path-1',
+        sweepId: 'sweep-1',
+        segmentSnippet: 'line(endAbsolute = [10, 0], tag = $e1)',
+        extrudeSnippet: 'extrude(length = 5, tagEnd = $cap1)',
+      })
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'edge-1',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const result = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance
+      )
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      expect(result).toContain('// Comment for converted edges')
+      expect(result.indexOf('// Comment for converted edges')).toBeLessThan(
+        result.indexOf('edges = [')
+      )
+      expect(result.indexOf('edges = [')).toBeLessThan(
+        result.indexOf('tolerance')
+      )
+      const n = norm(result)
+      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
+    })
+
     it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
       const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
       const ast = assertParse(code, wasmInstance)
