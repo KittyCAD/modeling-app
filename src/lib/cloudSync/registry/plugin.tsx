@@ -36,12 +36,14 @@ import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   canRevealInFileExplorer,
@@ -1039,6 +1041,18 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           return project
         },
       },
+    },
+    readEntries: async ({ signal }) => {
+      const projects = await readProjectsFromProjectDirectory({
+        projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+        wasmInstancePromise: getWasmPromise(),
+        signal,
+      })
+
+      return projects.map((project) => ({
+        ...homeProjectEntryFromProject(project),
+        libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }))
     },
   }
 
