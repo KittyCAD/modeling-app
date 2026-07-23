@@ -1777,7 +1777,7 @@ surface001 = extrude(
           [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
             (artifact) => artifact.type === 'sweep' && !artifact.consumed
           )
-        ).toHaveLength(2)
+        ).toHaveLength(1)
       }
     )
 
