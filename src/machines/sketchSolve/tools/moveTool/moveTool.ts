@@ -25,6 +25,9 @@ import { isArray, roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
+  type DiameterConstraint,
+  type DistanceConstraint,
+  type RadiusConstraint,
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
@@ -355,7 +358,9 @@ function buildSegmentDragAnchors({
   ]
 }
 
-function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
+function isConstraintWithDraggableLabel(
+  obj: ApiObject | undefined
+): obj is DistanceConstraint | RadiusConstraint | DiameterConstraint {
   return (
     obj !== undefined &&
     (isDistanceConstraint(obj) ||
@@ -693,12 +698,7 @@ function applyConstraintLabelPreviewEdits({
   const sceneGraph = result.sceneGraphDelta.new_graph
   const objects = sceneGraph.objects.map((obj) => {
     const labelPosition = labelPositions.get(obj.id)
-    if (
-      !labelPosition ||
-      (!isDistanceConstraint(obj) &&
-        !isRadiusConstraint(obj) &&
-        !isDiameterConstraint(obj))
-    ) {
+    if (!labelPosition || !isConstraintWithDraggableLabel(obj)) {
       return obj
     }
 
