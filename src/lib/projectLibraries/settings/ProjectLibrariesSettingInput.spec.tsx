@@ -1,11 +1,11 @@
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
   DirectoryProjectLibrarySettingsDetails,
   filterProjectLibraryTypeOptionsForSettings,
   ProjectLibrariesSettingInput,
-  projectLibraryTypeOptionsFromContributions,
   type ProjectLibraryTypeOption,
+  projectLibraryTypeOptionsFromContributions,
 } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
-import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -222,7 +222,11 @@ describe('ProjectLibrariesSettingInput', () => {
         value={defaultLibraries}
         updateValue={updateValue}
         libraryTypeOptions={libraryTypeOptions}
-        canManageLibraries={false}
+        canAddLibraries={false}
+        canReorderLibraries={false}
+        canChangeLibraryType={false}
+        canEditLibraryDetails={false}
+        canRemoveLibrary={() => false}
       />
     )
 
@@ -236,6 +240,48 @@ describe('ProjectLibrariesSettingInput', () => {
     expect(screen.getByTestId('project-directory-input')).toHaveTextContent(
       '/projects'
     )
+  })
+
+  test('allows directory library removal without enabling web library management', () => {
+    const updateValue = vi.fn()
+    const cloudLibrary: ProjectLibrarySetting = {
+      title: 'Personal Cloud',
+      path: '/personal',
+      type: 'cloud',
+    }
+
+    render(
+      <ProjectLibrariesSettingInput
+        value={[...defaultLibraries, cloudLibrary]}
+        updateValue={updateValue}
+        libraryTypeOptions={multipleLibraryTypeOptions}
+        selectableLibraryTypeOptions={multipleLibraryTypeOptions.filter(
+          (option) => option.value !== 'directory'
+        )}
+        canAddLibraries={false}
+        canReorderLibraries={false}
+        canChangeLibraryType={false}
+        canEditLibraryDetails={false}
+        canRemoveLibrary={(library) => library.type === 'directory'}
+      />
+    )
+
+    expect(screen.queryByTestId('project-library-add')).toBeNull()
+    expect(screen.queryByTestId('project-library-drag-handle')).toBeNull()
+    const libraryTypes = screen.getAllByTestId('project-library-type')
+    expect(libraryTypes).toHaveLength(2)
+    expect(libraryTypes[0]).toHaveAttribute(
+      'aria-label',
+      'Library type: Directory'
+    )
+    expect(libraryTypes[1]).toHaveAttribute('aria-label', 'Library type: Cloud')
+
+    const removeButtons = screen.getAllByTestId('project-library-remove')
+    expect(removeButtons).toHaveLength(1)
+
+    fireEvent.click(removeButtons[0])
+
+    expect(updateValue).toHaveBeenLastCalledWith([cloudLibrary])
   })
 
   test('shows library type as an icon button with icon and label options', () => {

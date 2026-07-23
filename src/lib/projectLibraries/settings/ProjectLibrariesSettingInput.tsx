@@ -2,15 +2,15 @@ import { Listbox } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import {
   CustomIcon,
-  isCustomIconName,
   type CustomIconName,
+  isCustomIconName,
 } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
-  NEW_PROJECT_LIBRARY_TITLE,
   areProjectLibrarySettingsEqual,
   moveProjectLibrarySetting,
+  NEW_PROJECT_LIBRARY_TITLE,
   normalizeProjectLibrarySetting,
   type ProjectLibrarySetting,
   type ProjectLibraryType,
@@ -35,7 +35,11 @@ interface ProjectLibrariesSettingInputProps {
   updateValue: (value: ProjectLibrarySetting[]) => void
   libraryTypeOptions?: readonly ProjectLibraryTypeOption[]
   selectableLibraryTypeOptions?: readonly ProjectLibraryTypeOption[]
-  canManageLibraries?: boolean
+  canAddLibraries?: boolean
+  canReorderLibraries?: boolean
+  canChangeLibraryType?: boolean
+  canEditLibraryDetails?: boolean
+  canRemoveLibrary?: (library: ProjectLibrarySetting) => boolean
 }
 
 export interface ProjectLibraryTypeOption {
@@ -323,7 +327,11 @@ export function ProjectLibrariesSettingInput({
   updateValue,
   libraryTypeOptions = [],
   selectableLibraryTypeOptions = libraryTypeOptions,
-  canManageLibraries = true,
+  canAddLibraries = true,
+  canReorderLibraries = true,
+  canChangeLibraryType = true,
+  canEditLibraryDetails = true,
+  canRemoveLibrary = () => true,
 }: ProjectLibrariesSettingInputProps) {
   const electron = typeof window === 'undefined' ? undefined : window.electron
   const [draftLibraries, setDraftLibraries] =
@@ -510,32 +518,38 @@ export function ProjectLibrariesSettingInput({
             const SettingsDetails =
               libraryTypeOptionForType(library.type, libraryTypeOptions)
                 ?.settingsDetails ?? DefaultProjectLibrarySettingsDetails
+            const canRemoveCurrentLibrary = canRemoveLibrary(library)
+            const showRemoveColumn = draftLibraries.some(canRemoveLibrary)
 
             return (
               <li
                 key={`${index}-${library.type}`}
                 className={`grid gap-2 rounded-sm border p-2 dark:border-chalkboard-80 ${
-                  canManageLibraries
+                  canReorderLibraries && showRemoveColumn
                     ? 'pl-1 md:grid-cols-[auto_auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)_auto]'
-                    : 'md:grid-cols-[auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)]'
+                    : canReorderLibraries
+                      ? 'pl-1 md:grid-cols-[auto_auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)]'
+                      : showRemoveColumn
+                        ? 'md:grid-cols-[auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)_auto]'
+                        : 'md:grid-cols-[auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)]'
                 } ${
                   dragOverLibraryIndex === index
                     ? 'border-primary bg-primary/5 dark:border-primary'
                     : 'border-chalkboard-30'
                 } ${draggedLibraryIndex === index ? 'opacity-60' : ''}`}
                 onDragOver={
-                  canManageLibraries
+                  canReorderLibraries
                     ? (event) => handleDragOver(event, index)
                     : undefined
                 }
                 onDrop={
-                  canManageLibraries
+                  canReorderLibraries
                     ? (event) => handleDrop(event, index)
                     : undefined
                 }
                 data-testid="project-library-row"
               >
-                {canManageLibraries && (
+                {canReorderLibraries && (
                   <button
                     type="button"
                     draggable
@@ -552,9 +566,13 @@ export function ProjectLibrariesSettingInput({
                 )}
                 <ProjectLibraryTypeSelect
                   value={library.type}
-                  options={selectableLibraryTypeOptions}
+                  options={
+                    canChangeLibraryType
+                      ? selectableLibraryTypeOptions
+                      : libraryTypeOptions
+                  }
                   onChange={(type) => updateLibraryType(index, type)}
-                  readOnly={!canManageLibraries}
+                  readOnly={!canChangeLibraryType}
                 />
                 <input
                   value={library.title}
@@ -588,34 +606,39 @@ export function ProjectLibrariesSettingInput({
                         : draftLibraries
                     )
                   }
-                  readOnly={!canManageLibraries}
+                  readOnly={!canEditLibraryDetails}
                   chooseDirectory={
-                    electron && canManageLibraries ? chooseDirectory : undefined
+                    electron && canEditLibraryDetails
+                      ? chooseDirectory
+                      : undefined
                   }
                 />
-                {canManageLibraries && (
-                  <ActionButton
-                    Element="button"
-                    type="button"
-                    tabIndex={0}
-                    onClick={() => removeLibrary(index)}
-                    className="justify-self-start !p-0 md:justify-self-end"
-                    iconStart={{
-                      icon: 'trash',
-                      bgClassName: '!bg-transparent',
-                      iconClassName: 'dark:!text-chalkboard-30',
-                    }}
-                    data-testid="project-library-remove"
-                  >
-                    <Tooltip position="top-right">Remove library</Tooltip>
-                  </ActionButton>
-                )}
+                {showRemoveColumn &&
+                  (canRemoveCurrentLibrary ? (
+                    <ActionButton
+                      Element="button"
+                      type="button"
+                      tabIndex={0}
+                      onClick={() => removeLibrary(index)}
+                      className="justify-self-start !p-0 md:justify-self-end"
+                      iconStart={{
+                        icon: 'trash',
+                        bgClassName: '!bg-transparent',
+                        iconClassName: 'dark:!text-chalkboard-30',
+                      }}
+                      data-testid="project-library-remove"
+                    >
+                      <Tooltip position="top-right">Remove library</Tooltip>
+                    </ActionButton>
+                  ) : (
+                    <span aria-hidden="true" />
+                  ))}
               </li>
             )
           })}
         </ul>
       )}
-      {canManageLibraries && (
+      {canAddLibraries && (
         <ActionButton
           Element="button"
           type="button"
