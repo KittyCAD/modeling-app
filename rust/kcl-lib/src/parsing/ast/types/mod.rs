@@ -1396,7 +1396,11 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::AscribedExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
-            Expr::SketchVar(_) => {}
+            Expr::SketchVar(expr) => {
+                if let Some(initial) = &mut expr.initial {
+                    initial.replace_value(source_range, new_value);
+                }
+            }
             Expr::None(_) => {}
         }
     }
@@ -1529,7 +1533,11 @@ impl Expr {
             Expr::SketchBlock(expr) => {
                 expr.rename_identifiers(old_name, new_name, excluded);
             }
-            Expr::SketchVar(_) => {}
+            Expr::SketchVar(expr) => {
+                if let Some(initial) = &mut expr.initial {
+                    initial.rename_identifiers(old_name, new_name, excluded);
+                }
+            }
             Expr::None(_) => {}
         }
     }
@@ -1863,7 +1871,7 @@ impl Block {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct SketchVar {
-    pub initial: Option<BoxNode<NumericLiteral>>,
+    pub initial: Option<Box<Expr>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]

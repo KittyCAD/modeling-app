@@ -29,7 +29,6 @@ use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
-use crate::parsing::ast::types::NumericLiteral;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::ObjectProperty;
 use crate::parsing::ast::types::Parameter;
@@ -433,14 +432,6 @@ impl Node<VariableDeclarator> {
     });
 }
 
-impl NumericLiteral {
-    fn digestable_id(&self) -> Vec<u8> {
-        let mut result: Vec<u8> = self.value.to_ne_bytes().into();
-        result.extend((self.suffix as u32).to_ne_bytes());
-        result
-    }
-}
-
 impl Node<Literal> {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.value.digestable_id());
@@ -637,8 +628,8 @@ impl Node<Block> {
 
 impl Node<SketchVar> {
     compute_digest!(|slf, hasher| {
-        if let Some(initial) = &slf.initial {
-            hasher.update(initial.digestable_id());
+        if let Some(initial) = &mut slf.initial {
+            hasher.update(initial.compute_digest());
         } else {
             hasher.update("no_initial");
         }
