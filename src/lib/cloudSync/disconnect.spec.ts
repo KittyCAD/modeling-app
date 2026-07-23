@@ -6,6 +6,7 @@ import {
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  moveCloudSyncProjectToDirectory,
   retryCloudSync,
   setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
@@ -161,6 +162,63 @@ function createTestFs(files: Map<string, string>) {
     '/documents/Projects',
     projectPath,
   ])
+  function normalizeDirectory(path: string) {
+    const normalizedPath = normalizePath(path)
+    return normalizedPath === '/'
+      ? normalizedPath
+      : normalizedPath.replace(/\/$/g, '')
+  }
+  function copyPath(sourcePath: string, targetPath: string) {
+    const normalizedSourcePath = normalizePath(sourcePath)
+    const normalizedTargetPath = normalizePath(targetPath)
+    if (directories.has(normalizedSourcePath)) {
+      directories.add(normalizedTargetPath)
+      for (const directory of Array.from(directories)) {
+        if (!directory.startsWith(`${normalizedSourcePath}/`)) {
+          continue
+        }
+        directories.add(
+          `${normalizedTargetPath}${directory.slice(normalizedSourcePath.length)}`
+        )
+      }
+      for (const [filePath, contents] of Array.from(files)) {
+        if (!filePath.startsWith(`${normalizedSourcePath}/`)) {
+          continue
+        }
+        files.set(
+          `${normalizedTargetPath}${filePath.slice(normalizedSourcePath.length)}`,
+          contents
+        )
+      }
+      return
+    }
+
+    const contents = files.get(normalizedSourcePath)
+    if (contents === undefined) {
+      throw new Error('ENOENT')
+    }
+    directories.add(normalizeDirectory(dirname(normalizedTargetPath)))
+    files.set(normalizedTargetPath, contents)
+  }
+  function removePath(path: string) {
+    const normalizedPath = normalizePath(path)
+    for (const directory of Array.from(directories)) {
+      if (
+        directory === normalizedPath ||
+        directory.startsWith(`${normalizedPath}/`)
+      ) {
+        directories.delete(directory)
+      }
+    }
+    for (const filePath of Array.from(files.keys())) {
+      if (
+        filePath === normalizedPath ||
+        filePath.startsWith(`${normalizedPath}/`)
+      ) {
+        files.delete(filePath)
+      }
+    }
+  }
   return {
     resolve: joinPaths,
     join: joinPaths,
@@ -181,7 +239,9 @@ function createTestFs(files: Map<string, string>) {
         return Promise.reject('ENOENT')
       }
     },
-    cp: async () => undefined,
+    cp: async (sourcePath: string, targetPath: string) => {
+      copyPath(sourcePath, targetPath)
+    },
     readFile: async (
       path: string,
       options?: { encoding?: string } | string
@@ -199,7 +259,10 @@ function createTestFs(files: Map<string, string>) {
       }
       return new TextEncoder().encode(contents)
     },
-    rename: async () => undefined,
+    rename: async (sourcePath: string, targetPath: string) => {
+      copyPath(sourcePath, targetPath)
+      removePath(sourcePath)
+    },
     writeFile: async (path: string, data: Uint8Array<ArrayBuffer>) => {
       files.set(normalizePath(path), new TextDecoder().decode(data))
     },
@@ -224,11 +287,7 @@ function createTestFs(files: Map<string, string>) {
       directories.add(normalizePath(path))
       return undefined
     },
-    rm: async (path: string) => {
-      const normalizedPath = normalizePath(path)
-      directories.delete(normalizedPath)
-      files.delete(normalizedPath)
-    },
+    rm: async (path: string) => removePath(path),
     detach: async () => undefined,
     attach: async () => undefined,
   } as IZooDesignStudioFS
@@ -481,5 +540,76 @@ describe('cloud sync upload failures', () => {
       lastFailureKind: 'remote-upload-forbidden',
       lastFailure: expect.stringContaining('does not have edit access'),
     })
+  })
+})
+
+describe('moveCloudSyncProjectToDirectory', () => {
+  beforeEach(async () => {
+    await deleteSyncDatabase()
+    installFetchMock()
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl: 'https://example.test',
+      environmentName: 'dev.zoo.dev',
+      projectDirectoryPath: '/documents/Projects',
+    })
+  })
+
+  afterEach(async () => {
+    configureCloudSyncEngine({ enabled: false })
+    vi.unstubAllGlobals()
+    await deleteSyncDatabase()
+  })
+
+  it('moves a cloud-linked local project and rewrites sync metadata', async () => {
+    const files = new Map([
+      [
+        projectTomlPath,
+        `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      ],
+      [`${projectPath}/main.kcl`, 'cube(1)'],
+    ])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    await seedLinkedProject()
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: `${projectPath}/main.kcl`,
+      createdAt: '2026-07-08T12:00:00.000Z',
+    })
+
+    await expect(
+      moveCloudSyncProjectToDirectory({
+        projectPath,
+        projectDirectoryPath: '/documents/Zoo/personal',
+      })
+    ).resolves.toEqual({
+      projectPath: '/documents/Zoo/personal/bracket',
+      projectName: 'bracket',
+      remoteProjectId,
+      remoteRevision,
+    })
+
+    expect(files.has(`${projectPath}/main.kcl`)).toBe(false)
+    expect(files.get('/documents/Zoo/personal/bracket/main.kcl')).toBe(
+      'cube(1)'
+    )
+    expect(await getCloudSyncProjectMetadata(projectPath)).toBeUndefined()
+    expect(
+      await getCloudSyncProjectMetadata('/documents/Zoo/personal/bracket')
+    ).toMatchObject({
+      localProjectPath: '/documents/Zoo/personal/bracket',
+      projectName: 'bracket',
+      remoteProjectId,
+      remoteRevision,
+    })
+    expect(await getAllOutboxEntries()).toEqual([
+      expect.objectContaining({
+        projectPath: '/documents/Zoo/personal/bracket',
+        kind: 'upsert',
+        targetPath: '/documents/Zoo/personal/bracket',
+        sourcePath: projectPath,
+      }),
+    ])
   })
 })

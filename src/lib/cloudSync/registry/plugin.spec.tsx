@@ -105,6 +105,11 @@ function createCloudSyncService(): CloudSyncRegistryService {
     setProjectScope: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
+    moveProjectToPersonalCloudLibrary: vi.fn().mockResolvedValue({
+      projectPath: '/some/path/local-project',
+      projectName: 'local-project',
+      remoteProjectId: 'remote-123',
+    }),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
     getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),

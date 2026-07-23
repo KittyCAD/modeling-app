@@ -14,11 +14,13 @@ import {
   getCloudSyncProjectModifiedTime,
   getCloudSyncRemoteProjectThumbnailUrl,
   installCloudSyncFileSystemObserver,
+  moveCloudSyncProjectToDirectory,
   resolveCloudSyncProjectConflict,
   retryCloudSync,
   setCloudSyncProjectScope,
   startCloudSyncProject,
 } from '@src/lib/cloudSync'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   type CloudSyncRegistryService,
   cloudSyncService,
@@ -74,6 +76,13 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     setProjectScope: setCloudSyncProjectScope,
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
+    moveProjectToPersonalCloudLibrary: (projectPath) =>
+      getDefaultCloudProjectDirectoryPath().then((projectDirectoryPath) =>
+        moveCloudSyncProjectToDirectory({
+          projectPath,
+          projectDirectoryPath,
+        })
+      ),
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

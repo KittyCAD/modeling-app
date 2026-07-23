@@ -53,7 +53,7 @@ import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
 
-function invalidateConfiguredProjectLibraryEntries() {
+export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
 }
 
