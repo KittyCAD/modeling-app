@@ -1,10 +1,6 @@
 import { describe, expect, test, vi } from 'vitest'
 
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
-import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'

@@ -24,7 +24,6 @@ import {
   retrieveHoleTypeArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
-import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import {
   SWEEP_CONSTANTS,
   SWEEP_MODULE,
@@ -118,21 +117,6 @@ function retrieveUnlabeledSelectionsForEdit(
   return isErr(selections)
     ? { graphSelections: [], otherSelections: [] }
     : selections
-}
-
-function getProfileFunctionFromOperationName(
-  operationName: string
-): ProfileGdtFunction | undefined {
-  switch (operationName) {
-    case 'gdt::profile':
-      return 'profile'
-    case 'gdt::profileLine':
-      return 'profileLine'
-    case 'gdt::profileSurface':
-      return 'profileSurface'
-    default:
-      return undefined
-  }
 }
 
 // Helper functions for argument extraction
