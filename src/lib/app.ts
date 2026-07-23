@@ -229,6 +229,7 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  private previousCloudSyncDesiredActive: boolean | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -645,13 +646,15 @@ export class App implements AppSubsystems {
    * library and replaces only the recognized default directory row.
    */
   private materializePersonalCloudLibraryOnEnable = (
-    snapshot: SnapshotFrom<typeof this.settings.actor>
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    options: { force?: boolean } = {}
   ) => {
     if (!snapshot.matches('idle')) {
       return false
     }
 
     const currentLibraries = snapshot.context.app.libraries?.current ?? []
+    const userLibraries = snapshot.context.app.libraries?.user
     const defaultDirectoryLibraryPaths = new Set(
       [
         snapshot.context.app.projectDirectory?.current,
@@ -667,6 +670,18 @@ export class App implements AppSubsystems {
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
       library.type === defaultCloudLibrary.type &&
       library.path === defaultCloudLibrary.path
+
+    if (
+      !options.force &&
+      userLibraries !== undefined &&
+      !userLibraries.some(isDefaultCloudLibrary)
+    ) {
+      // Product policy: an explicit user library list without Personal Cloud
+      // means the user removed it. Do not re-add it just because the plugin is
+      // active by default for feature-flagged users.
+      return false
+    }
+
     const shouldReplaceDirectoryLibraryOnWeb = (
       library: ProjectLibrarySetting
     ) =>
@@ -739,6 +754,7 @@ export class App implements AppSubsystems {
 
     const activePluginIds: string[] = []
     let shouldMaterializePersonalCloudLibrary = false
+    let shouldForceMaterializePersonalCloudLibrary = false
     let shouldSyncCloudSyncRuntimePolicy = cloudSyncDefaultChanged
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
@@ -763,6 +779,12 @@ export class App implements AppSubsystems {
           false
         )
       const desiredActive = settingDesiredActive && featureAllowsCloudSyncPlugin
+      if (plugin.id === CLOUD_SYNC_PLUGIN_ID) {
+        shouldForceMaterializePersonalCloudLibrary =
+          this.previousCloudSyncDesiredActive === false && desiredActive
+        this.previousCloudSyncDesiredActive = desiredActive
+      }
+
       if (desiredActive) {
         activePluginIds.push(plugin.id)
       }
@@ -797,7 +819,9 @@ export class App implements AppSubsystems {
     }
 
     if (shouldMaterializePersonalCloudLibrary) {
-      this.materializePersonalCloudLibraryOnEnable(snapshot)
+      this.materializePersonalCloudLibraryOnEnable(snapshot, {
+        force: shouldForceMaterializePersonalCloudLibrary,
+      })
     }
     if (shouldSyncCloudSyncRuntimePolicy) {
       this.syncCloudSyncRuntimePolicy()

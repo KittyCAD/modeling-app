@@ -361,15 +361,7 @@ describe('cloud sync project library', () => {
         icon: 'network',
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
       })
-      expect(registry.get(projectLibrariesValueSpec)).toEqual([
-        expect.objectContaining({
-          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-          title: 'Personal Cloud',
-          path: getDefaultCloudProjectLibrarySetting().path,
-          type: CLOUD_PROJECT_LIBRARY_TYPE,
-          icon: 'network',
-        }),
-      ])
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
 
       pluginToggle.disable()
 
@@ -421,6 +413,46 @@ describe('cloud sync project library', () => {
           order: 1,
         }),
       ])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not contribute Personal Cloud after it is removed from settings', () => {
+    const registry = new Registry()
+    const settings = createSettingsService({
+      libraries: [getDefaultCloudProjectLibrarySetting()],
+    })
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      registry.get(pluginService).enable()
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        }),
+      ])
+
+      settings.send({
+        type: 'set.app.libraries',
+        data: { value: [] },
+      })
+
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
     } finally {
       registry[Symbol.dispose]()
     }
