@@ -39,10 +39,7 @@ import {
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+import { type SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -62,6 +59,10 @@ import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engine
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  type ProjectStorageRegistryService,
+  projectStorageService,
+} from '@src/registry/contracts/projectStorage'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -139,6 +140,8 @@ export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
+export type AppProjectStorageSystem = ProjectStorageRegistryService
+
 export type AppDebug = {
   mlEphantManagerActor?: MlEphantManagerActor
 }
@@ -156,6 +159,7 @@ export interface AppSubsystems {
   userFeatures: AppUserFeaturesSystem
   layout: AppLayoutSystem
   registry: AppRegistrySystem
+  projectStorage: AppProjectStorageSystem
 }
 
 export class App implements AppSubsystems {
@@ -196,6 +200,8 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
+  /** Project storage and file-system event projection */
+  projectStorage: AppProjectStorageSystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -218,6 +224,7 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    this.projectStorage = subsystems.projectStorage
     this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
@@ -225,6 +232,7 @@ export class App implements AppSubsystems {
         app: this,
       },
     }).start()
+    this.projectStorage.connectActor(this.systemIOActor)
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -276,6 +284,7 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
+    const projectStorage = appRegistry.get(projectStorageService)
     const settingsActor = settings.actor
     const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
@@ -301,6 +310,7 @@ export class App implements AppSubsystems {
       userFeatures,
       layout,
       registry: appRegistry,
+      projectStorage,
     }
   }
 
@@ -367,10 +377,21 @@ export class App implements AppSubsystems {
         },
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
-          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          for (const replayFile of replayFiles) {
+            this.projectStorage.recordMutation({
+              kind:
+                replayFile.previousContent === null
+                  ? 'created'
+                  : replayFile.nextContent === null
+                    ? 'deleted'
+                    : 'updated',
+              path: replayFile.absolutePath,
+              projectPath: project.projectIORefSignal.value.path,
+              source: 'zookeeper-history',
             })
+          }
+          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
+            this.projectStorage.refreshProjectDirectory()
           }
         },
       })
