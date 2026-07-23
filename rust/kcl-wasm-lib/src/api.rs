@@ -626,6 +626,7 @@ impl Context {
 
     /// Edit an angle constraint in a sketch.
     #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
     pub async fn edit_angle_constraint(
         &self,
         version_json: &str,
