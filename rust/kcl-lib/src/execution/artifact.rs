@@ -454,6 +454,7 @@ pub struct SweepEdge {
 pub enum SweepEdgeSubType {
     Opposite,
     Adjacent,
+    PreviousAdjacent,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -2526,6 +2527,11 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
+            let adjacent_edge_ids = info
+                .edges
+                .iter()
+                .filter_map(|edge| edge.adjacent_info.as_ref().map(|info| info.edge_id))
+                .collect::<AHashSet<_>>();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
@@ -2604,6 +2610,34 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Sweep(new_sweep));
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                // Internal edges are already represented as the next adjacent edge of
+                // the preceding segment. Only add the open component's start edge.
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info
+                    && !adjacent_edge_ids.contains(&previous_adjacent_info.edge_id)
+                {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: previous_adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::PreviousAdjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: previous_adjacent_info
+                            .faces
+                            .iter()
+                            .map(|face| ArtifactId::new(*face))
+                            .collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![previous_adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
             }

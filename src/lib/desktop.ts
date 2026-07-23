@@ -36,6 +36,10 @@ import {
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
+  getDefaultDirectoryProjectLibraryPath,
+  isProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
+import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   preserveProjectTomlMetadataInProjectSettingsContents,
@@ -61,8 +65,20 @@ function getProjectSettingsSection(
 function getProjectDirectorySetting(
   config: DeepPartial<Configuration> | Configuration
 ): string | undefined {
+  const libraries = getProjectLibrarySettingsFromConfiguration(config)
+  if (libraries) {
+    return getDefaultDirectoryProjectLibraryPath(libraries)
+  }
+
   const directory = getProjectSettingsSection(config)?.directory
   return typeof directory === 'string' ? directory : undefined
+}
+
+function getProjectLibrarySettingsFromConfiguration(
+  config: DeepPartial<Configuration> | Configuration
+) {
+  const libraries = config.settings?.app?.libraries
+  return isProjectLibrarySettings(libraries) ? libraries : undefined
 }
 
 const convertIStatToFileMetadata = (

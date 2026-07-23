@@ -41,13 +41,15 @@ const cloudProject = {
 } satisfies HomeProjectEntry
 
 function createProjectActions({
+  canOpen = vi.fn(() => true),
   rename = vi.fn().mockResolvedValue(undefined),
 }: {
+  canOpen?: HomeProjectActionsService['canOpen']
   rename?: HomeProjectActionsService['rename']
 } = {}): HomeProjectActionsService {
   return {
-    canOpen: () => true,
     canDuplicate: () => true,
+    canOpen,
     canRename: () => true,
     canDelete: () => true,
     open: vi.fn().mockResolvedValue({
@@ -82,13 +84,8 @@ function renderProjectCard({
 }
 
 function clickRenameProject() {
-  const renameButton = screen.getByText('Rename project').closest('button')
-  expect(renameButton).not.toBeNull()
-  if (!renameButton) {
-    return
-  }
-
-  fireEvent.click(renameButton)
+  fireEvent.contextMenu(screen.getByTestId('project-link'))
+  fireEvent.click(screen.getByTestId('project-card-context-rename'))
 }
 
 function submitRenameProject() {
@@ -116,11 +113,9 @@ describe('ProjectCard', () => {
 
   test('duplicates a local project from its card action', async () => {
     const { projectActions } = renderProjectCard()
-    const duplicateButton = screen.getByRole('button', {
-      name: 'Duplicate project',
-    })
 
-    fireEvent.click(duplicateButton)
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
 
     await waitFor(() =>
       expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
@@ -258,6 +253,77 @@ describe('ProjectCard', () => {
     expect(screen.queryByTestId('cloud-conflict-badge')).not.toBeInTheDocument()
   })
 
+  test('shows project actions in the card context menu', () => {
+    renderProjectCard()
+
+    expect(screen.queryByText('Rename project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Delete project')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+
+    expect(screen.getByTestId('project-card-context-rename')).toHaveTextContent(
+      'Rename project'
+    )
+    expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
+      'Delete project'
+    )
+  })
+
+  test('selects the project title when opening rename from the context menu', async () => {
+    renderProjectCard()
+
+    clickRenameProject()
+
+    const input = screen.getByTestId('project-rename-input')
+    if (!(input instanceof HTMLInputElement)) {
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      return
+    }
+
+    await waitFor(() => expect(input).toHaveFocus())
+
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
     vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
     const projectActions = createProjectActions()
@@ -321,11 +387,43 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('opens the cloud conflict dialog from conflicted project cards', () => {
+  test('opens conflicted project cards without resolving cloud conflicts on Home', async () => {
+    const project = {
+      ...cloudProject,
+      status: 'conflicted',
+      conflict: {
+        conflictProjectPath: '/projects/old-cloud-title conflict',
+        createdAt: new Date(now).toISOString(),
+        remoteRevision: 'revision-123',
+      },
+    } satisfies HomeProjectEntry
+    const { projectActions } = renderProjectCard({
+      project,
+    })
+
+    expect(screen.getByTestId('cloud-conflict-badge')).toHaveTextContent(
+      'Cloud conflict'
+    )
+
+    fireEvent.click(screen.getByTestId('project-link'))
+
+    await waitFor(() =>
+      expect(projectActions.open).toHaveBeenCalledWith(project)
+    )
+    expect(
+      screen.queryByTestId('cloud-conflict-dialog')
+    ).not.toBeInTheDocument()
+  })
+
+  test('does not make conflict-only project cards openable from Home', () => {
+    const projectActions = createProjectActions()
+    vi.mocked(projectActions.canOpen).mockReturnValue(false)
     renderProjectCard({
+      projectActions,
       project: {
         ...cloudProject,
         status: 'conflicted',
+        defaultFile: undefined,
         conflict: {
           conflictProjectPath: '/projects/old-cloud-title conflict',
           createdAt: new Date(now).toISOString(),
@@ -335,13 +433,14 @@ describe('ProjectCard', () => {
     })
 
     expect(screen.getByTestId('cloud-conflict-badge')).toHaveTextContent(
-      'Inspect Conflicts'
+      'Cloud conflict'
     )
 
     fireEvent.click(screen.getByTestId('project-link'))
 
-    expect(screen.getByTestId('cloud-conflict-dialog')).toBeInTheDocument()
-    expect(screen.getByText('Use local data')).toBeInTheDocument()
-    expect(screen.getByText('Use cloud data')).toBeInTheDocument()
+    expect(projectActions.open).not.toHaveBeenCalled()
+    expect(
+      screen.queryByTestId('cloud-conflict-dialog')
+    ).not.toBeInTheDocument()
   })
 })

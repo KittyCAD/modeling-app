@@ -1,11 +1,14 @@
 import 'fake-indexeddb/auto'
 import {
   cloudSyncRemoteProjects,
+  cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
+  retryCloudSync,
+  setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
 import {
   appendOutboxEntry,
@@ -377,5 +380,117 @@ describe('disconnectCloudSyncProject', () => {
     expect(files.get(projectTomlPath)).toContain(
       `project_id = "${remoteProjectId}"`
     )
+  })
+})
+
+describe('cloud sync upload failures', () => {
+  beforeEach(async () => {
+    await deleteSyncDatabase()
+    installFetchMock()
+  })
+
+  afterEach(async () => {
+    setCloudSyncProjectScope(undefined)
+    configureCloudSyncEngine({ enabled: false })
+    vi.unstubAllGlobals()
+    await deleteSyncDatabase()
+  })
+
+  it('records a blocked upload failure when the remote project is readable but not writable', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'cube = 1'],
+      [
+        projectTomlPath,
+        `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      ],
+    ])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    await seedLinkedProject()
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: `${projectPath}/main.kcl`,
+      createdAt: '2026-07-08T12:00:00.000Z',
+    })
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+
+      if (url === remoteProjectUrl && method === 'GET') {
+        return new Response(
+          JSON.stringify({
+            id: remoteProjectId,
+            title: 'Bracket',
+            revision: remoteRevision,
+          }),
+          {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+      }
+
+      if (
+        url === `${remoteProjectUrl}?expected_revision=${remoteRevision}` &&
+        method === 'PUT'
+      ) {
+        return new Response(JSON.stringify({ message: 'Forbidden' }), {
+          status: 403,
+          statusText: 'Forbidden',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      }
+
+      return new Response(
+        JSON.stringify({ message: `Unexpected fetch: ${method} ${url}` }),
+        {
+          status: 500,
+          statusText: 'Unexpected fetch',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    })
+
+    configureCloudSyncEngine({
+      enabled: false,
+      baseUrl: 'https://example.test',
+      environmentName: 'dev.zoo.dev',
+      projectDirectoryPath: '/documents/Projects',
+    })
+    setCloudSyncProjectScope(projectPath)
+    configureCloudSyncEngine({ enabled: true })
+    retryCloudSync()
+    await vi.waitFor(() => {
+      expect(cloudSyncStatus.value.lastFailureKind).toBe(
+        'remote-upload-forbidden'
+      )
+    })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${remoteProjectUrl}?expected_revision=${remoteRevision}`,
+      expect.objectContaining({
+        credentials: 'include',
+        method: 'PUT',
+      })
+    )
+    await expect(getAllOutboxEntries()).resolves.toHaveLength(1)
+    const metadata = await getCloudSyncProjectMetadata(projectPath)
+    expect(metadata?.conflict).toBeUndefined()
+    expect(metadata?.lastFailure).toMatchObject({
+      kind: 'remote-upload-forbidden',
+      message: expect.stringContaining('does not have edit access'),
+    })
+    expect(cloudSyncStatus.value).toMatchObject({
+      state: 'failed',
+      activeProjectPath: projectPath,
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailure: expect.stringContaining('does not have edit access'),
+    })
   })
 })

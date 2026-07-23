@@ -9,7 +9,7 @@ import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   new_graph: {

@@ -110,7 +110,7 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#libraries')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')

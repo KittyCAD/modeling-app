@@ -1,23 +1,13 @@
 import { newKclFile } from '@src/lang/project'
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
-import {
-  cloudSyncStatus,
-  getCloudSyncProjectMetadataIndex,
-  getCloudSyncProjectModifiedTime,
-} from '@src/lib/cloudSync'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
-  MAX_PROJECT_NAME_LENGTH,
-  PROJECT_SETTINGS_FILE_NAME,
   ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
-  getProjectInfo,
-  mkdirOrNOOP,
   readAppSettingsFile,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -35,15 +25,11 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { FileEntry } from '@src/lib/project'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import {
-  getProjectDirectoryNameFromTitle,
-  getProjectTitleFromUniqueDirectoryName,
-  sanitizeProjectName,
-} from '@src/lib/projectName'
-import { getProjectTomlContents } from '@src/lib/projectToml'
-import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
+import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -60,8 +46,13 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
-import { v4 } from 'uuid'
-import { fromPromise, waitFor } from 'xstate'
+import { fromPromise } from 'xstate'
+
+export {
+  shouldSendProjectFolderReadProgress,
+  sortProjectDirectoryEntriesByModifiedDesc,
+} from '@src/lib/projectDirectoryScanner'
+export { getDuplicateProjectBaseName } from '@src/lib/projectDuplication'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -162,102 +153,6 @@ async function getUniqueProjectNameForCreate({
   return getUniqueProjectName(requestedProjectName, existingEntries)
 }
 
-async function getAvailableDuplicateProjectNames({
-  context,
-  requestedProjectTitle,
-  fallbackProjectDirectoryName,
-  projectDirectoryPath,
-}: {
-  context: SystemIOContext
-  requestedProjectTitle: string
-  fallbackProjectDirectoryName: string
-  projectDirectoryPath: string
-}) {
-  const unavailableTitles = new Set(
-    (context.folders ?? []).map((folder) =>
-      getProjectDisplayName(folder).toLowerCase()
-    )
-  )
-  const unavailableDirectoryNames = new Set(
-    (context.folders ?? []).map((folder) => folder.name.toLowerCase())
-  )
-  for (const entryName of await getProjectDirectoryEntryNames(
-    projectDirectoryPath
-  )) {
-    unavailableDirectoryNames.add(entryName.toLowerCase())
-  }
-
-  const projectDirectoryPrefix = `${normalizeProjectPathForCloudMetadata(
-    projectDirectoryPath
-  )}/`
-  const cloudProjectMetadataByPath = await getCloudSyncProjectMetadataIndex()
-  for (const metadataPath of cloudProjectMetadataByPath.keys()) {
-    const normalizedPath = normalizeProjectPathForCloudMetadata(metadataPath)
-    if (!normalizedPath.startsWith(projectDirectoryPrefix)) continue
-    const relativePath = normalizedPath.slice(projectDirectoryPrefix.length)
-    if (relativePath && !relativePath.includes('/')) {
-      unavailableDirectoryNames.add(relativePath.toLowerCase())
-    }
-  }
-
-  const requestedProjectDirectoryName = getDuplicateProjectBaseName(
-    getProjectDirectoryNameFromTitle(
-      requestedProjectTitle,
-      fallbackProjectDirectoryName
-    ),
-    fallbackProjectDirectoryName
-  )
-
-  for (let index = 1; ; index += 1) {
-    const suffix = `-${index}`
-    const baseLength = MAX_PROJECT_NAME_LENGTH - suffix.length
-    const title = `${requestedProjectTitle.slice(0, baseLength)}${suffix}`
-    const name = `${requestedProjectDirectoryName.slice(0, baseLength)}${suffix}`
-    if (
-      !unavailableTitles.has(title.toLowerCase()) &&
-      !unavailableDirectoryNames.has(name.toLowerCase())
-    ) {
-      return { name, title }
-    }
-  }
-}
-
-export function getDuplicateProjectBaseName(name: string, fallback: string) {
-  let sanitized = sanitizeProjectName(name, fallback)
-  if (fsZds.sep === '\\') {
-    sanitized = sanitized
-      .replace(/[<>:"|?*\u0000-\u001f]/g, '-')
-      .replace(/[. ]+$/g, '')
-  }
-  const windowsDeviceName = sanitized.match(
-    /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i
-  )
-  if (windowsDeviceName) {
-    sanitized = `${windowsDeviceName[1]}-project${windowsDeviceName[2] ?? ''}`
-  }
-  return sanitized.startsWith('.') || !sanitized ? fallback : sanitized
-}
-
-export function shouldSendProjectFolderReadProgress(
-  folders: SystemIOContext['folders']
-) {
-  return !folders?.length
-}
-
-type ProjectDirectoryEntry = {
-  name: string
-  path: string
-  modified: number
-}
-
-export function sortProjectDirectoryEntriesByModifiedDesc(
-  entries: ProjectDirectoryEntry[]
-) {
-  return entries.toSorted(
-    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
-  )
-}
-
 function normalizeProjectPathForCloudMetadata(projectPath: string) {
   return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
@@ -280,7 +175,6 @@ async function runWithProjectTargetLock<T>(
     operation
   )
 }
-
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
@@ -535,100 +429,23 @@ export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context, signal }) => {
-        const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
-        const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
-        const canSendProgress = shouldSendProjectFolderReadProgress(
-          context.folders
-        )
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        const sendFoldersProgress = (folders: Project[]) => {
-          if (signal.aborted) {
-            return
-          }
-          context.app.systemIOActor.send({
-            type: SystemIOMachineEvents.setFolders,
-            data: { folders },
-          })
-        }
 
-        await mkdirOrNOOP(projectDirectoryPath)
-        const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
-          ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
-          : new Map()
-        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries: ProjectDirectoryEntry[] = []
-        for (const entry of await fsZds.readdir(projectDirectoryPath)) {
-          if (entry.startsWith('.')) {
-            continue
-          }
-
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
-          let stat: Awaited<ReturnType<typeof fsZds.stat>>
-          try {
-            stat = await fsZds.stat(projectPath)
-          } catch {
-            continue
-          }
-          if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
-            continue
-          }
-
-          entries.push({
-            name: entry,
-            path: projectPath,
-            modified:
-              getCloudSyncProjectModifiedTime(
-                cloudProjectMetadataByPath.get(
-                  normalizeProjectPathForCloudMetadata(projectPath)
-                ),
-                stat.mtimeMs
-              ) ?? stat.mtimeMs,
-          })
-        }
-        const { value: canReadWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
-
-        for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
-          entries
-        )) {
-          if (signal.aborted) {
-            return projects
-          }
-          const project: Project = await getProjectInfo(
-            entry.path,
-            await context.wasmInstancePromise
-          )
-          const cloudMetadata = cloudProjectMetadataByPath.get(
-            normalizeProjectPathForCloudMetadata(entry.path)
-          )
-          project.cloudProjectId ??= cloudMetadata?.remoteProjectId
-          project.cloudConflict = cloudMetadata?.conflict
-          if (project.metadata) {
-            project.metadata.modified = getCloudSyncProjectModifiedTime(
-              cloudMetadata,
-              project.metadata.modified
-            )
-          }
-          if (
-            project.kcl_file_count === 0 &&
-            project.readWriteAccess &&
-            canReadWriteProjectDirectory
-          ) {
-            continue
-          }
-          projects.push(project)
-          if (
-            canSendProgress &&
-            projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0
-          ) {
-            sendFoldersProgress([...projects])
-          }
-        }
-        sendFoldersProgress(projects)
-        return projects
+        return readProjectsFromProjectDirectory({
+          projectDirectoryPath,
+          wasmInstancePromise: context.wasmInstancePromise,
+          previousProjects: context.folders,
+          signal,
+          onProgress: (folders) => {
+            context.app.systemIOActor.send({
+              type: SystemIOMachineEvents.setFolders,
+              data: { folders },
+            })
+          },
+        })
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -711,124 +528,24 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        const rawProjectDirectoryPath = input.context.projectDirectoryPath
-        if (rawProjectDirectoryPath === NO_PROJECT_DIRECTORY) {
+        const projectDirectoryPath = input.context.projectDirectoryPath
+        if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return Promise.reject(
             new Error('Unable to determine the project directory.')
           )
         }
-        const projectDirectoryPath = fsZds.resolve(rawProjectDirectoryPath)
-
-        try {
-          await fsZds.access(
-            project.path,
-            fsZdsConstants.R_OK | fsZdsConstants.X_OK
-          )
-        } catch {
-          return Promise.reject(
-            new Error(
-              `Project "${getProjectDisplayName(project)}" cannot be read`
-            )
-          )
-        }
-        const { value: canWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
-        if (!canWriteProjectDirectory) {
-          return Promise.reject(
-            new Error('The project directory cannot be written to.')
-          )
-        }
-
-        const currentProject = input.context.app.project
-        if (
-          currentProject &&
-          fsZds.resolve(currentProject.path) === fsZds.resolve(project.path)
-        ) {
-          await waitFor(input.context.app.settings.actor, (state) =>
-            state.matches('idle')
-          )
-          await Promise.all(
-            Array.from(currentProject.editors.values(), (editor) =>
-              editor.flushPendingWriteToFile()
-            )
-          )
-          await flushActiveTextFileWrite({ throwOnError: true })
-        }
-
-        const requestedProjectTitle =
-          input.requestedProjectName.trim() || getProjectDisplayName(project)
-        const duplicateProjectNames = await getAvailableDuplicateProjectNames({
-          context: input.context,
-          requestedProjectTitle,
-          fallbackProjectDirectoryName: project.name,
+        return duplicateProjectInDirectory({
+          app: input.context.app,
+          source: {
+            directoryName: project.name,
+            displayName: getProjectDisplayName(project),
+            path: project.path,
+          },
           projectDirectoryPath,
+          requestedProjectTitle: input.requestedProjectName,
+          unavailableProjectTitles: folders.map(getProjectDisplayName),
+          wasmInstance: await input.context.wasmInstancePromise,
         })
-        const duplicateName = duplicateProjectNames.name
-        const targetPath = fsZds.resolve(projectDirectoryPath, duplicateName)
-        if (
-          fsZds.dirname(targetPath) !== projectDirectoryPath ||
-          (await pathExists(targetPath))
-        ) {
-          return Promise.reject(
-            new Error(`Project "${duplicateName}" already exists`)
-          )
-        }
-
-        const wasmInstance = await input.context.wasmInstancePromise
-        const projectToml = await getProjectTomlContents({
-          projectPath: project.path,
-          wasmInstance,
-        })
-        if (isErr(projectToml)) {
-          return Promise.reject(projectToml)
-        }
-        const duplicatedProjectToml = prepareProjectTomlForDuplication(
-          projectToml,
-          duplicateProjectNames.title,
-          v4()
-        )
-        if (isErr(duplicatedProjectToml)) {
-          return Promise.reject(duplicatedProjectToml)
-        }
-
-        const stagingPath = fsZds.join(
-          projectDirectoryPath,
-          `.zds-duplicate-${v4()}`
-        )
-        try {
-          await fsZds.cp(project.path, stagingPath, {
-            recursive: true,
-            makeWritable: true,
-            verbatimSymlinks: true,
-          })
-          const stagedProjectTomlPath = fsZds.join(
-            stagingPath,
-            PROJECT_SETTINGS_FILE_NAME
-          )
-          await fsZds.rm(stagedProjectTomlPath, { force: true })
-          await fsZds.writeFile(
-            stagedProjectTomlPath,
-            new TextEncoder().encode(duplicatedProjectToml)
-          )
-          await runWithProjectTargetLock(targetPath, async () => {
-            if (await pathExists(targetPath)) {
-              return Promise.reject(
-                new Error(`Project "${duplicateName}" already exists`)
-              )
-            }
-            await fsZds.rename(stagingPath, targetPath)
-          })
-        } catch (error) {
-          await fsZds
-            .rm(stagingPath, { recursive: true, force: true })
-            .catch(() => undefined)
-          return Promise.reject(error)
-        }
-
-        return {
-          message: `Successfully duplicated "${getProjectDisplayName(project)}" as "${duplicateProjectNames.title}"`,
-          name: duplicateName,
-        }
       }
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(

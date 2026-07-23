@@ -28,6 +28,7 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -36,6 +37,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
@@ -45,7 +47,6 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,
@@ -305,7 +306,7 @@ const Home = () => {
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (
@@ -558,6 +559,8 @@ function HomeHeader({
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const defaultDirectoryLibraryPath =
+    getDefaultDirectoryProjectLibraryPath(settings.app.libraries.current) || ''
 
   return (
     <section {...rest}>
@@ -619,10 +622,10 @@ function HomeHeader({
         Loaded from{' '}
         <Link
           data-testid="project-directory-settings-link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
           className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
         >
-          {settings.app.projectDirectory.current}
+          {defaultDirectoryLibraryPath}
         </Link>
         .
       </p>
@@ -633,10 +636,10 @@ function HomeHeader({
               <p className="">{errorMessage(readWriteProjectDir.error)}</p>
               <Link
                 data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
+                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
                 className="py-1 text-white underline underline-offset-2 text-sm"
               >
-                Change Project Directory
+                Change Projects Library
               </Link>
             </div>
           </div>

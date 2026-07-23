@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart fail_user_defined_error.kcl
+extension: md
+snapshot_kind: binary
+---

@@ -19,7 +19,7 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 
-#[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
+#[wasm_bindgen(module = "/../../src/lib/engineConnection/connectionManager.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
@@ -53,6 +53,12 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct ResponseContext {
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
+}
+
+impl Default for ResponseContext {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[wasm_bindgen]
@@ -161,7 +167,9 @@ impl WasmTransport {
 }
 
 // Safety: WebAssembly runs this transport on the browser's single thread.
+#[expect(unsafe_code)]
 unsafe impl Send for WasmTransport {}
+#[expect(unsafe_code)]
 unsafe impl Sync for WasmTransport {}
 
 #[async_trait::async_trait]

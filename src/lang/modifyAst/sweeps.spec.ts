@@ -43,7 +43,7 @@ import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -534,6 +534,41 @@ extrude001 = extrude(region001, length = 1)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should edit an extrude call with an inline region selection', async () => {
+      const code = `${triangleRegion}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 1)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const region = [...artifactGraph.values()].findLast(
+        (artifact) => artifact.type === 'path'
+      )
+      const sketches = createSelectionFromArtifacts([region!], artifactGraph)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(region(point = [1mm, 1mm], sketch = s), length = 2)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a multi-profile extrude call on a profile and a cap', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -927,8 +962,65 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       expect(error).not.toBeInstanceOf(Error)
     })
 
+    it('should add a surface extrude from the previous edge of an open profile', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const previousAdjacentEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'previousAdjacent'
+      )
+      if (!previousAdjacentEdge) {
+        throw new Error('previous adjacent sweepEdge artifact not found')
+      }
+
+      const sketches = createSelectionFromArtifacts(
+        [previousAdjacentEdge],
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '5',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toBe(`@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+extrude002 = extrude(
+  getPreviousAdjacentEdge(extrude001.sketch.tags.line1),
+  length = 5,
+  method = NEW,
+  bodyType = SURFACE,
+)
+`)
+    })
+
     it('should preserve method and compose edge references for extruded edge profiles', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
@@ -1032,7 +1124,7 @@ extrude002 = extrude(
     })
 
     it('should use edge expressions for extrude direction body edge selections', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
