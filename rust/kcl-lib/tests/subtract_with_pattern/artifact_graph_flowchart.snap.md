@@ -60,25 +60,7 @@ flowchart LR
   33["SweepEdge Adjacent"]
   34["Pattern Transform<br>[469, 639, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  36["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  37["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  38["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  39["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  40["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  41["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  42["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  43["Sweep Extrusion<br>[469, 639, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  44["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
+  35["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -88,7 +70,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 9
-  2 --- 44
+  2 --- 35
   3 --- 13
   3 x--> 14
   3 --- 22
@@ -140,16 +122,7 @@ flowchart LR
   25 --- 27
   25 ---- 28
   25 --- 34
-  25 <---x 35
-  25 <---x 36
-  25 <---x 37
-  25 <---x 38
-  25 <---x 39
-  25 <---x 40
-  25 <---x 41
-  25 <---x 42
-  25 <---x 43
-  25 --- 44
+  25 --- 35
   26 --- 29
   26 x--> 30
   26 --- 32
@@ -163,22 +136,4 @@ flowchart LR
   29 --- 32
   29 --- 33
   32 <--x 31
-  34 x--> 35
-  34 x--> 36
-  34 x--> 37
-  34 x--> 38
-  34 x--> 39
-  34 x--> 40
-  34 x--> 41
-  34 x--> 42
-  34 x--> 43
-  35 <--x 44
-  36 <--x 44
-  37 <--x 44
-  38 <--x 44
-  39 <--x 44
-  40 <--x 44
-  41 <--x 44
-  42 <--x 44
-  43 <--x 44
 ```

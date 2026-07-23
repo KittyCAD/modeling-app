@@ -45,10 +45,6 @@ flowchart LR
   24["SweepEdge Adjacent"]
   25["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
-  26["Sweep Extrusion<br>[301, 355, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
-  27["Sweep Extrusion<br>[301, 355, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
   1 --- 2
   1 --- 3
   3 --- 4
@@ -59,8 +55,6 @@ flowchart LR
   3 --- 9
   3 ---- 10
   3 --- 25
-  3 <---x 26
-  3 <---x 27
   5 --- 11
   5 x--> 15
   5 --- 17
@@ -108,6 +102,4 @@ flowchart LR
   19 <--x 16
   21 <--x 16
   23 <--x 16
-  25 x--> 26
-  25 x--> 27
 ```

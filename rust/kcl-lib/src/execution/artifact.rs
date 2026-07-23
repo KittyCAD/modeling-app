@@ -1510,6 +1510,27 @@ fn pattern_source_ids(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: Art
     unique
 }
 
+fn pattern_source_body_id_for_copy(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    copy_id: ArtifactId,
+) -> Option<ArtifactId> {
+    artifacts.values().find_map(|artifact| {
+        let Artifact::Pattern(pattern) = artifact else {
+            return None;
+        };
+        if !pattern.copy_ids.contains(&copy_id) {
+            return None;
+        }
+
+        pattern_source_ids(artifacts, pattern.source_id).into_iter().find(|id| {
+            matches!(
+                artifacts.get(id),
+                Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+            )
+        })
+    })
+}
+
 fn pattern_artifact_updates(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     pattern_id: ArtifactId,
@@ -1532,10 +1553,6 @@ fn pattern_artifact_updates(
         .collect::<Vec<_>>();
 
     let source_ids = pattern_source_ids(artifacts, source_id);
-    let source_body = source_ids.iter().find_map(|source_id| match artifacts.get(source_id) {
-        Some(artifact @ (Artifact::Sweep(_) | Artifact::CompositeSolid(_))) => Some(artifact),
-        _ => None,
-    });
     let mut return_arr = vec![Artifact::Pattern(Pattern {
         id: pattern_id,
         sub_type,
@@ -1543,40 +1560,8 @@ fn pattern_artifact_updates(
         copy_ids,
         copy_face_ids,
         copy_edge_ids,
-        code_ref: code_ref.clone(),
+        code_ref,
     })];
-
-    // Pattern copies are top-level engine bodies, but the Pattern artifact
-    // alone only records their IDs. Materialize a body artifact for each copy
-    // so later operations such as clone() can resolve the copy by engine ID.
-    if let Some(source_body) = source_body {
-        for face_edge_info in face_edge_infos {
-            let copy_id = ArtifactId::new(face_edge_info.object_id);
-            match source_body {
-                Artifact::Sweep(source) => {
-                    let mut copy = source.clone();
-                    copy.id = copy_id;
-                    copy.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
-                    copy.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
-                    copy.code_ref = code_ref.clone();
-                    copy.consumed = false;
-                    copy.pattern_ids = Vec::new();
-                    return_arr.push(Artifact::Sweep(copy));
-                }
-                Artifact::CompositeSolid(source) => {
-                    let mut copy = source.clone();
-                    copy.id = copy_id;
-                    copy.consumed = false;
-                    copy.output_index = None;
-                    copy.code_ref = code_ref.clone();
-                    copy.composite_solid_id = None;
-                    copy.pattern_ids = Vec::new();
-                    return_arr.push(Artifact::CompositeSolid(copy));
-                }
-                _ => {}
-            }
-        }
-    }
 
     for source_id in source_ids {
         let Some(artifact) = artifacts.get(&source_id) else {
@@ -2238,7 +2223,16 @@ fn artifacts_to_update(
                 .unwrap_or(source_entity_id);
             let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
-            let Some(source_artifact) = artifacts.get(&source_id) else {
+            // Pattern copies are represented by their owning Pattern rather
+            // than eagerly materialized body artifacts. Resolve the source
+            // body only when a copy is actually cloned.
+            let pattern_source_body_id = if artifacts.contains_key(&source_id) {
+                None
+            } else {
+                pattern_source_body_id_for_copy(artifacts, source_id)
+            };
+            let source_artifact_id = pattern_source_body_id.unwrap_or(source_id);
+            let Some(source_artifact) = artifacts.get(&source_artifact_id) else {
                 return Ok(Vec::new());
             };
 
@@ -2248,45 +2242,26 @@ fn artifacts_to_update(
             // distinct result ID, allowing its Path and Sweep to coexist.
             entity_id_map.insert(source_entity_id, id);
             entity_id_map.insert(source_id, result_id);
-
-            // A materialized pattern copy contains the copy's face and edge
-            // IDs, while its structural Wall/Cap/SweepEdge artifacts remain
-            // attached to the pattern's source body. Map that body to the
-            // clone result so those structural artifacts can be cloned only
-            // when the copy itself is cloned.
-            let pattern_source_body_id = artifacts.values().find_map(|artifact| {
-                let Artifact::Pattern(pattern) = artifact else {
-                    return None;
-                };
-                if !pattern.copy_ids.contains(&source_id) {
-                    return None;
-                }
-                pattern_source_ids(artifacts, pattern.source_id).into_iter().find(|id| {
-                    matches!(
-                        artifacts.get(id),
-                        Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
-                    )
-                })
-            });
-            if let Some(pattern_source_body_id) = pattern_source_body_id {
-                entity_id_map.insert(pattern_source_body_id, result_id);
-            }
+            entity_id_map.insert(source_artifact_id, result_id);
 
             let mut cloned_artifacts = Vec::new();
-            cloned_artifacts.push(remap_artifact_for_clone(
+            let mut cloned_source = remap_artifact_for_clone(
                 source_artifact,
                 &entity_id_map,
                 &code_ref,
                 artifact_command.cmd_id,
-                source_id,
-            ));
+                source_artifact_id,
+            );
+            if pattern_source_body_id.is_some()
+                && let Artifact::Sweep(sweep) = &mut cloned_source
+            {
+                sweep.source_sweep_id = Some(source_id);
+            }
+            cloned_artifacts.push(cloned_source);
 
             for artifact in artifacts.values() {
                 let artifact_id = artifact.id();
-                if artifact_id == source_id
-                    || Some(artifact_id) == pattern_source_body_id
-                    || !entity_id_map.contains_key(&artifact_id)
-                {
+                if artifact_id == source_artifact_id || !entity_id_map.contains_key(&artifact_id) {
                     continue;
                 }
                 cloned_artifacts.push(remap_artifact_for_clone(
@@ -2294,7 +2269,7 @@ fn artifacts_to_update(
                     &entity_id_map,
                     &code_ref,
                     artifact_command.cmd_id,
-                    source_id,
+                    source_artifact_id,
                 ));
             }
 

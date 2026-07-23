@@ -693,6 +693,7 @@ clonedCopy = clone(patternCopy)
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
         assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
         assert_ne!(pattern_copy.id, cloned_copy.id);
+        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
             Some(Artifact::CompositeSolid(_))
@@ -888,6 +889,7 @@ clonedCopy = clone(patternCopy)
         let cloned_sketch = cloned_copy.sketch().expect("Expected cloned copy to have a sketch");
         assert_eq!(pattern_copy.original_id(), source.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
+        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
 
         let pattern_wall = pattern_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
         let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();

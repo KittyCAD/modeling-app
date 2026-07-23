@@ -122,20 +122,14 @@ flowchart LR
   67["SweepEdge Adjacent"]
   68["Pattern Circular<br>[1107, 1272, 0]<br>Copies: 3<br>Faces: 150<br>Edges: 432"]
     %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  69["Sweep ExtrusionTwist<br>[1107, 1272, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  70["Sweep ExtrusionTwist<br>[1107, 1272, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  71["Sweep ExtrusionTwist<br>[1107, 1272, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  72["StartSketchOnPlane<br>[884, 937, 16]"]
+  69["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  73["StartSketchOnPlane<br>[884, 937, 16]"]
+  70["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  74["StartSketchOnPlane<br>[884, 937, 16]"]
+  71["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   1 --- 2
-  1 <--x 72
+  1 <--x 69
   2 --- 3
   2 --- 4
   2 --- 5
@@ -162,7 +156,7 @@ flowchart LR
   15 --- 19
   18 <--x 17
   20 --- 21
-  20 <--x 73
+  20 <--x 70
   21 --- 22
   21 --- 23
   21 --- 24
@@ -217,7 +211,7 @@ flowchart LR
   40 <--x 35
   42 <--x 35
   44 --- 45
-  44 <--x 74
+  44 <--x 71
   45 --- 46
   45 --- 47
   45 --- 48
@@ -227,9 +221,6 @@ flowchart LR
   45 --- 52
   45 ---- 53
   45 --- 68
-  45 <---x 69
-  45 <---x 70
-  45 <---x 71
   47 --- 55
   47 x--> 58
   47 --- 62
@@ -276,7 +267,4 @@ flowchart LR
   62 <--x 59
   64 <--x 59
   66 <--x 59
-  68 x--> 69
-  68 x--> 70
-  68 x--> 71
 ```

@@ -1072,17 +1072,7 @@ fn pattern_artifact_links_to_source_geometry() {
     assert!(updated.iter().any(|artifact| {
         matches!(artifact, Artifact::Sweep(sweep) if sweep.id == sweep_id && sweep.pattern_ids == vec![pattern_id])
     }));
-    assert!(updated.iter().any(|artifact| {
-        matches!(
-            artifact,
-            Artifact::Sweep(sweep)
-                if sweep.id == ArtifactId::new(copy_id)
-                    && sweep.surface_ids == vec![ArtifactId::new(copy_wall_id), ArtifactId::new(copy_cap_id)]
-                    && sweep.edge_ids == vec![ArtifactId::new(copy_edge_id)]
-                    && !sweep.consumed
-                    && sweep.pattern_ids.is_empty()
-        )
-    }));
+    assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
     assert!(
         !updated
             .iter()
@@ -1091,7 +1081,7 @@ fn pattern_artifact_links_to_source_geometry() {
 }
 
 #[test]
-fn pattern_artifact_materializes_composite_solid_copies() {
+fn pattern_artifact_does_not_materialize_composite_solid_copies() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let pattern_id = ArtifactId::new(Uuid::new_v4());
     let copy_id = Uuid::new_v4();
@@ -1128,24 +1118,23 @@ fn pattern_artifact_materializes_composite_solid_copies() {
         CodeRef::placeholder(SourceRange::synthetic()),
     );
 
-    let Some(Artifact::CompositeSolid(copy)) = updated
-        .iter()
-        .find(|artifact| artifact.id() == ArtifactId::new(copy_id))
-    else {
-        panic!("Expected a materialized composite solid pattern copy");
-    };
-    assert!(!copy.consumed);
-    assert_eq!(copy.output_index, None);
-    assert_eq!(copy.composite_solid_id, None);
-    assert!(copy.pattern_ids.is_empty());
+    assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::CompositeSolid(source)
+                if source.id == source_id && source.pattern_ids == vec![pattern_id]
+        )
+    }));
 }
 
 #[test]
-fn entity_clone_resolves_materialized_pattern_copy() {
+fn entity_clone_resolves_pattern_copy_lazily() {
     let source_path_id = ArtifactId::new(Uuid::new_v4());
     let source_sweep_id = ArtifactId::new(Uuid::new_v4());
     let source_wall_id = ArtifactId::new(Uuid::new_v4());
     let source_cap_id = ArtifactId::new(Uuid::new_v4());
+    let source_edge_id = ArtifactId::new(Uuid::new_v4());
     let pattern_id = ArtifactId::new(Uuid::new_v4());
     let copy_id = Uuid::new_v4();
     let copy_face_id = Uuid::new_v4();
@@ -1164,7 +1153,7 @@ fn entity_clone_resolves_materialized_pattern_copy() {
             sub_type: SweepSubType::Extrusion,
             path_id: source_path_id,
             surface_ids: vec![source_wall_id, source_cap_id],
-            edge_ids: Vec::new(),
+            edge_ids: vec![source_edge_id],
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -1183,6 +1172,18 @@ fn entity_clone_resolves_materialized_pattern_copy() {
             path_ids: Vec::new(),
             face_code_ref: code_ref.clone(),
             cmd_id: Uuid::new_v4(),
+        }),
+    );
+    artifacts.insert(
+        source_edge_id,
+        Artifact::SweepEdge(SweepEdge {
+            id: source_edge_id,
+            sub_type: SweepEdgeSubType::Opposite,
+            seg_id: ArtifactId::new(Uuid::new_v4()),
+            cmd_id: Uuid::new_v4(),
+            index: 0,
+            sweep_id: source_sweep_id,
+            common_surface_ids: vec![source_wall_id, source_cap_id],
         }),
     );
     artifacts.insert(
@@ -1215,6 +1216,7 @@ fn entity_clone_resolves_materialized_pattern_copy() {
     ) {
         merge_artifact_into_map(&mut artifacts, update);
     }
+    assert!(!artifacts.contains_key(&ArtifactId::new(copy_id)));
 
     let artifact_command = ArtifactCommand {
         cmd_id: clone_id,
@@ -1233,6 +1235,7 @@ fn entity_clone_resolves_materialized_pattern_copy() {
     clone_id_map.insert(ArtifactId::new(copy_edge_id), cloned_edge_id);
     clone_id_map.insert(source_wall_id, cloned_face_id);
     clone_id_map.insert(source_cap_id, cloned_cap_id);
+    clone_id_map.insert(source_edge_id, cloned_edge_id);
     let entity_clone_id_maps = AHashMap::from_iter([(clone_id, clone_id_map)]);
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -1273,6 +1276,14 @@ fn entity_clone_resolves_materialized_pattern_copy() {
             Artifact::Cap(cap)
                 if cap.id == cloned_cap_id
                     && cap.sweep_id == ArtifactId::new(clone_id)
+        )
+    }));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::SweepEdge(edge)
+                if edge.id == cloned_edge_id
+                    && edge.sweep_id == ArtifactId::new(clone_id)
         )
     }));
 }
