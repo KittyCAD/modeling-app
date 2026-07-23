@@ -16,6 +16,8 @@ export type {
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
   ProjectMetadata as CloudSyncProjectMetadata,
+  ProjectSyncFailure,
+  ProjectSyncFailureKind,
 } from '@src/lib/cloudSync/types'
 
 let fsObserverInstalled = false

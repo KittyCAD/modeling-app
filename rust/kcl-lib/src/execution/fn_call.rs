@@ -1185,9 +1185,9 @@ fn coerce_result_type(
     // result shape violates the function's declared contract.
     if ty.subtype(&RuntimeType::never()) {
         let message = if result.is_some() {
-            "This function is declared to return `never`, but it returned a value."
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         } else {
-            "This function is declared to return `never`, but it completed without returning a value."
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         };
         return Err(KclError::new_type(KclErrorDetails::new(
             message.to_owned(),
@@ -1230,6 +1230,14 @@ mod test {
     use crate::parsing::ast::types::Identifier;
     use crate::parsing::ast::types::Parameter;
     use crate::parsing::ast::types::Program;
+
+    fn source_texts<'a>(program: &'a str, error: &KclError) -> Vec<&'a str> {
+        error
+            .source_ranges()
+            .into_iter()
+            .map(|range| &program[range.start()..range.end()])
+            .collect()
+    }
 
     fn get_var(result: &ExecTestResults, name: &str) -> KclValue {
         result
@@ -1475,7 +1483,7 @@ bad()
         assert!(matches!(&err, KclError::Type { .. }));
         assert_eq!(
             err.message(),
-            "This function is declared to return `never`, but it returned a value."
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         );
     }
 
@@ -1493,7 +1501,7 @@ alsoBad()
         assert!(matches!(&err, KclError::Type { .. }));
         assert_eq!(
             err.message(),
-            "This function is declared to return `never`, but it completed without returning a value."
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         );
     }
 
@@ -1511,7 +1519,7 @@ bad()
         assert!(matches!(&err, KclError::Type { .. }));
         assert_eq!(
             err.message(),
-            "This function is declared to return `never`, but it returned a value."
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         );
     }
 
@@ -1529,36 +1537,218 @@ alsoBad()
         assert!(matches!(&err, KclError::Type { .. }));
         assert_eq!(
             err.message(),
-            "This function is declared to return `never`, but it completed without returning a value."
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_function_contract_is_path_dependent() {
         let function = r#"@settings(experimentalFeatures = allow)
-fn pathDependent(@propagateError: bool): never {
-  return if propagateError {
-    missingValue
+fn failOrReturn(@shouldFail: bool): never {
+  return if shouldFail {
+    fail("requested failure")
   } else {
     42
   }
 }
 "#;
 
-        let err = parse_execute(&format!("{function}\npathDependent(true)\n"))
+        let err = parse_execute(&format!("{function}\nfailOrReturn(true)\n"))
             .await
             .unwrap_err();
-        assert!(matches!(&err, KclError::UndefinedValue { .. }));
-        assert_eq!(err.message(), "`missingValue` is not defined");
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
 
-        let err = parse_execute(&format!("{function}\npathDependent(false)\n"))
+        let err = parse_execute(&format!("{function}\nfailOrReturn(false)\n"))
             .await
             .unwrap_err();
         assert!(matches!(&err, KclError::Type { .. }));
         assert_eq!(
             err.message(),
-            "This function is declared to return `never`, but it returned a value."
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_type_alias_contract_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+type impossible = never
+fn failOrReturn(@shouldFail: bool): impossible {
+  return if shouldFail {
+    fail("requested failure")
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_with_never_can_return_a_value_or_fail() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn stringOrFail(@shouldFail: bool): string | never {
+  return if shouldFail {
+    fail("requested failure")
+  } else {
+    "ok"
+  }
+}
+"#;
+
+        let result = parse_execute(&format!("{function}\nresult = stringOrFail(false)\n"))
+            .await
+            .unwrap();
+        let KclValue::String { value, .. } = get_var(&result, "result") else {
+            panic!("expected `result` to be a string")
+        };
+        assert_eq!(value, "ok");
+
+        let err = parse_execute(&format!("{function}\nstringOrFail(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_reports_user_defined_message_and_callsite_once() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fail("custom failure")
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "custom failure");
+        assert_eq!(err.get_message(), "user-defined: custom failure");
+        assert_eq!(serde_json::to_value(&err).unwrap()["kind"], "user_defined");
+        assert_eq!(source_texts(program, &err), [r#"fail("custom failure")"#]);
+        assert_eq!(err.backtrace().len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_unwinds_through_nested_never_functions_once() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn inner(): never {
+  fail("nested failure")
+}
+
+fn outer(): never {
+  inner()
+}
+
+outer()
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "nested failure");
+        assert_eq!(
+            source_texts(program, &err),
+            [r#"fail("nested failure")"#, "inner()", "outer()"]
+        );
+        assert_eq!(
+            err.backtrace()
+                .iter()
+                .map(|item| item.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("inner"), Some("outer"), None]
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_is_valid_in_a_function_with_a_value_return_type() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn valueOrFail(@shouldFail: bool): number {
+  return if shouldFail {
+    fail("no value")
+  } else {
+    42
+  }
+}
+"#;
+
+        parse_execute(&format!("{function}\nresult = valueOrFail(false)\n"))
+            .await
+            .unwrap();
+
+        let err = parse_execute(&format!("{function}\nvalueOrFail(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "no value");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_with_fail_or_fallthrough_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn failOrFallThrough(@shouldFail: bool): never {
+  result = if shouldFail {
+    fail("requested failure")
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\nfailOrFallThrough(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+
+        let err = parse_execute(&format!("{function}\nfailOrFallThrough(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_argument_evaluation_errors_take_precedence() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {
+  fail(missingMessage)
+}
+
+stop()
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UndefinedValue { .. }));
+        assert_eq!(err.message(), "`missingMessage` is not defined");
+        assert_eq!(source_texts(program, &err), ["missingMessage", "stop()"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_rejects_invalid_message_arguments_before_invocation() {
+        for program in [
+            "@settings(experimentalFeatures = allow)\nfail()\n",
+            "@settings(experimentalFeatures = allow)\nfail(42)\n",
+        ] {
+            let err = parse_execute(program).await.unwrap_err();
+            assert!(matches!(&err, KclError::Argument { .. }), "{err:?}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
