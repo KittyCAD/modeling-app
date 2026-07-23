@@ -4,7 +4,11 @@ import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import {
+  findOperationArtifact,
+  findOperationPlaneArtifact,
+  isOffsetPlane,
+} from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -20,6 +24,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import {
   type OperationTreeNode,
   buildOperationTree,
+  findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
@@ -75,7 +80,7 @@ import {
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -89,6 +94,7 @@ import { useNavigate } from 'react-router-dom'
 type Singletons = ReturnType<typeof useSingletons>
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
+type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
@@ -97,7 +103,52 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
+// Keep automatic edit-time migration disabled until all feature-tree and
+// point-click edit flows support the new edge specifier syntax. Until then,
+// expose Z0006 only as an explicit lint action.
+//
+// IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
+// operations. The migration can change the KCL, and we need to choose the
+// correct operation to edit.
+// `findSameVisibleStdLibOperationAfterSourceChange()` uses a heuristic, but it
+// may fail since operations don't have an identity that persists across
+// executions. Currently, we don't change the operations in an auto-fix, but
+// this seems brittle.
+const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
+
+const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
+  'fillet',
+  'chamfer',
+  'extrude',
+  'revolve',
+  'helix',
+  'gdt::flatness',
+  'gdt::straightness',
+  'gdt::circularity',
+  'gdt::cylindricity',
+  'gdt::position',
+  'gdt::profile',
+  'gdt::profileLine',
+  'gdt::profileSurface',
+  'gdt::distance',
+  'gdt::perpendicularity',
+  'gdt::angularity',
+  'gdt::concentricity',
+  'gdt::symmetry',
+  'gdt::runout',
+  'gdt::parallelism',
+  'gdt::annotation',
+])
+
+export function supportsZ0006AutoFixBeforeFeatureTreeEdit(
+  operation: Operation
+): boolean {
+  return (
+    operation.type === 'StdLibCall' &&
+    Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES.has(operation.name)
+  )
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -745,6 +796,108 @@ interface OperationProps {
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
   referenceModuleId?: number
 }
+
+function getFeatureTreeArtifactForEditOperation(
+  operation: Operation,
+  artifactGraph: SystemDeps['kclManager']['artifactGraph']
+) {
+  if (
+    'sourceRange' in operation &&
+    operation.sourceRange != null &&
+    isArray(operation.sourceRange) &&
+    operation.sourceRange.length >= 2
+  ) {
+    const sourceRange = operation.sourceRange
+    const artifact = getArtifactFromRange(
+      [sourceRange[0], sourceRange[1], sourceRange[2] ?? 0],
+      artifactGraph
+    )
+    if (artifact) return artifact
+  }
+
+  if (operation.type === 'StdLibCall') {
+    return findOperationArtifact(operation, artifactGraph) ?? undefined
+  }
+
+  return undefined
+}
+
+async function applyZ0006FixAndReselectFeatureTreeOperation({
+  operation,
+  systemDeps,
+}: {
+  operation: StdLibCallOperation
+  systemDeps: SystemDeps
+}): Promise<StdLibCallOperation | undefined> {
+  const beforeOperations = getAllOperations(
+    systemDeps.kclManager.lastSuccessfulOperations
+  )
+  const applied = await systemDeps.kclManager.applyZ0006FixBeforeEdit()
+  if (!applied) return operation
+
+  return findSameVisibleStdLibOperationAfterSourceChange({
+    operation,
+    beforeOperations,
+    afterOperations: getAllOperations(
+      systemDeps.kclManager.lastSuccessfulOperations
+    ),
+  })
+}
+
+async function prepareFeatureTreeEditCommand({
+  operation,
+  artifact,
+  commandBarActor,
+  selectOperation,
+  systemDeps,
+}: {
+  operation: Operation
+  artifact: ReturnType<typeof getArtifactFromRange> | undefined
+  commandBarActor: CommandBarActorType
+  selectOperation: () => Promise<void>
+  systemDeps: SystemDeps
+}) {
+  await selectOperation()
+
+  let operationToEdit: Operation | undefined = operation
+  if (
+    ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
+    operation.type === 'StdLibCall' &&
+    supportsZ0006AutoFixBeforeFeatureTreeEdit(operation)
+  ) {
+    operationToEdit = await applyZ0006FixAndReselectFeatureTreeOperation({
+      operation,
+      systemDeps,
+    })
+  }
+
+  if (!operationToEdit) {
+    toast.error(
+      'Could not safely reselect operation after automatic migration. Please try again.'
+    )
+    return
+  }
+
+  const artifactForEdit:
+    | NonNullable<ReturnType<typeof getArtifactFromRange>>
+    | undefined =
+    operationToEdit === operation
+      ? (artifact ?? undefined)
+      : getFeatureTreeArtifactForEditOperation(
+          operationToEdit,
+          systemDeps.kclManager.artifactGraph
+        )
+
+  return prepareEditCommand({
+    artifactGraph: systemDeps.kclManager.artifactGraph,
+    code: systemDeps.kclManager.code,
+    commandBarActor,
+    operation: operationToEdit,
+    rustContext: systemDeps.rustContext,
+    artifact: artifactForEdit,
+  })
+}
+
 /**
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
@@ -923,23 +1076,24 @@ const OperationItem = ({
         })
         return
       }
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
+
+      prepareFeatureTreeEditCommand({
         operation: item,
-        rustContext: systemDeps.rustContext,
         artifact,
-      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+        commandBarActor,
+        selectOperation,
+        systemDeps,
+      }).catch((e) => {
+        toast.error(err(e) ? e.message : JSON.stringify(e))
+      })
     }
   }, [
     isModuleOwned,
     item,
     modelingActor,
     commandBarActor,
-    systemDeps.kclManager.artifactGraph,
-    systemDeps.kclManager.code,
-    systemDeps.rustContext,
+    selectOperation,
+    systemDeps,
   ])
 
   function enterAppearanceFlow() {
@@ -1057,6 +1211,30 @@ const OperationItem = ({
     }
   }
 
+  function canExportDxf(
+    item: Operation
+  ): item is Parameters<typeof exportSketchToDxf>[0] {
+    return (
+      (item.type === 'StdLibCall' &&
+        (item.name === 'startSketchOn' || item.name === 'subtract2d')) ||
+      (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+    )
+  }
+
+  function exportDxf() {
+    if (!canExportDxf(item)) {
+      return
+    }
+    exportSketchToDxf(item, {
+      engineCommandManager,
+      kclManager,
+      toast,
+      uuidv4,
+      base64Decode,
+      browserSaveFile,
+    }).catch(reportRejection)
+  }
+
   const menuItems = useMemo(
     () => {
       const viewSourceMenuItem = (
@@ -1111,46 +1289,10 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
+        ...(canExportDxf(item)
           ? [
               <ContextMenuItem
-                onClick={() => {
-                  const exportDxf = async () => {
-                    if (item.type !== 'StdLibCall') return
-                    await exportSketchToDxf(item, {
-                      engineCommandManager,
-                      kclManager,
-                      toast,
-                      uuidv4,
-                      base64Decode,
-                      browserSaveFile,
-                    })
-                  }
-                  void exportDxf()
-                }}
-                data-testid="context-menu-export-dxf"
-              >
-                Export to DXF
-              </ContextMenuItem>,
-            ]
-          : []),
-        ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
-          ? [
-              <ContextMenuItem
-                onClick={() => {
-                  const exportDxf = async () => {
-                    if (item.type !== 'StdLibCall') return
-                    await exportSketchToDxf(item, {
-                      engineCommandManager,
-                      kclManager,
-                      toast,
-                      uuidv4,
-                      base64Decode,
-                      browserSaveFile,
-                    })
-                  }
-                  void exportDxf()
-                }}
+                onClick={exportDxf}
                 data-testid="context-menu-export-dxf"
               >
                 Export to DXF

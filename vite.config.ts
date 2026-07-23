@@ -66,19 +66,44 @@ export default defineConfig(({ command, mode }) => {
       outDir: 'build',
       target: 'es2022',
     },
-    resolve: {
-      alias: {
-        '@kittycad/registry': '/packages/registry/src',
-        '@kittycad/codemirror-lsp-client':
-          '/packages/codemirror-lsp-client/src',
-        '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
-        '@kittycad/ui-components': '/packages/ui-components/src',
-        '@rust': '/rust',
-        '@e2e': '/e2e',
-        '@src': '/src',
-        '@public': '/public',
-        '@root': '/',
+    // Three 0.184 uses class static blocks that esbuild can minify into
+    // anonymous class expressions which crash during startup.
+    esbuild: {
+      supported: {
+        'class-static-blocks': false,
       },
+    },
+    resolve: {
+      alias: [
+        // Force browser-safe LSP protocol/RPC entrypoints; the node entries touch
+        // worker_threads, which Vite externalizes in client bundles.
+        {
+          find: /^vscode-jsonrpc$/,
+          replacement: 'vscode-jsonrpc/browser',
+        },
+        {
+          find: /^vscode-languageserver-protocol$/,
+          replacement: 'vscode-languageserver-protocol/browser',
+        },
+        { find: '@kittycad/registry', replacement: '/packages/registry/src' },
+        {
+          find: '@kittycad/codemirror-lsp-client',
+          replacement: '/packages/codemirror-lsp-client/src',
+        },
+        {
+          find: '@kittycad/codemirror-lang-kcl',
+          replacement: '/packages/codemirror-lang-kcl/src',
+        },
+        {
+          find: '@kittycad/ui-components',
+          replacement: '/packages/ui-components/src',
+        },
+        { find: '@rust', replacement: '/rust' },
+        { find: '@e2e', replacement: '/e2e' },
+        { find: '@src', replacement: '/src' },
+        { find: '@public', replacement: '/public' },
+        { find: '@root', replacement: '/' },
+      ],
     },
     plugins: [
       nodePolyfills({

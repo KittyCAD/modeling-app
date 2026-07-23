@@ -8,6 +8,9 @@ lint:
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
+    # kcl-wasm-lib
+    # TODO: Add --all-targets. It currently has a bunch of failures.
+    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix
@@ -71,6 +74,13 @@ redo-sim-tests:
     # needs to happen *after* they're all generated.
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} {{ kcl_lib_flags }} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
+# Regenerate all simulation test output, forcing one test at a time.
+redo-sim-tests-serial:
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} --test-runner=cargo-test {{ kcl_lib_flags }} --no-quiet -- simulation_tests -- --test-threads=1
+    # This copies PNG files generated during tests to the public folder. It
+    # needs to happen *after* they're all generated.
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{ cita }} --test-runner=cargo-test {{ kcl_lib_flags }} --no-quiet -- simulation_tests::kcl_samples::test_after_engine -- --test-threads=1
+
 test:
     cargo install cargo-nextest --locked
     {{ cnr }} --workspace --features=artifact-graph
@@ -89,11 +99,15 @@ bump-kcl-crate-versions bump='patch':
     ./target/debug/kcl-bumper --bump {{ bump }}
     cargo check -p kcl-bumper # this way Cargo.lock gets updated
 
-publish-kcl version:
+publish-kcl-part1:
+    cargo publish -p kcl-error
+    @echo "You should now update the transitive kcl-error dependency and commit this."
+    @echo "    cargo update -p kcl-error@<old-version>"
+
+publish-kcl-part2 version:
     git tag kcl-{{ version }} -m "Release kcl-{{ version }}"
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
-    cargo publish -p kcl-error
     cargo publish -p kcl-api
     cargo publish -p kcl-syntax
     cargo publish -p kcl-lib

@@ -32,7 +32,7 @@ import {
   generateModelingMachineDefaultContext,
   modelingMachineInitialInternalContext,
 } from '@src/machines/modelingSharedContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -1646,7 +1646,6 @@ sketch001 = sketch(on = YZ) {
             artifactGraph,
             hasErrors: vi.fn(() => false),
             hidePlanes: vi.fn(),
-            setCopilotEnabled: vi.fn(),
             setSelectionFilter: vi.fn(),
             setSelectionFilterToDefault: vi.fn(),
             showPlanes: vi.fn(),

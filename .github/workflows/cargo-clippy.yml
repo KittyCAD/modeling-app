@@ -33,11 +33,13 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache-workspaces: rust
           components: clippy
           rustflags: '' # Use .cargo/config.toml
+          # We need this to run clippy for the wasm32 target.
+          target: wasm32-unknown-unknown
 
       - name: Run clippy
         run: |

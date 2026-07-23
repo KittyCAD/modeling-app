@@ -65,6 +65,11 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
+    /// Whether this command should be omitted when deriving the semantic
+    /// artifact graph. Query-only commands can still be useful in command
+    /// snapshots without becoming frontend selection artifacts.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub omit_from_graph: bool,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -449,6 +454,7 @@ pub struct SweepEdge {
 pub enum SweepEdgeSubType {
     Opposite,
     Adjacent,
+    PreviousAdjacent,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -979,6 +985,9 @@ pub(super) fn build_artifact_graph(
     }
 
     for artifact_command in artifact_commands {
+        if artifact_command.omit_from_graph {
+            continue;
+        }
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
         }
@@ -2177,11 +2186,24 @@ fn artifacts_to_update(
 
             return Ok(cloned_artifacts);
         }
-        ModelingCmd::Extrude(kcmc::Extrude { target, .. })
-        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
-        | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
-        | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+        ModelingCmd::Extrude(_)
+        | ModelingCmd::TwistExtrude(_)
+        | ModelingCmd::Revolve(_)
+        | ModelingCmd::RevolveAboutEdge(_)
+        | ModelingCmd::ExtrudeToReference(_) => {
+            let target = match cmd {
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: Some(target), ..
+                }) => target,
+                // Reference-based extrusions do not have a path UUID until the
+                // engine resolves their topology payload.
+                ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
+                ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
+                | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
+                | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
+            };
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
@@ -2505,6 +2527,11 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
+            let adjacent_edge_ids = info
+                .edges
+                .iter()
+                .filter_map(|edge| edge.adjacent_info.as_ref().map(|info| info.edge_id))
+                .collect::<AHashSet<_>>();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
@@ -2583,6 +2610,34 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Sweep(new_sweep));
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                // Internal edges are already represented as the next adjacent edge of
+                // the preceding segment. Only add the open component's start edge.
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info
+                    && !adjacent_edge_ids.contains(&previous_adjacent_info.edge_id)
+                {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: previous_adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::PreviousAdjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: previous_adjacent_info
+                            .faces
+                            .iter()
+                            .map(|face| ArtifactId::new(*face))
+                            .collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![previous_adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
             }

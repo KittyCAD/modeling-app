@@ -1,6 +1,6 @@
 import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import { toUtf16 } from '@src/lang/errors'
-import { executeAstMock } from '@src/lang/langHelpers'
+import { executeAstMock } from '@src/lang/executeAstMock'
 import { forceSuffix } from '@src/lang/util'
 import {
   type KclValueView,

@@ -6,6 +6,7 @@ import { waitFor } from 'xstate'
 import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
+import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -24,9 +25,9 @@ import {
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
-import { ensureOpfsCloudProjectLocallySynced } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -126,7 +127,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const localCloudProject = await ensureOpfsCloudProjectLocallySynced(
+      const localCloudProject = await ensureCloudProjectLocallySynced(
         projectId
       ).catch(() => undefined)
       if (cancelled) {
@@ -226,7 +227,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
     const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
+    const projectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
+      app.settings.get().app.libraries.current
+    )
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }

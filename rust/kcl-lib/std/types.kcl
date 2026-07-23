@@ -23,6 +23,15 @@
 @(impl = primitive)
 export type any
 
+/// The uninhabited type of computations that never complete normally.
+///
+/// `never` has no values and is a subtype of every type. Use it as the return
+/// type of a function that always stops evaluation by raising an error. A
+/// function declared to return `never` produces a type error if it returns a
+/// value or reaches the end of its body.
+@(impl = primitive, experimental = true)
+export type never
+
 /// The type of the none (aka null) value.
 ///
 /// Note that this is not the empty type, i.e., a type which represents no values.

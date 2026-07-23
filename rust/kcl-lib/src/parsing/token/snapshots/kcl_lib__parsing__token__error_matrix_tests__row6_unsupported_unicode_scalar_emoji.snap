@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_old(\"a\\u{1F642}b\")"
+---
+source: "a🙂b"
+lex:   Err [lexical] "found unknown token '🙂'" @ [SourceRange([1, 2, 0])]
+parse: Err [lexical] "found unknown token '🙂'" @ [SourceRange([1, 2, 0])]

@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
 import { KclManager } from '@src/lang/KclManager'
@@ -21,7 +22,8 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
+import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { createActor } from 'xstate'
 
 /**
@@ -72,6 +74,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
@@ -140,6 +143,15 @@ export async function loadWasm() {
   return instancePromise
 }
 
+export function createTestWasmRegistryItem(
+  wasmPromise: Promise<ModuleType> = loadWasm()
+) {
+  return defineRegistryItem({
+    id: 'test.wasm-promise',
+    provides: [provideWasmPromise(wasmPromise)],
+  })
+}
+
 /**
  * "Building the world" in Node consists of only the WASM module.
  *
@@ -168,6 +180,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,

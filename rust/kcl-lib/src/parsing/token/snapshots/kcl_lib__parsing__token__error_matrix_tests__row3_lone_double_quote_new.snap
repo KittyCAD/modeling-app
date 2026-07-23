@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_new(\"\\\"\")"
+---
+source: "\""
+tokens: 1
+issues: 1
+final:  Err [lexical] "unterminated string literal" @ [SourceRange([0, 1, 0])]

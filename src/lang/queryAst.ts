@@ -1,6 +1,9 @@
+import type { Block } from '@rust/kcl-lib/bindings/Block'
+import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NumericLiteral } from '@rust/kcl-lib/bindings/NumericLiteral'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
@@ -8,7 +11,6 @@ import {
   createMemberExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { sourceRangeContains } from '@src/lang/sourceRange'
@@ -25,6 +27,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
+import type { ToolTip } from '@src/lang/toolTips'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
@@ -43,6 +46,7 @@ import type {
   SegmentArtifact,
   SourceRange,
   SyntaxType,
+  UnaryExpression,
   VariableDeclaration,
   VariableDeclarator,
   VariableMap,
@@ -69,7 +73,6 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -232,6 +235,9 @@ type KCLNode = Node<
   | TypeDeclaration
   | ReturnStatement
   | Identifier
+  | Block
+  | ElseIf
+  | NumericLiteral
 >
 
 export function traverse(
@@ -267,6 +273,26 @@ export function traverse(
         [index, 'index'],
       ])
     )
+  } else if (_node.type === 'FunctionExpression') {
+    if (_node.name) {
+      _traverse(_node.name, [...pathToNode, ['name', 'FunctionExpression']])
+    }
+    _node.params.forEach((param, index) =>
+      _traverse(param.identifier, [
+        ...pathToNode,
+        ['params', 'FunctionExpression'],
+        [index, 'index'],
+        ['identifier', 'Parameter'],
+      ])
+    )
+    _node.body.body.forEach((item, index) =>
+      _traverse(item, [
+        ...pathToNode,
+        ['body', 'FunctionExpression'],
+        ['body', 'FunctionExpression'],
+        [index, 'index'],
+      ])
+    )
   } else if (_node.type === 'CallExpressionKw') {
     _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
     if (_node.unlabeled !== null) {
@@ -294,6 +320,8 @@ export function traverse(
     // do nothing
   } else if (_node.type === 'TagDeclarator') {
     // do nothing
+  } else if (_node.type === 'NumericLiteral') {
+    // do nothing
   } else if (_node.type === 'ArrayExpression') {
     _node.elements.forEach((el, index) =>
       _traverse(el, [
@@ -302,6 +330,15 @@ export function traverse(
         [index, 'index'],
       ])
     )
+  } else if (_node.type === 'ArrayRangeExpression') {
+    _traverse(_node.startElement, [
+      ...pathToNode,
+      ['startElement', 'ArrayRangeExpression'],
+    ])
+    _traverse(_node.endElement, [
+      ...pathToNode,
+      ['endElement', 'ArrayRangeExpression'],
+    ])
   } else if (_node.type === 'ObjectExpression') {
     _node.properties.forEach(({ key, value }, index) => {
       _traverse(key, [
@@ -323,6 +360,71 @@ export function traverse(
     // hmm this smell
     _traverse(_node.object, [...pathToNode, ['object', 'MemberExpression']])
     _traverse(_node.property, [...pathToNode, ['property', 'MemberExpression']])
+  } else if (_node.type === 'IfExpression') {
+    _traverse(_node.cond, [...pathToNode, ['cond', 'IfExpression']])
+    _node.then_val.body.forEach((item, index) =>
+      _traverse(item, [
+        ...pathToNode,
+        ['then_val', 'IfExpression'],
+        ['body', 'IfExpression'],
+        [index, 'index'],
+      ])
+    )
+    _node.else_ifs.forEach((elseIf, index) =>
+      _traverse(elseIf, [
+        ...pathToNode,
+        ['else_ifs', 'IfExpression'],
+        [index, 'index'],
+      ])
+    )
+    _node.final_else.body.forEach((item, index) =>
+      _traverse(item, [
+        ...pathToNode,
+        ['final_else', 'IfExpression'],
+        ['body', 'IfExpression'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'ElseIf') {
+    _traverse(_node.cond, [...pathToNode, ['cond', 'IfExpression']])
+    _node.then_val.body.forEach((item, index) =>
+      _traverse(item, [
+        ...pathToNode,
+        ['then_val', 'IfExpression'],
+        ['body', 'IfExpression'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'LabelledExpression') {
+    _traverse(_node.expr, [...pathToNode, ['expr', 'LabelledExpression']])
+    _traverse(_node.label, [...pathToNode, ['label', 'LabelledExpression']])
+  } else if (_node.type === 'AscribedExpression') {
+    _traverse(_node.expr, [...pathToNode, ['expr', 'AscribedExpression']])
+  } else if (_node.type === 'SketchBlock') {
+    _node.arguments.forEach((arg, index) =>
+      _traverse(arg.arg, [
+        ...pathToNode,
+        ['arguments', 'SketchBlock'],
+        [index, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ])
+    )
+    _node.body.items.forEach((item, index) =>
+      _traverse(item, [
+        ...pathToNode,
+        ['body', 'SketchBlock'],
+        ['items', 'Block'],
+        [index, 'index'],
+      ])
+    )
+  } else if (_node.type === 'SketchVar') {
+    if (_node.initial) {
+      _traverse(_node.initial, [...pathToNode, ['initial', 'SketchVar']])
+    }
+  } else if (_node.type === 'Block') {
+    _node.items.forEach((item, index) =>
+      _traverse(item, [...pathToNode, ['items', 'Block'], [index, 'index']])
+    )
   } else if (_node.type === 'ImportStatement') {
     // Do nothing.
   } else if ('body' in _node && isArray(_node.body)) {
@@ -1224,6 +1326,48 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    if (s.artifact?.type === 'edgeCut') {
+      const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'VariableDeclaration',
+        false,
+        true
+      )
+      if (
+        !err(edgeCutVariable) &&
+        edgeCutVariable.node.type === 'VariableDeclaration'
+      ) {
+        const name = edgeCutVariable.node.declaration.id.name
+        if (pushedNames[name]) {
+          continue
+        }
+        exprs.push(createLocalName(name))
+        pushedNames[name] = true
+        continue
+      }
+
+      const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'CallExpressionKw',
+        false,
+        true
+      )
+      if (!err(edgeCutCall) && edgeCutCall.node.unlabeled) {
+        const input = structuredClone(edgeCutCall.node.unlabeled)
+        const key = outputExprKey(input)
+        if (pushedNames[key]) {
+          continue
+        }
+        exprs.push(input)
+        pushedNames[key] = true
+        continue
+      }
+    }
+
     if (s.artifact?.type === 'segment') {
       const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
       const sketchName = getSketchVariableNameForSegment(
@@ -1613,6 +1757,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'Segment') {
     artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Uuid') {
+    artifactIds = [opArg.value.value]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
@@ -1622,6 +1768,9 @@ export function retrieveSelectionsFromOpArg(
       }
       if (v.type === 'Segment') {
         return [v.artifact_id]
+      }
+      if (v.type === 'Uuid') {
+        return [v.value]
       }
       if (v.type === 'TagIdentifier' && v.artifact_id) {
         return [v.artifact_id]
@@ -2256,6 +2405,19 @@ export function getSketchSegmentName(
   }
 
   return null
+}
+
+export function createSketchTagMemberExpression(
+  sourceSurfaceExpr: Expr,
+  segmentName: string
+): Expr {
+  return createMemberExpression(
+    createMemberExpression(
+      createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+      'tags'
+    ),
+    segmentName
+  )
 }
 
 export function getSketchSegmentNameFromSourceSurface(

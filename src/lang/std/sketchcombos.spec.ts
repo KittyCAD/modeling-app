@@ -1,5 +1,4 @@
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
-import type { ToolTip } from '@src/lang/langHelpers'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import {
   fnNameToTooltip,
@@ -17,6 +16,7 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
+import type { ToolTip } from '@src/lang/toolTips'
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -28,7 +28,7 @@ import { findAngleLengthPair } from '@src/unitTestUtils'
 
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 

@@ -122,11 +122,11 @@ flowchart LR
   67["SweepEdge Adjacent"]
   68["Pattern Circular<br>[1107, 1272, 0]<br>Copies: 3<br>Faces: 150<br>Edges: 432"]
     %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  69["StartSketchOnPlane<br>[884, 937, 15]"]
+  69["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  70["StartSketchOnPlane<br>[884, 937, 15]"]
+  70["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  71["StartSketchOnPlane<br>[884, 937, 15]"]
+  71["StartSketchOnPlane<br>[884, 937, 16]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   1 --- 2
   1 <--x 69
@@ -165,10 +165,6 @@ flowchart LR
   21 --- 27
   21 --- 28
   21 ---- 29
-  22 --- 30
-  22 x--> 34
-  22 --- 36
-  22 --- 37
   23 --- 31
   23 x--> 34
   23 --- 38
@@ -181,6 +177,10 @@ flowchart LR
   25 x--> 34
   25 --- 42
   25 --- 43
+  27 --- 30
+  27 x--> 34
+  27 --- 36
+  27 --- 37
   29 --- 30
   29 --- 31
   29 --- 32
@@ -221,10 +221,6 @@ flowchart LR
   45 --- 52
   45 ---- 53
   45 --- 68
-  46 --- 54
-  46 x--> 58
-  46 --- 60
-  46 --- 61
   47 --- 55
   47 x--> 58
   47 --- 62
@@ -237,6 +233,10 @@ flowchart LR
   49 x--> 58
   49 --- 66
   49 --- 67
+  51 --- 54
+  51 x--> 58
+  51 --- 60
+  51 --- 61
   53 --- 54
   53 --- 55
   53 --- 56

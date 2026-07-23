@@ -60,8 +60,9 @@ type GdtObjectsCommandArgs<Name extends StdLibCommandName> = GdtObjectsArgs<
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ExtrudeCommandArgs = Override<
-  Omit<StdLibCommandArgs<'extrude'>, 'direction'>,
+  StdLibCommandArgs<'extrude'>,
   {
+    direction?: Selections
     method?: KclPreludeExtrudeMethod
     bodyType?: KclPreludeBodyType
   }

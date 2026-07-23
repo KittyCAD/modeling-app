@@ -16,6 +16,10 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
+  getDefaultDirectoryProjectLibraryPath,
+  isPathInDirectoryProjectLibrary,
+} from '@src/lib/projectLibraries'
+import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
@@ -39,11 +43,7 @@ export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
  * The OPFS cloud feature flag enables the home, multi-project view on web.
  */
 export const baseLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async ({ request }) => {
     const url = new URL(request.url)
     const routerSearch = getRouterSearchFromRequestUrl(
@@ -70,8 +70,11 @@ export const baseLoader =
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
+    const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
+      settings.settings.app.libraries.current
+    )
     const requestedProjectName = fsZds.resolve(
-      settings.settings.app.projectDirectory.current,
+      defaultDirectoryLibraryPath ?? '',
       DEFAULT_WEB_PROJECT_NAME
     )
 
@@ -100,11 +103,7 @@ export const baseLoader =
   }
 
 export const fileLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
     const {
       settings: { actor: settingsActor },
@@ -230,10 +229,16 @@ export const fileLoader =
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+    const appProjectDir =
+      getDefaultDirectoryProjectLibraryPath(
+        settings.settings.app.libraries.current
+      ) ?? ''
+    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
+      project.path,
+      appProjectDir
+    )
       ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
@@ -261,11 +266,7 @@ export const fileLoader =
 
 // Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
     // If on unflagged web, bump out to root, which will redirect to a project.
     if (!window.electron && !(await webHomeRouteEnabled(app))) {
