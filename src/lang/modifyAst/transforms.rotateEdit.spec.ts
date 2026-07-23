@@ -28,8 +28,9 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
 rotate(
   extrude001,
-  axis = [1, 0, 0],
-  angle = 10,
+  axis = [0, 0, 1],
+  angle = 30deg,
+  global = true,
 )
 pattern001 = patternCircular3d(
   extrude001,
@@ -94,17 +95,21 @@ pattern001 = patternCircular3d(
         ],
         otherSelections: [],
       },
-      axis: await getKclCommandValue('[1, 0, 0]', instance, rustContext),
-      angle: await getKclCommandValue('20', instance, rustContext),
+      axis: await getKclCommandValue('[0, 0, 1]', instance, rustContext),
+      angle: await getKclCommandValue('45deg', instance, rustContext),
+      global: true,
       nodeToEdit: rotatePathToNode,
       wasmInstance: instance,
     })
     if (err(result)) throw result
 
     const newCode = recast(result.modifiedAst, instance)
-    expect(newCode).toContain(
-      'rotate(extrude001, axis = [1, 0, 0], angle = 20)'
-    )
+    expect(newCode).toContain(`rotate(
+  extrude001,
+  axis = [0, 0, 1],
+  angle = 45deg,
+  global = true,
+)`)
     expect(newCode).not.toContain('rotate(pattern001')
   })
 })

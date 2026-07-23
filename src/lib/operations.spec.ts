@@ -793,7 +793,8 @@ describe('operations.test.ts', () => {
 
     it('enters edit flow for rotate with an axis array', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code = 'rotate001 = rotate(extrude001, axis = [1,0,0], angle = 30)'
+      const code =
+        'rotate001 = rotate(extrude001, axis = [0, 0, 1], angle = 30deg, global = true)'
       const operation = stdlib('rotate')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -810,16 +811,20 @@ describe('operations.test.ts', () => {
           value: {
             type: 'Array',
             value: [
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
               { type: 'Number', value: 1, ty: { type: 'Any' } },
-              { type: 'Number', value: 0, ty: { type: 'Any' } },
-              { type: 'Number', value: 0, ty: { type: 'Any' } },
             ],
           },
-          sourceRange: rangeOfText(code, '[1,0,0]'),
+          sourceRange: rangeOfText(code, '[0, 0, 1]'),
         },
         angle: {
           value: { type: 'Number', value: 30, ty: { type: 'Any' } },
-          sourceRange: rangeOfText(code, '30'),
+          sourceRange: rangeOfText(code, '30deg'),
+        },
+        global: {
+          value: { type: 'Bool', value: true },
+          sourceRange: rangeOfText(code, 'true'),
         },
       }
 
@@ -839,14 +844,16 @@ describe('operations.test.ts', () => {
       const argDefaultValues = result.data.argDefaultValues as {
         axis?: string | { valueText: string }
         angle?: { valueText: string }
+        global?: boolean
       }
       expect(result.data.name).toBe('Rotate')
       expect(
         typeof argDefaultValues.axis === 'string'
           ? argDefaultValues.axis
           : argDefaultValues.axis?.valueText
-      ).toBe('[1,0,0]')
-      expect(argDefaultValues.angle?.valueText).toBe('30')
+      ).toBe('[0, 0, 1]')
+      expect(argDefaultValues.angle?.valueText).toBe('30deg')
+      expect(argDefaultValues.global).toBe(true)
     })
 
     it('enters edit flow for rotate with a named axis as a KCL value', async () => {
