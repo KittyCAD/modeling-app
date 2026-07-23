@@ -73,22 +73,15 @@ export class CmdBarFixture {
     }
     const getCommandName = () =>
       this.page.getByTestId('command-name').textContent()
-    const getCurrentArgValue = () =>
-      this.page.getByTestId('cmd-bar-arg-value').evaluate((element) => {
-        const style = window.getComputedStyle(element)
-        const isVisibleInput =
-          style.visibility !== 'hidden' &&
-          style.display !== 'none' &&
-          Number(style.opacity) !== 0
-        if (element instanceof HTMLTextAreaElement && isVisibleInput) {
-          return element.value
-        }
-        if (element instanceof HTMLInputElement && isVisibleInput) {
-          return element.value
-        }
+    const getCurrentArgValue = async () => {
+      const argValue = this.page.getByTestId('cmd-bar-arg-value')
+      const isAxis3DInput = await this.page
+        .getByTestId('axis-3d-input-mode')
+        .isVisible()
+        .catch(() => false)
 
-        return element.textContent || ''
-      })
+      return isAxis3DInput ? argValue.inputValue() : argValue.textContent()
+    }
     const getReviewValidationError = async () => {
       const locator = this.page.getByTestId('cmd-bar-review-validation-error')
       if (!(await locator.isVisible())) return undefined

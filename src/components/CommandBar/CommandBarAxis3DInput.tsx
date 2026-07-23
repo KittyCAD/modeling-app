@@ -187,7 +187,10 @@ function CommandBarAxis3DInput({
 
   return (
     <>
-      <div className="mx-4 mt-4 mb-2 flex items-center gap-4">
+      <div
+        className="mx-4 mt-4 mb-2 flex items-center gap-4"
+        data-testid="axis-3d-input-mode"
+      >
         <span className="text-sm text-chalkboard-70 dark:text-chalkboard-40">
           Axis input
         </span>
