@@ -128,6 +128,13 @@ async fn inner_chamfer(
             vec![args.source_range],
         )));
     }
+    if tags.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must chamfer at least one tag".to_owned(),
+            backtrace: Default::default(),
+        }));
+    }
 
     if angle.is_some() && second_length.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -212,7 +219,7 @@ async fn inner_chamfer(
     }
 
     let id = exec_state.next_uuid();
-    let num_extra_ids = edge_ids.len() - 1;
+    let num_extra_ids = edge_ids.len().saturating_sub(1);
     let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
     for _ in 0..num_extra_ids {
         extra_face_ids.push(exec_state.next_uuid());
