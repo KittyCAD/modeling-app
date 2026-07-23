@@ -57,6 +57,23 @@ type CommandArgumentStatus = Extract<
   CommandStatus,
   'experimental' | 'deprecated'
 >
+export type CommandDialogGroup = {
+  id: string
+  title: string
+  description?: string
+  collapsible?: boolean
+  defaultOpen?: boolean
+}
+export type CommandDialogLayout = {
+  groups: CommandDialogGroup[]
+}
+export type CommandArgumentDialogConfig = {
+  group?: string
+  controlStyle?: 'select' | 'segmented'
+  selectionHeading?: string
+  selectionEmptyLabel?: string
+  selectionHint?: string
+}
 type CommandArgumentRequired<C> =
   | boolean
   | ((
@@ -135,6 +152,9 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
+  useModelingDialog?: boolean
+  dialogLayout?: CommandDialogLayout
 }
 
 export type CommandConfig<
@@ -179,6 +199,7 @@ export type CommandArgumentConfig<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: 'options'
@@ -374,6 +395,7 @@ export type CommandArgument<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>

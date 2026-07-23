@@ -617,6 +617,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    dialogLayout: {
+      groups: [
+        {
+          id: 'selection',
+          title: 'Selection',
+          description: 'Choose the profiles or faces to extrude.',
+        },
+        {
+          id: 'extent',
+          title: 'Extent',
+          description: 'Set distance, direction, and termination selections.',
+        },
+        {
+          id: 'operation',
+          title: 'Operation',
+          description: 'Choose the generated body behavior.',
+        },
+        {
+          id: 'advanced',
+          title: 'Advanced',
+          description: 'Tags, twist, seams, and lower-level method controls.',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude
     ),
@@ -627,6 +652,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           sketches: {
             inputType: 'selection',
             displayName: 'Profiles',
+            dialog: {
+              group: 'selection',
+              selectionHeading: 'Profiles',
+              selectionEmptyLabel: 'Select profiles or faces',
+              selectionHint: 'Pick sketch regions, sketch segments, or faces.',
+            },
             selectionTypes: [
               'solid2d',
               'segment',
@@ -642,21 +673,67 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           length: {
+            dialog: {
+              group: 'extent',
+            },
             defaultValue: KCL_DEFAULT_LENGTH,
             prepopulate: true,
           },
           to: {
             inputType: 'selection',
+            dialog: {
+              group: 'extent',
+              selectionHeading: 'To',
+              selectionEmptyLabel: 'Optional terminating face',
+              selectionHint: 'Use this for an up-to-face style extent.',
+            },
             // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
             selectionTypes: ['cap', 'wall'],
             clearSelectionFirst: true,
             multiple: false,
             description: 'Only parallel faces are supported for now.',
           },
+          symmetric: {
+            dialog: {
+              group: 'extent',
+              controlStyle: 'segmented',
+            },
+          },
+          bidirectionalLength: {
+            dialog: {
+              group: 'extent',
+            },
+          },
           tagStart: {
+            dialog: {
+              group: 'advanced',
+            },
             // TODO: add validation like for Clone command
           },
+          tagEnd: {
+            dialog: {
+              group: 'advanced',
+            },
+          },
+          draftAngle: {
+            dialog: {
+              group: 'advanced',
+            },
+          },
+          twistAngle: {
+            dialog: {
+              group: 'advanced',
+            },
+          },
+          twistAngleStep: {
+            dialog: {
+              group: 'advanced',
+            },
+          },
           twistCenter: {
+            dialog: {
+              group: 'advanced',
+            },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
@@ -672,14 +749,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           method: {
             inputType: 'options',
+            dialog: {
+              group: 'advanced',
+              controlStyle: 'segmented',
+            },
             required: extrudeSelectionRequiresMethod,
             options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
               name: capitaliseFC(value.toLowerCase()),
               value,
             })),
           },
+          hideSeams: {
+            dialog: {
+              group: 'advanced',
+              controlStyle: 'segmented',
+            },
+          },
           bodyType: {
             inputType: 'options',
+            dialog: {
+              group: 'operation',
+              controlStyle: 'segmented',
+            },
             required: extrudeSelectionRequiresBodyType,
             options: kclBodyTypeOptions,
           },

@@ -11,6 +11,8 @@ export interface DraggableProps extends HTMLProps<HTMLDivElement> {
   containerRef?: RefObject<HTMLElement | null>
   Handle?: ReactNode
   side?: DraggableSide
+  /** If true, pin the element into container bounds immediately on mount. */
+  startInContainer?: boolean
 }
 
 export type DraggableSide = 'top' | 'right' | 'bottom' | 'left'
@@ -30,6 +32,7 @@ export function Draggable({
   containerRef,
   Handle,
   side: providedSide,
+  startInContainer = false,
   style: providedStyle,
   children,
   ...props
@@ -48,6 +51,52 @@ export function Draggable({
   const dragRemoveCallback = useRef<((u: unknown) => void) | undefined>(
     undefined
   )
+
+  const parseMargins = useCallback((computedStyles: CSSStyleDeclaration) => {
+    const pxStyleToNumber = (property: keyof CSSStyleDeclaration) =>
+      Number(
+        typeof computedStyles[property] === 'string' &&
+          computedStyles[property].replace('px', '')
+      ) || 0
+    return {
+      blockStart: pxStyleToNumber('marginBlockStart'),
+      blockEnd: pxStyleToNumber('marginBlockEnd'),
+      inlineStart: pxStyleToNumber('marginInlineStart'),
+      inlineEnd: pxStyleToNumber('marginInlineEnd'),
+    }
+  }, [])
+
+  const pinIntoContainer = useCallback(() => {
+    if (!startInContainer || !targetRef.current || !containerRef?.current) {
+      return
+    }
+
+    const computedStyles = getComputedStyle(targetRef.current)
+    if (computedStyles.position === 'fixed') {
+      return
+    }
+
+    const targetRect = targetRef.current.getBoundingClientRect()
+    const containerRect = containerRef.current.getBoundingClientRect()
+    const margin = parseMargins(computedStyles)
+
+    const top = clamp(
+      targetRect.top,
+      containerRect.top - margin.blockStart,
+      containerRect.bottom - targetRect.height - margin.blockEnd
+    )
+    const left = clamp(
+      targetRect.left,
+      containerRect.left - margin.inlineStart,
+      containerRect.right - targetRect.width - margin.inlineEnd
+    )
+
+    targetRef.current.style.position = 'fixed'
+    targetRef.current.style.top = `${top}px`
+    targetRef.current.style.left = `${left}px`
+    targetRef.current.style.width = `${targetRect.width}px`
+    targetRef.current.style.height = `${targetRect.height}px`
+  }, [containerRef, parseMargins, startInContainer])
 
   const onContainerResize = useCallback((entries: ResizeObserverEntry[]) => {
     if (!targetRef.current || !offsetRef.current || entries.length !== 1) {
@@ -90,6 +139,30 @@ export function Draggable({
 
     return () => observer.unobserve(container)
   }, [containerRef, onContainerResize])
+
+  useEffect(() => {
+    if (!startInContainer) return
+
+    if (containerRef?.current) {
+      pinIntoContainer()
+      return
+    }
+
+    let attempts = 0
+    let rafId = 0
+    const maxAttempts = 8
+
+    const tryPin = () => {
+      pinIntoContainer()
+      if (!containerRef?.current && attempts < maxAttempts) {
+        attempts += 1
+        rafId = requestAnimationFrame(tryPin)
+      }
+    }
+
+    rafId = requestAnimationFrame(tryPin)
+    return () => cancelAnimationFrame(rafId)
+  }, [containerRef, pinIntoContainer, startInContainer])
 
   const elementDrag = useCallback(
     (offset: Offset) => (e: MouseEvent) => {
@@ -149,17 +222,7 @@ export function Draggable({
       const { width, height, top, left } =
         targetRef.current.getBoundingClientRect()
       const computedStyles = getComputedStyle(targetRef.current)
-      const pxStyleToNumber = (property: keyof CSSStyleDeclaration) =>
-        Number(
-          typeof computedStyles[property] === 'string' &&
-            computedStyles[property].replace('px', '')
-        ) ?? 0
-      const margin = {
-        blockStart: pxStyleToNumber('marginBlockStart'),
-        blockEnd: pxStyleToNumber('marginBlockEnd'),
-        inlineStart: pxStyleToNumber('marginInlineStart'),
-        inlineEnd: pxStyleToNumber('marginInlineEnd'),
-      }
+      const margin = parseMargins(computedStyles)
 
       targetRef.current.style.position = 'fixed'
       targetRef.current.style.top = `${top - margin.blockStart}px`
@@ -185,7 +248,7 @@ export function Draggable({
       document.addEventListener('visibilitychange', dragRemoveCallback.current)
       document.addEventListener('mouseleave', dragRemoveCallback.current)
     },
-    [closeDragElement, elementDrag]
+    [closeDragElement, elementDrag, parseMargins]
   )
 
   return Handle ? (

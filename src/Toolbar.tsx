@@ -19,6 +19,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -73,10 +74,34 @@ type ToolbarProps = {
 
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
+function getCommandBarTargetKey(
+  target: ToolbarItemResolved['commandBarTarget'] | undefined
+) {
+  return target ? `${target.groupId}:${target.name}` : undefined
+}
+
+function getCommandBarTargetFromToolbarItem(
+  itemConfig: Pick<ToolbarItemResolved, 'command' | 'commandBarTarget'>
+): ToolbarItemResolved['commandBarTarget'] | undefined {
+  if (itemConfig.commandBarTarget) {
+    return itemConfig.commandBarTarget
+  }
+
+  const separatorIndex = itemConfig.command?.indexOf(':') ?? -1
+  if (!itemConfig.command || separatorIndex <= 0) {
+    return undefined
+  }
+
+  const groupId = itemConfig.command.slice(0, separatorIndex)
+  const name = itemConfig.command.slice(separatorIndex + 1)
+  return groupId && name ? { groupId, name } : undefined
+}
+
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
     useSignals()
     const app = useApp()
+    const commandBarState = app.commands.useState()
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
@@ -110,6 +135,15 @@ const Toolbar_ = memo(
 
     const toolbarButtonsRef = useRef<HTMLUListElement>(null)
     const [showRichContent, setShowRichContent] = useState(false)
+    const selectedCommand = commandBarState.context.selectedCommand
+    const activeModelingDialogCommandKey =
+      !commandBarState.matches('Closed') &&
+      isModelingDialogCommand(selectedCommand)
+        ? getCommandBarTargetKey({
+            groupId: selectedCommand.groupId,
+            name: selectedCommand.name,
+          })
+        : undefined
 
     const disableAllButtons =
       (props.overallState !== NetworkHealthState.Ok &&
@@ -293,7 +327,13 @@ const Toolbar_ = memo(
           maybeIconConfig.disabled?.(props.state, wasmInstance) === true
 
         // Calculate the isActive state for this specific item
-        const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
+        const commandBarTargetKey = getCommandBarTargetKey(
+          getCommandBarTargetFromToolbarItem(maybeIconConfig)
+        )
+        const itemIsActive =
+          maybeIconConfig.isActive?.(props.state) ||
+          (activeModelingDialogCommandKey !== undefined &&
+            commandBarTargetKey === activeModelingDialogCommandKey)
 
         // Create item-specific callback props with the correct isActive value
         const itemCallbackProps = {
@@ -360,6 +400,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      activeModelingDialogCommandKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -378,6 +419,33 @@ const Toolbar_ = memo(
       (event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>) =>
         event.metaKey || event.ctrlKey,
       []
+    )
+    const runToolbarItemClick = useCallback(
+      (
+        itemConfig: ToolbarItemResolved,
+        event: Pick<MouseEvent, 'metaKey' | 'ctrlKey'>
+      ) => {
+        const commandBarTargetKey = getCommandBarTargetKey(
+          getCommandBarTargetFromToolbarItem(itemConfig)
+        )
+
+        if (activeModelingDialogCommandKey) {
+          app.commands.send({ type: 'Close' })
+          if (commandBarTargetKey === activeModelingDialogCommandKey) {
+            return
+          }
+        }
+
+        itemConfig.onClick({
+          ...itemConfig.callbackProps,
+          keepSelection: getKeepSelectionFromMouseEvent(event),
+        })
+      },
+      [
+        activeModelingDialogCommandKey,
+        app.commands,
+        getKeepSelectionFromMouseEvent,
+      ]
     )
 
     const rememberRecentDropdownItem = useCallback(
@@ -482,10 +550,7 @@ const Toolbar_ = memo(
                             (visibleItem) => visibleItem.id === itemConfig.id
                           )
                         )
-                        itemConfig.onClick({
-                          ...itemConfig.callbackProps,
-                          keepSelection: getKeepSelectionFromMouseEvent(event),
-                        })
+                        runToolbarItemClick(itemConfig, event)
                       },
                       disabled:
                         disableAllButtons ||
@@ -538,11 +603,7 @@ const Toolbar_ = memo(
                               itemConfig.id,
                               false
                             )
-                            itemConfig.onClick({
-                              ...itemConfig.callbackProps,
-                              keepSelection:
-                                getKeepSelectionFromMouseEvent(event),
-                            })
+                            runToolbarItemClick(itemConfig, event)
                           }}
                         >
                           <span
@@ -613,10 +674,7 @@ const Toolbar_ = memo(
                         next.set(i, maybeIconConfig.array.indexOf(itemConfig))
                         return next
                       })
-                      itemConfig.onClick({
-                        ...itemConfig.callbackProps,
-                        keepSelection: getKeepSelectionFromMouseEvent(event),
-                      })
+                      runToolbarItemClick(itemConfig, event)
                     },
                     disabled:
                       disableAllButtons ||
@@ -659,10 +717,7 @@ const Toolbar_ = memo(
                       name={selectedIcon.title}
                       aria-description={selectedIcon.description}
                       onClick={(event) =>
-                        selectedIcon.onClick({
-                          ...selectedIcon.callbackProps,
-                          keepSelection: getKeepSelectionFromMouseEvent(event),
-                        })
+                        runToolbarItemClick(selectedIcon, event)
                       }
                     >
                       <span
@@ -740,12 +795,7 @@ const Toolbar_ = memo(
                     ) ||
                     itemConfig.disabled
                   }
-                  onClick={(event) =>
-                    itemConfig.onClick({
-                      ...itemConfig.callbackProps,
-                      keepSelection: getKeepSelectionFromMouseEvent(event),
-                    })
-                  }
+                  onClick={(event) => runToolbarItemClick(itemConfig, event)}
                 >
                   <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                     {itemConfig.title}

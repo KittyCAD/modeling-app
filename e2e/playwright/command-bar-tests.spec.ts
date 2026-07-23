@@ -260,6 +260,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
       highlightedHeaderArg: 'Profiles',
     })
+    await expect(page.getByTestId('modeling-dialog')).not.toBeAttached()
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()

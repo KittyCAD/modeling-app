@@ -96,9 +96,15 @@ export interface ToolbarItemCallbackProps {
   keepSelection: boolean
 }
 
+export type ToolbarCommandBarTarget = {
+  groupId: string
+  name: string
+}
+
 export type ToolbarItem = {
   id: string
   command?: string
+  commandBarTarget?: ToolbarCommandBarTarget
   onClick: (props: ToolbarItemCallbackProps) => void
   icon?: CustomIconName
   sketchSolveToolName?: string
@@ -794,6 +800,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'shell',
+          commandBarTarget: { groupId: 'modeling', name: 'Shell' },
           onClick: () => {
             commands.send({
               type: 'Find and select command',
@@ -813,6 +820,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'hole',
+          commandBarTarget: { groupId: 'modeling', name: 'Hole' },
           onClick: () => {
             commands.send({
               type: 'Find and select command',
@@ -837,6 +845,10 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'boolean-union',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Boolean Union',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -857,6 +869,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'boolean-subtract',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Boolean Subtract',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -877,6 +893,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'boolean-intersect',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Boolean Intersect',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -900,6 +920,7 @@ export function buildToolbarConfig(
         },
         {
           id: 'split',
+          commandBarTarget: { groupId: 'modeling', name: 'Boolean Split' },
           onClick: () =>
             commands.send({
               type: 'Find and select command',
@@ -921,6 +942,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'blend-surface',
+              commandBarTarget: { groupId: 'modeling', name: 'Blend' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -941,6 +963,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'flip-surface',
+              commandBarTarget: { groupId: 'modeling', name: 'Flip Surface' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -962,6 +985,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'join-surfaces',
+              commandBarTarget: { groupId: 'modeling', name: 'Join Surfaces' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -982,6 +1006,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'delete-face',
+              commandBarTarget: { groupId: 'modeling', name: 'Delete Face' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1065,6 +1090,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'gear-helical',
+              commandBarTarget: { groupId: 'modeling', name: 'Helical Gear' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1083,6 +1109,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gear-spur',
+              commandBarTarget: { groupId: 'modeling', name: 'Spur Gear' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1101,6 +1128,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gear-herringbone',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Herringbone Gear',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1119,6 +1150,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gear-ring',
+              commandBarTarget: { groupId: 'modeling', name: 'Ring Gear' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1163,6 +1195,7 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'translate',
+              commandBarTarget: { groupId: 'modeling', name: 'Translate' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1183,6 +1216,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'rotate',
+              commandBarTarget: { groupId: 'modeling', name: 'Rotate' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1203,6 +1237,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'scale',
+              commandBarTarget: { groupId: 'modeling', name: 'Scale' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1221,6 +1256,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'clone',
+              commandBarTarget: { groupId: 'modeling', name: 'Clone' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1260,6 +1296,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'appearance',
+              commandBarTarget: { groupId: 'modeling', name: 'Appearance' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1306,6 +1343,10 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'pattern-circular-3d',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Pattern Circular 3D',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1327,6 +1368,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'pattern-linear-3d',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Pattern Linear 3D',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1354,6 +1399,7 @@ export function buildToolbarConfig(
           array: sortToolbarItemsByTitle([
             {
               id: 'gdt-flatness',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Flatness' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1438,6 +1484,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-datum',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Datum' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1457,6 +1504,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-profile',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Profile' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1478,6 +1526,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-position',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Position' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1595,6 +1644,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-perpendicularity',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Perpendicularity',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1619,6 +1672,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-parallelism',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Parallelism',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1643,6 +1700,7 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-distance',
+              commandBarTarget: { groupId: 'modeling', name: 'GDT Distance' },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1664,6 +1722,10 @@ export function buildToolbarConfig(
             },
             {
               id: 'gdt-annotation',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'GDT Annotation',
+              },
               onClick: () =>
                 commands.send({
                   type: 'Find and select command',
@@ -1967,6 +2029,10 @@ export function buildToolbarConfig(
           array: [
             {
               id: 'constraint-length',
+              commandBarTarget: {
+                groupId: 'modeling',
+                name: 'Constrain length',
+              },
               disabled: (state, wasmInstance) =>
                 !(
                   state.matches({ Sketch: 'SketchIdle' }) &&
