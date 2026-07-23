@@ -908,12 +908,18 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const library = computed<ProjectLibrary[]>(() => {
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
-    const configuredCloudLibrary =
-      settings.value?.current.value.app.libraries?.current.find(
+    const configuredLibraries =
+      settings.value?.current.value.app.libraries?.current
+    const configuredCloudLibraryIndex =
+      configuredLibraries?.findIndex(
         (library) =>
           library.type === defaultCloudLibrary.type &&
           library.path === defaultCloudLibrary.path
-      )
+      ) ?? -1
+    const configuredCloudLibrary =
+      configuredCloudLibraryIndex === -1
+        ? undefined
+        : configuredLibraries?.[configuredCloudLibraryIndex]
 
     return [
       {
@@ -921,7 +927,8 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
         ...configuredCloudLibrary,
         id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
         icon: 'network',
-        order: 10,
+        order:
+          configuredCloudLibraryIndex === -1 ? 10 : configuredCloudLibraryIndex,
       },
     ]
   })
