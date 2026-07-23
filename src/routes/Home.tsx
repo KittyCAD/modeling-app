@@ -35,7 +35,9 @@ import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   LEGACY_CLOUD_PROJECT_MIGRATION_DISMISSED_STORAGE_KEY,
+  type LegacyCloudProjectMigrationFailure,
   getLegacyCloudLocationProjects,
+  getLegacyCloudProjectMigrationFailureMessage,
   getLegacyCloudProjectMigrationSignature,
 } from '@src/lib/cloudSync/legacyProjectMigration'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
@@ -289,31 +291,69 @@ const Home = () => {
 
     setIsMigratingLegacyCloudProjects(true)
     try {
-      await Promise.all(
-        legacyCloudLocationProjects.map((project) =>
-          project.localProjectPath
-            ? cloudSync.moveProjectToPersonalCloudLibrary(
-                project.localProjectPath
-              )
-            : Promise.resolve()
+      const moveRequests = legacyCloudLocationProjects.flatMap((project) =>
+        project.localProjectPath
+          ? [
+              {
+                project,
+                promise: cloudSync.moveProjectToPersonalCloudLibrary(
+                  project.localProjectPath
+                ),
+              },
+            ]
+          : []
+      )
+
+      if (moveRequests.length === 0) {
+        return
+      }
+
+      const moveResults = await Promise.allSettled(
+        moveRequests.map(({ promise }) => promise)
+      )
+
+      const failures: LegacyCloudProjectMigrationFailure[] =
+        moveResults.flatMap((result, index) =>
+          result.status === 'rejected'
+            ? [
+                {
+                  project: moveRequests[index].project,
+                  reason: result.reason,
+                },
+              ]
+            : []
         )
+      const movedCount = moveResults.length - failures.length
+
+      if (movedCount > 0) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+        invalidateConfiguredProjectLibraryEntries()
+      }
+
+      if (failures.length === 0) {
+        storeLegacyCloudProjectMigrationDismissal(
+          legacyCloudLocationProjectSignature
+        )
+        setDismissedLegacyCloudProjectMigrationSignature(
+          legacyCloudLocationProjectSignature
+        )
+        toast.success(
+          `Moved ${movedCount} cloud-synced project${
+            movedCount === 1 ? '' : 's'
+          } into Personal Cloud.`
+        )
+        return
+      }
+
+      toast.error(
+        getLegacyCloudProjectMigrationFailureMessage({
+          movedCount,
+          failures,
+        })
       )
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-      invalidateConfiguredProjectLibraryEntries()
-      const count = legacyCloudLocationProjects.length
-      storeLegacyCloudProjectMigrationDismissal(
-        legacyCloudLocationProjectSignature
-      )
-      setDismissedLegacyCloudProjectMigrationSignature(
-        legacyCloudLocationProjectSignature
-      )
-      toast.success(
-        `Moved ${count} cloud-synced project${
-          count === 1 ? '' : 's'
-        } into Personal Cloud.`
-      )
+      reportRejection(failures[0].reason)
     } catch (error) {
       toast.error('Failed to move cloud-synced projects into Personal Cloud.')
       reportRejection(error)

@@ -1,4 +1,5 @@
 import {
+  getLegacyCloudProjectMigrationFailureMessage,
   getLegacyCloudLocationProjects,
   getLegacyCloudProjectMigrationSignature,
 } from '@src/lib/cloudSync/legacyProjectMigration'
@@ -77,5 +78,39 @@ describe('legacy cloud project migration helpers', () => {
         project({ remoteProjectId: 'remote-a' }),
       ])
     ).toBe('remote-a|remote-b')
+  })
+
+  it('formats single-project migration failures with the project and reason', () => {
+    expect(
+      getLegacyCloudProjectMigrationFailureMessage({
+        movedCount: 0,
+        failures: [
+          {
+            project: project({ title: 'Bracket' }),
+            reason: new Error(
+              'Personal Cloud already has a local copy of this cloud project at /documents/Zoo/personal/bracket.'
+            ),
+          },
+        ],
+      })
+    ).toBe(
+      'Could not move "Bracket" into Personal Cloud: Personal Cloud already has a local copy of this cloud project at /documents/Zoo/personal/bracket.'
+    )
+  })
+
+  it('formats partial migration failures without hiding successful moves', () => {
+    expect(
+      getLegacyCloudProjectMigrationFailureMessage({
+        movedCount: 2,
+        failures: [
+          {
+            project: project({ title: 'Bracket' }),
+            reason: 'destination already exists',
+          },
+        ],
+      })
+    ).toBe(
+      'Moved 2 cloud-synced projects, but could not move "Bracket" into Personal Cloud: destination already exists'
+    )
   })
 })
