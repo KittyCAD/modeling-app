@@ -10,6 +10,7 @@ import {
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
@@ -238,6 +239,17 @@ function hasPersonalCloudLibrarySetting(app: App) {
     )
 }
 
+function hasDefaultDirectoryLibrarySetting(app: App) {
+  const projectDirectory = app.settings.get().app.projectDirectory.current
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
+        library.path === projectDirectory
+    )
+}
+
 describe('project system', () => {
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -418,6 +430,7 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
       expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
+      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
       expect(
         app.registry
           .get(projectLibrariesValueSpec)
@@ -444,6 +457,8 @@ describe('project system', () => {
           current: getCloudSyncPluginSetting(app)?.current,
           user: getCloudSyncPluginSetting(app)?.user,
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasDefaultDirectoryLibrarySetting:
+            hasDefaultDirectoryLibrarySetting(app),
           hasPersonalCloudLibrary: app.registry
             .get(projectLibrariesValueSpec)
             .some(
@@ -456,6 +471,7 @@ describe('project system', () => {
           current: true,
           user: undefined,
           hasPersonalCloudLibrarySetting: true,
+          hasDefaultDirectoryLibrarySetting: false,
           hasPersonalCloudLibrary: true,
         })
 

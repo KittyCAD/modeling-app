@@ -424,6 +424,17 @@ describe('cloud sync project library', () => {
   test('opens the resolved local storage path from settings details', async () => {
     const registry = new Registry()
     const openPath = vi.fn().mockResolvedValue('')
+    vi.spyOn(fsZds, 'getPath').mockImplementation(async (pathType) => {
+      if (pathType === 'appData') {
+        return '/Users/frank/Library/Application Support/dev.zoo.modeling-app'
+      }
+
+      return '/documents'
+    })
+    vi.spyOn(fsZds, 'dirname').mockReturnValue('/Users/frank/Library')
+    vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
+      parts.reduce((path, part) => `${path}/${part}`)
+    )
     const mkdir = vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     window.electron = {

@@ -1,5 +1,6 @@
 import {
   DirectoryProjectLibrarySettingsDetails,
+  filterProjectLibraryTypeOptionsForSettings,
   ProjectLibrariesSettingInput,
   projectLibraryTypeOptionsFromContributions,
   type ProjectLibraryTypeOption,
@@ -117,6 +118,33 @@ describe('ProjectLibrariesSettingInput', () => {
     expect(screen.queryByTestId('project-directory-input')).toBeNull()
   })
 
+  test('filters library types hidden on the current platform from settings options', () => {
+    expect(
+      filterProjectLibraryTypeOptionsForSettings(
+        projectLibraryTypeOptionsFromContributions(
+          new Map([
+            [
+              'directory',
+              {
+                type: 'directory',
+                title: 'Directory',
+                hideInSettingsOnPlatform: 'web',
+              },
+            ],
+            [
+              'cloud',
+              {
+                type: 'cloud',
+                title: 'Cloud',
+              },
+            ],
+          ])
+        ),
+        { isDesktop: false }
+      ).map((option) => option.value)
+    ).toEqual(['cloud'])
+  })
+
   test('does not update project libraries when normalization matches the current value', () => {
     const updateValue = vi.fn()
     render(
@@ -185,6 +213,29 @@ describe('ProjectLibrariesSettingInput', () => {
         type: 'directory',
       },
     ])
+  })
+
+  test('hides library management controls when management is disabled', () => {
+    const updateValue = vi.fn()
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={libraryTypeOptions}
+        canManageLibraries={false}
+      />
+    )
+
+    expect(screen.queryByTestId('project-library-add')).toBeNull()
+    expect(screen.queryByTestId('project-library-remove')).toBeNull()
+    expect(screen.queryByTestId('project-library-drag-handle')).toBeNull()
+    expect(screen.getByTestId('project-library-type')).toHaveAttribute(
+      'aria-label',
+      'Library type: Directory'
+    )
+    expect(screen.getByTestId('project-directory-input')).toHaveTextContent(
+      '/projects'
+    )
   })
 
   test('shows library type as an icon button with icon and label options', () => {

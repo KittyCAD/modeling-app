@@ -7,8 +7,7 @@ export const CLOUD_PROJECT_LIBRARY_FOLDER = 'Zoo'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER = 'personal'
 export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
   'documents',
-  CLOUD_PROJECT_LIBRARY_FOLDER,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER,
+  PROJECT_FOLDER,
 ])}`
 
 export async function getDefaultCloudProjectDirectoryPath() {
@@ -22,6 +21,14 @@ export async function getDefaultCloudProjectDirectoryPath() {
       )
     } catch {
       // Fall back to the cross-platform documents location below.
+    }
+  }
+
+  if (typeof window !== 'undefined' && !window.electron) {
+    try {
+      return fsZds.join(await fsZds.getPath('documents'), PROJECT_FOLDER)
+    } catch {
+      return DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH
     }
   }
 
