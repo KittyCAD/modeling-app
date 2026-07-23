@@ -28,6 +28,7 @@ import {
 import type { FileEntry } from '@src/lib/project'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -51,6 +52,7 @@ export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectDirectoryScanner'
+export { getDuplicateProjectBaseName } from '@src/lib/projectDuplication'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -151,6 +153,28 @@ async function getUniqueProjectNameForCreate({
   return getUniqueProjectName(requestedProjectName, existingEntries)
 }
 
+function normalizeProjectPathForCloudMetadata(projectPath: string) {
+  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+async function runWithProjectTargetLock<T>(
+  targetPath: string,
+  operation: () => Promise<T>
+) {
+  const lockManager =
+    typeof navigator !== 'undefined' ? navigator.locks : undefined
+  if (!lockManager) {
+    return operation()
+  }
+
+  const normalizedTargetPath = normalizeProjectPathForCloudMetadata(
+    fsZds.resolve(targetPath)
+  ).toLowerCase()
+  return lockManager.request(
+    `zds:project-target:${normalizedTargetPath}`,
+    operation
+  )
+}
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
@@ -452,19 +476,76 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectDirectoryName: requestedProjectName,
           uniqueProjectDirectoryName: uniqueName,
         })
-        await createNewProjectDirectory(
-          uniqueName,
-          await input.context.wasmInstancePromise,
-          undefined,
-          undefined,
-          undefined,
-          projectDirectoryPath,
-          uniqueProjectTitle
-        )
+        const createProject = async () =>
+          createNewProjectDirectory(
+            uniqueName,
+            await input.context.wasmInstancePromise,
+            undefined,
+            undefined,
+            undefined,
+            projectDirectoryPath,
+            uniqueProjectTitle
+          )
+
+        if (projectDirectoryPath) {
+          const targetPath = fsZds.join(projectDirectoryPath, uniqueName)
+          await runWithProjectTargetLock(targetPath, async () => {
+            if (await pathExists(targetPath)) {
+              return Promise.reject(
+                new Error(`Project "${uniqueName}" already exists`)
+              )
+            }
+            await createProject()
+          })
+        } else {
+          await createProject()
+        }
         return {
           message: `Successfully created "${uniqueProjectTitle}"`,
           name: uniqueName,
         }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
+      }) => {
+        const folders = input.context.folders
+        if (!folders) {
+          return Promise.reject(new Error('Projects have not finished loading'))
+        }
+
+        const project = folders.find(({ name }) => name === input.projectName)
+        if (!project) {
+          return Promise.reject(
+            new Error(`Project "${input.projectName}" does not exist`)
+          )
+        }
+
+        const projectDirectoryPath = input.context.projectDirectoryPath
+        if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
+          return Promise.reject(
+            new Error('Unable to determine the project directory.')
+          )
+        }
+        return duplicateProjectInDirectory({
+          app: input.context.app,
+          source: {
+            directoryName: project.name,
+            displayName: getProjectDisplayName(project),
+            path: project.path,
+          },
+          projectDirectoryPath,
+          requestedProjectTitle: input.requestedProjectName,
+          unavailableProjectTitles: folders.map(getProjectDisplayName),
+          wasmInstance: await input.context.wasmInstancePromise,
+        })
       }
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(

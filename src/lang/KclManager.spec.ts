@@ -483,6 +483,147 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1)
     expect(writeSpy).toHaveBeenCalledTimes(1)
     expect(writeSpy).toHaveBeenCalledWith('second')
+    expect(
+      (kclManager as unknown as { timeoutWriter?: unknown }).timeoutWriter
+    ).toBeUndefined()
+  })
+
+  it('flushes the current buffer without waiting for the write debounce', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+
+    await kclManager.flushPendingWriteToFile()
+
+    expect(writeSpy).toHaveBeenCalledWith('latest')
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('settles the debounced write promise when flushing it', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+    })
+    const pendingWrite = kclManager.writeToFile()
+
+    await kclManager.flushPendingWriteToFile()
+
+    await expect(pendingWrite).resolves.toBeUndefined()
+  })
+
+  it('settles the debounced write promise when closing', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    const writeSpy = vi.spyOn(kclManager, 'write')
+    kclManager.path = '/tmp/kcl-manager-close-test.kcl'
+
+    const pendingWrite = kclManager.writeToFile()
+    kclManager.close()
+
+    await expect(pendingWrite).resolves.toBeInstanceOf(Error)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(writeSpy).not.toHaveBeenCalled()
+  })
+
+  it('keeps the file watcher rearm scheduled after a no-op flush', async () => {
+    vi.useFakeTimers()
+
+    const { kclManager } = createKclManagerTestHarness('start')
+    let diskCode = 'start'
+    vi.spyOn(kclManager, 'write').mockImplementation(async (code) => {
+      diskCode = code
+    })
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    kclManager.watch()
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
+      async () => diskCode
+    )
+
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(kclManager.watching).toBe(false)
+
+    await kclManager.flushPendingWriteToFile()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.watching).toBe(true)
+  })
+
+  it('flushes the current buffer when no write is scheduled', async () => {
+    const { kclManager } = createKclManagerTestHarness('start')
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+    })
+
+    await kclManager.flushPendingWriteToFile()
+
+    expect(writeSpy).toHaveBeenCalledWith('latest')
+  })
+
+  it('awaits an in-flight write and propagates its error', async () => {
+    vi.useFakeTimers()
+    const { kclManager } = createKclManagerTestHarness('start')
+    const deferredWrite = createDeferred<undefined>()
+    const writeError = new Error('write failed')
+    const writeSpy = vi
+      .spyOn(kclManager, 'write')
+      .mockReturnValue(deferredWrite.promise)
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('start')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+
+    kclManager.updateCodeEditor('latest', {
+      shouldExecute: false,
+      shouldWriteToDisk: true,
+      shouldResetCamera: false,
+    })
+    await vi.advanceTimersByTimeAsync(1000)
+
+    const flushPromise = kclManager.flushPendingWriteToFile()
+    deferredWrite.reject(writeError)
+
+    await expect(flushPromise).rejects.toBe(writeError)
+    expect(writeSpy).toHaveBeenCalledTimes(1)
   })
 
   it('reloads clean editor state from disk watcher updates', async () => {

@@ -1,9 +1,5 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type {
-  HomeProjectEntry,
-  HomeProjectEntryContribution,
-  HomeProjectOpenResult,
-} from '@src/registry/contracts/homeProjects'
+import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -11,6 +7,11 @@ import type {
 } from '@src/lib/projectLibraries'
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { isArray } from '@src/lib/utils'
+import type {
+  HomeProjectEntry,
+  HomeProjectEntryContribution,
+  HomeProjectOpenResult,
+} from '@src/registry/contracts/homeProjects'
 
 export type ProjectLibraryContribution =
   | ProjectLibrary
@@ -41,6 +42,8 @@ export interface ProjectLibraryProjectInput {
 
 export type ProjectLibraryOpenProjectInput = ProjectLibraryProjectInput
 
+export type ProjectLibraryDuplicateProjectInput = ProjectLibraryProjectInput
+
 export interface ProjectLibraryRenameProjectInput
   extends ProjectLibraryProjectInput {
   requestedName: string
@@ -53,6 +56,10 @@ export interface ProjectLibraryTypeOperations {
   openProject?: ProjectLibraryOperation<
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined
+  >
+  duplicateProject?: ProjectLibraryOperation<
+    ProjectLibraryDuplicateProjectInput,
+    DuplicateProjectResult | undefined
   >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>

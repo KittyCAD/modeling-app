@@ -1,19 +1,19 @@
 import {
-  combineProjectLibrarySettingDefaults,
-  combineProjectLibraryTypes,
-  combineProjectLibraries,
-  getHomeProjectEntriesForLibrary,
-  getProjectLibraryOperation,
-} from '@src/registry/contracts/projectLibraries'
-import {
   DEFAULT_PROJECT_LIBRARY_ID,
   getContainingDirectoryProjectLibraryPath,
-  getDefaultDirectoryProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryIdFromSetting,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import {
+  combineProjectLibraries,
+  combineProjectLibrarySettingDefaults,
+  combineProjectLibraryTypes,
+  getHomeProjectEntriesForLibrary,
+  getProjectLibraryOperation,
+} from '@src/registry/contracts/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
 describe('project library settings', () => {
@@ -203,6 +203,9 @@ describe('combineProjectLibraryTypes', () => {
     const openProject = {
       run: async () => undefined,
     }
+    const duplicateProject = {
+      run: async () => undefined,
+    }
     const renameProject = {
       run: async () => undefined,
     }
@@ -219,6 +222,7 @@ describe('combineProjectLibraryTypes', () => {
           operations: {
             createProject,
             openProject,
+            duplicateProject,
           },
         },
         {
@@ -238,6 +242,7 @@ describe('combineProjectLibraryTypes', () => {
       operations: {
         createProject,
         openProject,
+        duplicateProject,
         renameProject,
         deleteProject,
       },

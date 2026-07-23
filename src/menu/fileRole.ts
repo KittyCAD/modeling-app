@@ -104,6 +104,11 @@ export const modelingFileRole = (
         click: sendMenuAction(mainWindow, 'File.Create project'),
       },
       {
+        label: 'Duplicate Project',
+        id: 'File.Duplicate project',
+        click: sendMenuAction(mainWindow, 'File.Duplicate project'),
+      },
+      {
         label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',

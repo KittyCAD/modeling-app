@@ -2401,6 +2401,9 @@ async function registerProjectMutation(
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (projectNameFromPath(normalizedProjectPath).startsWith('.')) {
+    return
+  }
   let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(normalizedProjectPath)

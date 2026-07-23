@@ -66,6 +66,9 @@ function createProjectMenuApp() {
         actor: commandsActor,
         send: vi.fn(),
       },
+      systemIOActor: {
+        send: vi.fn(),
+      },
       settings: {
         actor: {},
         useSettings: () => ({
@@ -86,6 +89,35 @@ function createProjectMenuApp() {
 }
 
 describe('project explorer project menu', () => {
+  test('duplicates the current project', async () => {
+    const { app, dispose } = createProjectMenuApp()
+
+    try {
+      renderWithRouter(
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
+      )
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+      const duplicateButton = (
+        await screen.findByTestId('project-sidebar-duplicate-project')
+      ).closest('button')
+
+      expect(duplicateButton).not.toBeNull()
+      if (!duplicateButton) return
+      fireEvent.click(duplicateButton)
+
+      expect(app.systemIOActor.send).toHaveBeenCalledWith({
+        type: 'duplicate project',
+        data: {
+          projectName: projectWellFormed.name,
+          requestedProjectName: projectWellFormed.title,
+        },
+      })
+    } finally {
+      dispose()
+    }
+  })
+
   test('reveals the current project from the contributed menu item on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     const showInFolder = vi.fn()

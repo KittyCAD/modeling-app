@@ -8,7 +8,11 @@ import { describe, expect, test, vi } from 'vitest'
 describe('useOnPageMounted', () => {
   const singletons = App.fromProvided({
     registryOverrides: [
-      createTestWasmRegistryItem(Promise.resolve({} as ModuleType)),
+      createTestWasmRegistryItem(
+        Promise.resolve({
+          set_kcl_runtime_flags: vi.fn(),
+        } as unknown as ModuleType)
+      ),
     ],
   }).singletons
 

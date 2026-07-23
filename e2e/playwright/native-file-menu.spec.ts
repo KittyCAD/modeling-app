@@ -257,7 +257,8 @@ test.describe(
         throwTronAppMissing()
         return
       }
-      await homePage.goToModelingScene()
+      const sourceProjectName = 'native-menu-duplicate-source'
+      await homePage.goToModelingScene(sourceProjectName)
       await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
@@ -270,6 +271,13 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Create project')
         await cmdBar.expectCommandName('Create project')
+      })
+      await test.step('Modeling.File.Duplicate project', async () => {
+        await page.waitForTimeout(250)
+        await nativeMenu.click('File.Duplicate project')
+        await expect(page.getByTestId('app-header-project-name')).toHaveText(
+          `${sourceProjectName}-1`
+        )
       })
       await test.step('Modeling.File.Open project', async () => {
         await page.waitForTimeout(250)

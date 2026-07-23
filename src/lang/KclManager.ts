@@ -1094,6 +1094,11 @@ export class KclManager extends File {
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+  private pendingWriteSettlers: Array<{
+    resolve: () => void
+    reject: (reason?: unknown) => void
+  }> = []
+  private inFlightWrite: Promise<void> | undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -2151,6 +2156,12 @@ export class KclManager extends File {
   /** Clean up listeners, watchers, etc */
   public close() {
     clearTimeout(this.timeoutWriter)
+    this.timeoutWriter = undefined
+    const closeError = new Error(
+      'KCL manager closed before pending write completed'
+    )
+    this.pendingWriteSettlers.forEach(({ reject }) => reject(closeError))
+    this.pendingWriteSettlers = []
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
@@ -3667,14 +3678,37 @@ export class KclManager extends File {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
-      clearTimeout(this.timeoutRewatch)
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
+        this.pendingWriteSettlers.push({ resolve, reject })
         this.timeoutWriter = setTimeout(() => {
-          this.performDelayedWriteToFile({
-            newCode,
-            requestedDocumentVersion,
-            options,
-          }).then(resolve, reject)
+          this.timeoutWriter = undefined
+          const pendingWriteSettlers = this.pendingWriteSettlers
+          this.pendingWriteSettlers = []
+          const previousWrite = this.inFlightWrite
+          const writePromise = (previousWrite ?? Promise.resolve())
+            .catch(() => undefined)
+            .then(() =>
+              this.performDelayedWriteToFile({
+                newCode,
+                requestedDocumentVersion,
+                options,
+              })
+            )
+          this.inFlightWrite = writePromise
+          void writePromise.then(
+            () => {
+              if (this.inFlightWrite === writePromise) {
+                this.inFlightWrite = undefined
+              }
+              pendingWriteSettlers.forEach(({ resolve }) => resolve())
+            },
+            (error) => {
+              if (this.inFlightWrite === writePromise) {
+                this.inFlightWrite = undefined
+              }
+              pendingWriteSettlers.forEach(({ reject }) => reject(error))
+            }
+          )
         }, 1000)
       }).catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
@@ -3682,6 +3716,42 @@ export class KclManager extends File {
         }
         return err
       })
+    }
+  }
+
+  /** Persist the editor's current buffer without waiting for the debounce. */
+  async flushPendingWriteToFile() {
+    if (!this.path) {
+      return
+    }
+    while (this.inFlightWrite) {
+      await this.inFlightWrite
+    }
+    clearTimeout(this.timeoutWriter)
+    this.timeoutWriter = undefined
+    const pendingWriteSettlers = this.pendingWriteSettlers
+    this.pendingWriteSettlers = []
+    const writePromise = this.performDelayedWriteToFile({
+      newCode: this.code,
+      requestedDocumentVersion: this._documentVersion,
+      options: {},
+    })
+    this.inFlightWrite = writePromise
+    try {
+      await writePromise
+      if (!isCodeTheSame(this._lastKnownFileCode, this.code)) {
+        const error = new Error('Unable to persist the current editor contents')
+        pendingWriteSettlers.forEach(({ reject }) => reject(error))
+        return Promise.reject(error)
+      }
+      pendingWriteSettlers.forEach(({ resolve }) => resolve())
+    } catch (error) {
+      pendingWriteSettlers.forEach(({ reject }) => reject(error))
+      return Promise.reject(error)
+    } finally {
+      if (this.inFlightWrite === writePromise) {
+        this.inFlightWrite = undefined
+      }
     }
   }
 
@@ -3744,6 +3814,8 @@ export class KclManager extends File {
     }
 
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutRewatch = undefined
     this.unwatch()
 
     try {

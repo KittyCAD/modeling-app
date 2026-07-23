@@ -3,6 +3,7 @@ import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { getOPFSStorageRootPath } from '@src/lib/fs-zds/opfsPath'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
 
 // Holds onto directory metadata that is not stored by the File System API.
@@ -107,13 +108,14 @@ const walk = async (
   targetPath: string,
   onTargetNode?: (part: string) => void
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
+  const resolvedTargetPath = path.resolve(targetPath)
+  const storageRootPath = getOPFSStorageRootPath(resolvedTargetPath)
   let current = await navigator.storage.getDirectory()
-  let cwd = ''
+  let cwd = storageRootPath
   let looped = true
   let currentChanged = true
 
-  // '/'.split('/').length === 2 always.
-  if (targetPath.split(path.sep).length === 2) {
+  if (resolvedTargetPath === storageRootPath) {
     return current
   }
 
@@ -125,7 +127,10 @@ const walk = async (
       looped = true
       const currentPath = path.resolve(cwd, name)
 
-      if (targetPath.startsWith(currentPath) === false) {
+      if (
+        resolvedTargetPath !== currentPath &&
+        !resolvedTargetPath.startsWith(`${currentPath}${path.sep}`)
+      ) {
         continue
       }
 
@@ -133,7 +138,7 @@ const walk = async (
         onTargetNode(name)
       }
 
-      if (targetPath === currentPath) {
+      if (resolvedTargetPath === currentPath) {
         return handle
       }
 
@@ -328,42 +333,49 @@ const readFile = async <T extends ReadFileOptions>(
 }
 
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
-  const parts = targetPath.split(path.sep)
+  const resolvedTargetPath = path.resolve(targetPath)
+  const storageRootPath = getOPFSStorageRootPath(resolvedTargetPath)
 
   if (options?.recursive === true) {
+    const relativeParts = path
+      .relative(storageRootPath, resolvedTargetPath)
+      .split(path.sep)
+      .filter(Boolean)
     let current = navigator.storage.getDirectory()
-    for (const part of parts) {
-      // Indicative we're at /
-      if (part === '') continue
+    for (const part of relativeParts) {
       current = (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
   }
 
   // If not recursive, try to walk to the parent first, then create.
-  const parent = parts.slice(0, -1).join(path.sep)
-  const handle = await walk(parent)
+  const handle = await walk(path.dirname(resolvedTargetPath))
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
-  await handle.getDirectoryHandle(parts.slice(-1)[0], { create: true })
+  await handle.getDirectoryHandle(path.basename(resolvedTargetPath), {
+    create: true,
+  })
   return undefined
 }
 
-const rm = async (targetPath: string, options?: { recursive: boolean }) => {
+const rm = async (
+  targetPath: string,
+  options?: { recursive?: boolean; force?: boolean }
+) => {
+  const target = await walk(targetPath)
+  if (target === undefined) {
+    return options?.force ? undefined : Promise.reject('ENOENT')
+  }
+
   const dirName = path.dirname(targetPath)
   const baseName = path.basename(targetPath)
   const handle = await walk(dirName)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return
-  let isFile = false
-  try {
-    await handle.getFileHandle(baseName)
-    isFile = true
-  } catch (e: unknown) {
-    console.log(e)
-  }
   return handle.removeEntry(baseName, {
-    recursive: (options?.recursive ?? false) && !isFile,
+    recursive:
+      (options?.recursive ?? false) &&
+      target instanceof FileSystemDirectoryHandle,
   })
 }
 
@@ -448,28 +460,54 @@ const getPath: IZooDesignStudioFS['getPath'] = async (type) => {
   return path.sep + type
 }
 
-// In OPFS the system always has read-write permissions.
-const access = async (_path: string, _bitflags: number): Promise<undefined> => {
+// OPFS entries are always read-write, but the path must still exist.
+const access = async (targetPath: string, _bitflags: number) => {
+  if ((await walk(targetPath)) === undefined) {
+    return Promise.reject('ENOENT')
+  }
   return undefined
 }
 
 // Kind of a misnomer coming from NodeJS. This should be called `move`.
+const runWithRenameTargetLock = async <T>(
+  targetPath: string,
+  operation: () => Promise<T>
+) => {
+  const lockManager =
+    typeof navigator !== 'undefined' ? navigator.locks : undefined
+  if (!lockManager) {
+    return operation()
+  }
+
+  return lockManager.request(
+    `zds:opfs:rename:${path.resolve(targetPath).replaceAll('\\', '/')}`,
+    operation
+  )
+}
+
 const rename = async (
   sourcePath: string,
   targetPath: string
 ): Promise<undefined> => {
-  const handle = await walk(sourcePath)
-  if (handle === undefined) return Promise.reject('ENOENT')
+  return runWithRenameTargetLock(targetPath, async () => {
+    const handle = await walk(sourcePath)
+    if (handle === undefined) return Promise.reject('ENOENT')
+    if ((await walk(targetPath)) !== undefined) return Promise.reject('EEXIST')
 
-  if (handle instanceof FileSystemFileHandle) {
-    await cp(sourcePath, targetPath)
-    await rm(sourcePath)
-  } else {
-    await mkdir(targetPath)
-    await cp(sourcePath, targetPath)
-    await rm(sourcePath, { recursive: true })
-  }
-  return undefined
+    const sourceIsDirectory = handle instanceof FileSystemDirectoryHandle
+    if (sourceIsDirectory) {
+      await mkdir(targetPath)
+    }
+
+    try {
+      await cp(sourcePath, targetPath)
+      await rm(sourcePath, { recursive: sourceIsDirectory })
+    } catch (error) {
+      await rm(targetPath, { recursive: true }).catch(() => undefined)
+      return Promise.reject(error)
+    }
+    return undefined
+  })
 }
 
 // OPFS takes a very minimal approach to its API surface via primitives.
@@ -491,8 +529,27 @@ const cp = async (
       await writeFile(targetPath, Uint8Array.from(data))
     }
   } else {
+    const resolvedSourcePath = path.resolve(sourcePath)
+    const resolvedTargetPath = path.resolve(targetPath)
+    const sourcePathPrefix = resolvedSourcePath.endsWith(path.sep)
+      ? resolvedSourcePath
+      : `${resolvedSourcePath}${path.sep}`
+    if (
+      resolvedTargetPath === resolvedSourcePath ||
+      resolvedTargetPath.startsWith(sourcePathPrefix)
+    ) {
+      return Promise.reject('EINVAL')
+    }
+
+    const targetHandle = await walk(targetPath)
+    if (targetHandle === undefined) {
+      await mkdir(targetPath)
+    } else if (targetHandle instanceof FileSystemFileHandle) {
+      return Promise.reject('ENOTDIR')
+    }
+
     await scan(sourcePath, async (cwd, handle) => {
-      const relativePathToSourcePath = path.basename(cwd, sourcePath)
+      const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
         targetPath,
         relativePathToSourcePath,

@@ -88,6 +88,10 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: { projectName: string; requestedProjectName: string }
+        }
+      | {
           type: SystemIOMachineEvents.renameProject
           data: {
             /** New human-facing project title to write to project.toml. */
@@ -498,6 +502,19 @@ export const systemIOMachine = setup({
         return { message: '', name: '' }
       }
     ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName, requestedProjectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
+      }) => {
+        return { message: '', name: '' }
+      }
+    ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
       async ({
         input: { context, requestedProjectName },
@@ -878,6 +895,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -986,6 +1006,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1087,6 +1110,7 @@ export const systemIOMachine = setup({
               },
               pendingRenamedProjectName: () => undefined, // clear after redirect
             }),
+            SystemIOMachineActions.flushDeferredSystemIOEvent,
           ],
         },
         onError: {
@@ -1095,6 +1119,7 @@ export const systemIOMachine = setup({
             assign({
               folders: ({ context }) => context.folders ?? [],
               hasListedProjects: true,
+              deferredSystemIOEvent: undefined,
             }),
           ],
         },
@@ -1122,6 +1147,36 @@ export const systemIOMachine = setup({
                   name: (event as { output: { name: string } }).output.name,
                 }
               },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
+              requestedProjectName: ({ event }) => ({
+                name: (event as { output: { name: string } }).output.name,
+              }),
             }),
             SystemIOMachineActions.toastSuccess,
           ],
@@ -1319,6 +1374,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,

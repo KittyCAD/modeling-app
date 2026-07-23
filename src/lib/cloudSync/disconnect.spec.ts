@@ -1,11 +1,12 @@
 import 'fake-indexeddb/auto'
 import {
-  cloudSyncStatus,
   cloudSyncRemoteProjects,
+  cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
   setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
@@ -265,6 +266,16 @@ describe('disconnectCloudSyncProject', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteSyncDatabase()
+  })
+
+  it('ignores mutations inside hidden project roots', async () => {
+    const hiddenProjectPath = '/documents/Projects/.zds-duplicate-staging'
+    configureCloudSyncLocalFileSystem(createTestFs(new Map()))
+
+    await notifyCloudSyncWriteLikeMutation(`${hiddenProjectPath}/project.toml`)
+
+    expect(await getCloudSyncProjectMetadata(hiddenProjectPath)).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {

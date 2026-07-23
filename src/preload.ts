@@ -11,6 +11,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
+import { cp } from '@src/lib/fs-zds/nodefs'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
@@ -146,7 +147,6 @@ const readdir = (path: string) => fs.readdir(path, 'utf-8')
 const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
-
 /**
  * Recursively move a file or folder to a destination
  * using the native Node `.rename` function,
@@ -386,5 +386,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  cp: fs.cp,
+  cp,
 })

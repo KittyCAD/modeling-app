@@ -18,6 +18,7 @@ import {
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -36,9 +37,9 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryOperation,
+  type ProjectLibraryTypeOperations,
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
-  type ProjectLibraryTypeOperations,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
@@ -131,6 +132,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
       ),
+    canDuplicate: (project) =>
+      Boolean(
+        systemIO.value &&
+          project.localProjectName &&
+          project.localProjectPath &&
+          getProjectOperation(project, 'duplicateProject')
+      ),
     canRename: (project) =>
       Boolean(
         project.localProjectPath &&
@@ -171,6 +179,24 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
       return { defaultFile: projectInfo.default_file }
+    },
+    duplicate: async (project) => {
+      const duplicateProject = getProjectOperation(project, 'duplicateProject')
+      if (
+        !serviceImpl.canDuplicate(project) ||
+        !duplicateProject ||
+        !project.localProjectName
+      ) {
+        return
+      }
+
+      const result = await duplicateProject.operation.run({
+        library: duplicateProject.library,
+        project,
+      })
+      if (result) {
+        toast.success(result.message)
+      }
     },
     rename: async (project, requestedName) => {
       const renameProject = getProjectOperation(project, 'renameProject')
@@ -362,6 +388,39 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 }
 
                 return { defaultFile: project.defaultFile }
+              },
+            },
+            duplicateProject: {
+              run: async ({ library, project }) => {
+                const systemIOService = systemIO.value
+                if (
+                  !systemIOService ||
+                  !project.localProjectName ||
+                  !project.localProjectPath
+                ) {
+                  return undefined
+                }
+
+                const result = await duplicateProjectInDirectory({
+                  app: systemIOService.actor.getSnapshot().context.app,
+                  source: {
+                    directoryName: project.localProjectName,
+                    displayName: getHomeProjectDisplayName(project),
+                    path: project.localProjectPath,
+                  },
+                  projectDirectoryPath: library.path,
+                  requestedProjectTitle: getHomeProjectDisplayName(project),
+                  unavailableProjectTitles: ctx.valueSpecs
+                    .get(homeProjectEntriesValueSpec)
+                    .filter((entry) => entry.libraryIds?.includes(library.id))
+                    .map(getHomeProjectDisplayName),
+                  wasmInstance: await getWasmPromise(),
+                })
+                systemIOService.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+
+                return result
               },
             },
             renameProject: {

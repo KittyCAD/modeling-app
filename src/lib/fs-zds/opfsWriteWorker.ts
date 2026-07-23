@@ -1,4 +1,5 @@
 import path from 'path'
+import { getOPFSStorageRootPath } from '@src/lib/fs-zds/opfsPath'
 
 type WriteFileRequest = {
   id: number
@@ -14,12 +15,14 @@ type WorkerResponse =
 const walk = async (
   targetPath: string
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
+  const resolvedTargetPath = path.resolve(targetPath)
+  const storageRootPath = getOPFSStorageRootPath(resolvedTargetPath)
   let current = await navigator.storage.getDirectory()
-  let cwd = ''
+  let cwd = storageRootPath
   let looped = true
   let currentChanged = true
 
-  if (targetPath.split(path.sep).length === 2) {
+  if (resolvedTargetPath === storageRootPath) {
     return current
   }
 
@@ -31,11 +34,14 @@ const walk = async (
       looped = true
       const currentPath = path.resolve(cwd, name)
 
-      if (targetPath.startsWith(currentPath) === false) {
+      if (
+        resolvedTargetPath !== currentPath &&
+        !resolvedTargetPath.startsWith(`${currentPath}${path.sep}`)
+      ) {
         continue
       }
 
-      if (targetPath === currentPath) {
+      if (resolvedTargetPath === currentPath) {
         return handle
       }
 
