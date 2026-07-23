@@ -1335,10 +1335,17 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    if (s.artifact?.type === 'edgeCut' && s.codeRef) {
+    const selectedEdgeCut =
+      s.artifact?.type === 'edgeCut'
+        ? s.artifact
+        : resolvedForSegment?.artifact?.type === 'edgeCut'
+          ? resolvedForSegment.artifact
+          : null
+    const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
+    if (selectedEdgeCut && edgeCutCodeRef) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration',
         false,
@@ -1357,7 +1364,7 @@ export function getVariableExprsFromSelection(
 
       const edgeCutCall = getNodeFromPath<CallExpressionKw>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'CallExpressionKw',
         false,

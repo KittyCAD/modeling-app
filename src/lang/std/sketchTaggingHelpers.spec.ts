@@ -1,5 +1,8 @@
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { addTagForSketchOnFace } from '@src/lang/std/sketchTaggingHelpers'
+import {
+  addTagForSketchOnFace,
+  addTagToSingletonEdgeCut,
+} from '@src/lang/std/sketchTaggingHelpers'
 import { topLevelRange } from '@src/lang/util'
 import { assertParse, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -136,5 +139,53 @@ ${insertCode}
         genCode(expectedChamfer)
       )
     })
+  })
+})
+
+describe('addTagToSingletonEdgeCut', () => {
+  const addTag = (code: string) => {
+    const ast = assertParse(code, instanceInThisFile)
+    const callStart = code.indexOf('chamfer(')
+    const pathToNode = getNodePathFromSourceRange(
+      ast,
+      topLevelRange(callStart, code.length)
+    )
+    return addTagToSingletonEdgeCut(
+      { node: ast, pathToNode, wasmInstance: instanceInThisFile },
+      instanceInThisFile
+    )
+  }
+
+  it.each([
+    [
+      'a face API edge selector',
+      `chamfer001 = chamfer(body001, edges = [{ sideFaces = [faceA, faceB] }], length = 1)`,
+    ],
+    [
+      'a legacy tags expression',
+      `chamfer001 = chamfer(body001, tags = getCommonEdge(faces = [faceA, faceB]), length = 1)`,
+    ],
+  ])('tags a chamfer containing %s', (_description, code) => {
+    const result = addTag(code)
+    if (err(result)) throw result
+
+    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+      'tag = $seg01'
+    )
+  })
+
+  it('rejects an operation containing multiple edge selectors', () => {
+    const result = addTag(
+      `chamfer001 = chamfer(body001, edges = [
+  { sideFaces = [faceA, faceB] },
+  { sideFaces = [faceB, faceC] }
+], length = 1)`
+    )
+
+    expect(result).toEqual(
+      new Error(
+        'Cannot tag an edge cut from an operation with multiple selectors until source-selector metadata is available'
+      )
+    )
   })
 })

@@ -741,6 +741,67 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('falls back to faceId on the latest body after chained edge treatments', async () => {
+      const code = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+extrude001 = extrude(region001, length = 12, tagEnd = $endCap)
+chamfer001 = chamfer(
+  extrude001,
+  edges = [{ sideFaces = [region001.tags.bottom, endCap] }],
+  length = 2,
+)
+fillet001 = fillet(
+  chamfer001,
+  edges = [{ sideFaces = [region001.tags.top, endCap] }],
+  radius = 2,
+)`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      if (!sweep) throw new Error('Could not find expected sweep')
+
+      const result = addDeleteFace({
+        ast,
+        artifactGraph,
+        faces: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'face',
+                face_id: '00000000-0000-0000-0000-000000000002',
+              },
+              engineTopologyFallback: {
+                parentId: sweep.id,
+                primitiveIndex: 7,
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`face001 = faceId(fillet001, index = 7)`)
+      expect(newCode).toContain(
+        `surface001 = deleteFace(fillet001, faces = face001)`
+      )
+    })
+
     it('should add a deleteFace call on the bracket', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         bracket,
