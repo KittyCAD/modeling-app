@@ -2515,23 +2515,18 @@ export function canSubmitSelectionArg(
     inputType: 'selection' | 'selectionMixed'
   }
 ) {
-  if (selectionsByType === 'none') {
-    return false
-  }
-
-  // Filter to only selection types that match the argument's allowed types
-  const relevantSelections = [...selectionsByType.entries()].filter(([type]) =>
-    argument.selectionTypes.includes(type as Artifact['type'])
+  return (
+    selectionsByType !== 'none' &&
+    [...selectionsByType.entries()].every(([type, count]) => {
+      const isAllowedType = argument.selectionTypes.includes(
+        type as Artifact['type']
+      )
+      return (
+        isAllowedType &&
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
+      )
+    })
   )
-
-  if (relevantSelections.length === 0) {
-    return false
-  }
-
-  // Check if all relevant selections are valid
-  return relevantSelections.every(([type, count]) => {
-    return !argument.multiple ? count < 2 && count > 0 : count > 0
-  })
 }
 
 /**

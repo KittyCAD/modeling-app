@@ -12,6 +12,7 @@ import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
+  canSubmitSelectionArg,
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
@@ -1947,6 +1948,38 @@ describe('getSelectionTypeDisplayText', () => {
 
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
+    )
+  })
+})
+
+describe('canSubmitSelectionArg', () => {
+  const bodyArgument = {
+    inputType: 'selection' as const,
+    selectionTypes: ['sweep'],
+    multiple: false,
+  } as Parameters<typeof canSubmitSelectionArg>[1]
+
+  test('accepts a selection containing only an allowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['sweep', 1]]), bodyArgument)).toBe(
+      true
+    )
+  })
+
+  test('rejects a selection containing an allowed and a disallowed type', () => {
+    expect(
+      canSubmitSelectionArg(
+        new Map([
+          ['sweep', 1],
+          ['wall', 1],
+        ]),
+        bodyArgument
+      )
+    ).toBe(false)
+  })
+
+  test('rejects a selection containing only a disallowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
+      false
     )
   })
 })
