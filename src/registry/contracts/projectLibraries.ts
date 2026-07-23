@@ -4,6 +4,7 @@ import type {
   HomeProjectEntryContribution,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
+import type { Project } from '@src/lib/project'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -49,7 +50,10 @@ export interface ProjectLibraryRenameProjectInput
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
 
 export interface ProjectLibraryTypeOperations {
-  createProject?: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+  createProject?: ProjectLibraryOperation<
+    ProjectLibraryCreateProjectInput,
+    Project | undefined
+  >
   openProject?: ProjectLibraryOperation<
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined
@@ -58,12 +62,24 @@ export interface ProjectLibraryTypeOperations {
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
 }
 
+export interface ProjectLibraryTypePathInput {
+  kind: 'directory'
+  icon?: string
+  dialogTitle?: string
+  buttonLabel?: string
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
   icon?: string
   order?: number
+  /** Initial value used when settings are seeded or migrated for this type. */
   defaultSetting?: ProjectLibrarySetting
+  /** Template used when a user manually adds a new library of this type. */
+  newLibrarySetting?: ProjectLibrarySetting
+  /** Optional UI behavior for editing the library path in settings. */
+  pathInput?: ProjectLibraryTypePathInput
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary

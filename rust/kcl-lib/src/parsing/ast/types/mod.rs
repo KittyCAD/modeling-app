@@ -4718,8 +4718,13 @@ cylinder = startSketchOn(-XZ)
 
     #[test]
     fn test_parse_never_type() {
-        let program =
-            parse("@settings(experimentalFeatures = allow)\nfn stop(@impossible: never): never { return impossible }");
+        let program = parse(
+            "@settings(experimentalFeatures = allow)\n\
+             fn stop(@impossible: never): never { return impossible }\n\
+             type impossible = never\n\
+             type neverReturns = fn(): never\n\
+             type valueOrNever = string | never",
+        );
         let BodyItem::VariableDeclaration(var_decl) = program.body.first().unwrap() else {
             panic!("expected a variable declaration")
         };
@@ -4735,6 +4740,36 @@ cylinder = startSketchOn(-XZ)
             function.return_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::Never)
         );
+
+        let BodyItem::TypeDeclaration(impossible) = &program.body[1] else {
+            panic!("expected a type declaration")
+        };
+        assert_eq!(
+            impossible.alias.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+
+        let BodyItem::TypeDeclaration(never_returns) = &program.body[2] else {
+            panic!("expected a type declaration")
+        };
+        let Type::Primitive(PrimitiveType::Function(never_returns)) = &never_returns.alias.as_ref().unwrap().inner
+        else {
+            panic!("expected a function type")
+        };
+        assert_eq!(
+            never_returns.return_type.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+
+        let BodyItem::TypeDeclaration(value_or_never) = &program.body[3] else {
+            panic!("expected a type declaration")
+        };
+        let Type::Union { tys } = &value_or_never.alias.as_ref().unwrap().inner else {
+            panic!("expected a union type")
+        };
+        assert_eq!(tys[0].inner, Type::Primitive(PrimitiveType::String));
+        assert_eq!(tys[1].inner, Type::Primitive(PrimitiveType::Never));
+
         assert_eq!(
             serde_json::to_value(PrimitiveType::Never).unwrap(),
             serde_json::json!({ "p_type": "Never" })

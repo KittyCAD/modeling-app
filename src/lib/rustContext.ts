@@ -44,7 +44,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { Themes } from '@src/lib/theme'
-import { createOnDarkThemeMediaQueryChange } from '@src/network/connectionManagerEvents'
+import { createOnDarkThemeMediaQueryChange } from '@src/lib/engineConnection/connectionManagerEvents'
 
 describe('createOnDarkThemeMediaQueryChange', () => {
   it('ignores system color changes when the app theme is fixed', () => {

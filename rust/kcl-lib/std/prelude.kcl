@@ -616,6 +616,26 @@ export fn assertIs(
   error?: string,
 ) {}
 
+/// Stop KCL evaluation with a user-defined error.
+///
+/// Use `fail` when evaluation cannot continue and the caller should receive a
+/// specific error message. `fail` never returns a value.
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// fn positive(@value: number): number {
+///   return if value > 0 {
+///     value
+///   } else {
+///     fail("value must be positive")
+///   }
+/// }
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn fail(
+  /// Message reported to the caller.
+  @msg: string,
+): never {}
+
 /// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
 /// If you provide multiple conditions, they will all be checked and all must be met.
 ///

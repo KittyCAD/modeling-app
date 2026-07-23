@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
+pub mod fail;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
@@ -296,6 +297,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "assertIs") => (
             |e, a| Box::pin(crate::std::assert::assert_is(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assertIs"),
+        ),
+        ("prelude", "fail") => (
+            |e, a| Box::pin(crate::std::fail::fail(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::fail"),
         ),
         ("runtime", "exit") => (
             |e, a| Box::pin(crate::std::runtime::exit(e, a)),

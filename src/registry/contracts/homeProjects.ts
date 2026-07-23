@@ -25,6 +25,12 @@ export type HomeProjectThumbnail =
       url: string
     }
 
+export type HomeProjectSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
 export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
@@ -42,6 +48,7 @@ export interface HomeProjectEntry {
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
 }
 
 export type HomeProjectEntryContribution = Omit<
@@ -128,6 +135,7 @@ function mergeHomeProjectEntries(
   }
 
   const conflict = local.conflict ?? remote.conflict
+  const syncFailure = local.syncFailure ?? remote.syncFailure
 
   return {
     ...remote,
@@ -140,6 +148,7 @@ function mergeHomeProjectEntries(
         ? 'syncing'
         : 'synced',
     conflict,
+    syncFailure,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,

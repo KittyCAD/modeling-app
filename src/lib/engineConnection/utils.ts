@@ -6,7 +6,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import type { Connection } from '@src/network/connection'
+import type { Connection } from '@src/lib/engineConnection/connection'
 
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000
@@ -206,7 +206,7 @@ export enum EngineConnectionEvents {
   // There are various failure scenarios where we want to try a restart.
   RestartRequest = 'restart-request',
 
-  // These are used for the EngineCommandManager and were created
+  // These are used for the EngineConnectionManager and were created
   // before onConnectionStateChange existed.
   ConnectionStarted = 'connection-started', // (engineConnection: EngineConnection) => void
   Opened = 'opened', // (engineConnection: EngineConnection) => void
@@ -240,7 +240,7 @@ export type UnreliableResponses = Extract<
   { type: 'highlight_set_entity' | 'camera_drag_move' | 'default_camera_zoom' }
 >
 
-export enum EngineCommandManagerEvents {
+export enum EngineConnectionManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
 

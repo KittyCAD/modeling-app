@@ -1,4 +1,4 @@
-import type { BillingContext } from '@src/machines/billingMachine'
+import type { BillingContext } from '@src/lib/billing/machine'
 
 const MILLISECONDS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60

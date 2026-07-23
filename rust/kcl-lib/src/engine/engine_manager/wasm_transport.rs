@@ -19,7 +19,7 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 
-#[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
+#[wasm_bindgen(module = "/../../src/lib/engineConnection/connectionManager.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;

@@ -15,7 +15,7 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { getOperationVariableName } from '@src/lib/operations'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { ToastOptions } from 'react-hot-toast'
 
 type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>

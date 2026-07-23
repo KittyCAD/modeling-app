@@ -5,13 +5,16 @@ import {
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
-import type { Connection } from '@src/network/connection'
-import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
+import type { Connection } from '@src/lib/engineConnection/connection'
+import type {
+  IEventListenerTracked,
+  ManagerTearDown,
+} from '@src/lib/engineConnection/utils'
 import {
   ConnectingType,
   EngineConnectionEvents,
   EngineConnectionStateType,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,

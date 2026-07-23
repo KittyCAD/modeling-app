@@ -11,8 +11,8 @@ import init, {
   lsp_run_kcl,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-import type { LspWorkerEvent } from '@src/editor/plugins/lsp/types'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { LspWorkerEvent } from '@src/lang/lsp/workerTypes'
 import { err, reportRejection } from '@src/lib/trap'
 
 const intoServer: IntoServer = new IntoServer()

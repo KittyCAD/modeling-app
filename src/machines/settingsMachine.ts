@@ -274,7 +274,7 @@ export const settingsMachine = setup({
       }
       const eventParts = settingPath.split('.') as [keyof SettingsType, string]
       if (settingPath === 'app.libraries') {
-        toast.success('Updated projects library.', {
+        toast.success('Updated project libraries.', {
           id: `${event.type}.success`,
         })
         return

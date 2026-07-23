@@ -14,6 +14,7 @@ layout: manual
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std/functions/std-faceId)
+  * [`fail`](/docs/kcl-std/functions/std-fail) Experimental
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)

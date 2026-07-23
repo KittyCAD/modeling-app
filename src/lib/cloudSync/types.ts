@@ -39,11 +39,16 @@ export type ProjectMetadata = {
     remoteProjectId?: string
     createdAt: string
   }
-  lastFailure?: {
-    message: string
-    at: string
-  }
+  lastFailure?: ProjectSyncFailure
   lastSyncedAt?: string
+}
+
+export type ProjectSyncFailureKind = 'remote-upload-forbidden'
+
+export type ProjectSyncFailure = {
+  message: string
+  at: string
+  kind?: ProjectSyncFailureKind
 }
 
 /** Durable queued local mutation that should be replicated to the cloud later. */
@@ -103,6 +108,7 @@ export type CloudSyncStatus = {
   pendingCount: number
   activeProjectPath?: string
   lastFailure?: string
+  lastFailureKind?: ProjectSyncFailureKind
   lastFailureAt?: string
   lastSyncedAt?: string
 }

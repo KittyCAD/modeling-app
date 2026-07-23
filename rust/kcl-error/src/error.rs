@@ -33,6 +33,8 @@ pub enum KclError {
     Argument { details: KclErrorDetails },
     #[error("type: {details:?}")]
     Type { details: KclErrorDetails },
+    #[error("user-defined: {details:?}")]
+    UserDefined { details: KclErrorDetails },
     #[error("i/o: {details:?}")]
     Io { details: KclErrorDetails },
     #[error("unexpected: {details:?}")]
@@ -181,6 +183,10 @@ impl KclError {
         KclError::Type { details }
     }
 
+    pub fn new_user_defined(details: KclErrorDetails) -> KclError {
+        KclError::UserDefined { details }
+    }
+
     pub fn is_undefined_value(&self) -> bool {
         matches!(self, KclError::UndefinedValue { .. })
     }
@@ -198,6 +204,7 @@ impl KclError {
             KclError::ImportCycle { .. } => "import cycle",
             KclError::Argument { .. } => "argument",
             KclError::Type { .. } => "type",
+            KclError::UserDefined { .. } => "user-defined",
             KclError::Io { .. } => "i/o",
             KclError::Unexpected { .. } => "unexpected",
             KclError::ValueAlreadyDefined { .. } => "value already defined",
@@ -220,6 +227,7 @@ impl KclError {
             KclError::ImportCycle { details: e } => e.source_ranges.clone(),
             KclError::Argument { details: e } => e.source_ranges.clone(),
             KclError::Type { details: e } => e.source_ranges.clone(),
+            KclError::UserDefined { details: e } => e.source_ranges.clone(),
             KclError::Io { details: e } => e.source_ranges.clone(),
             KclError::Unexpected { details: e } => e.source_ranges.clone(),
             KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
@@ -243,6 +251,7 @@ impl KclError {
             KclError::ImportCycle { details: e } => &e.message,
             KclError::Argument { details: e } => &e.message,
             KclError::Type { details: e } => &e.message,
+            KclError::UserDefined { details: e } => &e.message,
             KclError::Io { details: e } => &e.message,
             KclError::Unexpected { details: e } => &e.message,
             KclError::ValueAlreadyDefined { details: e } => &e.message,
@@ -265,6 +274,7 @@ impl KclError {
             | KclError::ImportCycle { details: e }
             | KclError::Argument { details: e }
             | KclError::Type { details: e }
+            | KclError::UserDefined { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }
             | KclError::ValueAlreadyDefined { details: e }
@@ -288,6 +298,7 @@ impl KclError {
             | KclError::ImportCycle { details: e }
             | KclError::Argument { details: e }
             | KclError::Type { details: e }
+            | KclError::UserDefined { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }
             | KclError::ValueAlreadyDefined { details: e }
@@ -322,6 +333,7 @@ impl KclError {
             | KclError::ImportCycle { details: e }
             | KclError::Argument { details: e }
             | KclError::Type { details: e }
+            | KclError::UserDefined { details: e }
             | KclError::Io { details: e }
             | KclError::Unexpected { details: e }
             | KclError::ValueAlreadyDefined { details: e }
