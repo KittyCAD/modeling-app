@@ -856,6 +856,12 @@ export const systemIOMachine = setup({
     [SystemIOMachineStates.idle]: {
       on: {
         // on can be an action
+        // The systemIO service now sits in `idle` and pushes refresh results
+        // into the actor via `setFolders` as a legacy bridge, so `idle` must
+        // handle it too (it is otherwise only handled while `readingFolders`).
+        [SystemIOMachineEvents.setFolders]: {
+          actions: SystemIOMachineActions.setFolders,
+        },
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
           target: SystemIOMachineStates.readingFolders,
         },

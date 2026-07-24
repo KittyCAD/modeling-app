@@ -29,6 +29,10 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import {
+  type SystemIOService,
+  systemIOService,
+} from '@src/lib/systemIO/registry/contract'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -39,7 +43,6 @@ import {
 } from '@src/lib/zookeeper/editorPlugin'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
@@ -76,7 +79,6 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -89,7 +91,6 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
-import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
 
@@ -147,6 +148,8 @@ export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
 export type AppLayoutSystem = LayoutService
 
+export type AppSystemIOSystem = SystemIOService
+
 export type AppRegistrySystem = Registry
 
 export type AppDebug = {
@@ -165,6 +168,7 @@ export interface AppSubsystems {
   billing: AppBillingSystem
   userFeatures: AppUserFeaturesSystem
   layout: AppLayoutSystem
+  systemIO: AppSystemIOSystem
   registry: AppRegistrySystem
 }
 
@@ -206,13 +210,17 @@ export class App implements AppSubsystems {
   userFeatures: AppUserFeaturesSystem
   /** The layout system for the application */
   layout: AppLayoutSystem
+  /** System-level project and filesystem IO service */
+  systemIO: AppSystemIOSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
    */
-  systemIOActor: SystemIOActor
+  get systemIOActor(): SystemIOActor {
+    return this.systemIO.actor as SystemIOActor
+  }
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
@@ -229,14 +237,13 @@ export class App implements AppSubsystems {
     this.commands = subsystems.commands
     this.settings = subsystems.settings
     this.layout = subsystems.layout
+    this.systemIO = subsystems.systemIO
     this.registry = subsystems.registry
     this.userFeatures = subsystems.userFeatures
-    this.systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
+    this.systemIO.startActor({
+      wasmInstancePromise: this.wasmPromise,
+      app: this,
+    })
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -291,6 +298,7 @@ export class App implements AppSubsystems {
     const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
+    const systemIO = appRegistry.get(systemIOService)
     const engineCommandManager = appRegistry.get(
       engineConnectionService
     ).manager
@@ -307,6 +315,7 @@ export class App implements AppSubsystems {
       billing,
       userFeatures,
       layout,
+      systemIO,
       registry: appRegistry,
     }
   }
@@ -413,7 +422,6 @@ export class App implements AppSubsystems {
     this.closeProject()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
-    this.systemIOActor.stop()
     this.settings.actor.stop()
     this.commands.actor.stop()
     this.auth.actor.stop()
@@ -612,9 +620,6 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
-          provideService(systemIOService, {
-            actor: this.systemIOActor,
-          }),
         ],
       }),
     ])
