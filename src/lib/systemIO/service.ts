@@ -59,6 +59,15 @@ export function createSystemIOService(
   const projects = signal<Projects>(undefined)
   let actor: SystemIOActor | undefined
   let actorSubscription: { unsubscribe: () => void } | undefined
+  // `projects`/`projectHandles` model a single "current" project directory, so
+  // this counter is intentionally global rather than per-directory: the most
+  // recently *started* refresh becomes the source of truth and any earlier
+  // refresh still in flight (including one for a different directory the user
+  // navigated away from) must not clobber it when it finally resolves. Same
+  // directory refreshes can never overlap here because the operation queue
+  // serializes them by resource key, so the guard only ever arbitrates between
+  // refreshes of different directories. See the "does not let stale refresh
+  // results overwrite newer refresh state" service test.
   let latestRefreshId = 0
 
   const setProjects = (nextProjects: readonly Project[] | undefined) => {
