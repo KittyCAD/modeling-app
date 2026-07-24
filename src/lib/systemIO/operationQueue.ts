@@ -94,6 +94,13 @@ export function createSystemIOOperationQueue<
         rejectResult = reject
       })
 
+      // Many callers only observe operations through the status signals and
+      // never read `.result` (fire-and-forget refreshes, for example). Attach
+      // an internal no-op rejection handler so a failed or cancelled operation
+      // cannot escape as an unhandled promise rejection. Consumers that do
+      // await `.result` still receive the rejection through their own handler.
+      void result.catch(() => {})
+
       const updateSnapshot = (
         patch: Partial<SystemIOOperationSnapshot<TRequest>>
       ) => {

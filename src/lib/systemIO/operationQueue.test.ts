@@ -188,6 +188,30 @@ describe('systemIO operation queue', () => {
     await expect(secondOperation.result).resolves.toBe('fresh')
   })
 
+  it('keeps an ignored failed result from surfacing as an unhandled rejection', async () => {
+    const queue = createTestQueue()
+    const operation = queue.enqueue(
+      {
+        request: {
+          type: 'test.fail',
+          input: {},
+        },
+        resourceKey: 'project:/example',
+      },
+      () => Promise.reject(new Error('boom'))
+    )
+
+    // Deliberately let the handler reject before anyone reads `.result`. The
+    // queue attaches its own no-op catch, so this must not escape as an
+    // unhandled rejection (vitest fails the test if one does).
+    await flushPromises()
+    await flushPromises()
+
+    expect(operation.status.value).toBe('failed')
+    // A late observer still receives the rejection through its own handler.
+    await expect(operation.result).rejects.toThrow('boom')
+  })
+
   it('cancels a queued operation without running its handler', async () => {
     const queue = createTestQueue()
     const first = deferred<string>()
