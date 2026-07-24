@@ -22,13 +22,17 @@ body = startSketchOn(YZ)
   |> close()
   |> extrude(length = outletSpacing * 4, symmetric = true)
   |> chamfer(
-       tags = [
-         getCommonEdge(faces = [seg01, seg02]),
-         getCommonEdge(faces = [seg03, seg01]),
-         getCommonEdge(faces = [rectangleSegmentA001, seg02]),
-         getCommonEdge(faces = [rectangleSegmentA001, seg03])
-       ],
        length = bodyWidth / 10,
+       edges = [
+         { sideFaces = [seg01, seg02] },
+         { sideFaces = [seg03, seg01] },
+         {
+           sideFaces = [rectangleSegmentA001, seg02]
+         },
+         {
+           sideFaces = [rectangleSegmentA001, seg03]
+         }
+       ],
      )
 // Create the inlet hole on the far side of the manifold
 inlet = hole::hole(

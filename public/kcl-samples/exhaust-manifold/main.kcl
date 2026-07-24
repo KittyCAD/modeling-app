@@ -279,28 +279,48 @@ hide(flangeSketch)
 flangeTopLeftFillet = fillet(
   flangeExtrude,
   radius = 1.5,
-  tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line7)
+  edges = [
+    {
+      sideFaces = [
+        flangeRegion.tags.arc8,
+        flangeRegion.tags.line7
+      ]
+    }
   ],
 )
 flangeTopFillets = fillet(
   flangeTopLeftFillet,
   radius = 1.5,
-  tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line12)
+  edges = [
+    {
+      sideFaces = [
+        flangeRegion.tags.line13,
+        flangeRegion.tags.line12
+      ]
+    }
   ],
 )
 flangeBottomLeftFillet = fillet(
   flangeTopFillets,
   radius = 0.25,
-  tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line6)
+  edges = [
+    {
+      sideFaces = [
+        flangeRegion.tags.line7,
+        flangeRegion.tags.line6
+      ]
+    }
   ],
 )
 flangeBody = fillet(
   flangeBottomLeftFillet,
   radius = 0.25,
-  tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line13)
+  edges = [
+    {
+      sideFaces = [
+        flangeRegion.tags.arc14,
+        flangeRegion.tags.line13
+      ]
+    }
   ],
 )

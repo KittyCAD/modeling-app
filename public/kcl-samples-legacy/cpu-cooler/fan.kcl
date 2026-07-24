@@ -10,8 +10,13 @@ import * from "parameters.kcl"
 // Model the center of the fan
 fanCenter = startSketchOn(YZ)
   |> circle(center = [0, 0], radius = fanHeight / 2, tag = $centerBend)
-  |> extrude(length = fanHeight)
-  |> fillet(radius = 1.5, tags = [getOppositeEdge(centerBend)])
+  |> extrude(length = fanHeight, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 1.5,
+       edges = [
+         { sideFaces = [centerBend, capEnd001] }
+       ],
+     )
 
 // Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
 fn fanBlade(offsetHeight, startAngle) {

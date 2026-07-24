@@ -11,8 +11,14 @@ import * from "parameters.kcl"
 startPlane = offsetPlane(YZ, offset = 4)
 motorBody = startSketchOn(startPlane)
   |> circle(center = [0, 0], radius = 10, tag = $seg04)
-  |> extrude(length = 17)
-  |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
+  |> extrude(length = 17, tagEnd = $capEnd001, tagStart = $capStart001)
+  |> fillet(
+       radius = 2,
+       edges = [
+         { sideFaces = [seg04, capEnd001] },
+         { sideFaces = [seg04, capStart001] }
+       ],
+     )
   |> appearance(color = "#021b55")
 motorStem = startSketchOn(offsetPlane(YZ, offset = 21))
   |> circle(center = [0, 0], radius = 1)

@@ -79,12 +79,7 @@ handleHole = startSketchOn(XY)
 baseSupport = startSketchOn(offsetPlane(XY, offset = 11.5))
   |> circle(center = [0, 0], radius = .45, tag = $seg05)
   |> extrude(length = 1, tagStart = $capStart001)
-  |> fillet(
-       radius = .05,
-       tags = [
-         getCommonEdge(faces = [seg05, capStart001])
-       ],
-     )
+  |> fillet(radius = .05, edges = [{ sideFaces = [seg05, capStart001] }])
 
 // Union all pieces into a single solid, then cut the handle hole
 hammerHead = union([firstProfiles, baseSupport])

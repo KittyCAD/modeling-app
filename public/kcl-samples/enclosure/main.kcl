@@ -37,23 +37,31 @@ baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
 baseBody = extrude(baseRegion, length = height)
   |> fillet(
        radius = wallThickness * 4,
-       tags = [
-         getCommonEdge(faces = [
-           baseRegion.tags.line1,
-           baseRegion.tags.line2
-         ]),
-         getCommonEdge(faces = [
-           baseRegion.tags.line1,
-           baseRegion.tags.line3
-         ]),
-         getCommonEdge(faces = [
-           baseRegion.tags.line3,
-           baseRegion.tags.line4
-         ]),
-         getCommonEdge(faces = [
-           baseRegion.tags.line4,
-           baseRegion.tags.line2
-         ])
+       edges = [
+         {
+           sideFaces = [
+             baseRegion.tags.line1,
+             baseRegion.tags.line2
+           ]
+         },
+         {
+           sideFaces = [
+             baseRegion.tags.line1,
+             baseRegion.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             baseRegion.tags.line3,
+             baseRegion.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             baseRegion.tags.line4,
+             baseRegion.tags.line2
+           ]
+         }
        ],
      )
   |> shell(faces = [END], thickness = wallThickness)
@@ -246,23 +254,31 @@ lidRegion = region(point = [width / 2, length / 2], sketch = lidSketch)
 lidPlate = extrude(lidRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
-       tags = [
-         getCommonEdge(faces = [
-           lidRegion.tags.line1,
-           lidRegion.tags.line2
-         ]),
-         getCommonEdge(faces = [
-           lidRegion.tags.line1,
-           lidRegion.tags.line3
-         ]),
-         getCommonEdge(faces = [
-           lidRegion.tags.line3,
-           lidRegion.tags.line4
-         ]),
-         getCommonEdge(faces = [
-           lidRegion.tags.line4,
-           lidRegion.tags.line2
-         ])
+       edges = [
+         {
+           sideFaces = [
+             lidRegion.tags.line1,
+             lidRegion.tags.line2
+           ]
+         },
+         {
+           sideFaces = [
+             lidRegion.tags.line1,
+             lidRegion.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             lidRegion.tags.line3,
+             lidRegion.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             lidRegion.tags.line4,
+             lidRegion.tags.line2
+           ]
+         }
        ],
      )
 
@@ -407,23 +423,31 @@ lidLipRegion = region(point = [lidOffsetX + width / 2, length / 2], sketch = lid
 lidLip = extrude(lidLipRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,
-       tags = [
-         getCommonEdge(faces = [
-           lidLipRegion.tags.line1,
-           lidLipRegion.tags.line2
-         ]),
-         getCommonEdge(faces = [
-           lidLipRegion.tags.line1,
-           lidLipRegion.tags.line3
-         ]),
-         getCommonEdge(faces = [
-           lidLipRegion.tags.line3,
-           lidLipRegion.tags.line4
-         ]),
-         getCommonEdge(faces = [
-           lidLipRegion.tags.line4,
-           lidLipRegion.tags.line2
-         ])
+       edges = [
+         {
+           sideFaces = [
+             lidLipRegion.tags.line1,
+             lidLipRegion.tags.line2
+           ]
+         },
+         {
+           sideFaces = [
+             lidLipRegion.tags.line1,
+             lidLipRegion.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             lidLipRegion.tags.line3,
+             lidLipRegion.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             lidLipRegion.tags.line4,
+             lidLipRegion.tags.line2
+           ]
+         }
        ],
      )
 

@@ -628,7 +628,7 @@ export fn ellipse(
 /// // extrude a circle to a tagged edge (cyan cylinder)
 /// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
 /// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
-///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+///   |> extrude(to = { sideFaces = [facetag0, facetag1] })
 ///   |> appearance(color = '#00FFFF')
 ///
 /// // extrude a circle to a plane (magenta cylinder)
@@ -1028,13 +1028,13 @@ export fn extrude(
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
 ///     |> close()
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90deg,
-///         axis = getOppositeEdge(revolveAxis)
+///         axis = { sideFaces = [revolveAxis, capEnd001] }
 ///     )
 /// ```
 ///
@@ -1045,13 +1045,13 @@ export fn extrude(
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
 ///     |> close()
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90deg,
-///         axis = getOppositeEdge(revolveAxis),
+///         axis = { sideFaces = [revolveAxis, capEnd001] },
 ///         tolerance = 0.0001
 ///     )
 /// ```
@@ -1381,7 +1381,7 @@ export fn getPreviousAdjacentEdge(
 ///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
 ///
 /// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
+/// commonEdge = { sideFaces = [chamfer0, end0] }
 ///
 /// // Chamfer the shared edge.
 /// // TODO: uncomment this when ssi for fillets lands
