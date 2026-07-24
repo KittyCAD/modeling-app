@@ -1056,7 +1056,24 @@ impl SketchSurface {
     }
 }
 
-/// A Sketch, Face, or TaggedFace.
+/// A Sketch, Edge, or EdgeTag
+#[derive(Debug, Clone, PartialEq)]
+pub enum CurveType {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Tagged Edge.
+    EdgeTag(Box<TagIdentifier>),
+    /// Edge.
+    Edge(Uuid),
+}
+
+impl From<Sketch> for CurveType {
+    fn from(value: Sketch) -> Self {
+        CurveType::Sketch(Box::new(value))
+    }
+}
+
+/// A Sketch, Face, TaggedFace, Edge, or EdgeTag.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Extrudable {
     /// Sketch.
