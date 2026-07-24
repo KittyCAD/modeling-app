@@ -3413,3 +3413,8 @@ export fn region(
   /// The sketch that the region is from. This is required when point is a `Point2d`.
   sketch?: any,
 ): Sketch {}
+@(impl = std_rust, feature_tree = true)
+export fn planarSurface(
+    /// Which sketch or sketches should be extruded.
+  @sketches: [Sketch | TaggedEdge | Edge | Segment; 1+],
+): [Solid; 1+] {}

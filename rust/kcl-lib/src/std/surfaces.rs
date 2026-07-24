@@ -14,10 +14,12 @@ use kittycad_modeling_cmds::shared::SurfaceEdgeReference;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
+use crate::ExecutorContext;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
 use crate::execution::ConsumedSolidOperation;
+use crate::execution::CurveType;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
@@ -28,8 +30,11 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::DEFAULT_TOLERANCE_MM;
+use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::edge;
+use crate::std::extrude::after_surface_creation;
+use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
 
@@ -428,4 +433,106 @@ async fn inner_join(
         );
         Ok(solid)
     }
+}
+
+/// Used the provided segments or edges to create a planar surface
+pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let curve_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "curves",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::tagged_edge(),
+                RuntimeType::Primitive(PrimitiveType::Edge),
+                RuntimeType::segment(),
+            ])),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let curves = coerce_curved_targets(curve_values, exec_state, &args.ctx, args.source_range).await?;
+
+    let result = inner_planar_surface(curves, tolerance, exec_state, args).await?;
+
+    Ok(result.into())
+}
+
+pub async fn coerce_curved_targets(
+    sketch_values: Vec<KclValue>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: crate::SourceRange,
+) -> Result<Vec<CurveType>, KclError> {
+    let mut curves = Vec::new();
+    let mut segments = Vec::new();
+
+    for value in sketch_values {
+        if let Some(segment) = value.clone().into_segment() {
+            segments.push(segment);
+            continue;
+        }
+
+        let Some(curve) = CurveType::from_kcl_val(&value) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected sketches, edges, or solved sketch segments for creating a planar surface.".to_owned(),
+                vec![source_range],
+            )));
+        };
+        curves.push(curve);
+    }
+
+    if !segments.is_empty() {
+        let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
+        curves.push(CurveType::from(synthetic_sketch));
+    }
+
+    Ok(curves)
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_planar_surface(
+    curves: Vec<CurveType>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Vec<Solid>, KclError> {
+    // Extrude the element(s).
+    let mut solids = Vec::new();
+    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    
+    let mut curve_ids: Vec<uuid::Uuid> = Vec::new();
+    for curve in curves {
+        let id = curve.operation_id(&args).await?;
+        curve_ids.push(id);
+    }
+    
+    // Surface-extrude an edge.
+    let response = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+        mcmd::CreatePlanarSurface::builder()
+            .curve_ids(curve_ids)
+            .tolerance(tolerance)
+            .build(),
+    ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::CreatePlanarSurface(resp),
+    } = response
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("CreatePlanarSurface response was not as expected: {response:?}"),
+            vec![args.source_range],
+        )));
+    };
+    let surface_ids = resp.surfaces;
+
+    for surface_id in surface_ids {
+        solids.push(after_surface_creation(surface_id.into(), None, exec_state, &args).await?);
+    }
+
+    Ok(solids)
 }

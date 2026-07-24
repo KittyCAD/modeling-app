@@ -16,6 +16,7 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
+use crate::execution::CurveType;
 use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
@@ -1273,6 +1274,18 @@ impl<'a> FromKclValue<'a> for Box<Face> {
             return None;
         };
         Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for CurveType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = Uuid::from_kcl_val;
+        let case3 = Box::<TagIdentifier>::from_kcl_val;
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(Self::Edge))
+            .or_else(|| case3(arg).map(Self::EdgeTag))
     }
 }
 
