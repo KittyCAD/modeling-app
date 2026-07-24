@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::walk::Node;
 
 /// Walk-specific trait adding the ability to traverse the KCL AST.
@@ -107,7 +108,13 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children
             }
             Node::VariableDeclaration(n) => vec![(&n.declaration).into()],
-            Node::TypeDeclaration(n) => vec![(&n.name).into()],
+            Node::TypeDeclaration(n) => {
+                let mut children: Vec<Node> = vec![(&n.name).into()];
+                if let TypeDeclarationDefinition::Enum(e) = &n.definition {
+                    children.extend(e.variants.iter().map(|v| Node::from(&v.name)));
+                }
+                children
+            }
             Node::ReturnStatement(n) => {
                 vec![(&n.argument).into()]
             }

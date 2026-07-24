@@ -106,6 +106,7 @@ use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
 use crate::std::StdFnProps;
@@ -1088,8 +1089,8 @@ impl ExecutorContext {
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
-                            Some(alias) => {
+                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
+                            TypeDeclarationDefinition::Alias { ty: alias } => {
                                 let value = KclValue::Type {
                                     value: TypeDef::Alias(
                                         RuntimeType::from_parsed(
@@ -1119,9 +1120,15 @@ impl ExecutorContext {
                                     exec_state.mod_local.module_exports.push(name_in_mem);
                                 }
                             }
-                            None => {
+                            TypeDeclarationDefinition::Bare => {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     "User-defined types are not yet supported.".to_owned(),
+                                    vec![metadata.source_range],
+                                )));
+                            }
+                            TypeDeclarationDefinition::Enum(_) => {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Enum declarations are not yet supported.".to_owned(),
                                     vec![metadata.source_range],
                                 )));
                             }

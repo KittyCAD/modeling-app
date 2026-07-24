@@ -95,6 +95,7 @@ use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
@@ -2956,7 +2957,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         None
     };
 
-    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+    let definition = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         equals(i)?;
         ignore_whitespace(i);
@@ -2964,9 +2965,9 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
         ParseContext::experimental("type aliases", ty.as_source_range());
 
-        Some(ty)
+        TypeDeclarationDefinition::Alias { ty: Box::new(ty) }
     } else {
-        None
+        TypeDeclarationDefinition::Bare
     };
 
     let module_id = name.module_id;
@@ -2977,7 +2978,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         TypeDeclaration {
             name,
             args,
-            alias,
+            definition,
             visibility,
             digest: None,
         },
