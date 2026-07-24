@@ -6887,7 +6887,7 @@ type Color { | Red }
 
         // A comment between the name and the body stops definition detection
         // (alias and enum alike), leaving a bare declaration followed by an
-        // unparseable `{...}` statement.
+        // unparsable `{...}` statement.
         let code = r#"@settings(experimentalFeatures = allow)
 type Color /* c */ { | Red }
 "#;
