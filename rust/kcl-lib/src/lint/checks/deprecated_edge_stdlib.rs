@@ -297,6 +297,7 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
 mod tests {
     use super::Z0006;
     use super::lint_deprecated_edge_stdlib_in_fillet_chamfer;
+    use crate::lint::LintOptions;
 
     #[test]
     fn detects_get_opposite_edge_in_fillet_tags() {
@@ -435,6 +436,30 @@ fillet(body, radius = 1, tags = [body.sketch.tags.e1])
         assert!(
             z0006[0].description.contains("axis") || z0006[0].description.contains("edgeRef"),
             "description should mention axis or edgeRef"
+        );
+    }
+
+    #[test]
+    fn z0006_is_opt_in_for_lint_all() {
+        let kcl = "revolve(profile, axis = getOppositeEdge(seg01))";
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+
+        let default_findings = prog.lint_all().unwrap();
+        assert!(
+            default_findings
+                .iter()
+                .all(|finding| finding.finding.code != Z0006.code),
+            "published lint consumers should not receive Z0006 by default"
+        );
+
+        let opted_in_findings = prog
+            .lint_all_with_options(LintOptions::default().with_z0006(true))
+            .unwrap();
+        assert!(
+            opted_in_findings
+                .iter()
+                .any(|finding| finding.finding.code == Z0006.code),
+            "explicitly opting in should enable Z0006"
         );
     }
 
