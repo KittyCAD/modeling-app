@@ -457,15 +457,11 @@ function buildDistanceLabelEditsForMovedSegments({
   objectsAfterDrag,
   units,
 }: {
-  obj: ApiObject
+  obj: DistanceConstraint
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
 }): ConstraintLabelEdit[] {
-  if (!isDistanceConstraint(obj)) {
-    return []
-  }
-
   const { points, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
@@ -512,15 +508,11 @@ function buildCircularLabelEditsForMovedSegments({
   objectsAfterDrag,
   units,
 }: {
-  obj: ApiObject
+  obj: RadiusConstraint | DiameterConstraint
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
 }): ConstraintLabelEdit[] {
-  if (!isRadiusConstraint(obj) && !isDiameterConstraint(obj)) {
-    return []
-  }
-
   const { arc, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
