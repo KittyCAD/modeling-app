@@ -30,7 +30,9 @@ import {
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
+  getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
+  getVariableNameFromNodePath,
   locateVariableWithCallOrPipe,
   traverse,
   valueOrVariable,
@@ -1074,8 +1076,10 @@ function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
 }
 
-function isRevolveOrHelix(callee: string): boolean {
-  return callee === 'revolve' || callee === 'helix'
+function edgeReferenceArgument(callee: string): 'axis' | 'across' | null {
+  if (callee === 'revolve' || callee === 'helix') return 'axis'
+  if (callee === 'mirror3d') return 'across'
+  return null
 }
 
 function isExtrude(callee: string): boolean {
@@ -1497,12 +1501,24 @@ function findFilletChamferCallsToFixUnified(
 interface RevolveHelixCallToFix {
   range: Z0006SourceRange
   faceIds: [string, string]
+  argument: 'axis' | 'across'
   pathToCall?: PathToNode
 }
 
 interface ExtrudeToCallToFix {
   range: Z0006SourceRange
   faceIds: [string, string]
+  pathToCall?: PathToNode
+}
+
+type ExtrudeEdgeArgument = 'target' | 'to' | 'direction'
+
+interface ExtrudeEdgeCallToFix {
+  range: Z0006SourceRange
+  replacements: Array<{
+    argument: ExtrudeEdgeArgument
+    payload: FilletEdgeRefPayload | FilletEdgeRefPayload[]
+  }>
   pathToCall?: PathToNode
 }
 
@@ -1529,7 +1545,9 @@ function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
 
 export function findRevolveHelixCallsToFix(
   program: Node<Program>,
-  edgeRefactorMetadata: EdgeRefactorMeta[]
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph?: ArtifactGraph,
+  wasmInstance?: ModuleType
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
@@ -1539,13 +1557,40 @@ export function findRevolveHelixCallsToFix(
 
       const call = node
       const calleeName = getCalleeName(call)
-      if (!calleeName || !isRevolveOrHelix(calleeName)) return
+      if (!calleeName) return
+      const argument = edgeReferenceArgument(calleeName)
+      if (!argument) return
 
-      const axisArg = findKwArg('axis', call)
-      const deprecatedCall = axisArg
-        ? findDeprecatedEdgeStdlibCallFromExpr(program, axisArg, pathToNode)
+      const edgeArg = findKwArg(argument, call)
+      const deprecatedCall = edgeArg
+        ? findDeprecatedEdgeStdlibCallFromExpr(program, edgeArg, pathToNode)
         : null
-      if (!deprecatedCall) return
+      if (!deprecatedCall) {
+        if (
+          calleeName !== 'mirror3d' ||
+          !edgeArg ||
+          !getTagInfoFromExpr(edgeArg)?.tagsBaseExpr ||
+          !artifactGraph ||
+          !wasmInstance
+        ) {
+          return
+        }
+        const payload = directSketchSegmentEdgePayload(
+          program,
+          edgeArg,
+          artifactGraph,
+          wasmInstance
+        )
+        const [firstFaceId, secondFaceId] = payload?.side_faces ?? []
+        if (!firstFaceId || !secondFaceId) return
+        results.push({
+          range: [call.start, call.end, call.moduleId],
+          faceIds: [firstFaceId, secondFaceId],
+          argument,
+          pathToCall: pathToNode,
+        })
+        return
+      }
       const inner = deprecatedCall.call
 
       const innerStart = inner.start
@@ -1561,6 +1606,7 @@ export function findRevolveHelixCallsToFix(
         results.push({
           range: [callStart, callEnd, moduleId],
           faceIds: meta.faceIds,
+          argument,
           pathToCall: pathToNode,
         })
       }
@@ -1570,16 +1616,54 @@ export function findRevolveHelixCallsToFix(
   return results
 }
 
-function findToArg(call: Node<CallExpressionKw>): Expr | null {
-  const arg = call.arguments?.find((a) => getLabelName(a) === 'to')
+function findExtrudeEdgeArgumentExpr(
+  call: Node<CallExpressionKw>,
+  argument: ExtrudeEdgeArgument
+): Expr | null {
+  if (argument === 'target') {
+    return (
+      call.unlabeled ??
+      call.arguments?.find((arg) => getLabelName(arg) === undefined)?.arg ??
+      null
+    )
+  }
+  const arg = call.arguments?.find((a) => getLabelName(a) === argument)
   return arg?.arg ?? null
 }
 
-export function findExtrudeToCallsToFix(
+function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
+  return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
+}
+
+function resolveTopLevelArrayExpression(
+  program: Program,
+  expr: Expr,
+  referencePath: PathToNode
+): Extract<Expr, { type: 'ArrayExpression' }> | null {
+  if (expr.type === 'ArrayExpression') return expr
+  if (expr.type !== 'Name' || isNestedScopePath(referencePath)) return null
+
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === expr.name.name
+  )
+  if (
+    declaration?.type !== 'VariableDeclaration' ||
+    declaration.declaration.init.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+  return declaration.declaration.init
+}
+
+export function findExtrudeEdgeCallsToFix(
   program: Node<Program>,
-  edgeRefactorMetadata: EdgeRefactorMeta[]
-): ExtrudeToCallToFix[] {
-  const results: ExtrudeToCallToFix[] = []
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph?: ArtifactGraph,
+  wasmInstance?: ModuleType
+): ExtrudeEdgeCallToFix[] {
+  const results: ExtrudeEdgeCallToFix[] = []
 
   traverse(program, {
     enter(node, pathToNode) {
@@ -1589,33 +1673,221 @@ export function findExtrudeToCallsToFix(
       const calleeName = getCalleeName(call)
       if (!calleeName || !isExtrude(calleeName)) return
 
-      const toArg = findToArg(call)
-      const deprecatedCall = toArg
-        ? findDeprecatedEdgeStdlibCallFromExpr(program, toArg, pathToNode)
-        : null
-      if (!deprecatedCall) return
-      const inner = deprecatedCall.call
+      const replacements: ExtrudeEdgeCallToFix['replacements'] = []
+      for (const argument of ['target', 'to', 'direction'] as const) {
+        if (argument === 'target' && extrudeRequiresConcreteTarget(call)) {
+          continue
+        }
+        const expr = findExtrudeEdgeArgumentExpr(call, argument)
+        const targetArray =
+          argument === 'target' && expr
+            ? resolveTopLevelArrayExpression(program, expr, pathToNode)
+            : null
+        if (targetArray) {
+          const payloads = targetArray.elements.map((element) => {
+            const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+              program,
+              element,
+              pathToNode
+            )
+            if (!deprecatedCall) return null
+            const meta = edgeRefactorMetadata.find((candidate) =>
+              sourceRangeMatch(
+                candidate,
+                deprecatedCall.call.start,
+                deprecatedCall.call.end,
+                deprecatedCall.call.moduleId
+              )
+            )
+            return hasFaceIds(meta) ? edgeRefactorMetaToPayload(meta) : null
+          })
+          if (
+            payloads.length > 0 &&
+            payloads.every(
+              (payload): payload is FilletEdgeRefPayload => payload !== null
+            )
+          ) {
+            replacements.push({ argument, payload: payloads })
+          }
+          continue
+        }
+        const deprecatedCall = expr
+          ? findDeprecatedEdgeStdlibCallFromExpr(program, expr, pathToNode)
+          : null
+        if (!deprecatedCall) {
+          if (
+            (argument === 'target' || argument === 'direction') &&
+            expr &&
+            artifactGraph &&
+            wasmInstance &&
+            // A sketch segment is already a stable target or direction. Only
+            // generated solid-edge tags need converting to a face API selector.
+            getTagInfoFromExpr(expr)?.tagsBaseExpr != null
+          ) {
+            const payload = directSketchSegmentEdgePayload(
+              program,
+              expr,
+              artifactGraph,
+              wasmInstance,
+              argument === 'target' ? call : undefined
+            )
+            if (payload) replacements.push({ argument, payload })
+          }
+          continue
+        }
 
-      const innerStart = inner.start
-      const innerEnd = inner.end
-      const innerModuleId = inner.moduleId
-      const meta = edgeRefactorMetadata.find((m) =>
-        sourceRangeMatch(m, innerStart, innerEnd, innerModuleId)
-      )
-      const moduleId = call.moduleId
-      const callStart = call.start
-      const callEnd = call.end
-      if (hasFaceIds(meta)) {
-        results.push({
-          range: [callStart, callEnd, moduleId],
-          faceIds: meta.faceIds,
-          pathToCall: pathToNode,
+        const inner = deprecatedCall.call
+        const meta = edgeRefactorMetadata.find((m) =>
+          sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+        )
+        if (!hasFaceIds(meta)) continue
+
+        replacements.push({
+          argument,
+          payload: edgeRefactorMetaToPayload(meta),
         })
       }
+
+      if (replacements.length === 0) return
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        replacements,
+        pathToCall: pathToNode,
+      })
     },
   })
 
   return results
+}
+
+function directSketchSegmentEdgePayload(
+  program: Node<Program>,
+  expr: Expr,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  targetExtrudeCall?: Node<CallExpressionKw>
+): FilletEdgeRefPayload | null {
+  if (expr.type !== 'MemberExpression' || expr.property.type !== 'Name') {
+    return null
+  }
+
+  const segmentName = expr.property.name.name
+  const tagInfo = getTagInfoFromExpr(expr)
+  const owningBodyExpr = tagInfo?.tagsBaseExpr
+    ? getBodyExprFromSketchTagsBaseExpr(tagInfo.tagsBaseExpr)
+    : null
+
+  if (owningBodyExpr) {
+    const bodyKey = exprPathKey(owningBodyExpr)
+    if (!bodyKey) return null
+
+    const owningSweep = [...artifactGraph.values()].find((artifact) => {
+      if (artifact.type !== 'sweep') return false
+      return [
+        artifact.codeRef.pathToNode,
+        getNodePathFromSourceRange(program, artifact.codeRef.range),
+      ].some(
+        (pathToNode) =>
+          getVariableNameFromNodePath(pathToNode, program, wasmInstance) ===
+          bodyKey
+      )
+    })
+    if (!owningSweep || owningSweep.type !== 'sweep') return null
+
+    const candidateSegments = [...artifactGraph.values()].filter(
+      (artifact): artifact is Artifact & { type: 'segment' } => {
+        if (
+          artifact.type !== 'segment' ||
+          artifact.pathId !== owningSweep.pathId ||
+          artifact.commonSurfaceIds.length !== 2
+        ) {
+          return false
+        }
+        const sourceSegmentId = artifact.originalSegId ?? artifact.id
+        return (
+          getSketchSegmentName(
+            program,
+            sourceSegmentId,
+            artifactGraph,
+            wasmInstance
+          ) === segmentName
+        )
+      }
+    )
+    if (candidateSegments.length === 0) return null
+
+    const targetSweep = targetExtrudeCall
+      ? [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' &&
+            artifact.codeRef.range[0] === targetExtrudeCall.start &&
+            artifact.codeRef.range[1] === targetExtrudeCall.end &&
+            (artifact.codeRef.range[2] ?? 0) === targetExtrudeCall.moduleId
+        )
+      : undefined
+    const segment =
+      targetSweep?.type === 'sweep'
+        ? candidateSegments.find(
+            (candidate) => candidate.surfaceId === targetSweep.pathId
+          )
+        : candidateSegments.length === 1
+          ? candidateSegments[0]
+          : undefined
+
+    return segment ? { side_faces: segment.commonSurfaceIds } : null
+  }
+
+  if (expr.object.type !== 'Name') return null
+  const sketchName = expr.object.name.name
+  const originalSegment = [...artifactGraph.values()].find(
+    (artifact) =>
+      artifact.type === 'segment' &&
+      !artifact.originalSegId &&
+      getSketchSegmentName(
+        program,
+        artifact.id,
+        artifactGraph,
+        wasmInstance
+      ) === segmentName &&
+      getSketchVariableNameForSegment(
+        program,
+        artifact.id,
+        artifactGraph,
+        wasmInstance
+      ) === sketchName
+  )
+  if (!originalSegment || originalSegment.type !== 'segment') return null
+
+  const regionSegment = [...artifactGraph.values()].find(
+    (artifact) =>
+      artifact.type === 'segment' &&
+      artifact.originalSegId === originalSegment.id &&
+      artifact.commonSurfaceIds.length === 2
+  )
+  if (!regionSegment || regionSegment.type !== 'segment') return null
+
+  return { side_faces: regionSegment.commonSurfaceIds }
+}
+
+export function findExtrudeToCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): ExtrudeToCallToFix[] {
+  return findExtrudeEdgeCallsToFix(program, edgeRefactorMetadata).flatMap(
+    ({ range, replacements, pathToCall }) => {
+      const replacement = replacements.find(({ argument }) => argument === 'to')
+      if (!replacement || isArray(replacement.payload)) return []
+      const [firstFaceId, secondFaceId] = replacement.payload.side_faces
+      if (!firstFaceId || !secondFaceId) return []
+      return [
+        {
+          range,
+          faceIds: [firstFaceId, secondFaceId],
+          pathToCall,
+        },
+      ]
+    }
+  )
 }
 
 export function findGdtEdgesCallsToFix(
@@ -1741,7 +2013,7 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
 ): Node<Program> {
   if (toFix.length === 0) return modifiedAst
   for (let index = 0; index < toFix.length; index++) {
-    const { faceIds, pathToCall } = toFix[index]
+    const { faceIds, argument, pathToCall } = toFix[index]
     const path = pathToCall?.length ? pathToCall : pathList[index]
     const result = createEdgeRefObjectExpression(
       { side_faces: faceIds },
@@ -1760,47 +2032,85 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
     const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'axis'
+      (a) => getLabelName(a) !== argument
     )
-    newArgs.push(createLabeledArg('axis', result.expr))
+    newArgs.push(createLabeledArg(argument, result.expr))
     callNode.arguments = newArgs
   }
   return modifiedAst
 }
 
-function refactorExtrudeToToEdgeSpecifierInPlace(
+function refactorExtrudeEdgeArgumentsInPlace(
   modifiedAst: Node<Program>,
-  toFix: ExtrudeToCallToFix[],
-  pathList: PathToNode[],
+  toFix: ExtrudeEdgeCallToFix[],
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): Node<Program> {
-  if (toFix.length === 0) return modifiedAst
-  for (let index = 0; index < toFix.length; index++) {
-    const { faceIds, pathToCall } = toFix[index]
-    const path = pathToCall?.length ? pathToCall : pathList[index]
-    const result = createEdgeRefObjectExpression(
-      { side_faces: faceIds },
-      wasmInstance,
-      modifiedAst,
-      artifactGraph
-    )
-    if (err(result)) continue
-    modifiedAst = result.modifiedAst
+  for (const { replacements, pathToCall } of toFix) {
+    if (!pathToCall?.length) continue
+
+    let nextAst = structuredClone(modifiedAst)
+    const replacementExprs: Array<{
+      argument: ExtrudeEdgeArgument
+      expr: Expr
+    }> = []
+    let failedToCreateEdgeRef = false
+
+    for (const { argument, payload } of replacements) {
+      const payloads = isArray(payload) ? payload : [payload]
+      const exprs: Expr[] = []
+      for (const item of payloads) {
+        const result = createEdgeRefObjectExpression(
+          item,
+          wasmInstance,
+          nextAst,
+          artifactGraph
+        )
+        if (err(result)) {
+          failedToCreateEdgeRef = true
+          break
+        }
+        exprs.push(result.expr)
+        nextAst = result.modifiedAst
+      }
+      if (failedToCreateEdgeRef) break
+      replacementExprs.push({
+        argument,
+        expr: isArray(payload) ? createArrayExpression(exprs) : exprs[0],
+      })
+    }
+
+    if (failedToCreateEdgeRef || replacementExprs.length === 0) continue
+
     const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
-      modifiedAst,
-      path,
+      nextAst,
+      pathToCall,
       wasmInstance,
       ['CallExpressionKw']
     )
     if (err(nodeResult)) continue
+
     const callNode = nodeResult.node
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'to'
-    )
-    newArgs.push(createLabeledArg('to', result.expr))
-    callNode.arguments = newArgs
+    for (const { argument, expr } of replacementExprs) {
+      if (argument === 'target') {
+        if (callNode.unlabeled) {
+          callNode.unlabeled = expr
+        } else {
+          const unlabeledArg = callNode.arguments.find(
+            (arg) => getLabelName(arg) === undefined
+          )
+          if (unlabeledArg) unlabeledArg.arg = expr
+        }
+        continue
+      }
+      const existingArg = callNode.arguments.find(
+        (arg) => getLabelName(arg) === argument
+      )
+      if (existingArg) existingArg.arg = expr
+    }
+    modifiedAst = nextAst
   }
+
   return modifiedAst
 }
 
@@ -1939,11 +2249,21 @@ export function refactorZ0006Unified(
     sourceRange
   )
   const toFixRevolveHelix = filterCallsBySourceRange(
-    findRevolveHelixCallsToFix(ast, edgeRefactorMetadata),
+    findRevolveHelixCallsToFix(
+      ast,
+      edgeRefactorMetadata,
+      artifactGraph,
+      wasmInstance
+    ),
     sourceRange
   )
-  const toFixExtrudeTo = filterCallsBySourceRange(
-    findExtrudeToCallsToFix(ast, edgeRefactorMetadata),
+  const toFixExtrudeEdges = filterCallsBySourceRange(
+    findExtrudeEdgeCallsToFix(
+      ast,
+      edgeRefactorMetadata,
+      artifactGraph,
+      wasmInstance
+    ),
     sourceRange
   )
   const toFixGdtEdges = filterCallsBySourceRange(
@@ -1957,7 +2277,7 @@ export function refactorZ0006Unified(
   if (
     toFixFilletChamfer.length === 0 &&
     toFixRevolveHelix.length === 0 &&
-    toFixExtrudeTo.length === 0 &&
+    toFixExtrudeEdges.length === 0 &&
     toFixGdtEdges.length === 0 &&
     toFixGdtDistanceEndpoints.length === 0
   ) {
@@ -2032,14 +2352,9 @@ export function refactorZ0006Unified(
     wasmInstance
   )
 
-  modifiedAst = refactorExtrudeToToEdgeSpecifierInPlace(
+  modifiedAst = refactorExtrudeEdgeArgumentsInPlace(
     modifiedAst,
-    toFixExtrudeTo,
-    toFixExtrudeTo.map((item) =>
-      item.pathToCall?.length
-        ? item.pathToCall
-        : getNodePathFromSourceRange(ast, item.range)
-    ),
+    toFixExtrudeEdges,
     artifactGraph,
     wasmInstance
   )
