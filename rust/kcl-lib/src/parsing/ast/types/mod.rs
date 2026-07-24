@@ -38,6 +38,11 @@ use crate::errors::KclError;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::TagIdentifier;
+
+enum RenameTarget {
+    Name(String),
+    SketchMember { sketch_name: String, member_name: String },
+}
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
@@ -847,7 +852,7 @@ impl Program {
 
         if let Some(old_name) = old_name {
             // Now rename all the identifiers in the rest of the program.
-            self.rename_identifiers(&old_name, new_name, &[]);
+            self.rename_identifiers_order_aware(&old_name, new_name, &[]);
         } else {
             // Okay so this was not a top level variable declaration.
             // But it might be a variable declaration inside a function or function params.
@@ -882,6 +887,41 @@ impl Program {
                     }
                 }
             }
+
+            if let Some(value) = &mut value {
+                if let Some(old_name) = value.rename_symbol(new_name, pos) {
+                    let sketch_name = match item {
+                        BodyItem::VariableDeclaration(variable_declaration)
+                            if matches!(variable_declaration.declaration.init, Expr::SketchBlock(_)) =>
+                        {
+                            Some(variable_declaration.declaration.id.name.clone())
+                        }
+                        _ => None,
+                    };
+                    if let Some(sketch_name) = sketch_name {
+                        self.rename_member_references(&sketch_name, &old_name, new_name);
+                    } else {
+                        self.rename_identifiers_order_aware(&old_name, new_name, &[]);
+                    }
+                    return;
+                }
+            }
+
+            let rename_target = value.as_ref().and_then(|value| value.rename_target_at(pos));
+            match rename_target {
+                Some(RenameTarget::Name(old_name)) => {
+                    self.rename_declarations_named(&old_name, new_name);
+                    self.rename_identifiers(&old_name, new_name, &[]);
+                }
+                Some(RenameTarget::SketchMember {
+                    sketch_name,
+                    member_name,
+                }) => {
+                    self.rename_sketch_member(&sketch_name, &member_name, new_name);
+                    self.rename_member_references(&sketch_name, &member_name, new_name);
+                }
+                None => {}
+            }
         }
     }
 
@@ -893,32 +933,45 @@ impl Program {
         }
     }
 
+    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.body {
+            item.rename_declarations_named(old_name, new_name);
+        }
+    }
+
+    fn rename_sketch_member(&mut self, sketch_name: &str, member_name: &str, new_name: &str) {
+        for item in &mut self.body {
+            let BodyItem::VariableDeclaration(variable_declaration) = item else {
+                continue;
+            };
+            if variable_declaration.declaration.id.name != sketch_name {
+                continue;
+            }
+            if let Expr::SketchBlock(sketch_block) = &mut variable_declaration.declaration.init {
+                sketch_block.body.rename_binding_and_identifiers(member_name, new_name);
+            }
+        }
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        for item in &mut self.body {
+            item.rename_member_references(object_name, old_member_name, new_name);
+        }
+    }
+
+    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
+        self.get_body_item_for_position(pos)?
+            .get_expr_for_position(pos)?
+            .rename_target_at(pos)
+    }
+
     /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
     /// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
     /// uses after the binding are not. We use `body_item_defined_names` so all bindings are
     /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
     /// names, etc.).
     fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
-        for item in &mut self.body {
-            let names_in_this = body_item_defined_names(&*item);
-            let shadowed_here = names_in_this.iter().any(|name| name == old_name);
-            let excluded_for_this: Vec<&str> = match item {
-                BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
-                _ => {
-                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-                    for n in &names_in_this {
-                        v.push(n.as_str());
-                    }
-                    v
-                }
-            };
-            item.rename_identifiers(old_name, new_name, &excluded_for_this);
-            excluded_owned.extend(names_in_this);
-            if shadowed_here {
-                break;
-            }
-        }
+        rename_body_items_order_aware(&mut self.body, old_name, new_name, excluded);
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1128,6 +1181,45 @@ impl BodyItem {
         }
     }
 
+    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            BodyItem::VariableDeclaration(variable_declaration) => {
+                if variable_declaration.declaration.id.name == old_name {
+                    variable_declaration.declaration.id.name = new_name.to_string();
+                }
+                variable_declaration
+                    .declaration
+                    .init
+                    .rename_declarations_named(old_name, new_name);
+            }
+            BodyItem::ExpressionStatement(expression_statement) => expression_statement
+                .expression
+                .rename_declarations_named(old_name, new_name),
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement.argument.rename_declarations_named(old_name, new_name);
+            }
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+        }
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        match self {
+            BodyItem::ExpressionStatement(expression_statement) => expression_statement
+                .expression
+                .rename_member_references(object_name, old_member_name, new_name),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
+                .declaration
+                .init
+                .rename_member_references(object_name, old_member_name, new_name),
+            BodyItem::ReturnStatement(return_statement) => {
+                return_statement
+                    .argument
+                    .rename_member_references(object_name, old_member_name, new_name)
+            }
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+        }
+    }
+
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         match self {
             BodyItem::ImportStatement(_) => {} // TODO
@@ -1184,6 +1276,29 @@ fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
         }
     }
     out
+}
+
+fn rename_body_items_order_aware(items: &mut Vec<BodyItem>, old_name: &str, new_name: &str, excluded: &[&str]) {
+    let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+    for item in items {
+        let names_in_this = body_item_defined_names(&*item);
+        let shadowed_here = names_in_this.iter().any(|name| name == old_name);
+        let excluded_for_this: Vec<&str> = match item {
+            BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
+            _ => {
+                let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                for n in &names_in_this {
+                    v.push(n.as_str());
+                }
+                v
+            }
+        };
+        item.rename_identifiers(old_name, new_name, &excluded_for_this);
+        excluded_owned.extend(names_in_this);
+        if shadowed_here {
+            break;
+        }
+    }
 }
 
 /// Collect all names defined (bound) in an expression: TagDeclarator, LabelledExpression label,
@@ -1406,6 +1521,172 @@ impl Expr {
             Expr::SketchBlock(e) => e.replace_value(source_range, new_value),
             Expr::SketchVar(_) => {}
             Expr::None(_) => {}
+        }
+    }
+
+    fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match self {
+            Expr::FunctionExpression(function_expression) => {
+                for param in &mut function_expression.params {
+                    let param_source_range: SourceRange = (&param.identifier).into();
+                    if param_source_range.contains(pos) {
+                        let old_name = param.identifier.name.clone();
+                        param.identifier.rename(&old_name, new_name);
+                        function_expression.body.rename_identifiers(&old_name, new_name, &[]);
+                        return Some(old_name);
+                    }
+                }
+                None
+            }
+            Expr::SketchBlock(sketch_block) => sketch_block.rename_symbol(new_name, pos),
+            _ => None,
+        }
+    }
+
+    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
+        if !SourceRange::from(self).contains(pos) {
+            return None;
+        }
+
+        match self {
+            Expr::Name(name) => name.local_ident().and_then(|ident| {
+                SourceRange::from(&name.name)
+                    .contains(pos)
+                    .then(|| RenameTarget::Name(ident.inner.to_string()))
+            }),
+            Expr::MemberExpression(member_expression) => member_expression.rename_target_at(pos),
+            Expr::CallExpressionKw(call_expression) => {
+                if let Some(unlabeled) = &call_expression.unlabeled
+                    && let Some(target) = unlabeled.rename_target_at(pos)
+                {
+                    return Some(target);
+                }
+                call_expression
+                    .arguments
+                    .iter()
+                    .find_map(|arg| arg.arg.rename_target_at(pos))
+            }
+            Expr::ArrayExpression(array_expression) => array_expression
+                .elements
+                .iter()
+                .find_map(|element| element.rename_target_at(pos)),
+            Expr::ArrayRangeExpression(array_range) => array_range
+                .start_element
+                .rename_target_at(pos)
+                .or_else(|| array_range.end_element.rename_target_at(pos)),
+            Expr::BinaryExpression(binary_expression) => binary_expression
+                .left
+                .rename_target_at(pos)
+                .or_else(|| binary_expression.right.rename_target_at(pos)),
+            Expr::UnaryExpression(unary_expression) => unary_expression.argument.rename_target_at(pos),
+            Expr::PipeExpression(pipe_expression) => {
+                pipe_expression.body.iter().find_map(|expr| expr.rename_target_at(pos))
+            }
+            Expr::LabelledExpression(labelled_expression) => labelled_expression.expr.rename_target_at(pos),
+            Expr::AscribedExpression(ascribed_expression) => ascribed_expression.expr.rename_target_at(pos),
+            Expr::SketchBlock(sketch_block) => sketch_block.body.rename_target_at(pos),
+            Expr::ObjectExpression(object_expression) => object_expression
+                .properties
+                .iter()
+                .find_map(|property| property.value.rename_target_at(pos)),
+            Expr::FunctionExpression(function_expression) => function_expression.body.rename_target_at(pos),
+            Expr::IfExpression(_)
+            | Expr::Literal(_)
+            | Expr::TagDeclarator(_)
+            | Expr::PipeSubstitution(_)
+            | Expr::SketchVar(_)
+            | Expr::None(_) => None,
+        }
+    }
+
+    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            Expr::SketchBlock(sketch_block) => sketch_block.body.rename_declarations_named(old_name, new_name),
+            Expr::FunctionExpression(function_expression) => {
+                function_expression.body.rename_declarations_named(old_name, new_name);
+            }
+            _ => {}
+        }
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        match self {
+            Expr::MemberExpression(member_expression) => {
+                member_expression.rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::CallExpressionKw(call_expression) => {
+                if let Some(unlabeled) = &mut call_expression.unlabeled {
+                    unlabeled.rename_member_references(object_name, old_member_name, new_name);
+                }
+                for arg in &mut call_expression.arguments {
+                    arg.arg.rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            Expr::ArrayExpression(array_expression) => {
+                for element in &mut array_expression.elements {
+                    element.rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            Expr::ArrayRangeExpression(array_range) => {
+                array_range
+                    .start_element
+                    .rename_member_references(object_name, old_member_name, new_name);
+                array_range
+                    .end_element
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::BinaryExpression(binary_expression) => {
+                binary_expression
+                    .left
+                    .rename_member_references(object_name, old_member_name, new_name);
+                binary_expression
+                    .right
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::UnaryExpression(unary_expression) => {
+                unary_expression
+                    .argument
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::PipeExpression(pipe_expression) => {
+                for expr in &mut pipe_expression.body {
+                    expr.rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            Expr::LabelledExpression(labelled_expression) => {
+                labelled_expression
+                    .expr
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::AscribedExpression(ascribed_expression) => {
+                ascribed_expression
+                    .expr
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::SketchBlock(sketch_block) => {
+                sketch_block
+                    .body
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::ObjectExpression(object_expression) => {
+                for property in &mut object_expression.properties {
+                    property
+                        .value
+                        .rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            Expr::FunctionExpression(function_expression) => {
+                function_expression
+                    .body
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            Expr::IfExpression(_)
+            | Expr::Name(_)
+            | Expr::Literal(_)
+            | Expr::TagDeclarator(_)
+            | Expr::PipeSubstitution(_)
+            | Expr::SketchVar(_)
+            | Expr::None(_) => {}
         }
     }
 
@@ -1786,7 +2067,11 @@ impl SketchBlock {
             arg.arg.rename_identifiers(old_name, new_name, excluded);
         }
 
-        self.body.rename_identifiers(old_name, new_name, excluded);
+        self.body.rename_identifiers_order_aware(old_name, new_name, excluded);
+    }
+
+    fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        self.body.rename_symbol(new_name, pos)
     }
 }
 
@@ -1844,6 +2129,55 @@ impl Block {
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         for item in &mut self.items {
             item.rename_identifiers(old_name, new_name, excluded);
+        }
+    }
+
+    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        rename_body_items_order_aware(&mut self.items, old_name, new_name, excluded);
+    }
+
+    fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        let item = self
+            .items
+            .iter_mut()
+            .find(|item| SourceRange::from(&**item).contains(pos))?;
+
+        let old_name = match item {
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.rename_symbol(new_name, pos),
+            BodyItem::ExpressionStatement(expression_statement) => {
+                expression_statement.expression.rename_symbol(new_name, pos)
+            }
+            BodyItem::ReturnStatement(return_statement) => return_statement.argument.rename_symbol(new_name, pos),
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
+        };
+
+        if let Some(old_name) = &old_name {
+            self.rename_identifiers_order_aware(old_name, new_name, &[]);
+        }
+
+        old_name
+    }
+
+    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
+        let item = self.items.iter().find(|item| SourceRange::from(*item).contains(pos))?;
+
+        item.get_expr_for_position(pos)?.rename_target_at(pos)
+    }
+
+    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_declarations_named(old_name, new_name);
+        }
+    }
+
+    fn rename_binding_and_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.rename_declarations_named(old_name, new_name);
+        self.rename_identifiers(old_name, new_name, &[]);
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        for item in &mut self.items {
+            item.rename_member_references(object_name, old_member_name, new_name);
         }
     }
 
@@ -2025,6 +2359,106 @@ impl BinaryPart {
                 e.expr.rename_identifiers(old_name, new_name, excluded);
             }
             BinaryPart::SketchVar(_) => {}
+        }
+    }
+
+    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
+        if !SourceRange::from(self).contains(pos) {
+            return None;
+        }
+
+        match self {
+            BinaryPart::Name(name) => name.local_ident().and_then(|ident| {
+                SourceRange::from(&name.name)
+                    .contains(pos)
+                    .then(|| RenameTarget::Name(ident.inner.to_string()))
+            }),
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression
+                .left
+                .rename_target_at(pos)
+                .or_else(|| binary_expression.right.rename_target_at(pos)),
+            BinaryPart::CallExpressionKw(call_expression) => {
+                if let Some(unlabeled) = &call_expression.unlabeled
+                    && let Some(target) = unlabeled.rename_target_at(pos)
+                {
+                    return Some(target);
+                }
+                call_expression
+                    .arguments
+                    .iter()
+                    .find_map(|arg| arg.arg.rename_target_at(pos))
+            }
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.argument.rename_target_at(pos),
+            BinaryPart::MemberExpression(member_expression) => member_expression.rename_target_at(pos),
+            BinaryPart::ArrayExpression(array_expression) => array_expression
+                .elements
+                .iter()
+                .find_map(|element| element.rename_target_at(pos)),
+            BinaryPart::ArrayRangeExpression(array_range) => array_range
+                .start_element
+                .rename_target_at(pos)
+                .or_else(|| array_range.end_element.rename_target_at(pos)),
+            BinaryPart::ObjectExpression(object_expression) => object_expression
+                .properties
+                .iter()
+                .find_map(|property| property.value.rename_target_at(pos)),
+            BinaryPart::AscribedExpression(ascribed_expression) => ascribed_expression.expr.rename_target_at(pos),
+            BinaryPart::IfExpression(_) | BinaryPart::Literal(_) | BinaryPart::SketchVar(_) => None,
+        }
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        match self {
+            BinaryPart::BinaryExpression(binary_expression) => {
+                binary_expression
+                    .left
+                    .rename_member_references(object_name, old_member_name, new_name);
+                binary_expression
+                    .right
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            BinaryPart::CallExpressionKw(call_expression) => {
+                if let Some(unlabeled) = &mut call_expression.unlabeled {
+                    unlabeled.rename_member_references(object_name, old_member_name, new_name);
+                }
+                for arg in &mut call_expression.arguments {
+                    arg.arg.rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            BinaryPart::UnaryExpression(unary_expression) => {
+                unary_expression
+                    .argument
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            BinaryPart::MemberExpression(member_expression) => {
+                member_expression.rename_member_references(object_name, old_member_name, new_name);
+            }
+            BinaryPart::ArrayExpression(array_expression) => {
+                for element in &mut array_expression.elements {
+                    element.rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            BinaryPart::ArrayRangeExpression(array_range) => {
+                array_range
+                    .start_element
+                    .rename_member_references(object_name, old_member_name, new_name);
+                array_range
+                    .end_element
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            BinaryPart::ObjectExpression(object_expression) => {
+                for property in &mut object_expression.properties {
+                    property
+                        .value
+                        .rename_member_references(object_name, old_member_name, new_name);
+                }
+            }
+            BinaryPart::AscribedExpression(ascribed_expression) => {
+                ascribed_expression
+                    .expr
+                    .rename_member_references(object_name, old_member_name, new_name);
+            }
+            BinaryPart::IfExpression(_) | BinaryPart::Name(_) | BinaryPart::Literal(_) | BinaryPart::SketchVar(_) => {}
         }
     }
 }
@@ -3535,7 +3969,61 @@ impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         self.object.rename_identifiers(old_name, new_name, excluded);
-        self.property.rename_identifiers(old_name, new_name, excluded);
+        if self.computed {
+            self.property.rename_identifiers(old_name, new_name, excluded);
+        } else if let Expr::Name(property) = &mut self.property
+            && !excluded.contains(&property.name.name.as_str())
+        {
+            property.rename(old_name, new_name);
+        }
+    }
+
+    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
+        if !self.computed
+            && SourceRange::from(&self.property).contains(pos)
+            && let Expr::Name(property) = &self.property
+            && let Some(property_name) = property.local_ident()
+            && let Expr::Name(object) = &self.object
+            && let Some(object_name) = object.local_ident()
+        {
+            return Some(RenameTarget::SketchMember {
+                sketch_name: object_name.inner.to_string(),
+                member_name: property_name.inner.to_string(),
+            });
+        }
+
+        self.object.rename_target_at(pos).or_else(|| {
+            if self.computed {
+                self.property.rename_target_at(pos)
+            } else {
+                None
+            }
+        })
+    }
+
+    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
+        self.object
+            .rename_member_references(object_name, old_member_name, new_name);
+        if self.computed {
+            self.property
+                .rename_member_references(object_name, old_member_name, new_name);
+            return;
+        }
+
+        let Expr::Name(object) = &self.object else {
+            return;
+        };
+        let Some(current_object_name) = object.local_ident() else {
+            return;
+        };
+        if current_object_name.inner != object_name {
+            return;
+        }
+
+        let Expr::Name(property) = &mut self.property else {
+            return;
+        };
+        property.rename(old_member_name, new_name);
     }
 }
 
@@ -5362,6 +5850,179 @@ fn foo() {
 foo()
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+blockSketch = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+  coincident([edge1.end, edge2.start])
+}
+
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+"#;
+        let mut program = parse(code);
+        let pos = code.find("edge1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"@settings(kclVersion = 2.0)
+
+blockSketch = sketch(on = XY) {
+  edgeOne = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+  coincident([edgeOne.end, edge2.start])
+}
+
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_updates_member_references() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.line1, s.line2])
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("line1Prime", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1Prime = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.line1Prime, s.line2])
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_top_level_declaration_does_not_rename_shadowing_sketch_block_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.rfind("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("topLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+topLine = 99
+result = topLine
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_does_not_rename_same_named_top_level_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+r = region(segments = [s.line1])
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("sketchLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  sketchLine = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([sketchLine.end, sketchLine.start])
+}
+
+r = region(segments = [s.sketchLine])
+line1 = 99
+result = line1
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_symbol_from_references() {
+        let code = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [var 8.34mm, var 12.78mm], end = [var 17.82mm, var 12.78mm])
+  line2 = line(start = [var 17.82mm, var 12.78mm], end = [var 17.82mm, var 6.3mm])
+  line3 = line(start = [var 17.82mm, var 6.3mm], end = [var 8.34mm, var 6.3mm])
+  line4 = line(start = [var 8.34mm, var 6.3mm], end = [var 8.34mm, var 12.78mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+r = region(segments = [s.line1, s.line2])
+extrude(r, length = 5)
+"#;
+        let expected = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1Prime = line(start = [var 8.34mm, var 12.78mm], end = [var 17.82mm, var 12.78mm])
+  line2 = line(start = [var 17.82mm, var 12.78mm], end = [var 17.82mm, var 6.3mm])
+  line3 = line(start = [var 17.82mm, var 6.3mm], end = [var 8.34mm, var 6.3mm])
+  line4 = line(start = [var 8.34mm, var 6.3mm], end = [var 8.34mm, var 12.78mm])
+  coincident([line1Prime.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1Prime.start])
+  parallel([line2, line4])
+  parallel([line3, line1Prime])
+  perpendicular([line1Prime, line2])
+  horizontal(line3)
+}
+r = region(segments = [s.line1Prime, s.line2])
+extrude(r, length = 5)
+"#;
+
+        for pos in [
+            code.find("perpendicular([line1").unwrap() + "perpendicular([".len() + 1,
+            code.find("s.line1").unwrap() + "s.".len() + 1,
+        ] {
+            let mut program = parse(code);
+            program.rename_symbol("line1Prime", pos);
+
+            let formatted = program.recast_top(&Default::default(), 0);
+            assert_eq!(formatted, expected);
+        }
     }
 
     #[test]
