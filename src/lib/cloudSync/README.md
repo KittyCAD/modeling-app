@@ -12,6 +12,13 @@ The cloud sync subsystem has both always-on infrastructure and toggleable runtim
 
 The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloudSync`, and `src/registry/contracts/cloudSync.ts` are intentionally thin shims for registry discovery and compatibility with existing import paths.
 
+## Libraries and disk persistence
+
+The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. At present, we only support a "personal" cloud library in our API (see [our docs](https://zoo.dev/docs/developer-tools/api/projects)), and the location on the disk where this library's contents are synced locally is not editable by users. The chosen locations are:
+- On web: `<opfs-root>/documents/zoo-design-studio-projects`
+- Linux and Windows: `~/documents/zoo-design-studio-projects`
+- macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
@@ -98,6 +105,7 @@ flowchart TD
 - If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
+- Home rename/delete of a cloud project act on the local materialization when one exists (and let normal sync replicate the change), and act directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
 
 ## Persistent State
 

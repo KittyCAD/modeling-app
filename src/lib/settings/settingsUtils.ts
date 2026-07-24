@@ -30,11 +30,12 @@ import {
 } from '@src/lib/layout/utils'
 import {
   getDefaultDirectoryProjectLibraryPath,
-  getDefaultProjectLibrarySettings,
   isProjectLibrarySettings,
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   Setting,
@@ -958,6 +959,7 @@ export async function loadAndValidateSettings(
     | string
     | {
         defaultProjectLibraries?: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies?: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
       }
@@ -969,6 +971,7 @@ export async function loadAndValidateSettings(
       : projectPathOrOptions
   const {
     defaultProjectLibraries = [],
+    projectLibrarySettingDefaultPolicies = [],
     extensionSettings = {},
     projectPath,
   } = options
@@ -991,14 +994,21 @@ export async function loadAndValidateSettings(
     typeof appSettings.app?.projectDirectory === 'string'
       ? appSettings.app.projectDirectory
       : undefined
-  const defaultDirectoryLibraryPath =
-    legacyProjectDirectory ?? initialDefaultDir
+
+  const policyDefaultProjectLibraries = resolveProjectLibrarySettingDefaults(
+    projectLibrarySettingDefaultPolicies,
+    {
+      initialDefaultDir,
+      legacyProjectDirectory,
+      isDesktop: isDesktop(),
+    }
+  )
 
   let settingsNext = createSettings(extensionSettings)
   settingsNext.app.projectDirectory.default = initialDefaultDir
   if (settingsNext.app.libraries) {
     settingsNext.app.libraries.default = mergeProjectLibrarySettings(
-      getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
+      policyDefaultProjectLibraries,
       defaultProjectLibraries
     )
   }

@@ -75,6 +75,7 @@ export async function buildTheWorldAndConnectToEngine() {
     input: {
       commandBarActor,
       defaultProjectLibraries: [],
+      projectLibrarySettingDefaultPolicies: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
@@ -181,6 +182,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     input: {
       commandBarActor,
       defaultProjectLibraries: [],
+      projectLibrarySettingDefaultPolicies: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
