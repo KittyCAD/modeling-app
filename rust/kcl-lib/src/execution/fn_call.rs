@@ -542,6 +542,7 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
         KclValue::Bool { .. } => false,
         KclValue::Number { .. } => false,
         KclValue::String { .. } => false,
+        KclValue::Enum { .. } => false,
         KclValue::SketchVar { .. } => true,
         KclValue::SketchConstraint { .. } => true,
         KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
