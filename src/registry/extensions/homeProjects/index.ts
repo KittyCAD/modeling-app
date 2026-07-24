@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -173,7 +174,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
-        project.remoteProjectId
+        project.remoteProjectId,
+        await getDefaultCloudProjectDirectoryPath()
       )
       if (!syncedProject) {
         return undefined

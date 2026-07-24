@@ -864,7 +864,8 @@ async function cloneRemoteProjectToLocal(
 }
 
 export async function ensureCloudProjectLocallySynced(
-  remoteProjectId: string
+  remoteProjectId: string,
+  targetProjectDirectoryPath?: string
 ): Promise<CloudSyncLocalProject | undefined> {
   if (!isConfiguredForCloud()) {
     return undefined
@@ -879,7 +880,13 @@ export async function ensureCloudProjectLocallySynced(
   const knownLocalMetadata = metadata.find(
     (entry) => entry.remoteProjectId === projectId && !entry.tombstone
   )
-  const projectDirectory = getConfiguredProjectDirectoryPath()
+  // The destination directory is the local materialization path of the
+  // project library the caller is opening this remote project from (e.g. the
+  // Personal Cloud library). Fall back to the configured directory only when
+  // the caller cannot resolve a target library.
+  const projectDirectory = targetProjectDirectoryPath?.trim()
+    ? normalizePathForSync(targetProjectDirectoryPath)
+    : getConfiguredProjectDirectoryPath()
   const knownLocalProjectPath = knownLocalMetadata
     ? projectPathInDirectory(knownLocalMetadata, projectDirectory)
     : undefined
