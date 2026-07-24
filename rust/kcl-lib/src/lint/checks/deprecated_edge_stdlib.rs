@@ -98,10 +98,13 @@ fn get_unlabeled_arg(call: &CallExpressionKw) -> Option<&Expr> {
 
 fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
     let mut arguments = Vec::with_capacity(3);
-    if get_unlabeled_arg(call).is_some_and(|expr| {
-        contains_deprecated_edge_stdlib(expr, prog)
-            || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
-    }) {
+    let requires_concrete_target = ["to", "twistAngle"].iter().any(|label| get_arg(call, label).is_some());
+    if !requires_concrete_target
+        && get_unlabeled_arg(call).is_some_and(|expr| {
+            contains_deprecated_edge_stdlib(expr, prog)
+                || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
+        })
+    {
         arguments.push("target");
     }
     for label in ["to", "direction"] {
@@ -559,6 +562,62 @@ extrude(cylinder3, to = targetEdge)
             "Z0006 fires for an extrude target using deprecated edge stdlib"
         );
         assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_extrude_target_with_to() {
+        let kcl = r#"extrude(
+  getOppositeEdge(edge1),
+  to = offsetPlane(XY, offset = 10),
+  bodyType = SURFACE,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(
+            z0006.is_empty(),
+            "a target that must remain concrete should not receive impossible migration guidance"
+        );
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_extrude_target_with_twist() {
+        let kcl = r#"extrude(
+  getOppositeEdge(edge1),
+  length = 10,
+  twistAngle = 45deg,
+  bodyType = SURFACE,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(
+            z0006.is_empty(),
+            "a target that must remain concrete should not receive impossible migration guidance"
+        );
+    }
+
+    #[test]
+    fn z0006_still_fires_for_extrude_direction_when_target_must_remain_concrete() {
+        let kcl = r#"extrude(
+  getOppositeEdge(edge1),
+  to = offsetPlane(XY, offset = 10),
+  direction = getCommonEdge(faces = [face1, face2]),
+  bodyType = SURFACE,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(
+            z0006.len(),
+            1,
+            "independently migratable arguments should still be linted"
+        );
+        assert!(z0006[0].description.contains("direction"));
+        assert!(!z0006[0].description.contains("target with"));
     }
 
     #[test]

@@ -672,6 +672,12 @@ const KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION =
     'direction = sketch001.line3'
   )
 
+const KCL_EXTRUDE_DIRECT_SEGMENT_TARGET_AND_DEPRECATED_DIRECTION =
+  KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE.replace(
+    'getNextAdjacentEdge(extrude001.sketch.tags.line3)',
+    'sketch001.line3'
+  )
+
 const KCL_EDGE_ID = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0])
@@ -1818,7 +1824,7 @@ surface001 = extrude(
           [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
             (artifact) => artifact.type === 'sweep' && !artifact.consumed
           )
-        ).toHaveLength(2)
+        ).toHaveLength(1)
       }
     )
 
@@ -1927,6 +1933,25 @@ surface001 = extrude(
         expect(normalized).not.toContain('direction = { sideFaces = [')
         expect(normalized).not.toContain('getNextAdjacentEdge(')
         expect(normalized).toContain('extrude( { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'preserves a direct sketch segment target while refactoring the extrude direction',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_DIRECT_SEGMENT_TARGET_AND_DEPRECATED_DIRECTION
+        )
+        const normalized = norm(refactored)
+        expect(normalized).toContain('extrude( sketch001.line3,')
+        expect(normalized).not.toContain('extrude( { sideFaces = [')
+        expect(normalized).not.toContain('getOppositeEdge(')
+        expect(normalized).toContain('direction = { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
