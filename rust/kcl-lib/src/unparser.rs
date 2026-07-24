@@ -17,6 +17,7 @@ use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::CommentStyle;
 use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::EnumDeclaration;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FormatOptions;
 use crate::parsing::ast::types::FunctionExpression;
@@ -163,7 +164,7 @@ fn recast_body(
             BodyItem::VariableDeclaration(variable_declaration) => {
                 variable_declaration.recast(&mut result, options, indentation_level);
             }
-            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result, options, indentation_level),
             BodyItem::ReturnStatement(return_statement) => {
                 write!(&mut result, "{indentation}return ").no_fail();
                 let mut tmp_buf = String::with_capacity(256);
@@ -718,7 +719,8 @@ impl VariableDeclaration {
 }
 
 impl TypeDeclaration {
-    pub fn recast(&self, buf: &mut String) {
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        options.write_indentation(buf, indentation_level);
         match self.visibility {
             ItemVisibility::Default => {}
             ItemVisibility::Export => buf.push_str("export "),
@@ -742,20 +744,101 @@ impl TypeDeclaration {
                 buf.push_str(" = ");
                 write!(buf, "{ty}").no_fail();
             }
-            TypeDeclarationDefinition::Enum(e) => {
-                // Minimal recast; proper multi-line layout and comment
-                // preservation land with enum parsing.
-                buf.push_str(" {");
-                if e.variants.is_empty() {
-                    buf.push_str(" |");
+            TypeDeclarationDefinition::Enum(e) => e.recast(buf, options, indentation_level),
+        }
+    }
+}
+
+impl EnumDeclaration {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        // An enum with no variants and no comments stays on one line, keeping
+        // the standalone arm marker which classifies the body as an enum.
+        if self.variants.is_empty() && self.non_code_meta.is_empty() {
+            buf.push_str(" { | }");
+            return;
+        }
+
+        let body_level = indentation_level + 1;
+        let body_indentation = options.get_indentation(body_level);
+        buf.push_str(" {\n");
+
+        // Comments before the first arm (or around a standalone `|`),
+        // mirroring how `recast_body` renders `start_nodes`.
+        let has_non_newline_start_node = self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+        if has_non_newline_start_node {
+            let mut pending_newline = false;
+            for start_node in &self.non_code_meta.start_nodes {
+                if matches!(start_node.value, NonCodeValue::NewLine) {
+                    pending_newline = true;
+                    continue;
                 }
-                for variant in &e.variants {
-                    buf.push_str(" | ");
-                    buf.push_str(&variant.name.name);
+                if pending_newline {
+                    buf.push('\n');
+                    pending_newline = false;
                 }
-                buf.push_str(" }");
+                buf.push_str(&start_node.recast(options, body_level));
+                if !buf.ends_with('\n') {
+                    buf.push('\n');
+                }
+            }
+            if pending_newline {
+                buf.push('\n');
             }
         }
+
+        if self.variants.is_empty() {
+            buf.push_str(&body_indentation);
+            buf.push_str("|\n");
+        }
+
+        for (index, variant) in self.variants.iter().enumerate() {
+            // Comments strongly associated with this arm, mirroring how
+            // `recast_body` renders body-item pre-comments.
+            let mut arm = String::new();
+            for comment in &variant.pre_comments {
+                if !comment.is_empty() {
+                    arm.push_str(&body_indentation);
+                    arm.push_str(comment);
+                }
+                if comment.is_empty() && !arm.ends_with('\n') {
+                    arm.push('\n');
+                }
+                if !arm.ends_with("\n\n") && arm != "\n" {
+                    arm.push('\n');
+                }
+            }
+            arm.push_str(&body_indentation);
+            arm.push_str("| ");
+            arm.push_str(&variant.name.name);
+            buf.push_str(&arm);
+
+            // Trailing comments and blank lines after this arm, mirroring how
+            // `recast_body` renders per-item non-code nodes.
+            if let Some(noncodes) = self.non_code_meta.non_code_nodes.get(&index) {
+                for (i, noncode) in noncodes.iter().enumerate() {
+                    let formatted = noncode.recast(options, body_level);
+                    if i == 0
+                        && !formatted.trim().is_empty()
+                        && matches!(noncode.value, NonCodeValue::BlockComment { .. })
+                    {
+                        buf.push('\n');
+                    }
+                    buf.push_str(&formatted);
+                }
+                if !buf.ends_with('\n') {
+                    buf.push('\n');
+                }
+            } else {
+                buf.push('\n');
+            }
+        }
+
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
     }
 }
 
@@ -1505,6 +1588,167 @@ foo = 42
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);
         assert_eq!(output, input);
+    }
+
+    /// Assert that `input` formats to `expected`, and that formatting is
+    /// idempotent: recasting the output parses and formats to itself.
+    #[track_caller]
+    fn assert_recast(input: &str, expected: &str) {
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, expected);
+        let reparsed = crate::parsing::top_level_parse(&output).unwrap();
+        assert_eq!(reparsed.recast_top(&Default::default(), 0), output);
+    }
+
+    #[test]
+    fn recast_enum_multi_line_is_stable() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  | Red
+  | Green
+  | Blue
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_expands_single_line() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color { | Red | Green | Blue }
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  | Red
+  | Green
+  | Blue
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_export() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+export type Color {
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_no_variants() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty { | }
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_no_variants_with_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty { /* a */ | /* b */ }
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Empty {
+  /* a */
+  /* b */
+  |
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_with_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  // before red
+  | Red // after red
+  | /* inside green arm */ Green
+
+  | Blue
+  // trailing
+}
+"#;
+        // Comments between an arm's `|` and its name normalize to a line
+        // above the arm; everything else keeps its position.
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  // before red
+  | Red // after red
+  /* inside green arm */
+  | Green
+
+  | Blue
+  // trailing
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_with_comment_above_declaration() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+// palette
+type Color {
+  // before red
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_with_outer_annotation() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+@(impl = kcl)
+type Color {
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_export_annotation_and_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+// palette
+@(impl = kcl)
+export type Color {
+  | Red // warm
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_in_function_body() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+fn palette() {
+  type Color {
+    | Red
+    | Green
+  }
+  return 0
+}
+"#;
+        assert_recast(input, input);
     }
 
     #[test]
