@@ -9,6 +9,7 @@ import {
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -19,10 +20,10 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -287,18 +288,13 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
-    const settingsActor = settings.actor
     const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
     const engineCommandManager = appRegistry.get(
       engineConnectionService
     ).manager
-    const rustContext = new RustContext(
-      wasmPromise,
-      engineCommandManager,
-      settingsActor
-    )
+    const rustContext = appRegistry.get(rustContextService).context
 
     return {
       wasmPromise,

@@ -1,4 +1,5 @@
 import {
+  DirectoryProjectLibrarySettingsDetails,
   ProjectLibrariesSettingInput,
   projectLibraryTypeOptionsFromContributions,
   type ProjectLibraryTypeOption,
@@ -30,6 +31,7 @@ const libraryTypeOptions: ProjectLibraryTypeOption[] = [
       path: 'projects',
       type: 'directory',
     },
+    settingsDetails: DirectoryProjectLibrarySettingsDetails,
   },
 ]
 
@@ -49,6 +51,7 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
       path: 'zoo-cloud',
       type: 'cloud',
     },
+    settingsDetails: () => <></>,
   },
 ]
 
@@ -84,6 +87,34 @@ describe('ProjectLibrariesSettingInput', () => {
     fireEvent.blur(screen.getByTestId('project-directory-input'))
 
     expect(updateValue).not.toHaveBeenCalled()
+  })
+
+  test('does not render implicit details for library types without a settings details contribution', () => {
+    const updateValue = vi.fn()
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={projectLibraryTypeOptionsFromContributions(
+          new Map([
+            [
+              'directory',
+              {
+                type: 'directory',
+                title: 'Directory',
+                defaultSetting: {
+                  title: 'Default Projects Directory',
+                  path: 'projects',
+                  type: 'directory',
+                },
+              },
+            ],
+          ])
+        )}
+      />
+    )
+
+    expect(screen.queryByTestId('project-directory-input')).toBeNull()
   })
 
   test('does not update project libraries when normalization matches the current value', () => {

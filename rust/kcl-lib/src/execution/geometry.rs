@@ -1103,6 +1103,8 @@ pub enum Extrudable {
     EdgeTag(Box<TagIdentifier>),
     /// Edge.
     Edge(Uuid),
+    /// Edge specifier payload.
+    EdgeSpecifier(UnresolvedEdgeSpecifier),
 }
 
 impl Extrudable {
@@ -1125,6 +1127,10 @@ impl Extrudable {
                 ))),
             },
             Extrudable::Edge(edge) => Ok(*edge),
+            Extrudable::EdgeSpecifier(_) => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find a legacy id for edge specifier".to_owned(),
+                vec![args.source_range],
+            ))),
         }
     }
 
@@ -1143,6 +1149,7 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Edge(_) => None,
+            Extrudable::EdgeSpecifier(_) => None,
         }
     }
 
@@ -1170,6 +1177,7 @@ impl Extrudable {
                 _ => ProfileClosed::Maybe,
             },
             Extrudable::Edge(_) => ProfileClosed::Maybe,
+            Extrudable::EdgeSpecifier(_) => ProfileClosed::Maybe,
         }
     }
 }
