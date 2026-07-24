@@ -17,18 +17,18 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
-import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  NEW_PROJECT_LIBRARY_TITLE,
   getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
+  NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -42,10 +42,10 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryOperation,
+  type ProjectLibraryTypeOperations,
   projectLibrariesValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
-  type ProjectLibraryTypeOperations,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
@@ -54,7 +54,7 @@ import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
 
-function invalidateConfiguredProjectLibraryEntries() {
+export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
 }
 
@@ -148,17 +148,17 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
       ),
+    // A local materialization is not required: cloud library operations can act
+    // on a remote-only project directly. Each library type's operation guards
+    // its own local-vs-remote handling, so the shared capability check only
+    // needs write access plus a registered operation.
     canRename: (project) =>
       Boolean(
-        project.localProjectPath &&
-          project.readWriteAccess &&
-          getProjectOperation(project, 'renameProject')
+        project.readWriteAccess && getProjectOperation(project, 'renameProject')
       ),
     canDelete: (project) =>
       Boolean(
-        project.localProjectPath &&
-          project.readWriteAccess &&
-          getProjectOperation(project, 'deleteProject')
+        project.readWriteAccess && getProjectOperation(project, 'deleteProject')
       ),
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')

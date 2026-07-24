@@ -944,6 +944,101 @@ export async function ensureCloudProjectLocallySynced(
   )
 }
 
+/**
+ * Rename the remote cloud project identified by `remoteProjectId`.
+ *
+ * This targets *remote-only* projects that have not been materialized locally,
+ * so there is no local `project.toml` to edit. The cloud API has no title-only
+ * update, so the whole-project archive is downloaded and re-uploaded with the
+ * new title. Callers that own a local materialization should edit the local
+ * `project.toml` instead and let sync replicate the rename to the remote.
+ */
+export async function renameRemoteCloudProject(
+  remoteProjectId: string,
+  requestedName: string
+): Promise<void> {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const title = requestedName.trim()
+  if (!projectId || !title) {
+    return
+  }
+
+  const remoteProject = await getRemoteProject(config, projectId)
+  const files = withRemoteProjectMetadataInArchiveFiles(
+    filterCloudSyncProjectFilesForSync(
+      await parseProjectArchive(
+        await downloadRemoteProjectArchive(config, projectId)
+      )
+    ),
+    title,
+    projectId,
+    getEnvironmentName()
+  )
+  const updated = await updateRemoteProject({
+    config,
+    projectPath: localProjectNameForRemoteProject(remoteProject),
+    projectId,
+    files,
+    expectedRevision: getRevision(remoteProject),
+  }).catch(rejectRemoteUploadFailure)
+
+  // Reflect the new title in the in-memory remote index immediately so Home
+  // updates before the next full remote index sync completes.
+  cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.map(
+    (project) =>
+      project.id === projectId
+        ? { ...project, title: updated.title ?? title }
+        : project
+  )
+  scheduleRemoteIndexSync(0)
+}
+
+/**
+ * Delete the remote cloud project identified by `remoteProjectId`, tolerating a
+ * remote that is already gone (404). Any local sync metadata still pointing at
+ * it is cleared so the project neither reappears nor lingers as a tombstone.
+ *
+ * This targets *remote-only* projects; callers that own a local materialization
+ * should remove the local project instead and let sync replicate the deletion.
+ */
+export async function deleteRemoteCloudProject(
+  remoteProjectId: string
+): Promise<void> {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  if (!projectId) {
+    return
+  }
+
+  try {
+    await deleteRemoteProject(config, projectId)
+  } catch (error) {
+    if (!(error instanceof CloudApiError && error.status === 404)) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw error
+    }
+  }
+
+  for (const metadata of await getAllProjectMetadata()) {
+    if (metadata.remoteProjectId === projectId) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await deleteProjectMetadata(metadata.localProjectPath)
+    }
+  }
+
+  cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.filter(
+    (project) => project.id !== projectId
+  )
+  scheduleRemoteIndexSync(0)
+}
+
 export async function getCloudSyncRemoteProjectThumbnailUrl(
   remoteProject: RemoteProjectSummary
 ) {

@@ -29,18 +29,22 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  deleteRemoteCloudProject,
   type RemoteProjectSummary,
+  renameRemoteCloudProject,
   retryCloudSync,
 } from '@src/lib/cloudSync'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
@@ -51,6 +55,7 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type CloudSyncRegistryService,
@@ -70,14 +75,16 @@ import {
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { settingsService } from '@src/registry/contracts/settings'
 import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { settingsService } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { invalidateConfiguredProjectLibraryEntries } from '@src/registry/extensions/homeProjects'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation } from 'react-router-dom'
@@ -1015,9 +1022,21 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
  * sync-only surface (remote entries, status bar, project-menu sync actions).
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const systemIO = ctx.services.signal(systemIOService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  // A materialized cloud project can be listed either by System IO (when the
+  // cloud folder is the app's project directory, e.g. on web) or by the
+  // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
+  // local mutations show up regardless of which surface owns the entry.
+  const refreshLocalCloudProjectEntries = () => {
+    systemIO.value?.actor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+    invalidateConfiguredProjectLibraryEntries()
+  }
 
   const cloudLibraryType: ProjectLibraryTypeContribution = {
     type: CLOUD_PROJECT_LIBRARY_TYPE,
@@ -1049,6 +1068,44 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return project
+        },
+      },
+      // Rename/delete act on the remote project directly when it has not been
+      // materialized locally. Once a local copy exists, they behave like a
+      // normal local project: mutate the local files and let cloud sync
+      // replicate the change to the remote.
+      renameProject: {
+        run: async ({ project, requestedName }) => {
+          const title = requestedName.trim()
+          if (!title) {
+            return
+          }
+
+          if (project.localProjectPath && project.readWriteAccess) {
+            await writeProjectTitleToProjectToml(
+              project.localProjectPath,
+              title
+            )
+            refreshLocalCloudProjectEntries()
+            return
+          }
+
+          if (project.remoteProjectId) {
+            await renameRemoteCloudProject(project.remoteProjectId, title)
+          }
+        },
+      },
+      deleteProject: {
+        run: async ({ project }) => {
+          if (project.localProjectPath && project.readWriteAccess) {
+            await fsZds.rm(project.localProjectPath, { recursive: true })
+            refreshLocalCloudProjectEntries()
+            return
+          }
+
+          if (project.remoteProjectId) {
+            await deleteRemoteCloudProject(project.remoteProjectId)
+          }
         },
       },
     },

@@ -105,6 +105,7 @@ flowchart TD
 - If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
+- Home rename/delete of a cloud project act on the local materialization when one exists (and let normal sync replicate the change), and act directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
 
 ## Persistent State
 
