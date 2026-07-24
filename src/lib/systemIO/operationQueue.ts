@@ -41,10 +41,6 @@ export type SystemIOQueueRequest<
 
 const DEFAULT_RESOURCE_KEY = 'system-io.default'
 
-function isTerminal(status: SystemIOOperationStatus) {
-  return status === 'succeeded' || status === 'failed' || status === 'cancelled'
-}
-
 export function createSystemIOAbortError() {
   const error = new Error('SystemIO operation was cancelled')
   error.name = 'AbortError'
@@ -75,7 +71,11 @@ export function createSystemIOOperationQueue<
 
       if (coalesceKey) {
         const existing = coalescedOperations.get(coalesceKey)
-        if (existing && !isTerminal(existing.status.value)) {
+        // Only fold into an operation that hasn't started yet. A `running`
+        // operation may have already captured state that predates whatever
+        // triggered this request (e.g. a filesystem mutation), so it must run
+        // as a fresh operation rather than reuse the in-flight result.
+        if (existing && existing.status.value === 'queued') {
           return existing as SystemIOOperation<TResult, TRequest>
         }
       }

@@ -293,24 +293,30 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       const defaultProjectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
         settings.value?.current.value.app.libraries.current
       )
-      const refreshKey =
-        service && defaultProjectDirectoryPath
-          ? defaultProjectDirectoryPath
-          : undefined
 
-      if (!refreshKey) {
+      if (!service || !defaultProjectDirectoryPath) {
         lastRefreshKey = undefined
         entries.value = []
         return
       }
 
+      const refreshKey = defaultProjectDirectoryPath
       if (refreshKey === lastRefreshKey) {
         return
       }
 
       lastRefreshKey = refreshKey
       entries.value = []
-      requestProjectDirectoryRefresh(service, defaultProjectDirectoryPath)
+      void service
+        .request(refreshProjectsRequest(defaultProjectDirectoryPath))
+        .result.catch((error) => {
+          // A failed refresh must not permanently short-circuit this effect for
+          // the directory; clear the guard so a later run can retry it.
+          if (lastRefreshKey === refreshKey) {
+            lastRefreshKey = undefined
+          }
+          reportRejection(error)
+        })
     })
 
     disposeSystemIOEntriesEffect = effect(() => {

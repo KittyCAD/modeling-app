@@ -120,7 +120,7 @@ describe('systemIO operation queue', () => {
     await expect(secondOperation.result).resolves.toBe('second')
   })
 
-  it('coalesces duplicate queued or running operations', async () => {
+  it('coalesces duplicate queued operations', async () => {
     const queue = createTestQueue()
     const refresh = deferred<string>()
     const handler = vi.fn(() => refresh.promise)
@@ -144,6 +144,48 @@ describe('systemIO operation queue', () => {
     refresh.resolve('projects')
 
     await expect(firstOperation.result).resolves.toBe('projects')
+  })
+
+  it('does not coalesce into an already running operation', async () => {
+    const queue = createTestQueue()
+    const first = deferred<string>()
+    const second = deferred<string>()
+    const handler = vi
+      .fn<() => Promise<string>>()
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise)
+    const operationRequest = {
+      request: {
+        type: 'projects.refresh',
+        input: { projectDirectoryPath: '/projects' },
+      },
+      resourceKey: 'project-directory:/projects',
+      coalesceKey: 'projects.refresh:/projects',
+    }
+
+    const firstOperation = queue.enqueue(operationRequest, handler)
+
+    // Let the first operation start running before the next request arrives,
+    // simulating a refresh triggered by a mutation that happened after the
+    // first scan began.
+    await flushPromises()
+    expect(firstOperation.status.value).toBe('running')
+
+    const secondOperation = queue.enqueue(operationRequest, handler)
+    expect(secondOperation).not.toBe(firstOperation)
+    expect(secondOperation.status.value).toBe('queued')
+
+    first.resolve('stale')
+    await expect(firstOperation.result).resolves.toBe('stale')
+    await flushPromises()
+
+    // The second operation runs fresh instead of reusing the stale in-flight
+    // result, guaranteeing a re-read after the mutation.
+    expect(secondOperation.status.value).toBe('running')
+    expect(handler).toHaveBeenCalledTimes(2)
+
+    second.resolve('fresh')
+    await expect(secondOperation.result).resolves.toBe('fresh')
   })
 
   it('cancels a queued operation without running its handler', async () => {

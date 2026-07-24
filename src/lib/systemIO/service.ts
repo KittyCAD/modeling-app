@@ -140,6 +140,13 @@ export function createSystemIOService(
 
       actor = dependencies.createActor(input)
       actorSubscription = actor.subscribe((snapshot) => {
+        // The actor emits a snapshot on every event, including ones that don't
+        // touch `folders` (which is `undefined` until it has loaded projects).
+        // Only mirror actual folder data so an unrelated snapshot can't clobber
+        // the freshly-loaded project list back to undefined.
+        if (snapshot.context.folders === undefined) {
+          return
+        }
         setProjects(snapshot.context.folders)
       })
       return actor
@@ -148,8 +155,10 @@ export function createSystemIOService(
     dispose: () => {
       actorSubscription?.unsubscribe()
       actorSubscription = undefined
+      // Stop the actor but keep the reference: a stopped actor absorbs late
+      // `send`/`subscribe` calls without throwing, whereas clearing it would
+      // make `app.systemIOActor` undefined and crash any lingering consumer.
       actor?.stop()
-      actor = undefined
     },
   }
 }

@@ -166,6 +166,25 @@ describe('systemIOMachine - XState', () => {
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
       })
+      it('accepts setFolders while idle so the systemIO service bridge works', () => {
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        expect(actor.getSnapshot().value).toBe(SystemIOMachineStates.idle)
+
+        const folders = [mockProject('bravo'), mockProject('alpha')]
+        actor.send({
+          type: SystemIOMachineEvents.setFolders,
+          data: { folders },
+        })
+
+        expect(actor.getSnapshot().context.folders).toStrictEqual(folders)
+        expect(actor.getSnapshot().value).toBe(SystemIOMachineStates.idle)
+        actor.stop()
+      })
       it('defers bulk edit success until file navigation completes', async () => {
         const onSuccess = vi.fn()
         const actor = createActor(

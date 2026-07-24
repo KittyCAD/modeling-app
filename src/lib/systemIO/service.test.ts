@@ -279,6 +279,39 @@ describe('systemIO service', () => {
     systemIO.dispose()
 
     expect(actor.stop).toHaveBeenCalledTimes(1)
+    // The stopped actor stays reachable so late consumers (e.g.
+    // `app.systemIOActor`) don't crash on a `send`/`subscribe` after dispose.
+    expect(systemIO.actor).toBe(actor)
+  })
+
+  it('ignores actor snapshots without folder data', async () => {
+    const projects = [createProject('/projects/bracket')]
+    const readProjectsFromProjectDirectory = vi.fn(async () => projects)
+    const { actor, systemIO } = createTestSystemIOService(
+      readProjectsFromProjectDirectory
+    )
+
+    systemIO.startActor({
+      wasmInstancePromise: Promise.resolve({}),
+      app: {},
+    } as never)
+
+    await expect(
+      systemIO.request(refreshProjectsRequest('/projects')).result
+    ).resolves.toBe(projects)
+    expect(systemIO.projects.value).toEqual(projects)
+
+    // A snapshot that carries no folder data (e.g. an unrelated actor event
+    // while the machine sits idle) must not wipe the loaded project list.
+    actor.send({
+      type: SystemIOMachineEvents.setFolders,
+      data: { folders: undefined },
+    })
+
+    expect(systemIO.projects.value).toEqual(projects)
+    expect(systemIO.projectHandles.value).toEqual([
+      { path: '/projects/bracket' },
+    ])
   })
 
   it('syncs service refresh results into the legacy actor bridge', async () => {
