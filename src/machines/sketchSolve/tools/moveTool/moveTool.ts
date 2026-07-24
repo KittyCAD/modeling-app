@@ -2034,7 +2034,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
 
           if (shouldRecoverInvalidPreview) {
-            // Current preview is invalid -> recover last good result to prevent an invalid result becoming the commited sketch
+            // Current preview is invalid -> recover last good result to prevent an invalid result becoming the committed sketch
             result = await recoverKnownGoodResult('invalid preview on drag end')
           } else if (
             snappingCandidate &&
