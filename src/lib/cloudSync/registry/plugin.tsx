@@ -1098,6 +1098,10 @@ export const cloudSyncPlugin = createZdsPlugin({
     description: 'Whether the Cloud sync plugin is enabled.',
     hideOnLevel: 'project',
     hideOnPlatform: 'web',
+    // Cloud sync is feature-gated; keep the toggle out of every settings
+    // surface (settings panel, command bar, plugins list) for users without
+    // the flag instead of special-casing the plugin id per surface.
+    hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
     userToml: {
       sectionKey: 'plugins',
       tomlKey: CLOUD_SYNC_PLUGIN_ID,

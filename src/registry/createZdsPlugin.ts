@@ -6,6 +6,7 @@ import {
   defineRegistryItem,
   provide,
 } from '@kittycad/registry'
+import type { Feature } from '@kittycad/lib'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type {
   HideOnPlatformValue,
@@ -39,6 +40,13 @@ type ZdsPluginActivationSettingSpec = {
    * the app runtime; this only removes the settings control.
    */
   hideOnPlatform?: HideOnPlatformValue
+  /**
+   * Hide the activation toggle unless the user has this feature flag. Lets a
+   * feature-gated plugin (e.g. cloud sync) drop out of the settings panel,
+   * command bar, and plugins list through the same settings config rather than
+   * a bespoke check per surface.
+   */
+  hideWithoutFeature?: Feature
   userToml?: { sectionKey: string; tomlKey: string }
   projectToml?: { sectionKey: string; tomlKey: string }
 }
@@ -95,6 +103,7 @@ export function createZdsPlugin({
             commandConfig: activationSetting.commandConfig,
             hideOnLevel: activationSetting.hideOnLevel,
             hideOnPlatform: activationSetting.hideOnPlatform,
+            hideWithoutFeature: activationSetting.hideWithoutFeature,
             userToml: activationSetting.userToml,
             projectToml: activationSetting.projectToml,
           }),
