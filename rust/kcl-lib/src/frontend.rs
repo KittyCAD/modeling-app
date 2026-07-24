@@ -10822,25 +10822,17 @@ sketch001 = sketch(on = XZ) {
                 )
             })
             .unwrap();
-        let line1_id = frontend
-            .scene_graph
-            .objects
+        let line1_id = sketch
+            .segments
             .iter()
-            .find_map(|object| match &object.kind {
-                ObjectKind::Segment {
-                    segment: Segment::Line(line),
-                } if line.owner.is_none() && object.label == "line1" => Some(object.id),
-                _ => None,
-            })
-            .or_else(|| {
-                sketch.segments.iter().copied().find(|segment_id| {
-                    matches!(
-                        frontend.scene_graph.objects[segment_id.0].kind,
-                        ObjectKind::Segment {
-                            segment: Segment::Line(_)
-                        }
-                    )
-                })
+            .copied()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects[segment_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
             })
             .unwrap();
         let label_position = Point2d {
