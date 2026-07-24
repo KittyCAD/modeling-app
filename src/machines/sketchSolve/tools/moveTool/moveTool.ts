@@ -3,6 +3,7 @@ import type {
   Number as ApiNumber,
   ApiObject,
   ApiPoint2d,
+  ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
   SceneGraphDelta,
   SegmentCtor,
@@ -88,14 +89,9 @@ type DragSketchOutcome = {
   sceneGraphDelta: SceneGraphDelta
 }
 
-type ConstraintLabelEdit = {
-  constraintId: number
-  labelPosition: ApiPoint2d<ApiNumber>
-}
-
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
-  constraintLabelEdits: ConstraintLabelEdit[]
+  constraintLabelEdits: ConstraintLabelPositionEdit[]
   dragAnchorSegmentIds: number[]
   dragAnchors: SegmentDragAnchor[]
 }
@@ -389,7 +385,7 @@ function buildConstraintLabelEditsForMovedSegments({
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
+}): ConstraintLabelPositionEdit[] {
   return objectsBeforeDrag.flatMap((obj) => {
     if (isDistanceConstraint(obj)) {
       return buildDistanceLabelEditsForMovedSegments({
@@ -423,7 +419,7 @@ function buildConstraintLabelEditsForSnappedPoint({
   pointId: number
   position: Coords2d
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
+}): ConstraintLabelPositionEdit[] {
   const objectsAtSnapPosition = objectsBeforeSnap.map((obj) => {
     if (obj.id !== pointId || !isPointSegment(obj)) {
       return obj
@@ -461,7 +457,7 @@ function buildDistanceLabelEditsForMovedSegments({
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
+}): ConstraintLabelPositionEdit[] {
   const { points, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
@@ -512,7 +508,7 @@ function buildCircularLabelEditsForMovedSegments({
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
+}): ConstraintLabelPositionEdit[] {
   const { arc, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
@@ -658,9 +654,9 @@ function mergeConstraintLabelPreviewEdits({
   pendingLabelEdits,
   movedLabelEdits,
 }: {
-  pendingLabelEdits: ConstraintLabelEdit[]
-  movedLabelEdits: ConstraintLabelEdit[]
-}): ConstraintLabelEdit[] {
+  pendingLabelEdits: ConstraintLabelPositionEdit[]
+  movedLabelEdits: ConstraintLabelPositionEdit[]
+}): ConstraintLabelPositionEdit[] {
   const mergedEdits = new Map(
     pendingLabelEdits.map((edit) => [edit.constraintId, edit])
   )
@@ -677,7 +673,7 @@ function applyConstraintLabelPreviewEdits({
   labelEdits,
 }: {
   result: DragSketchOutcome
-  labelEdits: ConstraintLabelEdit[]
+  labelEdits: ConstraintLabelPositionEdit[]
 }): DragSketchOutcome {
   // labelPosition is solver-neutral. Keep it as a UI-only override during the
   // drag, then commit it with the final segment edit in one AST execution.
@@ -1539,7 +1535,7 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
-          let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
+          let appliedConstraintLabelEdits: ConstraintLabelPositionEdit[] = []
           const movedConstraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
@@ -1974,7 +1970,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            constraintLabelEdits: ConstraintLabelPositionEdit[] = [],
             dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id),
             dragAnchors: SegmentDragAnchor[] = []
           ) =>
