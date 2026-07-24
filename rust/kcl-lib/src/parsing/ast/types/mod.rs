@@ -413,14 +413,22 @@ impl Node<Program> {
     }
 
     pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
-        let rules = vec![
+        self.lint_all_with_options(crate::lint::LintOptions::default())
+    }
+
+    /// Check the provided Program using the standard lint rules and explicitly
+    /// enabled opt-in rules.
+    pub fn lint_all_with_options(&self, options: crate::lint::LintOptions) -> Result<Vec<crate::lint::Discovered>> {
+        let mut rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
-            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
         ];
+        if options.z0006_enabled() {
+            rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
+        }
 
         let mut findings = vec![];
         for rule in rules {
@@ -4718,8 +4726,13 @@ cylinder = startSketchOn(-XZ)
 
     #[test]
     fn test_parse_never_type() {
-        let program =
-            parse("@settings(experimentalFeatures = allow)\nfn stop(@impossible: never): never { return impossible }");
+        let program = parse(
+            "@settings(experimentalFeatures = allow)\n\
+             fn stop(@impossible: never): never { return impossible }\n\
+             type impossible = never\n\
+             type neverReturns = fn(): never\n\
+             type valueOrNever = string | never",
+        );
         let BodyItem::VariableDeclaration(var_decl) = program.body.first().unwrap() else {
             panic!("expected a variable declaration")
         };
@@ -4735,6 +4748,36 @@ cylinder = startSketchOn(-XZ)
             function.return_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::Never)
         );
+
+        let BodyItem::TypeDeclaration(impossible) = &program.body[1] else {
+            panic!("expected a type declaration")
+        };
+        assert_eq!(
+            impossible.alias.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+
+        let BodyItem::TypeDeclaration(never_returns) = &program.body[2] else {
+            panic!("expected a type declaration")
+        };
+        let Type::Primitive(PrimitiveType::Function(never_returns)) = &never_returns.alias.as_ref().unwrap().inner
+        else {
+            panic!("expected a function type")
+        };
+        assert_eq!(
+            never_returns.return_type.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+
+        let BodyItem::TypeDeclaration(value_or_never) = &program.body[3] else {
+            panic!("expected a type declaration")
+        };
+        let Type::Union { tys } = &value_or_never.alias.as_ref().unwrap().inner else {
+            panic!("expected a union type")
+        };
+        assert_eq!(tys[0].inner, Type::Primitive(PrimitiveType::String));
+        assert_eq!(tys[1].inner, Type::Primitive(PrimitiveType::Never));
+
         assert_eq!(
             serde_json::to_value(PrimitiveType::Never).unwrap(),
             serde_json::json!({ "p_type": "Never" })

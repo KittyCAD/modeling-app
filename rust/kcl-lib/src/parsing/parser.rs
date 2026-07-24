@@ -6347,6 +6347,13 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
             [11, 16],
         );
 
+        let code = "fn accept(@stop: fn(): never) {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [23, 28],
+        );
+
         let code = r#"@settings(experimentalFeatures = allow)
 fn stop(): never {}"#;
         assert_no_err(code);
