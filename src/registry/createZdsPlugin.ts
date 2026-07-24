@@ -7,7 +7,10 @@ import {
   provide,
 } from '@kittycad/registry'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type {
+  HideOnPlatformValue,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 type ZdsPluginDefault = 'core' | 'off'
@@ -29,6 +32,13 @@ type ZdsPluginActivationSettingSpec = {
   description?: string
   commandConfig?: { inputType: 'boolean' }
   hideOnLevel?: SettingsLevel
+  /**
+   * Hide the activation toggle on a platform. Used to make a plugin
+   * non-optional there (e.g. cloud sync on web, where it is the storage layer).
+   * Enforcement that the value cannot be turned off is handled separately in
+   * the app runtime; this only removes the settings control.
+   */
+  hideOnPlatform?: HideOnPlatformValue
   userToml?: { sectionKey: string; tomlKey: string }
   projectToml?: { sectionKey: string; tomlKey: string }
 }
@@ -84,6 +94,7 @@ export function createZdsPlugin({
             description: activationSetting.description,
             commandConfig: activationSetting.commandConfig,
             hideOnLevel: activationSetting.hideOnLevel,
+            hideOnPlatform: activationSetting.hideOnPlatform,
             userToml: activationSetting.userToml,
             projectToml: activationSetting.projectToml,
           }),

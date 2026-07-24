@@ -1006,7 +1006,15 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
   }
 }, 'cloud-sync.project-library')
 
-const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+/**
+ * The `cloud` project-library *type* handler (browse/create in the local
+ * Personal Cloud folder). This is registered as an always-on extension rather
+ * than inside the cloud-sync plugin's toggle-able slot: on web the cloud folder
+ * is the canonical project storage, so disabling cloud *sync* must not remove
+ * the ability to list or create projects there. The plugin continues to own the
+ * sync-only surface (remote entries, status bar, project-menu sync actions).
+ */
+export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
@@ -1021,12 +1029,12 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     settingsDetails: CloudProjectLibrarySettingsDetails,
     operations: {
       createProject: {
-        isAvailable: () => cloudSyncStatus.value.enabled,
+        // Creating a project only needs the local library folder, so it stays
+        // available whether or not cloud sync is currently enabled. When sync
+        // is on we also enroll the new project; otherwise it is picked up the
+        // next time sync is enabled (via syncExistingLocalProjects on web /
+        // startProjectSync on desktop).
         run: async ({ requestedProjectName, requestedProjectTitle }) => {
-          if (!cloudSyncStatus.value.enabled) {
-            return Promise.reject(new Error('Cloud sync is not enabled.'))
-          }
-
           const project = await createProjectInLocalDirectory({
             projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
             requestedProjectName,
@@ -1034,9 +1042,11 @@ const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             wasmInstancePromise: getWasmPromise(),
           })
 
-          await ctx.services
-            .get(cloudSyncService)
-            .startProjectSync(project.path)
+          if (cloudSyncStatus.value.enabled) {
+            await ctx.services
+              .get(cloudSyncService)
+              .startProjectSync(project.path)
+          }
 
           return project
         },
@@ -1074,10 +1084,23 @@ export const cloudSyncPlugin = createZdsPlugin({
   description: 'Cloud-backed project sync controls and status.',
   items: [
     cloudSyncProjectLibraryContribution,
-    cloudSyncProjectLibraryType,
     cloudSyncStatusBarItemContribution,
     cloudSyncProjectMenuItem,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],
   defaultSetting: 'off',
+  // On web, cloud sync is the project storage layer rather than an optional
+  // feature, so its toggle is hidden there (and forced active by the app
+  // runtime). Mirrors createZdsPlugin's default activation setting otherwise.
+  activationSetting: {
+    category: 'plugins',
+    settingName: CLOUD_SYNC_PLUGIN_ID,
+    description: 'Whether the Cloud sync plugin is enabled.',
+    hideOnLevel: 'project',
+    hideOnPlatform: 'web',
+    userToml: {
+      sectionKey: 'plugins',
+      tomlKey: CLOUD_SYNC_PLUGIN_ID,
+    },
+  },
 })

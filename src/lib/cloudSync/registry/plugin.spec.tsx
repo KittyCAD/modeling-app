@@ -10,6 +10,7 @@ import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import {
   cloudSyncPlugin,
+  cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
 } from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
@@ -23,6 +24,7 @@ import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import {
+  getProjectLibraryCreateProjectOperation,
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -321,9 +323,29 @@ describe('cloud sync project menu item', () => {
 })
 
 describe('cloud sync project library', () => {
-  test('contributes the cloud project library type while the plugin is active', () => {
+  test('registers the cloud project library type as always-on infrastructure', () => {
     const registry = new Registry()
-    registry.configure([cloudSyncPlugin])
+    // The type handler is registered independently of the toggle-able plugin.
+    registry.configure([cloudSyncProjectLibraryType])
+
+    try {
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toMatchObject({
+        title: 'Cloud',
+        icon: 'network',
+        defaultSetting: getDefaultCloudProjectLibrarySetting(),
+      })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('toggles only the personal cloud library row with the plugin, keeping the type', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
 
     try {
       const plugin = registry
@@ -337,24 +359,16 @@ describe('cloud sync project library', () => {
 
       const pluginToggle = registry.get(pluginService)
       expect(pluginToggle.active.value).toBe(false)
+      // Type is always available; only the Personal Cloud row is gated.
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
-      ).toBe(false)
+      ).toBe(true)
       expect(registry.get(projectLibrariesValueSpec)).toEqual([])
 
       pluginToggle.enable()
 
-      expect(
-        registry
-          .get(projectLibraryTypesValueSpec)
-          .get(CLOUD_PROJECT_LIBRARY_TYPE)
-      ).toMatchObject({
-        title: 'Cloud',
-        icon: 'network',
-        defaultSetting: getDefaultCloudProjectLibrarySetting(),
-      })
       expect(registry.get(projectLibrariesValueSpec)).toEqual([
         expect.objectContaining({
           id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -367,12 +381,48 @@ describe('cloud sync project library', () => {
 
       pluginToggle.disable()
 
+      // Disabling sync removes the row contribution but must NOT remove the
+      // type handler — otherwise a settings-configured cloud library would
+      // become unusable.
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
-      ).toBe(false)
+      ).toBe(true)
       expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('offers project creation in the cloud library while sync is disabled', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+    cloudSyncStatus.value = {
+      enabled: false,
+      state: 'disabled',
+      pendingCount: 0,
+    }
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType).toBeDefined()
+      if (!cloudLibraryType) {
+        return
+      }
+
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      // readEntries and createProject stay available even though cloud sync is
+      // off, so a web user who is not actively syncing can still list/create.
+      expect(cloudLibraryType.readEntries).toBeDefined()
+      expect(
+        getProjectLibraryCreateProjectOperation(cloudLibraryType, cloudLibrary)
+      ).toBeDefined()
     } finally {
       registry[Symbol.dispose]()
     }
@@ -431,7 +481,7 @@ describe('cloud sync project library', () => {
       showInFolder,
     } as unknown as Window['electron']
 
-    registry.configure([cloudSyncPlugin])
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
 
     try {
       enableCloudSyncPlugin(registry)

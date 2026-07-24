@@ -456,6 +456,11 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
   const entries = signal<HomeProjectEntryContribution[]>([])
   const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
+  // Diagnostic dedupe: a configured library whose type has no registered
+  // handler cannot be listed and would silently vanish from Home. This should
+  // not happen (the cloud and directory types are always-on), so warn once per
+  // library rather than swallowing it.
+  const warnedMissingTypeLibraryIds = new Set<string>()
   let abortController: AbortController | undefined
   let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
@@ -505,6 +510,12 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
         if (!readEntries) {
+          if (!warnedMissingTypeLibraryIds.has(library.id)) {
+            warnedMissingTypeLibraryIds.add(library.id)
+            console.warn(
+              `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
+            )
+          }
           continue
         }
 

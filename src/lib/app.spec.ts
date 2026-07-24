@@ -475,6 +475,67 @@ describe('project system', () => {
           hasPersonalCloudLibrary: true,
         })
 
+      // On web, cloud sync is the project storage layer, not an optional
+      // feature: a disable attempt is overridden, the plugin stays active, and
+      // a usable library plus a create target remain (the strand-repro fix).
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await expect
+        .poll(() => ({
+          current: getCloudSyncPluginSetting(app)?.current,
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrary: app.registry
+            .get(projectLibrariesValueSpec)
+            .some(
+              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+          canCreateInPersonalCloud: app
+            .getCreateProjectLibraryTargets()
+            .some(
+              (target) =>
+                target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          current: true,
+          active: true,
+          hasPersonalCloudLibrary: true,
+          canCreateInPersonalCloud: true,
+        })
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('respects an explicit cloud sync opt-out on desktop', async () => {
+    const previousElectron = window.electron
+    window.electron = {
+      os: { isMac: false },
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins: vi.fn().mockResolvedValue(undefined),
+      },
+    } as unknown as typeof window.electron
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      // Cloud sync auto-enables for the flag on desktop too.
+      await expect
+        .poll(() => getPluginToggle(app, 'cloud-sync').active.value)
+        .toBe(true)
+
+      // Unlike web (where the disable attempt is overridden), desktop keeps
+      // cloud sync optional and honors the opt-out.
       app.settings.actor.send({
         type: 'set.plugins.cloud-sync',
         data: {
@@ -485,13 +546,13 @@ describe('project system', () => {
       } as never)
 
       await waitForSettingsIdle(app)
-      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
 
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
     } finally {
       app.dispose()
+      window.electron = previousElectron
     }
   })
 

@@ -512,7 +512,8 @@ export class App implements AppSubsystems {
 
   getCreateProjectLibraryTargets = () => {
     const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
-    return this.registry.get(projectLibrariesValueSpec).flatMap((library) => {
+    const libraries = this.registry.get(projectLibrariesValueSpec)
+    const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
         libraryTypes.get(library.type),
         library
@@ -520,6 +521,17 @@ export class App implements AppSubsystems {
 
       return createProject ? [{ library, createProject }] : []
     })
+
+    // Configured libraries exist but none can create a project — the user would
+    // see an actionless Home. This should not happen (the cloud and directory
+    // types are always-on); surface it rather than silently returning nothing.
+    if (targets.length === 0 && libraries.length > 0) {
+      console.warn(
+        'No project library can create projects; the configured libraries have no available createProject handler.'
+      )
+    }
+
+    return targets
   }
 
   syncAppCommands = () => {
@@ -579,12 +591,18 @@ export class App implements AppSubsystems {
 
   /**
    * Product policy: Cloud sync is feature-gated, but feature-flagged users
-   * should get the plugin enabled by default until they explicitly opt out.
+   * should get the plugin enabled by default.
    *
    * Keep the plugin's static default off so registry startup stays
    * deterministic. Once settings and user features are both settled in the app
-   * runtime, this writes the first user-level enablement only when there is no
-   * existing user preference.
+   * runtime, this writes the user-level enablement.
+   *
+   * Desktop is opt-in: only write when there is no existing user preference, so
+   * an explicit opt-out is respected. Web treats cloud sync as the project
+   * storage layer rather than an optional feature, so it is mandatory for
+   * eligible users regardless of any prior opt-out (the toggle is also hidden
+   * on web via the plugin activation setting). This makes the setting the
+   * single source of truth that everything downstream follows.
    */
   private maybeEnableCloudSyncPluginForFeature = (
     snapshot: SnapshotFrom<typeof this.settings.actor>,
@@ -613,7 +631,8 @@ export class App implements AppSubsystems {
       return false
     }
 
-    if (settingValue.user !== undefined) {
+    const isWeb = typeof window !== 'undefined' && !window.electron
+    if (!isWeb && settingValue.user !== undefined) {
       return false
     }
 
