@@ -1,22 +1,29 @@
 import { describe, expect, test, vi } from 'vitest'
 
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
+import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
+  canSubmitSelectionArg,
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
+  getStableOffsetPlaneData,
   handleSelectionBatch,
   normalizeEntityReference,
 } from '@src/lib/selections'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1679,6 +1686,204 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('mixed entity-reference selection highlighting', () => {
+  test('keeps engine primitive selections when graph selections use entity references', () => {
+    const graphFaceId = 'graph-face-id'
+    const primitiveFaceId = 'primitive-face-id'
+    const graphCodeRef = {
+      range: [10, 20, 0] as SourceRange,
+      pathToNode: [],
+    }
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: graphFaceId },
+            codeRef: graphCodeRef,
+          },
+        ],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: primitiveFaceId,
+            parentEntityId: 'body-id',
+            primitiveIndex: 2,
+            primitiveType: 'face',
+          },
+        ],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectEntity = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_entity'
+    )
+    expect(selectEntity?.type).toBe('modeling_cmd_req')
+    if (selectEntity?.type !== 'modeling_cmd_req') return
+    expect(selectEntity.cmd.type).toBe('select_entity')
+    if (selectEntity.cmd.type !== 'select_entity') return
+    expect(selectEntity.cmd.entities).toEqual([
+      { type: 'face', face_id: graphFaceId },
+    ])
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([primitiveFaceId])
+  })
+
+  test('creates a valid editor selection when only some graph selections have code refs', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'tagged-face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            entityRef: { type: 'face', face_id: 'primitive-face-id' },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.mainIndex).toBe(0)
+    expect(result.codeMirrorSelection.main.head).toBe(20)
+  })
+
+  test('does not send a legacy select_add for an entity-reference edge', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: ['side-face-1', 'side-face-2'],
+              end_faces: ['end-face-1'],
+            },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' &&
+          event.cmd.type === 'select_entity'
+      )
+    ).toBe(true)
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+      )
+    ).toBe(false)
+  })
+
+  test('retains legacy selection for a code-only graph selection mixed with an entity reference', () => {
+    const codeOnlyArtifact: Artifact = {
+      type: 'segment',
+      id: 'code-only-segment',
+      pathId: 'path-id',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [30, 40, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [codeOnlyArtifact.id, codeOnlyArtifact],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            codeRef: codeOnlyArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([codeOnlyArtifact.id])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
   test('normalizes region entity references', () => {
     expect(
@@ -1942,6 +2147,171 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
+  })
+})
+
+describe('canSubmitSelectionArg', () => {
+  const bodyArgument = {
+    inputType: 'selection' as const,
+    selectionTypes: ['sweep'],
+    multiple: false,
+  } as Parameters<typeof canSubmitSelectionArg>[1]
+
+  test('accepts a selection containing only an allowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['sweep', 1]]), bodyArgument)).toBe(
+      true
+    )
+  })
+
+  test('rejects a selection containing an allowed and a disallowed type', () => {
+    expect(
+      canSubmitSelectionArg(
+        new Map([
+          ['sweep', 1],
+          ['wall', 1],
+        ]),
+        bodyArgument
+      )
+    ).toBe(false)
+  })
+
+  test('rejects a selection containing only a disallowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
+      false
+    )
+  })
+})
+
+describe('getStableOffsetPlaneData', () => {
+  const code = (
+    on: string,
+    planeDefinition = 'offsetPlane(XZ, offset = 0mm)'
+  ) =>
+    `plane001 = ${planeDefinition}
+sketch001 = sketch(on = ${on}) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}`
+
+  const normalizeSignedZero = (value: number) =>
+    Object.is(value, -0) ? 0 : value
+
+  const normalizeAxis = (axis: readonly number[]) =>
+    axis.map(normalizeSignedZero)
+
+  const axis = (point: Point3d) => normalizeAxis([point.x, point.y, point.z])
+
+  const getPlaneVariable = (
+    variables: ExecState['variables'],
+    name: string
+  ) => {
+    const variable = variables[name]
+    if (variable?.type !== 'Plane') {
+      throw new Error(`Expected ${name} to be a Plane variable`)
+    }
+    return variable.value
+  }
+
+  const setupStableOffsetPlaneData = async (
+    source: string
+  ): Promise<{
+    result: ReturnType<typeof getStableOffsetPlaneData>
+    plane001: Plane
+    sketchBlockPlaneInfo: PlaneInfo
+    effectiveArtifactHasVariable: boolean
+  }> => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(source, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const sketchBlock = [...execState.artifactGraph.values()].find(
+      (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+        artifact.type === 'sketchBlock'
+    )
+    if (!sketchBlock?.planeId) {
+      throw new Error('Expected sketch block with a planeId')
+    }
+    const artifact = execState.artifactGraph.get(sketchBlock.planeId)
+    if (artifact?.type !== 'plane') {
+      throw new Error('Expected sketch block planeId to point to a plane')
+    }
+    if (!sketchBlock.planeInfo) {
+      throw new Error('Expected sketch block with evaluated planeInfo')
+    }
+    const result = getStableOffsetPlaneData(artifact, {
+      execState,
+      sceneInfra: {
+        baseUnitMultiplier: 1,
+      } as Pick<SceneInfra, 'baseUnitMultiplier'> as SceneInfra,
+      sketchBlock,
+    })
+
+    return {
+      result,
+      plane001: getPlaneVariable(execState.variables, 'plane001'),
+      sketchBlockPlaneInfo: sketchBlock.planeInfo,
+      effectiveArtifactHasVariable: Object.values(execState.variables).some(
+        (value) =>
+          value?.type === 'Plane' && value.value.artifactId === artifact.id
+      ),
+    }
+  }
+
+  test('uses the Rust-provided zAxis for variable-level plane negation', async () => {
+    const { result, plane001, sketchBlockPlaneInfo } =
+      await setupStableOffsetPlaneData(
+        code('plane001', '-offsetPlane(XZ, offset = 0mm)')
+      )
+
+    expect(axis(plane001.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, 1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
+  })
+
+  test('keeps the same zAxis for non-negated offset planes', async () => {
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('plane001'))
+
+    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, -1, 0])
+    expect(effectiveArtifactHasVariable).toBe(true)
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(result.negated).toBe(false)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, -1, 0])
+  })
+
+  test('resolves sketch use-site negation when the effective plane artifact is not in variables', async () => {
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('-plane001'))
+
+    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
+    expect(effectiveArtifactHasVariable).toBe(false)
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(result.negated).toBe(false)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
   })
 })
 

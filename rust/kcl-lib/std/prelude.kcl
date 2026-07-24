@@ -205,7 +205,7 @@ export fn helix(
   @(includeInSnippet = true)
   radius?: number(Length),
   /// Axis to use for the helix. Can be an Axis3d, an Edge, a Segment, or an edge reference object when not using a cylinder.
-  /// Edge reference objects use adjacent faces, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.
+  /// Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge | Segment | any,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
@@ -615,6 +615,26 @@ export fn assertIs(
   /// If the value was false, the program will terminate with this error message
   error?: string,
 ) {}
+
+/// Stop KCL evaluation with a user-defined error.
+///
+/// Use `fail` when evaluation cannot continue and the caller should receive a
+/// specific error message. `fail` never returns a value.
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// fn positive(@value: number): number {
+///   return if value > 0 {
+///     value
+///   } else {
+///     fail("value must be positive")
+///   }
+/// }
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn fail(
+  /// Message reported to the caller.
+  @msg: string,
+): never {}
 
 /// Check a value meets some expected conditions at runtime. Program terminates with an error if conditions aren't met.
 /// If you provide multiple conditions, they will all be checked and all must be met.

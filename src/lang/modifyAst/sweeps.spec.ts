@@ -1809,6 +1809,59 @@ loft001 = loft([region001, region002])`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should preserve mixed named and inline regions when editing a loft', async () => {
+      const code = `lowerSketch = sketch(on = XY) {
+  lower = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+}
+lowerRegion = region(point = [5mm, 0mm], sketch = lowerSketch)
+upperSketch = sketch(on = offsetPlane(XY, offset = 20mm)) {
+  upper = circle(center = [0mm, 0mm], start = [6mm, 0mm])
+}
+mixedLoft = loft(
+  [
+    lowerRegion,
+    region(point = [3mm, 0mm], sketch = upperSketch),
+  ],
+  vDegree = 2,
+)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        code,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const regions = [...artifactGraph.values()].filter(
+        (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+      )
+      expect(regions).toHaveLength(2)
+      const sketches = createSelectionFromArtifacts(regions, artifactGraph)
+      const vDegree = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addLoft({
+        ast,
+        artifactGraph,
+        sketches,
+        vDegree,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`mixedLoft = loft(
+  [
+    lowerRegion,
+    region(point = [3mm, 0mm], sketch = upperSketch)
+  ],
+  vDegree = 3,
+)`)
+      expect(newCode).not.toContain('%')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic loft call with surface bodyType', async () => {
       const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
