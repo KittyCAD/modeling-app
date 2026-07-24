@@ -314,9 +314,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
-            let mut lint_findings = program_to_lint
-                .lint_all_with_options(crate::lint::LintOptions::default().with_z0006(true))
-                .expect("failed to lint program");
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             lint_findings.extend(
                 exec_state
                     .modules()
@@ -329,10 +327,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         // Only lint KCL files.
                         match &module.repr {
                             ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
-                            ModuleRepr::Kcl(node, _exec_result) => Some(
-                                node.lint_all_with_options(crate::lint::LintOptions::default().with_z0006(true))
-                                    .expect("failed to lint program"),
-                            ),
+                            ModuleRepr::Kcl(node, _exec_result) => {
+                                Some(node.lint_all().expect("failed to lint program"))
+                            }
                         }
                     })
                     .flatten(),

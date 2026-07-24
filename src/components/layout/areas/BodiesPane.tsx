@@ -165,14 +165,11 @@ function BodyItem({
       return
     }
 
-    sendSelectionEvent(
-      {
-        sourceRange,
-        kclManager,
-        modelingSend,
-      },
-      true
-    )
+    sendSelectionEvent({
+      sourceRange,
+      kclManager,
+      modelingSend,
+    })
   }
   const handleDelete = () => {
     onSelect()

@@ -1,13 +1,15 @@
-import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import {
   closeDebugPanel,
+  closeOnboardingModalIfPresent,
   doAndWaitForImageDiff,
   getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
+  sendSceneCommand,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 
@@ -153,6 +155,8 @@ export class SceneFixture {
    * We've written a lot of tests using hard-coded pixel coordinates.
    * This function translates those to stream-relative ones,
    * or can be used to get stream coordinates by ratio.
+   * (When debugging manually, you can log the ratios yourself via devtools
+   * using this same math, run `enableMousePositionLogs()` in the console.)
    */
   convertPagePositionToStream = async (
     x: number,
@@ -436,11 +440,10 @@ export class SceneFixture {
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
-    await openAndClearDebugPanel(this.page)
     await doAndWaitForImageDiff(
       this.page,
       () =>
-        sendCustomCmd(this.page, {
+        sendSceneCommand(this.page, {
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -452,7 +455,6 @@ export class SceneFixture {
         }),
       300
     )
-    await closeDebugPanel(this.page)
   }
   /** Forces a refresh of the camera position and target displayed
    *  in the debug panel and then returns the values of the fields
@@ -496,11 +498,18 @@ export class SceneFixture {
   }
 
   settled = async (
-    { expectError }: Partial<{ expectError: boolean }> | undefined = {
-      expectError: false,
-    }
+    cmdBarOrOptions?: CmdBarFixture | Partial<{ expectError: boolean }>,
+    options?: Partial<{ expectError: boolean }>
   ) => {
+    const settledOptions =
+      cmdBarOrOptions && 'openCmdBar' in cmdBarOrOptions
+        ? options
+        : cmdBarOrOptions
+    const { expectError = false } = settledOptions ?? {}
+
     await closeOnboardingModalIfPresent(this.page)
+
+    await this.connectionEstablished()
 
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {
@@ -509,7 +518,27 @@ export class SceneFixture {
       })
     }
     await expect(this.startEditSketchBtn).toBeVisible()
-    await expect(this.engineConnectionsSpinner).not.toBeVisible()
+  }
+
+  waitForExecutionDoneAfter = async (
+    action: () => Promise<unknown>,
+    { timeout = 30_000 }: { timeout?: number } = {}
+  ) => {
+    await this.page.evaluate(() => {
+      window.engineCommandManager?.clearCommandLogs()
+    })
+    await action()
+    await expect
+      .poll(
+        () =>
+          this.page.evaluate(() =>
+            window.engineCommandManager?.commandLogs.some(
+              (log) => log.type === 'execution-done'
+            )
+          ),
+        { timeout }
+      )
+      .toBe(true)
   }
 
   expectPixelColor = async (

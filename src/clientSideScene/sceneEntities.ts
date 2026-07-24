@@ -117,6 +117,7 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
+  artifactToEntityRef,
   getNodeFromPath,
   getPathNormalisedForTruncatedAst,
 } from '@src/lang/queryAst'
@@ -128,6 +129,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 
+import type { EntityReference } from '@kittycad/lib'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -947,12 +949,12 @@ export class SceneEntities {
           index >= draftExpressionsIndices.start &&
           // the following line is not robust to sketches defined within a function
           sketchInfo.pathToNode[1][0] === sketchEntryNodePath[1][0]
-        const isSelected = selectionRanges?.graphSelections.some((selection) =>
-          isOverlap(
-            selection?.codeRef?.range,
-            sourceRangeFromRust(segment.__geoMeta.sourceRange)
-          )
-        )
+        const segRange = segment.__geoMeta?.sourceRange
+        const isSelected = selectionRanges?.graphSelections.some((sel) => {
+          const selRange = sel?.codeRef?.range
+          if (!selRange || !segRange) return false
+          return isOverlap(selRange, sourceRangeFromRust(segRange))
+        })
 
         let seg: Group
         const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
@@ -2960,6 +2962,7 @@ export class SceneEntities {
             type: 'Set selection',
             data: {
               selectionType: 'singleCodeCursor',
+              selection: {},
             },
           })
           return
@@ -4374,13 +4377,16 @@ function computeSelectionFromSourceRangeAndAST(
 ): Selections {
   const artifactGraph = kclManager.artifactGraph
   const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
+  const codeRef = codeRefFromRange(sourceRange, ast)
+  const entityRef: EntityReference | undefined = artifact
+    ? artifactToEntityRef(
+        artifact.type,
+        artifact.id,
+        artifact.type === 'segment' ? artifact.pathId : undefined
+      )
+    : undefined
   const selection: Selections = {
-    graphSelections: [
-      {
-        artifact,
-        codeRef: codeRefFromRange(sourceRange, ast),
-      },
-    ],
+    graphSelections: [{ entityRef, codeRef }],
     otherSelections: [],
   }
   return selection

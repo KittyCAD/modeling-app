@@ -243,11 +243,10 @@ describe('MlEphantConversation', () => {
     rendersRequestBubbleThenDisplayResponse('standard')
   })
 
-  test('shows an attachments loading indicator while attachment processing is in progress', () => {
+  test('shows request attachments while processing is in progress', () => {
     render(
       <MlEphantConversation
         isLoading={false}
-        isLoadingAttachments={true}
         conversation={{
           exchanges: [
             {
@@ -282,8 +281,10 @@ describe('MlEphantConversation', () => {
       />
     )
 
+    expect(screen.getByText('Attachments')).toBeInTheDocument()
+    expect(screen.getByText('front-view.png')).toBeInTheDocument()
     expect(
-      screen.getByText('Progressively loading attachments into context...')
+      screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
   })
 
@@ -1097,6 +1098,16 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
+    test('displays screenshot capture button', () => {
+      renderConversation()
+      expect(
+        screen.getByTestId('ml-ephant-screenshot-button')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Capture viewport screenshot')
+      ).toBeInTheDocument()
+    })
+
     test('displays screenshot annotation button', () => {
       renderConversation()
       const zoodleButton = screen.getByTestId(
@@ -1105,6 +1116,16 @@ describe('MlEphantConversation', () => {
       expect(zoodleButton).toBeInTheDocument()
       expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getByText('Zoodle')).toBeInTheDocument()
+    })
+
+    test('adds captured viewport screenshot as an attachment', async () => {
+      renderConversation()
+
+      fireEvent.click(screen.getByTestId('ml-ephant-screenshot-button'))
+
+      expect(
+        await screen.findByText('viewport-screenshot.png')
+      ).toBeInTheDocument()
     })
 
     test('marks screenshot annotation button active and cancels on second click', () => {
@@ -1139,10 +1160,6 @@ describe('MlEphantConversation', () => {
         naturalHeight = 16
         width = 16
         height = 16
-
-        set src(_value: string) {
-          queueMicrotask(() => this.onload?.())
-        }
       }
 
       const drawImageSpy = vi

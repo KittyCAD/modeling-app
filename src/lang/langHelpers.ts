@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
@@ -27,15 +26,6 @@ import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
-
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
-
-function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
-  return (
-    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
-    defaultValue
-  )
-}
 
 interface ExecutionResult {
   logs: string[]
@@ -162,8 +152,7 @@ export async function lintAst({
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    let discovered_findings = await kclLint(ast, instance, shouldShowZ0006)
+    let discovered_findings = await kclLint(ast, instance)
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false

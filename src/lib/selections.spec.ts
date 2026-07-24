@@ -1,7 +1,10 @@
+import { describe, expect, test, vi } from 'vitest'
+
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
@@ -9,19 +12,19 @@ import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
+  canSubmitSelectionArg,
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForQueryEntityTypeWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   handleSelectionBatch,
-  selectSketchPlane,
+  normalizeEntityReference,
 } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, test, vi } from 'vitest'
-
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [105.55, 105.55])
@@ -1683,14 +1686,321 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('mixed entity-reference selection highlighting', () => {
+  test('keeps engine primitive selections when graph selections use entity references', () => {
+    const graphFaceId = 'graph-face-id'
+    const primitiveFaceId = 'primitive-face-id'
+    const graphCodeRef = {
+      range: [10, 20, 0] as SourceRange,
+      pathToNode: [],
+    }
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: graphFaceId },
+            codeRef: graphCodeRef,
+          },
+        ],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: primitiveFaceId,
+            parentEntityId: 'body-id',
+            primitiveIndex: 2,
+            primitiveType: 'face',
+          },
+        ],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectEntity = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_entity'
+    )
+    expect(selectEntity?.type).toBe('modeling_cmd_req')
+    if (selectEntity?.type !== 'modeling_cmd_req') return
+    expect(selectEntity.cmd.type).toBe('select_entity')
+    if (selectEntity.cmd.type !== 'select_entity') return
+    expect(selectEntity.cmd.entities).toEqual([
+      { type: 'face', face_id: graphFaceId },
+    ])
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([primitiveFaceId])
+  })
+
+  test('creates a valid editor selection when only some graph selections have code refs', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'tagged-face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            entityRef: { type: 'face', face_id: 'primitive-face-id' },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.mainIndex).toBe(0)
+    expect(result.codeMirrorSelection.main.head).toBe(20)
+  })
+
+  test('does not send a legacy select_add for an entity-reference edge', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: ['side-face-1', 'side-face-2'],
+              end_faces: ['end-face-1'],
+            },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' &&
+          event.cmd.type === 'select_entity'
+      )
+    ).toBe(true)
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+      )
+    ).toBe(false)
+  })
+
+  test('retains legacy selection for a code-only graph selection mixed with an entity reference', () => {
+    const codeOnlyArtifact: Artifact = {
+      type: 'segment',
+      id: 'code-only-segment',
+      pathId: 'path-id',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [30, 40, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [codeOnlyArtifact.id, codeOnlyArtifact],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            codeRef: codeOnlyArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([codeOnlyArtifact.id])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
+  test('normalizes region entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'region',
+        region_id: 'region-1',
+      })
+    ).toEqual({
+      type: 'region',
+      region_id: 'region-1',
+    })
+  })
+
+  test('converts region query responses to engine region selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const pathToNode = [['body', '']] as any
+    const codeRef = {
+      range: [0, 0, 0] as SourceRange,
+      pathToNode,
+      nodePath: { steps: [] },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-1',
+          codeRef,
+          planeId: 'plane-1',
+          sketchId: 1,
+        } as unknown as Artifact,
+      ],
+      [
+        'path-1',
+        {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef,
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: 'sketch-1',
+        } as unknown as Artifact,
+      ],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'region_get_query_point') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_query_point',
+                  data: { query_point: { x: 12, y: 34 } },
+                },
+              },
+            },
+          }
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: { entity_id: 'path-1' },
+                },
+              },
+            },
+          }
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          reference: {
+            type: 'region',
+            region_id: 'region-1',
+          },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'engineRegionSelection',
+        selection: {
+          type: 'engineRegion',
+          id: 'region-1',
+          point: { x: 12, y: 34 },
+          sketchId: 'sketch-1',
+        },
+      },
+    })
+  })
+
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
+    const selection: Selections = {
       graphSelections: [
-        { artifact: { type: 'wall' } as Artifact, codeRef },
-        { artifact: { type: 'cap' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+        { entityRef: { type: 'face', face_id: 'wall-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'cap-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'primitive-face-1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1702,15 +2012,15 @@ describe('getSelectionTypeDisplayText', () => {
       ],
     }
 
-    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '4 faces'
-    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe('4 faces')
   })
 
   test('does not coalesce region selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
-      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'solid2d-1' }, codeRef },
+      ],
       otherSelections: [
         {
           type: 'engineRegion',
@@ -1731,7 +2041,7 @@ describe('getSelectionTypeDisplayText', () => {
     const selection = {
       graphSelections: [
         {
-          artifact: { type: 'path', subType: 'region' } as Artifact,
+          artifact: { type: 'path', subType: 'region' } as unknown as Artifact,
           codeRef,
         },
       ],
@@ -1743,13 +2053,86 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
+  test('resolves solid2d entity refs to region path artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'path-1',
+        {
+          id: 'path-1',
+          type: 'path',
+          subType: 'region',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'path-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 region')
+  })
+
+  test('resolves solid3d entity refs to sweep artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'sweep-1',
+        {
+          id: 'sweep-1',
+          type: 'sweep',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 sweep')
+  })
+
+  test('resolves solid2d edge refs to helix artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          id: 'helix-1',
+          type: 'helix',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelections: [
-        { artifact: { type: 'segment' } as Artifact, codeRef },
-        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+        {
+          entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' },
+          codeRef,
+        },
+        { entityRef: { type: 'edge', faces: ['f1', 'f2'] }, codeRef },
+        { entityRef: { type: 'solid2d_edge', edge_id: 'e1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1763,6 +2146,38 @@ describe('getSelectionTypeDisplayText', () => {
 
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
+    )
+  })
+})
+
+describe('canSubmitSelectionArg', () => {
+  const bodyArgument = {
+    inputType: 'selection' as const,
+    selectionTypes: ['sweep'],
+    multiple: false,
+  } as Parameters<typeof canSubmitSelectionArg>[1]
+
+  test('accepts a selection containing only an allowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['sweep', 1]]), bodyArgument)).toBe(
+      true
+    )
+  })
+
+  test('rejects a selection containing an allowed and a disallowed type', () => {
+    expect(
+      canSubmitSelectionArg(
+        new Map([
+          ['sweep', 1],
+          ['wall', 1],
+        ]),
+        bodyArgument
+      )
+    ).toBe(false)
+  })
+
+  test('rejects a selection containing only a disallowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
+      false
     )
   })
 })

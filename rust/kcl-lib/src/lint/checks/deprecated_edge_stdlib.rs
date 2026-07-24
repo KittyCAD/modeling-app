@@ -1,6 +1,6 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, mirror3d `across`, extrude edge arguments, GD&T `edges`, or
-//! GD&T distance `from`/`to` arguments.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, mirror3d `across`, extrude edge arguments,
+//! `getBoundedEdge` `edge`, GD&T `edges`, or GD&T distance `from`/`to` arguments.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -22,8 +22,9 @@ def_finding!(
     "Prefer edges or edge specifiers over deprecated edge stdlib calls",
     "\
 Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated \
-stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' \
-(fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. \
+stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Deprecated stdlib usage \
+in getBoundedEdge 'edge' arguments is also deprecated. Prefer 'edges' (fillet/chamfer) or an edge \
+specifier object such as { sideFaces = [tag1, tag2] }. \
 The auto-fix will convert it.
 ",
     FindingFamily::Simplify
@@ -52,6 +53,10 @@ fn edge_reference_argument(callee_name: &str) -> Option<&'static str> {
 
 fn is_extrude(callee_name: &str) -> bool {
     callee_name == "extrude"
+}
+
+fn is_get_bounded_edge(callee_name: &str) -> bool {
+    callee_name == "getBoundedEdge"
 }
 
 fn is_gdt_edge_command(callee_name: &str) -> bool {
@@ -261,6 +266,17 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
                 None,
             ));
         }
+    } else if is_get_bounded_edge(callee_name)
+        && let Some(edge_expr) = get_arg(call_node, "edge")
+        && let Expr::CallExpressionKw(inner) = edge_expr
+        && is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+    {
+        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+        findings.push(Z0006.at(
+            "getBoundedEdge uses 'edge' with deprecated stdlib; prefer an edge specifier object".to_string(),
+            pos,
+            None,
+        ));
     } else if is_gdt_edge_command(callee_name)
         && let Some(elements) = get_edges_elements(call_node)
         && elements
@@ -297,7 +313,6 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
 mod tests {
     use super::Z0006;
     use super::lint_deprecated_edge_stdlib_in_fillet_chamfer;
-    use crate::lint::LintOptions;
 
     #[test]
     fn detects_get_opposite_edge_in_fillet_tags() {
@@ -440,30 +455,6 @@ fillet(body, radius = 1, tags = [body.sketch.tags.e1])
     }
 
     #[test]
-    fn z0006_is_opt_in_for_lint_all() {
-        let kcl = "revolve(profile, axis = getOppositeEdge(seg01))";
-        let prog = crate::Program::parse_no_errs(kcl).unwrap();
-
-        let default_findings = prog.lint_all().unwrap();
-        assert!(
-            default_findings
-                .iter()
-                .all(|finding| finding.finding.code != Z0006.code),
-            "published lint consumers should not receive Z0006 by default"
-        );
-
-        let opted_in_findings = prog
-            .lint_all_with_options(LintOptions::default().with_z0006(true))
-            .unwrap();
-        assert!(
-            opted_in_findings
-                .iter()
-                .any(|finding| finding.finding.code == Z0006.code),
-            "explicitly opting in should enable Z0006"
-        );
-    }
-
-    #[test]
     fn z0006_fires_for_revolve_with_deprecated_axis_variable() {
         let kcl = r#"axisEdge = getOppositeEdge(seg01)
 revolve(profile, axis = axisEdge)
@@ -527,6 +518,23 @@ mirror3d(body, across = baseSketch.line4)
         assert!(
             z0006[0].description.contains("to") || z0006[0].description.contains("sideFaces"),
             "description should mention to or sideFaces"
+        );
+    }
+
+    #[test]
+    fn z0006_fires_for_get_bounded_edge_with_deprecated_edge() {
+        let kcl = r#"blend([
+  getBoundedEdge(surface001, edge = getOppositeEdge(edge1)),
+  edge2,
+])
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for getBoundedEdge with deprecated edge");
+        assert!(
+            z0006[0].description.contains("getBoundedEdge") || z0006[0].description.contains("edge"),
+            "description should mention getBoundedEdge or edge"
         );
     }
 

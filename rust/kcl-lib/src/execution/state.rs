@@ -1006,7 +1006,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
+                RefactorMetadata::EdgeRefactor(meta) => Some((**meta).clone()),
                 RefactorMetadata::DirectTagFillet(_) => None,
             })
             .collect()

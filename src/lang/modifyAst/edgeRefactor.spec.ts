@@ -31,6 +31,7 @@
 import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
 import {
+  findBoundedEdgeCallsToFix,
   findExtrudeEdgeCallsToFix,
   findExtrudeToCallsToFix,
   findGdtDistanceEndpointCallsToFix,
@@ -503,6 +504,12 @@ gdt001 = gdt::distance(
 )
 `
 
+const KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE = `bounded001 = getBoundedEdge(
+  surface001,
+  edge = getCommonEdge(faces = [face1, face2]),
+)
+`
+
 const KCL_SKETCH_BLOCK_REGION_GET_OPPOSITE_EDGE = `@settings(kclVersion = 2.0)
 
 profile = sketch(on = XY) {
@@ -550,8 +557,8 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        baseRegion.tags.edge1,
-        capEnd001
+        capEnd001,
+        baseRegion.tags.edge1
       ]
     }
   ],
@@ -697,11 +704,15 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
 
 cutSketch = sketch(on = YZ) {
-  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -727,11 +738,15 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
 
 cutSketch = sketch(on = YZ) {
-  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -1273,6 +1288,30 @@ describe('refactorZ0006Unified', () => {
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
+    it('finds getBoundedEdge edge calls with deprecated stdlib for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const toFix = findBoundedEdgeCallsToFix(ast, metadata)
+
+      expect(toFix).toHaveLength(1)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
     it('refactors GD&T edges with provided metadata without requiring engine execution', () => {
       const ast = assertParse(KCL_GDT_GET_COMMON_EDGE, wasmInstance)
       const graph = createTaggedWallAndCapGraph(ast, KCL_GDT_GET_COMMON_EDGE, {
@@ -1727,7 +1766,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
@@ -1942,7 +1983,9 @@ surface001 = extrude(
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -2055,9 +2098,10 @@ surface001 = extrude(
         expect(n).toContain('fillet(')
         expect(n).toContain('radius = 0.1')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [ baseRegion.tags.')
-        expect(n).toContain('endFaces = [')
-        expect(n).toMatch(/endFaces = \[\s*(?:startCap|cutRegion\.tags\.)/)
+        expect(n).toContain(
+          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
+        )
+        expect(n).not.toContain('endFaces')
         expect(n).not.toContain(removed)
       })
     }
@@ -2375,16 +2419,16 @@ surface001 = extrude(
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge2, bs.tags.edge1]
          },
          {
            sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge6, bs.tags.edge5]
          }
        ],
      )`

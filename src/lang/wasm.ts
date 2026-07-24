@@ -1,4 +1,13 @@
-import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
+import type {
+  CodeRef,
+  Artifact as RustArtifact,
+  ArtifactGraph as RustArtifactGraph,
+  Cap as RustCapArtifact,
+  EdgeCut as RustEdgeCut,
+  Segment as RustSegmentArtifact,
+  Sweep as RustSweepArtifact,
+  Wall as RustWallArtifact,
+} from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -34,10 +43,7 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
-import {
-  type Artifact,
-  defaultArtifactGraph,
-} from '@src/lang/std/artifactGraph'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
@@ -49,21 +55,60 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
-  Artifact,
-  Cap as CapArtifact,
   CodeRef,
   PrimitiveEdge as PrimitiveEdgeArtifact,
-  EdgeCut,
   GdtAnnotationArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
-  Segment as SegmentArtifact,
   Solid2d as Solid2dArtifact,
-  Sweep as SweepArtifact,
-  SweepEdge,
-  Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
+export type SegmentArtifact = RustSegmentArtifact & {
+  edgeIds?: ArtifactId[]
+  commonSurfaceIds?: ArtifactId[]
+}
+export type SweepArtifact = RustSweepArtifact & {
+  edgeIds?: ArtifactId[]
+}
+export type WallArtifact = RustWallArtifact & {
+  edgeCutEdgeIds?: ArtifactId[]
+}
+export type CapArtifact = RustCapArtifact & {
+  edgeCutEdgeIds?: ArtifactId[]
+}
+export type EdgeCut = RustEdgeCut & {
+  consumedEdgeId?: ArtifactId
+  edgeIds?: ArtifactId[]
+}
+export type SweepEdgeArtifact = {
+  type: 'sweepEdge'
+  id: ArtifactId
+  segId: ArtifactId
+  sweepId?: ArtifactId
+  subType?: string
+  commonSurfaceIds?: ArtifactId[]
+  codeRef?: CodeRef
+}
+export type EdgeCutEdgeArtifact = {
+  type: 'edgeCutEdge'
+  id: ArtifactId
+  edgeCutId?: ArtifactId
+  segId?: ArtifactId
+  subType?: string
+  codeRef?: CodeRef
+}
+export type Artifact =
+  | Exclude<
+      RustArtifact,
+      { type: 'segment' | 'sweep' | 'wall' | 'cap' | 'edgeCut' }
+    >
+  | ({ type: 'segment' } & SegmentArtifact)
+  | ({ type: 'sweep' } & SweepArtifact)
+  | ({ type: 'wall' } & WallArtifact)
+  | ({ type: 'cap' } & CapArtifact)
+  | ({ type: 'edgeCut' } & EdgeCut)
+  | SweepEdgeArtifact
+  | EdgeCutEdgeArtifact
 export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
@@ -446,7 +491,7 @@ function artifactGraphFromRust(
   // Translate NodePath to PathToNode.
   for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
+    if (!('codeRef' in artifact) || !artifact.codeRef) continue
     const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
     artifact.codeRef.pathToNode = pathToNode
   }
@@ -527,13 +572,11 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (
   ast: Program,
-  instance: ModuleType,
-  enableZ0006 = false
+  instance: ModuleType
 ): Promise<Array<Discovered>> => {
   try {
     const discoveredFindings: Array<Discovered> = await instance.kcl_lint(
-      JSON.stringify(ast),
-      enableZ0006
+      JSON.stringify(ast)
     )
     return discoveredFindings
   } catch (e: any) {

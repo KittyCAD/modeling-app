@@ -194,9 +194,13 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
-      return execStateFromRust(result)
+      const outcome = execStateFromRust(result)
+      this.setDefaultPlanes(outcome.defaultPlanes)
+      return outcome
     } catch (e: any) {
-      return Promise.reject(errFromErrWithOutputs(e))
+      const err = errFromErrWithOutputs(e)
+      this.setDefaultPlanes(err.defaultPlanes)
+      return Promise.reject(err)
     }
   }
 

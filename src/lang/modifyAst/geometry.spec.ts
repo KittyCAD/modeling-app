@@ -1,6 +1,7 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -9,6 +10,7 @@ import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getAstAndArtifactGraph,
+  getWalls,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -285,59 +287,6 @@ helix001 = helix(
 )`)
     })
 
-    it('should add a standalone call on sweep edge selection from region-based extrude', async () => {
-      const code = `sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
-  line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var 100mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line2.end, line3.start])
-  vertical(line1)
-}
-hide(sketch001)
-region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = 100)`
-      const { ast, artifactGraph } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const segment = [...artifactGraph.values()].find(
-        (n) => n.type === 'sweepEdge'
-      )
-      const result = addHelix({
-        ast,
-        artifactGraph,
-        edge: createSelectionFromArtifacts([segment!], artifactGraph),
-        revolutions: (await stringToKclExpression(
-          '1',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        angleStart: (await stringToKclExpression(
-          '2',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        radius: (await stringToKclExpression(
-          '3',
-          rustContextInThisFile
-        )) as KclCommandValue,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      await enginelessExecutor(ast, rustContextInThisFile)
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(
-        newCode
-      ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
-helix001 = helix(
-  axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]),
-  revolutions = 1,
-  angleStart = 2,
-  radius = 3,
-)
-`)
-    })
-
     it('should edit a standalone call on segment selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
@@ -350,7 +299,7 @@ helix001 = helix(
       const edge: Selections = {
         graphSelections: [
           {
-            artifact: segment,
+            entityRef: artifactToEntityRef(segment!.type, segment!.id),
             codeRef: segment!.codeRef,
           },
         ],
@@ -388,7 +337,70 @@ helix001 = helix(
 )`)
     })
 
-    // For now to avoid setting up an engine connection, the sweepEdge case is done in e2e (point-click.spec.ts)
+    it('should add a standalone call on extruded edge selection using face API axis', async () => {
+      const code = `sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
+  line2 = line(start = [var 0mm, var 100mm], end = [var 100mm, var 0mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 100mm, var 0mm], end = [var 0mm, var 0mm])
+  coincident([line2.end, line3.start])
+  vertical(line1)
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (n) => n.type === 'segment'
+      )
+      const wall = getWalls(artifactGraph, 1).graphSelections[0]
+      const endCap = [...artifactGraph.values()].find(
+        (n) => n.type === 'cap' && n.subType === 'end'
+      )
+      const edge: Selections = {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [wall.artifact!.id, endCap!.id],
+            },
+            codeRef: segment!.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+      const result = addHelix({
+        ast,
+        artifactGraph,
+        edge,
+        revolutions: (await stringToKclExpression(
+          '20',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        angleStart: (await stringToKclExpression(
+          '0',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        radius: (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`helix001 = helix(
+  axis = {
+    sideFaces = [region001.tags.line1, capEnd001]
+  },
+  revolutions = 20,
+  angleStart = 0,
+  radius = 1,
+)`)
+    })
 
     const cylinderExtrude = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 100)
@@ -413,7 +425,7 @@ helix001 = helix(
       const cylinder: Selections = {
         graphSelections: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],
@@ -450,7 +462,7 @@ helix001 = helix(
       const cylinder: Selections = {
         graphSelections: [
           {
-            artifact: sweep,
+            entityRef: artifactToEntityRef(sweep!.type, sweep!.id),
             codeRef: sweep!.codeRef,
           },
         ],

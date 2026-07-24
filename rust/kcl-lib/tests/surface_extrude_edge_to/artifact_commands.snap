@@ -272,6 +272,15 @@ description: Artifact commands surface_extrude_edge_to.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -306,15 +315,6 @@ description: Artifact commands surface_extrude_edge_to.kcl
           "a": 0.3
         }
       }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "query_entity_type",
-        "entity_id": "[uuid]"
-      },
-      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

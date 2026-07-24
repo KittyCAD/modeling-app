@@ -555,13 +555,15 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{
+            entityRef?: { type: string; segment_id?: string }
+          }>
         }
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'segment-id'
-      )
+      expect(
+        argDefaultValues.direction?.graphSelections[0].entityRef?.segment_id
+      ).toBe('segment-id')
     })
 
     it('preserves sweep edge profiles and direction in the command defaults', async () => {

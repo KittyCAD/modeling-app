@@ -111,6 +111,12 @@ export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await page.getByTestId('custom-cmd-send-button').click()
 }
 
+export async function sendSceneCommand(page: Page, cmd: EngineCommand) {
+  await page.evaluate(async (cmd) => {
+    await window.engineCommandManager.sendSceneCommand(cmd)
+  }, cmd)
+}
+
 async function clearCommandLogs(page: Page) {
   await page.getByTestId('custom-cmd-input').fill('')
   await page.getByTestId('clear-commands').scrollIntoViewIfNeeded()
@@ -1254,20 +1260,15 @@ export async function doAndWaitForImageDiff(
         return actualDiffCount > diffCount
       }
 
-      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-      let count = 0
-      const interval = setInterval(() => {
-        ;(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
-          }
-        })().catch(reportRejection)
-      }, 50)
+      // Run sequentially so slow screenshots do not overlap and starve Electron.
+      for (let count = 0; count <= 100; count++) {
+        if (await isImageDiff()) {
+          resolve(true)
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+      resolve(false)
     })().catch(reportRejection)
   })
 }

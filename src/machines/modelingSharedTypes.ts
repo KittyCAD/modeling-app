@@ -1,4 +1,5 @@
 import type {
+  EntityReference,
   EntityType,
   Point2d,
   RegionGetResolvableIntersectionInfo,
@@ -57,9 +58,31 @@ export type NonCodeSelection =
   | EnginePrimitiveSelection
   | EngineRegionSelection
 
+/**
+ * Shape of edgeRef when parsed from op args. KCL uses camelCase (sideFaces, endFaces);
+ * op args may also contain snake_case from API. Use when reading so TS enforces
+ * valid keys (not faces/disambiguators).
+ */
+export type EdgeRefFromOpArgs = {
+  side_faces?: unknown
+  sideFaces?: unknown
+  end_faces?: unknown
+  endFaces?: unknown
+  index?: unknown
+}
+
+/** Engine-provided topology data for edge picks; codegen can use edgeId(solid, index) when tag-based graph resolution is unavailable (e.g. shell inner edges). */
+export type EngineTopologyFallback = {
+  parentId: string
+  primitiveIndex: number
+}
+
 export interface Selection {
+  entityRef?: EntityReference
   artifact?: Artifact
-  codeRef: CodeRef
+  codeRef?: CodeRef
+  /** From query_entity_type_with_point reference.topology_fallback; carried only on graphSelections rows. */
+  engineTopologyFallback?: EngineTopologyFallback
   engineEntityId?: ArtifactId
   patternIndex?: number
 }
@@ -72,7 +95,7 @@ export type Selections = {
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
-      selection?: Selection
+      selection: Selection
       scrollIntoView?: boolean
     }
   | {
@@ -224,6 +247,7 @@ export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
   useSketchSolveMode?: Setting<boolean>
+  useNewSketchMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 

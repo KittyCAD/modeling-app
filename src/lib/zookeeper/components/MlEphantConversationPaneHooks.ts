@@ -1,4 +1,5 @@
 import { type MlToolResult } from '@kittycad/lib'
+import { isDeletedFileReasoning } from '@src/lib/mlReasoningTypes'
 import type { FileEntry } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
@@ -84,10 +85,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
           if (!('reasoning' in response)) {
             return []
           }
-          if (
-            response.reasoning.type !== 'deleted_kcl_file' &&
-            response.reasoning.type !== 'deleted_project_file'
-          ) {
+          if (!isDeletedFileReasoning(response.reasoning)) {
             return []
           }
           return response.reasoning.file_name
@@ -107,7 +105,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // Clear selections since new model
       engineCommandManager.modelingSend({
         type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+        data: { selection: {}, selectionType: 'singleCodeCursor' },
       })
     })
 
