@@ -229,10 +229,14 @@ function getPluginToggle(app: App, pluginId: string) {
 }
 
 function hasPersonalCloudLibrarySetting(app: App) {
+  return Boolean(getPersonalCloudLibrarySetting(app))
+}
+
+function getPersonalCloudLibrarySetting(app: App) {
   const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
   return app.settings
     .get()
-    .app.libraries.current.some(
+    .app.libraries.current.find(
       (library) =>
         library.type === defaultCloudLibrary.type &&
         library.path === defaultCloudLibrary.path
@@ -495,6 +499,103 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('preserves the default project library title when web materialization replaces it with Personal Cloud', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+      const projectDirectory = app.settings.get().app.projectDirectory.current
+      app.settings.actor.send({
+        type: 'set.app.libraries',
+        data: {
+          level: 'user',
+          value: [
+            {
+              title: 'Projects',
+              path: projectDirectory,
+              type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+            },
+          ],
+        },
+      })
+
+      await waitForSettingsIdle(app)
+      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
+
+      await expect
+        .poll(() => getPersonalCloudLibrarySetting(app))
+        .toMatchObject({
+          title: 'Projects',
+          path: getDefaultCloudProjectLibrarySetting().path,
+          type: getDefaultCloudProjectLibrarySetting().type,
+        })
+      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(false)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('does not recreate a deleted Personal Cloud library while cloud sync remains enabled', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          hasPersonalCloudLibrarySetting: true,
+        })
+
+      const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+      const librariesWithoutPersonalCloud = app.settings
+        .get()
+        .app.libraries.current.filter(
+          (library) =>
+            library.type !== defaultCloudLibrary.type ||
+            library.path !== defaultCloudLibrary.path
+        )
+
+      app.settings.actor.send({
+        type: 'set.app.libraries',
+        data: {
+          level: 'user',
+          value: librariesWithoutPersonalCloud,
+        },
+      })
+
+      await waitForSettingsIdle(app)
+
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasPersonalCloudLibrary: app.registry
+            .get(projectLibrariesValueSpec)
+            .some(
+              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          active: true,
+          hasPersonalCloudLibrarySetting: false,
+          hasPersonalCloudLibrary: false,
+        })
     } finally {
       app.dispose()
     }

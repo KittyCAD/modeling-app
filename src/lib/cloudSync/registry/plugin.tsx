@@ -991,6 +991,10 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
         ? undefined
         : configuredLibraries?.[configuredCloudLibraryIndex]
 
+    if (!configuredCloudLibrary) {
+      return []
+    }
+
     return [
       {
         ...defaultCloudLibrary,

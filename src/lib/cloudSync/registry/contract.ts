@@ -27,6 +27,13 @@ export type CloudSyncRegistryService = {
    * The local project is marked excluded so later edits do not recreate it.
    */
   disconnectProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Move an already cloud-linked local project into the canonical Personal
+   * Cloud library storage location.
+   */
+  moveProjectToPersonalCloudLibrary: (
+    projectPath: string
+  ) => Promise<CloudSyncLocalProject>
   ensureProjectLocallySynced: (
     remoteProjectId: string
   ) => Promise<CloudSyncLocalProject | undefined>

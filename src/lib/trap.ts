@@ -74,12 +74,37 @@ export function report(
  * Promise.prototype.catch.
  */
 export function reportRejection(reason: any): undefined {
-  report(
-    (
-      (reason instanceof Object ? JSON.stringify(reason, null, 2) : reason) ??
-      'Unknown promise rejection'
-    ).toString()
-  )
+  report(formatRejectionReason(reason))
+}
+
+export function formatRejectionReason(reason: unknown) {
+  if (reason instanceof Error) {
+    return reason.stack || reason.message
+  }
+
+  if (typeof reason === 'string') {
+    return reason
+  }
+
+  if (reason && typeof reason === 'object') {
+    const message = (reason as { message?: unknown }).message
+    if (typeof message === 'string') {
+      return message
+    }
+
+    try {
+      const serialized = JSON.stringify(reason, null, 2)
+      if (serialized && serialized !== '{}') {
+        return serialized
+      }
+    } catch {
+      // Fall through to Object.prototype.toString for non-serializable values.
+    }
+
+    return Object.prototype.toString.call(reason)
+  }
+
+  return (reason ?? 'Unknown promise rejection').toString()
 }
 
 /**

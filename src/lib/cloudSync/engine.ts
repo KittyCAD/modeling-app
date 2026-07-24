@@ -765,6 +765,25 @@ async function uniqueProjectPath(
   return candidate
 }
 
+async function moveProjectDirectory(sourcePath: string, targetPath: string) {
+  try {
+    await localFs.rename(sourcePath, targetPath)
+    return
+  } catch (error) {
+    const code =
+      error && typeof error === 'object' && 'code' in error
+        ? error.code
+        : undefined
+    if (code !== 'EXDEV') {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw error
+    }
+  }
+
+  await localFs.cp(sourcePath, targetPath, { recursive: true })
+  await localFs.rm(sourcePath, { recursive: true })
+}
+
 function localProjectFromMetadata(
   metadata: ProjectMetadata
 ): CloudSyncLocalProject | undefined {
@@ -783,12 +802,16 @@ function localProjectFromMetadata(
 async function findLocalProjectPathByRemoteProjectId(
   projectDirectory: string,
   remoteProjectId: string,
-  preferredProjectName?: string
+  preferredProjectName?: string,
+  options: { excludedProjectPath?: string } = {}
 ) {
   const candidateNames = new Set<string>()
   if (preferredProjectName) {
     candidateNames.add(preferredProjectName)
   }
+  const excludedProjectPath = options.excludedProjectPath
+    ? normalizePathForSync(options.excludedProjectPath)
+    : undefined
 
   const entries = await localFs.readdir(projectDirectory).catch((error) => {
     if (error === 'ENOENT') {
@@ -805,18 +828,31 @@ async function findLocalProjectPathByRemoteProjectId(
       continue
     }
     const candidatePath = localFs.join(projectDirectory, entry)
-    if (!(await exists(candidatePath))) {
+    const normalizedCandidatePath = normalizePathForSync(candidatePath)
+    if (normalizedCandidatePath === excludedProjectPath) {
       continue
     }
-    const candidateMetadata = await getProjectMetadata(candidatePath)
+    const stat = await localFs.stat(candidatePath).catch((error) => {
+      if (error === 'ENOENT') {
+        return undefined
+      }
+      return Promise.reject(error)
+    })
+    if (!stat || !statIsDirectory(stat)) {
+      continue
+    }
+    const candidateMetadata = await getProjectMetadata(normalizedCandidatePath)
     if (isProjectSyncExcluded(candidateMetadata)) {
       continue
     }
+    if (candidateMetadata?.remoteProjectId === remoteProjectId) {
+      return normalizedCandidatePath
+    }
     const candidateRemoteProjectId = await readProjectTomlCloudProjectId(
-      candidatePath
+      normalizedCandidatePath
     ).catch(() => undefined)
     if (candidateRemoteProjectId === remoteProjectId) {
-      return candidatePath
+      return normalizedCandidatePath
     }
   }
 
@@ -2366,6 +2402,94 @@ export async function disconnectCloudSyncProject(projectPath: string) {
     lastSyncedAt: disconnectedAt,
   })
   scheduleRemoteIndexSync(0)
+}
+
+export async function moveCloudSyncProjectToDirectory({
+  projectPath,
+  projectDirectoryPath,
+}: {
+  projectPath: string
+  projectDirectoryPath: string
+}): Promise<CloudSyncLocalProject> {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const normalizedProjectDirectoryPath =
+    normalizePathForSync(projectDirectoryPath)
+  const metadata = await bindRemoteProjectIdFromToml(
+    await getOrCreateProjectMetadata(normalizedProjectPath)
+  )
+  if (!metadata.remoteProjectId) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Only cloud-synced projects can be moved.')
+  }
+
+  if (isProjectPathInDirectory(normalizedProjectPath, projectDirectoryPath)) {
+    return {
+      projectPath: normalizedProjectPath,
+      projectName: projectNameFromPath(normalizedProjectPath),
+      remoteProjectId: metadata.remoteProjectId,
+      remoteRevision: metadata.remoteRevision,
+    }
+  }
+
+  await localFs.mkdir(normalizedProjectDirectoryPath, { recursive: true })
+  const existingTargetProjectPath = await findLocalProjectPathByRemoteProjectId(
+    normalizedProjectDirectoryPath,
+    metadata.remoteProjectId,
+    projectNameFromPath(normalizedProjectPath),
+    { excludedProjectPath: normalizedProjectPath }
+  )
+  if (existingTargetProjectPath) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Personal Cloud already has a local copy of this cloud project at ${existingTargetProjectPath}.`
+    )
+  }
+  const targetProjectPath = normalizePathForSync(
+    await uniqueProjectPath(
+      normalizedProjectDirectoryPath,
+      projectNameFromPath(normalizedProjectPath)
+    )
+  )
+
+  await moveProjectDirectory(normalizedProjectPath, targetProjectPath)
+  await clearOutboxEntriesForProject(normalizedProjectPath)
+  await deleteProjectMetadata(normalizedProjectPath)
+
+  const nextMetadata = {
+    ...metadata,
+    localProjectPath: targetProjectPath,
+    projectName: projectNameFromPath(targetProjectPath),
+    tombstone: false,
+    syncExcluded: undefined,
+    lastFailure: undefined,
+  }
+  await putProjectMetadata(nextMetadata)
+  await appendOutboxEntry({
+    projectPath: targetProjectPath,
+    kind: 'upsert',
+    targetPath: targetProjectPath,
+    sourcePath: normalizedProjectPath,
+    createdAt: nowIso(),
+  })
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+  })
+  scheduleSync(0)
+
+  return {
+    projectPath: targetProjectPath,
+    projectName: nextMetadata.projectName,
+    remoteProjectId: metadata.remoteProjectId,
+    remoteRevision: metadata.remoteRevision,
+  }
 }
 
 function attachVisibilityChangeListener() {

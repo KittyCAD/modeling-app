@@ -32,6 +32,14 @@ import {
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
+import {
+  LEGACY_CLOUD_PROJECT_MIGRATION_DISMISSED_STORAGE_KEY,
+  type LegacyCloudProjectMigrationFailure,
+  getLegacyCloudLocationProjects,
+  getLegacyCloudProjectMigrationFailureMessage,
+  getLegacyCloudProjectMigrationSignature,
+} from '@src/lib/cloudSync/legacyProjectMigration'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -79,7 +87,9 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { invalidateConfiguredProjectLibraryEntries } from '@src/registry/extensions/homeProjects'
 import {
   acceptOnboarding,
   needsToOnboard,
@@ -88,6 +98,7 @@ import {
 import type { HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import toast from 'react-hot-toast'
 import {
   Link,
   useLocation,
@@ -103,6 +114,27 @@ type ReadWriteProjectState = {
 }
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
+
+function getStoredLegacyCloudProjectMigrationDismissal() {
+  try {
+    return (
+      window.localStorage?.getItem(
+        LEGACY_CLOUD_PROJECT_MIGRATION_DISMISSED_STORAGE_KEY
+      ) ?? ''
+    )
+  } catch {
+    return ''
+  }
+}
+
+function storeLegacyCloudProjectMigrationDismissal(signature: string) {
+  try {
+    window.localStorage?.setItem(
+      LEGACY_CLOUD_PROJECT_MIGRATION_DISMISSED_STORAGE_KEY,
+      signature
+    )
+  } catch {}
+}
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -151,10 +183,19 @@ const Home = () => {
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const projectLibraries = registry.signal(projectLibrariesValueSpec).value
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const cloudSync = registry.optional(cloudSyncService)
+  const cloudSyncEnabled = cloudSync?.status.value.enabled === true
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
+  const [personalCloudRoot, setPersonalCloudRoot] = useState<string>()
+  const [
+    dismissedLegacyCloudProjectMigrationSignature,
+    setDismissedLegacyCloudProjectMigrationSignature,
+  ] = useState(getStoredLegacyCloudProjectMigrationDismissal)
+  const [isMigratingLegacyCloudProjects, setIsMigratingLegacyCloudProjects] =
+    useState(false)
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
@@ -178,6 +219,20 @@ const Home = () => {
   const { searchResults, query, setQuery } = useProjectSearch(
     scopedHomeProjectEntries
   )
+  const legacyCloudLocationProjects = getLegacyCloudLocationProjects({
+    projects: homeProjectEntries,
+    libraries: projectLibraries,
+    personalCloudRoot,
+  })
+  const legacyCloudLocationProjectSignature =
+    getLegacyCloudProjectMigrationSignature(legacyCloudLocationProjects)
+  const showLegacyCloudProjectMigrationPrompt =
+    hasCloudSyncFeature &&
+    cloudSyncEnabled &&
+    !selectedProjectLibrary &&
+    legacyCloudLocationProjects.length > 0 &&
+    legacyCloudLocationProjectSignature !==
+      dismissedLegacyCloudProjectMigrationSignature
   const projectSearchKeybinding = keymapKeystrokesDisplay(
     keymap
       ? findKeymapItemForCommand(
@@ -208,6 +263,113 @@ const Home = () => {
   useEffect(() => {
     setCloudSyncProjectScope(undefined)
   }, [])
+
+  useEffect(() => {
+    if (!hasCloudSyncFeature || !cloudSyncEnabled) {
+      setPersonalCloudRoot(undefined)
+      return
+    }
+
+    let disposed = false
+    getDefaultCloudProjectDirectoryPath()
+      .then((path) => {
+        if (!disposed) {
+          setPersonalCloudRoot(path)
+        }
+      })
+      .catch(reportRejection)
+
+    return () => {
+      disposed = true
+    }
+  }, [hasCloudSyncFeature, cloudSyncEnabled])
+
+  async function migrateLegacyCloudProjectsToPersonalCloud() {
+    if (!cloudSync || legacyCloudLocationProjects.length === 0) {
+      return
+    }
+
+    setIsMigratingLegacyCloudProjects(true)
+    try {
+      const moveRequests = legacyCloudLocationProjects.flatMap((project) =>
+        project.localProjectPath
+          ? [
+              {
+                project,
+                promise: cloudSync.moveProjectToPersonalCloudLibrary(
+                  project.localProjectPath
+                ),
+              },
+            ]
+          : []
+      )
+
+      if (moveRequests.length === 0) {
+        return
+      }
+
+      const moveResults = await Promise.allSettled(
+        moveRequests.map(({ promise }) => promise)
+      )
+
+      const failures: LegacyCloudProjectMigrationFailure[] =
+        moveResults.flatMap((result, index) =>
+          result.status === 'rejected'
+            ? [
+                {
+                  project: moveRequests[index].project,
+                  reason: result.reason,
+                },
+              ]
+            : []
+        )
+      const movedCount = moveResults.length - failures.length
+
+      if (movedCount > 0) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+        invalidateConfiguredProjectLibraryEntries()
+      }
+
+      if (failures.length === 0) {
+        storeLegacyCloudProjectMigrationDismissal(
+          legacyCloudLocationProjectSignature
+        )
+        setDismissedLegacyCloudProjectMigrationSignature(
+          legacyCloudLocationProjectSignature
+        )
+        toast.success(
+          `Moved ${movedCount} cloud-synced project${
+            movedCount === 1 ? '' : 's'
+          } into Personal Cloud.`
+        )
+        return
+      }
+
+      toast.error(
+        getLegacyCloudProjectMigrationFailureMessage({
+          movedCount,
+          failures,
+        })
+      )
+      reportRejection(failures[0].reason)
+    } catch (error) {
+      toast.error('Failed to move cloud-synced projects into Personal Cloud.')
+      reportRejection(error)
+    } finally {
+      setIsMigratingLegacyCloudProjects(false)
+    }
+  }
+
+  function dismissLegacyCloudProjectMigrationPrompt() {
+    storeLegacyCloudProjectMigrationDismissal(
+      legacyCloudLocationProjectSignature
+    )
+    setDismissedLegacyCloudProjectMigrationSignature(
+      legacyCloudLocationProjectSignature
+    )
+  }
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -406,6 +568,16 @@ const Home = () => {
           projectSearchKeybinding={projectSearchKeybinding}
           className="col-start-2 -col-end-1"
         />
+        {showLegacyCloudProjectMigrationPrompt && (
+          <LegacyCloudProjectMigrationBanner
+            projects={legacyCloudLocationProjects}
+            personalCloudRoot={personalCloudRoot}
+            isMigrating={isMigratingLegacyCloudProjects}
+            onMigrate={() => void migrateLegacyCloudProjectsToPersonalCloud()}
+            onDismiss={dismissLegacyCloudProjectMigrationPrompt}
+            className="col-start-2 -col-end-1"
+          />
+        )}
         <aside
           data-testid="home-sidebar"
           className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
@@ -730,6 +902,117 @@ function HomeHeader({
           </div>
         </section>
       )}
+    </section>
+  )
+}
+
+interface LegacyCloudProjectMigrationBannerProps
+  extends HTMLProps<HTMLDivElement> {
+  projects: readonly HomeProjectEntry[]
+  personalCloudRoot?: string
+  isMigrating: boolean
+  onMigrate: () => void
+  onDismiss: () => void
+}
+
+function LegacyCloudProjectMigrationBanner({
+  projects,
+  personalCloudRoot,
+  isMigrating,
+  onMigrate,
+  onDismiss,
+  className = '',
+  ...rest
+}: LegacyCloudProjectMigrationBannerProps) {
+  const [isReviewing, setIsReviewing] = useState(false)
+  const count = projects.length
+
+  return (
+    <section
+      data-testid="legacy-cloud-project-migration-banner"
+      className={`my-4 rounded-sm border border-primary/30 bg-primary/5 p-3 text-sm dark:border-primary/40 dark:bg-chalkboard-90 ${className}`}
+      {...rest}
+    >
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start gap-2">
+            <span className="mt-0.5 grid h-6 w-6 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-80">
+              <CustomIcon name="network" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-chalkboard-100 dark:text-chalkboard-10">
+                Move cloud-synced projects into Personal Cloud
+              </p>
+              <p className="mt-1 text-chalkboard-80 dark:text-chalkboard-30">
+                {count} cloud-synced project{count === 1 ? ' is' : 's are'}{' '}
+                stored outside Personal Cloud. Moving{' '}
+                {count === 1 ? 'it' : 'them'} avoids duplicate library listings.
+              </p>
+              {personalCloudRoot ? (
+                <p className="mt-1 truncate text-xs text-chalkboard-70 dark:text-chalkboard-40">
+                  Personal Cloud stores projects at {personalCloudRoot}.
+                </p>
+              ) : null}
+            </div>
+          </div>
+          {isReviewing && (
+            <ul className="mt-3 flex max-h-36 flex-col gap-1 overflow-y-auto rounded-sm border border-chalkboard-20 bg-chalkboard-10 p-2 text-xs dark:border-chalkboard-80 dark:bg-chalkboard-100">
+              {projects.map((project) => (
+                <li
+                  key={project.id}
+                  className="grid gap-1 text-chalkboard-80 dark:text-chalkboard-30 sm:grid-cols-[minmax(8rem,14rem)_minmax(0,1fr)]"
+                >
+                  <span className="truncate font-medium">
+                    {project.title || project.name}
+                  </span>
+                  <span className="truncate">{project.localProjectPath}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 lg:justify-end">
+          <ActionButton
+            Element="button"
+            type="button"
+            onClick={() => setIsReviewing((value) => !value)}
+            disabled={isMigrating}
+            iconStart={{
+              icon: isReviewing ? 'arrowUp' : 'arrowDown',
+              bgClassName: '!bg-transparent',
+            }}
+            data-testid="legacy-cloud-project-migration-review"
+          >
+            {isReviewing ? 'Hide' : 'Review'}
+          </ActionButton>
+          <ActionButton
+            Element="button"
+            type="button"
+            onClick={onMigrate}
+            disabled={isMigrating}
+            iconStart={{
+              icon: 'network',
+              bgClassName: '!bg-transparent',
+            }}
+            data-testid="legacy-cloud-project-migration-move"
+          >
+            {isMigrating ? 'Moving...' : 'Move to Personal Cloud'}
+          </ActionButton>
+          <ActionButton
+            Element="button"
+            type="button"
+            onClick={onDismiss}
+            disabled={isMigrating}
+            iconStart={{
+              icon: 'close',
+              bgClassName: '!bg-transparent',
+            }}
+            data-testid="legacy-cloud-project-migration-dismiss"
+          >
+            Dismiss
+          </ActionButton>
+        </div>
+      </div>
     </section>
   )
 }
