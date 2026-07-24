@@ -33,6 +33,7 @@ use crate::std::DEFAULT_TOLERANCE_MM;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::edge;
+use crate::std::extrude::after_surface_creation;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::sketch::FaceTag;
 use crate::std::solid_consumption::record_consumed_solids;
@@ -491,7 +492,7 @@ pub async fn coerce_curved_targets(
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_planar_surface(
-    extrudables: Vec<CurveType>,
+    curves: Vec<CurveType>,
     tolerance: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
@@ -499,412 +500,38 @@ async fn inner_planar_surface(
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
-
-    let extrude_method = match method.as_deref() {
-        Some("new" | "NEW") => ExtrudeMethod::New,
-        Some("merge" | "MERGE") => ExtrudeMethod::Merge,
-        None => ExtrudeMethod::default(),
-        Some(other) => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown merge method {other}, try using `MERGE` or `NEW`"),
-                vec![args.source_range],
-            )));
-        }
+    
+    let mut curve_ids: Vec<uuid::Uuid> = Vec::new();
+    for curve in curves {
+        let id = curve.operation_id(&args).await?;
+        curve_ids.push(id);
+    }
+    
+    // Surface-extrude an edge.
+    let response = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+        mcmd::CreatePlanarSurface::builder()
+            .curve_ids(curve_ids)
+            .tolerance(tolerance)
+            .build(),
+    ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::CreatePlanarSurface(resp),
+    } = response
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("CreatePlanarSurface response was not as expected: {response:?}"),
+            vec![args.source_range],
+        )));
     };
+    let surface_ids = resp.surfaces;
 
-    if symmetric.unwrap_or(false) && bidirectional_length.is_some() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
-                .to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    if let Some(bidirectional_length) = &bidirectional_length
-        && bidirectional_length.to_mm() < 0.0
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "`bidirectionalLength` must be greater than or equal to 0".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    if (length.is_some() || twist_angle.is_some()) && to.is_some() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "You cannot give `length` or `twist` params with the `to` param, you have to choose one or the other"
-                .to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
-    let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
-
-    let opposite = match (symmetric, bidirection) {
-        (Some(true), _) => Opposite::Symmetric,
-        (None, None) => Opposite::None,
-        (Some(false), None) => Opposite::None,
-        (None, Some(length)) => Opposite::Other(length),
-        (Some(false), Some(length)) => Opposite::Other(length),
-    };
-
-    for extrudable in &extrudables {
-        let is_edge = match extrudable {
-            Extrudable::Sketch(..) => false,
-            Extrudable::FaceTag(_) => false,
-            Extrudable::Face(_) => false,
-            Extrudable::EdgeTag(_) => true,
-            Extrudable::Edge(_) => true,
-        };
-        let extrude_cmd_id = exec_state.next_uuid();
-        let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
-        let cmd = match (
-            &twist_angle,
-            &twist_angle_step,
-            &twist_center,
-            length.clone(),
-            &to,
-            &direction,
-        ) {
-            (Some(angle), angle_step, center, Some(length), None, None) => {
-                let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
-                let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
-                let angle_step_size = Angle::from_degrees(
-                    angle_step
-                        .clone()
-                        .map(|a| a.to_degrees(exec_state, args.source_range))
-                        .unwrap_or(15.0),
-                );
-                ModelingCmd::from(
-                    mcmd::TwistExtrude::builder()
-                        .target(sketch_or_face_id.into())
-                        .distance(LengthUnit(length.to_mm()))
-                        .center_2d(center)
-                        .total_rotation_angle(total_rotation_angle)
-                        .angle_step_size(angle_step_size)
-                        .tolerance(tolerance)
-                        .body_type(body_type)
-                        .build(),
-                )
-            }
-            (None, None, None, Some(length), None, None) => ModelingCmd::from(
-                mcmd::Extrude::builder()
-                    .target(sketch_or_face_id.into())
-                    .distance(LengthUnit(length.to_mm()))
-                    .opposite(opposite.clone())
-                    .maybe_draft_angle(
-                        draft_angle
-                            .clone()
-                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
-                    )
-                    .extrude_method(extrude_method)
-                    .body_type(body_type)
-                    .maybe_merge_coplanar_faces(hide_seams)
-                    .build(),
-            ),
-            (None, None, None, Some(length), None, Some(dir)) => {
-                let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => DirectionType::Axis {
-                        direction: KPoint3d {
-                            x: p[0].n,
-                            y: p[1].n,
-                            z: p[2].n,
-                        },
-                    },
-                    Point3dOrEdgeReference::Edge(edge) => match edge {
-                        crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
-                        crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
-                            id: match tag.get_cur_info() {
-                                Some(info) => info.id,
-                                None => {
-                                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                                        "Failed to get current info for tag".to_string(),
-                                        vec![args.source_range],
-                                    )));
-                                }
-                            },
-                        },
-                    },
-                };
-                ModelingCmd::from(
-                    mcmd::Extrude::builder()
-                        .target(sketch_or_face_id.into())
-                        .distance(LengthUnit(length.to_mm()))
-                        .opposite(opposite.clone())
-                        .maybe_draft_angle(
-                            draft_angle
-                                .clone()
-                                .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
-                        )
-                        .extrude_method(extrude_method)
-                        .body_type(body_type)
-                        .maybe_merge_coplanar_faces(hide_seams)
-                        .direction(direction3d)
-                        .build(),
-                )
-            }
-            (None, None, None, None, Some(to), None) => match to {
-                Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
-                    mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::Point {
-                            point: KPoint3d {
-                                x: LengthUnit(point[0].to_mm()),
-                                y: LengthUnit(point[1].to_mm()),
-                                z: LengthUnit(point[2].to_mm()),
-                            },
-                        })
-                        .extrude_method(extrude_method)
-                        .body_type(body_type)
-                        .build(),
-                ),
-                Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
-                    mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::Axis {
-                            axis: KPoint3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: direction[2].to_mm(),
-                            },
-                            point: KPoint3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
-                            },
-                        })
-                        .extrude_method(extrude_method)
-                        .body_type(body_type)
-                        .build(),
-                ),
-                Point3dAxis3dOrGeometryReference::Plane(plane) => {
-                    let plane_id = if plane.is_uninitialized() {
-                        if plane.info.origin.units.is_none() {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Origin of plane has unknown units".to_string(),
-                                vec![args.source_range],
-                            )));
-                        }
-                        let sketch_plane = crate::std::sketch::make_sketch_plane_from_orientation(
-                            plane.clone().info.into_plane_data(),
-                            exec_state,
-                            &args,
-                        )
-                        .await?;
-                        sketch_plane.id
-                    } else {
-                        plane.id
-                    };
-                    ModelingCmd::from(
-                        mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference {
-                                entity_id: Some(plane_id),
-                                entity_reference: None,
-                            })
-                            .extrude_method(extrude_method)
-                            .body_type(body_type)
-                            .build(),
-                    )
-                }
-                Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
-                    let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
-                    ModelingCmd::from(
-                        mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference {
-                                entity_id: Some(edge_id),
-                                entity_reference: None,
-                            })
-                            .extrude_method(extrude_method)
-                            .body_type(body_type)
-                            .build(),
-                    )
-                }
-                Point3dAxis3dOrGeometryReference::Face(face_tag) => {
-                    let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
-                    ModelingCmd::from(
-                        mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference {
-                                entity_id: Some(face_id),
-                                entity_reference: None,
-                            })
-                            .extrude_method(extrude_method)
-                            .body_type(body_type)
-                            .build(),
-                    )
-                }
-                Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
-                    mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::EntityReference {
-                            entity_id: Some(sketch_ref.id),
-                            entity_reference: None,
-                        })
-                        .extrude_method(extrude_method)
-                        .body_type(body_type)
-                        .build(),
-                ),
-                Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
-                    mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
-                        .reference(ExtrudeReference::EntityReference {
-                            entity_id: Some(solid.id),
-                            entity_reference: None,
-                        })
-                        .extrude_method(extrude_method)
-                        .body_type(body_type)
-                        .build(),
-                ),
-                Point3dAxis3dOrGeometryReference::TaggedEdgeOrFace(tag) => {
-                    let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
-                    let tagged_edge_or_face_id = tagged_edge_or_face.id;
-                    ModelingCmd::from(
-                        mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference {
-                                entity_id: Some(tagged_edge_or_face_id),
-                                entity_reference: None,
-                            })
-                            .extrude_method(extrude_method)
-                            .body_type(body_type)
-                            .build(),
-                    )
-                }
-                Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
-                    ModelingCmd::from(
-                        mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
-                            .reference(ExtrudeReference::EntityReference {
-                                entity_id: None,
-                                entity_reference: Some(EntityReference::Edge {
-                                    inner,
-                                    topology_fallback: None,
-                                }),
-                            })
-                            .extrude_method(extrude_method)
-                            .body_type(body_type)
-                            .build(),
-                    )
-                }
-            },
-            (Some(_), _, _, None, None, None) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "The `length` parameter must be provided when using twist angle for extrusion.".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-            (_, _, _, None, None, None) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Either `length` or `to` parameter must be provided for extrusion.".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-            (_, _, _, Some(_), Some(_), None) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "You cannot give both `length` and `to` params, you have to choose one or the other".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-            (_, _, _, _, _, _) => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Invalid combination of parameters for extrusion.".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-        };
-
-        let being_extruded = match extrudable {
-            Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::FaceTag(face_tag) => {
-                let face_id = sketch_or_face_id;
-                let solid_id = match face_tag.geometry() {
-                    Some(crate::execution::Geometry::Solid(solid)) => solid.id,
-                    Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
-                        SketchSurface::Face(face) => face.parent_solid.solid_id,
-                        SketchSurface::Plane(_) => sketch.id,
-                    },
-                    None => face_id,
-                };
-                BeingExtruded::Face { face_id, solid_id }
-            }
-            Extrudable::Face(face) => BeingExtruded::Face {
-                face_id: face.id,
-                solid_id: face.parent_solid.solid_id,
-            },
-            Extrudable::EdgeTag(_) => BeingExtruded::Edge,
-            Extrudable::Edge(_) => BeingExtruded::Edge,
-        };
-        if let Some(post_extr_sketch) = extrudable.as_sketch() {
-            let cmds = post_extr_sketch.build_sketch_mode_cmds(
-                exec_state,
-                ModelingCmdReq {
-                    cmd_id: extrude_cmd_id.into(),
-                    cmd,
-                },
-            );
-            exec_state
-                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), &cmds)
-                .await?;
-            solids.push(
-                do_post_extrude(
-                    &post_extr_sketch,
-                    extrude_cmd_id.into(),
-                    false,
-                    &NamedCapTags {
-                        start: tag_start.as_ref(),
-                        end: tag_end.as_ref(),
-                    },
-                    extrude_method,
-                    exec_state,
-                    &args,
-                    None,
-                    None,
-                    body_type,
-                    being_extruded,
-                )
-                .await?,
-            );
-        } else if is_edge {
-            // Ensure that edges do not use the MERGE method.
-            match extrude_method {
-                ExtrudeMethod::New => {
-                    // This is expected.
-                }
-                ExtrudeMethod::Merge => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Cannot use method MERGE with surface extrude of an edge".to_owned(),
-                        vec![args.source_range],
-                    )));
-                }
-                _ => {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        format!("Unknown extrude method: {extrude_method:?}"),
-                        vec![args.source_range],
-                    )));
-                }
-            }
-
-            // Surface-extrude an edge.
-            exec_state
-                .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
-                .await?;
-            // Extract the edge tag.
-            let edge_tag = match extrudable {
-                Extrudable::Sketch(_) => None,
-                Extrudable::FaceTag(_) => None,
-                Extrudable::Face(_) => None,
-                Extrudable::EdgeTag(tag) => Some(TagDeclarator::new(&tag.value)),
-                Extrudable::Edge(_) => None,
-            };
-            solids.push(after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?);
-        } else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a sketch for extrusion".to_owned(),
-                vec![args.source_range],
-            )));
-        }
+    for surface_id in surface_ids {
+        solids.push(after_surface_creation(surface_id.into(), None, exec_state, &args).await?);
     }
 
     Ok(solids)

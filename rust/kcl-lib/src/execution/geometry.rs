@@ -1073,6 +1073,23 @@ impl From<Sketch> for CurveType {
     }
 }
 
+impl CurveType {
+    /// Get the relevant id.
+    pub async fn operation_id(&self, args: &Args) -> Result<uuid::Uuid, KclError> {
+        match self {
+            CurveType::Sketch(sketch) => Ok(sketch.id),
+            CurveType::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid id to extrude".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            CurveType::Edge(edge) => Ok(*edge),
+        }
+    }
+}
+
 /// A Sketch, Face, TaggedFace, Edge, or EdgeTag.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Extrudable {
