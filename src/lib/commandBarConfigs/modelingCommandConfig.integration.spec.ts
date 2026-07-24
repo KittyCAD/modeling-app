@@ -460,6 +460,31 @@ describe('stdlib command arg derivation', () => {
       })
     ).toBe(false)
   })
+
+  it('uses axis3d inputs for axis arguments that can be default axes or vectors', () => {
+    for (const commandName of [
+      'Rotate',
+      'Pattern Circular 3D',
+      'Pattern Linear 3D',
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      expect(commandConfig.args?.axis).toMatchObject({
+        inputType: 'axis3d',
+        description:
+          'Choose a default axis (`X`, `Y`, or `Z`) or switch to Vector for a custom 3D vector.',
+      })
+      expect(
+        commandConfig.args?.axis?.valueSummary?.({
+          valueCalculated: 'NAN',
+          valueText: 'Y',
+        } as KclCommandValue)
+      ).toBe('Y')
+    }
+  })
 })
 
 describe('modeling command stdlib drift', () => {

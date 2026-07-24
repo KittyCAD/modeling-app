@@ -146,7 +146,7 @@ export function addRotate({
   roll?: KclCommandValue
   pitch?: KclCommandValue
   yaw?: KclCommandValue
-  axis?: string
+  axis?: KclCommandValue | string
   angle?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
@@ -176,7 +176,16 @@ export function addRotate({
     ? [createLabeledArg('pitch', valueOrVariable(pitch))]
     : []
   const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
-  const axisExpr = axis ? [createLabeledArg('axis', createLocalName(axis))] : []
+  const axisExpr = axis
+    ? [
+        createLabeledArg(
+          'axis',
+          typeof axis === 'string'
+            ? createLocalName(axis)
+            : valueOrVariable(axis)
+        ),
+      ]
+    : []
   const angleExpr = angle
     ? [createLabeledArg('angle', valueOrVariable(angle))]
     : []
@@ -208,6 +217,9 @@ export function addRotate({
   }
   if (yaw && 'variableName' in yaw && yaw.variableName) {
     insertVariableAndOffsetPathToNode(yaw, modifiedAst, mNodeToEdit)
+  }
+  if (axis && typeof axis !== 'string' && 'variableName' in axis) {
+    insertVariableAndOffsetPathToNode(axis, modifiedAst, mNodeToEdit)
   }
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)

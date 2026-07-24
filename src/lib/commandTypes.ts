@@ -31,6 +31,7 @@ const _INPUT_TYPES = [
   'selection',
   'selectionMixed',
   'boolean',
+  'axis3d',
   'vector3d',
 ] as const
 type INPUT_TYPE = typeof _INPUT_TYPES
@@ -46,6 +47,7 @@ export interface KclExpressionWithVariable extends KclExpression {
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
+export type Axis3DCommandValue = string | KclCommandValue
 export type CommandInputType = INPUT_TYPE[number]
 type CommandStatus =
   | 'active'
@@ -255,6 +257,31 @@ export type CommandArgumentConfig<
           ) => string)
     }
   | {
+      inputType: 'axis3d'
+      options:
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | ((
+            commandBarContext: {
+              argumentsToSubmit: Record<string, unknown>
+              machineManager?: MachineManager
+            },
+            machineContext?: C
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C,
+            wasmInstance?: ModuleType
+          ) => OutputType)
+      vectorDefaultValue?: string
+      validation?: (props: {
+        data: any
+        context: CommandBarContext
+        machineContext?: C
+      }) => Promise<boolean | string>
+    }
+  | {
       inputType: 'string' | 'color' | 'tagDeclarator'
       defaultValue?:
         | OutputType
@@ -448,6 +475,30 @@ export type CommandArgument<
             machineContext?: ContextFrom<T>,
             wasmInstance?: ModuleType
           ) => string)
+    }
+  | {
+      inputType: 'axis3d'
+      options:
+        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | ((
+            commandBarContext: {
+              argumentsToSubmit: Record<string, unknown>
+            },
+            machineContext?: ContextFrom<T>
+          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
+          ) => OutputType)
+      vectorDefaultValue?: string
+      validation?: (props: {
+        data: any
+        context: CommandBarContext
+        machineContext?: ContextFrom<T>
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'string' | 'color' | 'tagDeclarator'

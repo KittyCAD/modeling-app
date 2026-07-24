@@ -16,6 +16,7 @@ import {
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
+  Axis3DCommandValue,
   CommandArgumentConfig,
   KclCommandValue,
   StateMachineCommandSetConfig,
@@ -66,6 +67,10 @@ type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
 type ExportOptionalArg = 'up' | 'scale'
+type Axis3DCommandArgumentConfig = Extract<
+  CommandArgumentConfig<Axis3DCommandValue, ModelingMachineContext>,
+  { inputType: 'axis3d' }
+>
 
 const exportOptionalArgSupportByType: Partial<
   Record<OutputTypeKey, Partial<Record<ExportOptionalArg, boolean>>>
@@ -321,6 +326,49 @@ export const getDefaultGdtTolerance = (
 
 const summarizeGdtToleranceKclValue = (value: unknown) =>
   isKclCommandValue(value) ? value.valueText : ''
+
+const summarizeAxis3dValue = (value: unknown) =>
+  typeof value === 'string'
+    ? value
+    : isKclCommandValue(value)
+      ? value.valueText
+      : ''
+
+const axis3dDescription =
+  'Choose a default axis (`X`, `Y`, or `Z`) or switch to Vector for a custom 3D vector.'
+
+const axis3dProps = (
+  defaultAxis: typeof KCL_AXIS_X | typeof KCL_AXIS_Y | typeof KCL_AXIS_Z
+) =>
+  ({
+    inputType: 'axis3d',
+    description: axis3dDescription,
+    defaultValue: defaultAxis,
+    vectorDefaultValue:
+      defaultAxis === KCL_AXIS_X
+        ? '[1, 0, 0]'
+        : defaultAxis === KCL_AXIS_Y
+          ? '[0, 1, 0]'
+          : '[0, 0, 1]',
+    options: [
+      {
+        name: 'X-axis',
+        isCurrent: defaultAxis === KCL_AXIS_X,
+        value: KCL_AXIS_X,
+      },
+      {
+        name: 'Y-axis',
+        isCurrent: defaultAxis === KCL_AXIS_Y,
+        value: KCL_AXIS_Y,
+      },
+      {
+        name: 'Z-axis',
+        isCurrent: defaultAxis === KCL_AXIS_Z,
+        value: KCL_AXIS_Z,
+      },
+    ],
+    valueSummary: summarizeAxis3dValue,
+  }) satisfies Omit<Axis3DCommandArgumentConfig, 'required'>
 
 const gdtToleranceProps = {
   inputType: 'kcl',
@@ -1579,15 +1627,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         yaw: {
           defaultValue: KCL_DEFAULT_TRANSFORM,
         },
-        axis: {
-          inputType: 'options',
-          defaultValue: KCL_AXIS_Z,
-          options: [
-            { name: 'X-axis', value: KCL_AXIS_X },
-            { name: 'Y-axis', value: KCL_AXIS_Y },
-            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
-          ],
-        },
+        axis: axis3dProps(KCL_AXIS_Z),
         angle: {
           defaultValue: KCL_DEFAULT_DEGREE,
         },
@@ -1728,15 +1768,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         instances: {
           defaultValue: KCL_DEFAULT_INSTANCES,
         },
-        axis: {
-          inputType: 'options',
-          defaultValue: KCL_AXIS_Z,
-          options: [
-            { name: 'X-axis', value: KCL_AXIS_X },
-            { name: 'Y-axis', value: KCL_AXIS_Y },
-            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
-          ],
-        },
+        axis: axis3dProps(KCL_AXIS_Z),
         center: {
           required: true, // TODO: not true in KCL, we should fix the e2e test to match
           defaultValue: KCL_DEFAULT_ORIGIN,
@@ -1770,15 +1802,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           distance: {
             defaultValue: KCL_DEFAULT_LENGTH,
           },
-          axis: {
-            inputType: 'options',
-            defaultValue: KCL_AXIS_X,
-            options: [
-              { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
-              { name: 'Y-axis', value: KCL_AXIS_Y },
-              { name: 'Z-axis', value: KCL_AXIS_Z },
-            ],
-          },
+          axis: axis3dProps(KCL_AXIS_X),
         },
       }
     ),

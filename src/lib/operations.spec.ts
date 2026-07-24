@@ -790,6 +790,305 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.pitch?.valueText).toBe('20deg')
       expect(argDefaultValues.yaw?.valueText).toBe('30deg')
     })
+
+    it('enters edit flow for rotate with an axis array', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'rotate001 = rotate(extrude001, axis = [0, 0, 1], angle = 30deg, global = true)'
+      const operation = stdlib('rotate')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        axis: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[0, 0, 1]'),
+        },
+        angle: {
+          value: { type: 'Number', value: 30, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '30deg'),
+        },
+        global: {
+          value: { type: 'Bool', value: true },
+          sourceRange: rangeOfText(code, 'true'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: string | { valueText: string }
+        angle?: { valueText: string }
+        global?: boolean
+      }
+      expect(result.data.name).toBe('Rotate')
+      expect(
+        typeof argDefaultValues.axis === 'string'
+          ? argDefaultValues.axis
+          : argDefaultValues.axis?.valueText
+      ).toBe('[0, 0, 1]')
+      expect(argDefaultValues.angle?.valueText).toBe('30deg')
+      expect(argDefaultValues.global).toBe(true)
+    })
+
+    it('enters edit flow for rotate with a named axis as a KCL value', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'rotate001 = rotate(extrude001, axis = Z, angle = 30)'
+      const operation = stdlib('rotate')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        axis: {
+          value: { type: 'Plane', artifact_id: 'z-plane-id' },
+          sourceRange: rangeOfText(code, 'Z'),
+        },
+        angle: {
+          value: { type: 'Number', value: 30, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '30'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: { valueText: string }
+        angle?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Rotate')
+      expect(argDefaultValues.axis?.valueText).toBe('Z')
+      expect(argDefaultValues.angle?.valueText).toBe('30')
+    })
+  })
+
+  describe('Pattern 3D edit flow', () => {
+    it('enters edit flow for patternCircular3d with an axis array', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'pattern001 = patternCircular3d(extrude001, instances = 3, axis = [1,0,0], center = [0,0,0])'
+      const operation = stdlib('patternCircular3d')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        instances: {
+          value: { type: 'Number', value: 3, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '3'),
+        },
+        axis: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[1,0,0]'),
+        },
+        center: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[0,0,0]'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: string | { valueText: string }
+        center?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Pattern Circular 3D')
+      expect(
+        typeof argDefaultValues.axis === 'string'
+          ? argDefaultValues.axis
+          : argDefaultValues.axis?.valueText
+      ).toBe('[1,0,0]')
+      expect(argDefaultValues.center?.valueText).toBe('[0,0,0]')
+    })
+
+    it('enters edit flow for patternLinear3d with an axis array', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0,1,0])'
+      const operation = stdlib('patternLinear3d')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        instances: {
+          value: { type: 'Number', value: 3, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '3'),
+        },
+        distance: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        axis: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[0,1,0]'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: string | { valueText: string }
+        distance?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Pattern Linear 3D')
+      expect(
+        typeof argDefaultValues.axis === 'string'
+          ? argDefaultValues.axis
+          : argDefaultValues.axis?.valueText
+      ).toBe('[0,1,0]')
+      expect(argDefaultValues.distance?.valueText).toBe('10')
+    })
+
+    it('enters edit flow for patternLinear3d with a named axis as a KCL value', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = X)'
+      const operation = stdlib('patternLinear3d')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        instances: {
+          value: { type: 'Number', value: 3, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '3'),
+        },
+        distance: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        axis: {
+          value: { type: 'Plane', artifact_id: 'x-plane-id' },
+          sourceRange: rangeOfText(code, 'X'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: { valueText: string }
+        distance?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Pattern Linear 3D')
+      expect(argDefaultValues.axis?.valueText).toBe('X')
+      expect(argDefaultValues.distance?.valueText).toBe('10')
+    })
   })
 
   describe('GDT edit flow', () => {
