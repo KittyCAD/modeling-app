@@ -1,4 +1,4 @@
-//!
+#![allow(clippy::large_futures)]
 //! Transpiler for converting old sketch syntax to new sketch block syntax.
 
 use std::collections::HashMap;
@@ -222,7 +222,7 @@ pub async fn transpile_old_sketch_to_new_with_execution(
                 ))
             })?
     } else {
-        ctx.run_with_caching(program.clone()).await.map_err(|e| {
+        *ctx.run_with_caching(program.clone()).await.map_err(|e| {
             KclError::new_internal(KclErrorDetails::new(
                 format!("Failed to execute program for transpilation: {:?}", e),
                 vec![],

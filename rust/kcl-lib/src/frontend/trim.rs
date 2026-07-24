@@ -1,3 +1,4 @@
+#![allow(clippy::large_futures)]
 use std::f64::consts::TAU;
 
 use indexmap::IndexSet;

@@ -121,16 +121,19 @@ impl ExecState {
                 ModuleRepr::Root => {
                     module_state.insert(relative_path, self.root_module_artifact_state().clone());
                 }
-                ModuleRepr::Kcl(_, None) => {
-                    module_state.insert(relative_path, Default::default());
+                ModuleRepr::Kcl(_, cache) => {
+                    if let Some(outcome) = cache.as_ref() {
+                        module_state.insert(relative_path, outcome.artifacts.clone());
+                    } else {
+                        module_state.insert(relative_path, Default::default());
+                    }
                 }
-                ModuleRepr::Kcl(_, Some(outcome)) => {
-                    module_state.insert(relative_path, outcome.artifacts.clone());
+                ModuleRepr::Foreign(_, cache) => {
+                    if let Some((_, module_artifacts)) = cache.as_ref() {
+                        module_state.insert(relative_path, module_artifacts.clone());
+                    }
                 }
-                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
-                    module_state.insert(relative_path, module_artifacts.clone());
-                }
-                ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+                ModuleRepr::Dummy => {}
             }
         }
         module_state
