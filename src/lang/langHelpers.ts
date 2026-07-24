@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
@@ -27,15 +26,6 @@ import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
-
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
-
-function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
-  return (
-    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
-    defaultValue
-  )
-}
 
 interface ExecutionResult {
   logs: string[]
@@ -179,13 +169,6 @@ export async function lintAst({
     if (!shouldShowZ0005) {
       discovered_findings = discovered_findings.filter(
         (lint) => lint.finding.code !== 'Z0005'
-      )
-    }
-
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    if (!shouldShowZ0006) {
-      discovered_findings = discovered_findings.filter(
-        (lint) => lint.finding.code !== 'Z0006'
       )
     }
 
