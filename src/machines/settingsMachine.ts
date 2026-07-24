@@ -21,6 +21,7 @@ import type { Project } from '@src/lib/project'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type {
   BaseUnit,
@@ -48,6 +49,7 @@ export type SettingsActorDepsType = {
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
+  projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
   extensionSettings: ResolvedExtensionSettings
   wasmInstancePromise: Promise<ModuleType>
 }
@@ -125,6 +127,7 @@ export const settingsMachine = setup({
       SettingsType,
       {
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
         wasmInstancePromise: Promise<ModuleType>
       }
@@ -133,6 +136,8 @@ export const settingsMachine = setup({
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies:
+            input.projectLibrarySettingDefaultPolicies,
           extensionSettings: input.extensionSettings,
         }
       )
@@ -142,6 +147,7 @@ export const settingsMachine = setup({
       SettingsType,
       {
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
         project: Project
         settings: SettingsType
@@ -152,6 +158,8 @@ export const settingsMachine = setup({
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies:
+            input.projectLibrarySettingDefaultPolicies,
           extensionSettings: input.extensionSettings,
           projectPath: input.project.path,
         }
@@ -163,6 +171,7 @@ export const settingsMachine = setup({
       {
         currentProject?: Project
         defaultProjectLibraries: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
         wasmInstancePromise: Promise<ModuleType>
       }
@@ -171,6 +180,8 @@ export const settingsMachine = setup({
         input.wasmInstancePromise,
         {
           defaultProjectLibraries: input.defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies:
+            input.projectLibrarySettingDefaultPolicies,
           extensionSettings: input.extensionSettings,
           projectPath: input.currentProject?.path,
         }
@@ -577,6 +588,8 @@ export const settingsMachine = setup({
         input: ({ context }) => ({
           currentProject: context.currentProject,
           defaultProjectLibraries: context.defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies:
+            context.projectLibrarySettingDefaultPolicies,
           extensionSettings: context.extensionSettings,
           wasmInstancePromise: context.wasmInstancePromise,
         }),
@@ -627,6 +640,8 @@ export const settingsMachine = setup({
         src: 'loadUserSettings',
         input: ({ context }) => ({
           defaultProjectLibraries: context.defaultProjectLibraries,
+          projectLibrarySettingDefaultPolicies:
+            context.projectLibrarySettingDefaultPolicies,
           extensionSettings: context.extensionSettings,
           wasmInstancePromise: context.wasmInstancePromise,
         }),
@@ -677,6 +692,8 @@ export const settingsMachine = setup({
           assertEvent(event, 'load.project')
           return {
             defaultProjectLibraries: context.defaultProjectLibraries,
+            projectLibrarySettingDefaultPolicies:
+              context.projectLibrarySettingDefaultPolicies,
             extensionSettings: context.extensionSettings,
             settings: getOnlySettingsFromContext(context),
             project: event.project,
@@ -695,6 +712,7 @@ export function getOnlySettingsFromContext(
     currentProject: _c,
     commandBarActor: _cba,
     defaultProjectLibraries: _defaultProjectLibraries,
+    projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
     extensionSettings: _extensionSettings,
     wasmInstancePromise: _w,
     ...settings

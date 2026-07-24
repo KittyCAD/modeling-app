@@ -38,7 +38,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   const applyRuntimePolicy = () => {
     const currentSettings = settings.value?.current.value
     const cloudSyncPluginEnabled =
-      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current !== false
+      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
     const nextConfig = {
       ...runtimeConfig.value,
       enabled: runtimeConfig.value.enabled && cloudSyncPluginEnabled,
