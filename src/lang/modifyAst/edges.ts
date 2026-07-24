@@ -1720,10 +1720,9 @@ export function findExtrudeEdgeCallsToFix(
             expr &&
             artifactGraph &&
             wasmInstance &&
-            // A sketch segment is already a stable direction. Only generated
-            // solid-edge tags need converting to a face API selector here.
-            (argument !== 'direction' ||
-              getTagInfoFromExpr(expr)?.tagsBaseExpr != null)
+            // A sketch segment is already a stable target or direction. Only
+            // generated solid-edge tags need converting to a face API selector.
+            getTagInfoFromExpr(expr)?.tagsBaseExpr != null
           ) {
             const payload = directSketchSegmentEdgePayload(
               program,
