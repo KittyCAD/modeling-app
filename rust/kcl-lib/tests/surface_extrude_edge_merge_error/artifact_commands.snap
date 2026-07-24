@@ -267,6 +267,15 @@ description: Artifact commands surface_extrude_edge_merge_error.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ]
 }

@@ -9,6 +9,7 @@ import {
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -19,10 +20,10 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import RustContext from '@src/lib/rustContext'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -60,8 +61,17 @@ import {
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -160,6 +170,8 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public currentProjectLibraryIdSignal: Signal<string | undefined> =
+    signal(undefined)
   public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
@@ -276,18 +288,13 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
-    const settingsActor = settings.actor
     const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
     const engineCommandManager = appRegistry.get(
       engineConnectionService
     ).manager
-    const rustContext = new RustContext(
-      wasmPromise,
-      engineCommandManager,
-      settingsActor
-    )
+    const rustContext = appRegistry.get(rustContextService).context
 
     return {
       wasmPromise,
@@ -477,6 +484,18 @@ export class App implements AppSubsystems {
     setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
   }
 
+  getCreateProjectLibraryTargets = () => {
+    const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
+    return this.registry.get(projectLibrariesValueSpec).flatMap((library) => {
+      const createProject = getProjectLibraryCreateProjectOperation(
+        libraryTypes.get(library.type),
+        library
+      )
+
+      return createProject ? [{ library, createProject }] : []
+    })
+  }
+
   syncAppCommands = () => {
     const enableProjectDirectoryCommands =
       typeof window !== 'undefined' &&
@@ -499,6 +518,13 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectLibraryId: () =>
+              this.currentProjectLibraryIdSignal.value,
+            getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getHomeProjectActions: () =>
+              this.registry.get(homeProjectActionsService),
+            getHomeProjectEntries: () =>
+              this.registry.get(homeProjectEntriesValueSpec),
           }).map(provideCommand),
         ],
       }),

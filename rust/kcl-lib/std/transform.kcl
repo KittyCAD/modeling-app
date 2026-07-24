@@ -211,8 +211,9 @@ export fn mirror2d(
 export fn mirror3d(
   /// The body or bodies to be reflected.
   @bodies: [Solid; 1+],
-  /// The axis (or other geometry) to reflect across.
-  across: Edge | Plane | Axis3d | Segment,
+  /// The axis (or other geometry) to reflect across. An edge specifier object such as
+  /// `{ sideFaces = [faceTag1, faceTag2] }` can identify a solid edge without using its UUID.
+  across: Edge | Plane | Axis3d | Segment | any,
 ): [Solid; 1+] {}
 
 /// Move a solid or a sketch.

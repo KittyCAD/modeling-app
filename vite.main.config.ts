@@ -1,8 +1,7 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
-import vitePluginEslint from '@nabla/vite-plugin-eslint'
 import viteJsPluginReact from '@vitejs/plugin-react'
-import type { ConfigEnv, UserConfig as ViteUserConfig } from 'vite'
+import type { ConfigEnv, UserConfig } from 'vite'
 import { mergeConfig } from 'vite'
 import vitePluginPackageVersion from 'vite-plugin-package-version'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
@@ -87,7 +86,6 @@ export default defineConfig((env) => {
         },
       }),
       viteTsconfigPaths(),
-      vitePluginEslint(),
       vitePluginPackageVersion(),
       lezer(),
     ],
