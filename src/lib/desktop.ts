@@ -14,6 +14,7 @@ import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFo
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_KCL_VERSION,
   ENVIRONMENT_CONFIGURATION_FOLDER,
   ENVIRONMENT_FILE_NAME,
   PROJECT_ENTRYPOINT,
@@ -139,10 +140,12 @@ async function ensureProjectTomlTitle({
   projectPath,
   title,
   defaultFile,
+  kclVersion,
 }: {
   projectPath: string
   title: string
   defaultFile: string
+  kclVersion?: string
 }) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
@@ -165,10 +168,22 @@ async function ensureProjectTomlTitle({
     : `default_file = ${JSON.stringify(defaultFile.replaceAll('\\', '/'))}\n${
         projectToml.trim() ? `\n${projectToml}` : ''
       }`
-  const nextProjectToml = setProjectTitleInProjectTomlContents(
+  let nextProjectToml = setProjectTitleInProjectTomlContents(
     projectTomlWithDefaultFile,
     title
   )
+  if (kclVersion && !/^\s*kcl_version\s*=/m.test(nextProjectToml)) {
+    if (/\[settings\.modeling\]/.test(nextProjectToml)) {
+      nextProjectToml = nextProjectToml.replace(
+        /\[settings\.modeling\]/,
+        `[settings.modeling]\nkcl_version = ${JSON.stringify(kclVersion)}`
+      )
+    } else {
+      nextProjectToml = `${nextProjectToml.trimEnd()}\n\n[settings.modeling]\nkcl_version = ${JSON.stringify(
+        kclVersion
+      )}\n`
+    }
+  }
   await fsZds.writeFile(
     projectTomlPath,
     new TextEncoder().encode(nextProjectToml)
@@ -303,6 +318,7 @@ export async function createNewProjectDirectory(
     projectPath: projectDir,
     title: projectTitle,
     defaultFile: kclFileName,
+    kclVersion: initialCode ? undefined : DEFAULT_KCL_VERSION,
   })
   let metadata: FileMetadata | null = null
   try {

@@ -4,6 +4,8 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import type { Feature } from '@kittycad/lib'
 import {
+  kclSettings,
+  changeKclVersion,
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
@@ -12,12 +14,18 @@ import {
   mouseControlsToCameraSystem,
 } from '@src/lib/cameraControls'
 import {
+  LEGACY_KCL_VERSION,
+  PROJECT_ENTRYPOINT,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import {
   getInitialDefaultDir,
   overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
 } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
   LayoutWithMetadata,
@@ -46,7 +54,7 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import { appThemeToTheme } from '@src/lib/theme'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -57,6 +65,7 @@ import { NIL as uuidNIL, v4 } from 'uuid'
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
   id: 'ID',
+  kcl: 'KCL',
   ui: 'UI',
   url: 'URL',
 }
@@ -807,6 +816,7 @@ export function projectConfigurationToSettingsPayload(
       },
       modeling: {
         defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
+        kclVersion: configuration?.settings?.modeling?.kcl_version ?? undefined,
         highlightEdges: configuration?.settings?.modeling?.highlight_edges,
         enableSSAO: configuration?.settings?.modeling?.enable_ssao,
         fixedSizeGrid: toUndefinedIfNull(
@@ -845,6 +855,7 @@ export function settingsPayloadToProjectConfiguration(
 
   const typedModelingSection = compactRecord({
     base_unit: configuration?.modeling?.defaultUnit,
+    kcl_version: configuration?.modeling?.kclVersion,
     highlight_edges: configuration?.modeling?.highlightEdges,
     enable_ssao: configuration?.modeling?.enableSSAO,
     fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
@@ -940,6 +951,101 @@ function setProjectConfigurationId(
   })
 }
 
+function setProjectConfigurationKclVersion(
+  projectConfiguration: DeepPartial<ProjectConfiguration>,
+  kclVersion: string
+): DeepPartial<ProjectConfiguration> {
+  return mergeProjectConfiguration(projectConfiguration, {
+    settings: {
+      modeling: {
+        kcl_version: kclVersion,
+      },
+    },
+  })
+}
+
+async function resolveProjectEntrypointPath(
+  projectPath: string
+): Promise<string> {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  try {
+    const projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+    const defaultFileMatch = projectToml.match(
+      /^\s*default_file\s*=\s*(".*?")/m
+    )
+    if (defaultFileMatch) {
+      const defaultFile = JSON.parse(defaultFileMatch[1]) as string
+      if (defaultFile) {
+        return fsZds.join(projectPath, defaultFile)
+      }
+    }
+  } catch {
+    // Fall through to the default project entrypoint.
+  }
+  return fsZds.join(projectPath, PROJECT_ENTRYPOINT)
+}
+
+async function readKclVersionFromEntrypoint(
+  projectPath: string,
+  wasmInstance: ModuleType
+): Promise<string | undefined> {
+  const entrypointPath = await resolveProjectEntrypointPath(projectPath)
+  try {
+    const code = await fsZds.readFile(entrypointPath, { encoding: 'utf-8' })
+    const settings = kclSettings(code, wasmInstance)
+    if (isErr(settings) || !settings) {
+      return undefined
+    }
+    const version = settings.kclVersion
+    if (typeof version === 'string' && version.length > 0) {
+      return version
+    }
+  } catch {
+    // Fall through to no entrypoint-defined version.
+  }
+  return undefined
+}
+
+/**
+ * Keep the entrypoint file's `@settings(kclVersion)` in sync with the project
+ * setting. Only updates when the entrypoint already declares a version, and
+ * only writes when the file content would change.
+ */
+export async function syncKclVersionToEntrypoint(
+  projectPath: string,
+  kclVersion: string,
+  wasmInstance: ModuleType
+): Promise<void> {
+  const entrypointPath = await resolveProjectEntrypointPath(projectPath)
+  let code = ''
+  try {
+    code = await fsZds.readFile(entrypointPath, { encoding: 'utf-8' })
+  } catch {
+    // Missing entrypoint so there is nothing to sync.
+    return
+  }
+
+  const settings = kclSettings(code, wasmInstance)
+  const existingVersion =
+    !isErr(settings) && settings && typeof settings.kclVersion === 'string'
+      ? settings.kclVersion
+      : undefined
+  if (!existingVersion) {
+    // Do not introduce `@settings(kclVersion)` if the file does not already
+    // have one; project.toml is the source of truth in that case.
+    return
+  }
+
+  const updated = changeKclVersion(code, kclVersion, wasmInstance)
+  if (isErr(updated) || updated === code) {
+    return
+  }
+
+  await fsZds.writeFile(entrypointPath, new TextEncoder().encode(updated))
+}
+
 export interface AppSettings {
   settings: SettingsType
   configuration: DeepPartial<Configuration>
@@ -1016,11 +1122,29 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
     }
 
+    let projectSettingsDirty = false
     if (
       !projectSettings.settings?.meta?.id ||
       projectSettings.settings.meta.id === uuidNIL
     ) {
       projectSettings = setProjectConfigurationId(projectSettings, v4())
+      projectSettingsDirty = true
+    }
+
+    // Migrate project-level KCL version from main.kcl (or assume legacy 1.0).
+    let projectKclVersion = projectSettings.settings?.modeling?.kcl_version
+    if (!projectKclVersion) {
+      projectKclVersion =
+        (await readKclVersionFromEntrypoint(projectPath, wasmInstance)) ??
+        LEGACY_KCL_VERSION
+      projectSettings = setProjectConfigurationKclVersion(
+        projectSettings,
+        projectKclVersion
+      )
+      projectSettingsDirty = true
+    }
+
+    if (projectSettingsDirty) {
       const projectTomlString = serializeProjectConfiguration(
         projectSettings,
         wasmInstance
@@ -1030,9 +1154,15 @@ export async function loadAndValidateSettings(
           new Error('Could not serialize project configuration')
         )
       }
-
       await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
     }
+
+    // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
+    await syncKclVersionToEntrypoint(
+      projectPath,
+      projectKclVersion,
+      wasmInstance
+    )
 
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
@@ -1168,6 +1298,16 @@ export async function saveSettings(
 
   // Write the project settings.
   await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
+
+  // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
+  const projectKclVersion = allSettings.modeling.kclVersion.current
+  if (projectKclVersion) {
+    await syncKclVersionToEntrypoint(
+      projectPath,
+      projectKclVersion,
+      wasmInstance
+    )
+  }
 }
 
 export function getChangedSettingsAtLevel(
