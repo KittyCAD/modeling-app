@@ -270,6 +270,14 @@ pub struct ExistingSegmentCtor {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ConstraintLabelPositionEdit {
+    pub constraint_id: ObjectId,
+    pub label_position: Point2d<Number>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
 pub enum SegmentCtor {
     Point(PointCtor),

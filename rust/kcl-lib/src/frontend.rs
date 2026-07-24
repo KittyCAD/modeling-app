@@ -71,6 +71,7 @@ use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
 use crate::frontend::sketch::Coincident;
 use crate::frontend::sketch::Constraint;
+use crate::frontend::sketch::ConstraintLabelPositionEdit;
 use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
@@ -236,6 +237,9 @@ pub struct EditSegmentsOptions {
     /// Hidden fixed cursor points that the referenced segment bodies must pass
     /// through during solve.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// Constraint label positions to write in the same AST transaction as the
+    /// segment edits. Label positions do not participate in solving.
+    pub constraint_label_edits: Vec<ConstraintLabelPositionEdit>,
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -261,6 +265,8 @@ pub struct FrontendState {
     /// One-shot segment-body drag anchors for the next segment edit. These add
     /// a temporary solver point on the dragged segment that follows the cursor.
     next_segment_drag_anchors: Option<Vec<SegmentDragAnchor>>,
+    /// One-shot constraint label edits to apply with the next segment edit.
+    next_constraint_label_edits: Option<Vec<ConstraintLabelPositionEdit>>,
     /// One-shot override for whether the next edit commits solver-updated
     /// initial guesses back into KCL. Drag previews keep this off so only the
     /// explicit drag edit feeds the next solve.
@@ -290,6 +296,7 @@ impl FrontendState {
             point_freedom_cache: HashMap::new(),
             next_drag_anchor_segment_ids: None,
             next_segment_drag_anchors: None,
+            next_constraint_label_edits: None,
             next_edit_commits_solver_solutions: None,
             sketch_checkpoints: VecDeque::new(),
             sketch_checkpoint_id_gen: IncIdGenerator::new(1),
@@ -353,6 +360,7 @@ impl FrontendState {
                 .replace(anchor_ids.into_iter().collect())
         });
         let previous_drag_anchors = self.next_segment_drag_anchors.replace(options.drag_anchors);
+        let previous_constraint_label_edits = self.next_constraint_label_edits.replace(options.constraint_label_edits);
         let previous_commit_mode = self
             .next_edit_commits_solver_solutions
             .replace(options.commit_solved_initial_guesses);
@@ -361,6 +369,7 @@ impl FrontendState {
             self.next_drag_anchor_segment_ids = previous_anchor_ids;
         }
         self.next_segment_drag_anchors = previous_drag_anchors;
+        self.next_constraint_label_edits = previous_constraint_label_edits;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
         result
     }
@@ -414,6 +423,7 @@ impl FrontendState {
         self.point_freedom_cache = checkpoint.point_freedom_cache;
         self.next_drag_anchor_segment_ids = None;
         self.next_segment_drag_anchors = None;
+        self.next_constraint_label_edits = None;
         self.next_edit_commits_solver_solutions = None;
 
         if let Some(mock_memory) = checkpoint.mock_memory {
@@ -842,6 +852,7 @@ impl SketchApi for FrontendState {
             .next_drag_anchor_segment_ids
             .take()
             .unwrap_or_else(|| edited_segment_ids.clone());
+        let constraint_label_edits = self.next_constraint_label_edits.take().unwrap_or_default();
         let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         // Preprocess segments into a final_edits vector to handle if segments contains:
@@ -1037,6 +1048,10 @@ impl SketchApi for FrontendState {
                     .edit_control_point_spline(&mut new_ast, sketch, segment_id, ctor)
                     .map_err(KclErrorWithOutputs::no_outputs)?,
             }
+        }
+        for edit in constraint_label_edits {
+            self.mutate_constraint_label_position(&mut new_ast, edit.constraint_id, edit.label_position)
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
         let (source_delta, mut scene_graph_delta) = self
             .execute_after_edit(
@@ -1524,36 +1539,9 @@ impl SketchApi for FrontendState {
         let sketch_block_ref =
             sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
 
-        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
-        })?;
-        if !matches!(
-            &object.kind,
-            ObjectKind::Constraint {
-                constraint: Constraint::Distance(_)
-                    | Constraint::HorizontalDistance(_)
-                    | Constraint::VerticalDistance(_)
-                    | Constraint::Radius(_)
-                    | Constraint::Diameter(_),
-            }
-        ) {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object does not support labelPosition: {constraint_id:?}"
-            ))));
-        }
-
-        let label_position = to_ast_point2d_number(&label_position).map_err(|err| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Could not convert label position to AST: {err}"
-            )))
-        })?;
         let mut new_ast = self.program.ast.clone();
-        self.mutate_ast(
-            &mut new_ast,
-            constraint_id,
-            AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
-        )
-        .map_err(KclErrorWithOutputs::no_outputs)?;
+        self.mutate_constraint_label_position(&mut new_ast, constraint_id, label_position)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
 
         self.execute_after_edit(
@@ -4942,6 +4930,42 @@ impl FrontendState {
             .get(object_id.0)
             .ok_or_else(|| KclError::refactor(format!("Object not found: {object_id:?}")))?;
         mutate_ast_node_by_source_ref(ast, &sketch_object.source, command)
+    }
+
+    fn mutate_constraint_label_position(
+        &mut self,
+        ast: &mut ast::Node<ast::Program>,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+    ) -> Result<(), KclError> {
+        let object = self
+            .scene_graph
+            .objects
+            .get(constraint_id.0)
+            .ok_or_else(|| KclError::refactor(format!("Object not found: {constraint_id:?}")))?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Distance(_)
+                    | Constraint::HorizontalDistance(_)
+                    | Constraint::VerticalDistance(_)
+                    | Constraint::Radius(_)
+                    | Constraint::Diameter(_),
+            }
+        ) {
+            return Err(KclError::refactor(format!(
+                "Object does not support labelPosition: {constraint_id:?}"
+            )));
+        }
+
+        let label_position = to_ast_point2d_number(&label_position)
+            .map_err(|err| KclError::refactor(format!("Could not convert label position to AST: {err}")))?;
+        self.mutate_ast(
+            ast,
+            constraint_id,
+            AstMutateCommand::EditDistanceConstraintLabelPosition { label_position },
+        )?;
+        Ok(())
     }
 }
 
@@ -8839,6 +8863,7 @@ sketch(on = XY) {
                 EditSegmentsOptions {
                     anchor_segment_ids: Some(vec![line2_end_id]),
                     drag_anchors: Vec::new(),
+                    constraint_label_edits: Vec::new(),
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -8993,6 +9018,7 @@ sketch(on = XY) {
                 EditSegmentsOptions {
                     anchor_segment_ids: Some(vec![point1_id]),
                     drag_anchors: Vec::new(),
+                    constraint_label_edits: Vec::new(),
                     commit_solved_initial_guesses: true,
                 },
             )
@@ -10757,6 +10783,146 @@ sketch(on = XY) {
             panic!("Expected distance constraint");
         };
         assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_segments_can_commit_constraint_label_position_in_same_execution() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 12.55mm], end = [var -6.03mm, var 8.51mm])
+  line3 = line(start = [var -7.41mm, var 2.92mm], end = [var -1.47mm, var 4.32mm])
+  distance([line1.start, line3.end], labelPosition = [5.56mm, 8.65mm]) == 8.36mm
+  vertical([line1.start, ORIGIN])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch
+            .constraints
+            .iter()
+            .copied()
+            .find(|constraint_id| {
+                matches!(
+                    frontend.scene_graph.objects[constraint_id.0].kind,
+                    ObjectKind::Constraint {
+                        constraint: Constraint::Distance(_)
+                    }
+                )
+            })
+            .unwrap();
+        let line1_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|segment_id| {
+                matches!(
+                    frontend.scene_graph.objects[segment_id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .unwrap();
+        let label_position = Point2d {
+            x: Number {
+                value: 7.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 9.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (source_delta, scene_delta) = frontend
+            .edit_segments_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: line1_id,
+                    ctor: SegmentCtor::Line(LineCtor {
+                        start: point_expr_mm(2.0, 15.55),
+                        end: point_expr_mm(-4.03, 11.51),
+                        construction: None,
+                    }),
+                }],
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![]),
+                    drag_anchors: vec![SegmentDragAnchor {
+                        segment_id: line1_id,
+                        target: label_position.clone(),
+                    }],
+                    constraint_label_edits: vec![ConstraintLabelPositionEdit {
+                        constraint_id,
+                        label_position: label_position.clone(),
+                    }],
+                    commit_solved_initial_guesses: true,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert!(source_delta.text.contains("labelPosition = [7mm, 9mm]"));
+        let constraint_object = &scene_delta.new_graph.objects[constraint_id.0];
+        let ObjectKind::Constraint {
+            constraint: Constraint::Distance(distance),
+        } = &constraint_object.kind
+        else {
+            panic!("Expected distance constraint object");
+        };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        let snapped_label_position = Point2d {
+            x: Number {
+                value: 8.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+        let (source_delta, scene_delta) = frontend
+            .edit_segments_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![],
+                EditSegmentsOptions {
+                    anchor_segment_ids: Some(vec![line1_id]),
+                    drag_anchors: vec![],
+                    constraint_label_edits: vec![ConstraintLabelPositionEdit {
+                        constraint_id,
+                        label_position: snapped_label_position.clone(),
+                    }],
+                    commit_solved_initial_guesses: true,
+                },
+            )
+            .await
+            .unwrap();
+
+        assert!(source_delta.text.contains("labelPosition = [8mm, 10mm]"));
+        let constraint_object = &scene_delta.new_graph.objects[constraint_id.0];
+        let ObjectKind::Constraint {
+            constraint: Constraint::Distance(distance),
+        } = &constraint_object.kind
+        else {
+            panic!("Expected distance constraint object");
+        };
+        assert_eq!(distance.label_position, Some(snapped_label_position));
 
         mock_ctx.close().await;
     }
