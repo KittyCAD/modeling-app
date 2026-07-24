@@ -25,6 +25,7 @@ use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::token::NumericSuffix;
 
@@ -1121,7 +1122,10 @@ impl TyData {
                 impl_kind: annotations::Impl::Kcl,
                 doc_category: None,
             },
-            alias: ty.alias.as_ref().map(|t| t.to_string()),
+            alias: match &ty.definition {
+                TypeDeclarationDefinition::Alias { ty } => Some(ty.to_string()),
+                TypeDeclarationDefinition::Bare | TypeDeclarationDefinition::Enum(_) => None,
+            },
             summary: None,
             description: None,
             examples: Vec::new(),

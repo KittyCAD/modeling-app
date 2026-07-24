@@ -12,6 +12,8 @@ use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::EnumDeclaration;
+use crate::parsing::ast::types::EnumVariant;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ExpressionStatement;
 use crate::parsing::ast::types::FunctionExpression;
@@ -43,6 +45,7 @@ use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
@@ -398,9 +401,31 @@ impl Node<TypeDeclaration> {
                 hasher.update(a.compute_digest());
             }
         }
-        if let Some(alias) = &mut slf.alias {
-            hasher.update(alias.compute_digest());
+        match &mut slf.definition {
+            TypeDeclarationDefinition::Bare => {}
+            TypeDeclarationDefinition::Alias { ty } => {
+                hasher.update(ty.compute_digest());
+            }
+            TypeDeclarationDefinition::Enum(e) => {
+                hasher.update(b"TypeDeclarationDefinition::Enum");
+                hasher.update(e.compute_digest());
+            }
         }
+    });
+}
+
+impl EnumDeclaration {
+    compute_digest_no_attrs!(|slf, hasher| {
+        hasher.update(slf.variants.len().to_ne_bytes());
+        for variant in &mut slf.variants {
+            hasher.update(variant.compute_digest());
+        }
+    });
+}
+
+impl Node<EnumVariant> {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.name.compute_digest());
     });
 }
 
