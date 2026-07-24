@@ -1535,7 +1535,6 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
-          let appliedConstraintLabelEdits: ConstraintLabelPositionEdit[] = []
           const movedConstraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
               objectsBeforeDrag: objects,
@@ -1554,13 +1553,12 @@ export function createOnDragCallback({
               result,
               labelEdits: constraintLabelEdits,
             })
-            appliedConstraintLabelEdits = constraintLabelEdits
           }
 
           setLastGoodPreview({
             ...result,
             segmentsToEdit,
-            constraintLabelEdits: appliedConstraintLabelEdits,
+            constraintLabelEdits,
             dragAnchorSegmentIds,
             dragAnchors,
           })
