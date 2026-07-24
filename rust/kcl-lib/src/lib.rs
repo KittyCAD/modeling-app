@@ -360,6 +360,10 @@ impl Program {
         self.ast.lint_all()
     }
 
+    pub fn lint_all_with_options(&self, options: lint::LintOptions) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint_all_with_options(options)
+    }
+
     pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint(rule)
     }
