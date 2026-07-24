@@ -146,6 +146,36 @@ describe('systemIO operation queue', () => {
     await expect(firstOperation.result).resolves.toBe('projects')
   })
 
+  it('runs the newest handler when coalescing into a queued operation', async () => {
+    const queue = createTestQueue()
+    const firstHandler = vi.fn(() => Promise.resolve('first'))
+    const secondHandler = vi.fn(() => Promise.resolve('second'))
+    const makeRequest = (value: number) => ({
+      request: {
+        type: 'test.refresh',
+        input: { value },
+      },
+      resourceKey: 'project:/example',
+      coalesceKey: 'test.refresh:/example',
+    })
+
+    const firstOperation = queue.enqueue(makeRequest(1), firstHandler)
+    const secondOperation = queue.enqueue(makeRequest(2), secondHandler)
+
+    // Both callers share the single coalesced operation, which adopts the
+    // newest request payload.
+    expect(secondOperation).toBe(firstOperation)
+    expect(firstOperation.request).toMatchObject({ input: { value: 2 } })
+
+    await flushPromises()
+
+    // The freshest handler runs; the one enqueued first is discarded rather
+    // than silently winning.
+    expect(firstHandler).not.toHaveBeenCalled()
+    expect(secondHandler).toHaveBeenCalledTimes(1)
+    await expect(firstOperation.result).resolves.toBe('second')
+  })
+
   it('does not coalesce into an already running operation', async () => {
     const queue = createTestQueue()
     const first = deferred<string>()

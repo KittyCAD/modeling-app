@@ -39,6 +39,15 @@ export type SystemIOQueueRequest<
   readonly coalesceKey?: string
 }
 
+type CoalesceEntry<TRequest extends SystemIORequestBase> = {
+  readonly operation: SystemIOOperation<unknown, TRequest>
+  readonly status: ReadonlySignal<SystemIOOperationStatus>
+  readonly replacePending: (
+    request: TRequest,
+    handler: SystemIOOperationHandler<unknown>
+  ) => void
+}
+
 const DEFAULT_RESOURCE_KEY = 'system-io.default'
 
 export function createSystemIOAbortError() {
@@ -56,10 +65,7 @@ export function createSystemIOOperationQueue<
   const createId = options.createId ?? (() => crypto.randomUUID())
   const now = options.now ?? (() => Date.now())
   const resourceTails = new Map<string, Promise<void>>()
-  const coalescedOperations = new Map<
-    string,
-    SystemIOOperation<unknown, TRequest>
-  >()
+  const coalescedOperations = new Map<string, CoalesceEntry<TRequest>>()
 
   return {
     operations,
@@ -76,11 +82,22 @@ export function createSystemIOOperationQueue<
         // triggered this request (e.g. a filesystem mutation), so it must run
         // as a fresh operation rather than reuse the in-flight result.
         if (existing && existing.status.value === 'queued') {
-          return existing as SystemIOOperation<TResult, TRequest>
+          // Adopt the newest request/handler so the freshest intent runs when
+          // the still-queued operation starts, rather than silently discarding
+          // this caller's work in favor of whatever enqueued first.
+          existing.replacePending(
+            request,
+            handler as SystemIOOperationHandler<unknown>
+          )
+          return existing.operation as SystemIOOperation<TResult, TRequest>
         }
       }
 
       const id = createId()
+      // Track request/handler mutably so a later coalesced request can replace
+      // a still-queued operation's work with the newest intent.
+      let activeRequest = request
+      let activeHandler: SystemIOOperationHandler<TResult> = handler
       const queueResourceKey = resourceKey ?? DEFAULT_RESOURCE_KEY
       const status = signal<SystemIOOperationStatus>('queued')
       const abortController = new AbortController()
@@ -110,7 +127,10 @@ export function createSystemIOOperationQueue<
       }
 
       const clearCoalescedOperation = () => {
-        if (coalesceKey && coalescedOperations.get(coalesceKey) === operation) {
+        if (
+          coalesceKey &&
+          coalescedOperations.get(coalesceKey)?.operation === operation
+        ) {
           coalescedOperations.delete(coalesceKey)
         }
       }
@@ -174,7 +194,9 @@ export function createSystemIOOperationQueue<
 
       const operation: SystemIOOperation<TResult, TRequest> = {
         id,
-        request,
+        get request() {
+          return activeRequest
+        },
         status,
         result,
         cancel,
@@ -191,7 +213,15 @@ export function createSystemIOOperationQueue<
       ]
 
       if (coalesceKey) {
-        coalescedOperations.set(coalesceKey, operation)
+        coalescedOperations.set(coalesceKey, {
+          operation,
+          status,
+          replacePending: (nextRequest, nextHandler) => {
+            activeRequest = nextRequest
+            activeHandler = nextHandler as SystemIOOperationHandler<TResult>
+            updateSnapshot({ request: activeRequest })
+          },
+        })
       }
 
       const previousTail =
@@ -210,7 +240,7 @@ export function createSystemIOOperationQueue<
           })
 
           try {
-            const value = await handler({
+            const value = await activeHandler({
               signal: abortController.signal,
             })
             if (cancelled || abortController.signal.aborted) {
