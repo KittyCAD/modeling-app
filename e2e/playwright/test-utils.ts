@@ -8,6 +8,7 @@ import type { Configuration } from '@src/lang/wasm'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  OPFS_CLOUD_FEATURE_FLAG,
   SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
@@ -34,7 +35,13 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import {
+  PLAYWRIGHT_PROJECT_DIRECTORY,
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+  playwrightPluginSettings,
+  playwrightProjectLibraries,
+} from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
@@ -975,19 +982,21 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          plugins: playwrightPluginSettings({
+            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+          }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
+            libraries: playwrightProjectLibraries(),
             onboarding_status: 'dismissed',
           },
           project: {
             ...testProjectSettings,
-            ...(typeof testProjectSettings?.directory === 'string'
-              ? { directory: testProjectSettings.directory }
-              : {}),
+            directory: PLAYWRIGHT_PROJECT_DIRECTORY,
           },
         },
       }),

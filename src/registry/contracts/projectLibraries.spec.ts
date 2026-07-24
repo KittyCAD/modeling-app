@@ -1,12 +1,17 @@
 import {
+  combineProjectLibrarySettingDefaultPolicies,
   combineProjectLibrarySettingDefaults,
   combineProjectLibraryTypes,
   combineProjectLibraries,
   getHomeProjectEntriesForLibrary,
   getProjectLibraryOperation,
+  resolveProjectLibrarySettingDefaults,
 } from '@src/registry/contracts/projectLibraries'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
   areProjectLibrarySettingsEqual,
   getContainingDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
@@ -51,6 +56,18 @@ describe('project library settings', () => {
     ).toEqual(
       expect.objectContaining({
         id: DEFAULT_PROJECT_LIBRARY_ID,
+      })
+    )
+  })
+
+  test('maps the default cloud library to the stable cloud library id', () => {
+    expect(
+      projectLibraryFromSetting(getDefaultCloudProjectLibrarySetting())
+    ).toEqual(
+      expect.objectContaining({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
       })
     )
   })
@@ -285,6 +302,51 @@ describe('combineProjectLibraries', () => {
         id: 'external',
         title: 'External Projects',
       }),
+    ])
+  })
+})
+
+describe('project library default policies', () => {
+  test('resolves the highest-priority default library policy', () => {
+    const directoryPolicy = {
+      id: 'directory',
+      priority: 0,
+      getDefaultLibraries: () => [
+        {
+          title: 'Projects',
+          path: '/projects',
+          type: 'directory',
+        },
+      ],
+    }
+    const cloudPolicy = {
+      id: 'cloud',
+      priority: 10,
+      getDefaultLibraries: () => [
+        {
+          title: 'Personal Cloud',
+          path: '/personal',
+          type: 'cloud',
+        },
+      ],
+    }
+
+    const policies = combineProjectLibrarySettingDefaultPolicies([
+      directoryPolicy,
+      cloudPolicy,
+    ])
+
+    expect(
+      resolveProjectLibrarySettingDefaults(policies, {
+        initialDefaultDir: '/projects',
+        isDesktop: false,
+      })
+    ).toEqual([
+      {
+        title: 'Personal Cloud',
+        path: '/personal',
+        type: 'cloud',
+      },
     ])
   })
 })

@@ -7,6 +7,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
 import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -128,7 +129,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
       }
 
       const localCloudProject = await ensureCloudProjectLocallySynced(
-        projectId
+        projectId,
+        await getDefaultCloudProjectDirectoryPath()
       ).catch(() => undefined)
       if (cancelled) {
         return

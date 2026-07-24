@@ -6,8 +6,12 @@ import {
   defineRegistryItem,
   provide,
 } from '@kittycad/registry'
+import type { Feature } from '@kittycad/lib'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type {
+  HideOnPlatformValue,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 type ZdsPluginDefault = 'core' | 'off'
@@ -29,6 +33,20 @@ type ZdsPluginActivationSettingSpec = {
   description?: string
   commandConfig?: { inputType: 'boolean' }
   hideOnLevel?: SettingsLevel
+  /**
+   * Hide the activation toggle on a platform. Used to make a plugin
+   * non-optional there (e.g. cloud sync on web, where it is the storage layer).
+   * Enforcement that the value cannot be turned off is handled separately in
+   * the app runtime; this only removes the settings control.
+   */
+  hideOnPlatform?: HideOnPlatformValue
+  /**
+   * Hide the activation toggle unless the user has this feature flag. Lets a
+   * feature-gated plugin (e.g. cloud sync) drop out of the settings panel,
+   * command bar, and plugins list through the same settings config rather than
+   * a bespoke check per surface.
+   */
+  hideWithoutFeature?: Feature
   userToml?: { sectionKey: string; tomlKey: string }
   projectToml?: { sectionKey: string; tomlKey: string }
 }
@@ -84,6 +102,8 @@ export function createZdsPlugin({
             description: activationSetting.description,
             commandConfig: activationSetting.commandConfig,
             hideOnLevel: activationSetting.hideOnLevel,
+            hideOnPlatform: activationSetting.hideOnPlatform,
+            hideWithoutFeature: activationSetting.hideWithoutFeature,
             userToml: activationSetting.userToml,
             projectToml: activationSetting.projectToml,
           }),

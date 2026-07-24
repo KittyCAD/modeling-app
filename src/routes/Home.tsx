@@ -566,6 +566,7 @@ const Home = () => {
             projectActions={homeProjectActions}
             showCloudSyncUi={hasCloudSyncFeature}
             showSourceStatusBadges={false}
+            projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         ) : (
@@ -947,6 +948,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
   showSourceStatusBadges?: boolean
+  projectLibraryEmptyTestId?: string
 }
 
 function ProjectGrid({
@@ -959,6 +961,7 @@ function ProjectGrid({
   projectActions,
   showCloudSyncUi,
   showSourceStatusBadges = true,
+  projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
   const state = useSystemIOState()
@@ -989,7 +992,9 @@ function ProjectGrid({
               data-testid="projects-none"
               className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
             >
-              No projects found
+              <span data-testid={projectLibraryEmptyTestId}>
+                No projects found
+              </span>
               {projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
