@@ -39,7 +39,7 @@ export const projectEditRole = (
       },
       { type: 'separator' },
       {
-        label: 'Change Project Directory',
+        label: 'Manage Project Libraries',
         id: 'Edit.Change project directory',
         click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
       },
@@ -102,7 +102,7 @@ export const modelingEditRole = (
       },
       { type: 'separator' },
       {
-        label: 'Change Project Directory',
+        label: 'Manage Project Libraries',
         id: 'Edit.Change project directory',
         click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
       },

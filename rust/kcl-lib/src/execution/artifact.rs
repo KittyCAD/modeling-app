@@ -2074,7 +2074,10 @@ fn artifacts_to_update(
         }) => {
             let face_edge_infos = match response {
                 Some(OkModelingCmdResponse::EntityMirrorAcross(resp)) => resp.entity_face_edge_ids.as_slice(),
-                _ => internal_error!(
+                // A rejected modeling command has no response. Execution will
+                // report the engine error; there is no mirrored artifact to add.
+                None => return Ok(Vec::new()),
+                Some(_) => internal_error!(
                     range,
                     "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
                 ),
@@ -2202,14 +2205,19 @@ fn artifacts_to_update(
             let target = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude {
                     target: Some(target), ..
-                }) => target,
-                // Reference-based extrusions do not have a path UUID until the
-                // engine resolves their topology payload.
+                }) => cmd_id_ref_to_artifact_id(target),
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: None,
+                    target_reference: Some(_),
+                    ..
+                }) => return Ok(Vec::new()),
                 ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
                 | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+                    cmd_id_ref_to_artifact_id(target)
+                }
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
             };
             // Determine the resulting method from the specific command, if provided
@@ -2235,7 +2243,6 @@ fn artifacts_to_update(
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
-            let target = cmd_id_ref_to_artifact_id(target);
             return_arr.push(Artifact::Sweep(Sweep {
                 id,
                 sub_type,

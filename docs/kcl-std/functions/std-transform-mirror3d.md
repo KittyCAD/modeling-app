@@ -10,7 +10,7 @@ Create a mirror image of a 3D solid/surface/body, across some specified mirror a
 ```kcl
 mirror3d(
   @bodies: [Solid; 1+],
-  across: Edge | Plane | Axis3d | Segment,
+  across: Edge | Plane | Axis3d | Segment | any,
 ): [Solid; 1+]
 ```
 
@@ -21,7 +21,7 @@ mirror3d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `bodies` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The body or bodies to be reflected. | Yes |
-| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | The axis (or other geometry) to reflect across. | Yes |
+| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | The axis (or other geometry) to reflect across. An edge specifier object such as `{ sideFaces = [faceTag1, faceTag2] }` can identify a solid edge without using its UUID. | Yes |
 
 ### Returns
 
