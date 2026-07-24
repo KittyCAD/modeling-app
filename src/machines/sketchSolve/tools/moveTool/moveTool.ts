@@ -420,25 +420,25 @@ function buildConstraintLabelEditsForSnappedPoint({
   position: Coords2d
   units: NumericSuffix
 }): ConstraintLabelPositionEdit[] {
-  const objectsAtSnapPosition = objectsBeforeSnap.map((obj) => {
-    if (obj.id !== pointId || !isPointSegment(obj)) {
-      return obj
-    }
+  const point = objectsBeforeSnap[pointId]
+  if (!isPointSegment(point)) {
+    return []
+  }
 
-    return {
-      ...obj,
-      kind: {
-        ...obj.kind,
-        segment: {
-          ...obj.kind.segment,
-          position: buildConstraintLabelPosition(
-            new Vector2(position[0], position[1]),
-            units
-          ),
-        },
+  const objectsAtSnapPosition = [...objectsBeforeSnap]
+  objectsAtSnapPosition[pointId] = {
+    ...point,
+    kind: {
+      ...point.kind,
+      segment: {
+        ...point.kind.segment,
+        position: buildConstraintLabelPosition(
+          new Vector2(position[0], position[1]),
+          units
+        ),
       },
-    }
-  })
+    },
+  }
 
   return buildConstraintLabelEditsForMovedSegments({
     objectsBeforeDrag: objectsBeforeSnap,
