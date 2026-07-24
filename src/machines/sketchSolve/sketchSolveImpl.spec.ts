@@ -3,6 +3,7 @@ import { topLevelRange } from '@src/lang/util'
 import {
   buildSegmentCtorFromObject,
   sendToActorIfActive,
+  updateSceneGraphFromDelta,
   updateHoveredId,
   updateSelectedCodeHighlight,
   updateSelectedIds,
@@ -12,6 +13,7 @@ import {
 import {
   createControlPointSplineApiObject,
   createLineApiObject,
+  createMockSceneInfra,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
@@ -87,6 +89,35 @@ describe('buildSegmentCtorFromObject', () => {
       ],
       construction: false,
     })
+  })
+})
+
+describe('updateSceneGraphFromDelta', () => {
+  test('skips sparse scene graph holes before the current sketch', () => {
+    const sketch = createSketchApiObject(3) as unknown as ApiObject
+    const sceneGraphDelta = createSceneGraphDelta([sketch])
+    const context = {
+      sketchId: sketch.id,
+      sketchSolveToolName: null,
+      sceneInfra: createMockSceneInfra(),
+      sceneEntitiesManager: { sketchSolveGroup: null },
+      rustContext: {},
+      kclManager: {},
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      hoveredId: null,
+      constraintHoverPopups: [],
+      showNonVisualConstraints: false,
+    } as unknown as Parameters<typeof updateSceneGraphFromDelta>[0]['context']
+
+    expect(() =>
+      updateSceneGraphFromDelta({
+        sceneGraphDelta,
+        context,
+        selectedIds: [],
+        duringAreaSelectIds: [],
+      })
+    ).not.toThrow()
   })
 })
 
