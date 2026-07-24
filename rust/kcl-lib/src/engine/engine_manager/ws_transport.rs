@@ -315,11 +315,13 @@ impl WebSocketTransport {
                         Some(ToEngineReq { req, request_sent }) => {
                             // Decide whether to send as binary or text,
                             // then send to the engine.
-                            let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
-                                cmd: ModelingCmd::ImportFiles { .. },
-                                cmd_id: _,
-                            }) = &req
-                            {
+                            let res = if matches!(
+                                &req,
+                                WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                                    cmd: ModelingCmd::ImportFiles { .. },
+                                    cmd_id: _,
+                                }) | WebSocketRequest::ExecKclProject { .. }
+                            ) {
                                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
                             } else {
                                 Self::inner_send_to_engine(req, &mut tcp_write).await
