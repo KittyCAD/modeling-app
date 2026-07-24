@@ -12,6 +12,7 @@ import {
 } from '@src/components/Explorer/utils'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
@@ -313,39 +314,11 @@ export const FileExplorerRowElement = ({
   onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
-  const dragPreviewId = `drag-preview-${row.name}`
-  // Adds a preview element that is a pill-shaped element with the row's name
-  const createDragPreviewElem = useCallback(() => {
-    if (!window) {
-      return
-    }
-    const elem = window.document.createElement('div')
-    elem.id = dragPreviewId
-    elem.classList.add(
-      'text-xs',
-      'py-1',
-      'px-2',
-      'rounded-full',
-      'border-primary',
-      'border',
-      'bg-default'
-    )
-    elem.style.position = 'fixed'
-    elem.style.top = '-1000px'
-    elem.innerText = row.name
-    document.body.appendChild(elem)
-    return elem
-  }, [row.name, dragPreviewId])
+  const dragPreviewId = `drag-preview-${row.key}`
 
   // Removes the drag preview element from the DOM
   const removeDragPreviewElem = useCallback(() => {
-    if (!window) {
-      return
-    }
-    const dragPreviewElem = window.document.getElementById(dragPreviewId)
-    if (dragPreviewElem) {
-      document.body.removeChild(dragPreviewElem)
-    }
+    removeDragPreviewElement(dragPreviewId)
   }, [dragPreviewId])
 
   const delayRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -483,10 +456,10 @@ export const FileExplorerRowElement = ({
             parentPath: row.parentPath,
           } satisfies FileExplorerDropData)
         )
-        const previewElem = createDragPreviewElem()
-        if (previewElem) {
-          event.dataTransfer.setDragImage(previewElem, 0, 0)
-        }
+        setDragPreview(event.dataTransfer, {
+          id: dragPreviewId,
+          text: row.name,
+        })
       }}
       onDragEnd={() => {
         removeDragPreviewElem()

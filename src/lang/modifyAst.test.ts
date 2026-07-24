@@ -82,4 +82,15 @@ describe('editing calls in place', () => {
 
     expect(pathsReferToSamePipe(first, second)).toBe(false)
   })
+
+  it('rejects identical paths that are not inside a pipe', () => {
+    const path: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+    ]
+
+    expect(pathsReferToSamePipe(path, path)).toBe(false)
+  })
 })

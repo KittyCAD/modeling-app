@@ -7,7 +7,6 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import {
-  createNewProjectDirectory,
   getProjectInfo,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -17,14 +16,19 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
+  DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
+  NEW_PROJECT_LIBRARY_TITLE,
   getDefaultDirectoryProjectLibraryPath,
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
+import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -44,6 +48,16 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
+
+const configuredProjectLibraryEntriesInvalidation = signal(0)
+
+function invalidateConfiguredProjectLibraryEntries() {
+  configuredProjectLibraryEntriesInvalidation.value += 1
+}
+
+function readConfiguredProjectLibraryEntriesInvalidation() {
+  return configuredProjectLibraryEntriesInvalidation.value
+}
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined,
@@ -323,6 +337,18 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           title: 'Directory',
           icon: 'folder',
+          order: 0,
+          defaultSetting: {
+            title: DEFAULT_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
+          newLibrarySetting: {
+            title: NEW_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
+          settingsDetails: DirectoryProjectLibrarySettingsDetails,
           readEntries: async ({ library, signal }) => {
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
@@ -339,18 +365,16 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 requestedProjectName,
                 requestedProjectTitle,
               }) => {
-                const project = await createNewProjectDirectory(
+                const project = await createProjectInLocalDirectory({
+                  projectDirectoryPath: library.path,
                   requestedProjectName,
-                  await getWasmPromise(),
-                  undefined,
-                  undefined,
-                  undefined,
-                  library.path,
-                  requestedProjectTitle
-                )
+                  requestedProjectTitle,
+                  wasmInstancePromise: getWasmPromise(),
+                })
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                invalidateConfiguredProjectLibraryEntries()
 
                 return project
               },
@@ -377,6 +401,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                invalidateConfiguredProjectLibraryEntries()
               },
             },
             deleteProject: {
@@ -391,6 +416,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                invalidateConfiguredProjectLibraryEntries()
               },
             },
           },
@@ -400,10 +426,118 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.directory-library-type')
 
+const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
+  const entries = signal<HomeProjectEntryContribution[]>([])
+  const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
+  let abortController: AbortController | undefined
+  let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
+  let disposed = false
+  let loadId = 0
+
+  const updateEntries = () => {
+    entries.value = Array.from(entriesByLibraryId.values()).flat()
+  }
+
+  // Defer because `effect` runs immediately, and service reads are blocked
+  // while the registry graph is still being built.
+  queueMicrotask(() => {
+    if (disposed) {
+      return
+    }
+
+    disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
+      const currentSettings = settings.value?.current.value
+      const typeById = libraryTypes.value
+      // Directory library operations mutate the filesystem without changing
+      // settings or library type registrations. Read this signal so known
+      // mutations can invalidate and rescan configured library entries.
+      readConfiguredProjectLibraryEntriesInvalidation()
+      const nextLoadId = ++loadId
+
+      abortController?.abort()
+      const loadController = new AbortController()
+      abortController = loadController
+      entriesByLibraryId.clear()
+      entries.value = []
+
+      if (!currentSettings) {
+        return
+      }
+
+      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+        currentSettings.app.libraries.current
+      )
+      const configuredLibraries = currentSettings.app.libraries.current
+        .map((library, index) =>
+          projectLibraryFromSetting(library, index, {
+            defaultProjectDirectory,
+          })
+        )
+        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+
+      for (const library of configuredLibraries) {
+        const readEntries = typeById.get(library.type)?.readEntries
+        if (!readEntries) {
+          continue
+        }
+
+        readEntries({
+          library,
+          signal: loadController.signal,
+        })
+          .then((libraryEntries) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.set(library.id, libraryEntries)
+            updateEntries()
+          })
+          .catch((error: unknown) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.delete(library.id)
+            updateEntries()
+            reportRejection(error)
+          })
+      }
+    })
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.configured-project-library-entries',
+      provides: [
+        provide(homeProjectEntriesValueSpec, entries, {
+          key: 'home-projects.configured-project-library-entries',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        abortController?.abort()
+        disposeConfiguredProjectLibraryEntriesEffect?.()
+      },
+    }),
+  }
+}, 'home-projects.configured-project-library-entries')
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
     configuredProjectLibraries,
+    configuredProjectLibraryEntries,
     directoryProjectLibraryType,
     homeProjectActions,
     systemIOLocalHomeProjectEntries,

@@ -1,4 +1,7 @@
-import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
+import {
+  ProjectCard as UiProjectCard,
+  type ProjectCardClassNames,
+} from '@kittycad/ui-components'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
@@ -23,7 +26,10 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
   projectActions: HomeProjectActionsService
   projectStatus?: ProjectStatus
+  density?: 'default' | 'compact'
   showCloudSyncUi?: boolean
+  showDetails?: boolean
+  showSourceStatusBadges?: boolean
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -34,6 +40,13 @@ const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
     synced: 'Synced',
     conflicted: 'Conflicted',
   }
+
+const compactProjectCardClassNames: ProjectCardClassNames = {
+  thumbnailFrame:
+    'h-24 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
+  body: 'pb-2 flex flex-col flex-grow flex-auto gap-1 rounded-b-sm',
+  title: 'font-sans relative z-0 p-2 text-sm truncate',
+}
 
 function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
   return (
@@ -120,7 +133,10 @@ function AppProjectCard({
   project,
   projectActions,
   projectStatus,
+  density = 'default',
   showCloudSyncUi = true,
+  showDetails = true,
+  showSourceStatusBadges = true,
   ...props
 }: AppProjectCardProps) {
   const navigate = useNavigate()
@@ -223,7 +239,7 @@ function AppProjectCard({
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    !showCloudSyncUi || project.source === 'both'
+    !showCloudSyncUi || !showSourceStatusBadges || project.source === 'both'
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 
@@ -268,7 +284,7 @@ function AppProjectCard({
     </>
   )
 
-  const details = (
+  const details = showDetails ? (
     <>
       {project.kclFileCount !== undefined && (
         <span className="px-2 text-chalkboard-60 text-xs">
@@ -294,7 +310,7 @@ function AppProjectCard({
         </span>
       </span>
     </>
-  )
+  ) : undefined
 
   const dialogs = (
     <>
@@ -355,6 +371,9 @@ function AppProjectCard({
           ]}
         />
       )}
+      classNames={
+        density === 'compact' ? compactProjectCardClassNames : undefined
+      }
       renameForm={
         <ProjectCardRenameForm
           onSubmit={handleSave}

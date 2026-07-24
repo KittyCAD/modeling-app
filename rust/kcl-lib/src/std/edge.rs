@@ -172,6 +172,22 @@ pub(crate) async fn get_refactor_meta_for_edge(
     })
 }
 
+pub(crate) async fn record_refactor_meta_for_consumed_edge(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    argument_source_range: SourceRange,
+    args: &Args,
+) {
+    let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, argument_source_range) else {
+        return;
+    };
+    let Ok(meta) = get_refactor_meta_for_edge(exec_state, edge_id, args, pending.source_range, pending.stdlib_fn).await
+    else {
+        return;
+    };
+    exec_state.record_edge_refactor_meta(meta);
+}
+
 fn record_pending_edge_refactor_meta(
     exec_state: &mut ExecState,
     edge_id: Uuid,
@@ -525,13 +541,17 @@ pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<
     })
 }
 
-fn tag_or_uuid_from_value(value: &KclValue, field_name: &str, args: &Args) -> Result<TagOrUuid, KclError> {
+fn tag_or_uuid_from_value(
+    value: &KclValue,
+    field_name: &str,
+    source_range: SourceRange,
+) -> Result<TagOrUuid, KclError> {
     match value {
         KclValue::Uuid { value, .. } => Ok(TagOrUuid::Uuid(*value)),
         KclValue::TagIdentifier(tag) => Ok(TagOrUuid::Tag(tag.clone())),
         _ => Err(KclError::new_type(KclErrorDetails::new(
             format!("{field_name} elements must be tags or UUIDs"),
-            vec![args.source_range],
+            vec![source_range],
         ))),
     }
 }
@@ -540,13 +560,13 @@ fn parse_tag_or_uuid_array(
     obj: &KclObjectFields,
     field_name: &str,
     required: bool,
-    args: &Args,
+    source_range: SourceRange,
 ) -> Result<Vec<TagOrUuid>, KclError> {
     let Some(value) = obj.get(field_name) else {
         return if required {
             Err(KclError::new_type(KclErrorDetails::new(
                 format!("edge specifier object must have {field_name}"),
-                vec![args.source_range],
+                vec![source_range],
             )))
         } else {
             Ok(Vec::new())
@@ -555,29 +575,29 @@ fn parse_tag_or_uuid_array(
     let values = value.as_slice().ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("{field_name} must be an array"),
-            vec![args.source_range],
+            vec![source_range],
         ))
     })?;
     values
         .iter()
-        .map(|value| tag_or_uuid_from_value(value, field_name, args))
+        .map(|value| tag_or_uuid_from_value(value, field_name, source_range))
         .collect()
 }
 
-fn parse_edge_specifier_index(obj: &KclObjectFields, args: &Args) -> Result<Option<u32>, KclError> {
+fn parse_edge_specifier_index(obj: &KclObjectFields, source_range: SourceRange) -> Result<Option<u32>, KclError> {
     let Some(index) = obj.get("index") else {
         return Ok(None);
     };
     let KclValue::Number { value, .. } = index else {
         return Err(KclError::new_type(KclErrorDetails::new(
             "edge specifier 'index' must be a non-negative integer".to_owned(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     };
     if !value.is_finite() || value.fract() != 0.0 || *value < 0.0 || *value > u32::MAX as f64 {
         return Err(KclError::new_type(KclErrorDetails::new(
             "edge specifier 'index' must be a non-negative integer".to_owned(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     }
     Ok(Some(*value as u32))
@@ -588,13 +608,20 @@ pub(crate) fn is_edge_specifier_object(value: &KclValue) -> bool {
 }
 
 pub(crate) fn parse_edge_specifier_value(value: &KclValue, args: &Args) -> Result<UnresolvedEdgeSpecifier, KclError> {
+    parse_edge_specifier_value_at(value, args.source_range)
+}
+
+pub(crate) fn parse_edge_specifier_value_at(
+    value: &KclValue,
+    source_range: SourceRange,
+) -> Result<UnresolvedEdgeSpecifier, KclError> {
     let KclValue::Object { value: obj, .. } = value else {
         return Err(KclError::new_type(KclErrorDetails::new(
             "edge specifier must be an object with 'sideFaces'".to_owned(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     };
-    parse_edge_specifier_object(obj, args)
+    parse_edge_specifier_object_at(obj, source_range)
 }
 
 /// Parse a KCL object `{ sideFaces, endFaces?, index? }` into UnresolvedEdgeSpecifier. Used by getBoundedEdge and blend.
@@ -602,15 +629,22 @@ pub(crate) fn parse_edge_specifier_object(
     obj: &KclObjectFields,
     args: &Args,
 ) -> Result<UnresolvedEdgeSpecifier, KclError> {
-    let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, args)?;
+    parse_edge_specifier_object_at(obj, args.source_range)
+}
+
+pub(crate) fn parse_edge_specifier_object_at(
+    obj: &KclObjectFields,
+    source_range: SourceRange,
+) -> Result<UnresolvedEdgeSpecifier, KclError> {
+    let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, source_range)?;
     if side_faces.is_empty() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "sideFaces must be an array of at least one face, but zero were given".to_owned(),
-            vec![args.source_range],
+            vec![source_range],
         )));
     }
-    let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, args)?;
-    let index = parse_edge_specifier_index(obj, args)?;
+    let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, source_range)?;
+    let index = parse_edge_specifier_index(obj, source_range)?;
     Ok(UnresolvedEdgeSpecifier {
         side_faces,
         end_faces,

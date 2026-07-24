@@ -9,6 +9,7 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -206,6 +207,7 @@ describe('project system', () => {
         engineConnectionService
       )
       const registryBilling = app.registry.get(billingService)
+      const registryRustContext = app.registry.get(rustContextService)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -214,6 +216,7 @@ describe('project system', () => {
         registryEngineConnectionManager.manager
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
+      expect(app.rustContext).toBe(registryRustContext.context)
     } finally {
       app.dispose()
     }
