@@ -1895,6 +1895,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             currentSceneGraphDelta
           )
           if (draggedConstraintLabelId != null) {
+            // Directly dragging a constraint -> shortcut
             if (!intersectionPoint?.twoD) {
               return
             }
@@ -2033,6 +2034,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
 
           if (shouldRecoverInvalidPreview) {
+            // Current preview is invalid -> recover last good result to prevent an invalid result becoming the commited sketch
             result = await recoverKnownGoodResult('invalid preview on drag end')
           } else if (
             snappingCandidate &&
@@ -2040,6 +2042,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             draggedEntityId !== null &&
             snapConstraints.length > 0
           ) {
+            // The endpoint should snap
             const [x, y] = snappingCandidate.position
             const objectsBeforeSnap = currentSceneGraphDelta.new_graph.objects
             const snapConstraintLabelEdits = mergeConstraintLabelPreviewEdits({
@@ -2091,11 +2094,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
             )
 
             if (axisConstraint) {
-              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const existingSameConstraint = getAxisConstraintWithOrigin(
                 draggedEntityId,
                 axisConstraint.type,
-                objects
+                objectsBeforeSnap
               )
               if (existingSameConstraint) {
                 // Same zero distance constraint already exists -> don't add it again
@@ -2108,7 +2110,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 const existingOppositeConstraint = getAxisConstraintWithOrigin(
                   draggedEntityId,
                   oppositeConstraintType,
-                  objects
+                  objectsBeforeSnap
                 )
                 if (existingOppositeConstraint) {
                   // If there is already a 0 distance opposite constraint:
@@ -2153,13 +2155,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 }
               }
             } else {
-              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const constraintsToAdd = snapConstraints.filter((constraint) => {
                 if (constraint.type === 'Coincident') {
                   return !hasCoincidentConstraintForSnapTarget(
                     draggedEntityId,
                     snappingCandidate.target,
-                    objects
+                    objectsBeforeSnap
                   )
                 }
 
@@ -2167,7 +2168,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   return !hasMidpointConstraintForSnapTarget(
                     draggedEntityId,
                     snappingCandidate.target,
-                    objects
+                    objectsBeforeSnap
                   )
                 }
 
@@ -2227,6 +2228,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
               )
             }
           } else {
+            // No snap, this is the normal drag completion
             if (lastGoodPreview?.segmentsToEdit.length) {
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
