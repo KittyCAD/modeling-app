@@ -12,6 +12,13 @@ The cloud sync subsystem has both always-on infrastructure and toggleable runtim
 
 The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloudSync`, and `src/registry/contracts/cloudSync.ts` are intentionally thin shims for registry discovery and compatibility with existing import paths.
 
+## Libraries and disk persistence
+
+The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. At present, we only support a "personal" cloud library in our API (see [our docs](https://zoo.dev/docs/developer-tools/api/projects)), and the location on the disk where this library's contents are synced locally is not editable by users. The chosen locations are:
+- On web: `<opfs-root>/documents/zoo-design-studio-projects`
+- Linux and Windows: `~/documents/zoo-design-studio-projects`
+- MacOS: `~/Cloud/Zoo/personal`, by MacOS convention.
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
