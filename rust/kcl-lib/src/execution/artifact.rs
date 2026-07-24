@@ -222,6 +222,10 @@ pub enum PathSubType {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// The original segment this segment was cloned from, if any. For clones
+    /// of clones, this continues to point to the originating segment.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_segment_id: Option<ArtifactId>,
     /// If this artifact is a segment in a region, the segment in the original
     /// sketch that this was derived from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -769,6 +773,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
+        self.source_segment_id = new.source_segment_id.or(self.source_segment_id);
         merge_opt_id(&mut self.original_seg_id, new.original_seg_id);
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
@@ -1345,6 +1350,7 @@ fn remap_artifact_for_clone(
         Artifact::Segment(source) => Artifact::Segment(Segment {
             id: remap_id_for_clone(source.id, entity_id_map),
             path_id: remap_id_for_clone(source.path_id, entity_id_map),
+            source_segment_id: source.source_segment_id.or(Some(source.id)),
             original_seg_id: remap_opt_id_for_clone(source.original_seg_id, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
@@ -1968,6 +1974,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
+                source_segment_id: None,
                 original_seg_id: None,
                 surface_id: None,
                 edge_ids: Vec::new(),
@@ -2049,6 +2056,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: ArtifactId::new(*segment_id),
                         path_id: id,
+                        source_segment_id: None,
                         original_seg_id: Some(ArtifactId::new(*original_segment_id)),
                         surface_id: None,
                         edge_ids: Vec::new(),
@@ -2200,6 +2208,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: edge_id,
                         path_id: path.id,
+                        source_segment_id: None,
                         original_seg_id: None,
                         surface_id: None,
                         edge_ids: Vec::new(),

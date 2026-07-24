@@ -1162,6 +1162,7 @@ fn segment_artifact(original_seg_id: Option<ArtifactId>) -> Artifact {
     Artifact::Segment(Segment {
         id: ArtifactId::new(Uuid::new_v4()),
         path_id: ArtifactId::new(Uuid::new_v4()),
+        source_segment_id: None,
         original_seg_id,
         surface_id: None,
         edge_ids: Vec::new(),

@@ -381,6 +381,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         Artifact::Segment(Segment {
             id: source_seg_id,
             path_id: source_path_id,
+            source_segment_id: None,
             original_seg_id: None,
             surface_id: Some(source_wall_id),
             edge_ids: Vec::new(),
@@ -496,6 +497,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
     let source_path_id = ArtifactId::new(Uuid::new_v4());
     let source_sweep_id = ArtifactId::new(Uuid::new_v4());
     let source_seg_id = ArtifactId::new(Uuid::new_v4());
+    let source_sketch_seg_id = ArtifactId::new(Uuid::new_v4());
     let source_wall_id = ArtifactId::new(Uuid::new_v4());
     let source_plane_id = ArtifactId::new(Uuid::new_v4());
     let clone_entity_id = Uuid::new_v4();
@@ -546,7 +548,8 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         Artifact::Segment(Segment {
             id: source_seg_id,
             path_id: source_path_id,
-            original_seg_id: None,
+            source_segment_id: None,
+            original_seg_id: Some(source_sketch_seg_id),
             surface_id: Some(source_wall_id),
             edge_ids: Vec::new(),
             edge_cut_id: None,
@@ -646,6 +649,8 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         panic!("Expected cloned segment artifact");
     };
     assert_eq!(cloned_seg.path_id, cloned_path_id);
+    assert_eq!(cloned_seg.source_segment_id, Some(source_seg_id));
+    assert_eq!(cloned_seg.original_seg_id, Some(source_sketch_seg_id));
     assert_eq!(cloned_seg.surface_id, Some(cloned_wall_id));
 
     let Artifact::Wall(cloned_wall) = updated_map.get(&cloned_wall_id).expect("Expected cloned wall artifact") else {
@@ -1300,6 +1305,7 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
         Artifact::Segment(Segment {
             id: shared_id,
             path_id,
+            source_segment_id: None,
             original_seg_id: None,
             surface_id: None,
             edge_ids: Vec::new(),
