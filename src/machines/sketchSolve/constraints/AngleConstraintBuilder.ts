@@ -6,11 +6,15 @@ import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
-  TAU,
   addVec,
+  distance2d,
   dot2d,
+  getCcwSweep,
+  getLineIntersection,
+  getPolarAngle2d,
   intersectRanges,
   lerp,
+  normalizeAngle,
   normalizeVec,
   rotateVec2d,
   scaleVec,
@@ -124,6 +128,19 @@ export function calculateArcRenderInput(
 
   const line1Dir = normalizeVec(subVec(line1[1], line1[0]))
   const line2Dir = normalizeVec(subVec(line2[1], line2[0]))
+  const explicitRenderInput = calculateExplicitArcRenderInput(
+    obj,
+    line1,
+    line2,
+    line1Dir,
+    line2Dir,
+    center,
+    scale
+  )
+  if (explicitRenderInput) {
+    return explicitRenderInput
+  }
+
   // The distances of the line segment end points from the intersection (center)
   const line1SignedDistances = [
     dot2d(subVec(line1[0], center), line1Dir),
@@ -155,22 +172,26 @@ export function calculateArcRenderInput(
       )
     : radiusSigned
 
-  //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
   const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
 
+  const explicitLabelPosition = getAngleLabelPosition(obj)
+  const defaultRadius = Math.abs(adjustedRadiusSigned)
+  const radius = getAngleArcRadius(explicitLabelPosition, center, defaultRadius)
   const startVector = scaleVec(normalizeVec(line1Dir), adjustedRadiusSigned)
   const startAngle = Math.atan2(startVector[1], startVector[0])
-  const labelPosition = addVec(
+  const defaultLabelPosition = addVec(
     center,
     rotateVec2d(startVector, signedAngle / 2)
   )
+  const labelPosition = explicitLabelPosition ?? defaultLabelPosition
 
   return {
     line1,
     line2,
     labelPosition,
+    labelAngle: getAngleLabelAngle(explicitLabelPosition, center),
     center,
-    radius: Math.abs(adjustedRadiusSigned),
+    radius,
     startAngle,
     sweepAngle: signedAngle,
   }
@@ -179,13 +200,176 @@ export function calculateArcRenderInput(
 export function normalizeAngleRad(angle: ApiNumber) {
   const angleRadians =
     angle.units === 'Rad' ? angle.value : (angle.value * Math.PI) / 180
-  const normalized = ((angleRadians % TAU) + TAU) % TAU
-  return normalized
+  return normalizeAngle(angleRadians)
 }
 
 // Major angles are ones > 180deg
 export function isMajorConstraintAngle(angle: ApiNumber) {
   return normalizeAngleRad(angle) > Math.PI
+}
+
+function calculateExplicitArcRenderInput(
+  obj: AngleConstraint,
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d,
+  center: Coords2d,
+  scale: number
+): ArcLineInfo | null {
+  const sector = explicitAngleSector(obj.kind.constraint.sector)
+  if (!sector) {
+    return null
+  }
+
+  const sectorBoundaries = angleSectorBoundaries(
+    sector,
+    line1,
+    line2,
+    line1Dir,
+    line2Dir
+  )
+  const [start, end] =
+    obj.kind.constraint.inverse === true
+      ? [sectorBoundaries[1], sectorBoundaries[0]]
+      : sectorBoundaries
+  const explicitLabelPosition = getAngleLabelPosition(obj)
+  const defaultRadius = calculateExplicitArcRadius(
+    start.line,
+    end.line,
+    start.dir,
+    end.dir,
+    center,
+    scale
+  )
+  const radius = getAngleArcRadius(explicitLabelPosition, center, defaultRadius)
+  const startVector = scaleVec(start.dir, radius)
+  const startAngle = Math.atan2(startVector[1], startVector[0])
+  const sweepAngle = getCcwSweep(start.dir, end.dir)
+  const defaultLabelPosition = addVec(
+    center,
+    rotateVec2d(startVector, sweepAngle / 2)
+  )
+  const labelPosition = explicitLabelPosition ?? defaultLabelPosition
+
+  return {
+    line1: start.line,
+    line2: end.line,
+    labelPosition,
+    labelAngle: getAngleLabelAngle(explicitLabelPosition, center),
+    center,
+    radius,
+    startAngle,
+    sweepAngle,
+  }
+}
+
+function getAngleLabelPosition(obj: AngleConstraint): Coords2d | null {
+  const labelPosition = obj.kind.constraint.labelPosition
+  return labelPosition ? [labelPosition.x.value, labelPosition.y.value] : null
+}
+
+function getAngleArcRadius(
+  labelPosition: Coords2d | null,
+  center: Coords2d,
+  fallbackRadius: number
+) {
+  if (!labelPosition) {
+    return fallbackRadius
+  }
+
+  const labelRadius = distance2d(labelPosition, center)
+  return labelRadius > OVERLAP_EPSILON ? labelRadius : fallbackRadius
+}
+
+function getAngleLabelAngle(labelPosition: Coords2d | null, center: Coords2d) {
+  return labelPosition ? getPolarAngle2d(center, labelPosition) : undefined
+}
+
+function explicitAngleSector(sector: unknown) {
+  return sector === 1 || sector === 2 || sector === 3 || sector === 4
+    ? sector
+    : null
+}
+
+function angleSectorBoundaries(
+  sector: 1 | 2 | 3 | 4,
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d
+) {
+  switch (sector) {
+    case 1:
+      return [
+        { line: line1, dir: line1Dir },
+        { line: line2, dir: line2Dir },
+      ] as const
+    case 2:
+      return [
+        { line: line2, dir: line2Dir },
+        { line: line1, dir: scaleVec(line1Dir, -1) },
+      ] as const
+    case 3:
+      return [
+        { line: line1, dir: scaleVec(line1Dir, -1) },
+        { line: line2, dir: scaleVec(line2Dir, -1) },
+      ] as const
+    case 4:
+      return [
+        { line: line2, dir: scaleVec(line2Dir, -1) },
+        { line: line1, dir: line1Dir },
+      ] as const
+  }
+}
+
+function calculateExplicitArcRadius(
+  line1: LineSegment,
+  line2: LineSegment,
+  line1Dir: Coords2d,
+  line2Dir: Coords2d,
+  center: Coords2d,
+  scale: number
+) {
+  const line1Range = projectionRange(line1, center, line1Dir)
+  const line2Range = projectionRange(line2, center, line2Dir)
+  const commonLineRange = intersectRanges(line1Range, line2Range)
+  const commonRayRange = commonLineRange
+    ? intersectRanges(commonLineRange, [0, Number.POSITIVE_INFINITY])
+    : null
+  const radius = commonRayRange
+    ? findShortestRadiusFromRange(commonRayRange)
+    : findFallbackRayRadius([line1Range, line2Range])
+  const shouldApplyNonOverlapFallback =
+    !commonRayRange ||
+    Math.abs(commonRayRange[1] - commonRayRange[0]) < OVERLAP_EPSILON
+  return shouldApplyNonOverlapFallback
+    ? withMinimumMagnitude(
+        radius,
+        MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX * scale
+      )
+    : radius
+}
+
+function projectionRange(
+  line: LineSegment,
+  center: Coords2d,
+  direction: Coords2d
+): [number, number] {
+  const distances = [
+    dot2d(subVec(line[0], center), direction),
+    dot2d(subVec(line[1], center), direction),
+  ]
+  return [Math.min(...distances), Math.max(...distances)]
+}
+
+function findFallbackRayRadius(ranges: [number, number][]) {
+  return (
+    ranges
+      .flat()
+      .filter((distance) => distance > OVERLAP_EPSILON)
+      .sort((a, b) => a - b)[1] ?? 0
+  )
 }
 
 // finds the shortest radius on the range of projected distances of the 2 lines.
@@ -202,25 +386,4 @@ function withMinimumMagnitude(value: number, minMagnitude: number) {
     return minMagnitude
   }
   return Math.sign(value) * Math.max(Math.abs(value), minMagnitude)
-}
-
-// Returns the intersection of 2 infinite lines that lie on the given line segments.
-// Returns a valid point even if the line segments themselves don't intersect.
-// Returns null if the lines are parallel,
-export function getLineIntersection(
-  line1: LineSegment,
-  line2: LineSegment
-): Coords2d | null {
-  const p = line1[0]
-  const q = line2[0]
-  const r = subVec(line1[1], line1[0])
-  const s = subVec(line2[1], line2[0])
-  const denominator = r[0] * s[1] - r[1] * s[0]
-  if (Math.abs(denominator) < 1e-8) {
-    return null
-  }
-
-  const qp = subVec(q, p)
-  const t = (qp[0] * s[1] - qp[1] * s[0]) / denominator
-  return [p[0] + r[0] * t, p[1] + r[1] * t]
 }

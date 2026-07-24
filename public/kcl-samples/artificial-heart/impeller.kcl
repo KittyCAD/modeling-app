@@ -105,7 +105,7 @@ sketch003 = sketch(on = offsetPlane(XZ, offset = 0.4)) {
   coincident([arc3.center, arc1.center])
   tangent([arc1, arc2])
   tangent([arc3, arc4])
-  angle([line2, line3]) == 85
+  angleDimension(lines = [line2, line3], labelPosition = [0.12in, 0.16in], sector = 3) == 85
   distance([line2.start, line2.end]) == 1.4
   coincident([line2.start, arc4.center])
 }

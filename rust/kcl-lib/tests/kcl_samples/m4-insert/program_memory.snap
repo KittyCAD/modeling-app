@@ -61,8 +61,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "tag": {
             "commentStart": 579,
@@ -73,8 +73,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "outerTopWall"
           },
           "to": [
-            -3.150000000025,
-            -2.279999999942562
+            -3.15,
+            -2.280000000000126
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -85,8 +85,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            -2.279999999942562
+            -3.15,
+            -2.280000000000126
           ],
           "tag": {
             "commentStart": 667,
@@ -97,8 +97,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "topShoulder"
           },
           "to": [
-            -2.550000000018368,
-            -2.279999999931075
+            -2.550000000000013,
+            -2.280000000000151
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -109,8 +109,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.550000000018368,
-            -2.279999999931075
+            -2.550000000000013,
+            -2.280000000000151
           ],
           "tag": {
             "commentStart": 810,
@@ -121,8 +121,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperNeckWall"
           },
           "to": [
-            -2.550000000018368,
-            -3.132871870667607
+            -2.550000000000013,
+            -3.1328718708048537
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -133,8 +133,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.550000000018368,
-            -3.132871870667607
+            -2.550000000000013,
+            -3.1328718708048537
           ],
           "tag": {
             "commentStart": 956,
@@ -145,8 +145,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperRib"
           },
           "to": [
-            -3.1100000000316324,
-            -3.132871870664735
+            -3.109999999999987,
+            -3.1328718708048635
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -157,8 +157,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.1100000000316324,
-            -3.132871870664735
+            -3.109999999999987,
+            -3.1328718708048635
           ],
           "tag": {
             "commentStart": 1094,
@@ -169,8 +169,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "midWall"
           },
           "to": [
-            -3.110000000044407,
-            -5.532871870673323
+            -3.1099999999999617,
+            -5.532871870804853
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -181,8 +181,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.110000000044407,
-            -5.532871870673323
+            -3.1099999999999617,
+            -5.532871870804853
           ],
           "tag": {
             "commentStart": 1225,
@@ -193,8 +193,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "taperFlank"
           },
           "to": [
-            -2.1499999999653094,
-            -6.087128129162952
+            -2.150000000000118,
+            -6.087128129195516
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -205,8 +205,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.1499999999653094,
-            -6.087128129162952
+            -2.150000000000118,
+            -6.087128129195516
           ],
           "tag": {
             "commentStart": 1361,
@@ -217,8 +217,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerNeckWall"
           },
           "to": [
-            -2.149999999978574,
-            -6.939999999919587
+            -2.150000000000092,
+            -6.940000000000176
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -229,8 +229,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.149999999978574,
-            -6.939999999919587
+            -2.150000000000092,
+            -6.940000000000176
           ],
           "tag": {
             "commentStart": 1506,
@@ -241,8 +241,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerRib"
           },
           "to": [
-            -2.749999999998471,
-            -6.939999999931075
+            -2.7500000000000524,
+            -6.940000000000151
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -253,8 +253,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.749999999998471,
-            -6.939999999931075
+            -2.7500000000000524,
+            -6.940000000000151
           ],
           "tag": {
             "commentStart": 1644,
@@ -265,8 +265,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerBandWall"
           },
           "to": [
-            -2.7500000000117355,
-            -8.099999999942563
+            -2.750000000000026,
+            -8.100000000000126
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -277,13 +277,13 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.7500000000117355,
-            -8.099999999942563
+            -2.750000000000026,
+            -8.100000000000126
           ],
           "tag": null,
           "to": [
-            -3.150000000025,
-            0.00000000004594993807505346
+            -3.15,
+            -0.00000000000010075004870403091
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -294,8 +294,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            0.00000000004594993807505346
+            -3.15,
+            -0.00000000000010075004870403091
           ],
           "tag": {
             "commentStart": 1786,
@@ -306,8 +306,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "topBridge"
           },
           "to": [
-            -1.555000000075,
-            0.00000000004020619577220696
+            -1.5550000000000002,
+            -0.00000000000008815618544209148
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -318,8 +318,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -1.555000000075,
-            0.00000000004020619577220696
+            -1.5550000000000002,
+            -0.00000000000008815618544209148
           ],
           "tag": {
             "commentStart": 1867,
@@ -330,8 +330,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "innerWall"
           },
           "to": [
-            -1.55500000008,
-            -8.099999999959794
+            -1.5550000000000002,
+            -8.100000000000088
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -342,8 +342,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -1.55500000008,
-            -8.099999999959794
+            -1.5550000000000002,
+            -8.100000000000088
           ],
           "tag": {
             "commentStart": 1998,
@@ -354,8 +354,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "bottomBridge"
           },
           "to": [
-            -2.7500000000183675,
-            -8.099999999948306
+            -2.7500000000000133,
+            -8.100000000000113
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -394,12 +394,12 @@ description: Variables in memory after executing m4-insert.kcl
       },
       "start": {
         "from": [
-          -3.150000000025,
-          0.00000000005169368042384991
+          -3.15,
+          -0.00000000000011334396960489123
         ],
         "to": [
-          -3.150000000025,
-          0.00000000005169368042384991
+          -3.15,
+          -0.00000000000011334396960489123
         ],
         "units": "mm",
         "tag": null,
@@ -656,8 +656,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              0.00000000005169368042384991
+              -3.15,
+              -0.00000000000011334396960489123
             ],
             "tag": {
               "commentStart": 579,
@@ -668,8 +668,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "outerTopWall"
             },
             "to": [
-              -3.150000000025,
-              -2.279999999942562
+              -3.15,
+              -2.280000000000126
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -680,8 +680,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              -2.279999999942562
+              -3.15,
+              -2.280000000000126
             ],
             "tag": {
               "commentStart": 667,
@@ -692,8 +692,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "topShoulder"
             },
             "to": [
-              -2.550000000018368,
-              -2.279999999931075
+              -2.550000000000013,
+              -2.280000000000151
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -704,8 +704,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.550000000018368,
-              -2.279999999931075
+              -2.550000000000013,
+              -2.280000000000151
             ],
             "tag": {
               "commentStart": 810,
@@ -716,8 +716,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "upperNeckWall"
             },
             "to": [
-              -2.550000000018368,
-              -3.132871870667607
+              -2.550000000000013,
+              -3.1328718708048537
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -728,8 +728,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.550000000018368,
-              -3.132871870667607
+              -2.550000000000013,
+              -3.1328718708048537
             ],
             "tag": {
               "commentStart": 956,
@@ -740,8 +740,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "upperRib"
             },
             "to": [
-              -3.1100000000316324,
-              -3.132871870664735
+              -3.109999999999987,
+              -3.1328718708048635
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -752,8 +752,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.1100000000316324,
-              -3.132871870664735
+              -3.109999999999987,
+              -3.1328718708048635
             ],
             "tag": {
               "commentStart": 1094,
@@ -764,8 +764,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "midWall"
             },
             "to": [
-              -3.110000000044407,
-              -5.532871870673323
+              -3.1099999999999617,
+              -5.532871870804853
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -776,8 +776,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.110000000044407,
-              -5.532871870673323
+              -3.1099999999999617,
+              -5.532871870804853
             ],
             "tag": {
               "commentStart": 1225,
@@ -788,8 +788,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "taperFlank"
             },
             "to": [
-              -2.1499999999653094,
-              -6.087128129162952
+              -2.150000000000118,
+              -6.087128129195516
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -800,8 +800,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.1499999999653094,
-              -6.087128129162952
+              -2.150000000000118,
+              -6.087128129195516
             ],
             "tag": {
               "commentStart": 1361,
@@ -812,8 +812,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerNeckWall"
             },
             "to": [
-              -2.149999999978574,
-              -6.939999999919587
+              -2.150000000000092,
+              -6.940000000000176
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -824,8 +824,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.149999999978574,
-              -6.939999999919587
+              -2.150000000000092,
+              -6.940000000000176
             ],
             "tag": {
               "commentStart": 1506,
@@ -836,8 +836,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerRib"
             },
             "to": [
-              -2.749999999998471,
-              -6.939999999931075
+              -2.7500000000000524,
+              -6.940000000000151
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -848,8 +848,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.749999999998471,
-              -6.939999999931075
+              -2.7500000000000524,
+              -6.940000000000151
             ],
             "tag": {
               "commentStart": 1644,
@@ -860,8 +860,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerBandWall"
             },
             "to": [
-              -2.7500000000117355,
-              -8.099999999942563
+              -2.750000000000026,
+              -8.100000000000126
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -872,8 +872,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              0.00000000004594993807505346
+              -3.15,
+              -0.00000000000010075004870403091
             ],
             "tag": {
               "commentStart": 1786,
@@ -884,8 +884,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "topBridge"
             },
             "to": [
-              -1.555000000075,
-              0.00000000004020619577220696
+              -1.5550000000000002,
+              -0.00000000000008815618544209148
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -896,8 +896,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -1.555000000075,
-              0.00000000004020619577220696
+              -1.5550000000000002,
+              -0.00000000000008815618544209148
             ],
             "tag": {
               "commentStart": 1867,
@@ -908,8 +908,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "innerWall"
             },
             "to": [
-              -1.55500000008,
-              -8.099999999959794
+              -1.5550000000000002,
+              -8.100000000000088
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -920,8 +920,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -1.55500000008,
-              -8.099999999959794
+              -1.5550000000000002,
+              -8.100000000000088
             ],
             "tag": {
               "commentStart": 1998,
@@ -932,8 +932,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "bottomBridge"
             },
             "to": [
-              -2.7500000000183675,
-              -8.099999999948306
+              -2.7500000000000133,
+              -8.100000000000113
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -972,12 +972,12 @@ description: Variables in memory after executing m4-insert.kcl
         },
         "start": {
           "from": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "to": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "units": "mm",
           "tag": null,
@@ -1108,8 +1108,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "tag": {
             "commentStart": 579,
@@ -1120,8 +1120,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "outerTopWall"
           },
           "to": [
-            -3.150000000025,
-            -2.279999999942562
+            -3.15,
+            -2.280000000000126
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1132,8 +1132,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            -2.279999999942562
+            -3.15,
+            -2.280000000000126
           ],
           "tag": {
             "commentStart": 667,
@@ -1144,8 +1144,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "topShoulder"
           },
           "to": [
-            -2.550000000018368,
-            -2.279999999931075
+            -2.550000000000013,
+            -2.280000000000151
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1156,8 +1156,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.550000000018368,
-            -2.279999999931075
+            -2.550000000000013,
+            -2.280000000000151
           ],
           "tag": {
             "commentStart": 810,
@@ -1168,8 +1168,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperNeckWall"
           },
           "to": [
-            -2.550000000018368,
-            -3.132871870667607
+            -2.550000000000013,
+            -3.1328718708048537
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1180,8 +1180,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.550000000018368,
-            -3.132871870667607
+            -2.550000000000013,
+            -3.1328718708048537
           ],
           "tag": {
             "commentStart": 956,
@@ -1192,8 +1192,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "upperRib"
           },
           "to": [
-            -3.1100000000316324,
-            -3.132871870664735
+            -3.109999999999987,
+            -3.1328718708048635
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1204,8 +1204,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.1100000000316324,
-            -3.132871870664735
+            -3.109999999999987,
+            -3.1328718708048635
           ],
           "tag": {
             "commentStart": 1094,
@@ -1216,8 +1216,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "midWall"
           },
           "to": [
-            -3.110000000044407,
-            -5.532871870673323
+            -3.1099999999999617,
+            -5.532871870804853
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1228,8 +1228,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.110000000044407,
-            -5.532871870673323
+            -3.1099999999999617,
+            -5.532871870804853
           ],
           "tag": {
             "commentStart": 1225,
@@ -1240,8 +1240,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "taperFlank"
           },
           "to": [
-            -2.1499999999653094,
-            -6.087128129162952
+            -2.150000000000118,
+            -6.087128129195516
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1252,8 +1252,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.1499999999653094,
-            -6.087128129162952
+            -2.150000000000118,
+            -6.087128129195516
           ],
           "tag": {
             "commentStart": 1361,
@@ -1264,8 +1264,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerNeckWall"
           },
           "to": [
-            -2.149999999978574,
-            -6.939999999919587
+            -2.150000000000092,
+            -6.940000000000176
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1276,8 +1276,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.149999999978574,
-            -6.939999999919587
+            -2.150000000000092,
+            -6.940000000000176
           ],
           "tag": {
             "commentStart": 1506,
@@ -1288,8 +1288,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerRib"
           },
           "to": [
-            -2.749999999998471,
-            -6.939999999931075
+            -2.7500000000000524,
+            -6.940000000000151
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1300,8 +1300,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -2.749999999998471,
-            -6.939999999931075
+            -2.7500000000000524,
+            -6.940000000000151
           ],
           "tag": {
             "commentStart": 1644,
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "lowerBandWall"
           },
           "to": [
-            -2.7500000000117355,
-            -8.099999999942563
+            -2.750000000000026,
+            -8.100000000000126
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1324,8 +1324,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -3.150000000025,
-            0.00000000004594993807505346
+            -3.15,
+            -0.00000000000010075004870403091
           ],
           "tag": {
             "commentStart": 1786,
@@ -1336,8 +1336,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "topBridge"
           },
           "to": [
-            -1.555000000075,
-            0.00000000004020619577220696
+            -1.5550000000000002,
+            -0.00000000000008815618544209148
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1348,8 +1348,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -1.555000000075,
-            0.00000000004020619577220696
+            -1.5550000000000002,
+            -0.00000000000008815618544209148
           ],
           "tag": {
             "commentStart": 1867,
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "innerWall"
           },
           "to": [
-            -1.55500000008,
-            -8.099999999959794
+            -1.5550000000000002,
+            -8.100000000000088
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1372,8 +1372,8 @@ description: Variables in memory after executing m4-insert.kcl
             "sourceRange": []
           },
           "from": [
-            -1.55500000008,
-            -8.099999999959794
+            -1.5550000000000002,
+            -8.100000000000088
           ],
           "tag": {
             "commentStart": 1998,
@@ -1384,8 +1384,8 @@ description: Variables in memory after executing m4-insert.kcl
             "value": "bottomBridge"
           },
           "to": [
-            -2.7500000000183675,
-            -8.099999999948306
+            -2.7500000000000133,
+            -8.100000000000113
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1424,12 +1424,12 @@ description: Variables in memory after executing m4-insert.kcl
       },
       "start": {
         "from": [
-          -3.150000000025,
-          0.00000000005169368042384991
+          -3.15,
+          -0.00000000000011334396960489123
         ],
         "to": [
-          -3.150000000025,
-          0.00000000005169368042384991
+          -3.15,
+          -0.00000000000011334396960489123
         ],
         "units": "mm",
         "tag": null,
@@ -1509,7 +1509,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.555000000085,
+                        "n": -1.5550000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1517,7 +1517,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -8.099999999954049,
+                        "n": -8.100000000000101,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1527,7 +1527,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.7500000000183675,
+                        "n": -2.7500000000000133,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1535,7 +1535,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -8.099999999948306,
+                        "n": -8.100000000000113,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1629,7 +1629,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.55500000005,
+                        "n": -1.5550000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1637,7 +1637,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.000000000022974968987231965,
+                        "n": -0.00000000000005037489105991183,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1647,7 +1647,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000025000001771214184,
+                        "n": -0.0000000000000002342456926681171,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1655,7 +1655,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.000000000011487484487872239,
+                        "n": -0.00000000000002518743832509161,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1750,7 +1750,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.55500000007,
+                        "n": -1.5550000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1758,7 +1758,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.00000000003446245350956666,
+                        "n": -0.00000000000007556237261419411,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1768,7 +1768,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.55500000008,
+                        "n": -1.5550000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1776,7 +1776,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -8.099999999959794,
+                        "n": -8.100000000000088,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1870,7 +1870,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.750000000005103,
+                        "n": -2.7500000000000395,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1878,7 +1878,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.939999999936819,
+                        "n": -6.940000000000139,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1888,7 +1888,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.7500000000117355,
+                        "n": -2.750000000000026,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1896,7 +1896,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -8.099999999942563,
+                        "n": -8.100000000000126,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1990,7 +1990,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.1499999999719415,
+                        "n": -2.1500000000001047,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1998,7 +1998,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.0871281291715675,
+                        "n": -6.0871281291954995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.149999999978574,
+                        "n": -2.150000000000092,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2016,7 +2016,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.939999999919587,
+                        "n": -6.940000000000176,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2110,7 +2110,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.1499999999852064,
+                        "n": -2.1500000000000785,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2118,7 +2118,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.939999999925331,
+                        "n": -6.940000000000164,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2128,7 +2128,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.749999999998471,
+                        "n": -2.7500000000000524,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2136,7 +2136,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.939999999931075,
+                        "n": -6.940000000000151,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2233,8 +2233,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.150000000025,
-                    0.00000000005169368042384991
+                    -3.15,
+                    -0.00000000000011334396960489123
                   ],
                   "tag": {
                     "commentStart": 579,
@@ -2245,8 +2245,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "outerTopWall"
                   },
                   "to": [
-                    -3.150000000025,
-                    -2.279999999942562
+                    -3.15,
+                    -2.280000000000126
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2257,8 +2257,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.150000000025,
-                    -2.279999999942562
+                    -3.15,
+                    -2.280000000000126
                   ],
                   "tag": {
                     "commentStart": 667,
@@ -2269,8 +2269,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "topShoulder"
                   },
                   "to": [
-                    -2.550000000018368,
-                    -2.279999999931075
+                    -2.550000000000013,
+                    -2.280000000000151
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2281,8 +2281,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.550000000018368,
-                    -2.279999999931075
+                    -2.550000000000013,
+                    -2.280000000000151
                   ],
                   "tag": {
                     "commentStart": 810,
@@ -2293,8 +2293,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "upperNeckWall"
                   },
                   "to": [
-                    -2.550000000018368,
-                    -3.132871870667607
+                    -2.550000000000013,
+                    -3.1328718708048537
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2305,8 +2305,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.550000000018368,
-                    -3.132871870667607
+                    -2.550000000000013,
+                    -3.1328718708048537
                   ],
                   "tag": {
                     "commentStart": 956,
@@ -2317,8 +2317,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "upperRib"
                   },
                   "to": [
-                    -3.1100000000316324,
-                    -3.132871870664735
+                    -3.109999999999987,
+                    -3.1328718708048635
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2329,8 +2329,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.1100000000316324,
-                    -3.132871870664735
+                    -3.109999999999987,
+                    -3.1328718708048635
                   ],
                   "tag": {
                     "commentStart": 1094,
@@ -2341,8 +2341,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "midWall"
                   },
                   "to": [
-                    -3.110000000044407,
-                    -5.532871870673323
+                    -3.1099999999999617,
+                    -5.532871870804853
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2353,8 +2353,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.110000000044407,
-                    -5.532871870673323
+                    -3.1099999999999617,
+                    -5.532871870804853
                   ],
                   "tag": {
                     "commentStart": 1225,
@@ -2365,8 +2365,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "taperFlank"
                   },
                   "to": [
-                    -2.1499999999653094,
-                    -6.087128129162952
+                    -2.150000000000118,
+                    -6.087128129195516
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2377,8 +2377,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.1499999999653094,
-                    -6.087128129162952
+                    -2.150000000000118,
+                    -6.087128129195516
                   ],
                   "tag": {
                     "commentStart": 1361,
@@ -2389,8 +2389,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "lowerNeckWall"
                   },
                   "to": [
-                    -2.149999999978574,
-                    -6.939999999919587
+                    -2.150000000000092,
+                    -6.940000000000176
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2401,8 +2401,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.149999999978574,
-                    -6.939999999919587
+                    -2.150000000000092,
+                    -6.940000000000176
                   ],
                   "tag": {
                     "commentStart": 1506,
@@ -2413,8 +2413,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "lowerRib"
                   },
                   "to": [
-                    -2.749999999998471,
-                    -6.939999999931075
+                    -2.7500000000000524,
+                    -6.940000000000151
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2425,8 +2425,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.749999999998471,
-                    -6.939999999931075
+                    -2.7500000000000524,
+                    -6.940000000000151
                   ],
                   "tag": {
                     "commentStart": 1644,
@@ -2437,8 +2437,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "lowerBandWall"
                   },
                   "to": [
-                    -2.7500000000117355,
-                    -8.099999999942563
+                    -2.750000000000026,
+                    -8.100000000000126
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2449,13 +2449,13 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.7500000000117355,
-                    -8.099999999942563
+                    -2.750000000000026,
+                    -8.100000000000126
                   ],
                   "tag": null,
                   "to": [
-                    -3.150000000025,
-                    0.00000000004594993807505346
+                    -3.15,
+                    -0.00000000000010075004870403091
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2466,8 +2466,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.150000000025,
-                    0.00000000004594993807505346
+                    -3.15,
+                    -0.00000000000010075004870403091
                   ],
                   "tag": {
                     "commentStart": 1786,
@@ -2478,8 +2478,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "topBridge"
                   },
                   "to": [
-                    -1.555000000075,
-                    0.00000000004020619577220696
+                    -1.5550000000000002,
+                    -0.00000000000008815618544209148
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2490,8 +2490,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.555000000075,
-                    0.00000000004020619577220696
+                    -1.5550000000000002,
+                    -0.00000000000008815618544209148
                   ],
                   "tag": {
                     "commentStart": 1867,
@@ -2502,8 +2502,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "innerWall"
                   },
                   "to": [
-                    -1.55500000008,
-                    -8.099999999959794
+                    -1.5550000000000002,
+                    -8.100000000000088
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2514,8 +2514,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.55500000008,
-                    -8.099999999959794
+                    -1.5550000000000002,
+                    -8.100000000000088
                   ],
                   "tag": {
                     "commentStart": 1998,
@@ -2526,8 +2526,8 @@ description: Variables in memory after executing m4-insert.kcl
                     "value": "bottomBridge"
                   },
                   "to": [
-                    -2.7500000000183675,
-                    -8.099999999948306
+                    -2.7500000000000133,
+                    -8.100000000000113
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2566,12 +2566,12 @@ description: Variables in memory after executing m4-insert.kcl
               },
               "start": {
                 "from": [
-                  -3.150000000025,
-                  0.00000000005169368042384991
+                  -3.15,
+                  -0.00000000000011334396960489123
                 ],
                 "to": [
-                  -3.150000000025,
-                  0.00000000005169368042384991
+                  -3.15,
+                  -0.00000000000011334396960489123
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2651,7 +2651,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.1100000000316324,
+                        "n": -3.109999999999987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2659,7 +2659,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -3.132871870667607,
+                        "n": -3.1328718708048613,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2669,7 +2669,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -3.110000000044407,
+                        "n": -3.1099999999999617,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2677,7 +2677,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -5.532871870673323,
+                        "n": -5.532871870804853,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2771,7 +2771,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.150000000025,
+                        "n": -3.15,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2779,7 +2779,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.00000000005169368042384991,
+                        "n": -0.00000000000011334396960489123,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2789,7 +2789,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -3.150000000025,
+                        "n": -3.15,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2797,7 +2797,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -2.279999999942562,
+                        "n": -2.280000000000126,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2891,7 +2891,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.1100000000510395,
+                        "n": -3.1099999999999515,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2899,7 +2899,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -5.532871870681939,
+                        "n": -5.532871870804841,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2909,7 +2909,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.1499999999653094,
+                        "n": -2.150000000000118,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2917,7 +2917,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -6.087128129162952,
+                        "n": -6.087128129195516,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3011,7 +3011,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.150000000025,
+                        "n": -3.15,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3019,7 +3019,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.00000000004594993807505346,
+                        "n": -0.00000000000010075004870403091,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3029,7 +3029,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.555000000075,
+                        "n": -1.5550000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3037,7 +3037,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": 0.00000000004020619577220696,
+                        "n": -0.00000000000008815618544209148,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3131,7 +3131,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.150000000025,
+                        "n": -3.15,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3139,7 +3139,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -2.279999999936819,
+                        "n": -2.2800000000001384,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3149,7 +3149,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.550000000018368,
+                        "n": -2.550000000000013,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3157,7 +3157,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -2.279999999931075,
+                        "n": -2.280000000000151,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3251,7 +3251,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.550000000018368,
+                        "n": -2.550000000000013,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3259,7 +3259,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -2.279999999925331,
+                        "n": -2.2800000000001637,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3269,7 +3269,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.550000000018368,
+                        "n": -2.550000000000013,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3277,7 +3277,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -3.132871870667607,
+                        "n": -3.1328718708048537,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3371,7 +3371,7 @@ description: Variables in memory after executing m4-insert.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.550000000018368,
+                        "n": -2.550000000000013,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3379,7 +3379,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -3.132871870664735,
+                        "n": -3.1328718708048613,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3389,7 +3389,7 @@ description: Variables in memory after executing m4-insert.kcl
                     ],
                     "end": [
                       {
-                        "n": -3.1100000000316324,
+                        "n": -3.109999999999987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3397,7 +3397,7 @@ description: Variables in memory after executing m4-insert.kcl
                         }
                       },
                       {
-                        "n": -3.132871870664735,
+                        "n": -3.1328718708048635,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3721,8 +3721,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              0.00000000005169368042384991
+              -3.15,
+              -0.00000000000011334396960489123
             ],
             "tag": {
               "commentStart": 579,
@@ -3733,8 +3733,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "outerTopWall"
             },
             "to": [
-              -3.150000000025,
-              -2.279999999942562
+              -3.15,
+              -2.280000000000126
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3745,8 +3745,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              -2.279999999942562
+              -3.15,
+              -2.280000000000126
             ],
             "tag": {
               "commentStart": 667,
@@ -3757,8 +3757,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "topShoulder"
             },
             "to": [
-              -2.550000000018368,
-              -2.279999999931075
+              -2.550000000000013,
+              -2.280000000000151
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3769,8 +3769,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.550000000018368,
-              -2.279999999931075
+              -2.550000000000013,
+              -2.280000000000151
             ],
             "tag": {
               "commentStart": 810,
@@ -3781,8 +3781,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "upperNeckWall"
             },
             "to": [
-              -2.550000000018368,
-              -3.132871870667607
+              -2.550000000000013,
+              -3.1328718708048537
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3793,8 +3793,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.550000000018368,
-              -3.132871870667607
+              -2.550000000000013,
+              -3.1328718708048537
             ],
             "tag": {
               "commentStart": 956,
@@ -3805,8 +3805,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "upperRib"
             },
             "to": [
-              -3.1100000000316324,
-              -3.132871870664735
+              -3.109999999999987,
+              -3.1328718708048635
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3817,8 +3817,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.1100000000316324,
-              -3.132871870664735
+              -3.109999999999987,
+              -3.1328718708048635
             ],
             "tag": {
               "commentStart": 1094,
@@ -3829,8 +3829,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "midWall"
             },
             "to": [
-              -3.110000000044407,
-              -5.532871870673323
+              -3.1099999999999617,
+              -5.532871870804853
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3841,8 +3841,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.110000000044407,
-              -5.532871870673323
+              -3.1099999999999617,
+              -5.532871870804853
             ],
             "tag": {
               "commentStart": 1225,
@@ -3853,8 +3853,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "taperFlank"
             },
             "to": [
-              -2.1499999999653094,
-              -6.087128129162952
+              -2.150000000000118,
+              -6.087128129195516
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3865,8 +3865,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.1499999999653094,
-              -6.087128129162952
+              -2.150000000000118,
+              -6.087128129195516
             ],
             "tag": {
               "commentStart": 1361,
@@ -3877,8 +3877,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerNeckWall"
             },
             "to": [
-              -2.149999999978574,
-              -6.939999999919587
+              -2.150000000000092,
+              -6.940000000000176
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3889,8 +3889,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.149999999978574,
-              -6.939999999919587
+              -2.150000000000092,
+              -6.940000000000176
             ],
             "tag": {
               "commentStart": 1506,
@@ -3901,8 +3901,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerRib"
             },
             "to": [
-              -2.749999999998471,
-              -6.939999999931075
+              -2.7500000000000524,
+              -6.940000000000151
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3913,8 +3913,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -2.749999999998471,
-              -6.939999999931075
+              -2.7500000000000524,
+              -6.940000000000151
             ],
             "tag": {
               "commentStart": 1644,
@@ -3925,8 +3925,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "lowerBandWall"
             },
             "to": [
-              -2.7500000000117355,
-              -8.099999999942563
+              -2.750000000000026,
+              -8.100000000000126
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3937,8 +3937,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -3.150000000025,
-              0.00000000004594993807505346
+              -3.15,
+              -0.00000000000010075004870403091
             ],
             "tag": {
               "commentStart": 1786,
@@ -3949,8 +3949,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "topBridge"
             },
             "to": [
-              -1.555000000075,
-              0.00000000004020619577220696
+              -1.5550000000000002,
+              -0.00000000000008815618544209148
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -1.555000000075,
-              0.00000000004020619577220696
+              -1.5550000000000002,
+              -0.00000000000008815618544209148
             ],
             "tag": {
               "commentStart": 1867,
@@ -3973,8 +3973,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "innerWall"
             },
             "to": [
-              -1.55500000008,
-              -8.099999999959794
+              -1.5550000000000002,
+              -8.100000000000088
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3985,8 +3985,8 @@ description: Variables in memory after executing m4-insert.kcl
               "sourceRange": []
             },
             "from": [
-              -1.55500000008,
-              -8.099999999959794
+              -1.5550000000000002,
+              -8.100000000000088
             ],
             "tag": {
               "commentStart": 1998,
@@ -3997,8 +3997,8 @@ description: Variables in memory after executing m4-insert.kcl
               "value": "bottomBridge"
             },
             "to": [
-              -2.7500000000183675,
-              -8.099999999948306
+              -2.7500000000000133,
+              -8.100000000000113
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -4037,12 +4037,12 @@ description: Variables in memory after executing m4-insert.kcl
         },
         "start": {
           "from": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "to": [
-            -3.150000000025,
-            0.00000000005169368042384991
+            -3.15,
+            -0.00000000000011334396960489123
           ],
           "units": "mm",
           "tag": null,

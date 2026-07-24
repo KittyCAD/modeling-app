@@ -9,6 +9,7 @@ use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::errors::Tag;
 use crate::execution::BodyType;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
@@ -35,6 +36,12 @@ use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
 use crate::std::solid_consumption::validate_value_not_consumed;
 use crate::std::solid_consumption::warn_if_value_consumed_for_deprecated_call;
+
+fn deprecated_issue(source_range: SourceRange, message: impl ToString) -> CompilationIssue {
+    let mut issue = CompilationIssue::err(source_range, message);
+    issue.tag = Tag::Deprecated;
+    issue
+}
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
@@ -282,7 +289,7 @@ impl FunctionSource {
         let warn_on_deprecated_usage = !exec_state.mod_local.inside_stdlib;
         if warn_on_deprecated_usage && self.deprecated {
             exec_state.warn(
-                CompilationIssue::err(
+                deprecated_issue(
                     callsite,
                     format!(
                         "{} is deprecated, see the docs for a recommended replacement",
@@ -299,7 +306,7 @@ impl FunctionSource {
             && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
         {
             exec_state.warn(
-                CompilationIssue::err(
+                deprecated_issue(
                     callsite,
                     format!(
                         "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
@@ -360,7 +367,7 @@ impl FunctionSource {
                     None => format!("`{label}`"),
                 };
                 exec_state.warn(
-                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
+                    deprecated_issue(arg.source_range, format!("{qualified} {suffix}")),
                     annotations::WARN_DEPRECATED,
                 );
             }
@@ -2161,6 +2168,7 @@ x = f(1, oldArg = 2)
         let warnings = deprecation_warnings(&result);
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, Tag::Deprecated);
         assert!(
             warnings[0].message.contains("`f(oldArg)` is deprecated"),
             "found {}",
@@ -2209,6 +2217,7 @@ plane = startSketchOn(XY)
         let result = parse_execute(program).await.unwrap();
         let warnings = deprecation_warnings(&result);
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].tag, Tag::Deprecated);
         assert!(
             warnings[0].message.contains("`startSketchOn` is deprecated"),
             "found {}",

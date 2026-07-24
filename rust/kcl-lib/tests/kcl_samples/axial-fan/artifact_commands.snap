@@ -999,7 +999,7 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.020000000000253978,
+          "x": -0.020000000000253988,
           "y": 5.999966666574135,
           "z": 0.0
         }
@@ -1021,7 +1021,7 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000000000012543438510093097,
+            "x": -0.00000000000012544479344178683,
             "y": 0.00000000000001687538997430238
           },
           "radius": 6.000000000000045,
@@ -1031,7 +1031,7 @@ description: Artifact commands axial-fan.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 120.00000000000286
+            "value": 120.00000000000293
           },
           "relative": false
         }
@@ -1044,7 +1044,7 @@ description: Artifact commands axial-fan.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.020000000000254273,
+          "x": -0.020000000000254283,
           "y": 5.999966666574224,
           "z": 0.0
         }
@@ -1077,12 +1077,12 @@ description: Artifact commands axial-fan.kcl
           "type": "arc",
           "center": {
             "x": -0.00000000000012789769243681803,
-            "y": -0.00000000000006750155989720952
+            "y": -0.00000000000006927791673660977
           },
           "radius": 60.0,
           "start": {
             "unit": "degrees",
-            "value": 5.739138485831794
+            "value": 5.739138485831795
           },
           "end": {
             "unit": "degrees",
@@ -1101,7 +1101,7 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.5343792230418556,
+            "x": 3.534379227231865,
             "y": 11.999966666574428,
             "z": 0.0
           },
@@ -1118,17 +1118,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 3.5346422861098485,
-            "y": 17.99996666109768
+            "x": 3.5346422861088356,
+            "y": 17.999966661097837
           },
-          "radius": 6.0000000002901,
+          "radius": 6.000000000290071,
           "start": {
             "unit": "degrees",
-            "value": -90.00251206725764
+            "value": -90.00251202723634
           },
           "end": {
             "unit": "degrees",
-            "value": -150.0014306796444
+            "value": -150.00143120583013
           },
           "relative": false
         }
@@ -1143,8 +1143,8 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -24.59749479124019,
-            "y": 54.726257408988936,
+            "x": -24.59749479124027,
+            "y": 54.7262574089889,
             "z": 0.0
           },
           "relative": false
@@ -1160,17 +1160,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000003765876499528531,
-            "y": -0.00000000000012079226507921703
+            "x": -0.0000000000003836930773104541,
+            "y": -0.00000000000013500311979441904
           },
-          "radius": 59.99999999999999,
+          "radius": 60.0,
           "start": {
             "unit": "degrees",
-            "value": 114.20221194047181
+            "value": 114.20221194047188
           },
           "end": {
             "unit": "degrees",
-            "value": 120.00000000000017
+            "value": 120.00000000000028
           },
           "relative": false
         }
@@ -1185,8 +1185,8 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.000000000000406,
-            "y": 5.196152422706539,
+            "x": -3.0000000000004134,
+            "y": 5.196152422706535,
             "z": 0.0
           },
           "relative": false

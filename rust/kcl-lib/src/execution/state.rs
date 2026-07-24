@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -200,6 +201,17 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
 /// Unified metadata stream for Z0006 and future execution-backed refactors.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -207,6 +219,14 @@ pub struct DirectTagFilletMeta {
 pub enum RefactorMetadata {
     EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
 }
 
 /// Artifact state for a single module.
@@ -407,6 +427,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -1007,7 +1028,7 @@ impl ExecState {
             .iter()
             .filter_map(|m| match m {
                 RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
-                RefactorMetadata::DirectTagFillet(_) => None,
+                RefactorMetadata::DirectTagFillet(_) | RefactorMetadata::LegacyAngle(_) => None,
             })
             .collect()
     }
@@ -1019,7 +1040,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::LegacyAngle(_) => None,
                 RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
             })
             .collect()
@@ -1250,6 +1271,16 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .filter_map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => Some(*metadata),
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();

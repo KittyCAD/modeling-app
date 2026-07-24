@@ -429,6 +429,8 @@ export fn perpendicular(
 
 /// Constrain lines to meet at a given angle.
 ///
+/// Deprecated as of KCL 2.0. Use `angleDimension` for new angle constraints.
+///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
@@ -442,10 +444,39 @@ export fn perpendicular(
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
-@(impl = std_rust_constraint, feature_tree = true)
+@(impl = std_rust_constraint, feature_tree = true, deprecated_since = "2.0")
 export fn angle(
   /// The two line segments whose relative angle should match the value set with `==`.
   @input: [Segment; 2],
+  /// The desired position of the constraint label.
+  labelPosition?: Point2d,
+) {}
+
+/// Constrain a specific angle dimension sector between two lines.
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+///   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+///   line3 = line(start = [var 2mm, var 3.464mm], end = [var 4mm, var 0mm])
+///   coincident([line1.start, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.end])
+///   angleDimension(lines = [line1, line2], sector = 1) == 60deg
+/// }
+///
+/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn angleDimension(
+  /// The two line segments whose selected angle sector should match the value set with `==`.
+  lines: [Segment; 2],
+  /// Which of the four angle sectors to constrain, numbered around the line intersection.
+  sector: number(Count),
+  /// Whether to constrain the inverse of the selected sector.
+  inverse?: bool = false,
+  /// The desired position of the constraint label.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain two segments to be tangent.

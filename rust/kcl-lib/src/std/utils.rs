@@ -59,6 +59,51 @@ pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
     ((b[0] - a[0]).squared() + (b[1] - a[1]).squared()).sqrt()
 }
 
+pub(crate) fn vec2_sub(a: Coords2d, b: Coords2d) -> Coords2d {
+    [a[0] - b[0], a[1] - b[1]]
+}
+
+pub(crate) fn vec2_add(a: Coords2d, b: Coords2d) -> Coords2d {
+    [a[0] + b[0], a[1] + b[1]]
+}
+
+pub(crate) fn vec2_scale(a: Coords2d, scale: f64) -> Coords2d {
+    [a[0] * scale, a[1] * scale]
+}
+
+pub(crate) fn vec2_cross(a: Coords2d, b: Coords2d) -> f64 {
+    a[0] * b[1] - a[1] * b[0]
+}
+
+pub(crate) fn vec2_dot(a: Coords2d, b: Coords2d) -> f64 {
+    a[0] * b[0] + a[1] * b[1]
+}
+
+pub(crate) fn vec2_len(a: Coords2d) -> f64 {
+    libm::hypot(a[0], a[1])
+}
+
+/// Intersect two infinite 2D lines.
+///
+/// Each line is represented by two `[x, y]` points on the line. The points are
+/// not treated as finite segment endpoints.
+///
+/// Returns the intersection point, or `None` when the lines are parallel or
+/// nearly parallel.
+pub(crate) fn intersect_lines_2d(line0: (Coords2d, Coords2d), line1: (Coords2d, Coords2d)) -> Option<Coords2d> {
+    let p = line0.0;
+    let r = vec2_sub(line0.1, line0.0);
+    let q = line1.0;
+    let s = vec2_sub(line1.1, line1.0);
+    let denom = vec2_cross(r, s);
+    if denom.abs() <= 1e-9 {
+        return None;
+    }
+
+    let t = vec2_cross(vec2_sub(q, p), s) / denom;
+    Some(vec2_add(p, vec2_scale(r, t)))
+}
+
 /// Get the angle between these points
 pub(crate) fn between(a: Coords2d, b: Coords2d) -> Angle {
     let x = b[0] - a[0];

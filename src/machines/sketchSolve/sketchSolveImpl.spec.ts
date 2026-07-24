@@ -9,6 +9,7 @@ import {
   updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { getSketchSolveBlockingIssues } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   createControlPointSplineApiObject,
   createLineApiObject,
@@ -55,6 +56,48 @@ describe('updateSelectedIds', () => {
 
     expect(result.selectedIds).toEqual([10])
   })
+})
+
+test('only legacy angle deprecations do not block sketch solve', () => {
+  const sceneGraphDelta = createSceneGraphDelta([])
+  const angleRange: [number, number, number] = [10, 20, 0]
+  const filletWarning = {
+    message: '`fillet(legacyMethod)` is deprecated as of KCL 2.0',
+    severity: 'Warning',
+    tag: 'Deprecated',
+    sourceRange: [30, 40, 0],
+  } as any
+  const solverWarning = {
+    message: 'Constraint solver failed to find a solution',
+    severity: 'Warning',
+    tag: 'None',
+    sourceRange: [50, 60, 0],
+  } as any
+  sceneGraphDelta.exec_outcome.issues = [
+    {
+      message: '`angle` is deprecated as of KCL 2.0',
+      severity: 'Warning',
+      tag: 'Deprecated',
+      sourceRange: angleRange,
+    } as any,
+    filletWarning,
+    solverWarning,
+  ]
+  sceneGraphDelta.exec_outcome.refactorMetadata = [
+    {
+      kind: 'legacyAngle',
+      data: {
+        sourceRange: angleRange,
+        sector: 1,
+        inverse: false,
+      },
+    },
+  ]
+
+  expect(getSketchSolveBlockingIssues(sceneGraphDelta)).toEqual([
+    filletWarning,
+    solverWarning,
+  ])
 })
 
 describe('buildSegmentCtorFromObject', () => {
@@ -438,7 +481,8 @@ describe('updateSketchOutcome', () => {
     )
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'new code',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
     expect(updateCodeEditor.mock.invocationCallOrder[0]).toBeLessThan(
       syncSketchSolveOutcome.mock.invocationCallOrder[0]
@@ -480,7 +524,8 @@ describe('updateSketchOutcome', () => {
     expect(updateCodeEditor).not.toHaveBeenCalled()
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'executed editor snapshot',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
   })
 
@@ -523,7 +568,8 @@ describe('updateSketchOutcome', () => {
       expect(updateCodeEditor).toHaveBeenCalled()
       expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
         'new code',
-        sceneGraphDelta
+        sceneGraphDelta,
+        { refreshLintDiagnostics: true }
       )
     } finally {
       vi.useRealTimers()
@@ -574,7 +620,8 @@ describe('updateSketchOutcome', () => {
     )
     expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
       'last good preview',
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics: true }
     )
   })
 
@@ -612,6 +659,7 @@ describe('updateSketchOutcome', () => {
             sourceDelta: { text: 'new code' },
             sceneGraphDelta,
             suppressExecOutcomeIssues: true,
+            refreshLintDiagnostics: false,
           },
         },
       } as any)
@@ -627,6 +675,11 @@ describe('updateSketchOutcome', () => {
             severity: 'warning',
           }),
         ])
+      )
+      expect(syncSketchSolveOutcome).toHaveBeenCalledWith(
+        'new code',
+        sceneGraphDelta,
+        { refreshLintDiagnostics: false }
       )
     } finally {
       toastErrorSpy.mockRestore()

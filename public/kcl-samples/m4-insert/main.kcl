@@ -70,7 +70,7 @@ insertProfileSketch = sketch(on = XY) {
   horizontalDistance([midWall.start, centerGuide.end]) == insertGuideDiameter
   horizontalDistance([bottomBridge.end, centerGuide.end]) == insertLowerBandDiameter / 2
   verticalDistance([innerWall.end, innerWall.start]) == insertOverallHeight
-  angle([midWall, taperFlank]) == taperAngle
+  angleDimension(lines = [midWall, taperFlank], sector = 1, labelPosition = [-2.83mm, -6.02mm]) == taperAngle
 }
 
 insertProfileRegion = region(point = [-3.1475mm, -1.14mm], sketch = insertProfileSketch)

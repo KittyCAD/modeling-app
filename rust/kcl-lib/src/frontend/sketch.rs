@@ -133,6 +133,15 @@ pub trait SketchApi {
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn edit_angle_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        angle: Angle,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
     /// new_segment_info contains the IDs from the segment(s) added in a previous step.
@@ -561,6 +570,17 @@ impl Distance {
 pub struct Angle {
     pub lines: Vec<ObjectId>,
     pub angle: Number,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub sector: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub inverse: Option<bool>,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 

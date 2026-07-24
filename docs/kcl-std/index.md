@@ -166,6 +166,7 @@ layout: manual
   * [`union`](/docs/kcl-std/functions/std-solid-union)
 * [**std::solver**](/docs/kcl-std/modules/std-solver)
   * [`solver::angle`](/docs/kcl-std/functions/std-solver-angle)
+  * [`solver::angleDimension`](/docs/kcl-std/functions/std-solver-angleDimension)
   * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
   * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
   * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)

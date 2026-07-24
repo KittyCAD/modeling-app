@@ -4,6 +4,7 @@ use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::SegmentDragAnchor;
+use kcl_lib::front::EditAngleConstraintOptions;
 use kcl_lib::front::EditDistanceConstraintLabelPositionOptions;
 use kcl_lib::front::EditSegmentsOptions;
 use kcl_lib::front::Error;
@@ -621,6 +622,76 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Edit an angle constraint in a sketch.
+    #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
+    pub async fn edit_angle_constraint(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraint_id_json: &str,
+        constraint_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+        commit_solver_results: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        if !commit_solver_results && create_checkpoint {
+            return Err("Preview angle edits cannot create sketch checkpoints".into());
+        }
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint: kcl_lib::front::Constraint =
+            serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize Constraint: {e}"))?;
+        let kcl_lib::front::Constraint::Angle(angle) = constraint else {
+            return Err("edit_angle_constraint requires an Angle constraint".into());
+        };
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for edit angle constraint. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_angle_constraint_with_options(
+                &ctx,
+                version,
+                sketch,
+                constraint_id,
+                angle,
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: commit_solver_results,
+                },
+            )
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit angle constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Edit a constraint label position in a sketch.

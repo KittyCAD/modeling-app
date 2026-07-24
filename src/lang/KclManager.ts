@@ -36,6 +36,7 @@ import {
   getSketchCheckpointLimit,
   parse,
   recast,
+  resultIsOk,
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -1349,8 +1350,17 @@ export class KclManager extends File {
     this.setDiagnosticsForCurrentErrors()
   }
 
-  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+  syncSketchSolveOutcome(
+    code: string,
+    sceneGraphDelta: SceneGraphDelta,
+    options: { refreshLintDiagnostics?: boolean } = {}
+  ): void {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
+
+    this.diagnostics = []
+    if (options.refreshLintDiagnostics !== false) {
+      void this.refreshSketchSolveLintDiagnostics(code, execState)
+    }
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1365,6 +1375,33 @@ export class KclManager extends File {
       })
     )
     void this.updateArtifactGraph(execState.artifactGraph)
+  }
+
+  private async refreshSketchSolveLintDiagnostics(
+    code: string,
+    execState: ExecState
+  ): Promise<void> {
+    const instance = await this.systemDeps.wasmInstancePromise
+    const parseResult = parse(code, instance)
+    if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    const diagnostics = await lintAst({
+      ast: parseResult.program,
+      sourceCode: code,
+      instance,
+      rustContext: this.rustContext,
+      legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      directTagFilletMetadata: execState.directTagFilletMetadata,
+      artifactGraph: execState.artifactGraph,
+    })
+
+    if (this.code !== code) {
+      return
+    }
+    this.addDiagnostics(diagnostics)
   }
 
   hasErrors(): boolean {
@@ -2411,6 +2448,7 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,

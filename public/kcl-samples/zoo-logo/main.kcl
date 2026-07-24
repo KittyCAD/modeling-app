@@ -187,7 +187,7 @@ logoSketch = sketch(on = XY) {
   parallel([o1Guide01, o1Guide02])
   equalLength([o1Guide01, o1Guide02])
 
-  angle([frameBottom, o1Line01]) == 47deg
+  angleDimension(lines = [frameBottom, o1Line01], sector = 1, labelPosition = [1.06in, 0.06in]) == 47deg
   horizontalDistance([frameLeft.end, o1GuideArc04.center]) == logoHeight * 1.448
   verticalDistance([frameLeft.end, o1GuideArc04.center]) == logoHeight * 0.5
   radius(o1Arc03) == logoHeight * 0.5
@@ -269,7 +269,7 @@ logoSketch = sketch(on = XY) {
   horizontalDistance([o2Arc04.center, frameRight.start]) == logoHeight * 0.5
   verticalDistance([frameRight.start, o2Arc04.center]) == logoHeight * 0.5
   distance([o2GuideArc04.end, o2GuideArc04.start]) == logoHeight * 0.1
-  angle([frameBottom, o2Line03]) == 47deg
+  angleDimension(lines = [frameBottom, o2Line03], sector = 1, labelPosition = [2.2in, 0.04in]) == 47deg
   radius(o2Arc02) == logoHeight * 0.5
   radius(o2Arc03) == logoHeight * 0.27
 

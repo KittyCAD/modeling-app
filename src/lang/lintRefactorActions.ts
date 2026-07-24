@@ -2,8 +2,10 @@ import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
 import { toUtf16 } from '@src/lang/errors'
+import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import type {
   ArtifactGraph,
@@ -11,6 +13,7 @@ import type {
   EdgeRefactorMeta,
   Program,
 } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
@@ -26,6 +29,7 @@ type RefactorLintActionsParams = {
   shouldShowZ0005: boolean
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
+  legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   artifactGraph?: ArtifactGraph
   z0006RefactorCache?: Z0006RefactorCache
 }
@@ -65,6 +69,7 @@ async function createZ0005Actions({
   | 'instance'
   | 'edgeRefactorMetadata'
   | 'directTagFilletMetadata'
+  | 'legacyAngleRefactorMetadata'
   | 'artifactGraph'
 >): Promise<RefactorLintActionsResult> {
   if (lint.finding.code !== 'Z0005' || !rustContext || !shouldShowZ0005) {
@@ -143,7 +148,11 @@ function computeZ0006RefactorSource({
   sourceRange,
 }: Omit<
   RefactorLintActionsParams,
-  'lint' | 'rustContext' | 'shouldShowZ0005' | 'z0006RefactorCache'
+  | 'lint'
+  | 'rustContext'
+  | 'shouldShowZ0005'
+  | 'legacyAngleRefactorMetadata'
+  | 'z0006RefactorCache'
 > & {
   sourceRange?: [number, number, number]
 }): string | null {
@@ -166,7 +175,7 @@ function computeZ0006RefactorSource({
 async function getZ0006RefactorSource(
   params: Omit<
     RefactorLintActionsParams,
-    'lint' | 'rustContext' | 'shouldShowZ0005'
+    'lint' | 'rustContext' | 'shouldShowZ0005' | 'legacyAngleRefactorMetadata'
   > & {
     sourceRange?: [number, number, number]
   }
@@ -237,6 +246,56 @@ async function createZ0006Actions({
   }
 }
 
+function createZ0007Actions({
+  lint,
+  ast,
+  sourceCode,
+  instance,
+  legacyAngleRefactorMetadata,
+}: RefactorLintActionsParams): RefactorLintActionsResult {
+  if (lint.finding.code !== 'Z0007') return {}
+
+  const metadata = legacyAngleRefactorMetadata.find(
+    ({ sourceRange }) =>
+      sourceRange[0] === lint.pos[0] &&
+      sourceRange[1] === lint.pos[1] &&
+      sourceRange[2] === lint.pos[2]
+  )
+  if (!metadata) return {}
+
+  const modifiedAst = convertLegacyAngleToAngleDimension(
+    ast,
+    metadata.sourceRange,
+    metadata.sector,
+    metadata.inverse,
+    instance
+  )
+  if (err(modifiedAst)) return {}
+
+  const convertedSource = recast(modifiedAst, instance)
+  if (err(convertedSource)) return {}
+
+  return {
+    actions: [
+      {
+        name: 'Convert to angleDimension',
+        apply: (view: EditorView, _from: number, _to: number) => {
+          if (view.state.doc.toString() !== sourceCode) return
+
+          view.dispatch({
+            changes: {
+              from: 0,
+              to: view.state.doc.length,
+              insert: convertedSource,
+            },
+            annotations: [lspCodeActionEvent],
+          })
+        },
+      },
+    ],
+  }
+}
+
 export async function resolveRefactorLintActions(
   params: RefactorLintActionsParams
 ): Promise<RefactorLintActionsResult> {
@@ -245,6 +304,9 @@ export async function resolveRefactorLintActions(
 
   const z0006 = await createZ0006Actions(params)
   if (z0006.actions || z0006.messageOverride) return z0006
+
+  const z0007 = createZ0007Actions(params)
+  if (z0007.actions || z0007.messageOverride) return z0007
 
   return {}
 }

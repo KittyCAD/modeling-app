@@ -5,8 +5,7 @@ import {
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { getAngleDiff } from '@src/lib/utils'
-import { TAU } from '@src/lib/utils2d'
+import { TAU, getAngleDiff } from '@src/lib/utils2d'
 import {
   getArcPoints,
   getLinePoints,
