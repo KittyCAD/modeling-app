@@ -1654,7 +1654,7 @@ impl Node<SketchBlock> {
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) => None,
+                Plane::Object(_) | Plane::PrimitiveFace(_) => None,
             };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());

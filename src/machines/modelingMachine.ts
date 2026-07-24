@@ -14,6 +14,7 @@ import {
 } from '@src/machines/modelingSharedContext'
 import type {
   DefaultPlane,
+  EnginePrimitiveSelection,
   ExtrudeFacePlane,
   ModelingMachineContext,
   ModelingMachineInput,
@@ -3232,6 +3233,7 @@ export const modelingMachine = setup({
         input:
           | {
               artifactOrPlaneId: ArtifactId | undefined
+              primitiveFaceSelection?: EnginePrimitiveSelection
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
@@ -3250,6 +3252,7 @@ export const modelingMachine = setup({
         }
         const {
           artifactOrPlaneId,
+          primitiveFaceSelection,
           kclManager,
           rustContext,
           engineCommandManager,
@@ -3263,13 +3266,53 @@ export const modelingMachine = setup({
           )
         }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
+        const primitiveFace =
+          primitiveFaceSelection?.parentEntityId === undefined
+            ? null
+            : {
+                solidId: primitiveFaceSelection.parentEntityId,
+                index: primitiveFaceSelection.primitiveIndex,
+              }
 
-        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-          sceneInfra: kclManager.sceneInfra,
-          rustContext,
-        })
-        if (!err(defaultResult) && defaultResult) {
-          result = defaultResult
+        if (primitiveFaceSelection && !primitiveFace) {
+          return reject(
+            new Error('Could not resolve the selected primitive face in KCL.')
+          )
+        }
+
+        if (primitiveFaceSelection) {
+          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
+            primitiveFaceSelection.entityId
+          )
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+            return reject(
+              new Error(
+                'Could not get details for the selected primitive face.'
+              )
+            )
+          }
+          const { origin, z_axis, y_axis } = faceInfo
+          result = {
+            type: 'extrudeFace',
+            faceId: primitiveFaceSelection.entityId,
+            faceInfo: { type: 'primitiveFace' },
+            position: [origin.x, origin.y, origin.z].map(
+              (coordinate) =>
+                coordinate / kclManager.sceneInfra.baseUnitMultiplier
+            ) as [number, number, number],
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            sketchPathToNode: [],
+            extrudePathToNode: [],
+          }
+        } else {
+          const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+            sceneInfra: kclManager.sceneInfra,
+            rustContext,
+          })
+          if (!err(defaultResult) && defaultResult) {
+            result = defaultResult
+          }
         }
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
@@ -3387,6 +3430,16 @@ export const modelingMachine = setup({
         if (result.type === 'defaultPlane') {
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
+          }
+        } else if (primitiveFace) {
+          if (setProgramOutcome.type !== 'Success') {
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
+            )
+          }
+
+          sketchArgs = {
+            on: { primitiveFace },
           }
         } else {
           if (setProgramOutcome.type !== 'Success') {
@@ -7566,8 +7619,16 @@ export const modelingMachine = setup({
         },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
+          const primitiveFaceSelection =
+            context.selectionRanges.otherSelections.find(
+              (selection): selection is EnginePrimitiveSelection =>
+                isEnginePrimitiveSelection(selection) &&
+                selection.entityId === event.data &&
+                selection.primitiveType === 'face'
+            )
           return {
             artifactOrPlaneId: event.data,
+            primitiveFaceSelection,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
