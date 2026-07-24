@@ -205,7 +205,7 @@ export fn helix(
   @(includeInSnippet = true)
   radius?: number(Length),
   /// Axis to use for the helix. Can be an Axis3d, an Edge, a Segment, or an edge reference object when not using a cylinder.
-  /// Edge reference objects use adjacent faces, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.
+  /// Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge | Segment | any,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
