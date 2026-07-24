@@ -9,6 +9,7 @@
   logic @left
   pipe @left
   range
+  enumBody
 }
 
 @top Program {
@@ -20,7 +21,7 @@ statement[@isGroup=Statement] {
   ImportStatement { kw<"import"> ImportItems ImportFrom String } |
   FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition ParamList Body } |
   VariableDeclaration { kw<"export">? VariableDefinition Equals expression } |
-  TypeDeclaration { kw<"export">? kw<"type"> identifier ("=" type)? } |
+  TypeDeclaration { kw<"export">? kw<"type"> identifier ("=" type | !enumBody EnumBody)? } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression } |
   Annotation { AnnotationName AnnotationList? }
@@ -31,6 +32,13 @@ AnnotationList { !annotation "(" commaSep<AnnotationProperty> ")" }
 ParamList { "(" commaSep<Parameter { VariableDefinition "?"? (":" type)? }> ")" }
 
 Body { "{" statement* "}" }
+
+// An enum type declaration's body. Every variant arm begins with `|`; the
+// standalone `|` of an empty enum classifies the body as a nominal sum.
+// The `|` here is a distinct token from LogicOp, so `&` is not an arm marker.
+EnumBody { "{" "|" (EnumVariant ("|" EnumVariant)*)? "}" }
+
+EnumVariant { identifier }
 
 ImportItems { commaSep1NoTrailingComma<ImportItem> }
 ImportItem { identifier (ImportItemAs identifier)? }
