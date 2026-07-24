@@ -76,7 +76,7 @@ description: Variables in memory after executing washer.kcl
           },
           "ccw": true,
           "center": [
-            0.000000000000999999994004197,
+            0.0000000000009999999940041969,
             0.0
           ],
           "from": [
@@ -206,7 +206,7 @@ description: Variables in memory after executing washer.kcl
             },
             "ccw": true,
             "center": [
-              0.000000000000999999994004197,
+              0.0000000000009999999940041969,
               0.0
             ],
             "from": [
@@ -331,7 +331,7 @@ description: Variables in memory after executing washer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000999999994004197,
+                        "n": 0.0000000000009999999940041969,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -557,7 +557,7 @@ description: Variables in memory after executing washer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000000000999999994004197,
+                    0.0000000000009999999940041969,
                     0.0
                   ],
                   "from": [

@@ -275,10 +275,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -288,8 +288,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -300,8 +300,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -312,8 +312,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -325,14 +325,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -342,8 +342,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -354,8 +354,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -366,8 +366,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -406,12 +406,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -529,10 +529,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -542,8 +542,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -554,8 +554,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -566,8 +566,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -579,14 +579,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -596,8 +596,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -608,8 +608,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -620,8 +620,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -660,12 +660,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -783,10 +783,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -796,8 +796,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -808,8 +808,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -820,8 +820,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -833,14 +833,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -850,8 +850,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -862,8 +862,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -874,8 +874,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -914,12 +914,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -1037,10 +1037,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -1050,8 +1050,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1062,8 +1062,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -1074,8 +1074,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1087,14 +1087,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -1104,8 +1104,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1116,8 +1116,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -1128,8 +1128,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1168,12 +1168,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -1293,10 +1293,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.71875
             ],
             "from": [
-              2.687500000902488,
-              1.2500821189030098
+              2.6875000000000093,
+              1.2500781253448379
             ],
-            "radius": 0.5632990610749211,
+            "radius": 0.56330238424205,
             "tag": {
               "commentStart": 15806,
               "end": 15810,
@@ -1306,8 +1306,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc1"
             },
             "to": [
-              3.312499999097512,
-              1.2500821189030098
+              3.3124999999999907,
+              1.2500781253448379
             ],
             "type": "Arc",
             "units": "in"
@@ -1318,8 +1318,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.312499999097512,
-              1.2500821189030098
+              3.3124999999999907,
+              1.2500781253448379
             ],
             "tag": {
               "commentStart": 15917,
@@ -1330,8 +1330,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line2"
             },
             "to": [
-              3.3124999990976645,
-              0.6250821189026289
+              3.3124999999999907,
+              0.6250781253448379
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1343,14 +1343,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              3.0,
-              0.6250000000018283
+              3.000000000000006,
+              0.625
             ],
             "from": [
-              3.3124999984961074,
-              0.6250821189024004
+              3.3124999999999907,
+              0.6250781253448379
             ],
-            "radius": 0.3125000092857294,
+            "radius": 0.31250000976569553,
             "tag": {
               "commentStart": 15998,
               "end": 16002,
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc3"
             },
             "to": [
-              2.6875000015038926,
-              0.6250821189022481
+              2.6875000000000218,
+              0.6250781253448378
             ],
             "type": "Arc",
             "units": "in"
@@ -1372,8 +1372,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.6875000009023355,
-              0.6250821189024766
+              2.6875000000000218,
+              0.6250781253448378
             ],
             "tag": {
               "commentStart": 16109,
@@ -1384,8 +1384,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line4"
             },
             "to": [
-              2.687500000902488,
-              1.2500821189029336
+              2.6875000000000093,
+              1.2500781253448379
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1424,12 +1424,12 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "start": {
           "from": [
-            2.687500000902488,
-            1.2500821189030098
+            2.6875000000000093,
+            1.2500781253448379
           ],
           "to": [
-            2.687500000902488,
-            1.2500821189030098
+            2.6875000000000093,
+            1.2500781253448379
           ],
           "units": "in",
           "tag": null,
@@ -1550,10 +1550,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -1563,8 +1563,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1575,8 +1575,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -1587,8 +1587,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1600,14 +1600,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -1617,8 +1617,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1629,8 +1629,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -1641,8 +1641,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1681,12 +1681,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -1804,10 +1804,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -1817,8 +1817,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1829,8 +1829,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -1841,8 +1841,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1854,14 +1854,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -1871,8 +1871,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1883,8 +1883,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -1895,8 +1895,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1935,12 +1935,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -2058,10 +2058,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -2071,8 +2071,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2083,8 +2083,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -2095,8 +2095,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2108,14 +2108,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -2125,8 +2125,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -2149,8 +2149,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2189,12 +2189,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -2312,10 +2312,10 @@ description: Variables in memory after executing cold-plate.kcl
                   1.71875
                 ],
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
-                "radius": 0.5632990610749211,
+                "radius": 0.56330238424205,
                 "tag": {
                   "commentStart": 15806,
                   "end": 15810,
@@ -2325,8 +2325,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2337,8 +2337,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  3.312499999097512,
-                  1.2500821189030098
+                  3.3124999999999907,
+                  1.2500781253448379
                 ],
                 "tag": {
                   "commentStart": 15917,
@@ -2349,8 +2349,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line2"
                 },
                 "to": [
-                  3.3124999990976645,
-                  0.6250821189026289
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2362,14 +2362,14 @@ description: Variables in memory after executing cold-plate.kcl
                 },
                 "ccw": true,
                 "center": [
-                  3.0,
-                  0.6250000000018283
+                  3.000000000000006,
+                  0.625
                 ],
                 "from": [
-                  3.3124999984961074,
-                  0.6250821189024004
+                  3.3124999999999907,
+                  0.6250781253448379
                 ],
-                "radius": 0.3125000092857294,
+                "radius": 0.31250000976569553,
                 "tag": {
                   "commentStart": 15998,
                   "end": 16002,
@@ -2379,8 +2379,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "arc3"
                 },
                 "to": [
-                  2.6875000015038926,
-                  0.6250821189022481
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -2391,8 +2391,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.6875000009023355,
-                  0.6250821189024766
+                  2.6875000000000218,
+                  0.6250781253448378
                 ],
                 "tag": {
                   "commentStart": 16109,
@@ -2403,8 +2403,8 @@ description: Variables in memory after executing cold-plate.kcl
                   "value": "line4"
                 },
                 "to": [
-                  2.687500000902488,
-                  1.2500821189029336
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -2443,12 +2443,12 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "start": {
               "from": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "to": [
-                2.687500000902488,
-                1.2500821189030098
+                2.6875000000000093,
+                1.2500781253448379
               ],
               "units": "in",
               "tag": null,
@@ -2503,7 +2503,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.687500000902488,
+                        "n": 2.6875000000000093,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2511,7 +2511,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500821189030098,
+                        "n": 1.2500781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2521,7 +2521,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.312499999097512,
+                        "n": 3.3124999999999907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2529,7 +2529,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500821189030098,
+                        "n": 1.2500781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2655,7 +2655,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 3.3124999984961074,
+                        "n": 3.3124999999999845,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2663,7 +2663,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250821189024004,
+                        "n": 0.6250781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2673,7 +2673,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.6875000015038926,
+                        "n": 2.6875000000000155,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2681,7 +2681,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.625082118902248,
+                        "n": 0.6250781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2699,7 +2699,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000018283,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2807,7 +2807,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000000000001995350931333173,
+                        "n": -0.00000000000000000002389312529640224,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2815,7 +2815,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000006094500702973547,
+                        "n": 0.000000000000000006240380445503733,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2833,7 +2833,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000012188,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2928,7 +2928,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.312499999097512,
+                        "n": 3.3124999999999907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2936,7 +2936,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500821189029336,
+                        "n": 1.2500781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2946,7 +2946,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.3124999990976645,
+                        "n": 3.3124999999999907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2954,7 +2954,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250821189026289,
+                        "n": 0.6250781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3048,7 +3048,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.6875000009023355,
+                        "n": 2.6875000000000093,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3056,7 +3056,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250821189024766,
+                        "n": 0.6250781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3066,7 +3066,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.687500000902488,
+                        "n": 2.6875000000000093,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3074,7 +3074,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500821189029336,
+                        "n": 1.2500781253448379,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3176,10 +3176,10 @@ description: Variables in memory after executing cold-plate.kcl
                     1.71875
                   ],
                   "from": [
-                    2.687500000902488,
-                    1.2500821189030098
+                    2.6875000000000093,
+                    1.2500781253448379
                   ],
-                  "radius": 0.5632990610749211,
+                  "radius": 0.56330238424205,
                   "tag": {
                     "commentStart": 15806,
                     "end": 15810,
@@ -3189,8 +3189,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    3.312499999097512,
-                    1.2500821189030098
+                    3.3124999999999907,
+                    1.2500781253448379
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3201,8 +3201,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.312499999097512,
-                    1.2500821189030098
+                    3.3124999999999907,
+                    1.2500781253448379
                   ],
                   "tag": {
                     "commentStart": 15917,
@@ -3213,25 +3213,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line2"
                   },
                   "to": [
-                    3.3124999990976645,
-                    0.6250821189026289
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    3.3124999990976645,
-                    0.6250821189026289
-                  ],
-                  "tag": null,
-                  "to": [
-                    3.3124999984961074,
-                    0.6250821189024004
+                    3.3124999999999907,
+                    0.6250781253448379
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3243,14 +3226,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.0,
-                    0.6250000000018283
+                    3.000000000000006,
+                    0.625
                   ],
                   "from": [
-                    3.3124999984961074,
-                    0.6250821189024004
+                    3.3124999999999907,
+                    0.6250781253448379
                   ],
-                  "radius": 0.3125000092857294,
+                  "radius": 0.31250000976569553,
                   "tag": {
                     "commentStart": 15998,
                     "end": 16002,
@@ -3260,8 +3243,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    2.6875000015038926,
-                    0.6250821189022481
+                    2.6875000000000218,
+                    0.6250781253448378
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3272,25 +3255,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.6875000015038926,
-                    0.6250821189022481
-                  ],
-                  "tag": null,
-                  "to": [
-                    2.6875000009023355,
-                    0.6250821189024766
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    2.6875000009023355,
-                    0.6250821189024766
+                    2.6875000000000218,
+                    0.6250781253448378
                   ],
                   "tag": {
                     "commentStart": 16109,
@@ -3301,8 +3267,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line4"
                   },
                   "to": [
-                    2.687500000902488,
-                    1.2500821189029336
+                    2.6875000000000093,
+                    1.2500781253448379
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3341,12 +3307,12 @@ description: Variables in memory after executing cold-plate.kcl
               },
               "start": {
                 "from": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "to": [
-                  2.687500000902488,
-                  1.2500821189030098
+                  2.6875000000000093,
+                  1.2500781253448379
                 ],
                 "units": "in",
                 "tag": null,
@@ -3394,7 +3360,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000000020883032912258602,
+                        "n": 0.000000000000000000024312080947383117,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3402,7 +3368,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000000000000000000000000000000000000000007483586690204606,
+                        "n": 0.0000000000000000000000000000000000000000000000000000000000006052854703857126,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3523,10 +3489,10 @@ description: Variables in memory after executing cold-plate.kcl
             1.71875
           ],
           "from": [
-            2.687500000902488,
-            1.2500821189030098
+            2.6875000000000093,
+            1.2500781253448379
           ],
-          "radius": 0.5632990610749211,
+          "radius": 0.56330238424205,
           "tag": {
             "commentStart": 15806,
             "end": 15810,
@@ -3536,8 +3502,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc1"
           },
           "to": [
-            3.312499999097512,
-            1.2500821189030098
+            3.3124999999999907,
+            1.2500781253448379
           ],
           "type": "Arc",
           "units": "in"
@@ -3548,8 +3514,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            3.312499999097512,
-            1.2500821189030098
+            3.3124999999999907,
+            1.2500781253448379
           ],
           "tag": {
             "commentStart": 15917,
@@ -3560,8 +3526,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line2"
           },
           "to": [
-            3.3124999990976645,
-            0.6250821189026289
+            3.3124999999999907,
+            0.6250781253448379
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3573,14 +3539,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            3.0,
-            0.6250000000018283
+            3.000000000000006,
+            0.625
           ],
           "from": [
-            3.3124999984961074,
-            0.6250821189024004
+            3.3124999999999907,
+            0.6250781253448379
           ],
-          "radius": 0.3125000092857294,
+          "radius": 0.31250000976569553,
           "tag": {
             "commentStart": 15998,
             "end": 16002,
@@ -3590,8 +3556,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc3"
           },
           "to": [
-            2.6875000015038926,
-            0.6250821189022481
+            2.6875000000000218,
+            0.6250781253448378
           ],
           "type": "Arc",
           "units": "in"
@@ -3602,8 +3568,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            2.6875000009023355,
-            0.6250821189024766
+            2.6875000000000218,
+            0.6250781253448378
           ],
           "tag": {
             "commentStart": 16109,
@@ -3614,8 +3580,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line4"
           },
           "to": [
-            2.687500000902488,
-            1.2500821189029336
+            2.6875000000000093,
+            1.2500781253448379
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3654,12 +3620,12 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "start": {
         "from": [
-          2.687500000902488,
-          1.2500821189030098
+          2.6875000000000093,
+          1.2500781253448379
         ],
         "to": [
-          2.687500000902488,
-          1.2500821189030098
+          2.6875000000000093,
+          1.2500781253448379
         ],
         "units": "in",
         "tag": null,
@@ -4112,8 +4078,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.00000000000000000001765089238459434,
-              1.2500000000007059
+              0.000000000000000000018274912584780813,
+              1.25
             ],
             "tag": {
               "commentStart": 4522,
@@ -4124,8 +4090,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line1"
             },
             "to": [
-              0.6875000000006778,
-              1.250000000001059
+              0.6875,
+              1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4136,8 +4102,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              0.6875000000006778,
-              1.250000000001059
+              0.6875,
+              1.25
             ],
             "tag": {
               "commentStart": 4600,
@@ -4148,8 +4114,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line2"
             },
             "to": [
-              0.687500000001532,
-              0.6250000000020622
+              0.6875,
+              0.625
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4161,14 +4127,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              0.9999999989688589,
-              0.6250839229331315
+              0.9999999999999973,
+              0.6250781193968374
             ],
             "from": [
-              0.6875000006905455,
-              0.6250000000024152
+              0.6875,
+              0.625
             ],
-            "radius": 0.3125000095472066,
+            "radius": 0.31250000976422143,
             "tag": {
               "commentStart": 4681,
               "end": 4685,
@@ -4178,8 +4144,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc3"
             },
             "to": [
-              1.312500008158376,
-              0.6250689711447406
+              1.312500007323362,
+              0.6250390612906845
             ],
             "type": "Arc",
             "units": "in"
@@ -4190,8 +4156,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              1.3125000009738137,
-              0.6250689711452708
+              1.312500000000001,
+              0.6250390612915998
             ],
             "tag": {
               "commentStart": 4792,
@@ -4202,8 +4168,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line4"
             },
             "to": [
-              1.3125000009740142,
-              1.2500689711448445
+              1.312500000000001,
+              1.2500390612915997
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4214,8 +4180,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              1.3125000009740142,
-              1.2500689711448445
+              1.312500000000001,
+              1.2500390612915997
             ],
             "tag": {
               "commentStart": 4873,
@@ -4226,8 +4192,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line5"
             },
             "to": [
-              2.6875000009750307,
-              1.2500689711452135
+              2.6875000000000013,
+              1.2500390612915997
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4238,8 +4204,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.6875000009750307,
-              1.2500689711452135
+              2.6875000000000013,
+              1.2500390612915997
             ],
             "tag": {
               "commentStart": 4954,
@@ -4250,8 +4216,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line6"
             },
             "to": [
-              2.6875000009757417,
-              0.6250689711461275
+              2.6875000000000013,
+              0.6250390612915998
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4263,14 +4229,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              3.000000000350633,
-              0.6251125788717652
+              2.9999999999999996,
+              0.6250781243636977
             ],
             "from": [
-              2.6875000009757417,
-              0.6250689711461275
+              2.6875000000000013,
+              0.6250390612915998
             ],
-            "radius": 0.31250000241750514,
+            "radius": 0.31250000244147597,
             "tag": {
               "commentStart": 5035,
               "end": 5039,
@@ -4280,8 +4246,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc7"
             },
             "to": [
-              3.3125000017640733,
-              0.62508752811213
+              3.3125000013750387,
+              0.6250523072552162
             ],
             "type": "Arc",
             "units": "in"
@@ -4292,8 +4258,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.312500000610201,
-              0.6250875281122961
+              3.312500000000001,
+              0.6250523072553298
             ],
             "tag": {
               "commentStart": 5146,
@@ -4304,8 +4270,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line8"
             },
             "to": [
-              3.312500000610539,
-              1.250087528111568
+              3.312500000000001,
+              1.2500523072553298
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4316,8 +4282,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              3.312500000610539,
-              1.250087528111568
+              3.312500000000001,
+              1.2500523072553298
             ],
             "tag": {
               "commentStart": 5227,
@@ -4328,8 +4294,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line9"
             },
             "to": [
-              4.000000000611555,
-              1.2500875281112946
+              4.000000000000001,
+              1.2500523072553298
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4340,8 +4306,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              4.000000000611555,
-              1.2500875281112946
+              4.000000000000001,
+              1.2500523072553298
             ],
             "tag": {
               "commentStart": 5305,
@@ -4352,8 +4318,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line10"
             },
             "to": [
-              4.046864803599423,
-              1.0470937646136822
+              4.046864802988306,
+              1.047058543758406
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4365,14 +4331,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              4.655869979318706,
-              1.1875847070250658
+              4.655867849261463,
+              1.1875587180767853
             ],
             "from": [
-              4.046864804807278,
-              1.047093764892185
+              4.046864802988306,
+              1.047058543758406
             ],
-            "radius": 0.6250000059224637,
+            "radius": 0.6250000074827834,
             "tag": {
               "commentStart": 5384,
               "end": 5389,
@@ -4382,8 +4348,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc11"
             },
             "to": [
-              4.655951299297589,
-              0.5625847063929532
+              4.6559111200594945,
+              0.5625587120918915
             ],
             "type": "Arc",
             "units": "in"
@@ -4394,8 +4360,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              4.655951299297209,
-              0.5625847096255042
+              4.655911120059081,
+              0.5625587180767895
             ],
             "tag": {
               "commentStart": 5499,
@@ -4406,8 +4372,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line12"
             },
             "to": [
-              5.655951299297635,
-              0.5625847096255246
+              5.655911120059081,
+              0.5625587180767895
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4418,8 +4384,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.655951299297635,
-              0.5625847096255246
+              5.655911120059081,
+              0.5625587180767895
             ],
             "tag": {
               "commentStart": 5581,
@@ -4430,8 +4396,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line13"
             },
             "to": [
-              5.655951299297901,
-              -0.000015935842780760397
+              5.655911120059081,
+              -0.00004192739120217362
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4442,8 +4408,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              5.655951299297901,
-              -0.000015935842780760397
+              5.655911120059081,
+              -0.00004192739120217362
             ],
             "tag": {
               "commentStart": 5660,
@@ -4454,8 +4420,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line14"
             },
             "to": [
-              -5.655951299297991,
-              -0.00001593584282556346
+              -5.6559111200634895,
+              -0.000041927391202173635
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4466,8 +4432,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -5.655951299297991,
-              -0.00001593584282556346
+              -5.6559111200634895,
+              -0.000041927391202173635
             ],
             "tag": {
               "commentStart": 5737,
@@ -4478,8 +4444,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line15"
             },
             "to": [
-              -5.655951299297832,
-              0.5625847096254798
+              -5.6559111200634895,
+              0.5625587180767895
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4490,8 +4456,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -5.655951299297832,
-              0.5625847096254798
+              -5.6559111200634895,
+              0.5625587180767895
             ],
             "tag": {
               "commentStart": 5818,
@@ -4502,8 +4468,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line16"
             },
             "to": [
-              -4.655951299297032,
-              0.5625847096255938
+              -4.6559111200634895,
+              0.5625587180767895
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4515,14 +4481,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              -4.6558699793196485,
-              1.1875847070251557
+              -4.655867849261175,
+              1.1875587180767821
             ],
             "from": [
-              -4.655951299296767,
-              0.5625847113596194
+              -4.6559111200634895,
+              0.5625587180767895
             ],
-            "radius": 0.6250000009558873,
+            "radius": 0.6250000014978825,
             "tag": {
               "commentStart": 5902,
               "end": 5907,
@@ -4532,8 +4498,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc16"
             },
             "to": [
-              -4.046864809648106,
-              1.0470937660068986
+              -4.046864808820024,
+              1.04705854510256
             ],
             "type": "Arc",
             "units": "in"
@@ -4544,8 +4510,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -4.046864803600778,
-              1.0470937646119813
+              -4.046864802988306,
+              1.0470585437571553
             ],
             "tag": {
               "commentStart": 6020,
@@ -4556,8 +4522,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line17"
             },
             "to": [
-              -4.00000000061325,
-              1.250087528109398
+              -4.000000000000001,
+              1.2500523072540792
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4568,8 +4534,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -4.00000000061325,
-              1.250087528109398
+              -4.000000000000001,
+              1.2500523072540792
             ],
             "tag": {
               "commentStart": 6101,
@@ -4580,8 +4546,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line18"
             },
             "to": [
-              -3.3125000006118945,
-              1.2500875281097499
+              -3.312500000000001,
+              1.2500523072540792
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4592,8 +4558,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -3.3125000006118945,
-              1.2500875281097499
+              -3.312500000000001,
+              1.2500523072540792
             ],
             "tag": {
               "commentStart": 6182,
@@ -4604,8 +4570,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line19"
             },
             "to": [
-              -3.3125000006112173,
-              0.6250875281105951
+              -3.312500000000001,
+              0.6250523072540793
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4617,14 +4583,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              -3.000000000596473,
-              0.6251125788716172
+              -2.9999999999999996,
+              0.6250781243641712
             ],
             "from": [
-              -3.3125000006112173,
-              0.6250875281105951
+              -3.312500000000001,
+              0.6250523072540793
             ],
-            "radius": 0.3125000010188092,
+            "radius": 0.3125000010664384,
             "tag": {
               "commentStart": 6266,
               "end": 6271,
@@ -4634,8 +4600,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc20"
             },
             "to": [
-              -2.6875000026202778,
-              0.6250689711458194
+              -2.6875000013750387,
+              0.6250390612935282
             ],
             "type": "Arc",
             "units": "in"
@@ -4646,8 +4612,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.6875000009767582,
-              0.6250689711455704
+              -2.6875000000000013,
+              0.6250390612933565
             ],
             "tag": {
               "commentStart": 6381,
@@ -4658,8 +4624,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line21"
             },
             "to": [
-              -2.6875000009763865,
-              1.2500689711448014
+              -2.6875000000000013,
+              1.2500390612933565
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4670,8 +4636,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -2.6875000009763865,
-              1.2500689711448014
+              -2.6875000000000013,
+              1.2500390612933565
             ],
             "tag": {
               "commentStart": 6465,
@@ -4682,8 +4648,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line22"
             },
             "to": [
-              -1.3125000009750307,
-              1.250068971144485
+              -1.312500000000001,
+              1.2500390612933565
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4694,8 +4660,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -1.3125000009750307,
-              1.250068971144485
+              -1.312500000000001,
+              1.2500390612933565
             ],
             "tag": {
               "commentStart": 6549,
@@ -4706,8 +4672,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line23"
             },
             "to": [
-              -1.3125000009744914,
-              0.6250689711447137
+              -1.312500000000001,
+              0.6250390612933565
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4719,14 +4685,14 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "ccw": true,
             "center": [
-              -0.9999999989695366,
-              0.625083922933591
+              -0.9999999999999966,
+              0.6250781193966022
             ],
             "from": [
-              -1.312500002310563,
-              0.6250689711444632
+              -1.312500000000001,
+              0.6250390612933565
             ],
-            "radius": 0.31250000369871606,
+            "radius": 0.31250000244086124,
             "tag": {
               "commentStart": 6633,
               "end": 6638,
@@ -4736,8 +4702,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "arc24"
             },
             "to": [
-              -0.6875000065397134,
-              0.6250000000046917
+              -0.6875000073233591,
+              0.6250000000018309
             ],
             "type": "Arc",
             "units": "in"
@@ -4748,8 +4714,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.6875000000022097,
-              0.6250000000027681
+              -0.6875,
+              0.625
             ],
             "tag": {
               "commentStart": 6748,
@@ -4760,8 +4726,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line25"
             },
             "to": [
-              -0.6875000000016944,
-              1.2500000000017648
+              -0.6875,
+              1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4772,8 +4738,8 @@ description: Variables in memory after executing cold-plate.kcl
               "sourceRange": []
             },
             "from": [
-              -0.6875000000016944,
-              1.2500000000017648
+              -0.6875,
+              1.25
             ],
             "tag": {
               "commentStart": 6832,
@@ -4784,8 +4750,8 @@ description: Variables in memory after executing cold-plate.kcl
               "value": "line26"
             },
             "to": [
-              -0.0000000000003388934536733186,
-              1.250000000001059
+              -0.00000000000000000041132016653330544,
+              1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4824,12 +4790,12 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "start": {
           "from": [
-            0.00000000000000000001765089238459434,
-            1.2500000000007059
+            0.000000000000000000018274912584780813,
+            1.25
           ],
           "to": [
-            0.00000000000000000001765089238459434,
-            1.2500000000007059
+            0.000000000000000000018274912584780813,
+            1.25
           ],
           "units": "in",
           "tag": null,
@@ -4974,7 +4940,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 4.046864804807278,
+                        "n": 4.046864802988307,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4982,7 +4948,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.047093764892185,
+                        "n": 1.0470585437584061,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4992,7 +4958,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.655951299296943,
+                        "n": 4.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5000,7 +4966,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847113595299,
+                        "n": 0.5625587180767921,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5010,7 +4976,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.655869979318706,
+                        "n": 4.655867849261464,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5018,7 +4984,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.187584707025066,
+                        "n": 1.1875587180767855,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5126,7 +5092,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.655951299296767,
+                        "n": -4.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5134,7 +5100,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847113596194,
+                        "n": 0.5625587180767925,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5144,7 +5110,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.046864804808633,
+                        "n": -4.046864802988307,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5152,7 +5118,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.0470937648904841,
+                        "n": 1.0470585437571556,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5162,7 +5128,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -4.6558699793196485,
+                        "n": -4.655867849261175,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5170,7 +5136,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.1875847070251557,
+                        "n": 1.187558718076785,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5278,7 +5244,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -3.312500000616776,
+                        "n": -3.3125000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5286,7 +5252,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250875281106335,
+                        "n": 0.6250523072540793,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5296,7 +5262,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.6875000012271406,
+                        "n": -2.6875000000000018,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5304,7 +5270,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711456625,
+                        "n": 0.6250390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5314,7 +5280,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -3.0000000006020318,
+                        "n": -3.0,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5322,7 +5288,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6251125788716555,
+                        "n": 0.6250781243641714,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5430,7 +5396,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.312500002310563,
+                        "n": -1.3125000000000029,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5438,7 +5404,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711444632,
+                        "n": 0.6250390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5448,7 +5414,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6875000006912233,
+                        "n": -0.6875000000000011,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5456,7 +5422,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000031211,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5466,7 +5432,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.9999999989695366,
+                        "n": -0.9999999999999983,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5474,7 +5440,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.625083922933591,
+                        "n": 0.6250781193966021,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5582,7 +5548,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.6875000006905455,
+                        "n": 0.6875000000000011,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5590,7 +5556,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000024152,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5600,7 +5566,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3125000023098856,
+                        "n": 1.3125000000000029,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5608,7 +5574,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711450204,
+                        "n": 0.6250390612915998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5618,7 +5584,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.9999999989688589,
+                        "n": 0.9999999999999984,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5626,7 +5592,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250839229331315,
+                        "n": 0.6250781193968374,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5734,7 +5700,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.687500001226124,
+                        "n": 2.6875000000000018,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5742,7 +5708,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711462197,
+                        "n": 0.6250390612915998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5752,7 +5718,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.3125000006157594,
+                        "n": 3.3125000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5760,7 +5726,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250875281123345,
+                        "n": 0.6250523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5770,7 +5736,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.0000000006010152,
+                        "n": 3.0,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5778,7 +5744,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6251125788718576,
+                        "n": 0.6250781243636977,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5886,7 +5852,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000000000001765089238459434,
+                        "n": 0.000000000000000000018274912584780813,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5894,7 +5860,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500000000007059,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5904,7 +5870,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.6875000000006778,
+                        "n": 0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5912,7 +5878,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250000000001059,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6006,7 +5972,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.0000000006118945,
+                        "n": 4.000000000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6014,7 +5980,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500875281110988,
+                        "n": 1.2500523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6024,7 +5990,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.046864803599423,
+                        "n": 4.046864802988306,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6032,7 +5998,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.0470937646136822,
+                        "n": 1.047058543758406,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6126,7 +6092,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.655951299297209,
+                        "n": 4.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6134,7 +6100,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096255042,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6144,7 +6110,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.655951299297635,
+                        "n": 5.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6152,7 +6118,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096255246,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6246,7 +6212,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 5.6559512992977945,
+                        "n": 5.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6254,7 +6220,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096253902,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6264,7 +6230,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.655951299297901,
+                        "n": 5.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6272,7 +6238,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": -0.000015935842780760397,
+                        "n": -0.00004192739120217362,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6366,7 +6332,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 5.655951299297954,
+                        "n": 5.655911120059081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6374,7 +6340,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": -0.000015935842825563453,
+                        "n": -0.00004192739120217364,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6384,7 +6350,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -5.655951299297991,
+                        "n": -5.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6392,7 +6358,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": -0.00001593584282556346,
+                        "n": -0.000041927391202173635,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6486,7 +6452,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -5.6559512992979375,
+                        "n": -5.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6494,7 +6460,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": -0.000015935842780760424,
+                        "n": -0.00004192739120217359,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6504,7 +6470,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -5.655951299297832,
+                        "n": -5.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6512,7 +6478,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096254798,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6606,7 +6572,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -5.655951299297672,
+                        "n": -5.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6614,7 +6580,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096256142,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6624,7 +6590,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.655951299297032,
+                        "n": -4.6559111200634895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6632,7 +6598,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.5625847096255938,
+                        "n": 0.5625587180767895,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6726,7 +6692,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.046864803600778,
+                        "n": -4.046864802988306,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6734,7 +6700,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.0470937646119813,
+                        "n": 1.0470585437571553,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6744,7 +6710,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.00000000061325,
+                        "n": -4.000000000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6752,7 +6718,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250087528109398,
+                        "n": 1.2500523072540792,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6846,7 +6812,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.0000000006129115,
+                        "n": -4.000000000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6854,7 +6820,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500875281095936,
+                        "n": 1.2500523072540792,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6864,7 +6830,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -3.3125000006118945,
+                        "n": -3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6872,7 +6838,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500875281097499,
+                        "n": 1.2500523072540792,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6966,7 +6932,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -3.3125000006115557,
+                        "n": -3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6974,7 +6940,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250087528109867,
+                        "n": 1.2500523072540792,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6984,7 +6950,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -3.3125000006112173,
+                        "n": -3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6992,7 +6958,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250875281105951,
+                        "n": 0.6250523072540793,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7086,7 +7052,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.6875000000010166,
+                        "n": 0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7094,7 +7060,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500000000014118,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7104,7 +7070,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.687500000001532,
+                        "n": 0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7112,7 +7078,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000020622,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7206,7 +7172,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.6875000009767582,
+                        "n": -2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7214,7 +7180,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711455704,
+                        "n": 0.6250390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7224,7 +7190,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.6875000009763865,
+                        "n": -2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7232,7 +7198,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711448014,
+                        "n": 1.2500390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7326,7 +7292,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.6875000009760472,
+                        "n": -2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7334,7 +7300,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711446564,
+                        "n": 1.2500390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7344,7 +7310,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.3125000009750307,
+                        "n": -1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7352,7 +7318,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250068971144485,
+                        "n": 1.2500390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7446,7 +7412,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.3125000009746919,
+                        "n": -1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7454,7 +7420,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711442874,
+                        "n": 1.2500390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7464,7 +7430,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.3125000009744914,
+                        "n": -1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7472,7 +7438,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711447137,
+                        "n": 0.6250390612933565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7566,7 +7532,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.6875000000022097,
+                        "n": -0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7574,7 +7540,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250000000027681,
+                        "n": 0.625,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7584,7 +7550,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6875000000016944,
+                        "n": -0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7592,7 +7558,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500000000017648,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7686,7 +7652,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.6875000000013556,
+                        "n": -0.6875,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7694,7 +7660,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500000000014118,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7704,7 +7670,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000003388934536733186,
+                        "n": -0.00000000000000000041132016653330544,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7712,7 +7678,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250000000001059,
+                        "n": 1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7806,7 +7772,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.3125000009738137,
+                        "n": 1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7814,7 +7780,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711452708,
+                        "n": 0.6250390612915998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7824,7 +7790,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3125000009740142,
+                        "n": 1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7832,7 +7798,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711448445,
+                        "n": 1.2500390612915997,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7926,7 +7892,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.312500000974353,
+                        "n": 1.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7934,7 +7900,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711450421,
+                        "n": 1.2500390612915997,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7944,7 +7910,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.6875000009750307,
+                        "n": 2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7952,7 +7918,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711452135,
+                        "n": 1.2500390612915997,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8046,7 +8012,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.68750000097537,
+                        "n": 2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8054,7 +8020,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500689711453585,
+                        "n": 1.2500390612915997,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8064,7 +8030,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.6875000009757417,
+                        "n": 2.6875000000000013,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8072,7 +8038,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250689711461275,
+                        "n": 0.6250390612915998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8166,7 +8132,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.312500000610201,
+                        "n": 3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8174,7 +8140,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.6250875281122961,
+                        "n": 0.6250523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8184,7 +8150,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.312500000610539,
+                        "n": 3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8192,7 +8158,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250087528111568,
+                        "n": 1.2500523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8286,7 +8252,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.312500000610878,
+                        "n": 3.312500000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8294,7 +8260,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.250087528111451,
+                        "n": 1.2500523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8304,7 +8270,7 @@ description: Variables in memory after executing cold-plate.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.000000000611555,
+                        "n": 4.000000000000001,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8312,7 +8278,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 1.2500875281112946,
+                        "n": 1.2500523072553298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8409,8 +8375,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.00000000000000000001765089238459434,
-                    1.2500000000007059
+                    0.000000000000000000018274912584780813,
+                    1.25
                   ],
                   "tag": {
                     "commentStart": 4522,
@@ -8421,8 +8387,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line1"
                   },
                   "to": [
-                    0.6875000000006778,
-                    1.250000000001059
+                    0.6875,
+                    1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8433,8 +8399,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.6875000000006778,
-                    1.250000000001059
+                    0.6875,
+                    1.25
                   ],
                   "tag": {
                     "commentStart": 4600,
@@ -8445,25 +8411,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.687500000001532,
-                    0.6250000000020622
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.687500000001532,
-                    0.6250000000020622
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.6875000006905455,
-                    0.6250000000024152
+                    0.6875,
+                    0.625
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8475,14 +8424,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.9999999989688589,
-                    0.6250839229331315
+                    0.9999999999999973,
+                    0.6250781193968374
                   ],
                   "from": [
-                    0.6875000006905455,
-                    0.6250000000024152
+                    0.6875,
+                    0.625
                   ],
-                  "radius": 0.3125000095472066,
+                  "radius": 0.31250000976422143,
                   "tag": {
                     "commentStart": 4681,
                     "end": 4685,
@@ -8492,8 +8441,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    1.312500008158376,
-                    0.6250689711447406
+                    1.312500007323362,
+                    0.6250390612906845
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -8504,13 +8453,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.312500008158376,
-                    0.6250689711447406
+                    1.312500007323362,
+                    0.6250390612906845
                   ],
                   "tag": null,
                   "to": [
-                    1.3125000009738137,
-                    0.6250689711452708
+                    1.312500000000001,
+                    0.6250390612915998
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8521,8 +8470,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3125000009738137,
-                    0.6250689711452708
+                    1.312500000000001,
+                    0.6250390612915998
                   ],
                   "tag": {
                     "commentStart": 4792,
@@ -8533,8 +8482,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line4"
                   },
                   "to": [
-                    1.3125000009740142,
-                    1.2500689711448445
+                    1.312500000000001,
+                    1.2500390612915997
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8545,8 +8494,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3125000009740142,
-                    1.2500689711448445
+                    1.312500000000001,
+                    1.2500390612915997
                   ],
                   "tag": {
                     "commentStart": 4873,
@@ -8557,8 +8506,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line5"
                   },
                   "to": [
-                    2.6875000009750307,
-                    1.2500689711452135
+                    2.6875000000000013,
+                    1.2500390612915997
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8569,8 +8518,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.6875000009750307,
-                    1.2500689711452135
+                    2.6875000000000013,
+                    1.2500390612915997
                   ],
                   "tag": {
                     "commentStart": 4954,
@@ -8581,8 +8530,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line6"
                   },
                   "to": [
-                    2.6875000009757417,
-                    0.6250689711461275
+                    2.6875000000000013,
+                    0.6250390612915998
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8594,14 +8543,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    3.000000000350633,
-                    0.6251125788717652
+                    2.9999999999999996,
+                    0.6250781243636977
                   ],
                   "from": [
-                    2.6875000009757417,
-                    0.6250689711461275
+                    2.6875000000000013,
+                    0.6250390612915998
                   ],
-                  "radius": 0.31250000241750514,
+                  "radius": 0.31250000244147597,
                   "tag": {
                     "commentStart": 5035,
                     "end": 5039,
@@ -8611,8 +8560,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc7"
                   },
                   "to": [
-                    3.3125000017640733,
-                    0.62508752811213
+                    3.3125000013750387,
+                    0.6250523072552162
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -8623,13 +8572,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.3125000017640733,
-                    0.62508752811213
+                    3.3125000013750387,
+                    0.6250523072552162
                   ],
                   "tag": null,
                   "to": [
-                    3.312500000610201,
-                    0.6250875281122961
+                    3.312500000000001,
+                    0.6250523072553298
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8640,8 +8589,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.312500000610201,
-                    0.6250875281122961
+                    3.312500000000001,
+                    0.6250523072553298
                   ],
                   "tag": {
                     "commentStart": 5146,
@@ -8652,8 +8601,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line8"
                   },
                   "to": [
-                    3.312500000610539,
-                    1.250087528111568
+                    3.312500000000001,
+                    1.2500523072553298
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8664,8 +8613,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.312500000610539,
-                    1.250087528111568
+                    3.312500000000001,
+                    1.2500523072553298
                   ],
                   "tag": {
                     "commentStart": 5227,
@@ -8676,8 +8625,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line9"
                   },
                   "to": [
-                    4.000000000611555,
-                    1.2500875281112946
+                    4.000000000000001,
+                    1.2500523072553298
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8688,8 +8637,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.000000000611555,
-                    1.2500875281112946
+                    4.000000000000001,
+                    1.2500523072553298
                   ],
                   "tag": {
                     "commentStart": 5305,
@@ -8700,25 +8649,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line10"
                   },
                   "to": [
-                    4.046864803599423,
-                    1.0470937646136822
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    4.046864803599423,
-                    1.0470937646136822
-                  ],
-                  "tag": null,
-                  "to": [
-                    4.046864804807278,
-                    1.047093764892185
+                    4.046864802988306,
+                    1.047058543758406
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8730,14 +8662,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    4.655869979318706,
-                    1.1875847070250658
+                    4.655867849261463,
+                    1.1875587180767853
                   ],
                   "from": [
-                    4.046864804807278,
-                    1.047093764892185
+                    4.046864802988306,
+                    1.047058543758406
                   ],
-                  "radius": 0.6250000059224637,
+                  "radius": 0.6250000074827834,
                   "tag": {
                     "commentStart": 5384,
                     "end": 5389,
@@ -8747,8 +8679,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc11"
                   },
                   "to": [
-                    4.655951299297589,
-                    0.5625847063929532
+                    4.6559111200594945,
+                    0.5625587120918915
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -8759,13 +8691,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.655951299297589,
-                    0.5625847063929532
+                    4.6559111200594945,
+                    0.5625587120918915
                   ],
                   "tag": null,
                   "to": [
-                    4.655951299297209,
-                    0.5625847096255042
+                    4.655911120059081,
+                    0.5625587180767895
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8776,8 +8708,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.655951299297209,
-                    0.5625847096255042
+                    4.655911120059081,
+                    0.5625587180767895
                   ],
                   "tag": {
                     "commentStart": 5499,
@@ -8788,8 +8720,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line12"
                   },
                   "to": [
-                    5.655951299297635,
-                    0.5625847096255246
+                    5.655911120059081,
+                    0.5625587180767895
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8800,8 +8732,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.655951299297635,
-                    0.5625847096255246
+                    5.655911120059081,
+                    0.5625587180767895
                   ],
                   "tag": {
                     "commentStart": 5581,
@@ -8812,8 +8744,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line13"
                   },
                   "to": [
-                    5.655951299297901,
-                    -0.000015935842780760397
+                    5.655911120059081,
+                    -0.00004192739120217362
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8824,8 +8756,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.655951299297901,
-                    -0.000015935842780760397
+                    5.655911120059081,
+                    -0.00004192739120217362
                   ],
                   "tag": {
                     "commentStart": 5660,
@@ -8836,8 +8768,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line14"
                   },
                   "to": [
-                    -5.655951299297991,
-                    -0.00001593584282556346
+                    -5.6559111200634895,
+                    -0.000041927391202173635
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8848,8 +8780,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -5.655951299297991,
-                    -0.00001593584282556346
+                    -5.6559111200634895,
+                    -0.000041927391202173635
                   ],
                   "tag": {
                     "commentStart": 5737,
@@ -8860,8 +8792,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line15"
                   },
                   "to": [
-                    -5.655951299297832,
-                    0.5625847096254798
+                    -5.6559111200634895,
+                    0.5625587180767895
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8872,8 +8804,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -5.655951299297832,
-                    0.5625847096254798
+                    -5.6559111200634895,
+                    0.5625587180767895
                   ],
                   "tag": {
                     "commentStart": 5818,
@@ -8884,25 +8816,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line16"
                   },
                   "to": [
-                    -4.655951299297032,
-                    0.5625847096255938
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -4.655951299297032,
-                    0.5625847096255938
-                  ],
-                  "tag": null,
-                  "to": [
-                    -4.655951299296767,
-                    0.5625847113596194
+                    -4.6559111200634895,
+                    0.5625587180767895
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8914,14 +8829,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -4.6558699793196485,
-                    1.1875847070251557
+                    -4.655867849261175,
+                    1.1875587180767821
                   ],
                   "from": [
-                    -4.655951299296767,
-                    0.5625847113596194
+                    -4.6559111200634895,
+                    0.5625587180767895
                   ],
-                  "radius": 0.6250000009558873,
+                  "radius": 0.6250000014978825,
                   "tag": {
                     "commentStart": 5902,
                     "end": 5907,
@@ -8931,8 +8846,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc16"
                   },
                   "to": [
-                    -4.046864809648106,
-                    1.0470937660068986
+                    -4.046864808820024,
+                    1.04705854510256
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -8943,13 +8858,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.046864809648106,
-                    1.0470937660068986
+                    -4.046864808820024,
+                    1.04705854510256
                   ],
                   "tag": null,
                   "to": [
-                    -4.046864803600778,
-                    1.0470937646119813
+                    -4.046864802988306,
+                    1.0470585437571553
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8960,8 +8875,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.046864803600778,
-                    1.0470937646119813
+                    -4.046864802988306,
+                    1.0470585437571553
                   ],
                   "tag": {
                     "commentStart": 6020,
@@ -8972,8 +8887,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line17"
                   },
                   "to": [
-                    -4.00000000061325,
-                    1.250087528109398
+                    -4.000000000000001,
+                    1.2500523072540792
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -8984,8 +8899,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.00000000061325,
-                    1.250087528109398
+                    -4.000000000000001,
+                    1.2500523072540792
                   ],
                   "tag": {
                     "commentStart": 6101,
@@ -8996,8 +8911,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line18"
                   },
                   "to": [
-                    -3.3125000006118945,
-                    1.2500875281097499
+                    -3.312500000000001,
+                    1.2500523072540792
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9008,8 +8923,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.3125000006118945,
-                    1.2500875281097499
+                    -3.312500000000001,
+                    1.2500523072540792
                   ],
                   "tag": {
                     "commentStart": 6182,
@@ -9020,8 +8935,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line19"
                   },
                   "to": [
-                    -3.3125000006112173,
-                    0.6250875281105951
+                    -3.312500000000001,
+                    0.6250523072540793
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9033,14 +8948,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -3.000000000596473,
-                    0.6251125788716172
+                    -2.9999999999999996,
+                    0.6250781243641712
                   ],
                   "from": [
-                    -3.3125000006112173,
-                    0.6250875281105951
+                    -3.312500000000001,
+                    0.6250523072540793
                   ],
-                  "radius": 0.3125000010188092,
+                  "radius": 0.3125000010664384,
                   "tag": {
                     "commentStart": 6266,
                     "end": 6271,
@@ -9050,8 +8965,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc20"
                   },
                   "to": [
-                    -2.6875000026202778,
-                    0.6250689711458194
+                    -2.6875000013750387,
+                    0.6250390612935282
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9062,13 +8977,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.6875000026202778,
-                    0.6250689711458194
+                    -2.6875000013750387,
+                    0.6250390612935282
                   ],
                   "tag": null,
                   "to": [
-                    -2.6875000009767582,
-                    0.6250689711455704
+                    -2.6875000000000013,
+                    0.6250390612933565
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9079,8 +8994,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.6875000009767582,
-                    0.6250689711455704
+                    -2.6875000000000013,
+                    0.6250390612933565
                   ],
                   "tag": {
                     "commentStart": 6381,
@@ -9091,8 +9006,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line21"
                   },
                   "to": [
-                    -2.6875000009763865,
-                    1.2500689711448014
+                    -2.6875000000000013,
+                    1.2500390612933565
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9103,8 +9018,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.6875000009763865,
-                    1.2500689711448014
+                    -2.6875000000000013,
+                    1.2500390612933565
                   ],
                   "tag": {
                     "commentStart": 6465,
@@ -9115,8 +9030,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line22"
                   },
                   "to": [
-                    -1.3125000009750307,
-                    1.250068971144485
+                    -1.312500000000001,
+                    1.2500390612933565
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9127,8 +9042,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.3125000009750307,
-                    1.250068971144485
+                    -1.312500000000001,
+                    1.2500390612933565
                   ],
                   "tag": {
                     "commentStart": 6549,
@@ -9139,25 +9054,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line23"
                   },
                   "to": [
-                    -1.3125000009744914,
-                    0.6250689711447137
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.3125000009744914,
-                    0.6250689711447137
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.312500002310563,
-                    0.6250689711444632
+                    -1.312500000000001,
+                    0.6250390612933565
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9169,14 +9067,14 @@ description: Variables in memory after executing cold-plate.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.9999999989695366,
-                    0.625083922933591
+                    -0.9999999999999966,
+                    0.6250781193966022
                   ],
                   "from": [
-                    -1.312500002310563,
-                    0.6250689711444632
+                    -1.312500000000001,
+                    0.6250390612933565
                   ],
-                  "radius": 0.31250000369871606,
+                  "radius": 0.31250000244086124,
                   "tag": {
                     "commentStart": 6633,
                     "end": 6638,
@@ -9186,8 +9084,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "arc24"
                   },
                   "to": [
-                    -0.6875000065397134,
-                    0.6250000000046917
+                    -0.6875000073233591,
+                    0.6250000000018309
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -9198,13 +9096,13 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.6875000065397134,
-                    0.6250000000046917
+                    -0.6875000073233591,
+                    0.6250000000018309
                   ],
                   "tag": null,
                   "to": [
-                    -0.6875000000022097,
-                    0.6250000000027681
+                    -0.6875,
+                    0.625
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9215,8 +9113,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.6875000000022097,
-                    0.6250000000027681
+                    -0.6875,
+                    0.625
                   ],
                   "tag": {
                     "commentStart": 6748,
@@ -9227,8 +9125,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line25"
                   },
                   "to": [
-                    -0.6875000000016944,
-                    1.2500000000017648
+                    -0.6875,
+                    1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9239,8 +9137,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.6875000000016944,
-                    1.2500000000017648
+                    -0.6875,
+                    1.25
                   ],
                   "tag": {
                     "commentStart": 6832,
@@ -9251,8 +9149,8 @@ description: Variables in memory after executing cold-plate.kcl
                     "value": "line26"
                   },
                   "to": [
-                    -0.0000000000003388934536733186,
-                    1.250000000001059
+                    -0.00000000000000000041132016653330544,
+                    1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -9291,12 +9189,12 @@ description: Variables in memory after executing cold-plate.kcl
               },
               "start": {
                 "from": [
-                  0.00000000000000000001765089238459434,
-                  1.2500000000007059
+                  0.000000000000000000018274912584780813,
+                  1.25
                 ],
                 "to": [
-                  0.00000000000000000001765089238459434,
-                  1.2500000000007059
+                  0.000000000000000000018274912584780813,
+                  1.25
                 ],
                 "units": "in",
                 "tag": null,
@@ -9439,8 +9337,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            0.00000000000000000001765089238459434,
-            1.2500000000007059
+            0.000000000000000000018274912584780813,
+            1.25
           ],
           "tag": {
             "commentStart": 4522,
@@ -9451,8 +9349,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line1"
           },
           "to": [
-            0.6875000000006778,
-            1.250000000001059
+            0.6875,
+            1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9463,8 +9361,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            0.6875000000006778,
-            1.250000000001059
+            0.6875,
+            1.25
           ],
           "tag": {
             "commentStart": 4600,
@@ -9475,8 +9373,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line2"
           },
           "to": [
-            0.687500000001532,
-            0.6250000000020622
+            0.6875,
+            0.625
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9488,14 +9386,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            0.9999999989688589,
-            0.6250839229331315
+            0.9999999999999973,
+            0.6250781193968374
           ],
           "from": [
-            0.6875000006905455,
-            0.6250000000024152
+            0.6875,
+            0.625
           ],
-          "radius": 0.3125000095472066,
+          "radius": 0.31250000976422143,
           "tag": {
             "commentStart": 4681,
             "end": 4685,
@@ -9505,8 +9403,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc3"
           },
           "to": [
-            1.312500008158376,
-            0.6250689711447406
+            1.312500007323362,
+            0.6250390612906845
           ],
           "type": "Arc",
           "units": "in"
@@ -9517,8 +9415,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            1.3125000009738137,
-            0.6250689711452708
+            1.312500000000001,
+            0.6250390612915998
           ],
           "tag": {
             "commentStart": 4792,
@@ -9529,8 +9427,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line4"
           },
           "to": [
-            1.3125000009740142,
-            1.2500689711448445
+            1.312500000000001,
+            1.2500390612915997
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9541,8 +9439,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            1.3125000009740142,
-            1.2500689711448445
+            1.312500000000001,
+            1.2500390612915997
           ],
           "tag": {
             "commentStart": 4873,
@@ -9553,8 +9451,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line5"
           },
           "to": [
-            2.6875000009750307,
-            1.2500689711452135
+            2.6875000000000013,
+            1.2500390612915997
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9565,8 +9463,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            2.6875000009750307,
-            1.2500689711452135
+            2.6875000000000013,
+            1.2500390612915997
           ],
           "tag": {
             "commentStart": 4954,
@@ -9577,8 +9475,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line6"
           },
           "to": [
-            2.6875000009757417,
-            0.6250689711461275
+            2.6875000000000013,
+            0.6250390612915998
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9590,14 +9488,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            3.000000000350633,
-            0.6251125788717652
+            2.9999999999999996,
+            0.6250781243636977
           ],
           "from": [
-            2.6875000009757417,
-            0.6250689711461275
+            2.6875000000000013,
+            0.6250390612915998
           ],
-          "radius": 0.31250000241750514,
+          "radius": 0.31250000244147597,
           "tag": {
             "commentStart": 5035,
             "end": 5039,
@@ -9607,8 +9505,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc7"
           },
           "to": [
-            3.3125000017640733,
-            0.62508752811213
+            3.3125000013750387,
+            0.6250523072552162
           ],
           "type": "Arc",
           "units": "in"
@@ -9619,8 +9517,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            3.312500000610201,
-            0.6250875281122961
+            3.312500000000001,
+            0.6250523072553298
           ],
           "tag": {
             "commentStart": 5146,
@@ -9631,8 +9529,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line8"
           },
           "to": [
-            3.312500000610539,
-            1.250087528111568
+            3.312500000000001,
+            1.2500523072553298
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9643,8 +9541,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            3.312500000610539,
-            1.250087528111568
+            3.312500000000001,
+            1.2500523072553298
           ],
           "tag": {
             "commentStart": 5227,
@@ -9655,8 +9553,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line9"
           },
           "to": [
-            4.000000000611555,
-            1.2500875281112946
+            4.000000000000001,
+            1.2500523072553298
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9667,8 +9565,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            4.000000000611555,
-            1.2500875281112946
+            4.000000000000001,
+            1.2500523072553298
           ],
           "tag": {
             "commentStart": 5305,
@@ -9679,8 +9577,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line10"
           },
           "to": [
-            4.046864803599423,
-            1.0470937646136822
+            4.046864802988306,
+            1.047058543758406
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9692,14 +9590,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            4.655869979318706,
-            1.1875847070250658
+            4.655867849261463,
+            1.1875587180767853
           ],
           "from": [
-            4.046864804807278,
-            1.047093764892185
+            4.046864802988306,
+            1.047058543758406
           ],
-          "radius": 0.6250000059224637,
+          "radius": 0.6250000074827834,
           "tag": {
             "commentStart": 5384,
             "end": 5389,
@@ -9709,8 +9607,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc11"
           },
           "to": [
-            4.655951299297589,
-            0.5625847063929532
+            4.6559111200594945,
+            0.5625587120918915
           ],
           "type": "Arc",
           "units": "in"
@@ -9721,8 +9619,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            4.655951299297209,
-            0.5625847096255042
+            4.655911120059081,
+            0.5625587180767895
           ],
           "tag": {
             "commentStart": 5499,
@@ -9733,8 +9631,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line12"
           },
           "to": [
-            5.655951299297635,
-            0.5625847096255246
+            5.655911120059081,
+            0.5625587180767895
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9745,8 +9643,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            5.655951299297635,
-            0.5625847096255246
+            5.655911120059081,
+            0.5625587180767895
           ],
           "tag": {
             "commentStart": 5581,
@@ -9757,8 +9655,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line13"
           },
           "to": [
-            5.655951299297901,
-            -0.000015935842780760397
+            5.655911120059081,
+            -0.00004192739120217362
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9769,8 +9667,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            5.655951299297901,
-            -0.000015935842780760397
+            5.655911120059081,
+            -0.00004192739120217362
           ],
           "tag": {
             "commentStart": 5660,
@@ -9781,8 +9679,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line14"
           },
           "to": [
-            -5.655951299297991,
-            -0.00001593584282556346
+            -5.6559111200634895,
+            -0.000041927391202173635
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9793,8 +9691,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -5.655951299297991,
-            -0.00001593584282556346
+            -5.6559111200634895,
+            -0.000041927391202173635
           ],
           "tag": {
             "commentStart": 5737,
@@ -9805,8 +9703,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line15"
           },
           "to": [
-            -5.655951299297832,
-            0.5625847096254798
+            -5.6559111200634895,
+            0.5625587180767895
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9817,8 +9715,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -5.655951299297832,
-            0.5625847096254798
+            -5.6559111200634895,
+            0.5625587180767895
           ],
           "tag": {
             "commentStart": 5818,
@@ -9829,8 +9727,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line16"
           },
           "to": [
-            -4.655951299297032,
-            0.5625847096255938
+            -4.6559111200634895,
+            0.5625587180767895
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9842,14 +9740,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            -4.6558699793196485,
-            1.1875847070251557
+            -4.655867849261175,
+            1.1875587180767821
           ],
           "from": [
-            -4.655951299296767,
-            0.5625847113596194
+            -4.6559111200634895,
+            0.5625587180767895
           ],
-          "radius": 0.6250000009558873,
+          "radius": 0.6250000014978825,
           "tag": {
             "commentStart": 5902,
             "end": 5907,
@@ -9859,8 +9757,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc16"
           },
           "to": [
-            -4.046864809648106,
-            1.0470937660068986
+            -4.046864808820024,
+            1.04705854510256
           ],
           "type": "Arc",
           "units": "in"
@@ -9871,8 +9769,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -4.046864803600778,
-            1.0470937646119813
+            -4.046864802988306,
+            1.0470585437571553
           ],
           "tag": {
             "commentStart": 6020,
@@ -9883,8 +9781,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line17"
           },
           "to": [
-            -4.00000000061325,
-            1.250087528109398
+            -4.000000000000001,
+            1.2500523072540792
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9895,8 +9793,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -4.00000000061325,
-            1.250087528109398
+            -4.000000000000001,
+            1.2500523072540792
           ],
           "tag": {
             "commentStart": 6101,
@@ -9907,8 +9805,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line18"
           },
           "to": [
-            -3.3125000006118945,
-            1.2500875281097499
+            -3.312500000000001,
+            1.2500523072540792
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9919,8 +9817,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -3.3125000006118945,
-            1.2500875281097499
+            -3.312500000000001,
+            1.2500523072540792
           ],
           "tag": {
             "commentStart": 6182,
@@ -9931,8 +9829,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line19"
           },
           "to": [
-            -3.3125000006112173,
-            0.6250875281105951
+            -3.312500000000001,
+            0.6250523072540793
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9944,14 +9842,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            -3.000000000596473,
-            0.6251125788716172
+            -2.9999999999999996,
+            0.6250781243641712
           ],
           "from": [
-            -3.3125000006112173,
-            0.6250875281105951
+            -3.312500000000001,
+            0.6250523072540793
           ],
-          "radius": 0.3125000010188092,
+          "radius": 0.3125000010664384,
           "tag": {
             "commentStart": 6266,
             "end": 6271,
@@ -9961,8 +9859,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc20"
           },
           "to": [
-            -2.6875000026202778,
-            0.6250689711458194
+            -2.6875000013750387,
+            0.6250390612935282
           ],
           "type": "Arc",
           "units": "in"
@@ -9973,8 +9871,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -2.6875000009767582,
-            0.6250689711455704
+            -2.6875000000000013,
+            0.6250390612933565
           ],
           "tag": {
             "commentStart": 6381,
@@ -9985,8 +9883,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line21"
           },
           "to": [
-            -2.6875000009763865,
-            1.2500689711448014
+            -2.6875000000000013,
+            1.2500390612933565
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9997,8 +9895,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -2.6875000009763865,
-            1.2500689711448014
+            -2.6875000000000013,
+            1.2500390612933565
           ],
           "tag": {
             "commentStart": 6465,
@@ -10009,8 +9907,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line22"
           },
           "to": [
-            -1.3125000009750307,
-            1.250068971144485
+            -1.312500000000001,
+            1.2500390612933565
           ],
           "type": "ToPoint",
           "units": "in"
@@ -10021,8 +9919,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -1.3125000009750307,
-            1.250068971144485
+            -1.312500000000001,
+            1.2500390612933565
           ],
           "tag": {
             "commentStart": 6549,
@@ -10033,8 +9931,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line23"
           },
           "to": [
-            -1.3125000009744914,
-            0.6250689711447137
+            -1.312500000000001,
+            0.6250390612933565
           ],
           "type": "ToPoint",
           "units": "in"
@@ -10046,14 +9944,14 @@ description: Variables in memory after executing cold-plate.kcl
           },
           "ccw": true,
           "center": [
-            -0.9999999989695366,
-            0.625083922933591
+            -0.9999999999999966,
+            0.6250781193966022
           ],
           "from": [
-            -1.312500002310563,
-            0.6250689711444632
+            -1.312500000000001,
+            0.6250390612933565
           ],
-          "radius": 0.31250000369871606,
+          "radius": 0.31250000244086124,
           "tag": {
             "commentStart": 6633,
             "end": 6638,
@@ -10063,8 +9961,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "arc24"
           },
           "to": [
-            -0.6875000065397134,
-            0.6250000000046917
+            -0.6875000073233591,
+            0.6250000000018309
           ],
           "type": "Arc",
           "units": "in"
@@ -10075,8 +9973,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.6875000000022097,
-            0.6250000000027681
+            -0.6875,
+            0.625
           ],
           "tag": {
             "commentStart": 6748,
@@ -10087,8 +9985,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line25"
           },
           "to": [
-            -0.6875000000016944,
-            1.2500000000017648
+            -0.6875,
+            1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -10099,8 +9997,8 @@ description: Variables in memory after executing cold-plate.kcl
             "sourceRange": []
           },
           "from": [
-            -0.6875000000016944,
-            1.2500000000017648
+            -0.6875,
+            1.25
           ],
           "tag": {
             "commentStart": 6832,
@@ -10111,8 +10009,8 @@ description: Variables in memory after executing cold-plate.kcl
             "value": "line26"
           },
           "to": [
-            -0.0000000000003388934536733186,
-            1.250000000001059
+            -0.00000000000000000041132016653330544,
+            1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -10151,12 +10049,12 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "start": {
         "from": [
-          0.00000000000000000001765089238459434,
-          1.2500000000007059
+          0.000000000000000000018274912584780813,
+          1.25
         ],
         "to": [
-          0.00000000000000000001765089238459434,
-          1.2500000000007059
+          0.000000000000000000018274912584780813,
+          1.25
         ],
         "units": "in",
         "tag": null,
@@ -15349,7 +15247,7 @@ description: Variables in memory after executing cold-plate.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000010000000536608647,
+                        "n": -0.000000000010000000507403662,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15357,7 +15255,7 @@ description: Variables in memory after executing cold-plate.kcl
                         }
                       },
                       {
-                        "n": 0.00000000004500000456817843,
+                        "n": 0.000000000045000001971300284,
                         "ty": {
                           "in": null,
                           "type": "Known",

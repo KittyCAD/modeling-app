@@ -68,7 +68,7 @@ description: Artifact commands equal_radius_arc_arc_native.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.999999997999996,
+          "x": -4.999999998000001,
           "y": 0.0,
           "z": 0.0
         }
@@ -91,9 +91,9 @@ description: Artifact commands equal_radius_arc_arc_native.kcl
           "type": "arc",
           "center": {
             "x": -0.0,
-            "y": -0.0000000000000006123233993287468
+            "y": -0.0000000000000006123233993287473
           },
-          "radius": 4.999999997999996,
+          "radius": 4.999999998000001,
           "start": {
             "unit": "degrees",
             "value": 180.0
@@ -115,10 +115,10 @@ description: Artifact commands equal_radius_arc_arc_native.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 9.999999991999983,
-            "y": -0.0000000000000024492935968251273
+            "x": 9.999999992000001,
+            "y": -0.0000000000000024492935968251304
           },
-          "radius": 4.999999993999987,
+          "radius": 4.999999994,
           "start": {
             "unit": "degrees",
             "value": 180.0

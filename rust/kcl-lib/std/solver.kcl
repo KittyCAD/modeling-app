@@ -484,6 +484,7 @@ export fn tangent(
 ///   coincident([line1.start, ORIGIN])
 ///
 ///   arc1 = arc(start = [var 2mm, var 1mm], end = [var -3mm, var -2mm], center = [var 0mm, var 0mm])
+///   radius(arc1) == 3mm
 ///   coincident([arc1.center, line1.start])
 ///   coincident([arc1.start, line1])
 ///   midpoint(line1, point = arc1.start)

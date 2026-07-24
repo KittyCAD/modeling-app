@@ -336,7 +336,7 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.9799999999999998,
+              -0.98,
               1.15
             ],
             "tag": {
@@ -348,8 +348,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              -0.47999999999999954,
-              1.9499999999999997
+              -0.4799999999999999,
+              1.95
             ],
             "type": "ToPoint",
             "units": "m"
@@ -360,8 +360,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.47999999999999954,
-              1.9499999999999997
+              -0.4799999999999999,
+              1.95
             ],
             "tag": {
               "commentStart": 7575,
@@ -372,8 +372,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              0.9200000000000009,
-              1.9499999999999997
+              0.9200000000000003,
+              1.95
             ],
             "type": "ToPoint",
             "units": "m"
@@ -384,8 +384,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.9200000000000009,
-              1.9499999999999997
+              0.9200000000000003,
+              1.95
             ],
             "tag": {
               "commentStart": 7640,
@@ -396,8 +396,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              1.220000000000001,
-              1.1499999999999997
+              1.2200000000000002,
+              1.15
             ],
             "type": "ToPoint",
             "units": "m"
@@ -408,8 +408,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.220000000000001,
-              1.1499999999999997
+              1.2200000000000002,
+              1.15
             ],
             "tag": {
               "commentStart": 7705,
@@ -420,8 +420,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              -0.9799999999999998,
-              1.1499999999999997
+              -0.98,
+              1.15
             ],
             "type": "ToPoint",
             "units": "m"
@@ -460,11 +460,11 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -0.9799999999999998,
+            -0.98,
             1.15
           ],
           "to": [
-            -0.9799999999999998,
+            -0.98,
             1.15
           ],
           "units": "m",
@@ -545,7 +545,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.9799999999999998,
+                        "n": -0.98,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -563,7 +563,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.47999999999999954,
+                        "n": -0.4799999999999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -571,7 +571,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -665,7 +665,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.47999999999999937,
+                        "n": -0.4799999999999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -673,7 +673,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -683,7 +683,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.9200000000000009,
+                        "n": 0.9200000000000003,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -691,7 +691,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -785,7 +785,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.920000000000001,
+                        "n": 0.9200000000000003,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -793,7 +793,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -803,7 +803,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.220000000000001,
+                        "n": 1.2200000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -811,7 +811,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.1499999999999997,
+                        "n": 1.15,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -905,7 +905,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.220000000000001,
+                        "n": 1.2200000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -913,7 +913,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.1499999999999997,
+                        "n": 1.15,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -923,7 +923,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9799999999999998,
+                        "n": -0.98,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -931,7 +931,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.1499999999999997,
+                        "n": 1.15,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1028,7 +1028,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.9799999999999998,
+                    -0.98,
                     1.15
                   ],
                   "tag": {
@@ -1040,8 +1040,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.47999999999999954,
-                    1.9499999999999997
+                    -0.4799999999999999,
+                    1.95
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -1052,8 +1052,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.47999999999999954,
-                    1.9499999999999997
+                    -0.4799999999999999,
+                    1.95
                   ],
                   "tag": {
                     "commentStart": 7575,
@@ -1064,8 +1064,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.9200000000000009,
-                    1.9499999999999997
+                    0.9200000000000003,
+                    1.95
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -1076,8 +1076,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.9200000000000009,
-                    1.9499999999999997
+                    0.9200000000000003,
+                    1.95
                   ],
                   "tag": {
                     "commentStart": 7640,
@@ -1088,8 +1088,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    1.220000000000001,
-                    1.1499999999999997
+                    1.2200000000000002,
+                    1.15
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -1100,8 +1100,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.220000000000001,
-                    1.1499999999999997
+                    1.2200000000000002,
+                    1.15
                   ],
                   "tag": {
                     "commentStart": 7705,
@@ -1112,8 +1112,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -0.9799999999999998,
-                    1.1499999999999997
+                    -0.98,
+                    1.15
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -1152,11 +1152,11 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  -0.9799999999999998,
+                  -0.98,
                   1.15
                 ],
                 "to": [
-                  -0.9799999999999998,
+                  -0.98,
                   1.15
                 ],
                 "units": "m",
@@ -1208,7 +1208,7 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.9799999999999998,
+            -0.98,
             1.15
           ],
           "tag": {
@@ -1220,8 +1220,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line1"
           },
           "to": [
-            -0.47999999999999954,
-            1.9499999999999997
+            -0.4799999999999999,
+            1.95
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1232,8 +1232,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.47999999999999954,
-            1.9499999999999997
+            -0.4799999999999999,
+            1.95
           ],
           "tag": {
             "commentStart": 7575,
@@ -1244,8 +1244,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line2"
           },
           "to": [
-            0.9200000000000009,
-            1.9499999999999997
+            0.9200000000000003,
+            1.95
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1256,8 +1256,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            0.9200000000000009,
-            1.9499999999999997
+            0.9200000000000003,
+            1.95
           ],
           "tag": {
             "commentStart": 7640,
@@ -1268,8 +1268,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line3"
           },
           "to": [
-            1.220000000000001,
-            1.1499999999999997
+            1.2200000000000002,
+            1.15
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1280,8 +1280,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            1.220000000000001,
-            1.1499999999999997
+            1.2200000000000002,
+            1.15
           ],
           "tag": {
             "commentStart": 7705,
@@ -1292,8 +1292,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line4"
           },
           "to": [
-            -0.9799999999999998,
-            1.1499999999999997
+            -0.98,
+            1.15
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1332,11 +1332,11 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          -0.9799999999999998,
+          -0.98,
           1.15
         ],
         "to": [
-          -0.9799999999999998,
+          -0.98,
           1.15
         ],
         "units": "m",
@@ -1445,8 +1445,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.7499999959999994,
-              0.7499999963999998
+              -1.7499999959999992,
+              0.7499999963999996
             ],
             "tag": {
               "commentStart": 6411,
@@ -1457,8 +1457,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              1.7500000010000003,
-              0.7499999948999997
+              1.750000001000001,
+              0.7499999948999996
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1469,8 +1469,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.7499999987500001,
-              0.7499999941499996
+              1.7499999987500003,
+              0.7499999941499995
             ],
             "tag": {
               "commentStart": 6476,
@@ -1481,7 +1481,7 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              1.74999999725,
+              1.7499999972500002,
               1.1499999948999995
             ],
             "type": "ToPoint",
@@ -1493,7 +1493,7 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.7499999965,
+              1.7499999965000002,
               1.1499999950499995
             ],
             "tag": {
@@ -1505,7 +1505,7 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              -1.7499999854999981,
+              -1.7499999854999984,
               1.1499999953499995
             ],
             "type": "ToPoint",
@@ -1517,8 +1517,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.7499999872499983,
-              1.1499999957999998
+              -1.7499999872499985,
+              1.1499999957999996
             ],
             "tag": {
               "commentStart": 6606,
@@ -1530,7 +1530,7 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "to": [
               -1.7499999907499988,
-              0.7499999956499998
+              0.7499999956499995
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1569,12 +1569,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -1.7499999959999994,
-            0.7499999963999998
+            -1.7499999959999992,
+            0.7499999963999996
           ],
           "to": [
-            -1.7499999959999994,
-            0.7499999963999998
+            -1.7499999959999992,
+            0.7499999963999996
           ],
           "units": "m",
           "tag": null,
@@ -1654,7 +1654,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.7499999959999994,
+                        "n": -1.7499999959999992,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1662,7 +1662,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7499999963999998,
+                        "n": 0.7499999963999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1672,7 +1672,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.7500000010000003,
+                        "n": 1.750000001000001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1680,7 +1680,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7499999948999997,
+                        "n": 0.7499999948999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1774,7 +1774,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.7499999987500001,
+                        "n": 1.7499999987500003,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1782,7 +1782,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7499999941499996,
+                        "n": 0.7499999941499995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1792,7 +1792,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.74999999725,
+                        "n": 1.7499999972500002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1894,7 +1894,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.7499999965,
+                        "n": 1.7499999965000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1912,7 +1912,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.7499999854999981,
+                        "n": -1.7499999854999984,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2014,7 +2014,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.7499999872499983,
+                        "n": -1.7499999872499985,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2022,7 +2022,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.1499999957999998,
+                        "n": 1.1499999957999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2040,7 +2040,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7499999956499998,
+                        "n": 0.7499999956499995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.7499999959999994,
-                    0.7499999963999998
+                    -1.7499999959999992,
+                    0.7499999963999996
                   ],
                   "tag": {
                     "commentStart": 6411,
@@ -2149,8 +2149,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line1"
                   },
                   "to": [
-                    1.7500000010000003,
-                    0.7499999948999997
+                    1.750000001000001,
+                    0.7499999948999996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2161,13 +2161,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.7500000010000003,
-                    0.7499999948999997
+                    1.750000001000001,
+                    0.7499999948999996
                   ],
                   "tag": null,
                   "to": [
-                    1.7499999987500001,
-                    0.7499999941499996
+                    1.7499999987500003,
+                    0.7499999941499995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2178,8 +2178,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.7499999987500001,
-                    0.7499999941499996
+                    1.7499999987500003,
+                    0.7499999941499995
                   ],
                   "tag": {
                     "commentStart": 6476,
@@ -2190,7 +2190,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line2"
                   },
                   "to": [
-                    1.74999999725,
+                    1.7499999972500002,
                     1.1499999948999995
                   ],
                   "type": "ToPoint",
@@ -2202,12 +2202,12 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.74999999725,
+                    1.7499999972500002,
                     1.1499999948999995
                   ],
                   "tag": null,
                   "to": [
-                    1.7499999965,
+                    1.7499999965000002,
                     1.1499999950499995
                   ],
                   "type": "ToPoint",
@@ -2219,7 +2219,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.7499999965,
+                    1.7499999965000002,
                     1.1499999950499995
                   ],
                   "tag": {
@@ -2231,7 +2231,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.7499999854999981,
+                    -1.7499999854999984,
                     1.1499999953499995
                   ],
                   "type": "ToPoint",
@@ -2243,13 +2243,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.7499999854999981,
+                    -1.7499999854999984,
                     1.1499999953499995
                   ],
                   "tag": null,
                   "to": [
-                    -1.7499999872499983,
-                    1.1499999957999998
+                    -1.7499999872499985,
+                    1.1499999957999996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2260,8 +2260,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.7499999872499983,
-                    1.1499999957999998
+                    -1.7499999872499985,
+                    1.1499999957999996
                   ],
                   "tag": {
                     "commentStart": 6606,
@@ -2273,7 +2273,7 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "to": [
                     -1.7499999907499988,
-                    0.7499999956499998
+                    0.7499999956499995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2312,12 +2312,12 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  -1.7499999959999994,
-                  0.7499999963999998
+                  -1.7499999959999992,
+                  0.7499999963999996
                 ],
                 "to": [
-                  -1.7499999959999994,
-                  0.7499999963999998
+                  -1.7499999959999992,
+                  0.7499999963999996
                 ],
                 "units": "m",
                 "tag": null,
@@ -2368,8 +2368,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -1.7499999959999994,
-            0.7499999963999998
+            -1.7499999959999992,
+            0.7499999963999996
           ],
           "tag": {
             "commentStart": 6411,
@@ -2380,8 +2380,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line1"
           },
           "to": [
-            1.7500000010000003,
-            0.7499999948999997
+            1.750000001000001,
+            0.7499999948999996
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2392,8 +2392,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            1.7499999987500001,
-            0.7499999941499996
+            1.7499999987500003,
+            0.7499999941499995
           ],
           "tag": {
             "commentStart": 6476,
@@ -2404,7 +2404,7 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line2"
           },
           "to": [
-            1.74999999725,
+            1.7499999972500002,
             1.1499999948999995
           ],
           "type": "ToPoint",
@@ -2416,7 +2416,7 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            1.7499999965,
+            1.7499999965000002,
             1.1499999950499995
           ],
           "tag": {
@@ -2428,7 +2428,7 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line3"
           },
           "to": [
-            -1.7499999854999981,
+            -1.7499999854999984,
             1.1499999953499995
           ],
           "type": "ToPoint",
@@ -2440,8 +2440,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -1.7499999872499983,
-            1.1499999957999998
+            -1.7499999872499985,
+            1.1499999957999996
           ],
           "tag": {
             "commentStart": 6606,
@@ -2453,7 +2453,7 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "to": [
             -1.7499999907499988,
-            0.7499999956499998
+            0.7499999956499995
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2492,12 +2492,12 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          -1.7499999959999994,
-          0.7499999963999998
+          -1.7499999959999992,
+          0.7499999963999996
         ],
         "to": [
-          -1.7499999959999994,
-          0.7499999963999998
+          -1.7499999959999992,
+          0.7499999963999996
         ],
         "units": "m",
         "tag": null,
@@ -2561,8 +2561,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.5250000000028319,
-            0.3500000000001904
+            -0.525000000000283,
+            0.35000000000001047
           ],
           "tag": {
             "commentStart": 4226,
@@ -2573,8 +2573,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line1"
           },
           "to": [
-            -0.26250000000146045,
-            0.8046633388265529
+            -0.26250000000014817,
+            0.8046633388240976
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2585,8 +2585,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.26250000000146045,
-            0.8046633388265529
+            -0.26250000000014817,
+            0.8046633388240976
           ],
           "tag": {
             "commentStart": 4303,
@@ -2597,8 +2597,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line2"
           },
           "to": [
-            0.26250000000134155,
-            0.8046633388266685
+            0.26250000000013557,
+            0.8046633388241029
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2609,8 +2609,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            0.26250000000134155,
-            0.8046633388266685
+            0.26250000000013557,
+            0.8046633388241029
           ],
           "tag": {
             "commentStart": 4419,
@@ -2621,8 +2621,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line3"
           },
           "to": [
-            0.5250000000022812,
-            0.35000000000002723
+            0.525000000000228,
+            0.3500000000000027
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2633,8 +2633,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            0.5250000000022812,
-            0.35000000000002723
+            0.525000000000228,
+            0.3500000000000027
           ],
           "tag": {
             "commentStart": 4575,
@@ -2645,8 +2645,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line4"
           },
           "to": [
-            0.26250000000106705,
-            -0.10466333882676324
+            0.26250000000010876,
+            -0.10466333882410365
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2657,8 +2657,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            0.26250000000106705,
-            -0.10466333882676324
+            0.26250000000010876,
+            -0.10466333882410365
           ],
           "tag": {
             "commentStart": 4691,
@@ -2669,8 +2669,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line5"
           },
           "to": [
-            -0.2625000000017978,
-            -0.1046633388264206
+            -0.26250000000018126,
+            -0.10466333882409196
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2681,8 +2681,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.2625000000017978,
-            -0.1046633388264206
+            -0.26250000000018126,
+            -0.10466333882409196
           ],
           "tag": {
             "commentStart": 4809,
@@ -2693,8 +2693,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line6"
           },
           "to": [
-            -0.5250000000028476,
-            0.3500000000001631
+            -0.5250000000002846,
+            0.35000000000000775
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2733,12 +2733,12 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          -0.5250000000028319,
-          0.3500000000001904
+          -0.525000000000283,
+          0.35000000000001047
         ],
         "to": [
-          -0.5250000000028319,
-          0.3500000000001904
+          -0.525000000000283,
+          0.35000000000001047
         ],
         "units": "m",
         "tag": null,
@@ -2882,8 +2882,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000028319,
-              0.3500000000001904
+              -0.525000000000283,
+              0.35000000000001047
             ],
             "tag": {
               "commentStart": 4226,
@@ -2894,8 +2894,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000146045,
-              0.8046633388265529
+              -0.26250000000014817,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -2906,8 +2906,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000146045,
-              0.8046633388265529
+              -0.26250000000014817,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4303,
@@ -2918,8 +2918,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000134155,
-              0.8046633388266685
+              0.26250000000013557,
+              0.8046633388241029
             ],
             "type": "ToPoint",
             "units": "m"
@@ -2930,8 +2930,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000134155,
-              0.8046633388266685
+              0.26250000000013557,
+              0.8046633388241029
             ],
             "tag": {
               "commentStart": 4419,
@@ -2942,8 +2942,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000022812,
-              0.35000000000002723
+              0.525000000000228,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -2954,8 +2954,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000022812,
-              0.35000000000002723
+              0.525000000000228,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4575,
@@ -2966,8 +2966,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              0.26250000000106705,
-              -0.10466333882676324
+              0.26250000000010876,
+              -0.10466333882410365
             ],
             "type": "ToPoint",
             "units": "m"
@@ -2978,8 +2978,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000106705,
-              -0.10466333882676324
+              0.26250000000010876,
+              -0.10466333882410365
             ],
             "tag": {
               "commentStart": 4691,
@@ -2990,8 +2990,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000017978,
-              -0.1046633388264206
+              -0.26250000000018126,
+              -0.10466333882409196
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3002,8 +3002,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000017978,
-              -0.1046633388264206
+              -0.26250000000018126,
+              -0.10466333882409196
             ],
             "tag": {
               "commentStart": 4809,
@@ -3014,8 +3014,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000028476,
-              0.3500000000001631
+              -0.5250000000002846,
+              0.35000000000000775
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3054,12 +3054,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -0.5250000000028319,
-            0.3500000000001904
+            -0.525000000000283,
+            0.35000000000001047
           ],
           "to": [
-            -0.5250000000028319,
-            0.3500000000001904
+            -0.525000000000283,
+            0.35000000000001047
           ],
           "units": "m",
           "tag": null,
@@ -3139,14 +3139,14 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "ccw": true,
             "center": [
-              -0.0007138995114735852,
-              0.35000000000005294
+              -0.0007138987956651704,
+              0.35000000000000525
             ],
             "from": [
-              0.1520856467161471,
-              0.43530708480641545
+              0.1520856463105938,
+              0.43530708681476643
             ],
-            "radius": 0.17500000013007633,
+            "radius": 0.17500000013000247,
             "tag": {
               "commentStart": 9929,
               "end": 9936,
@@ -3156,8 +3156,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "circle2"
             },
             "to": [
-              0.1520856467161471,
-              0.43530708480641545
+              0.1520856463105938,
+              0.43530708681476643
             ],
             "type": "Circle",
             "units": "m"
@@ -3196,12 +3196,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
           "to": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
           "units": "m",
           "tag": null,
@@ -3244,14 +3244,14 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "ccw": true,
           "center": [
-            -0.0007138995114735852,
-            0.35000000000005294
+            -0.0007138987956651704,
+            0.35000000000000525
           ],
           "from": [
-            0.1520856467161471,
-            0.43530708480641545
+            0.1520856463105938,
+            0.43530708681476643
           ],
-          "radius": 0.17500000013007633,
+          "radius": 0.17500000013000247,
           "tag": {
             "commentStart": 9929,
             "end": 9936,
@@ -3261,8 +3261,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "circle2"
           },
           "to": [
-            0.1520856467161471,
-            0.43530708480641545
+            0.1520856463105938,
+            0.43530708681476643
           ],
           "type": "Circle",
           "units": "m"
@@ -3301,12 +3301,12 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          0.32005605008993004,
-          0.20997628963868833
+          0.3200560503374278,
+          0.20997628856583403
         ],
         "to": [
-          0.32005605008993004,
-          0.20997628963868833
+          0.3200560503374278,
+          0.20997628856583403
         ],
         "units": "m",
         "tag": null,
@@ -3406,8 +3406,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.849999996,
-              0.3999999994000001
+              -1.8499999959999993,
+              0.3999999993999999
             ],
             "tag": {
               "commentStart": 3077,
@@ -3418,8 +3418,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              1.8500000006,
-              0.3999999986
+              1.8500000006000006,
+              0.3999999985999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3430,8 +3430,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.8499999980499997,
-              0.3999999982
+              1.84999999805,
+              0.3999999981999999
             ],
             "tag": {
               "commentStart": 3142,
@@ -3442,8 +3442,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              1.8499999963499996,
-              0.7500000019000004
+              1.8499999963499998,
+              0.7500000019000002
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3454,8 +3454,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.8499999954999995,
-              0.7500000016500004
+              1.8499999954999997,
+              0.7500000016500001
             ],
             "tag": {
               "commentStart": 3207,
@@ -3466,8 +3466,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              -1.8499999848999986,
-              0.7500000011500003
+              -1.8499999848999984,
+              0.7500000011500001
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3478,8 +3478,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.8499999867499988,
-              0.7500000004000003
+              -1.8499999867499985,
+              0.7500000004
             ],
             "tag": {
               "commentStart": 3272,
@@ -3490,8 +3490,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              -1.8499999904499993,
-              0.39999999900000005
+              -1.8499999904499989,
+              0.3999999989999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3530,12 +3530,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -1.849999996,
-            0.3999999994000001
+            -1.8499999959999993,
+            0.3999999993999999
           ],
           "to": [
-            -1.849999996,
-            0.3999999994000001
+            -1.8499999959999993,
+            0.3999999993999999
           ],
           "units": "m",
           "tag": null,
@@ -3648,8 +3648,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.849999996,
-              0.3999999994000001
+              -1.8499999959999993,
+              0.3999999993999999
             ],
             "tag": {
               "commentStart": 3077,
@@ -3660,8 +3660,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              1.8500000006,
-              0.3999999986
+              1.8500000006000006,
+              0.3999999985999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3672,8 +3672,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.8499999980499997,
-              0.3999999982
+              1.84999999805,
+              0.3999999981999999
             ],
             "tag": {
               "commentStart": 3142,
@@ -3684,8 +3684,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              1.8499999963499996,
-              0.7500000019000004
+              1.8499999963499998,
+              0.7500000019000002
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3696,8 +3696,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              1.8499999954999995,
-              0.7500000016500004
+              1.8499999954999997,
+              0.7500000016500001
             ],
             "tag": {
               "commentStart": 3207,
@@ -3708,8 +3708,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              -1.8499999848999986,
-              0.7500000011500003
+              -1.8499999848999984,
+              0.7500000011500001
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3720,8 +3720,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -1.8499999867499988,
-              0.7500000004000003
+              -1.8499999867499985,
+              0.7500000004
             ],
             "tag": {
               "commentStart": 3272,
@@ -3732,8 +3732,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              -1.8499999904499993,
-              0.39999999900000005
+              -1.8499999904499989,
+              0.3999999989999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3772,12 +3772,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -1.849999996,
-            0.3999999994000001
+            -1.8499999959999993,
+            0.3999999993999999
           ],
           "to": [
-            -1.849999996,
-            0.3999999994000001
+            -1.8499999959999993,
+            0.3999999993999999
           ],
           "units": "m",
           "tag": null,
@@ -3857,7 +3857,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.849999996,
+                        "n": -1.8499999959999993,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3865,7 +3865,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3999999994000001,
+                        "n": 0.3999999993999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3875,7 +3875,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8500000006,
+                        "n": 1.8500000006000006,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3883,7 +3883,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3999999986,
+                        "n": 0.3999999985999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3977,7 +3977,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.8499999980499997,
+                        "n": 1.84999999805,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3985,7 +3985,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3999999982,
+                        "n": 0.3999999981999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3995,7 +3995,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8499999963499996,
+                        "n": 1.8499999963499998,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4003,7 +4003,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7500000019000004,
+                        "n": 0.7500000019000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4097,7 +4097,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.8499999954999995,
+                        "n": 1.8499999954999997,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4105,7 +4105,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7500000016500004,
+                        "n": 0.7500000016500001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.8499999848999986,
+                        "n": -1.8499999848999984,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4123,7 +4123,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7500000011500003,
+                        "n": 0.7500000011500001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4217,7 +4217,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.8499999867499988,
+                        "n": -1.8499999867499985,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4225,7 +4225,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.7500000004000003,
+                        "n": 0.7500000004,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4235,7 +4235,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.8499999904499993,
+                        "n": -1.8499999904499989,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4243,7 +4243,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.39999999900000005,
+                        "n": 0.3999999989999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4340,8 +4340,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.849999996,
-                    0.3999999994000001
+                    -1.8499999959999993,
+                    0.3999999993999999
                   ],
                   "tag": {
                     "commentStart": 3077,
@@ -4352,8 +4352,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line1"
                   },
                   "to": [
-                    1.8500000006,
-                    0.3999999986
+                    1.8500000006000006,
+                    0.3999999985999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4364,13 +4364,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8500000006,
-                    0.3999999986
+                    1.8500000006000006,
+                    0.3999999985999999
                   ],
                   "tag": null,
                   "to": [
-                    1.8499999980499997,
-                    0.3999999982
+                    1.84999999805,
+                    0.3999999981999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4381,8 +4381,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8499999980499997,
-                    0.3999999982
+                    1.84999999805,
+                    0.3999999981999999
                   ],
                   "tag": {
                     "commentStart": 3142,
@@ -4393,8 +4393,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line2"
                   },
                   "to": [
-                    1.8499999963499996,
-                    0.7500000019000004
+                    1.8499999963499998,
+                    0.7500000019000002
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4405,13 +4405,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8499999963499996,
-                    0.7500000019000004
+                    1.8499999963499998,
+                    0.7500000019000002
                   ],
                   "tag": null,
                   "to": [
-                    1.8499999954999995,
-                    0.7500000016500004
+                    1.8499999954999997,
+                    0.7500000016500001
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4422,8 +4422,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8499999954999995,
-                    0.7500000016500004
+                    1.8499999954999997,
+                    0.7500000016500001
                   ],
                   "tag": {
                     "commentStart": 3207,
@@ -4434,8 +4434,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.8499999848999986,
-                    0.7500000011500003
+                    -1.8499999848999984,
+                    0.7500000011500001
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4446,13 +4446,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.8499999848999986,
-                    0.7500000011500003
+                    -1.8499999848999984,
+                    0.7500000011500001
                   ],
                   "tag": null,
                   "to": [
-                    -1.8499999867499988,
-                    0.7500000004000003
+                    -1.8499999867499985,
+                    0.7500000004
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4463,8 +4463,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.8499999867499988,
-                    0.7500000004000003
+                    -1.8499999867499985,
+                    0.7500000004
                   ],
                   "tag": {
                     "commentStart": 3272,
@@ -4475,8 +4475,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -1.8499999904499993,
-                    0.39999999900000005
+                    -1.8499999904499989,
+                    0.3999999989999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4515,12 +4515,12 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  -1.849999996,
-                  0.3999999994000001
+                  -1.8499999959999993,
+                  0.3999999993999999
                 ],
                 "to": [
-                  -1.849999996,
-                  0.3999999994000001
+                  -1.8499999959999993,
+                  0.3999999993999999
                 ],
                 "units": "m",
                 "tag": null,
@@ -4571,8 +4571,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -1.849999996,
-            0.3999999994000001
+            -1.8499999959999993,
+            0.3999999993999999
           ],
           "tag": {
             "commentStart": 3077,
@@ -4583,8 +4583,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line1"
           },
           "to": [
-            1.8500000006,
-            0.3999999986
+            1.8500000006000006,
+            0.3999999985999999
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4595,8 +4595,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            1.8499999980499997,
-            0.3999999982
+            1.84999999805,
+            0.3999999981999999
           ],
           "tag": {
             "commentStart": 3142,
@@ -4607,8 +4607,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line2"
           },
           "to": [
-            1.8499999963499996,
-            0.7500000019000004
+            1.8499999963499998,
+            0.7500000019000002
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4619,8 +4619,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            1.8499999954999995,
-            0.7500000016500004
+            1.8499999954999997,
+            0.7500000016500001
           ],
           "tag": {
             "commentStart": 3207,
@@ -4631,8 +4631,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line3"
           },
           "to": [
-            -1.8499999848999986,
-            0.7500000011500003
+            -1.8499999848999984,
+            0.7500000011500001
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4643,8 +4643,8 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -1.8499999867499988,
-            0.7500000004000003
+            -1.8499999867499985,
+            0.7500000004
           ],
           "tag": {
             "commentStart": 3272,
@@ -4655,8 +4655,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line4"
           },
           "to": [
-            -1.8499999904499993,
-            0.39999999900000005
+            -1.8499999904499989,
+            0.3999999989999999
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4695,12 +4695,12 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          -1.849999996,
-          0.3999999994000001
+          -1.8499999959999993,
+          0.3999999993999999
         ],
         "to": [
-          -1.849999996,
-          0.3999999994000001
+          -1.8499999959999993,
+          0.3999999993999999
         ],
         "units": "m",
         "tag": null,
@@ -4848,8 +4848,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -4860,8 +4860,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4872,8 +4872,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -4884,8 +4884,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4896,8 +4896,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -4908,8 +4908,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4920,8 +4920,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -4932,8 +4932,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4944,8 +4944,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -4956,8 +4956,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4968,8 +4968,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -4980,8 +4980,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5020,12 +5020,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -5174,8 +5174,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -5186,8 +5186,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5198,8 +5198,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -5210,8 +5210,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5222,8 +5222,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -5234,8 +5234,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5246,8 +5246,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -5258,8 +5258,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5270,8 +5270,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -5282,8 +5282,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5294,8 +5294,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -5306,8 +5306,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5346,12 +5346,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -5500,8 +5500,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -5512,8 +5512,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5524,8 +5524,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -5536,8 +5536,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5548,8 +5548,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -5560,8 +5560,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5572,8 +5572,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -5584,8 +5584,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5596,8 +5596,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -5608,8 +5608,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5620,8 +5620,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -5632,8 +5632,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5672,12 +5672,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -5826,8 +5826,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -5838,8 +5838,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5850,8 +5850,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -5862,8 +5862,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5874,8 +5874,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -5886,8 +5886,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5898,8 +5898,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -5910,8 +5910,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5922,8 +5922,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -5934,8 +5934,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5946,8 +5946,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -5958,8 +5958,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5998,12 +5998,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -6157,8 +6157,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -6169,8 +6169,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6181,8 +6181,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -6193,8 +6193,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6205,8 +6205,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -6217,8 +6217,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6229,8 +6229,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -6241,8 +6241,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6253,8 +6253,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -6265,8 +6265,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6277,8 +6277,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -6289,8 +6289,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6329,12 +6329,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -6483,8 +6483,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "tag": {
                   "commentStart": 4226,
@@ -6495,8 +6495,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6507,8 +6507,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.26250000000146045,
-                  0.8046633388265529
+                  -0.26250000000014817,
+                  0.8046633388240976
                 ],
                 "tag": {
                   "commentStart": 4303,
@@ -6519,8 +6519,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6531,8 +6531,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000134155,
-                  0.8046633388266685
+                  0.26250000000013557,
+                  0.8046633388241029
                 ],
                 "tag": {
                   "commentStart": 4419,
@@ -6543,8 +6543,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6555,8 +6555,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.5250000000022812,
-                  0.35000000000002723
+                  0.525000000000228,
+                  0.3500000000000027
                 ],
                 "tag": {
                   "commentStart": 4575,
@@ -6567,8 +6567,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6579,8 +6579,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.26250000000106705,
-                  -0.10466333882676324
+                  0.26250000000010876,
+                  -0.10466333882410365
                 ],
                 "tag": {
                   "commentStart": 4691,
@@ -6591,8 +6591,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line5"
                 },
                 "to": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6603,8 +6603,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.2625000000017978,
-                  -0.1046633388264206
+                  -0.26250000000018126,
+                  -0.10466333882409196
                 ],
                 "tag": {
                   "commentStart": 4809,
@@ -6615,8 +6615,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line6"
                 },
                 "to": [
-                  -0.5250000000028476,
-                  0.3500000000001631
+                  -0.5250000000002846,
+                  0.35000000000000775
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6655,12 +6655,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "to": [
-                -0.5250000000028319,
-                0.3500000000001904
+                -0.525000000000283,
+                0.35000000000001047
               ],
               "units": "m",
               "tag": null,
@@ -6811,8 +6811,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000028319,
-              0.3500000000001904
+              -0.525000000000283,
+              0.35000000000001047
             ],
             "tag": {
               "commentStart": 4226,
@@ -6823,8 +6823,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000146045,
-              0.8046633388265529
+              -0.26250000000014817,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6835,8 +6835,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000146045,
-              0.8046633388265529
+              -0.26250000000014817,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4303,
@@ -6847,8 +6847,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000134155,
-              0.8046633388266685
+              0.26250000000013557,
+              0.8046633388241029
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6859,8 +6859,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000134155,
-              0.8046633388266685
+              0.26250000000013557,
+              0.8046633388241029
             ],
             "tag": {
               "commentStart": 4419,
@@ -6871,8 +6871,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000022812,
-              0.35000000000002723
+              0.525000000000228,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6883,8 +6883,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000022812,
-              0.35000000000002723
+              0.525000000000228,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4575,
@@ -6895,8 +6895,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              0.26250000000106705,
-              -0.10466333882676324
+              0.26250000000010876,
+              -0.10466333882410365
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6907,8 +6907,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000106705,
-              -0.10466333882676324
+              0.26250000000010876,
+              -0.10466333882410365
             ],
             "tag": {
               "commentStart": 4691,
@@ -6919,8 +6919,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000017978,
-              -0.1046633388264206
+              -0.26250000000018126,
+              -0.10466333882409196
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6931,8 +6931,8 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000017978,
-              -0.1046633388264206
+              -0.26250000000018126,
+              -0.10466333882409196
             ],
             "tag": {
               "commentStart": 4809,
@@ -6943,8 +6943,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000028476,
-              0.3500000000001631
+              -0.5250000000002846,
+              0.35000000000000775
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6983,12 +6983,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            -0.5250000000028319,
-            0.3500000000001904
+            -0.525000000000283,
+            0.35000000000001047
           ],
           "to": [
-            -0.5250000000028319,
-            0.3500000000001904
+            -0.525000000000283,
+            0.35000000000001047
           ],
           "units": "m",
           "tag": null,
@@ -7895,7 +7895,7 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "from": [
               -0.48,
-              1.9499999999999997
+              1.95
             ],
             "tag": {
               "commentStart": 8741,
@@ -7907,7 +7907,7 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "to": [
               0.9200000000000002,
-              1.9499999999999997
+              1.95
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7919,7 +7919,7 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "from": [
               0.9200000000000002,
-              1.9499999999999997
+              1.95
             ],
             "tag": {
               "commentStart": 8806,
@@ -7954,7 +7954,7 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line3"
             },
             "to": [
-              -0.4799999999999999,
+              -0.48,
               2.05
             ],
             "type": "ToPoint",
@@ -7966,7 +7966,7 @@ description: Variables in memory after executing stylized-car.kcl
               "sourceRange": []
             },
             "from": [
-              -0.4799999999999999,
+              -0.48,
               2.05
             ],
             "tag": {
@@ -7978,8 +7978,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "line4"
             },
             "to": [
-              -0.4799999999999999,
-              1.9499999999999997
+              -0.48,
+              1.95
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8019,11 +8019,11 @@ description: Variables in memory after executing stylized-car.kcl
         "start": {
           "from": [
             -0.48,
-            1.9499999999999997
+            1.95
           ],
           "to": [
             -0.48,
-            1.9499999999999997
+            1.95
           ],
           "units": "m",
           "tag": null,
@@ -8102,7 +8102,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8120,7 +8120,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8222,7 +8222,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8334,7 +8334,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.9200000000000003,
+                        "n": 0.9200000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8352,7 +8352,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4799999999999999,
+                        "n": -0.48,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8454,7 +8454,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.4799999999999999,
+                        "n": -0.48,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8472,7 +8472,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4799999999999999,
+                        "n": -0.48,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8480,7 +8480,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 1.9499999999999997,
+                        "n": 1.95,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8578,7 +8578,7 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "from": [
                     -0.48,
-                    1.9499999999999997
+                    1.95
                   ],
                   "tag": {
                     "commentStart": 8741,
@@ -8590,7 +8590,7 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "to": [
                     0.9200000000000002,
-                    1.9499999999999997
+                    1.95
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -8602,7 +8602,7 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "from": [
                     0.9200000000000002,
-                    1.9499999999999997
+                    1.95
                   ],
                   "tag": {
                     "commentStart": 8806,
@@ -8637,7 +8637,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -0.4799999999999999,
+                    -0.48,
                     2.05
                   ],
                   "type": "ToPoint",
@@ -8649,7 +8649,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4799999999999999,
+                    -0.48,
                     2.05
                   ],
                   "tag": {
@@ -8661,8 +8661,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -0.4799999999999999,
-                    1.9499999999999997
+                    -0.48,
+                    1.95
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -8702,11 +8702,11 @@ description: Variables in memory after executing stylized-car.kcl
               "start": {
                 "from": [
                   -0.48,
-                  1.9499999999999997
+                  1.95
                 ],
                 "to": [
                   -0.48,
-                  1.9499999999999997
+                  1.95
                 ],
                 "units": "m",
                 "tag": null,
@@ -8758,7 +8758,7 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "from": [
             -0.48,
-            1.9499999999999997
+            1.95
           ],
           "tag": {
             "commentStart": 8741,
@@ -8770,7 +8770,7 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "to": [
             0.9200000000000002,
-            1.9499999999999997
+            1.95
           ],
           "type": "ToPoint",
           "units": "m"
@@ -8782,7 +8782,7 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "from": [
             0.9200000000000002,
-            1.9499999999999997
+            1.95
           ],
           "tag": {
             "commentStart": 8806,
@@ -8817,7 +8817,7 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line3"
           },
           "to": [
-            -0.4799999999999999,
+            -0.48,
             2.05
           ],
           "type": "ToPoint",
@@ -8829,7 +8829,7 @@ description: Variables in memory after executing stylized-car.kcl
             "sourceRange": []
           },
           "from": [
-            -0.4799999999999999,
+            -0.48,
             2.05
           ],
           "tag": {
@@ -8841,8 +8841,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "line4"
           },
           "to": [
-            -0.4799999999999999,
-            1.9499999999999997
+            -0.48,
+            1.95
           ],
           "type": "ToPoint",
           "units": "m"
@@ -8882,11 +8882,11 @@ description: Variables in memory after executing stylized-car.kcl
       "start": {
         "from": [
           -0.48,
-          1.9499999999999997
+          1.95
         ],
         "to": [
           -0.48,
-          1.9499999999999997
+          1.95
         ],
         "units": "m",
         "tag": null,
@@ -8997,8 +8997,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "tag": {
                   "commentStart": 12626,
@@ -9009,8 +9009,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.4599999850399987,
-                  0.8299999947399996
+                  -0.45999998503999895,
+                  0.8299999947399995
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9021,8 +9021,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.45999998065999836,
-                  0.8299999939099996
+                  -0.45999998065999814,
+                  0.8299999939099995
                 ],
                 "tag": {
                   "commentStart": 12691,
@@ -9033,7 +9033,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -0.4599999777399981,
+                  -0.4599999777399979,
                   1.0699999956999997
                 ],
                 "type": "ToPoint",
@@ -9045,7 +9045,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.459999976279998,
+                  -0.4599999762799978,
                   1.0699999957699997
                 ],
                 "tag": {
@@ -9057,7 +9057,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  -0.8199999859599986,
+                  -0.8199999859599989,
                   1.0699999959099997
                 ],
                 "type": "ToPoint",
@@ -9069,7 +9069,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999867799986,
+                  -0.819999986779999,
                   1.0699999961199997
                 ],
                 "tag": {
@@ -9081,8 +9081,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  -0.8199999884199989,
-                  0.8299999955699997
+                  -0.8199999884199991,
+                  0.8299999955699996
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9121,12 +9121,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "to": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "units": "m",
               "tag": null,
@@ -9182,8 +9182,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "tag": {
                   "commentStart": 12626,
@@ -9194,8 +9194,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.4599999850399987,
-                  0.8299999947399996
+                  -0.45999998503999895,
+                  0.8299999947399995
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9206,8 +9206,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.45999998065999836,
-                  0.8299999939099996
+                  -0.45999998065999814,
+                  0.8299999939099995
                 ],
                 "tag": {
                   "commentStart": 12691,
@@ -9218,7 +9218,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -0.4599999777399981,
+                  -0.4599999777399979,
                   1.0699999956999997
                 ],
                 "type": "ToPoint",
@@ -9230,7 +9230,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.459999976279998,
+                  -0.4599999762799978,
                   1.0699999957699997
                 ],
                 "tag": {
@@ -9242,7 +9242,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line3"
                 },
                 "to": [
-                  -0.8199999859599986,
+                  -0.8199999859599989,
                   1.0699999959099997
                 ],
                 "type": "ToPoint",
@@ -9254,7 +9254,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999867799986,
+                  -0.819999986779999,
                   1.0699999961199997
                 ],
                 "tag": {
@@ -9266,8 +9266,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "line4"
                 },
                 "to": [
-                  -0.8199999884199989,
-                  0.8299999955699997
+                  -0.8199999884199991,
+                  0.8299999955699996
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9306,12 +9306,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "to": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "units": "m",
               "tag": null,
@@ -9435,8 +9435,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "tag": {
                 "commentStart": 12626,
@@ -9447,8 +9447,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line1"
               },
               "to": [
-                -0.4599999850399987,
-                0.8299999947399996
+                -0.45999998503999895,
+                0.8299999947399995
               ],
               "type": "ToPoint",
               "units": "m"
@@ -9459,8 +9459,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.45999998065999836,
-                0.8299999939099996
+                -0.45999998065999814,
+                0.8299999939099995
               ],
               "tag": {
                 "commentStart": 12691,
@@ -9471,7 +9471,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line2"
               },
               "to": [
-                -0.4599999777399981,
+                -0.4599999777399979,
                 1.0699999956999997
               ],
               "type": "ToPoint",
@@ -9483,7 +9483,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.459999976279998,
+                -0.4599999762799978,
                 1.0699999957699997
               ],
               "tag": {
@@ -9495,7 +9495,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line3"
               },
               "to": [
-                -0.8199999859599986,
+                -0.8199999859599989,
                 1.0699999959099997
               ],
               "type": "ToPoint",
@@ -9507,7 +9507,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999867799986,
+                -0.819999986779999,
                 1.0699999961199997
               ],
               "tag": {
@@ -9519,8 +9519,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line4"
               },
               "to": [
-                -0.8199999884199989,
-                0.8299999955699997
+                -0.8199999884199991,
+                0.8299999955699996
               ],
               "type": "ToPoint",
               "units": "m"
@@ -9559,12 +9559,12 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "start": {
             "from": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "to": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "units": "m",
             "tag": null,
@@ -9609,8 +9609,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "tag": {
                 "commentStart": 12626,
@@ -9621,8 +9621,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line1"
               },
               "to": [
-                -0.4599999850399987,
-                0.8299999947399996
+                -0.45999998503999895,
+                0.8299999947399995
               ],
               "type": "ToPoint",
               "units": "m"
@@ -9633,8 +9633,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.45999998065999836,
-                0.8299999939099996
+                -0.45999998065999814,
+                0.8299999939099995
               ],
               "tag": {
                 "commentStart": 12691,
@@ -9645,7 +9645,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line2"
               },
               "to": [
-                -0.4599999777399981,
+                -0.4599999777399979,
                 1.0699999956999997
               ],
               "type": "ToPoint",
@@ -9657,7 +9657,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.459999976279998,
+                -0.4599999762799978,
                 1.0699999957699997
               ],
               "tag": {
@@ -9669,7 +9669,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line3"
               },
               "to": [
-                -0.8199999859599986,
+                -0.8199999859599989,
                 1.0699999959099997
               ],
               "type": "ToPoint",
@@ -9681,7 +9681,7 @@ description: Variables in memory after executing stylized-car.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999867799986,
+                -0.819999986779999,
                 1.0699999961199997
               ],
               "tag": {
@@ -9693,8 +9693,8 @@ description: Variables in memory after executing stylized-car.kcl
                 "value": "line4"
               },
               "to": [
-                -0.8199999884199989,
-                0.8299999955699997
+                -0.8199999884199991,
+                0.8299999955699996
               ],
               "type": "ToPoint",
               "units": "m"
@@ -9733,12 +9733,12 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "start": {
             "from": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "to": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "units": "m",
             "tag": null,
@@ -9797,7 +9797,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.8199999908799992,
+                        "n": -0.8199999908799993,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9805,7 +9805,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8299999963999998,
+                        "n": 0.8299999963999997,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9815,7 +9815,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4599999850399987,
+                        "n": -0.45999998503999895,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9823,7 +9823,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8299999947399996,
+                        "n": 0.8299999947399995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9917,7 +9917,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.45999998065999836,
+                        "n": -0.45999998065999814,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9925,7 +9925,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8299999939099996,
+                        "n": 0.8299999939099995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9935,7 +9935,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4599999777399981,
+                        "n": -0.4599999777399979,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10037,7 +10037,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.459999976279998,
+                        "n": -0.4599999762799978,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10055,7 +10055,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.8199999859599986,
+                        "n": -0.8199999859599989,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10157,7 +10157,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.8199999867799986,
+                        "n": -0.819999986779999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10175,7 +10175,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.8199999884199989,
+                        "n": -0.8199999884199991,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10183,7 +10183,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8299999955699997,
+                        "n": 0.8299999955699996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10280,8 +10280,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999908799992,
-                    0.8299999963999998
+                    -0.8199999908799993,
+                    0.8299999963999997
                   ],
                   "tag": {
                     "commentStart": 12626,
@@ -10292,8 +10292,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.4599999850399987,
-                    0.8299999947399996
+                    -0.45999998503999895,
+                    0.8299999947399995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10304,13 +10304,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4599999850399987,
-                    0.8299999947399996
+                    -0.45999998503999895,
+                    0.8299999947399995
                   ],
                   "tag": null,
                   "to": [
-                    -0.45999998065999836,
-                    0.8299999939099996
+                    -0.45999998065999814,
+                    0.8299999939099995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10321,8 +10321,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.45999998065999836,
-                    0.8299999939099996
+                    -0.45999998065999814,
+                    0.8299999939099995
                   ],
                   "tag": {
                     "commentStart": 12691,
@@ -10333,7 +10333,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -0.4599999777399981,
+                    -0.4599999777399979,
                     1.0699999956999997
                   ],
                   "type": "ToPoint",
@@ -10345,12 +10345,12 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4599999777399981,
+                    -0.4599999777399979,
                     1.0699999956999997
                   ],
                   "tag": null,
                   "to": [
-                    -0.459999976279998,
+                    -0.4599999762799978,
                     1.0699999957699997
                   ],
                   "type": "ToPoint",
@@ -10362,7 +10362,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.459999976279998,
+                    -0.4599999762799978,
                     1.0699999957699997
                   ],
                   "tag": {
@@ -10374,7 +10374,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -0.8199999859599986,
+                    -0.8199999859599989,
                     1.0699999959099997
                   ],
                   "type": "ToPoint",
@@ -10386,12 +10386,12 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999859599986,
+                    -0.8199999859599989,
                     1.0699999959099997
                   ],
                   "tag": null,
                   "to": [
-                    -0.8199999867799986,
+                    -0.819999986779999,
                     1.0699999961199997
                   ],
                   "type": "ToPoint",
@@ -10403,7 +10403,7 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999867799986,
+                    -0.819999986779999,
                     1.0699999961199997
                   ],
                   "tag": {
@@ -10415,8 +10415,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -0.8199999884199989,
-                    0.8299999955699997
+                    -0.8199999884199991,
+                    0.8299999955699996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10455,12 +10455,12 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "to": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "units": "m",
                 "tag": null,
@@ -10532,7 +10532,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.525000000002879,
+                        "n": 0.5250000000002878,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10540,7 +10540,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000002723,
+                        "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10550,7 +10550,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000000000012012513246267064,
+                        "n": 0.000000000000000000014812878990961126,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10653,7 +10653,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.5250000000028319,
+                        "n": -0.525000000000283,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10661,7 +10661,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3500000000001904,
+                        "n": 0.35000000000001047,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10671,7 +10671,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.26250000000146045,
+                        "n": -0.26250000000014817,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10679,7 +10679,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388265529,
+                        "n": 0.8046633388240976,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10773,7 +10773,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.2625000000014447,
+                        "n": -0.2625000000001466,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10781,7 +10781,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388264984,
+                        "n": 0.8046633388240921,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10791,7 +10791,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.26250000000134155,
+                        "n": 0.26250000000013557,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10799,7 +10799,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388266685,
+                        "n": 0.8046633388241029,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10893,7 +10893,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2625000000012786,
+                        "n": 0.2625000000001293,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10901,7 +10901,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388265868,
+                        "n": 0.8046633388240947,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10911,7 +10911,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5250000000022812,
+                        "n": 0.525000000000228,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10919,7 +10919,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000002723,
+                        "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11013,7 +11013,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.5250000000016991,
+                        "n": 0.5250000000001698,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11031,7 +11031,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.26250000000106705,
+                        "n": 0.26250000000010876,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11039,7 +11039,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882676324,
+                        "n": -0.10466333882410365,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11133,7 +11133,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.26250000000105134,
+                        "n": 0.2625000000001072,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11141,7 +11141,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882670874,
+                        "n": -0.1046633388240982,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11151,7 +11151,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.2625000000017978,
+                        "n": -0.26250000000018126,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11159,7 +11159,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": -0.1046633388264206,
+                        "n": -0.10466333882409196,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11253,7 +11253,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.26250000000173485,
+                        "n": -0.262500000000175,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11261,7 +11261,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882633884,
+                        "n": -0.10466333882408378,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11271,7 +11271,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5250000000028476,
+                        "n": -0.5250000000002846,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11279,7 +11279,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3500000000001631,
+                        "n": 0.35000000000000775,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11373,7 +11373,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000005663845632146752,
+                        "n": 0.00000000000005663856320632382,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11391,7 +11391,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5250000000011328,
+                        "n": 0.5250000000001132,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11497,8 +11497,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5250000000028319,
-                    0.3500000000001904
+                    -0.525000000000283,
+                    0.35000000000001047
                   ],
                   "tag": {
                     "commentStart": 4226,
@@ -11509,8 +11509,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.26250000000146045,
-                    0.8046633388265529
+                    -0.26250000000014817,
+                    0.8046633388240976
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11521,8 +11521,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.26250000000146045,
-                    0.8046633388265529
+                    -0.26250000000014817,
+                    0.8046633388240976
                   ],
                   "tag": {
                     "commentStart": 4303,
@@ -11533,8 +11533,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.26250000000134155,
-                    0.8046633388266685
+                    0.26250000000013557,
+                    0.8046633388241029
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11545,8 +11545,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.26250000000134155,
-                    0.8046633388266685
+                    0.26250000000013557,
+                    0.8046633388241029
                   ],
                   "tag": {
                     "commentStart": 4419,
@@ -11557,8 +11557,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line3"
                   },
                   "to": [
-                    0.5250000000022812,
-                    0.35000000000002723
+                    0.525000000000228,
+                    0.3500000000000027
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11569,8 +11569,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5250000000022812,
-                    0.35000000000002723
+                    0.525000000000228,
+                    0.3500000000000027
                   ],
                   "tag": {
                     "commentStart": 4575,
@@ -11581,8 +11581,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line4"
                   },
                   "to": [
-                    0.26250000000106705,
-                    -0.10466333882676324
+                    0.26250000000010876,
+                    -0.10466333882410365
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11593,8 +11593,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.26250000000106705,
-                    -0.10466333882676324
+                    0.26250000000010876,
+                    -0.10466333882410365
                   ],
                   "tag": {
                     "commentStart": 4691,
@@ -11605,8 +11605,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -0.2625000000017978,
-                    -0.1046633388264206
+                    -0.26250000000018126,
+                    -0.10466333882409196
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11617,8 +11617,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.2625000000017978,
-                    -0.1046633388264206
+                    -0.26250000000018126,
+                    -0.10466333882409196
                   ],
                   "tag": {
                     "commentStart": 4809,
@@ -11629,8 +11629,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.5250000000028476,
-                    0.3500000000001631
+                    -0.5250000000002846,
+                    0.35000000000000775
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11669,12 +11669,12 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "to": [
-                  -0.5250000000028319,
-                  0.3500000000001904
+                  -0.525000000000283,
+                  0.35000000000001047
                 ],
                 "units": "m",
                 "tag": null,
@@ -11767,14 +11767,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114818778,
-                  0.35000000000005055
+                  -0.0007138987956659997,
+                  0.35000000000000503
                 ],
                 "from": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
-                "radius": 0.35000000004379284,
+                "radius": 0.35000000004378223,
                 "tag": {
                   "commentStart": 9844,
                   "end": 9851,
@@ -11784,8 +11784,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -11824,12 +11824,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -11893,14 +11893,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
+                  -0.0007138987956651704,
+                  0.35000000000000525
                 ],
                 "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
-                "radius": 0.17500000013007633,
+                "radius": 0.17500000013000247,
                 "tag": {
                   "commentStart": 9929,
                   "end": 9936,
@@ -11910,8 +11910,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle2"
                 },
                 "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -11950,12 +11950,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12024,14 +12024,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114818778,
-                  0.35000000000005055
+                  -0.0007138987956659997,
+                  0.35000000000000503
                 ],
                 "from": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
-                "radius": 0.35000000004379284,
+                "radius": 0.35000000004378223,
                 "tag": {
                   "commentStart": 9844,
                   "end": 9851,
@@ -12041,8 +12041,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12081,12 +12081,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12150,14 +12150,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
+                  -0.0007138987956651704,
+                  0.35000000000000525
                 ],
                 "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
-                "radius": 0.17500000013007633,
+                "radius": 0.17500000013000247,
                 "tag": {
                   "commentStart": 9929,
                   "end": 9936,
@@ -12167,8 +12167,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle2"
                 },
                 "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12207,12 +12207,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12266,14 +12266,14 @@ description: Variables in memory after executing stylized-car.kcl
           },
           "ccw": true,
           "center": [
-            -0.0007138995114818778,
-            0.35000000000005055
+            -0.0007138987956659997,
+            0.35000000000000503
           ],
           "from": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
-          "radius": 0.35000000004379284,
+          "radius": 0.35000000004378223,
           "tag": {
             "commentStart": 9844,
             "end": 9851,
@@ -12283,8 +12283,8 @@ description: Variables in memory after executing stylized-car.kcl
             "value": "circle1"
           },
           "to": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
           "type": "Circle",
           "units": "m"
@@ -12323,12 +12323,12 @@ description: Variables in memory after executing stylized-car.kcl
       },
       "start": {
         "from": [
-          0.32005605008993004,
-          0.20997628963868833
+          0.3200560503374278,
+          0.20997628856583403
         ],
         "to": [
-          0.32005605008993004,
-          0.20997628963868833
+          0.3200560503374278,
+          0.20997628856583403
         ],
         "units": "m",
         "tag": null,
@@ -12390,14 +12390,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114818778,
-                  0.35000000000005055
+                  -0.0007138987956659997,
+                  0.35000000000000503
                 ],
                 "from": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
-                "radius": 0.35000000004379284,
+                "radius": 0.35000000004378223,
                 "tag": {
                   "commentStart": 9844,
                   "end": 9851,
@@ -12407,8 +12407,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12447,12 +12447,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12516,14 +12516,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
+                  -0.0007138987956651704,
+                  0.35000000000000525
                 ],
                 "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
-                "radius": 0.17500000013007633,
+                "radius": 0.17500000013000247,
                 "tag": {
                   "commentStart": 9929,
                   "end": 9936,
@@ -12533,8 +12533,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle2"
                 },
                 "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12573,12 +12573,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12647,14 +12647,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114818778,
-                  0.35000000000005055
+                  -0.0007138987956659997,
+                  0.35000000000000503
                 ],
                 "from": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
-                "radius": 0.35000000004379284,
+                "radius": 0.35000000004378223,
                 "tag": {
                   "commentStart": 9844,
                   "end": 9851,
@@ -12664,8 +12664,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12704,12 +12704,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12773,14 +12773,14 @@ description: Variables in memory after executing stylized-car.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.0007138995114735852,
-                  0.35000000000005294
+                  -0.0007138987956651704,
+                  0.35000000000000525
                 ],
                 "from": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
-                "radius": 0.17500000013007633,
+                "radius": 0.17500000013000247,
                 "tag": {
                   "commentStart": 9929,
                   "end": 9936,
@@ -12790,8 +12790,8 @@ description: Variables in memory after executing stylized-car.kcl
                   "value": "circle2"
                 },
                 "to": [
-                  0.1520856467161471,
-                  0.43530708480641545
+                  0.1520856463105938,
+                  0.43530708681476643
                 ],
                 "type": "Circle",
                 "units": "m"
@@ -12830,12 +12830,12 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "start": {
               "from": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "to": [
-                0.32005605008993004,
-                0.20997628963868833
+                0.3200560503374278,
+                0.20997628856583403
               ],
               "units": "m",
               "tag": null,
@@ -12882,7 +12882,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.32005605008993004,
+                        "n": 0.3200560503374278,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -12890,7 +12890,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.20997628963868833,
+                        "n": 0.20997628856583403,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -12900,7 +12900,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0007138995114818778,
+                        "n": -0.0007138987956659997,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -12908,7 +12908,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000005055,
+                        "n": 0.35000000000000503,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13002,7 +13002,7 @@ description: Variables in memory after executing stylized-car.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.1520856467161471,
+                        "n": 0.1520856463105938,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13010,7 +13010,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.43530708480641545,
+                        "n": 0.43530708681476643,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13020,7 +13020,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0007138995114735852,
+                        "n": -0.0007138987956651704,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13028,7 +13028,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000005294,
+                        "n": 0.35000000000000525,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13130,7 +13130,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000017658808840104512,
+                        "n": 0.000000000000001765884808083222,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13140,7 +13140,7 @@ description: Variables in memory after executing stylized-car.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0007138995114874233,
+                        "n": -0.0007138987956665543,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13148,7 +13148,7 @@ description: Variables in memory after executing stylized-car.kcl
                         }
                       },
                       {
-                        "n": 0.3500000000000353,
+                        "n": 0.35000000000000353,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13247,14 +13247,14 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0007138995114818778,
-                    0.35000000000005055
+                    -0.0007138987956659997,
+                    0.35000000000000503
                   ],
                   "from": [
-                    0.32005605008993004,
-                    0.20997628963868833
+                    0.3200560503374278,
+                    0.20997628856583403
                   ],
-                  "radius": 0.35000000004379284,
+                  "radius": 0.35000000004378223,
                   "tag": {
                     "commentStart": 9844,
                     "end": 9851,
@@ -13264,8 +13264,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    0.32005605008993004,
-                    0.20997628963868833
+                    0.3200560503374278,
+                    0.20997628856583403
                   ],
                   "type": "Circle",
                   "units": "m"
@@ -13276,13 +13276,13 @@ description: Variables in memory after executing stylized-car.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.32005605008993004,
-                    0.20997628963868833
+                    0.3200560503374278,
+                    0.20997628856583403
                   ],
                   "tag": null,
                   "to": [
-                    0.1520856467161471,
-                    0.43530708480641545
+                    0.1520856463105938,
+                    0.43530708681476643
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -13294,14 +13294,14 @@ description: Variables in memory after executing stylized-car.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0007138995114735852,
-                    0.35000000000005294
+                    -0.0007138987956651704,
+                    0.35000000000000525
                   ],
                   "from": [
-                    0.1520856467161471,
-                    0.43530708480641545
+                    0.1520856463105938,
+                    0.43530708681476643
                   ],
-                  "radius": 0.17500000013007633,
+                  "radius": 0.17500000013000247,
                   "tag": {
                     "commentStart": 9929,
                     "end": 9936,
@@ -13311,8 +13311,8 @@ description: Variables in memory after executing stylized-car.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    0.1520856467161471,
-                    0.43530708480641545
+                    0.1520856463105938,
+                    0.43530708681476643
                   ],
                   "type": "Circle",
                   "units": "m"
@@ -13351,12 +13351,12 @@ description: Variables in memory after executing stylized-car.kcl
               },
               "start": {
                 "from": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "to": [
-                  0.32005605008993004,
-                  0.20997628963868833
+                  0.3200560503374278,
+                  0.20997628856583403
                 ],
                 "units": "m",
                 "tag": null,
@@ -13421,14 +13421,14 @@ description: Variables in memory after executing stylized-car.kcl
             },
             "ccw": true,
             "center": [
-              -0.0007138995114818778,
-              0.35000000000005055
+              -0.0007138987956659997,
+              0.35000000000000503
             ],
             "from": [
-              0.32005605008993004,
-              0.20997628963868833
+              0.3200560503374278,
+              0.20997628856583403
             ],
-            "radius": 0.35000000004379284,
+            "radius": 0.35000000004378223,
             "tag": {
               "commentStart": 9844,
               "end": 9851,
@@ -13438,8 +13438,8 @@ description: Variables in memory after executing stylized-car.kcl
               "value": "circle1"
             },
             "to": [
-              0.32005605008993004,
-              0.20997628963868833
+              0.3200560503374278,
+              0.20997628856583403
             ],
             "type": "Circle",
             "units": "m"
@@ -13478,12 +13478,12 @@ description: Variables in memory after executing stylized-car.kcl
         },
         "start": {
           "from": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
           "to": [
-            0.32005605008993004,
-            0.20997628963868833
+            0.3200560503374278,
+            0.20997628856583403
           ],
           "units": "m",
           "tag": null,

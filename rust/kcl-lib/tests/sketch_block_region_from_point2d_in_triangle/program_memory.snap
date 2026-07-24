@@ -47,8 +47,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            -0.20674594013619027,
-            -0.06852748084846844
+            -0.206745937446872,
+            -0.06852753424785177
           ],
           "tag": {
             "commentStart": 24,
@@ -59,8 +59,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "value": "line1"
           },
           "to": [
-            3.3967460225035606,
-            -0.06852748084842362
+            3.3967459390464816,
+            -0.06852753424785132
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -71,8 +71,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            3.3967460225035606,
-            -0.06852748084842362
+            3.3967459390464816,
+            -0.06852753424785132
           ],
           "tag": {
             "commentStart": 96,
@@ -83,8 +83,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "value": "line2"
           },
           "to": [
-            1.5950000411833656,
-            4.787054952178176
+            1.5950000007998002,
+            4.787055041028911
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -95,8 +95,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "sourceRange": []
           },
           "from": [
-            1.5950000411833656,
-            4.787054952178176
+            1.5950000007998002,
+            4.787055041028911
           ],
           "tag": {
             "commentStart": 213,
@@ -107,8 +107,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
             "value": "line3"
           },
           "to": [
-            -0.2067459401361986,
-            -0.06852748084851323
+            -0.20674593744687209,
+            -0.06852753424785223
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -147,12 +147,12 @@ description: Variables in memory after executing sketch_block_region_from_point2
       },
       "start": {
         "from": [
-          -0.20674594013619027,
-          -0.06852748084846844
+          -0.206745937446872,
+          -0.06852753424785177
         ],
         "to": [
-          -0.20674594013619027,
-          -0.06852748084846844
+          -0.206745937446872,
+          -0.06852753424785177
         ],
         "units": "mm",
         "tag": null,
@@ -196,7 +196,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                   "line": {
                     "start": [
                       {
-                        "n": -0.20674594013619027,
+                        "n": -0.206745937446872,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -204,7 +204,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": -0.06852748084846844,
+                        "n": -0.06852753424785177,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -214,7 +214,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     ],
                     "end": [
                       {
-                        "n": 3.3967460225035606,
+                        "n": 3.3967459390464816,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -222,7 +222,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": -0.06852748084842362,
+                        "n": -0.06852753424785132,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -316,7 +316,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                   "line": {
                     "start": [
                       {
-                        "n": 3.3967460225035526,
+                        "n": 3.3967459390464816,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -324,7 +324,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": -0.06852748084837883,
+                        "n": -0.06852753424785088,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -334,7 +334,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     ],
                     "end": [
                       {
-                        "n": 1.5950000411833656,
+                        "n": 1.5950000007998002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -342,7 +342,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": 4.787054952178176,
+                        "n": 4.787055041028911,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -436,7 +436,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                   "line": {
                     "start": [
                       {
-                        "n": 1.5950000411833656,
+                        "n": 1.5950000007998002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -444,7 +444,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": 4.78705495217822,
+                        "n": 4.787055041028912,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -454,7 +454,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     ],
                     "end": [
                       {
-                        "n": -0.2067459401361986,
+                        "n": -0.20674593744687209,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -462,7 +462,7 @@ description: Variables in memory after executing sketch_block_region_from_point2
                         }
                       },
                       {
-                        "n": -0.06852748084851323,
+                        "n": -0.06852753424785223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -559,8 +559,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    -0.20674594013619027,
-                    -0.06852748084846844
+                    -0.206745937446872,
+                    -0.06852753424785177
                   ],
                   "tag": {
                     "commentStart": 24,
@@ -571,8 +571,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "value": "line1"
                   },
                   "to": [
-                    3.3967460225035606,
-                    -0.06852748084842362
+                    3.3967459390464816,
+                    -0.06852753424785132
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -583,8 +583,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    3.3967460225035606,
-                    -0.06852748084842362
+                    3.3967459390464816,
+                    -0.06852753424785132
                   ],
                   "tag": {
                     "commentStart": 96,
@@ -595,8 +595,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "value": "line2"
                   },
                   "to": [
-                    1.5950000411833656,
-                    4.787054952178176
+                    1.5950000007998002,
+                    4.787055041028911
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -607,8 +607,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "sourceRange": []
                   },
                   "from": [
-                    1.5950000411833656,
-                    4.787054952178176
+                    1.5950000007998002,
+                    4.787055041028911
                   ],
                   "tag": {
                     "commentStart": 213,
@@ -619,8 +619,8 @@ description: Variables in memory after executing sketch_block_region_from_point2
                     "value": "line3"
                   },
                   "to": [
-                    -0.2067459401361986,
-                    -0.06852748084851323
+                    -0.20674593744687209,
+                    -0.06852753424785223
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -659,12 +659,12 @@ description: Variables in memory after executing sketch_block_region_from_point2
               },
               "start": {
                 "from": [
-                  -0.20674594013619027,
-                  -0.06852748084846844
+                  -0.206745937446872,
+                  -0.06852753424785177
                 ],
                 "to": [
-                  -0.20674594013619027,
-                  -0.06852748084846844
+                  -0.206745937446872,
+                  -0.06852753424785177
                 ],
                 "units": "mm",
                 "tag": null,

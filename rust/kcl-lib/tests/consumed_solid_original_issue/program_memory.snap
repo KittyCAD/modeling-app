@@ -166,8 +166,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000009502754108900857,
-              -0.000000000000000000000000019297620301673507
+              -0.00000000000000000000420770827310535,
+              0.0000000000000000000000000000000000000000000000000000000000035782337847701565
             ],
             "tag": {
               "commentStart": 1640,
@@ -178,8 +178,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "value": "line1"
             },
             "to": [
-              17.275286442096036,
-              -0.00000000000000000000000003859524070819622
+              17.22059756513262,
+              0.0000000000000000000000000000000000000000000000000000000000046672614583958563
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -190,8 +190,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "sourceRange": []
             },
             "from": [
-              17.275286442096036,
-              -0.00000000000000000000000003859524070819622
+              17.22059756513262,
+              0.0000000000000000000000000000000000000000000000000000000000046672614583958563
             ],
             "tag": {
               "commentStart": 1783,
@@ -202,8 +202,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "value": "line2"
             },
             "to": [
-              17.275286442095986,
-              34.69963210574459
+              17.22059756513262,
+              34.80477969331079
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -215,14 +215,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "ccw": true,
             "center": [
-              1.8591628289673547,
-              34.699187315239854
+              2.0412659549877077,
+              34.80437917672039
             ],
             "from": [
-              17.275286442095986,
-              34.69963210574459
+              17.22059756513262,
+              34.80477969331079
             ],
-            "radius": 15.416123619545244,
+            "radius": 15.17933161542886,
             "tag": {
               "commentStart": 1902,
               "end": 1906,
@@ -232,8 +232,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "value": "arc1"
             },
             "to": [
-              0.0000000024351327621019436,
-              50.002794113558394
+              -0.0000000005974936101438288,
+              49.84583328161752
             ],
             "type": "Arc",
             "units": "mm"
@@ -244,8 +244,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "sourceRange": []
             },
             "from": [
-              0.0000000024351327621019436,
-              50.002794113558394
+              -0.0000000005974936101438288,
+              49.84583328161752
             ],
             "tag": {
               "commentStart": 2148,
@@ -256,8 +256,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               "value": "line3"
             },
             "to": [
-              -0.0000000000000019005508210462823,
-              -0.000000000000000000000000019297620249248904
+              -0.0000000000000000000084154165462107,
+              0.0000000000000000000000000000000000000000000000000000000000049784122222889134
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -296,12 +296,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
         },
         "start": {
           "from": [
-            -0.0000000000000009502754108900857,
-            -0.000000000000000000000000019297620301673507
+            -0.00000000000000000000420770827310535,
+            0.0000000000000000000000000000000000000000000000000000000000035782337847701565
           ],
           "to": [
-            -0.0000000000000009502754108900857,
-            -0.000000000000000000000000019297620301673507
+            -0.00000000000000000000420770827310535,
+            0.0000000000000000000000000000000000000000000000000000000000035782337847701565
           ],
           "units": "mm",
           "tag": null,
@@ -378,8 +378,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000009502754108900857,
-            -0.000000000000000000000000019297620301673507
+            -0.00000000000000000000420770827310535,
+            0.0000000000000000000000000000000000000000000000000000000000035782337847701565
           ],
           "tag": {
             "commentStart": 1640,
@@ -390,8 +390,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line1"
           },
           "to": [
-            17.275286442096036,
-            -0.00000000000000000000000003859524070819622
+            17.22059756513262,
+            0.0000000000000000000000000000000000000000000000000000000000046672614583958563
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -402,8 +402,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            17.275286442096036,
-            -0.00000000000000000000000003859524070819622
+            17.22059756513262,
+            0.0000000000000000000000000000000000000000000000000000000000046672614583958563
           ],
           "tag": {
             "commentStart": 1783,
@@ -414,8 +414,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line2"
           },
           "to": [
-            17.275286442095986,
-            34.69963210574459
+            17.22059756513262,
+            34.80477969331079
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -427,14 +427,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
           },
           "ccw": true,
           "center": [
-            1.8591628289673547,
-            34.699187315239854
+            2.0412659549877077,
+            34.80437917672039
           ],
           "from": [
-            17.275286442095986,
-            34.69963210574459
+            17.22059756513262,
+            34.80477969331079
           ],
-          "radius": 15.416123619545244,
+          "radius": 15.17933161542886,
           "tag": {
             "commentStart": 1902,
             "end": 1906,
@@ -444,8 +444,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "arc1"
           },
           "to": [
-            0.0000000024351327621019436,
-            50.002794113558394
+            -0.0000000005974936101438288,
+            49.84583328161752
           ],
           "type": "Arc",
           "units": "mm"
@@ -456,8 +456,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            0.0000000024351327621019436,
-            50.002794113558394
+            -0.0000000005974936101438288,
+            49.84583328161752
           ],
           "tag": {
             "commentStart": 2148,
@@ -468,8 +468,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line3"
           },
           "to": [
-            -0.0000000000000019005508210462823,
-            -0.000000000000000000000000019297620249248904
+            -0.0000000000000000000084154165462107,
+            0.0000000000000000000000000000000000000000000000000000000000049784122222889134
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -508,12 +508,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
       },
       "start": {
         "from": [
-          -0.0000000000000009502754108900857,
-          -0.000000000000000000000000019297620301673507
+          -0.00000000000000000000420770827310535,
+          0.0000000000000000000000000000000000000000000000000000000000035782337847701565
         ],
         "to": [
-          -0.0000000000000009502754108900857,
-          -0.000000000000000000000000019297620301673507
+          -0.00000000000000000000420770827310535,
+          0.0000000000000000000000000000000000000000000000000000000000035782337847701565
         ],
         "units": "mm",
         "tag": null,
@@ -940,8 +940,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -952,8 +952,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -965,14 +965,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -982,8 +982,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -994,8 +994,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -1006,8 +1006,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1019,14 +1019,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -1036,8 +1036,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1076,12 +1076,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -1194,8 +1194,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -1206,8 +1206,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1219,14 +1219,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -1236,8 +1236,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1248,8 +1248,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -1260,8 +1260,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1273,14 +1273,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -1290,8 +1290,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1330,12 +1330,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -1448,8 +1448,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -1460,8 +1460,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1473,14 +1473,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -1490,8 +1490,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1502,8 +1502,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -1514,8 +1514,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1527,14 +1527,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -1544,8 +1544,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1584,12 +1584,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -1702,8 +1702,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -1714,8 +1714,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1727,14 +1727,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -1744,8 +1744,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1756,8 +1756,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -1768,8 +1768,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1781,14 +1781,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -1798,8 +1798,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -1838,12 +1838,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -1956,8 +1956,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -1968,8 +1968,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1981,14 +1981,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -1998,8 +1998,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2010,8 +2010,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -2022,8 +2022,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2035,14 +2035,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -2052,8 +2052,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2092,12 +2092,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -2210,8 +2210,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -2222,8 +2222,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2235,14 +2235,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -2252,8 +2252,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2264,8 +2264,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -2276,8 +2276,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2289,14 +2289,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -2306,8 +2306,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2346,12 +2346,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -2403,8 +2403,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000009502754108900857,
-            -0.000000000000000000000000019297620301673507
+            -0.00000000000000000000420770827310535,
+            0.0000000000000000000000000000000000000000000000000000000000035782337847701565
           ],
           "tag": {
             "commentStart": 1640,
@@ -2415,8 +2415,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line1"
           },
           "to": [
-            17.275286442096036,
-            -0.00000000000000000000000003859524070819622
+            17.22059756513262,
+            0.0000000000000000000000000000000000000000000000000000000000046672614583958563
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2427,8 +2427,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            17.275286442096036,
-            -0.00000000000000000000000003859524070819622
+            17.22059756513262,
+            0.0000000000000000000000000000000000000000000000000000000000046672614583958563
           ],
           "tag": {
             "commentStart": 1783,
@@ -2439,8 +2439,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line2"
           },
           "to": [
-            17.275286442095986,
-            34.69963210574459
+            17.22059756513262,
+            34.80477969331079
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2452,14 +2452,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
           },
           "ccw": true,
           "center": [
-            1.8591628289673547,
-            34.699187315239854
+            2.0412659549877077,
+            34.80437917672039
           ],
           "from": [
-            17.275286442095986,
-            34.69963210574459
+            17.22059756513262,
+            34.80477969331079
           ],
-          "radius": 15.416123619545244,
+          "radius": 15.17933161542886,
           "tag": {
             "commentStart": 1902,
             "end": 1906,
@@ -2469,8 +2469,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "arc1"
           },
           "to": [
-            0.0000000024351327621019436,
-            50.002794113558394
+            -0.0000000005974936101438288,
+            49.84583328161752
           ],
           "type": "Arc",
           "units": "mm"
@@ -2481,8 +2481,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "sourceRange": []
           },
           "from": [
-            0.0000000024351327621019436,
-            50.002794113558394
+            -0.0000000005974936101438288,
+            49.84583328161752
           ],
           "tag": {
             "commentStart": 2148,
@@ -2493,8 +2493,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             "value": "line3"
           },
           "to": [
-            -0.0000000000000019005508210462823,
-            -0.000000000000000000000000019297620249248904
+            -0.0000000000000000000084154165462107,
+            0.0000000000000000000000000000000000000000000000000000000000049784122222889134
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2533,12 +2533,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
       },
       "start": {
         "from": [
-          -0.0000000000000009502754108900857,
-          -0.000000000000000000000000019297620301673507
+          -0.00000000000000000000420770827310535,
+          0.0000000000000000000000000000000000000000000000000000000000035782337847701565
         ],
         "to": [
-          -0.0000000000000009502754108900857,
-          -0.000000000000000000000000019297620301673507
+          -0.00000000000000000000420770827310535,
+          0.0000000000000000000000000000000000000000000000000000000000035782337847701565
         ],
         "units": "mm",
         "tag": null,
@@ -2789,8 +2789,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -2801,8 +2801,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2814,14 +2814,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -2831,8 +2831,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2843,8 +2843,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -2855,8 +2855,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2868,14 +2868,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -2885,8 +2885,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -2925,12 +2925,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -2986,8 +2986,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -2998,8 +2998,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3011,14 +3011,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -3028,8 +3028,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3040,8 +3040,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -3052,8 +3052,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3065,14 +3065,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -3082,8 +3082,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3122,12 +3122,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -3183,8 +3183,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -3195,8 +3195,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3208,14 +3208,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -3225,8 +3225,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3237,8 +3237,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -3249,8 +3249,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3262,14 +3262,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -3279,8 +3279,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3319,12 +3319,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -3380,8 +3380,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -3392,8 +3392,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3405,14 +3405,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -3422,8 +3422,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3434,8 +3434,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -3446,8 +3446,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3459,14 +3459,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -3476,8 +3476,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3516,12 +3516,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -3577,8 +3577,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -3589,8 +3589,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3602,14 +3602,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -3619,8 +3619,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3631,8 +3631,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -3643,8 +3643,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3656,14 +3656,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -3673,8 +3673,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3713,12 +3713,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -3774,8 +3774,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "tag": {
                   "commentStart": 406,
@@ -3786,8 +3786,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line1"
                 },
                 "to": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3799,14 +3799,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  11.5911099154688,
-                  3.105828541230285
+                  11.59110991546882,
+                  3.105828541230249
                 ],
                 "from": [
-                  15.000000000000014,
-                  -0.0000000000000227123911579229
+                  15.0,
+                  -0.000000000000000049629976485344605
                 ],
-                "radius": 4.611583517181057,
+                "radius": 4.611583517180992,
                 "tag": {
                   "commentStart": 498,
                   "end": 502,
@@ -3816,8 +3816,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc1"
                 },
                 "to": [
-                  12.990381056766594,
-                  7.500000000000092
+                  12.99038105676658,
+                  7.499999999999999
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3828,8 +3828,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "sourceRange": []
                 },
                 "from": [
-                  7.500000000000012,
-                  12.990381056766559
+                  7.500000000000002,
+                  12.990381056766578
                 ],
                 "tag": {
                   "commentStart": 653,
@@ -3840,8 +3840,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "line2"
                 },
                 "to": [
-                  0.000000000000001841228201007036,
-                  -0.000000000000017724866664549068
+                  0.00000000000000007000425470851272,
+                  -0.0000000000000000022143988957514074
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3853,14 +3853,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                 },
                 "ccw": true,
                 "center": [
-                  17.677669529663696,
+                  17.67766952966369,
                   17.67766952966368
                 ],
                 "from": [
-                  7.500000000000007,
-                  12.990381056766555
+                  7.500000000000002,
+                  12.990381056766578
                 ],
-                "radius": 11.205160877167222,
+                "radius": 11.205160877167215,
                 "tag": {
                   "commentStart": 887,
                   "end": 891,
@@ -3870,8 +3870,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "value": "arc2"
                 },
                 "to": [
-                  12.990381056766582,
-                  7.499999999999989
+                  12.990381056766577,
+                  7.4999999999999964
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -3910,12 +3910,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
             },
             "start": {
               "from": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "to": [
-                0.000000000000006899522647848546,
-                -0.000000000000014526668752594063
+                0.00000000000000004751442319125145,
+                -0.00000000000000001251222676741394
               ],
               "units": "mm",
               "tag": null,
@@ -3970,7 +3970,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "arc": {
                     "start": [
                       {
-                        "n": 15.000000000000027,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3978,7 +3978,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.000000000000033460008255009816,
+                        "n": -0.0000000000000000724060042227431,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3988,7 +3988,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": 12.990381056766578,
+                        "n": 12.99038105676658,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3996,7 +3996,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 7.499999999999989,
+                        "n": 7.499999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4006,7 +4006,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "center": [
                       {
-                        "n": 11.591109915468813,
+                        "n": 11.59110991546882,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4014,7 +4014,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 3.105828541230274,
+                        "n": 3.105828541230249,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4122,7 +4122,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "arc": {
                     "start": [
                       {
-                        "n": 7.500000000000007,
+                        "n": 7.500000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4130,7 +4130,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 12.990381056766555,
+                        "n": 12.990381056766578,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4148,7 +4148,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 7.499999999999995,
+                        "n": 7.499999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4158,7 +4158,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "center": [
                       {
-                        "n": 17.677669529663692,
+                        "n": 17.67766952966369,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4166,7 +4166,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 17.67766952966368,
+                        "n": 17.677669529663685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4274,7 +4274,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000006899522647848546,
+                        "n": 0.00000000000000004751442319125145,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4282,7 +4282,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.000000000000014526668752594063,
+                        "n": -0.00000000000000001251222676741394,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4292,7 +4292,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": 15.000000000000014,
+                        "n": 15.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4300,7 +4300,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.0000000000000227123911579229,
+                        "n": -0.000000000000000049629976485344605,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4394,7 +4394,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "line": {
                     "start": [
                       {
-                        "n": 7.500000000000012,
+                        "n": 7.500000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4402,7 +4402,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 12.990381056766559,
+                        "n": 12.990381056766578,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4412,7 +4412,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000001841228201007036,
+                        "n": 0.00000000000000007000425470851272,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4420,7 +4420,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.000000000000017724866664549068,
+                        "n": -0.0000000000000000022143988957514074,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4517,8 +4517,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    0.000000000000006899522647848546,
-                    -0.000000000000014526668752594063
+                    0.00000000000000004751442319125145,
+                    -0.00000000000000001251222676741394
                   ],
                   "tag": {
                     "commentStart": 406,
@@ -4529,8 +4529,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "line1"
                   },
                   "to": [
-                    15.000000000000014,
-                    -0.0000000000000227123911579229
+                    15.0,
+                    -0.000000000000000049629976485344605
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4542,14 +4542,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   },
                   "ccw": true,
                   "center": [
-                    11.5911099154688,
-                    3.105828541230285
+                    11.59110991546882,
+                    3.105828541230249
                   ],
                   "from": [
-                    15.000000000000014,
-                    -0.0000000000000227123911579229
+                    15.0,
+                    -0.000000000000000049629976485344605
                   ],
-                  "radius": 4.611583517181057,
+                  "radius": 4.611583517180992,
                   "tag": {
                     "commentStart": 498,
                     "end": 502,
@@ -4559,8 +4559,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "arc1"
                   },
                   "to": [
-                    12.990381056766594,
-                    7.500000000000092
+                    12.99038105676658,
+                    7.499999999999999
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -4571,13 +4571,13 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    12.990381056766594,
-                    7.500000000000092
+                    12.99038105676658,
+                    7.499999999999999
                   ],
                   "tag": null,
                   "to": [
-                    7.500000000000012,
-                    12.990381056766559
+                    7.500000000000002,
+                    12.990381056766578
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4588,8 +4588,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    7.500000000000012,
-                    12.990381056766559
+                    7.500000000000002,
+                    12.990381056766578
                   ],
                   "tag": {
                     "commentStart": 653,
@@ -4600,8 +4600,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "line2"
                   },
                   "to": [
-                    0.000000000000001841228201007036,
-                    -0.000000000000017724866664549068
+                    0.00000000000000007000425470851272,
+                    -0.0000000000000000022143988957514074
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4612,13 +4612,13 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    0.000000000000001841228201007036,
-                    -0.000000000000017724866664549068
+                    0.00000000000000007000425470851272,
+                    -0.0000000000000000022143988957514074
                   ],
                   "tag": null,
                   "to": [
-                    7.500000000000007,
-                    12.990381056766555
+                    7.500000000000002,
+                    12.990381056766578
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4630,14 +4630,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   },
                   "ccw": true,
                   "center": [
-                    17.677669529663696,
+                    17.67766952966369,
                     17.67766952966368
                   ],
                   "from": [
-                    7.500000000000007,
-                    12.990381056766555
+                    7.500000000000002,
+                    12.990381056766578
                   ],
-                  "radius": 11.205160877167222,
+                  "radius": 11.205160877167215,
                   "tag": {
                     "commentStart": 887,
                     "end": 891,
@@ -4647,8 +4647,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "arc2"
                   },
                   "to": [
-                    12.990381056766582,
-                    7.499999999999989
+                    12.990381056766577,
+                    7.4999999999999964
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -4687,12 +4687,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               },
               "start": {
                 "from": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "to": [
-                  0.000000000000006899522647848546,
-                  -0.000000000000014526668752594063
+                  0.00000000000000004751442319125145,
+                  -0.00000000000000001251222676741394
                 ],
                 "units": "mm",
                 "tag": null,
@@ -4746,7 +4746,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "arc": {
                     "start": [
                       {
-                        "n": 17.27528643963194,
+                        "n": 17.22059756513261,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4754,7 +4754,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 34.69963210574455,
+                        "n": 34.80477969331079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4764,7 +4764,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000003801101636221449,
+                        "n": -0.000000000000000000016830833092421413,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4772,7 +4772,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 50.0027941133204,
+                        "n": 49.845833277214716,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4782,7 +4782,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "center": [
                       {
-                        "n": 1.8591628265033096,
+                        "n": 2.041265954987697,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4790,7 +4790,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 34.69918731523981,
+                        "n": 34.80437917672039,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4898,7 +4898,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000009502754108900857,
+                        "n": -0.00000000000000000000420770827310535,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4906,7 +4906,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.000000000000000000000000019297620301673507,
+                        "n": 0.0000000000000000000000000000000000000000000000000000000000035782337847701565,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4916,7 +4916,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": 17.275286442096036,
+                        "n": 17.22059756513262,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4924,7 +4924,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.00000000000000000000000003859524070819622,
+                        "n": 0.0000000000000000000000000000000000000000000000000000000000046672614583958563,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5018,7 +5018,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "line": {
                     "start": [
                       {
-                        "n": 17.275286442096032,
+                        "n": 17.22059756513262,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5026,7 +5026,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.00000000000000000000000009648810192776436,
+                        "n": 0.000000000000000000000000000000000000000000000000000000000009334522916791713,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5036,7 +5036,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": 17.275286442095986,
+                        "n": 17.22059756513262,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5044,7 +5044,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 34.69963210574459,
+                        "n": 34.80477969331079,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5138,7 +5138,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000028508262297347,
+                        "n": -0.000000000000000000012623124819316055,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5146,7 +5146,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": 50.00279411332038,
+                        "n": 49.845833277214716,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5156,7 +5156,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000019005508210462823,
+                        "n": -0.0000000000000000000084154165462107,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5164,7 +5164,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                         }
                       },
                       {
-                        "n": -0.000000000000000000000000019297620249248904,
+                        "n": 0.0000000000000000000000000000000000000000000000000000000000049784122222889134,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5261,8 +5261,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000009502754108900857,
-                    -0.000000000000000000000000019297620301673507
+                    -0.00000000000000000000420770827310535,
+                    0.0000000000000000000000000000000000000000000000000000000000035782337847701565
                   ],
                   "tag": {
                     "commentStart": 1640,
@@ -5273,8 +5273,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "line1"
                   },
                   "to": [
-                    17.275286442096036,
-                    -0.00000000000000000000000003859524070819622
+                    17.22059756513262,
+                    0.0000000000000000000000000000000000000000000000000000000000046672614583958563
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5285,8 +5285,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    17.275286442096036,
-                    -0.00000000000000000000000003859524070819622
+                    17.22059756513262,
+                    0.0000000000000000000000000000000000000000000000000000000000046672614583958563
                   ],
                   "tag": {
                     "commentStart": 1783,
@@ -5297,8 +5297,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "line2"
                   },
                   "to": [
-                    17.275286442095986,
-                    34.69963210574459
+                    17.22059756513262,
+                    34.80477969331079
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5310,14 +5310,14 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                   },
                   "ccw": true,
                   "center": [
-                    1.8591628289673547,
-                    34.699187315239854
+                    2.0412659549877077,
+                    34.80437917672039
                   ],
                   "from": [
-                    17.275286442095986,
-                    34.69963210574459
+                    17.22059756513262,
+                    34.80477969331079
                   ],
-                  "radius": 15.416123619545244,
+                  "radius": 15.17933161542886,
                   "tag": {
                     "commentStart": 1902,
                     "end": 1906,
@@ -5327,8 +5327,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "arc1"
                   },
                   "to": [
-                    0.0000000024351327621019436,
-                    50.002794113558394
+                    -0.0000000005974936101438288,
+                    49.84583328161752
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5339,8 +5339,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000024351327621019436,
-                    50.002794113558394
+                    -0.0000000005974936101438288,
+                    49.84583328161752
                   ],
                   "tag": {
                     "commentStart": 2148,
@@ -5351,8 +5351,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
                     "value": "line3"
                   },
                   "to": [
-                    -0.0000000000000019005508210462823,
-                    -0.000000000000000000000000019297620249248904
+                    -0.0000000000000000000084154165462107,
+                    0.0000000000000000000000000000000000000000000000000000000000049784122222889134
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5391,12 +5391,12 @@ description: Variables in memory after executing consumed_solid_original_issue.k
               },
               "start": {
                 "from": [
-                  -0.0000000000000009502754108900857,
-                  -0.000000000000000000000000019297620301673507
+                  -0.00000000000000000000420770827310535,
+                  0.0000000000000000000000000000000000000000000000000000000000035782337847701565
                 ],
                 "to": [
-                  -0.0000000000000009502754108900857,
-                  -0.000000000000000000000000019297620301673507
+                  -0.00000000000000000000420770827310535,
+                  0.0000000000000000000000000000000000000000000000000000000000035782337847701565
                 ],
                 "units": "mm",
                 "tag": null,

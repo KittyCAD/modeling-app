@@ -68,8 +68,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1849.999996,
-          "y": 399.9999994000001,
+          "x": -1849.9999959999993,
+          "y": 399.9999993999999,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1850.0000006,
-            "y": 399.9999986,
+            "x": 1850.0000006000005,
+            "y": 399.9999985999999,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1849.9999980499997,
-          "y": 399.9999982,
+          "x": 1849.99999805,
+          "y": 399.9999981999999,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1849.9999963499995,
-            "y": 750.0000019000004,
+            "x": 1849.9999963499997,
+            "y": 750.0000019000001,
             "z": 0.0
           },
           "relative": false
@@ -135,8 +135,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1849.9999954999994,
-          "y": 750.0000016500004,
+          "x": 1849.9999954999996,
+          "y": 750.0000016500002,
           "z": 0.0
         }
       }
@@ -150,8 +150,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999848999987,
-            "y": 750.0000011500003,
+            "x": -1849.9999848999985,
+            "y": 750.0000011500001,
             "z": 0.0
           },
           "relative": false
@@ -165,8 +165,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1849.9999867499987,
-          "y": 750.0000004000002,
+          "x": -1849.9999867499985,
+          "y": 750.0000004000001,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999904499994,
-            "y": 399.99999900000006,
+            "x": -1849.999990449999,
+            "y": 399.9999989999999,
             "z": 0.0
           },
           "relative": false
@@ -352,8 +352,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -525.0000000028318,
-          "y": 350.00000000019037,
+          "x": -525.000000000283,
+          "y": 350.00000000001046,
           "z": 0.0
         }
       }
@@ -374,8 +374,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000014605,
-            "y": 804.663338826553,
+            "x": -262.5000000001482,
+            "y": 804.6633388240975,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +391,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.50000000134156,
-            "y": 804.6633388266686,
+            "x": 262.50000000013557,
+            "y": 804.6633388241029,
             "z": 0.0
           },
           "relative": false
@@ -408,8 +408,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 525.0000000022812,
-            "y": 350.0000000000272,
+            "x": 525.0000000002279,
+            "y": 350.0000000000027,
             "z": 0.0
           },
           "relative": false
@@ -425,8 +425,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.50000000106706,
-            "y": -104.66333882676324,
+            "x": 262.50000000010874,
+            "y": -104.66333882410366,
             "z": 0.0
           },
           "relative": false
@@ -442,8 +442,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000017978,
-            "y": -104.6633388264206,
+            "x": -262.5000000001813,
+            "y": -104.66333882409195,
             "z": 0.0
           },
           "relative": false
@@ -459,8 +459,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -525.0000000028476,
-            "y": 350.00000000016314,
+            "x": -525.0000000002846,
+            "y": 350.00000000000773,
             "z": 0.0
           },
           "relative": false
@@ -795,8 +795,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1749.9999959999996,
-          "y": 749.9999963999998,
+          "x": -1749.9999959999993,
+          "y": 749.9999963999996,
           "z": 0.0
         }
       }
@@ -817,8 +817,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1750.0000010000003,
-            "y": 749.9999948999997,
+            "x": 1750.000001000001,
+            "y": 749.9999948999996,
             "z": 0.0
           },
           "relative": false
@@ -832,8 +832,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1749.99999875,
-          "y": 749.9999941499997,
+          "x": 1749.9999987500003,
+          "y": 749.9999941499996,
           "z": 0.0
         }
       }
@@ -847,7 +847,7 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1749.99999725,
+            "x": 1749.9999972500002,
             "y": 1149.9999948999996,
             "z": 0.0
           },
@@ -862,7 +862,7 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1749.9999965,
+          "x": 1749.9999965000002,
           "y": 1149.9999950499996,
           "z": 0.0
         }
@@ -877,7 +877,7 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1749.999985499998,
+            "x": -1749.9999854999983,
             "y": 1149.9999953499996,
             "z": 0.0
           },
@@ -892,8 +892,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1749.9999872499982,
-          "y": 1149.9999957999999,
+          "x": -1749.9999872499984,
+          "y": 1149.9999957999996,
           "z": 0.0
         }
       }
@@ -908,7 +908,7 @@ description: Artifact commands stylized-car.kcl
           "type": "line",
           "end": {
             "x": -1749.9999907499987,
-            "y": 749.9999956499997,
+            "y": 749.9999956499995,
             "z": 0.0
           },
           "relative": false
@@ -1079,7 +1079,7 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -979.9999999999998,
+          "x": -980.0,
           "y": 1150.0,
           "z": 0.0
         }
@@ -1101,8 +1101,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -479.99999999999955,
-            "y": 1949.9999999999998,
+            "x": -479.99999999999994,
+            "y": 1950.0,
             "z": 0.0
           },
           "relative": false
@@ -1118,8 +1118,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 920.0000000000009,
-            "y": 1949.9999999999998,
+            "x": 920.0000000000002,
+            "y": 1950.0,
             "z": 0.0
           },
           "relative": false
@@ -1135,8 +1135,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1220.0000000000011,
-            "y": 1149.9999999999998,
+            "x": 1220.0000000000002,
+            "y": 1150.0,
             "z": 0.0
           },
           "relative": false
@@ -1152,8 +1152,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -979.9999999999998,
-            "y": 1149.9999999999998,
+            "x": -980.0,
+            "y": 1150.0,
             "z": 0.0
           },
           "relative": false
@@ -1325,7 +1325,7 @@ description: Artifact commands stylized-car.kcl
         "path": "[uuid]",
         "to": {
           "x": -480.0,
-          "y": 1949.9999999999998,
+          "y": 1950.0,
           "z": 0.0
         }
       }
@@ -1347,7 +1347,7 @@ description: Artifact commands stylized-car.kcl
           "type": "line",
           "end": {
             "x": 920.0000000000001,
-            "y": 1949.9999999999998,
+            "y": 1950.0,
             "z": 0.0
           },
           "relative": false
@@ -1380,7 +1380,7 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -479.99999999999994,
+            "x": -480.0,
             "y": 2050.0,
             "z": 0.0
           },
@@ -1397,8 +1397,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -479.99999999999994,
-            "y": 1949.9999999999998,
+            "x": -480.0,
+            "y": 1950.0,
             "z": 0.0
           },
           "relative": false
@@ -1569,8 +1569,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 320.05605008993007,
-          "y": 209.97628963868834,
+          "x": 320.0560503374278,
+          "y": 209.97628856583404,
           "z": 0.0
         }
       }
@@ -1591,17 +1591,17 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.7138995114818778,
-            "y": 350.00000000005053
+            "x": -0.7138987956659997,
+            "y": 350.000000000005
           },
-          "radius": 350.00000004379285,
+          "radius": 350.0000000437822,
           "start": {
             "unit": "radians",
-            "value": -0.4115907618485123
+            "value": -0.4115907651930058
           },
           "end": {
             "unit": "radians",
-            "value": 5.871594545331074
+            "value": 5.87159454198658
           },
           "relative": false
         }
@@ -1614,8 +1614,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 152.0856467161471,
-          "y": 435.30708480641545,
+          "x": 152.0856463105938,
+          "y": 435.3070868147664,
           "z": 0.0
         }
       }
@@ -1629,17 +1629,17 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.7138995114735852,
-            "y": 350.0000000000529
+            "x": -0.7138987956651703,
+            "y": 350.00000000000523
           },
-          "radius": 175.00000013007633,
+          "radius": 175.00000013000246,
           "start": {
             "unit": "radians",
-            "value": 0.5091887309154169
+            "value": 0.509188744059662
           },
           "end": {
             "unit": "radians",
-            "value": 6.792374038095003
+            "value": 6.792374051239248
           },
           "relative": false
         }
@@ -2861,8 +2861,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -819.9999908799992,
-          "y": 829.9999963999998,
+          "x": -819.9999908799994,
+          "y": 829.9999963999996,
           "z": 0.0
         }
       }
@@ -2883,8 +2883,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.9999850399987,
-            "y": 829.9999947399997,
+            "x": -459.99998503999893,
+            "y": 829.9999947399996,
             "z": 0.0
           },
           "relative": false
@@ -2898,8 +2898,8 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -459.99998065999836,
-          "y": 829.9999939099996,
+          "x": -459.99998065999813,
+          "y": 829.9999939099995,
           "z": 0.0
         }
       }
@@ -2913,7 +2913,7 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.99997773999814,
+            "x": -459.9999777399979,
             "y": 1069.9999956999998,
             "z": 0.0
           },
@@ -2928,7 +2928,7 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -459.999976279998,
+          "x": -459.9999762799978,
           "y": 1069.9999957699997,
           "z": 0.0
         }
@@ -2943,7 +2943,7 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999859599985,
+            "x": -819.9999859599989,
             "y": 1069.9999959099998,
             "z": 0.0
           },
@@ -2958,7 +2958,7 @@ description: Artifact commands stylized-car.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -819.9999867799986,
+          "x": -819.999986779999,
           "y": 1069.9999961199997,
           "z": 0.0
         }
@@ -2973,8 +2973,8 @@ description: Artifact commands stylized-car.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999884199989,
-            "y": 829.9999955699997,
+            "x": -819.9999884199991,
+            "y": 829.9999955699996,
             "z": 0.0
           },
           "relative": false

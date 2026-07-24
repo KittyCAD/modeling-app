@@ -90,7 +90,7 @@ description: Artifact commands sketch_block_circle_constants.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000010000000814903708,
+            "x": 0.0000000010000000747403698,
             "y": 0.0
           },
           "radius": 2.999999998,
@@ -151,7 +151,7 @@ description: Artifact commands sketch_block_circle_constants.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 0.0000000010000000814903708,
+          "x": 0.0000000010000000747403698,
           "y": 0.0
         }
       }

@@ -58,7 +58,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                         }
                       },
                       {
-                        "n": 6.0000000170000005,
+                        "n": 6.000000016999997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                         }
                       },
                       {
-                        "n": 3.0000000110000005,
+                        "n": 3.0000000109999982,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -178,7 +178,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                         }
                       },
                       {
-                        "n": 0.000000001000000002547721,
+                        "n": 0.0000000009999998595609285,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -196,7 +196,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                         }
                       },
                       {
-                        "n": 0.0000000010000000356144117,
+                        "n": 0.0000000009999998552932053,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -294,7 +294,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                   },
                   "from": [
                     -10.0,
-                    0.000000001000000002547721
+                    0.0000000009999998595609285
                   ],
                   "tag": {
                     "commentStart": 65,
@@ -306,7 +306,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                   },
                   "to": [
                     10.0,
-                    0.0000000010000000356144117
+                    0.0000000009999998552932053
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -318,12 +318,12 @@ description: Variables in memory after executing tangent_line_circle.kcl
                   },
                   "from": [
                     10.0,
-                    0.0000000010000000356144117
+                    0.0000000009999998552932053
                   ],
                   "tag": null,
                   "to": [
                     0.0,
-                    6.0000000170000005
+                    6.000000016999997
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -336,13 +336,13 @@ description: Variables in memory after executing tangent_line_circle.kcl
                   "ccw": true,
                   "center": [
                     0.0,
-                    3.0000000110000005
+                    3.0000000109999982
                   ],
                   "from": [
                     0.0,
-                    6.0000000170000005
+                    6.000000016999997
                   ],
-                  "radius": 3.000000006,
+                  "radius": 3.0000000059999987,
                   "tag": {
                     "commentStart": 133,
                     "end": 134,
@@ -353,7 +353,7 @@ description: Variables in memory after executing tangent_line_circle.kcl
                   },
                   "to": [
                     0.0,
-                    6.0000000170000005
+                    6.000000016999997
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -393,11 +393,11 @@ description: Variables in memory after executing tangent_line_circle.kcl
               "start": {
                 "from": [
                   -10.0,
-                  0.000000001000000002547721
+                  0.0000000009999998595609285
                 ],
                 "to": [
                   -10.0,
-                  0.000000001000000002547721
+                  0.0000000009999998595609285
                 ],
                 "units": "mm",
                 "tag": null,

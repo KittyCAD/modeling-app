@@ -68,8 +68,8 @@ description: Artifact commands bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000004149807002921994,
-          "y": -57.14999999999998,
+          "x": 0.00000000000000004149800450307374,
+          "y": -57.15,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000001435169516896473,
-            "y": 0.00000000000002018359418328758,
+            "x": 0.0000000000000000143516442187749,
+            "y": 0.000000000000002018359014929317,
             "z": 0.0
           },
           "relative": false
@@ -108,7 +108,7 @@ description: Artifact commands bracket.kcl
           "type": "line",
           "end": {
             "x": 127.0,
-            "y": 0.00000000000002315790364517517,
+            "y": 0.0000000000000023157897930349752,
             "z": 0.0
           },
           "relative": false
@@ -125,7 +125,7 @@ description: Artifact commands bracket.kcl
           "type": "line",
           "end": {
             "x": 127.0,
-            "y": -9.775347184188798,
+            "y": -9.77534718418883,
             "z": 0.0
           },
           "relative": false
@@ -142,7 +142,7 @@ description: Artifact commands bracket.kcl
           "type": "line",
           "end": {
             "x": 9.775347184188835,
-            "y": -9.775347184188789,
+            "y": -9.77534718418883,
             "z": 0.0
           },
           "relative": false
@@ -159,7 +159,7 @@ description: Artifact commands bracket.kcl
           "type": "line",
           "end": {
             "x": 9.775347184188835,
-            "y": -57.14999999999996,
+            "y": -57.15,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000006848766065017384,
-            "y": -57.14999999999996,
+            "x": 0.0000000000000000684875813359608,
+            "y": -57.15,
             "z": 0.0
           },
           "relative": false
@@ -479,18 +479,18 @@ description: Artifact commands bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -0.0000000000000008139611638193311,
-          "y": -38.099999999999994,
-          "z": -9.775347184188787
+          "x": 38.099999999999994,
+          "y": 0.0,
+          "z": -9.77534718418883
         },
         "x_axis": {
-          "x": 1.0,
-          "y": -0.0,
-          "z": -0.00000000000000008326672684688674
+          "x": -0.0,
+          "y": 1.0,
+          "z": -0.0
         },
         "y_axis": {
-          "x": -0.00000000000000008326672684688674,
-          "y": -0.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": -1.0
         },
         "size": 60.0,
@@ -517,8 +517,8 @@ description: Artifact commands bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": 1.0,
+          "x": -1.0,
+          "y": -0.0,
           "z": -0.0
         }
       }
@@ -716,18 +716,18 @@ description: Artifact commands bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -0.0000000000000008139611638193311,
-          "y": -38.099999999999994,
-          "z": -9.775347184188787
+          "x": 38.099999999999994,
+          "y": 0.0,
+          "z": -9.77534718418883
         },
         "x_axis": {
-          "x": 1.0,
-          "y": -0.0,
-          "z": -0.00000000000000008326672684688674
+          "x": -0.0,
+          "y": 1.0,
+          "z": -0.0
         },
         "y_axis": {
-          "x": -0.00000000000000008326672684688674,
-          "y": -0.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": -1.0
         },
         "size": 60.0,
@@ -754,8 +754,8 @@ description: Artifact commands bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": 1.0,
+          "x": -1.0,
+          "y": -0.0,
           "z": -0.0
         }
       }
@@ -953,18 +953,18 @@ description: Artifact commands bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -0.0000000000000008139611638193311,
-          "y": 38.099999999999994,
-          "z": -9.775347184188787
+          "x": -38.099999999999994,
+          "y": 0.0,
+          "z": -9.77534718418883
         },
         "x_axis": {
-          "x": 1.0,
-          "y": -0.0,
-          "z": -0.00000000000000008326672684688674
+          "x": -0.0,
+          "y": 1.0,
+          "z": -0.0
         },
         "y_axis": {
-          "x": -0.00000000000000008326672684688674,
-          "y": -0.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": -1.0
         },
         "size": 60.0,
@@ -991,8 +991,8 @@ description: Artifact commands bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": 1.0,
+          "x": -1.0,
+          "y": -0.0,
           "z": -0.0
         }
       }
@@ -1190,18 +1190,18 @@ description: Artifact commands bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -0.0000000000000008139611638193311,
-          "y": 38.099999999999994,
-          "z": -9.775347184188787
+          "x": -38.099999999999994,
+          "y": 0.0,
+          "z": -9.77534718418883
         },
         "x_axis": {
-          "x": 1.0,
-          "y": -0.0,
-          "z": -0.00000000000000008326672684688674
+          "x": -0.0,
+          "y": 1.0,
+          "z": -0.0
         },
         "y_axis": {
-          "x": -0.00000000000000008326672684688674,
-          "y": -0.0,
+          "x": 0.0,
+          "y": 0.0,
           "z": -1.0
         },
         "size": 60.0,
@@ -1228,8 +1228,8 @@ description: Artifact commands bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
-          "y": 1.0,
+          "x": -1.0,
+          "y": -0.0,
           "z": -0.0
         }
       }

@@ -2001,8 +2001,8 @@ export fn sweep(
 ///   circle1 = circle(start = [var 2.28mm, var 2.99mm], center = [var 1.98mm, var 2.03mm])
 /// }
 ///
-/// squareRegion = region(point = [0.0002mm, 2.0095mm], sketch = squareSketch)
-/// circleRegion = region(point = [1.6807mm, 1.0724mm], sketch = circleSketch0)
+/// squareRegion = region(point = [2mm, 2mm], sketch = squareSketch)
+/// circleRegion = region(point = [2mm, 2mm], sketch = circleSketch0)
 ///
 /// shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 /// ```

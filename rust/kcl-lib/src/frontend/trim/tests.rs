@@ -2754,8 +2754,8 @@ mod get_trim_spawn_terminations_tests {
             intersecting_seg_id,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 1.8273063333627224).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 1.8109968114535633).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.743299969685973).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
         }
     }
@@ -2838,8 +2838,8 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 2.0716435933183504).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7918829774915763).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 2.071671330558468).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.791881035862689).abs() < 1e-5);
         }
     }
 
@@ -3016,16 +3016,16 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.left_side
         {
-            assert!((trim_termination_coords.x - 0.008837118620591083).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.809080419697051).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 0.008803091254108455).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.8099058939065307).abs() < 1e-5);
         }
 
         if let TrimTermination::SegEndPoint {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - (-5.1310115335133135)).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 1.0662359198714615).abs() < 1e-5);
+            assert!((trim_termination_coords.x - (-5.131579678278041)).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 1.0668109413896305).abs() < 1e-5);
         }
     }
 

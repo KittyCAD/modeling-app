@@ -465,7 +465,7 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000001874999197920074,
+            "x": 0.00000001874999206357573,
             "y": 0.0
           },
           "radius": 75.00000000000001,
@@ -581,7 +581,7 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 20.000000005,
+          "x": 20.000000005000004,
           "y": 0.0,
           "z": 0.0
         }
@@ -603,10 +603,10 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000005000000307354519,
+            "x": 0.000000005000006825303125,
             "y": 0.0
           },
-          "radius": 20.0,
+          "radius": 19.999999999999996,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -767,7 +767,7 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.00000000375,
+          "x": 15.000000003750005,
           "y": 0.0,
           "z": 0.0
         }
@@ -789,7 +789,7 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000003749999755927745,
+            "x": 0.00000000375000556306655,
             "y": 0.0
           },
           "radius": 15.0,
