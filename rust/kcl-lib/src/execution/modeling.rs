@@ -13,6 +13,7 @@ use crate::errors::KclErrorDetails;
 use crate::exec::ArtifactCommand;
 use crate::exec::IdGenerator;
 use crate::exec::KclValue;
+use crate::execution::EntityCloneInfo;
 use crate::execution::FaceParentSolid;
 use crate::execution::Solid;
 use crate::std::Args;
@@ -83,8 +84,17 @@ impl ExecState {
     /// Add a modeling command to the batch but don't fire it right away.
     pub(crate) async fn batch_modeling_cmd(
         &mut self,
+        meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<(), KclError> {
+        self.batch_modeling_cmd_with_entity_clone_info(meta, cmd, None).await
+    }
+
+    pub(crate) async fn batch_modeling_cmd_with_entity_clone_info(
+        &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
+        entity_clone_info: Option<EntityCloneInfo>,
     ) -> Result<(), KclError> {
         if self.is_in_sketch_block() {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
@@ -94,6 +104,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            entity_clone_info,
             omit_from_graph: false,
         });
         meta.ctx
@@ -117,6 +128,7 @@ impl ExecState {
                 cmd_id: *cmd_req.cmd_id.as_ref(),
                 range: meta.source_range,
                 command: cmd_req.cmd.clone(),
+                entity_clone_info: None,
                 omit_from_graph: false,
             });
         }
@@ -144,6 +156,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            entity_clone_info: None,
             omit_from_graph: false,
         });
         meta.ctx
@@ -166,6 +179,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            entity_clone_info: None,
             omit_from_graph: false,
         });
         meta.ctx
@@ -189,6 +203,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            entity_clone_info: None,
             omit_from_graph: true,
         });
         meta.ctx
@@ -212,6 +227,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            entity_clone_info: None,
             omit_from_graph: false,
         });
         meta.ctx.engine.async_modeling_cmd(id, meta.source_range, cmd).await
