@@ -40,6 +40,7 @@ import {
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -108,7 +109,6 @@ import type {
   EngineRegionSelection,
   ExtrudeFacePlane,
   OffsetPlane,
-  PrimitiveFaceSketchTarget,
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -1113,15 +1113,7 @@ export function removeReferenceFromSelections(
   }
 }
 
-export function isEnginePrimitiveSelection(
-  selection: Selections['otherSelections'][number]
-): selection is EnginePrimitiveSelection {
-  return (
-    typeof selection === 'object' &&
-    'type' in selection &&
-    selection.type === 'enginePrimitive'
-  )
-}
+export { isEnginePrimitiveSelection }
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
@@ -2440,11 +2432,7 @@ export async function selectSketchPlane(
     if (!kclManager) return
     if (!planeOrFaceId) return
 
-    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-    const isDefaultPlane = Object.values(
-      kclManager.rustContext.defaultPlanes ?? {}
-    ).includes(planeOrFaceId)
-    if (useSketchSolveMode && (artifact || isDefaultPlane)) {
+    if (useSketchSolveMode) {
       kclManager.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,
@@ -2460,37 +2448,7 @@ export async function selectSketchPlane(
       return
     }
 
-    if (!artifact) {
-      const primitiveSelection = await getPrimitiveSelectionForEntity(
-        planeOrFaceId,
-        kclManager.engineCommandManager
-      )
-      if (
-        primitiveSelection &&
-        isReferenceablePrimitiveSelection(primitiveSelection) &&
-        primitiveSelection.primitiveType === 'face'
-      ) {
-        const primitiveFaceTarget = await getPrimitiveFaceSketchTarget(
-          primitiveSelection,
-          kclManager
-        )
-        if (err(primitiveFaceTarget)) return primitiveFaceTarget
-        kclManager.sceneInfra.modelingSend({
-          type: 'Select sketch solve plane',
-          data: primitiveFaceTarget,
-        })
-        return
-      }
-    }
-
-    if (useSketchSolveMode) {
-      kclManager.sceneInfra.modelingSend({
-        type: 'Select sketch solve plane',
-        data: planeOrFaceId,
-      })
-      return
-    }
-
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
     const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
       sceneInfra: kclManager.sceneInfra,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
@@ -2519,42 +2477,6 @@ export async function selectSketchPlane(
     }
   } catch (err) {
     reportRejection(err)
-  }
-}
-
-async function getPrimitiveFaceSketchTarget(
-  primitiveSelection: ReferenceablePrimitiveSelection,
-  kclManager: KclManager
-): Promise<PrimitiveFaceSketchTarget | Error> {
-  if (!primitiveSelection.parentEntityId) {
-    return new Error('Could not resolve the selected primitive face in KCL.')
-  }
-
-  const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
-    primitiveSelection.entityId
-  )
-  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
-    return new Error('Could not get details for the selected primitive face.')
-  }
-
-  const { origin, z_axis, y_axis } = faceInfo
-  return {
-    face: {
-      solidId: primitiveSelection.parentEntityId,
-      index: primitiveSelection.primitiveIndex,
-    },
-    plane: {
-      type: 'extrudeFace',
-      faceId: primitiveSelection.entityId,
-      faceInfo: { type: 'primitiveFace' },
-      position: [origin.x, origin.y, origin.z].map(
-        (coordinate) => coordinate / kclManager.sceneInfra.baseUnitMultiplier
-      ) as [number, number, number],
-      zAxis: [z_axis.x, z_axis.y, z_axis.z],
-      yAxis: [y_axis.x, y_axis.y, y_axis.z],
-      sketchPathToNode: [],
-      extrudePathToNode: [],
-    },
   }
 }
 

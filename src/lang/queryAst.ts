@@ -1944,9 +1944,7 @@ export function getSelectedSketchTarget(
 
   const primitiveFace = selectionRanges.otherSelections.find(
     (selection): selection is EnginePrimitiveSelection =>
-      typeof selection !== 'string' &&
-      'type' in selection &&
-      selection.type === 'enginePrimitive' &&
+      isEnginePrimitiveSelection(selection) &&
       selection.primitiveType === 'face'
   )
   if (primitiveFace) {
@@ -1967,6 +1965,16 @@ export function getSelectedSketchTarget(
   }
 
   return null
+}
+
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
 }
 
 export function getSelectedPlaneAsNode(

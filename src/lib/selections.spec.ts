@@ -1907,7 +1907,7 @@ describe('selectSketchPlane', () => {
     const getFaceDetails = vi.fn()
 
     await selectSketchPlane('plane001', true, {
-      artifactGraph: new Map([['plane001', { type: 'plane', id: 'plane001' }]]),
+      artifactGraph: new Map(),
       rustContext: { defaultPlanes: null },
       sceneEntitiesManager: { getFaceDetails },
       sceneInfra: { modelingSend },
@@ -1918,68 +1918,5 @@ describe('selectSketchPlane', () => {
       data: 'plane001',
     })
     expect(getFaceDetails).not.toHaveBeenCalled()
-  })
-
-  test('routes an unmaterialized shell face to the frontend sketch API', async () => {
-    const shellId = 'shell-artifact-id'
-    const faceId = 'inner-face-id'
-    const modelingSend = vi.fn()
-    const sendSceneCommand = vi
-      .fn()
-      .mockResolvedValueOnce({
-        resp: {
-          type: 'modeling',
-          data: {
-            modeling_response: {
-              type: 'entity_get_primitive_index',
-              data: { primitive_index: 6, entity_type: 'face' },
-            },
-          },
-        },
-      })
-      .mockResolvedValueOnce({
-        resp: {
-          type: 'modeling',
-          data: {
-            modeling_response: {
-              type: 'entity_get_parent_id',
-              data: { entity_id: shellId },
-            },
-          },
-        },
-      })
-    const getFaceDetails = vi.fn().mockResolvedValue({
-      origin: { x: 1, y: 2, z: 3 },
-      y_axis: { x: 0, y: 1, z: 0 },
-      z_axis: { x: 0, y: 0, z: 1 },
-    })
-
-    await selectSketchPlane(faceId, true, {
-      artifactGraph: new Map(),
-      rustContext: { defaultPlanes: {} },
-      engineCommandManager: { sendSceneCommand },
-      sceneEntitiesManager: { getFaceDetails },
-      sceneInfra: { modelingSend, baseUnitMultiplier: 1 },
-    } as any)
-
-    expect(modelingSend).toHaveBeenCalledWith({
-      type: 'Select sketch solve plane',
-      data: {
-        face: {
-          solidId: shellId,
-          index: 6,
-        },
-        plane: {
-          type: 'extrudeFace',
-          faceId,
-          faceInfo: { type: 'primitiveFace' },
-          position: [1, 2, 3],
-          yAxis: [0, 1, 0],
-          zAxis: [0, 0, 1],
-          sketchPathToNode: [],
-          extrudePathToNode: [],
-        },
-      },
-    })
   })
 })

@@ -285,13 +285,7 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: {
-          artifactGraph: new Map([
-            ['plane-001', { id: 'plane-001', type: 'plane' }],
-          ]),
-          rustContext: { defaultPlanes: null },
-          sceneInfra: { modelingSend },
-        },
+        kclManager: { sceneInfra: { modelingSend } },
         selectionRanges: {
           graphSelections: [
             {
@@ -336,13 +330,7 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: {
-          artifactGraph: new Map(),
-          rustContext: {
-            defaultPlanes: { xy: 'default-plane-xy' },
-          },
-          sceneInfra: { modelingSend },
-        },
+        kclManager: { sceneInfra: { modelingSend } },
         selectionRanges: {
           graphSelections: [],
           otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],

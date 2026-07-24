@@ -3,7 +3,10 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
-import { getSelectedSketchTarget as getSelectedSketchTargetId } from '@src/lang/queryAst'
+import {
+  getSelectedPlaneId,
+  getSelectedSketchTarget as getSelectedSketchTargetId,
+} from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -2584,13 +2587,13 @@ function getSelectedSketchTarget(selectionRanges: Selections): {
 
   const id = getSelectedSketchTargetId(selectionRanges)
   if (!id) return null
-  const isPlane = selectionRanges.graphSelections.some(
-    ({ artifact }) => artifact?.id === id && artifact.type === 'plane'
-  )
 
   return {
     id,
-    title: isPlane ? 'Start Sketch on plane' : 'Start Sketch on face',
+    title:
+      getSelectedPlaneId(selectionRanges) === id
+        ? 'Start Sketch on plane'
+        : 'Start Sketch on face',
   }
 }
 

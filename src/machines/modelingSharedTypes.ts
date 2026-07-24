@@ -4,10 +4,7 @@ import type {
   RegionGetResolvableIntersectionInfo,
 } from '@kittycad/lib'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type {
-  PrimitiveFacePlane,
-  SceneGraphDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
@@ -190,11 +187,6 @@ export type ExtrudeFacePlane = {
   faceId: string
   zAxis: [number, number, number]
   yAxis: [number, number, number]
-}
-
-export type PrimitiveFaceSketchTarget = {
-  face: PrimitiveFacePlane
-  plane: ExtrudeFacePlane
 }
 
 export type DefaultPlane = {
