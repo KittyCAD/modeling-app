@@ -539,11 +539,13 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (
   ast: Program,
-  instance: ModuleType
+  instance: ModuleType,
+  enableZ0006 = false
 ): Promise<Array<Discovered>> => {
   try {
     const discoveredFindings: Array<Discovered> = await instance.kcl_lint(
-      JSON.stringify(ast)
+      JSON.stringify(ast),
+      enableZ0006
     )
     return discoveredFindings
   } catch (e: any) {

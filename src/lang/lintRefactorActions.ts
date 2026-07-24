@@ -27,10 +27,10 @@ type RefactorLintActionsParams = {
   instance: ModuleType
   rustContext?: RustContext
   shouldShowZ0005: boolean
-  edgeRefactorMetadata: EdgeRefactorMeta[]
-  directTagFilletMetadata: DirectTagFilletMeta[]
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
+  directTagFilletMetadata?: DirectTagFilletMeta[]
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
-  artifactGraph: ArtifactGraph
+  artifactGraph?: ArtifactGraph
   z0006RefactorCache?: Z0006RefactorCache
 }
 
@@ -156,14 +156,12 @@ function computeZ0006RefactorSource({
 > & {
   sourceRange?: [number, number, number]
 }): string | null {
-  if (!edgeRefactorMetadata.length && !directTagFilletMetadata.length) {
-    return null
-  }
+  if (!artifactGraph) return null
 
   const newSourceResult = refactorZ0006Unified(
     ast,
-    edgeRefactorMetadata,
-    directTagFilletMetadata,
+    edgeRefactorMetadata ?? [],
+    directTagFilletMetadata ?? [],
     artifactGraph,
     instance,
     sourceRange
@@ -205,10 +203,7 @@ async function createZ0006Actions({
   RefactorLintActionsParams,
   'rustContext' | 'shouldShowZ0005'
 >): Promise<RefactorLintActionsResult> {
-  if (
-    lint.finding.code !== 'Z0006' ||
-    (!edgeRefactorMetadata.length && !directTagFilletMetadata.length)
-  ) {
+  if (lint.finding.code !== 'Z0006' || !artifactGraph) {
     return {}
   }
 

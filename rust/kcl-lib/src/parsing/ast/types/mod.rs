@@ -413,15 +413,23 @@ impl Node<Program> {
     }
 
     pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
-        let rules = vec![
+        self.lint_all_with_options(crate::lint::LintOptions::default())
+    }
+
+    /// Check the provided Program using the standard lint rules and explicitly
+    /// enabled opt-in rules.
+    pub fn lint_all_with_options(&self, options: crate::lint::LintOptions) -> Result<Vec<crate::lint::Discovered>> {
+        let mut rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
-            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
             crate::lint::checks::lint_legacy_angle,
         ];
+        if options.z0006_enabled() {
+            rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
+        }
 
         let mut findings = vec![];
         for rule in rules {

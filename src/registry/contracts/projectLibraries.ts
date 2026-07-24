@@ -4,6 +4,7 @@ import type {
   HomeProjectEntryContribution,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
+import type { Project } from '@src/lib/project'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -11,6 +12,7 @@ import type {
 } from '@src/lib/projectLibraries'
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { isArray } from '@src/lib/utils'
+import type { ComponentType } from 'react'
 
 export type ProjectLibraryContribution =
   | ProjectLibrary
@@ -49,7 +51,10 @@ export interface ProjectLibraryRenameProjectInput
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
 
 export interface ProjectLibraryTypeOperations {
-  createProject?: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+  createProject?: ProjectLibraryOperation<
+    ProjectLibraryCreateProjectInput,
+    Project | undefined
+  >
   openProject?: ProjectLibraryOperation<
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined
@@ -58,12 +63,28 @@ export interface ProjectLibraryTypeOperations {
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
 }
 
+export interface ProjectLibrarySettingsDetailsProps {
+  library: ProjectLibrarySetting
+  index: number
+  updateLibrary: (library: ProjectLibrarySetting) => void
+  commitLibrary: (library?: ProjectLibrarySetting) => void
+  chooseDirectory?: (input: {
+    defaultPath?: string
+    title?: string
+  }) => Promise<string | undefined>
+}
+
 export interface ProjectLibraryTypeContribution {
   type: ProjectLibraryType
   title: string
   icon?: string
   order?: number
+  /** Initial value used when settings are seeded or migrated for this type. */
   defaultSetting?: ProjectLibrarySetting
+  /** Template used when a user manually adds a new library of this type. */
+  newLibrarySetting?: ProjectLibrarySetting
+  /** Optional detail cell rendered in the project libraries settings row. */
+  settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary

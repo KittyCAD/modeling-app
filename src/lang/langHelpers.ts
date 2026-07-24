@@ -159,13 +159,14 @@ export async function lintAst({
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
-  edgeRefactorMetadata: EdgeRefactorMeta[]
-  directTagFilletMetadata: DirectTagFilletMeta[]
+  edgeRefactorMetadata?: EdgeRefactorMeta[]
+  directTagFilletMetadata?: DirectTagFilletMeta[]
   legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
-  artifactGraph: ArtifactGraph
+  artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    let discovered_findings = await kclLint(ast, instance)
+    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
+    let discovered_findings = await kclLint(ast, instance, shouldShowZ0006)
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
@@ -182,13 +183,6 @@ export async function lintAst({
     if (!shouldShowZ0005) {
       discovered_findings = discovered_findings.filter(
         (lint) => lint.finding.code !== 'Z0005'
-      )
-    }
-
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    if (!shouldShowZ0006) {
-      discovered_findings = discovered_findings.filter(
-        (lint) => lint.finding.code !== 'Z0006'
       )
     }
 

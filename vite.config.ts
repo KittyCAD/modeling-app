@@ -1,6 +1,5 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
-import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
@@ -116,7 +115,6 @@ export default defineConfig(({ command, mode }) => {
       }),
       indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
       viteTsconfigPaths(),
-      eslint(),
       version(),
       lezer(),
       topLevelAwait({
