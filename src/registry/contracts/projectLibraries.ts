@@ -12,6 +12,7 @@ import type {
 } from '@src/lib/projectLibraries'
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { isArray } from '@src/lib/utils'
+import type { ComponentType } from 'react'
 
 export type ProjectLibraryContribution =
   | ProjectLibrary
@@ -62,11 +63,15 @@ export interface ProjectLibraryTypeOperations {
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
 }
 
-export interface ProjectLibraryTypePathInput {
-  kind: 'directory'
-  icon?: string
-  dialogTitle?: string
-  buttonLabel?: string
+export interface ProjectLibrarySettingsDetailsProps {
+  library: ProjectLibrarySetting
+  index: number
+  updateLibrary: (library: ProjectLibrarySetting) => void
+  commitLibrary: (library?: ProjectLibrarySetting) => void
+  chooseDirectory?: (input: {
+    defaultPath?: string
+    title?: string
+  }) => Promise<string | undefined>
 }
 
 export interface ProjectLibraryTypeContribution {
@@ -78,8 +83,8 @@ export interface ProjectLibraryTypeContribution {
   defaultSetting?: ProjectLibrarySetting
   /** Template used when a user manually adds a new library of this type. */
   newLibrarySetting?: ProjectLibrarySetting
-  /** Optional UI behavior for editing the library path in settings. */
-  pathInput?: ProjectLibraryTypePathInput
+  /** Optional detail cell rendered in the project libraries settings row. */
+  settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary
