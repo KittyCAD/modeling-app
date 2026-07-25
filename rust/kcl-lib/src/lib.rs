@@ -226,10 +226,11 @@ pub mod front {
             Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ControlPointSpline,
-            ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal,
-            Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
+            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
+            ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
+            Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
+            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,
+            Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
