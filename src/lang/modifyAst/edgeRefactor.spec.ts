@@ -1183,23 +1183,24 @@ describe('refactorZ0006Unified', () => {
       expect(findExtrudeEdgeCallsToFix(ast, metadata)).toEqual([])
     })
 
-    it('finds a direct tagged-edge extrude target from the artifact graph', () => {
+    it('finds a direct tagged-edge extrude target from execution metadata', () => {
       const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
-      const graph = createTaggedWallAndCapGraph(
-        ast,
-        KCL_EXTRUDE_TARGET_DIRECT_TAG,
+      const metadata: EdgeRefactorMeta[] = [
         {
-          segmentId: 'segment-1',
-          wallId: 'wall-1',
-          capId: 'cap-1',
-          pathId: 'path-1',
-          sweepId: 'sweep-1',
-          segmentSnippet:
-            'line1 = line(start = [-6.36mm, -3.01mm], end = [3.61mm, 6.24mm])',
-          extrudeSnippet: 'extrude(region001, length = 5mm)',
-        }
-      )
-      const callsToFix = findExtrudeEdgeCallsToFix(ast, [], graph, wasmInstance)
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForSnippet(
+            KCL_EXTRUDE_TARGET_DIRECT_TAG,
+            'extrude001.sketch.tags.line1'
+          ),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          endFaceIds: [],
+          stdlibFn: 'directEdgeTag',
+        },
+      ]
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, metadata)
       expect(callsToFix).toHaveLength(1)
       expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
         'target',

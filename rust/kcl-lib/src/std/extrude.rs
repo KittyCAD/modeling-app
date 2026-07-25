@@ -144,6 +144,19 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
     let hide_seams: Option<bool> = args.get_kw_arg_opt("hideSeams", &RuntimeType::bool(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let target_argument_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map(|arg| arg.source_range)
+        .unwrap_or(args.source_range);
+    let direct_target_edges = sketch_values
+        .iter()
+        .filter_map(|value| {
+            let KclValue::TagIdentifier(tag) = value else {
+                return None;
+            };
+            Some(tag.clone())
+        })
+        .collect::<Vec<_>>();
     let sketches = coerce_extrude_targets(
         sketch_values,
         body_type.unwrap_or_default(),
@@ -154,6 +167,10 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.source_range,
     )
     .await?;
+
+    if let [tag] = direct_target_edges.as_slice() {
+        edge::record_refactor_meta_for_direct_tag(exec_state, tag, target_argument_source_range, &args).await;
+    }
 
     let result = inner_extrude(
         sketches,
@@ -474,6 +491,16 @@ async fn inner_extrude(
         (None, Some(length)) => Opposite::Other(length),
         (Some(false), Some(length)) => Opposite::Other(length),
     };
+
+    if let Some(Point3dOrEdgeReference::Edge(direction_edge)) = &direction {
+        let edge_id = direction_edge.get_engine_id(exec_state, &args)?;
+        let source_range = args
+            .labeled
+            .get("direction")
+            .map(|arg| arg.source_range)
+            .unwrap_or(args.source_range);
+        edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await;
+    }
 
     for extrudable in &extrudables {
         let is_edge = match extrudable {

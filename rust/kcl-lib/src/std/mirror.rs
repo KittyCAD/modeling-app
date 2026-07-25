@@ -84,6 +84,7 @@ async fn inner_mirror_3d(
                 .map(|arg| arg.source_range)
                 .unwrap_or(args.source_range);
             crate::std::edge::record_refactor_meta_for_consumed_edge(exec_state, edge_id, source_range, &args).await;
+            crate::std::edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await;
             MirrorAcross::Edge { id: edge_id }
         }
         MirrorAcross3d::EdgeSpecifier(specifier) => MirrorAcross::EdgeReference {

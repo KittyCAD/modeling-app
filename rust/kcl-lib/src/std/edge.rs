@@ -177,6 +177,100 @@ pub(crate) async fn record_refactor_meta_for_consumed_edge(
     exec_state.record_edge_refactor_meta(meta);
 }
 
+pub(crate) async fn record_refactor_meta_for_direct_edge(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    source_range: SourceRange,
+    args: &Args,
+) {
+    if !args.ctx.no_engine_commands().await
+        && exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), true)
+            .await
+            .is_err()
+    {
+        return;
+    }
+    let Ok(meta) = get_refactor_meta_for_edge(
+        exec_state,
+        edge_id,
+        args,
+        source_range,
+        EdgeRefactorStdlibFn::DirectEdgeTag,
+    )
+    .await
+    else {
+        return;
+    };
+    exec_state.record_edge_refactor_meta(meta);
+}
+
+pub(crate) async fn record_refactor_meta_for_direct_tag(
+    exec_state: &mut ExecState,
+    tag: &TagIdentifier,
+    source_range: SourceRange,
+    args: &Args,
+) {
+    let Some(tag_info) = tag.get_cur_info() else {
+        return;
+    };
+    if !args.ctx.no_engine_commands().await
+        && exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), true)
+            .await
+            .is_err()
+    {
+        return;
+    }
+    if args.ctx.no_engine_commands().await {
+        let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id: tag_info.id,
+            face_ids,
+            end_face_ids: Vec::new(),
+            source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
+        });
+        return;
+    }
+
+    let response = exec_state
+        .send_untracked_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::Solid3dGetAdjacencyInfo::builder()
+                    .object_id(tag_info.geometry.id())
+                    .edge_id(tag_info.id)
+                    .build(),
+            ),
+        )
+        .await;
+    let Ok(OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info),
+    }) = response
+    else {
+        return;
+    };
+    let Some(edge_info) = info
+        .edges
+        .iter()
+        .filter_map(|edge| edge.original_info.as_ref())
+        .find(|edge| edge.edge_id == tag_info.id)
+    else {
+        return;
+    };
+    let [first, second] = edge_info.faces.as_slice() else {
+        return;
+    };
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id: tag_info.id,
+        face_ids: [*first, *second],
+        end_face_ids: Vec::new(),
+        source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
+    });
+}
+
 fn record_pending_edge_refactor_meta(
     exec_state: &mut ExecState,
     edge_id: Uuid,
