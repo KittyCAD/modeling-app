@@ -107,6 +107,15 @@ function createSettingsSnapshot({
 }): SettingsType {
   return {
     app: {
+      libraries: {
+        current: [
+          {
+            title: 'Projects',
+            path: projectDirectoryPath,
+            type: 'directory',
+          },
+        ],
+      },
       projectDirectory: {
         current: projectDirectoryPath,
       },

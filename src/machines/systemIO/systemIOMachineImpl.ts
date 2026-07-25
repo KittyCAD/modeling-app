@@ -26,7 +26,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
@@ -50,7 +50,7 @@ import { fromPromise } from 'xstate'
 export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
-} from '@src/lib/projectDirectoryScanner'
+} from '@src/lib/projectLibraries/directoryScanner'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {

@@ -1627,7 +1627,7 @@ interface ExtrudeEdgeCallToFix {
   range: Z0006SourceRange
   replacements: Array<{
     argument: ExtrudeEdgeArgument
-    payload: FilletEdgeRefPayload
+    payload: FilletEdgeRefPayload | FilletEdgeRefPayload[]
   }>
   pathToCall?: PathToNode
 }
@@ -1672,8 +1672,8 @@ function getCallPathFromExpr(
 export function findRevolveHelixCallsToFix(
   program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
-  artifactGraph?: ArtifactGraph,
-  wasmInstance?: ModuleType
+  _artifactGraph?: ArtifactGraph,
+  _wasmInstance?: ModuleType
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
@@ -1702,21 +1702,20 @@ export function findRevolveHelixCallsToFix(
       if (
         calleeName === 'mirror3d' &&
         edgeArg &&
-        getTagInfoFromExpr(edgeArg)?.tagsBaseExpr &&
-        artifactGraph &&
-        wasmInstance
+        getTagInfoFromExpr(edgeArg)?.tagsBaseExpr
       ) {
-        const payload = directSketchSegmentEdgePayload(
-          program,
-          edgeArg,
-          artifactGraph,
-          wasmInstance
+        const meta = edgeRefactorMetadata.find((candidate) =>
+          sourceRangeMatch(
+            candidate,
+            edgeArg.start,
+            edgeArg.end,
+            edgeArg.moduleId
+          )
         )
-        const [firstFaceId, secondFaceId] = payload?.side_faces ?? []
-        if (firstFaceId && secondFaceId) {
+        if (hasFaceIds(meta)) {
           results.push({
             range: [call.start, call.end, call.moduleId],
-            faceIds: [firstFaceId, secondFaceId],
+            faceIds: [meta.faceIds[0], meta.faceIds[1]],
             argument,
             pathToCall: callPath,
           })
@@ -1759,16 +1758,48 @@ function findExtrudeEdgeArgumentExpr(
   call: Node<CallExpressionKw>,
   argument: ExtrudeEdgeArgument
 ): Expr | null {
-  if (argument === 'target') return call.unlabeled ?? null
+  if (argument === 'target') {
+    return (
+      call.unlabeled ??
+      call.arguments?.find((arg) => getLabelName(arg) === undefined)?.arg ??
+      null
+    )
+  }
   const arg = call.arguments?.find((a) => getLabelName(a) === argument)
   return arg?.arg ?? null
+}
+
+function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
+  return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
+}
+
+function resolveTopLevelArrayExpression(
+  program: Program,
+  expr: Expr,
+  referencePath: PathToNode
+): Extract<Expr, { type: 'ArrayExpression' }> | null {
+  if (expr.type === 'ArrayExpression') return expr
+  if (expr.type !== 'Name' || isNestedScopePath(referencePath)) return null
+
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === expr.name.name
+  )
+  if (
+    declaration?.type !== 'VariableDeclaration' ||
+    declaration.declaration.init.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+  return declaration.declaration.init
 }
 
 export function findExtrudeEdgeCallsToFix(
   program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
-  artifactGraph?: ArtifactGraph,
-  wasmInstance?: ModuleType
+  _artifactGraph?: ArtifactGraph,
+  _wasmInstance?: ModuleType
 ): ExtrudeEdgeCallToFix[] {
   const results: ExtrudeEdgeCallToFix[] = []
 
@@ -1786,7 +1817,46 @@ export function findExtrudeEdgeCallsToFix(
     }
     const replacements: ExtrudeEdgeCallToFix['replacements'] = []
     for (const argument of ['target', 'to', 'direction'] as const) {
+      if (argument === 'target' && extrudeRequiresConcreteTarget(call)) {
+        continue
+      }
       const argumentExpr = findExtrudeEdgeArgumentExpr(call, argument)
+      const targetArray =
+        argument === 'target' && argumentExpr
+          ? resolveTopLevelArrayExpression(
+              program,
+              argumentExpr,
+              pathPrefix ?? []
+            )
+          : null
+      if (targetArray) {
+        const payloads = targetArray.elements.map((element) => {
+          const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+            program,
+            element,
+            pathPrefix ?? []
+          )
+          if (!deprecatedCall) return null
+          const meta = edgeRefactorMetadata.find((candidate) =>
+            sourceRangeMatch(
+              candidate,
+              deprecatedCall.call.start,
+              deprecatedCall.call.end,
+              deprecatedCall.call.moduleId
+            )
+          )
+          return hasFaceIds(meta) ? edgeRefactorMetaToPayload(meta) : null
+        })
+        if (
+          payloads.length > 0 &&
+          payloads.every(
+            (payload): payload is FilletEdgeRefPayload => payload !== null
+          )
+        ) {
+          replacements.push({ argument, payload: payloads })
+        }
+        continue
+      }
       const deprecatedCall = argumentExpr
         ? findDeprecatedEdgeStdlibCallFromExpr(
             program,
@@ -1798,17 +1868,24 @@ export function findExtrudeEdgeCallsToFix(
         if (
           (argument === 'target' || argument === 'direction') &&
           argumentExpr &&
-          artifactGraph &&
-          wasmInstance
+          // Sketch segments are already stable targets or directions. Only
+          // generated solid-edge tags should be converted to a face API selector.
+          getTagInfoFromExpr(argumentExpr)?.tagsBaseExpr != null
         ) {
-          const payload = directSketchSegmentEdgePayload(
-            program,
-            argumentExpr,
-            artifactGraph,
-            wasmInstance,
-            argument === 'target' ? call : undefined
+          const meta = edgeRefactorMetadata.find((candidate) =>
+            sourceRangeMatch(
+              candidate,
+              argumentExpr.start,
+              argumentExpr.end,
+              argumentExpr.moduleId
+            )
           )
-          if (payload) replacements.push({ argument, payload })
+          if (hasFaceIds(meta)) {
+            replacements.push({
+              argument,
+              payload: edgeRefactorMetaToPayload(meta),
+            })
+          }
         }
         continue
       }
@@ -1843,115 +1920,6 @@ export function findExtrudeEdgeCallsToFix(
   return results
 }
 
-function directSketchSegmentEdgePayload(
-  program: Node<Program>,
-  expr: Expr,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType,
-  targetExtrudeCall?: Node<CallExpressionKw>
-): FilletEdgeRefPayload | null {
-  if (expr.type !== 'MemberExpression' || expr.property.type !== 'Name') {
-    return null
-  }
-
-  const segmentName = expr.property.name.name
-  const tagInfo = getTagInfoFromExpr(expr)
-  const owningBodyExpr = tagInfo?.tagsBaseExpr
-    ? getBodyExprFromSketchTagsBaseExpr(tagInfo.tagsBaseExpr)
-    : null
-
-  if (owningBodyExpr) {
-    const bodyKey = exprPathKey(owningBodyExpr)
-    if (!bodyKey) return null
-
-    const owningSweep = [...artifactGraph.values()].find((artifact) => {
-      if (artifact.type !== 'sweep') return false
-      return [
-        artifact.codeRef.pathToNode,
-        getNodePathFromSourceRange(program, artifact.codeRef.range),
-      ].some(
-        (pathToNode) =>
-          getVariableNameFromNodePath(pathToNode, program, wasmInstance) ===
-          bodyKey
-      )
-    })
-    if (!owningSweep || owningSweep.type !== 'sweep') return null
-
-    const candidateSegments = [...artifactGraph.values()].filter(
-      (artifact): artifact is Artifact & { type: 'segment' } => {
-        if (
-          artifact.type !== 'segment' ||
-          artifact.pathId !== owningSweep.pathId ||
-          artifact.commonSurfaceIds.length !== 2
-        ) {
-          return false
-        }
-        const sourceSegmentId = artifact.originalSegId ?? artifact.id
-        return (
-          getSketchSegmentName(
-            program,
-            sourceSegmentId,
-            artifactGraph,
-            wasmInstance
-          ) === segmentName
-        )
-      }
-    )
-    if (candidateSegments.length === 0) return null
-
-    const targetSweep = targetExtrudeCall
-      ? [...artifactGraph.values()].find(
-          (artifact) =>
-            artifact.type === 'sweep' &&
-            artifact.codeRef.range[0] === targetExtrudeCall.start &&
-            artifact.codeRef.range[1] === targetExtrudeCall.end &&
-            (artifact.codeRef.range[2] ?? 0) === targetExtrudeCall.moduleId
-        )
-      : undefined
-    const segment =
-      targetSweep?.type === 'sweep'
-        ? candidateSegments.find(
-            (candidate) => candidate.surfaceId === targetSweep.pathId
-          )
-        : candidateSegments.length === 1
-          ? candidateSegments[0]
-          : undefined
-
-    return segment ? { side_faces: segment.commonSurfaceIds } : null
-  }
-
-  if (expr.object.type !== 'Name') return null
-  const sketchName = expr.object.name.name
-  const originalSegment = [...artifactGraph.values()].find(
-    (artifact) =>
-      artifact.type === 'segment' &&
-      !artifact.originalSegId &&
-      getSketchSegmentName(
-        program,
-        artifact.id,
-        artifactGraph,
-        wasmInstance
-      ) === segmentName &&
-      getSketchVariableNameForSegment(
-        program,
-        artifact.id,
-        artifactGraph,
-        wasmInstance
-      ) === sketchName
-  )
-  if (!originalSegment || originalSegment.type !== 'segment') return null
-
-  const regionSegment = [...artifactGraph.values()].find(
-    (artifact) =>
-      artifact.type === 'segment' &&
-      artifact.originalSegId === originalSegment.id &&
-      artifact.commonSurfaceIds.length === 2
-  )
-  if (!regionSegment || regionSegment.type !== 'segment') return null
-
-  return { side_faces: regionSegment.commonSurfaceIds }
-}
-
 export function findExtrudeToCallsToFix(
   program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[]
@@ -1959,7 +1927,7 @@ export function findExtrudeToCallsToFix(
   return findExtrudeEdgeCallsToFix(program, edgeRefactorMetadata).flatMap(
     ({ range, replacements, pathToCall }) => {
       const replacement = replacements.find(({ argument }) => argument === 'to')
-      if (!replacement) return []
+      if (!replacement || isArray(replacement.payload)) return []
       const [firstFaceId, secondFaceId] = replacement.payload.side_faces
       if (!firstFaceId || !secondFaceId) return []
       return [
@@ -2185,18 +2153,27 @@ function refactorExtrudeEdgeArgumentsInPlace(
     let failedToCreateEdgeRef = false
 
     for (const { argument, payload } of replacements) {
-      const result = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        nextAst,
-        artifactGraph
-      )
-      if (err(result)) {
-        failedToCreateEdgeRef = true
-        break
+      const payloads = isArray(payload) ? payload : [payload]
+      const exprs: Expr[] = []
+      for (const item of payloads) {
+        const result = createEdgeRefObjectExpression(
+          item,
+          wasmInstance,
+          nextAst,
+          artifactGraph
+        )
+        if (err(result)) {
+          failedToCreateEdgeRef = true
+          break
+        }
+        exprs.push(result.expr)
+        nextAst = result.modifiedAst
       }
-      replacementExprs.push({ argument, expr: result.expr })
-      nextAst = result.modifiedAst
+      if (failedToCreateEdgeRef) break
+      replacementExprs.push({
+        argument,
+        expr: isArray(payload) ? createArrayExpression(exprs) : exprs[0],
+      })
     }
 
     if (failedToCreateEdgeRef || replacementExprs.length === 0) continue
@@ -2212,7 +2189,14 @@ function refactorExtrudeEdgeArgumentsInPlace(
     const callNode = nodeResult.node
     for (const { argument, expr } of replacementExprs) {
       if (argument === 'target') {
-        callNode.unlabeled = expr
+        if (callNode.unlabeled) {
+          callNode.unlabeled = expr
+        } else {
+          const unlabeledArg = callNode.arguments.find(
+            (arg) => getLabelName(arg) === undefined
+          )
+          if (unlabeledArg) unlabeledArg.arg = expr
+        }
         continue
       }
       const existingArg = callNode.arguments.find(

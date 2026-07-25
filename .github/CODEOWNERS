@@ -4,7 +4,7 @@
 /src/                             @KittyCAD/frontend
 
 # KCL
-/rust/                            @KittyCAD/kcl
+/rust/                            @KittyCAD/kcl @KittyCAD/frontend
 
 # ZDS-KCL bridge
 /rust/**/frontend.rs              @KittyCAD/frontend @KittyCAD/kcl

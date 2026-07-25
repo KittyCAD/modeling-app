@@ -82,10 +82,10 @@ pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String
     console_error_panic_hook::set_once();
 
     // ts-rs can't handle tuple types, so it mashes all of these types together.
-    if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json) {
-        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
-            return Ok(formatted);
-        }
+    if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json)
+        && let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty)
+    {
+        return Ok(formatted);
     }
     if let Ok(unit_type) = serde_json::from_str::<UnitType>(numeric_type_json) {
         let ty = NumericType::Known(unit_type);

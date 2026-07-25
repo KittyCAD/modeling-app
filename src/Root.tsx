@@ -1,6 +1,5 @@
 import { AppStateProvider } from '@src/AppState'
 import { Auth } from '@src/Auth'
-import LspProvider from '@src/components/LspProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
 import { RouteProvider } from '@src/components/RouteProvider'
 import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
@@ -13,12 +12,10 @@ function RootLayout() {
     <OpenInDesktopAppHandler>
       <RouteProvider>
         <Auth>
-          <LspProvider>
-            <AppStateProvider>
-              <SystemIOMachineLogicListener />
-              <Outlet />
-            </AppStateProvider>
-          </LspProvider>
+          <AppStateProvider>
+            <SystemIOMachineLogicListener />
+            <Outlet />
+          </AppStateProvider>
         </Auth>
       </RouteProvider>
     </OpenInDesktopAppHandler>

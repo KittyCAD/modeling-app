@@ -1,6 +1,6 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export interface IUseOnOfflineToExitSketchMode {
@@ -22,13 +22,13 @@ export function useOnOfflineToExitSketchMode({
     }
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.Offline,
+      EngineConnectionManagerEvents.Offline,
       onOffline as EventListener
     )
 
     return () => {
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.Offline,
+        EngineConnectionManagerEvents.Offline,
         onOffline as EventListener
       )
     }

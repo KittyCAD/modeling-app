@@ -23,7 +23,6 @@ import {
 } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
-  getEdgeCutMeta,
   getRegionTagExprFromSegmentId,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
@@ -37,6 +36,7 @@ import {
   getCapForPathId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
+import { addTagToSingletonEdgeCut } from '@src/lang/std/sketchTaggingHelpers'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -60,7 +60,6 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
-  EdgeCutInfo,
   EnginePrimitiveSelection,
   Selection,
   Selections,
@@ -183,6 +182,25 @@ export function addDeleteFace({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
+  // An edgeCut identifies the chamfer/fillet result, but does not retain enough
+  // source identity to split a multi-selector operation. Singleton operations
+  // can be tagged directly without reconstructing a removed sweepEdge.
+  for (const selection of faces.graphSelections) {
+    const resolved = resolveToCodeRef(selection, artifactGraph)
+    if (resolved?.artifact?.type !== 'edgeCut') continue
+
+    const tagResult = addTagToSingletonEdgeCut(
+      {
+        node: modifiedAst,
+        pathToNode: resolved.artifact.codeRef.pathToNode,
+        wasmInstance,
+      },
+      wasmInstance
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+  }
+
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
     faces,
@@ -202,17 +220,19 @@ export function addDeleteFace({
   let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
 
-  const enginePrimitives = faces.otherSelections.filter(
-    (selection): selection is EnginePrimitiveSelection =>
-      isEnginePrimitiveSelection(selection) &&
-      selection.primitiveType === 'face'
-  )
+  const enginePrimitives = getPrimitiveFaceSelectionsFromSelection({
+    graphSelections: faces.graphSelections.filter(
+      (selection) => !resolveToCodeRef(selection, artifactGraph)
+    ),
+    otherSelections: faces.otherSelections,
+  })
   if (enginePrimitives.length > 0) {
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives,
       modifiedAst,
       artifactGraph,
       wasmInstance,
+      useLatestBody: true,
     })
     if (err(result)) return result
     solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
@@ -1081,7 +1101,6 @@ export function getFacesExprsFromSelection(
       return [createLocalName(tagResult.tag)]
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
       let targetArtifact: Artifact | undefined
-      let edgeCutMeta: EdgeCutInfo | null = null
       if (artifact.type === 'wall') {
         const key = artifact.segId
         const segmentArtifact = getArtifactOfTypes(
@@ -1116,7 +1135,6 @@ export function getFacesExprsFromSelection(
         }
       } else {
         targetArtifact = artifact
-        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
       }
 
       const codeRef =
@@ -1127,12 +1145,21 @@ export function getFacesExprsFromSelection(
         console.warn('No codeRef for target artifact')
         return []
       }
-      const tagResult = mutateAstWithTagForSketchSegment(
-        ast,
-        codeRef.pathToNode,
-        wasmInstance,
-        edgeCutMeta
-      )
+      const tagResult =
+        targetArtifact?.type === 'edgeCut'
+          ? addTagToSingletonEdgeCut(
+              {
+                node: modifiedAst,
+                pathToNode: codeRef.pathToNode,
+                wasmInstance,
+              },
+              wasmInstance
+            )
+          : mutateAstWithTagForSketchSegment(
+              ast,
+              codeRef.pathToNode,
+              wasmInstance
+            )
       if (err(tagResult)) {
         console.warn(
           'Failed to mutate ast with tag for sketch segment',
@@ -1408,11 +1435,13 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   modifiedAst,
   artifactGraph,
   wasmInstance,
+  useLatestBody = false,
 }: {
   enginePrimitives: EnginePrimitiveSelection[]
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
+  useLatestBody?: boolean
 }): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
   if (enginePrimitives.length === 0) {
     return { solidsExprs: [], faceExprs: [] }
@@ -1488,14 +1517,17 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
         'Could not resolve selected primitive face bodies in code.'
       )
     }
+    const resolvedSolidExpr = useLatestBody
+      ? getLatestEdgeCutBodyExpr(solidExpr, modifiedAst)
+      : solidExpr
     if (solidExprs.length === 0) {
-      solidExprs.push(solidExpr)
+      solidExprs.push(resolvedSolidExpr)
     }
 
     // Step 2. Create the faceId call and keep track of the new variable name
     const faceExpr = createCallExpressionStdLibKw(
       'faceId',
-      structuredClone(solidExpr),
+      structuredClone(resolvedSolidExpr),
       [
         createLabeledArg(
           'index',
@@ -1528,4 +1560,43 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   }
 
   return { solidsExprs: solidExprs, faceExprs }
+}
+
+function getLatestEdgeCutBodyExpr(
+  initialBodyExpr: NonNullable<Expr>,
+  ast: Node<Program>
+): NonNullable<Expr> {
+  if (initialBodyExpr.type !== 'Name') {
+    return initialBodyExpr
+  }
+
+  const reachableBodyNames = new Set([initialBodyExpr.name.name])
+  let latestBodyName = initialBodyExpr.name.name
+  // Primitive face metadata identifies the originating solid. Follow the KCL
+  // data flow so faceId targets the latest edge treatment that owns that body.
+  for (const statement of ast.body) {
+    if (
+      statement.type !== 'VariableDeclaration' ||
+      statement.declaration.init.type !== 'CallExpressionKw'
+    ) {
+      continue
+    }
+
+    const call = statement.declaration.init
+    if (
+      call.callee.type !== 'Name' ||
+      (call.callee.name.name !== 'chamfer' &&
+        call.callee.name.name !== 'fillet') ||
+      call.unlabeled?.type !== 'Name' ||
+      !reachableBodyNames.has(call.unlabeled.name.name)
+    ) {
+      continue
+    }
+
+    const outputName = statement.declaration.id.name
+    reachableBodyNames.add(outputName)
+    latestBodyName = outputName
+  }
+
+  return createLocalName(latestBodyName)
 }

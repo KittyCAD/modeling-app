@@ -26,9 +26,7 @@ import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
-  enforceFileEXT,
   fileNameHasExtension,
-  getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
@@ -1312,16 +1310,12 @@ export const ProjectExplorer = ({
                 })
               }
             } else {
-              // rename a file
-              const originalExt = getEXTWithPeriod(name)
-              const fileNameForcedWithOriginalExt = enforceFileEXT(
-                requestedName,
-                originalExt
-              )
-              if (!fileNameForcedWithOriginalExt) {
-                // TODO: OH NO!
-                return
-              }
+              // Respect a user-typed extension otherwise assume the file is KCL.
+              const fileName =
+                fileNameHasExtension(requestedName) ||
+                requestedName.startsWith('.')
+                  ? requestedName
+                  : requestedName + FILE_EXT
 
               const requestedAbsoluteFilePathWithExtension = joinOSPaths(
                 getParentAbsolutePath(row.path),
@@ -1337,7 +1331,7 @@ export const ProjectExplorer = ({
                   ? SystemIOMachineEvents.renameFileAndNavigateToFile
                   : SystemIOMachineEvents.renameFile,
                 data: {
-                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
+                  requestedFileNameWithExtension: fileName,
                   fileNameWithExtension: name,
                   absolutePathToParentDirectory: getParentAbsolutePath(
                     row.path

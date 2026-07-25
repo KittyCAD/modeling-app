@@ -1,4 +1,5 @@
 import { ActionButton } from '@src/components/ActionButton'
+import type { Feature } from '@kittycad/lib'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -24,6 +25,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
@@ -42,11 +44,14 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout, systemIOActor } = useApp()
+    const { settings, layout, systemIOActor, userFeatures } = useApp()
     const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
+    const userFeaturesContext = userFeatures.useContext()
+    const hasFeature = (feature: Feature) =>
+      userFeaturesContextHas(userFeaturesContext, feature, false)
     const executingPath = useAbsoluteFilePath()
 
     const projectPath = useMemo(() => {
@@ -85,7 +90,8 @@ export const AllSettingsFields = forwardRef(
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
-                (setting) => !shouldHideSetting(setting, searchParamTab)
+                (setting) =>
+                  !shouldHideSetting(setting, searchParamTab, hasFeature)
               )
             )
             .map(([category, categorySettings]) => (
@@ -98,7 +104,7 @@ export const AllSettingsFields = forwardRef(
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
-                    shouldShowSettingInput(item[1], searchParamTab)
+                    shouldShowSettingInput(item[1], searchParamTab, hasFeature)
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting

@@ -44,6 +44,7 @@ use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableKind;
@@ -735,9 +736,25 @@ impl TypeDeclaration {
             }
             buf.push(')');
         }
-        if let Some(alias) = &self.alias {
-            buf.push_str(" = ");
-            write!(buf, "{alias}").no_fail();
+        match &self.definition {
+            TypeDeclarationDefinition::Bare => {}
+            TypeDeclarationDefinition::Alias { ty } => {
+                buf.push_str(" = ");
+                write!(buf, "{ty}").no_fail();
+            }
+            TypeDeclarationDefinition::Enum(e) => {
+                // Minimal recast; proper multi-line layout and comment
+                // preservation land with enum parsing.
+                buf.push_str(" {");
+                if e.variants.is_empty() {
+                    buf.push_str(" |");
+                }
+                for variant in &e.variants {
+                    buf.push_str(" | ");
+                    buf.push_str(&variant.name.name);
+                }
+                buf.push_str(" }");
+            }
         }
     }
 }

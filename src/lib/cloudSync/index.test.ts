@@ -18,6 +18,7 @@ import {
   projectManifestsEqual,
   shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
+import { DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH } from '@src/lib/cloudSync/paths'
 import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
@@ -46,6 +47,24 @@ function readProjectFile(files: ProjectArchiveFile[], relativePath: string) {
 }
 
 describe('cloudSync sync helpers', () => {
+  it('uses the web project directory as the default cloud project directory fallback', () => {
+    expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
+      `/documents/${PROJECT_FOLDER}`
+    )
+  })
+
+  it('identifies project roots beneath the personal Zoo cloud directory', () => {
+    expect(
+      getCloudSyncProjectRoot(
+        '/Users/frank/Library/CloudStorage/Zoo/personal/bracket/main.kcl'
+      )
+    ).toBe('/Users/frank/Library/CloudStorage/Zoo/personal/bracket')
+
+    expect(
+      getCloudSyncProjectRoot('/Users/frank/Library/CloudStorage/Zoo/personal')
+    ).toBeUndefined()
+  })
+
   it('identifies project roots beneath the OPFS project directory', () => {
     expect(
       getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}/bracket/main.kcl`)

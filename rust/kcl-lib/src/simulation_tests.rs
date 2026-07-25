@@ -6440,6 +6440,27 @@ mod surface_extrude_edge_specifier_input {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_exit {
+    const TEST_NAME: &str = "sketch_block_exit";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod surface_extrude_edge_specifier_direction {
     const TEST_NAME: &str = "surface_extrude_edge_specifier_direction";
 
@@ -6495,5 +6516,26 @@ mod mirror3d_edge_specifier_after_subtract {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod fail_user_defined_error {
+    const TEST_NAME: &str = "fail_user_defined_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that we can unparse the KCL.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL execution fails.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

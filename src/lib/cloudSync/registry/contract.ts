@@ -27,8 +27,15 @@ export type CloudSyncRegistryService = {
    * The local project is marked excluded so later edits do not recreate it.
    */
   disconnectProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Materialize a remote cloud project into the local library directory the
+   * caller is opening it from. `targetProjectDirectoryPath` is the resolved
+   * local path of that library; when omitted the engine falls back to the
+   * configured project directory.
+   */
   ensureProjectLocallySynced: (
-    remoteProjectId: string
+    remoteProjectId: string,
+    targetProjectDirectoryPath?: string
   ) => Promise<CloudSyncLocalProject | undefined>
   getRemoteProjectThumbnailUrl: (
     remoteProject: RemoteProjectSummary

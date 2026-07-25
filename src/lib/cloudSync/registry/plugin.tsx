@@ -29,14 +29,33 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  deleteRemoteCloudProject,
   type RemoteProjectSummary,
+  renameRemoteCloudProject,
   retryCloudSync,
 } from '@src/lib/cloudSync'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  type ProjectLibrary,
+} from '@src/lib/projectLibraries'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from '@src/lib/revealInFileExplorer'
+import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type CloudSyncRegistryService,
@@ -51,15 +70,26 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
+  type ProjectLibrarySettingsDetailsProps,
+  type ProjectLibraryTypeContribution,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import { settingsService } from '@src/registry/contracts/settings'
+import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { settingsService } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { invalidateConfiguredProjectLibraryEntries } from '@src/registry/extensions/homeProjects'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useLocation } from 'react-router-dom'
+
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 
 type CloudSyncStatusBarPresentation = {
   label: string
@@ -69,12 +99,60 @@ type CloudSyncStatusBarPresentation = {
   tooltip: string
 }
 
-type CloudConflictDialogResolvedTheme = 'light' | 'dark'
+function CloudProjectLibrarySettingsDetails({
+  library,
+}: ProjectLibrarySettingsDetailsProps) {
+  const [storagePath, setStoragePath] = useState<string>()
 
-function getCloudConflictDialogResolvedTheme(
-  theme: Parameters<typeof getResolvedTheme>[0]
-): CloudConflictDialogResolvedTheme {
-  return getResolvedTheme(theme) === Themes.Dark ? 'dark' : 'light'
+  useEffect(() => {
+    let disposed = false
+
+    getDefaultCloudProjectDirectoryPath()
+      .then((projectDirectoryPath) => {
+        if (!disposed) {
+          setStoragePath(projectDirectoryPath)
+        }
+      })
+      .catch(() => {
+        if (!disposed) {
+          setStoragePath(undefined)
+        }
+      })
+
+    return () => {
+      disposed = true
+    }
+  }, [])
+
+  return (
+    <div className="min-w-0 text-sm m-0 flex items-stretch gap-2">
+      <p className="min-w-0 px-2 py-1 flex-1 truncate text-2">
+        {storagePath
+          ? `Stored locally at ${storagePath}`
+          : 'Resolving local storage path...'}
+      </p>
+      {canRevealInFileExplorer() && (
+        <ActionButton
+          Element="button"
+          type="button"
+          tabIndex={0}
+          className="!p-0"
+          iconStart={{
+            icon: 'folder',
+            bgClassName: '!bg-transparent',
+          }}
+          disabled={!storagePath}
+          onClick={() => {
+            if (storagePath) {
+              revealInFileExplorer(storagePath)
+            }
+          }}
+        >
+          <Tooltip position="top-right">Reveal in file explorer</Tooltip>
+        </ActionButton>
+      )}
+    </div>
+  )
 }
 
 type CloudSyncProjectMenuDialog =
@@ -220,7 +298,7 @@ function CloudSyncDisconnectProjectDialog({
 function CloudSyncProjectMenuDialogHost({
   resolvedTheme,
 }: {
-  resolvedTheme: CloudConflictDialogResolvedTheme
+  resolvedTheme: ResolvedTheme
 }) {
   useSignals()
   const dialog = cloudSyncProjectMenuDialog.value
@@ -380,12 +458,16 @@ export function getCloudSyncStatusBarPresentation(
   const isSyncing = status.state === 'syncing'
   const isBlocked = status.state === 'failed' || status.state === 'conflict'
   const hasPendingChanges = status.pendingCount > 0
+  const isRemoteUploadBlocked =
+    status.lastFailureKind === 'remote-upload-forbidden'
   const label = isSyncing
     ? 'Cloud syncing'
     : status.state === 'conflict'
       ? 'Cloud conflict'
       : status.state === 'failed'
-        ? 'Cloud sync failed'
+        ? isRemoteUploadBlocked
+          ? 'Cloud sync blocked'
+          : 'Cloud sync failed'
         : hasPendingChanges
           ? 'Cloud sync pending'
           : 'Cloud synced'
@@ -415,7 +497,7 @@ export function getCloudSyncStatusBarPresentation(
 function CloudSyncStatusBarItem({
   resolvedTheme,
 }: {
-  resolvedTheme: CloudConflictDialogResolvedTheme
+  resolvedTheme: ResolvedTheme
 }) {
   useSignals()
   const location = useLocation()
@@ -550,9 +632,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
     const settingsValues = settings.value!.useSettings()
     return (
       <CloudSyncStatusBarItem
-        resolvedTheme={getCloudConflictDialogResolvedTheme(
-          settingsValues.app.theme.current
-        )}
+        resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
       />
     )
   }
@@ -631,19 +711,42 @@ function getCloudSyncHomeProjectModifiedTime(
   return Number.isNaN(modified) ? undefined : modified
 }
 
-function homeProjectEntryConflictFields(
+function homeProjectEntryCloudSyncFields(
   metadata: CloudSyncProjectMetadataIndexEntry | undefined
 ): Pick<
   HomeProjectEntryContribution,
-  'conflict' | 'localProjectPath' | 'status'
+  'conflict' | 'libraryId' | 'localProjectPath' | 'status' | 'syncFailure'
 > {
-  return metadata?.conflict
-    ? {
-        status: 'conflicted',
-        conflict: metadata.conflict,
-        localProjectPath: metadata.localProjectPath,
-      }
-    : { status: 'cloud-only' }
+  const syncFailure =
+    metadata?.lastFailure?.kind === 'remote-upload-forbidden'
+      ? metadata.lastFailure
+      : undefined
+  if (!metadata?.conflict) {
+    return {
+      libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      status: 'cloud-only',
+      ...(syncFailure
+        ? { syncFailure, localProjectPath: metadata?.localProjectPath }
+        : {}),
+    }
+  }
+
+  return {
+    libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+    status: 'conflicted',
+    conflict: metadata.conflict,
+    localProjectPath: metadata.localProjectPath,
+    ...(syncFailure ? { syncFailure } : {}),
+  }
+}
+
+function shouldContributeCloudSyncMetadata(
+  metadata: CloudSyncProjectMetadataIndexEntry
+) {
+  return (
+    Boolean(metadata.conflict) ||
+    metadata.lastFailure?.kind === 'remote-upload-forbidden'
+  )
 }
 
 function remoteThumbnailCacheKey(project: RemoteProjectSummary) {
@@ -696,7 +799,7 @@ function pruneRemoteThumbnailState({
 const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   (ctx) => {
     const cloudSync = ctx.services.signal(cloudSyncService)
-    const conflictMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
+    const cloudSyncMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
     const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
     const requestedThumbnailKeys = new Map<string, string>()
     let disposed = false
@@ -710,8 +813,8 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         return []
       }
 
-      const conflictMetadataByRemoteProjectId = new Map(
-        conflictMetadata.value.flatMap((metadata) =>
+      const cloudSyncMetadataByRemoteProjectId = new Map(
+        cloudSyncMetadata.value.flatMap((metadata) =>
           metadata.remoteProjectId
             ? ([[metadata.remoteProjectId, metadata]] as const)
             : []
@@ -722,13 +825,13 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
       )
       const remoteProjectEntries = cloudSyncRemoteProjects.value.map(
         (project) => {
-          const metadata = conflictMetadataByRemoteProjectId.get(project.id)
+          const metadata = cloudSyncMetadataByRemoteProjectId.get(project.id)
           const name = metadata?.projectName || project.title || project.id
           const thumbnailUrl = remoteThumbnailUrls.value.get(project.id)
 
           return {
             source: 'remote',
-            ...homeProjectEntryConflictFields(metadata),
+            ...homeProjectEntryCloudSyncFields(metadata),
             name,
             title: metadata?.projectName || project.title,
             remoteProjectId: project.id,
@@ -745,7 +848,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           } satisfies HomeProjectEntryContribution
         }
       )
-      const localOnlyConflictEntries = conflictMetadata.value
+      const localOnlyCloudSyncEntries = cloudSyncMetadata.value
         .filter(
           (metadata) =>
             !metadata.remoteProjectId ||
@@ -755,18 +858,17 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           (metadata) =>
             ({
               source: 'remote',
-              status: 'conflicted',
+              ...homeProjectEntryCloudSyncFields(metadata),
               name: metadata.projectName,
               title: metadata.projectName,
               localProjectPath: metadata.localProjectPath,
               remoteProjectId: metadata.remoteProjectId,
               modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
               readWriteAccess: true,
-              conflict: metadata.conflict,
             }) satisfies HomeProjectEntryContribution
         )
 
-      return [...remoteProjectEntries, ...localOnlyConflictEntries]
+      return [...remoteProjectEntries, ...localOnlyCloudSyncEntries]
     })
 
     // Defer because `effect` runs immediately, and service reads are blocked
@@ -776,7 +878,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         return
       }
 
-      // Keep Home conflict badges in sync with cloud sync metadata, even
+      // Keep Home cloud sync badges in sync with cloud sync metadata, even
       // before System IO rereads local project folders.
       disposeEffect = effect(() => {
         const service = cloudSync.value
@@ -784,7 +886,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         const nextLoadId = ++loadId
 
         if (!service || !status.enabled) {
-          conflictMetadata.value = []
+          cloudSyncMetadata.value = []
           remoteThumbnailUrls.value = new Map()
           requestedThumbnailKeys.clear()
           return
@@ -836,16 +938,16 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
               return
             }
 
-            conflictMetadata.value = Array.from(metadataIndex.values()).filter(
+            cloudSyncMetadata.value = Array.from(metadataIndex.values()).filter(
               (metadata) =>
-                Boolean(metadata.conflict) &&
+                shouldContributeCloudSyncMetadata(metadata) &&
                 !metadata.tombstone &&
                 !metadata.syncExcluded
             )
           })
           .catch((error: unknown) => {
             if (!disposed && nextLoadId === loadId) {
-              conflictMetadata.value = []
+              cloudSyncMetadata.value = []
             }
             reportRejection(error)
           })
@@ -870,14 +972,196 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
+const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const library = computed<ProjectLibrary[]>(() => {
+    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+    const configuredLibraries =
+      settings.value?.current.value.app.libraries?.current
+    const configuredCloudLibraryIndex =
+      configuredLibraries?.findIndex(
+        (library) =>
+          library.type === defaultCloudLibrary.type &&
+          library.path === defaultCloudLibrary.path
+      ) ?? -1
+    const configuredCloudLibrary =
+      configuredCloudLibraryIndex === -1
+        ? undefined
+        : configuredLibraries?.[configuredCloudLibraryIndex]
+
+    return [
+      {
+        ...defaultCloudLibrary,
+        ...configuredCloudLibrary,
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        icon: 'network',
+        order:
+          configuredCloudLibraryIndex === -1 ? 10 : configuredCloudLibraryIndex,
+      },
+    ]
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.project-library',
+      provides: [
+        provide(projectLibrariesValueSpec, library, {
+          key: 'cloud-sync.project-library',
+        }),
+      ],
+    }),
+  }
+}, 'cloud-sync.project-library')
+
+/**
+ * The `cloud` project-library *type* handler (browse/create in the local
+ * Personal Cloud folder). This is registered as an always-on extension rather
+ * than inside the cloud-sync plugin's toggle-able slot: on web the cloud folder
+ * is the canonical project storage, so disabling cloud *sync* must not remove
+ * the ability to list or create projects there. The plugin continues to own the
+ * sync-only surface (remote entries, status bar, project-menu sync actions).
+ */
+export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const systemIO = ctx.services.signal(systemIOService)
+  const getWasmPromise = () =>
+    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+    Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  // A materialized cloud project can be listed either by System IO (when the
+  // cloud folder is the app's project directory, e.g. on web) or by the
+  // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
+  // local mutations show up regardless of which surface owns the entry.
+  const refreshLocalCloudProjectEntries = () => {
+    systemIO.value?.actor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+    invalidateConfiguredProjectLibraryEntries()
+  }
+
+  const cloudLibraryType: ProjectLibraryTypeContribution = {
+    type: CLOUD_PROJECT_LIBRARY_TYPE,
+    title: 'Cloud',
+    icon: 'network',
+    order: 10,
+    defaultSetting: getDefaultCloudProjectLibrarySetting(),
+    newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
+    settingsDetails: CloudProjectLibrarySettingsDetails,
+    operations: {
+      createProject: {
+        // Creating a project only needs the local library folder, so it stays
+        // available whether or not cloud sync is currently enabled. When sync
+        // is on we also enroll the new project; otherwise it is picked up the
+        // next time sync is enabled (via syncExistingLocalProjects on web /
+        // startProjectSync on desktop).
+        run: async ({ requestedProjectName, requestedProjectTitle }) => {
+          const project = await createProjectInLocalDirectory({
+            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            requestedProjectName,
+            requestedProjectTitle,
+            wasmInstancePromise: getWasmPromise(),
+          })
+
+          if (cloudSyncStatus.value.enabled) {
+            await ctx.services
+              .get(cloudSyncService)
+              .startProjectSync(project.path)
+          }
+
+          return project
+        },
+      },
+      // Rename/delete act on the remote project directly when it has not been
+      // materialized locally. Once a local copy exists, they behave like a
+      // normal local project: mutate the local files and let cloud sync
+      // replicate the change to the remote.
+      renameProject: {
+        run: async ({ project, requestedName }) => {
+          const title = requestedName.trim()
+          if (!title) {
+            return
+          }
+
+          if (project.localProjectPath && project.readWriteAccess) {
+            await writeProjectTitleToProjectToml(
+              project.localProjectPath,
+              title
+            )
+            refreshLocalCloudProjectEntries()
+            return
+          }
+
+          if (project.remoteProjectId) {
+            await renameRemoteCloudProject(project.remoteProjectId, title)
+          }
+        },
+      },
+      deleteProject: {
+        run: async ({ project }) => {
+          if (project.localProjectPath && project.readWriteAccess) {
+            await fsZds.rm(project.localProjectPath, { recursive: true })
+            refreshLocalCloudProjectEntries()
+            return
+          }
+
+          if (project.remoteProjectId) {
+            await deleteRemoteCloudProject(project.remoteProjectId)
+          }
+        },
+      },
+    },
+    readEntries: async ({ signal }) => {
+      const projects = await readProjectsFromProjectDirectory({
+        projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+        wasmInstancePromise: getWasmPromise(),
+        signal,
+      })
+
+      return projects.map((project) => ({
+        ...homeProjectEntryFromProject(project),
+        libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }))
+    },
+  }
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.project-library-type',
+      provides: [
+        provide(projectLibraryTypesValueSpec, cloudLibraryType, {
+          key: 'cloud-sync.project-library-type',
+        }),
+      ],
+    }),
+  }
+}, 'cloud-sync.project-library-type')
+
 export const cloudSyncPlugin = createZdsPlugin({
-  id: 'cloud-sync',
+  id: CLOUD_SYNC_PLUGIN_ID,
   title: 'Cloud sync',
   description: 'Cloud-backed project sync controls and status.',
   items: [
+    cloudSyncProjectLibraryContribution,
     cloudSyncStatusBarItemContribution,
     cloudSyncProjectMenuItem,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],
-  defaultSetting: 'core',
+  defaultSetting: 'off',
+  // On web, cloud sync is the project storage layer rather than an optional
+  // feature, so its toggle is hidden there (and forced active by the app
+  // runtime). Mirrors createZdsPlugin's default activation setting otherwise.
+  activationSetting: {
+    category: 'plugins',
+    settingName: CLOUD_SYNC_PLUGIN_ID,
+    description: 'Whether the Cloud sync plugin is enabled.',
+    hideOnLevel: 'project',
+    hideOnPlatform: 'web',
+    // Cloud sync is feature-gated; keep the toggle out of every settings
+    // surface (settings panel, command bar, plugins list) for users without
+    // the flag instead of special-casing the plugin id per surface.
+    hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+    userToml: {
+      sectionKey: 'plugins',
+      tomlKey: CLOUD_SYNC_PLUGIN_ID,
+    },
+  },
 })

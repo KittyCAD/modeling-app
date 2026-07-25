@@ -1,5 +1,6 @@
 import {
   defineRegistryItem,
+  pluginsValueSpec,
   provideService,
   Registry,
 } from '@kittycad/registry'
@@ -7,11 +8,30 @@ import { signal } from '@preact/signals-core'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
-import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
+import {
+  cloudSyncPlugin,
+  cloudSyncProjectLibraryType,
+  getCloudSyncStatusBarPresentation,
+} from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
+import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import {
+  type SettingsRegistryService,
+  settingsService,
+} from '@src/registry/contracts/settings'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
@@ -57,6 +77,22 @@ const projectWellFormed = {
   default_file: '/some/path/550e8400-e29b-41d4-a716-446655440000/main.kcl',
 } satisfies Project
 
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
+const originalElectron = window.electron
+
+type TestSettings = {
+  app: {
+    libraries: {
+      current: ProjectLibrarySetting[]
+    }
+  }
+  plugins: {
+    [CLOUD_SYNC_PLUGIN_ID]: {
+      current: boolean
+    }
+  }
+}
+
 function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
 }
@@ -79,6 +115,77 @@ function createCloudSyncService(): CloudSyncRegistryService {
   }
 }
 
+function createSettingsService({
+  cloudSyncEnabled = true,
+  libraries = [],
+}: {
+  cloudSyncEnabled?: boolean
+  libraries?: ProjectLibrarySetting[]
+}) {
+  const settingsSignal = signal<TestSettings>({
+    app: {
+      libraries: {
+        current: libraries,
+      },
+    },
+    plugins: {
+      [CLOUD_SYNC_PLUGIN_ID]: {
+        current: cloudSyncEnabled,
+      },
+    },
+  })
+  const send = vi.fn(
+    (event: {
+      type: 'set.app.libraries'
+      data: { value: ProjectLibrarySetting[] }
+    }) => {
+      if (event.type !== 'set.app.libraries') {
+        return
+      }
+
+      settingsSignal.value = {
+        ...settingsSignal.value,
+        app: {
+          ...settingsSignal.value.app,
+          libraries: {
+            current: event.data.value,
+          },
+        },
+      }
+    }
+  )
+  const service = {
+    actor: {
+      getSnapshot: () => ({
+        matches: (state: string) => state === 'idle',
+      }),
+    },
+    current: settingsSignal,
+    get: () => settingsSignal.value,
+    send,
+    useSettings: () => settingsSignal.value,
+  } as unknown as SettingsRegistryService
+
+  return {
+    service,
+    settingsSignal,
+    send,
+  }
+}
+
+function enableCloudSyncPlugin(registry: Registry) {
+  const plugin = registry
+    .get(pluginsValueSpec)
+    .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+  const pluginService = plugin?.service
+  expect(pluginService).toBeDefined()
+  if (!pluginService) {
+    return
+  }
+
+  registry.get(pluginService).enable()
+}
+
 function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
   const registry = new Registry()
   const cloudSyncServiceExtension = defineRegistryItem({
@@ -86,6 +193,7 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
     providesServices: [provideService(cloudSyncService, cloudSync)],
   })
   registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+  enableCloudSyncPlugin(registry)
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -123,6 +231,7 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
 }
 
 afterEach(() => {
+  window.electron = originalElectron
   cloudSyncStatus.value = {
     enabled: false,
     state: 'disabled',
@@ -130,6 +239,25 @@ afterEach(() => {
   }
   cloudSyncRemoteProjects.value = []
   vi.restoreAllMocks()
+})
+
+describe('cloud sync status presentation', () => {
+  test('labels remote upload permission failures as blocked sync', () => {
+    expect(
+      getCloudSyncStatusBarPresentation({
+        enabled: true,
+        state: 'failed',
+        pendingCount: 1,
+        lastFailure: 'Cloud sync cannot upload local changes.',
+        lastFailureKind: 'remote-upload-forbidden',
+        lastFailureAt: new Date(now).toISOString(),
+      })
+    ).toMatchObject({
+      label: 'Cloud sync blocked',
+      tooltip: 'Cloud sync cannot upload local changes.',
+      isBlocked: true,
+    })
+  })
 })
 
 describe('cloud sync project menu item', () => {
@@ -194,6 +322,230 @@ describe('cloud sync project menu item', () => {
   })
 })
 
+describe('cloud sync project library', () => {
+  test('registers the cloud project library type as always-on infrastructure', () => {
+    const registry = new Registry()
+    // The type handler is registered independently of the toggle-able plugin.
+    registry.configure([cloudSyncProjectLibraryType])
+
+    try {
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toMatchObject({
+        title: 'Cloud',
+        icon: 'network',
+        defaultSetting: getDefaultCloudProjectLibrarySetting(),
+      })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('toggles only the personal cloud library row with the plugin, keeping the type', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
+
+    try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      const pluginToggle = registry.get(pluginService)
+      expect(pluginToggle.active.value).toBe(false)
+      // Type is always available; only the Personal Cloud row is gated.
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .has(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toBe(true)
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+
+      pluginToggle.enable()
+
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Personal Cloud',
+          path: getDefaultCloudProjectLibrarySetting().path,
+          type: CLOUD_PROJECT_LIBRARY_TYPE,
+          icon: 'network',
+        }),
+      ])
+
+      pluginToggle.disable()
+
+      // Disabling sync removes the row contribution but must NOT remove the
+      // type handler — otherwise a settings-configured cloud library would
+      // become unusable.
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .has(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toBe(true)
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('offers project creation in the cloud library while sync is disabled', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+    cloudSyncStatus.value = {
+      enabled: false,
+      state: 'disabled',
+      pendingCount: 0,
+    }
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType).toBeDefined()
+      if (!cloudLibraryType) {
+        return
+      }
+
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      // readEntries and createProject stay available even though cloud sync is
+      // off, so a web user who is not actively syncing can still list/create.
+      expect(cloudLibraryType.readEntries).toBeDefined()
+      expect(
+        getProjectLibraryCreateProjectOperation(cloudLibraryType, cloudLibrary)
+      ).toBeDefined()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('preserves configured personal cloud library order', () => {
+    const registry = new Registry()
+    const settings = createSettingsService({
+      libraries: [
+        {
+          title: 'Directory',
+          path: '/projects',
+          type: 'directory',
+        },
+        getDefaultCloudProjectLibrarySetting(),
+      ],
+    })
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      registry.get(pluginService).enable()
+
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          order: 1,
+        }),
+      ])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('reveals the resolved local storage path from settings details', async () => {
+    const registry = new Registry()
+    const showInFolder = vi.fn()
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
+    window.electron = {
+      os: {
+        isMac: true,
+      },
+      showInFolder,
+    } as unknown as Window['electron']
+
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
+
+    try {
+      enableCloudSyncPlugin(registry)
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType?.settingsDetails).toBeDefined()
+      const SettingsDetails = cloudLibraryType?.settingsDetails
+      if (!SettingsDetails) {
+        return
+      }
+
+      render(
+        <SettingsDetails
+          library={getDefaultCloudProjectLibrarySetting()}
+          index={0}
+          updateLibrary={vi.fn()}
+          commitLibrary={vi.fn()}
+        />
+      )
+
+      const revealButton = await screen.findByRole('button')
+      await waitFor(() => expect(revealButton).not.toBeDisabled())
+
+      fireEvent.click(revealButton)
+
+      expect(showInFolder).toHaveBeenCalled()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not mutate project library settings from plugin activation', async () => {
+    const registry = new Registry()
+    const settings = createSettingsService({})
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+
+    registry.configure([settingsExtension, cloudSyncPlugin])
+
+    try {
+      const plugin = registry
+        .get(pluginsValueSpec)
+        .find((plugin) => plugin.id === CLOUD_SYNC_PLUGIN_ID)
+      const pluginService = plugin?.service
+      expect(pluginService).toBeDefined()
+      if (!pluginService) {
+        return
+      }
+
+      registry.get(pluginService).enable()
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(settings.send).not.toHaveBeenCalled()
+      expect(settings.settingsSignal.value.app.libraries.current).toEqual([])
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+})
+
 describe('cloud sync home project entries', () => {
   test('contributes remote thumbnails for cloud-only home entries', async () => {
     cloudSyncStatus.value = {
@@ -220,6 +572,7 @@ describe('cloud sync home project entries', () => {
     })
 
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
 
     try {
       await waitFor(() =>
@@ -227,6 +580,7 @@ describe('cloud sync home project entries', () => {
           expect.objectContaining({
             source: 'remote',
             status: 'cloud-only',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
             name: 'Remote title',
             title: 'Remote title',
             remoteProjectId: 'remote-123',
@@ -285,6 +639,7 @@ describe('cloud sync home project entries', () => {
     })
 
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
 
     try {
       await waitFor(() =>
@@ -298,6 +653,75 @@ describe('cloud sync home project entries', () => {
             localProjectPath: '/some/path/local-project',
             conflict: expect.objectContaining({
               conflictProjectPath: '/some/path/local-project (cloud conflict)',
+            }),
+          }),
+        ])
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('adds sync failure metadata for remote upload permission failures', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'failed',
+      pendingCount: 1,
+      lastFailure: 'Cloud sync cannot upload local changes.',
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailureAt: new Date(now).toISOString(),
+    }
+    cloudSyncRemoteProjects.value = [
+      {
+        id: 'remote-123',
+        title: 'Remote title',
+        revision: 'remote-rev-1',
+        updated_at: '2026-06-02T20:00:00.000Z',
+      },
+    ]
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          '/some/path/local-project',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/some/path/local-project',
+            projectName: 'Local project',
+            remoteProjectId: 'remote-123',
+            remoteRevision: 'remote-rev-1',
+            hasPendingChanges: true,
+            lastFailure: {
+              kind: 'remote-upload-forbidden',
+              message: 'Cloud sync cannot upload local changes.',
+              at: new Date(now).toISOString(),
+            },
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      await waitFor(() =>
+        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+          expect.objectContaining({
+            source: 'remote',
+            status: 'cloud-only',
+            name: 'Local project',
+            title: 'Local project',
+            remoteProjectId: 'remote-123',
+            localProjectPath: '/some/path/local-project',
+            syncFailure: expect.objectContaining({
+              kind: 'remote-upload-forbidden',
+              message: 'Cloud sync cannot upload local changes.',
             }),
           }),
         ])

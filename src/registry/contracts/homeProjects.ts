@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export type HomeProjectSource = 'local' | 'remote' | 'both'
@@ -24,6 +25,12 @@ export type HomeProjectThumbnail =
       url: string
     }
 
+export type HomeProjectSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
 export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
@@ -41,6 +48,7 @@ export interface HomeProjectEntry {
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
 }
 
 export type HomeProjectEntryContribution = Omit<
@@ -92,12 +100,6 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
   return `${entry.source}:${entry.id ?? entry.name}`
 }
 
-function uniqueStrings(values: readonly (string | undefined)[]) {
-  return Array.from(
-    new Set(values.filter((value): value is string => Boolean(value)))
-  )
-}
-
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
   return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])])
 }
@@ -133,6 +135,7 @@ function mergeHomeProjectEntries(
   }
 
   const conflict = local.conflict ?? remote.conflict
+  const syncFailure = local.syncFailure ?? remote.syncFailure
 
   return {
     ...remote,
@@ -145,6 +148,7 @@ function mergeHomeProjectEntries(
         ? 'syncing'
         : 'synced',
     conflict,
+    syncFailure,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,
@@ -155,6 +159,11 @@ function mergeHomeProjectEntries(
   }
 }
 
+/**
+ * Same-source entries can overlap when multiple libraries point at the same
+ * local or remote project. Keep the newest display data while preserving every
+ * library membership so library-filtered views can still find the project.
+ */
 function mergeSameSourceHomeProjectEntries(
   existing: HomeProjectEntry | undefined,
   next: HomeProjectEntry

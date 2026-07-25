@@ -2700,6 +2700,185 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
+  test(`Delete face on an unmapped face-API chamfer`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [-12in, -6in], end = [-12in, 6in])
+  line2 = line(start = [-12in, 6in], end = [12in, 6in])
+  line3 = line(start = [12in, 6in], end = [12in, -6in])
+  line4 = line(start = [12in, -6in], end = [-12in, -6in])
+}
+region001 = region(point = [0in, 0in], sketch = sketch001)
+extrude001 = extrude(region001, length = -12in, tagEnd = $capEnd001)
+chamfer001 = chamfer(
+  extrude001,
+  edges = [{ sideFaces = [capEnd001, region001.tags.line2] }],
+  length = 5in,
+)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+    await editor.closePane()
+    await scene.moveCameraTo(
+      { x: 573.4, y: -539.4, z: 453.32 },
+      { x: 51.38, y: -17.36, z: -68.74 }
+    )
+
+    const [clickChamferFace] = scene.makeMouseHelpers(0.4948, 0.6468, {
+      format: 'ratio',
+    })
+    await toolbar.selectSurface('delete-face')
+    await clickChamferFace()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: { Faces: '1 face' },
+      reviewValidationError: undefined,
+      commandName: 'Delete Face',
+    })
+    await cmdBar.submit()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain('face001 = faceId(chamfer001, index = ')
+    await editor.expectEditor.toContain(
+      'surface001 = deleteFace(chamfer001, faces = face001)'
+    )
+  })
+
+  test(`Delete face on an unmapped multi-selector chamfer face`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [24, 0])
+  right = line(start = [24, 0], end = [24, 16])
+  top = line(start = [24, 16], end = [0, 16])
+  left = line(start = [0, 16], end = [0, 0])
+}
+region001 = region(point = [12, 8], sketch = sketch001)
+extrude001 = extrude(region001, length = 10, tagEnd = $endCap)
+chamfer001 = chamfer(
+  extrude001,
+  edges = [
+    { sideFaces = [region001.tags.bottom, endCap] },
+    { sideFaces = [region001.tags.right, endCap] }
+  ],
+  length = 2,
+)
+hide(sketch001)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+    await editor.closePane()
+    await scene.moveCameraTo(
+      { x: 5.72, y: -14.38, z: 26.13 },
+      { x: 12, y: 8, z: 5 }
+    )
+
+    const [clickChamferFace] = scene.makeMouseHelpers(0.5631, 0.5459, {
+      format: 'ratio',
+    })
+    await toolbar.selectSurface('delete-face')
+    await clickChamferFace()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: { Faces: '1 face' },
+      reviewValidationError: undefined,
+      commandName: 'Delete Face',
+    })
+    await cmdBar.submit()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain(
+      'face001 = faceId(chamfer001, index = 7)'
+    )
+    await editor.expectEditor.toContain(
+      'surface001 = deleteFace(chamfer001, faces = face001)'
+    )
+  })
+
+  test(`Delete face on an unmapped chained fillet face`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+extrude001 = extrude(region001, length = 12, tagEnd = $endCap)
+chamfer001 = chamfer(
+  extrude001,
+  edges = [{ sideFaces = [region001.tags.bottom, endCap] }],
+  length = 2,
+)
+fillet001 = fillet(
+  chamfer001,
+  edges = [{ sideFaces = [region001.tags.top, endCap] }],
+  radius = 2,
+)
+hide(sketch001)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+    await editor.closePane()
+    await scene.moveCameraTo(
+      { x: 39.68, y: -7.24, z: 19.4 },
+      { x: 15, y: 10, z: 6 }
+    )
+
+    const [clickFilletFace] = scene.makeMouseHelpers(0.6532, 0.4954, {
+      format: 'ratio',
+    })
+    await toolbar.selectSurface('delete-face')
+    await clickFilletFace()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: { Faces: '1 face' },
+      reviewValidationError: undefined,
+      commandName: 'Delete Face',
+    })
+    await cmdBar.submit()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain(
+      'face001 = faceId(fillet001, index = 7)'
+    )
+    await editor.expectEditor.toContain(
+      'surface001 = deleteFace(fillet001, faces = face001)'
+    )
+  })
+
   test('Revolve point-and-click', async ({
     context,
     page,

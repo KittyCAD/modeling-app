@@ -157,6 +157,7 @@ pub enum EdgeRefactorStdlibFn {
     GetPreviousAdjacentEdge,
     GetCommonEdge,
     EdgeId,
+    DirectEdgeTag,
 }
 
 /// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
@@ -205,7 +206,7 @@ pub struct DirectTagFilletMeta {
 #[ts(export)]
 #[serde(tag = "kind", content = "data", rename_all = "camelCase")]
 pub enum RefactorMetadata {
-    EdgeRefactor(EdgeRefactorMeta),
+    EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
 }
 
@@ -904,7 +905,7 @@ impl ExecState {
         self.mod_local
             .artifacts
             .refactor_metadata
-            .push(RefactorMetadata::EdgeRefactor(meta));
+            .push(RefactorMetadata::EdgeRefactor(Box::new(meta)));
     }
 
     pub(crate) fn record_pending_edge_refactor_meta(&mut self, meta: PendingEdgeRefactorMeta) {
@@ -1006,7 +1007,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(meta) => Some(meta.clone()),
+                RefactorMetadata::EdgeRefactor(meta) => Some((**meta).clone()),
                 RefactorMetadata::DirectTagFillet(_) => None,
             })
             .collect()

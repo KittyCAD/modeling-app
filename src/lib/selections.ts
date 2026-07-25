@@ -123,7 +123,7 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -1887,18 +1887,41 @@ export function handleSelectionBatch({
 
   if (entityReferences.length > 0) {
     engineEvents = setEngineEntitySelectionV2(entityReferences, systemDeps)
-    const fallbackSelections = selections.graphSelections
-      .map((selection) => {
-        const entityId = getEngineEntityIdForSelection(selection, artifactGraph)
-        if (!entityId) return undefined
-        return {
-          id: entityId,
-          range:
-            getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
-            defaultSourceRange(),
-        }
-      })
-      .filter(isNonNullable)
+    const fallbackSelections = [
+      ...selections.graphSelections
+        .map((selection) => {
+          if (selection.entityRef) return undefined
+          const entityId = getEngineEntityIdForSelection(
+            selection,
+            artifactGraph
+          )
+          if (!entityId) return undefined
+          return {
+            id: entityId,
+            range:
+              getCodeRefsByArtifactId(entityId, artifactGraph)?.[0]?.range ||
+              defaultSourceRange(),
+          }
+        })
+        .filter(isNonNullable),
+      ...selections.otherSelections
+        .map((selection) => {
+          if (isEnginePrimitiveSelection(selection)) {
+            return {
+              id: selection.entityId,
+              range: defaultSourceRange(),
+            }
+          }
+          if (isEngineRegionSelection(selection)) {
+            return {
+              id: selection.id,
+              range: defaultSourceRange(),
+            }
+          }
+          return undefined
+        })
+        .filter(isNonNullable),
+    ]
 
     if (fallbackSelections.length > 0) {
       engineEvents.push(
@@ -1948,14 +1971,10 @@ export function handleSelectionBatch({
     }
   })
 
-  const totalSelections = selections.graphSelections.length
   if (ranges.length)
     return {
       engineEvents,
-      codeMirrorSelection: EditorSelection.create(
-        ranges,
-        totalSelections > 0 ? totalSelections - 1 : 0
-      ),
+      codeMirrorSelection: EditorSelection.create(ranges, ranges.length - 1),
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
@@ -2471,23 +2490,18 @@ export function canSubmitSelectionArg(
     inputType: 'selection' | 'selectionMixed'
   }
 ) {
-  if (selectionsByType === 'none') {
-    return false
-  }
-
-  // Filter to only selection types that match the argument's allowed types
-  const relevantSelections = [...selectionsByType.entries()].filter(([type]) =>
-    argument.selectionTypes.includes(type as Artifact['type'])
+  return (
+    selectionsByType !== 'none' &&
+    [...selectionsByType.entries()].every(([type, count]) => {
+      const isAllowedType = argument.selectionTypes.includes(
+        type as Artifact['type']
+      )
+      return (
+        isAllowedType &&
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
+      )
+    })
   )
-
-  if (relevantSelections.length === 0) {
-    return false
-  }
-
-  // Check if all relevant selections are valid
-  return relevantSelections.every(([type, count]) => {
-    return !argument.multiple ? count < 2 && count > 0 : count > 0
-  })
 }
 
 /**
@@ -3088,9 +3102,10 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
-  const offsetResult = await getOffsetSketchPlaneData(artifact, {
-    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+  const offsetResult = getStableOffsetPlaneData(artifact, {
+    execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
+    sketchBlock,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -3132,6 +3147,43 @@ export function selectDefaultSketchPlane(
   return true
 }
 
+// Uses the executed sketch `on` plane so editing an offset-plane sketch is
+// independent of camera-facing scene data.
+export function getStableOffsetPlaneData(
+  artifact: Artifact | undefined,
+  systemDeps: {
+    execState: ExecState
+    sceneInfra: SceneInfra
+    sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
+  }
+): Error | false | OffsetPlane {
+  if (artifact?.type !== 'plane') {
+    return false
+  }
+
+  const planeInfo = systemDeps.sketchBlock?.planeInfo
+
+  if (!planeInfo) {
+    return false
+  }
+
+  return {
+    type: 'offsetPlane',
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    position: [
+      planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.z / systemDeps.sceneInfra.baseUnitMultiplier,
+    ],
+    planeId: artifact.id,
+    pathToNode: artifact.codeRef.pathToNode,
+    negated: false,
+  }
+}
+
+// Uses engine sketch-mode plane data so selecting a new offset plane can keep
+// the current camera-facing side.
 export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {

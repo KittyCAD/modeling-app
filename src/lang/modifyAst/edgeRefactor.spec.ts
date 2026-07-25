@@ -557,8 +557,8 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        baseRegion.tags.edge1,
-        capEnd001
+        capEnd001,
+        baseRegion.tags.edge1
       ]
     }
   ],
@@ -670,6 +670,12 @@ const KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION =
   KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE.replace(
     'direction = getOppositeEdge(extrude001.sketch.tags.line3)',
     'direction = sketch001.line3'
+  )
+
+const KCL_EXTRUDE_DIRECT_SEGMENT_TARGET_AND_DEPRECATED_DIRECTION =
+  KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE.replace(
+    'getNextAdjacentEdge(extrude001.sketch.tags.line3)',
+    'sketch001.line3'
   )
 
 const KCL_EDGE_ID = `body = startSketchOn(XY)
@@ -1123,23 +1129,78 @@ describe('refactorZ0006Unified', () => {
       }
     )
 
-    it('finds a direct tagged-edge extrude target from the artifact graph', () => {
-      const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
-      const graph = createTaggedWallAndCapGraph(
-        ast,
-        KCL_EXTRUDE_TARGET_DIRECT_TAG,
+    it('finds a deprecated extrude target after a commented argument', () => {
+      const kcl = `surface001 = extrude(
+  // { sideFaces = [region001.tags.line1, endFace] },
+  getOppositeEdge(body001.sketch.tags.line1),
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)`
+      const ast = assertParse(kcl, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
         {
-          segmentId: 'segment-1',
-          wallId: 'wall-1',
-          capId: 'cap-1',
-          pathId: 'path-1',
-          sweepId: 'sweep-1',
-          segmentSnippet:
-            'line1 = line(start = [-6.36mm, -3.01mm], end = [3.61mm, 6.24mm])',
-          extrudeSnippet: 'extrude(region001, length = 5mm)',
-        }
-      )
-      const callsToFix = findExtrudeEdgeCallsToFix(ast, [], graph, wasmInstance)
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, metadata)
+      expect(callsToFix).toHaveLength(1)
+      expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
+        'target',
+      ])
+    })
+
+    it.each([
+      {
+        name: 'extrude-to-reference',
+        kcl: 'extrude(getOppositeEdge(edge1), to = face1)',
+      },
+      {
+        name: 'twist extrude',
+        kcl: 'extrude(getOppositeEdge(edge1), length = 5, twistAngle = 90deg)',
+      },
+    ])('does not refactor the concrete target of a $name', ({ kcl }) => {
+      const ast = assertParse(kcl, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      expect(findExtrudeEdgeCallsToFix(ast, metadata)).toEqual([])
+    })
+
+    it('finds a direct tagged-edge extrude target from execution metadata', () => {
+      const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForSnippet(
+            KCL_EXTRUDE_TARGET_DIRECT_TAG,
+            'extrude001.sketch.tags.line1'
+          ),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          endFaceIds: [],
+          stdlibFn: 'directEdgeTag',
+        },
+      ]
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, metadata)
       expect(callsToFix).toHaveLength(1)
       expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
         'target',
@@ -1706,7 +1767,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
@@ -1723,6 +1786,116 @@ part = bracket()
         expect(normalized).not.toContain('getOppositeEdge(')
         expect(normalized).toContain('extrude( { sideFaces = [')
         expect(normalized).toContain('direction = { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'replaces an extrude target following a commented argument in place',
+      { timeout: 30_000 },
+      async () => {
+        const kcl = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  line2 = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  line3 = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  line4 = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+body001 = extrude(region001, length = 5mm, tagEnd = $endFace)
+surface001 = extrude(
+  // { sideFaces = [region001.tags.line1, endFace] },
+  getOppositeEdge(body001.sketch.tags.line1),
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)`
+        const refactored = await runIntegrationRefactor(kcl)
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain('getOppositeEdge(')
+        expect(normalized.match(/sideFaces =/g)).toHaveLength(2)
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+        expect(
+          [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
+            (artifact) => artifact.type === 'sweep' && !artifact.consumed
+          )
+        ).toHaveLength(1)
+      }
+    )
+
+    it(
+      'refactors an array of deprecated extrude targets',
+      { timeout: 30_000 },
+      async () => {
+        const kcl = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  line2 = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  line3 = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  line4 = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+body001 = extrude(region001, length = 5mm)
+surface001 = extrude(
+  [
+    getOppositeEdge(body001.sketch.tags.line1),
+    getOppositeEdge(body001.sketch.tags.line3),
+  ],
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)`
+        const refactored = await runIntegrationRefactor(kcl)
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain('getOppositeEdge(')
+        expect(normalized.match(/sideFaces =/g)).toHaveLength(2)
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'refactors an array referenced through a variable without changing its declaration',
+      { timeout: 30_000 },
+      async () => {
+        const kcl = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  line2 = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  line3 = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  line4 = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+body001 = extrude(region001, length = 5mm)
+targets = [
+  getOppositeEdge(body001.sketch.tags.line1),
+  getOppositeEdge(body001.sketch.tags.line3),
+]
+surface001 = extrude(
+  targets,
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)`
+        const refactored = await runIntegrationRefactor(kcl)
+        const normalized = norm(refactored)
+        expect(normalized).toContain(
+          'targets = [ getOppositeEdge(body001.sketch.tags.line1), getOppositeEdge(body001.sketch.tags.line3) ]'
+        )
+        expect(normalized).not.toContain('extrude( targets,')
+        expect(normalized).toContain('extrude( [ { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
@@ -1750,14 +1923,35 @@ part = bracket()
     )
 
     it(
-      'refactors a direct sketch segment used as the extrude direction',
+      'preserves a direct sketch segment direction while refactoring the extrude target',
       { timeout: 30_000 },
       async () => {
         const refactored = await runIntegrationRefactor(
           KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION
         )
         const normalized = norm(refactored)
-        expect(normalized).not.toContain('direction = sketch001.line3')
+        expect(normalized).toContain('direction = sketch001.line3')
+        expect(normalized).not.toContain('direction = { sideFaces = [')
+        expect(normalized).not.toContain('getNextAdjacentEdge(')
+        expect(normalized).toContain('extrude( { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'preserves a direct sketch segment target while refactoring the extrude direction',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_DIRECT_SEGMENT_TARGET_AND_DEPRECATED_DIRECTION
+        )
+        const normalized = norm(refactored)
+        expect(normalized).toContain('extrude( sketch001.line3,')
+        expect(normalized).not.toContain('extrude( { sideFaces = [')
+        expect(normalized).not.toContain('getOppositeEdge(')
         expect(normalized).toContain('direction = { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
@@ -1790,7 +1984,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -2224,16 +2420,16 @@ part = bracket()
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge2, bs.tags.edge1]
          },
          {
            sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge6, bs.tags.edge5]
          }
        ],
      )`

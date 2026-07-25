@@ -1,0 +1,156 @@
+/// Operations on KCL strings.
+///
+/// This module provides functions for transforming strings and inspecting
+/// their contents.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// Convert all cased characters in a string to uppercase.
+///
+/// This conversion is Unicode-aware and locale-independent. Some characters
+/// expand into multiple characters; for example, `ß` becomes `SS`. The exact
+/// mappings follow the Unicode data bundled with KCL.
+///
+/// Unicode normalization is not performed. Canonically equivalent strings
+/// therefore retain their original representations. Empty strings and strings
+/// without cased characters are returned unchanged.
+///
+/// ```kcl,norun
+/// result = "Straße"
+///   |> string::uppercase()
+///
+/// assertIs(result == "STRASSE")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn uppercase(
+  /// The string to convert.
+  @text: string,
+): string {}
+
+/// Convert all cased characters in a string to lowercase.
+///
+/// This conversion is Unicode-aware and locale-independent. Some conversions
+/// depend on the surrounding characters; for example, a Greek capital sigma
+/// becomes `ς` at the end of a word and `σ` elsewhere. Some characters expand
+/// into multiple characters; for example, `İ` becomes `i` followed by a
+/// combining dot above. The exact mappings follow the Unicode data bundled
+/// with KCL.
+///
+/// Unicode normalization is not performed. Canonically equivalent strings
+/// therefore retain their original representations. Empty strings and strings
+/// without cased characters are returned unchanged.
+///
+/// ```kcl,norun
+/// result = "KCL ΟΣ"
+///   |> string::lowercase()
+///
+/// assertIs(result == "kcl ος")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn lowercase(
+  /// The string to convert.
+  @text: string,
+): string {}
+
+/// Compare two strings for equality.
+///
+/// By default, this performs an exact, case-sensitive comparison equivalent
+/// to the `==` operator. Set `caseInsensitive` to `true` to compare using
+/// locale-independent full Unicode case folding.
+///
+/// Full case folding may expand characters; for example, `Straße` and
+/// `STRASSE` compare as equal. The exact mappings follow the Unicode data
+/// bundled with KCL.
+///
+/// Unicode normalization is not performed. Canonically equivalent strings
+/// with different representations therefore compare as unequal. Empty strings
+/// are valid inputs, and comparison is symmetric.
+///
+/// This function always returns a Boolean predicate, including inside a sketch
+/// block. It does not create an equivalence constraint.
+///
+/// ```kcl,norun
+/// matches = "Straße"
+///   |> string::isEqual(to = "STRASSE", caseInsensitive = true)
+///
+/// assertIs(matches)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn isEqual(
+  /// The string to compare.
+  @text: string,
+  /// The string to compare `text` with.
+  to: string,
+  /// Whether to compare using locale-independent full Unicode case folding.
+  caseInsensitive?: bool = false,
+): bool {}
+
+/// Remove whitespace from the start and end of a string.
+///
+/// Whitespace is defined by Unicode's `White_Space` property and includes
+/// spaces, tabs, newlines, and non-breaking spaces. Whitespace inside the
+/// string is preserved.
+///
+/// If the input is empty or contains only whitespace, this returns an empty
+/// string. Unicode normalization and case conversion are not performed.
+///
+/// ```kcl,norun
+/// result = "  KCL strings  "
+///   |> string::trim()
+///
+/// assertIs(result == "KCL strings")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn trim(
+  /// The string to trim.
+  @text: string,
+): string {}
+
+/// Remove whitespace from the start of a string.
+///
+/// Whitespace is defined by Unicode's `White_Space` property and includes
+/// spaces, tabs, newlines, and non-breaking spaces. Only the contiguous
+/// whitespace at the start is removed; whitespace inside or at the end of the
+/// string is preserved.
+///
+/// The start is the beginning of the string's character sequence, independent
+/// of how the text is displayed. If the input is empty or contains only
+/// whitespace, this returns an empty string. Unicode normalization and case
+/// conversion are not performed.
+///
+/// ```kcl,norun
+/// result = "  KCL strings  "
+///   |> string::trimStart()
+///
+/// assertIs(result == "KCL strings  ")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn trimStart(
+  /// The string to trim.
+  @text: string,
+): string {}
+
+/// Remove whitespace from the end of a string.
+///
+/// Whitespace is defined by Unicode's `White_Space` property and includes
+/// spaces, tabs, newlines, and non-breaking spaces. Only the contiguous
+/// whitespace at the end is removed; whitespace at the start or inside the
+/// string is preserved.
+///
+/// The end is the end of the string's character sequence, independent of how
+/// the text is displayed. If the input is empty or contains only whitespace,
+/// this returns an empty string. Unicode normalization and case conversion are
+/// not performed.
+///
+/// ```kcl,norun
+/// result = "  KCL strings  "
+///   |> string::trimEnd()
+///
+/// assertIs(result == "  KCL strings")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn trimEnd(
+  /// The string to trim.
+  @text: string,
+): string {}

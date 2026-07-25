@@ -50,6 +50,7 @@ use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
 use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
@@ -62,7 +63,14 @@ use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::any_array(), exec_state)?;
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Any)),
+            ArrayLen::Minimum(1),
+        ),
+        exec_state,
+    )?;
 
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to_raw = args.get_kw_arg_opt(
@@ -136,6 +144,19 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
     let hide_seams: Option<bool> = args.get_kw_arg_opt("hideSeams", &RuntimeType::bool(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let target_argument_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map(|arg| arg.source_range)
+        .unwrap_or(args.source_range);
+    let direct_target_edges = sketch_values
+        .iter()
+        .filter_map(|value| {
+            let KclValue::TagIdentifier(tag) = value else {
+                return None;
+            };
+            Some(tag.clone())
+        })
+        .collect::<Vec<_>>();
     let sketches = coerce_extrude_targets(
         sketch_values,
         body_type.unwrap_or_default(),
@@ -146,6 +167,10 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.source_range,
     )
     .await?;
+
+    if let [tag] = direct_target_edges.as_slice() {
+        edge::record_refactor_meta_for_direct_tag(exec_state, tag, target_argument_source_range, &args).await;
+    }
 
     let result = inner_extrude(
         sketches,
@@ -466,6 +491,16 @@ async fn inner_extrude(
         (None, Some(length)) => Opposite::Other(length),
         (Some(false), Some(length)) => Opposite::Other(length),
     };
+
+    if let Some(Point3dOrEdgeReference::Edge(direction_edge)) = &direction {
+        let edge_id = direction_edge.get_engine_id(exec_state, &args)?;
+        let source_range = args
+            .labeled
+            .get("direction")
+            .map(|arg| arg.source_range)
+            .unwrap_or(args.source_range);
+        edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await;
+    }
 
     for extrudable in &extrudables {
         let is_edge = match extrudable {
@@ -889,14 +924,18 @@ pub enum BeingExtruded {
 /// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
 /// It can be any edge of the body, but if our body is a clone, we should use an edge of
 /// the original body, not the new cloned body.
-fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: Option<&HashMap<Uuid, Uuid>>) -> Uuid {
+fn get_extrusion_info_edge_id(
+    sketch: &Sketch,
+    any_edge_id: Uuid,
+    clone_id_map: Option<&HashMap<Uuid, Uuid>>,
+) -> Option<Uuid> {
     // If this isn't a clone, there's no old/new body distinction.
     // So just use the edge.
     if sketch.clone.is_none() {
-        return any_edge_id;
+        return Some(any_edge_id);
     }
     let Some(clone_map) = clone_id_map else {
-        return any_edge_id;
+        return Some(any_edge_id);
     };
 
     // clone_map maps old IDs -> new IDs.
@@ -904,7 +943,7 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
     // (we know this if it's a _key_ of the map)
     // we should use it (because that's the old body we're querying).
     if clone_map.contains_key(&any_edge_id) {
-        return any_edge_id;
+        return Some(any_edge_id);
     }
 
     // Otherwise, if the `any_edge_id` is an ID of the NEW body
@@ -912,13 +951,13 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
     // we should query the corresponding ID in the OLD body.
     // i.e. if it's a hashmap value, find the corresponding key.
     if let Some((old_edge_id, _)) = clone_map.iter().find(|(_, new_edge_id)| **new_edge_id == any_edge_id) {
-        return *old_edge_id;
+        return Some(*old_edge_id);
     }
 
     // Fall back to this if the clone_map doesn't have the data we expect.
-    // Probably will fail in the engine because it means the clone map was built wrong,
+    // Engine will intuit an edge for the relevant calls, but it may mean the clone map was built wrong,
     // or KCL and the engine disagree about what geometry exists.
-    any_edge_id
+    None
 }
 
 /// This is similar to [`do_post_extrude()`], but for surfaces where a sketch
@@ -1049,6 +1088,7 @@ pub(crate) async fn do_post_extrude<'a>(
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
     // So let's find an edge of the old body.
     let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);
+
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
@@ -1110,7 +1150,7 @@ pub(crate) async fn do_post_extrude<'a>(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dGetExtrusionFaceInfo::builder()
-                    .edge_id(extrusion_info_edge_id)
+                    .maybe_edge_id(extrusion_info_edge_id)
                     .object_id(sketch_id)
                     .build(),
             ),
@@ -1521,6 +1561,14 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
                 .contains("`bidirectionalLength` must be greater than or equal to 0"),
             "{err:?}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_an_empty_target_array() {
+        let err = parse_execute("nothing = extrude([], length = 5)").await.unwrap_err();
+
+        assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
+        assert!(err.message().contains("requires one or more"), "{err:?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]

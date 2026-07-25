@@ -22,6 +22,7 @@ import {
   getPatternArtifactForCopyId,
   getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
+  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
@@ -1334,10 +1335,17 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    if (s.artifact?.type === 'edgeCut' && s.codeRef) {
+    const selectedEdgeCut =
+      s.artifact?.type === 'edgeCut'
+        ? s.artifact
+        : resolvedForSegment?.artifact?.type === 'edgeCut'
+          ? resolvedForSegment.artifact
+          : null
+    const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
+    if (selectedEdgeCut && edgeCutCodeRef) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration',
         false,
@@ -1356,7 +1364,7 @@ export function getVariableExprsFromSelection(
 
       const edgeCutCall = getNodeFromPath<CallExpressionKw>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'CallExpressionKw',
         false,
@@ -1956,6 +1964,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'Segment') {
     artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Uuid') {
+    artifactIds = [opArg.value.value]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
@@ -1965,6 +1975,9 @@ export function retrieveSelectionsFromOpArg(
       }
       if (v.type === 'Segment') {
         return [v.artifact_id]
+      }
+      if (v.type === 'Uuid') {
+        return [v.value]
       }
       if (v.type === 'TagIdentifier' && v.artifact_id) {
         return [v.artifact_id]
@@ -1995,7 +2008,12 @@ export function retrieveSelectionsFromOpArg(
       }
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    const codeRefs =
+      artifact.type === 'sweepEdge'
+        ? [getSweepEdgeCodeRef(artifact, artifactGraph)].filter(
+            (codeRef): codeRef is CodeRef => !err(codeRef)
+          )
+        : getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }

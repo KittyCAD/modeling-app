@@ -95,6 +95,7 @@ use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
@@ -2956,7 +2957,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         None
     };
 
-    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+    let definition = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         equals(i)?;
         ignore_whitespace(i);
@@ -2964,9 +2965,9 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
         ParseContext::experimental("type aliases", ty.as_source_range());
 
-        Some(ty)
+        TypeDeclarationDefinition::Alias { ty: Box::new(ty) }
     } else {
-        None
+        TypeDeclarationDefinition::Bare
     };
 
     let module_id = name.module_id;
@@ -2977,7 +2978,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         TypeDeclaration {
             name,
             args,
-            alias,
+            definition,
             visibility,
             digest: None,
         },
@@ -3613,6 +3614,9 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
 
             if *result == PrimitiveType::None {
                 ParseContext::experimental("none type", result.as_source_range());
+            }
+            if *result == PrimitiveType::Never {
+                ParseContext::experimental("never type", result.as_source_range());
             }
 
             result
@@ -6333,6 +6337,36 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         let (_, errs) = assert_no_err(code);
         assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
+    fn never_type_is_experimental() {
+        let code = "fn stop(): never {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [11, 16],
+        );
+
+        let code = "fn accept(@stop: fn(): never) {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [23, 28],
+        );
+
+        let code = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {}"#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+fn stop(): never {}"#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(
+            errs[0].message,
+            "Use of never type is experimental and may change or be removed."
+        );
     }
 
     #[test]

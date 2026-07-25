@@ -46,6 +46,7 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
+  ProjectSyncFailureKind,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
@@ -96,6 +97,8 @@ export type CloudSyncConflictResolution = 'local' | 'cloud'
 const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
+const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
+  'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
 
 let localFs: IZooDesignStudioFS = opfs.impl
 
@@ -119,9 +122,13 @@ export const cloudSyncStatus = signal<CloudSyncStatus>({
 export const cloudSyncRemoteProjects = signal<RemoteProjectSummary[]>([])
 
 function updateStatus(next: Partial<CloudSyncStatus>) {
+  const shouldClearFailureKind =
+    Object.prototype.hasOwnProperty.call(next, 'lastFailure') &&
+    !Object.prototype.hasOwnProperty.call(next, 'lastFailureKind')
   cloudSyncStatus.value = {
     ...cloudSyncStatus.value,
     ...next,
+    ...(shouldClearFailureKind ? { lastFailureKind: undefined } : {}),
   }
 }
 
@@ -131,6 +138,42 @@ function nowIso() {
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+}
+
+function isProjectSyncFailureKind(
+  value: unknown
+): value is ProjectSyncFailureKind {
+  return value === 'remote-upload-forbidden'
+}
+
+function projectFailureKind(error: unknown) {
+  if (typeof error === 'object' && error !== null && 'kind' in error) {
+    const kind = error.kind
+    return isProjectSyncFailureKind(kind) ? kind : undefined
+  }
+  return undefined
+}
+
+function projectFailureError(
+  kind: ProjectSyncFailureKind,
+  message: string
+): Error & { kind: ProjectSyncFailureKind } {
+  const error = new Error(message) as Error & { kind: ProjectSyncFailureKind }
+  error.kind = kind
+  return error
+}
+
+function remoteUploadFailureFromError(error: unknown) {
+  return error instanceof CloudApiError && error.status === 403
+    ? projectFailureError(
+        'remote-upload-forbidden',
+        REMOTE_UPLOAD_FORBIDDEN_MESSAGE
+      )
+    : error
+}
+
+function rejectRemoteUploadFailure(error: unknown): Promise<never> {
+  return Promise.reject(remoteUploadFailureFromError(error))
 }
 
 function getConfiguredProjectDirectoryPath() {
@@ -821,7 +864,8 @@ async function cloneRemoteProjectToLocal(
 }
 
 export async function ensureCloudProjectLocallySynced(
-  remoteProjectId: string
+  remoteProjectId: string,
+  targetProjectDirectoryPath?: string
 ): Promise<CloudSyncLocalProject | undefined> {
   if (!isConfiguredForCloud()) {
     return undefined
@@ -836,7 +880,13 @@ export async function ensureCloudProjectLocallySynced(
   const knownLocalMetadata = metadata.find(
     (entry) => entry.remoteProjectId === projectId && !entry.tombstone
   )
-  const projectDirectory = getConfiguredProjectDirectoryPath()
+  // The destination directory is the local materialization path of the
+  // project library the caller is opening this remote project from (e.g. the
+  // Personal Cloud library). Fall back to the configured directory only when
+  // the caller cannot resolve a target library.
+  const projectDirectory = targetProjectDirectoryPath?.trim()
+    ? normalizePathForSync(targetProjectDirectoryPath)
+    : getConfiguredProjectDirectoryPath()
   const knownLocalProjectPath = knownLocalMetadata
     ? projectPathInDirectory(knownLocalMetadata, projectDirectory)
     : undefined
@@ -892,6 +942,101 @@ export async function ensureCloudProjectLocallySynced(
     projectDirectory,
     knownLocalProjectPath
   )
+}
+
+/**
+ * Rename the remote cloud project identified by `remoteProjectId`.
+ *
+ * This targets *remote-only* projects that have not been materialized locally,
+ * so there is no local `project.toml` to edit. The cloud API has no title-only
+ * update, so the whole-project archive is downloaded and re-uploaded with the
+ * new title. Callers that own a local materialization should edit the local
+ * `project.toml` instead and let sync replicate the rename to the remote.
+ */
+export async function renameRemoteCloudProject(
+  remoteProjectId: string,
+  requestedName: string
+): Promise<void> {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const title = requestedName.trim()
+  if (!projectId || !title) {
+    return
+  }
+
+  const remoteProject = await getRemoteProject(config, projectId)
+  const files = withRemoteProjectMetadataInArchiveFiles(
+    filterCloudSyncProjectFilesForSync(
+      await parseProjectArchive(
+        await downloadRemoteProjectArchive(config, projectId)
+      )
+    ),
+    title,
+    projectId,
+    getEnvironmentName()
+  )
+  const updated = await updateRemoteProject({
+    config,
+    projectPath: localProjectNameForRemoteProject(remoteProject),
+    projectId,
+    files,
+    expectedRevision: getRevision(remoteProject),
+  }).catch(rejectRemoteUploadFailure)
+
+  // Reflect the new title in the in-memory remote index immediately so Home
+  // updates before the next full remote index sync completes.
+  cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.map(
+    (project) =>
+      project.id === projectId
+        ? { ...project, title: updated.title ?? title }
+        : project
+  )
+  scheduleRemoteIndexSync(0)
+}
+
+/**
+ * Delete the remote cloud project identified by `remoteProjectId`, tolerating a
+ * remote that is already gone (404). Any local sync metadata still pointing at
+ * it is cleared so the project neither reappears nor lingers as a tombstone.
+ *
+ * This targets *remote-only* projects; callers that own a local materialization
+ * should remove the local project instead and let sync replicate the deletion.
+ */
+export async function deleteRemoteCloudProject(
+  remoteProjectId: string
+): Promise<void> {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  if (!projectId) {
+    return
+  }
+
+  try {
+    await deleteRemoteProject(config, projectId)
+  } catch (error) {
+    if (!(error instanceof CloudApiError && error.status === 404)) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw error
+    }
+  }
+
+  for (const metadata of await getAllProjectMetadata()) {
+    if (metadata.remoteProjectId === projectId) {
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await deleteProjectMetadata(metadata.localProjectPath)
+    }
+  }
+
+  cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.filter(
+    (project) => project.id !== projectId
+  )
+  scheduleRemoteIndexSync(0)
 }
 
 export async function getCloudSyncRemoteProjectThumbnailUrl(
@@ -1069,11 +1214,13 @@ async function markProjectFailure(
   error: unknown
 ): Promise<void> {
   const message = errorMessage(error)
+  const kind = projectFailureKind(error)
   const next = {
     ...metadata,
     lastFailure: {
       message,
       at: nowIso(),
+      kind,
     },
   }
   await putProjectMetadata(next)
@@ -1082,6 +1229,7 @@ async function markProjectFailure(
       state: 'failed',
       activeProjectPath: metadata.localProjectPath,
       lastFailure: message,
+      lastFailureKind: kind,
       lastFailureAt: next.lastFailure.at,
     })
   }
@@ -1186,7 +1334,7 @@ async function applyLocalDataForConflict(metadata: ProjectMetadata) {
     projectId: metadata.remoteProjectId,
     files: localFiles,
     expectedRevision: conflict.remoteRevision ?? metadata.remoteRevision,
-  })
+  }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteConflictCopy(conflict.conflictProjectPath)
   await markProjectSynced(
@@ -1714,7 +1862,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         projectId: remoteProjectId,
         files: localFiles,
         expectedRevision: metadata.remoteRevision,
-      })
+      }).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
@@ -2112,9 +2260,11 @@ async function runCloudSync() {
     }
   } catch (error) {
     const syncedAt = pendingStatusSyncedAt
+    const kind = projectFailureKind(error)
     updateStatus({
       state: 'failed',
       lastFailure: errorMessage(error),
+      lastFailureKind: kind,
       lastFailureAt: nowIso(),
       activeProjectPath: scopedProjectPath,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
@@ -2507,6 +2657,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
       enabled: false,
       state: 'disabled',
       activeProjectPath: undefined,
+      lastFailure: undefined,
+      lastFailureAt: undefined,
     })
     return
   }
@@ -2515,6 +2667,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   updateStatus({
     enabled: true,
     state: 'idle',
+    lastFailure: undefined,
+    lastFailureAt: undefined,
   })
   void refreshPendingCount()
   scheduleSync(0)
