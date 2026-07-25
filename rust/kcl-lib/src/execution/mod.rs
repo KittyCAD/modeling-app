@@ -4521,4 +4521,37 @@ s2 = sketch(on = XZ) {
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_declaration_is_experimental() {
+        // Without opting in, executing a program with an enum declaration
+        // fails at the parsing stage with the experimental diagnostic.
+        let code = "type Color { | Red }";
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Use of enum declarations is experimental and may change or be removed."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_declaration_execution_not_yet_supported() {
+        // Enums parse but do not execute until their runtime representation
+        // lands; until then execution reports a graceful error.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Enum declarations are not yet supported."
+        );
+
+        // Exported enums take the same path.
+        let code = r#"@settings(experimentalFeatures = allow)
+export type Color { | Red }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Enum declarations are not yet supported."
+        );
+    }
 }

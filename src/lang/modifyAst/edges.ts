@@ -31,8 +31,6 @@ import {
   getRegionTagExprFromSegmentId,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
-  getSketchVariableNameForSegment,
-  getVariableNameFromNodePath,
   getVariableExprsFromSelection,
   resolveToCodeRef,
   traverse,

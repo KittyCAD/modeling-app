@@ -573,7 +573,7 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 5.0,
+            "n": 50.0,
             "ty": {
               "type": "Default",
               "len": "mm",

@@ -698,6 +698,35 @@ mod test {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_digest() {
+        // The IDE relies on digests to detect AST changes, so enum digests
+        // must be stable across reparses and sensitive to variant changes.
+        let digest = |body: &str| {
+            let code = format!("@settings(experimentalFeatures = allow)\n{body}\n");
+            crate::parsing::top_level_parse(&code).unwrap().compute_digest()
+        };
+
+        let red_green = digest("type Color { | Red | Green }");
+
+        // Stable: identical source hashes identically.
+        assert_eq!(red_green, digest("type Color { | Red | Green }"));
+
+        // Comments do not change the digest.
+        assert_eq!(
+            red_green,
+            digest("type Color {\n  // warm\n  | Red\n  | Green // cool\n}")
+        );
+
+        // Renaming a variant, reordering variants, or adding one changes it.
+        assert_ne!(red_green, digest("type Color { | Red | Blue }"));
+        assert_ne!(red_green, digest("type Color { | Green | Red }"));
+        assert_ne!(red_green, digest("type Color { | Red | Green | Blue }"));
+
+        // An enum is not an alias, even against the same name.
+        assert_ne!(digest("type Color { | }"), digest("type Color = string"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_annotations_digest() {
         // Settings annotations should be included in the digest.
         let prog1_string = r#"@settings(defaultLengthUnit = in)
