@@ -1,4 +1,4 @@
-import toast from 'react-hot-toast'
+import type { WebSocketResponse } from '@kittycad/lib'
 
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -11,6 +11,7 @@ import type {
   ApiPoint2d,
   ApiProjectId,
   ApiVersion,
+  ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
@@ -25,26 +26,23 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-
-import type { WebSocketResponse } from '@kittycad/lib'
-
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
-import { err, reportRejection } from '@src/lib/trap'
-import type { DeepPartial } from '@src/lib/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-
 import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
 import { Signal as LegacySignal } from '@src/lib/signal'
+import { err, reportRejection } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import toast from 'react-hot-toast'
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -541,7 +539,7 @@ export default class RustContext {
     }
   }
 
-  /** Edit a segment in a sketch. */
+  /** Edit segments and optional constraint label positions in one sketch execution. */
   async editSegments(
     version: ApiVersion,
     sketch: ApiObjectId,
@@ -550,7 +548,8 @@ export default class RustContext {
     createCheckpoint = false,
     anchorSegmentIds?: ApiObjectId[],
     commitSolverResults = true,
-    dragAnchors: SegmentDragAnchor[] = []
+    dragAnchors: SegmentDragAnchor[] = [],
+    constraintLabelEdits: ConstraintLabelPositionEdit[] = []
   ): Promise<SketchMutationResult> {
     const instance = await this._checkContextInstance()
 
@@ -573,7 +572,8 @@ export default class RustContext {
         createCheckpoint,
         JSON.stringify(anchorSegmentIds ?? null),
         JSON.stringify(dragAnchors),
-        commitSolverResults
+        commitSolverResults,
+        JSON.stringify(constraintLabelEdits)
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
