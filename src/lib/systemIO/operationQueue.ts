@@ -1,4 +1,4 @@
-import { type ReadonlySignal, signal } from '@preact/signals-core'
+import { type ReadonlySignal, type Signal, signal } from '@preact/signals-core'
 import type {
   SystemIOOperation,
   SystemIOOperationSnapshot,
@@ -17,6 +17,11 @@ export type SystemIOOperationHandler<TResult> = (
 export type SystemIOOperationQueueOptions = {
   createId?: () => string
   now?: () => number
+  /**
+   * Initial value for the {@link SystemIOOperationQueue.recordLimit} signal.
+   * Defaults to {@link DEFAULT_OPERATION_RECORD_LIMIT}.
+   */
+  recordLimit?: number
 }
 
 export type SystemIOOperationQueue<
@@ -25,6 +30,13 @@ export type SystemIOOperationQueue<
   readonly operations: ReadonlySignal<
     readonly SystemIOOperationSnapshot<TRequest>[]
   >
+  /**
+   * Maximum number of operation snapshots to retain. Only settled
+   * (succeeded/failed/cancelled) records are evicted, oldest first; in-flight
+   * operations are always kept. Set to `Infinity` to retain every record
+   * (e.g. for a debug/inspection UI) at the cost of unbounded growth.
+   */
+  readonly recordLimit: Signal<number>
   enqueue: <TResult>(
     operationRequest: SystemIOQueueRequest<TRequest>,
     handler: SystemIOOperationHandler<TResult>
@@ -50,6 +62,12 @@ type CoalesceEntry<TRequest extends SystemIORequestBase> = {
 
 const DEFAULT_RESOURCE_KEY = 'system-io.default'
 
+export const DEFAULT_OPERATION_RECORD_LIMIT = 200
+
+function isSettledStatus(status: SystemIOOperationStatus) {
+  return status === 'succeeded' || status === 'failed' || status === 'cancelled'
+}
+
 export function createSystemIOAbortError() {
   const error = new Error('SystemIO operation was cancelled')
   error.name = 'AbortError'
@@ -64,11 +82,43 @@ export function createSystemIOOperationQueue<
   const operations = signal<readonly SystemIOOperationSnapshot<TRequest>[]>([])
   const createId = options.createId ?? (() => crypto.randomUUID())
   const now = options.now ?? (() => Date.now())
+  const recordLimit = signal<number>(
+    options.recordLimit ?? DEFAULT_OPERATION_RECORD_LIMIT
+  )
   const resourceTails = new Map<string, Promise<void>>()
   const coalescedOperations = new Map<string, CoalesceEntry<TRequest>>()
 
+  const pruneSettledOperations = () => {
+    const limit = recordLimit.value
+    if (!Number.isFinite(limit)) {
+      return
+    }
+
+    const maxRecords = Math.max(0, Math.floor(limit))
+    const current = operations.value
+    if (current.length <= maxRecords) {
+      return
+    }
+
+    let excess = current.length - maxRecords
+    const kept = current.filter((snapshot) => {
+      // Evict finished records only, oldest first, so in-flight operations are
+      // always represented and their later status updates still land.
+      if (excess > 0 && isSettledStatus(snapshot.status)) {
+        excess -= 1
+        return false
+      }
+      return true
+    })
+
+    if (kept.length !== current.length) {
+      operations.value = kept
+    }
+  }
+
   return {
     operations,
+    recordLimit,
     enqueue<TResult>(
       operationRequest: SystemIOQueueRequest<TRequest>,
       handler: SystemIOOperationHandler<TResult>
@@ -148,6 +198,7 @@ export function createSystemIOOperationQueue<
           error,
         })
         clearCoalescedOperation()
+        pruneSettledOperations()
         rejectResult(error)
       }
 
@@ -164,6 +215,7 @@ export function createSystemIOOperationQueue<
           error,
         })
         clearCoalescedOperation()
+        pruneSettledOperations()
         rejectResult(error)
       }
 
@@ -179,6 +231,7 @@ export function createSystemIOOperationQueue<
           finishedAt: now(),
         })
         clearCoalescedOperation()
+        pruneSettledOperations()
         resolveResult(value)
       }
 
@@ -211,6 +264,7 @@ export function createSystemIOOperationQueue<
           enqueuedAt: now(),
         },
       ]
+      pruneSettledOperations()
 
       if (coalesceKey) {
         coalescedOperations.set(coalesceKey, {

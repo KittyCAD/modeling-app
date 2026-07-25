@@ -1,5 +1,5 @@
 import { defineContract, defineService } from '@kittycad/registry'
-import type { ReadonlySignal } from '@preact/signals-core'
+import type { ReadonlySignal, Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
 import type { SystemIOActor, SystemIOInput } from '@src/machines/systemIO/utils'
 
@@ -70,6 +70,13 @@ export type SystemIOService = {
    */
   readonly actor: SystemIOActor | undefined
   readonly operations: ReadonlySignal<readonly SystemIOOperationSnapshot[]>
+  /**
+   * Maximum number of {@link operations} snapshots to retain. Settled records
+   * are evicted oldest-first once the count exceeds this; in-flight operations
+   * are always kept. Writable so a debug/inspection UI (or a developer in a
+   * pinch) can raise it — set it to `Infinity` to keep every record.
+   */
+  readonly operationRecordLimit: Signal<number>
   readonly projectHandles: ReadonlySignal<ProjectHandles>
   readonly projects: ReadonlySignal<Projects>
   startActor: (input: SystemIOInput) => SystemIOActor

@@ -140,6 +140,7 @@ export function createSystemIOService(
       return actor
     },
     operations: queue.operations,
+    operationRecordLimit: queue.recordLimit,
     projectHandles,
     projects,
     startActor: (input) => {

@@ -1,4 +1,7 @@
-import { createSystemIOOperationQueue } from '@src/lib/systemIO/operationQueue'
+import {
+  createSystemIOOperationQueue,
+  type SystemIOOperationQueueOptions,
+} from '@src/lib/systemIO/operationQueue'
 import type { SystemIORequestBase } from '@src/lib/systemIO/registry/contract'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -21,13 +24,16 @@ function deferred<T>(): Deferred<T> {
 
 const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-function createTestQueue() {
+function createTestQueue(
+  overrides: Partial<SystemIOOperationQueueOptions> = {}
+) {
   let id = 0
   let time = 0
 
   return createSystemIOOperationQueue<SystemIORequestBase>({
     createId: () => `operation-${++id}`,
     now: () => ++time,
+    ...overrides,
   })
 }
 
@@ -282,5 +288,85 @@ describe('systemIO operation queue', () => {
     await flushPromises()
 
     expect(secondHandler).not.toHaveBeenCalled()
+  })
+
+  it('retains only recordLimit records, evicting oldest settled first', async () => {
+    const queue = createTestQueue({ recordLimit: 2 })
+
+    for (let value = 1; value <= 3; value++) {
+      queue.enqueue(
+        {
+          request: { type: 'test.write', input: { value } },
+          resourceKey: 'project:/example',
+        },
+        () => Promise.resolve(value)
+      )
+    }
+
+    await flushPromises()
+    await flushPromises()
+
+    const snapshots = queue.operations.value
+    expect(snapshots.map((snapshot) => snapshot.id)).toEqual([
+      'operation-2',
+      'operation-3',
+    ])
+    expect(snapshots.every((snapshot) => snapshot.status === 'succeeded')).toBe(
+      true
+    )
+  })
+
+  it('retains every record when recordLimit is Infinity', async () => {
+    const queue = createTestQueue({ recordLimit: Number.POSITIVE_INFINITY })
+
+    for (let value = 1; value <= 3; value++) {
+      queue.enqueue(
+        {
+          request: { type: 'test.write', input: { value } },
+          resourceKey: 'project:/example',
+        },
+        () => Promise.resolve(value)
+      )
+    }
+
+    await flushPromises()
+    await flushPromises()
+
+    expect(queue.operations.value).toHaveLength(3)
+  })
+
+  it('never evicts in-flight operations to satisfy recordLimit', async () => {
+    const queue = createTestQueue({ recordLimit: 1 })
+    const pending = deferred<string>()
+
+    queue.enqueue(
+      {
+        request: { type: 'test.write', input: { value: 1 } },
+        resourceKey: 'project:/one',
+      },
+      () => pending.promise
+    )
+    queue.enqueue(
+      {
+        request: { type: 'test.write', input: { value: 2 } },
+        resourceKey: 'project:/two',
+      },
+      () => pending.promise
+    )
+
+    await flushPromises()
+
+    // Both operations are running concurrently; despite a limit of 1, neither
+    // is settled so neither can be evicted.
+    expect(queue.operations.value).toHaveLength(2)
+    expect(
+      queue.operations.value.every((snapshot) => snapshot.status === 'running')
+    ).toBe(true)
+
+    pending.resolve('done')
+    await flushPromises()
+
+    // Once settled, the history trims back down to the limit.
+    expect(queue.operations.value).toHaveLength(1)
   })
 })

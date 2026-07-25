@@ -260,6 +260,24 @@ describe('systemIO service', () => {
     )
   })
 
+  it('exposes a writable operation record limit that bounds retained records', async () => {
+    const projects = [createProject('/projects/bracket')]
+    const readProjectsFromProjectDirectory = vi.fn(async () => projects)
+    const { systemIO } = createTestSystemIOService(
+      readProjectsFromProjectDirectory
+    )
+
+    systemIO.operationRecordLimit.value = 1
+
+    await systemIO.request(refreshProjectsRequest('/a')).result
+    await systemIO.request(refreshProjectsRequest('/b')).result
+
+    expect(systemIO.operations.value).toHaveLength(1)
+    expect(systemIO.operations.value.at(-1)).toEqual(
+      expect.objectContaining({ status: 'succeeded' })
+    )
+  })
+
   it('owns the legacy actor lifecycle', () => {
     const readProjectsFromProjectDirectory = vi.fn()
     const { actor, createActor, systemIO } = createTestSystemIOService(
