@@ -100,6 +100,9 @@ async fn inner_clone(
         };
 
         if args.ctx.no_engine_commands().await {
+            if let GeometryWithImportedGeometry::Solid(solid) = &new_geometry {
+                exec_state.bom_register_solid(solid);
+            }
             res.push(new_geometry);
         } else {
             exec_state
@@ -117,6 +120,9 @@ async fn inner_clone(
                         vec![args.source_range],
                     ))
                 })?;
+            if let GeometryWithImportedGeometry::Solid(solid) = &new_geometry {
+                exec_state.bom_register_solid(solid);
+            }
             res.push(new_geometry)
         }
     }
@@ -144,6 +150,9 @@ pub(super) async fn fix_tags_and_references(
             let (start_tag, end_tag) = get_named_cap_tags(solid);
             let solid_value = solid.value.clone();
             let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
+            // do_post_extrude rebuilds Solid without BOM fields — keep a copy to restore.
+            let bom_label = solid.label.clone();
+            let bom_properties = solid.properties.clone();
 
             // Make the sketch id the new geometry id.
             let sketch = solid.sketch_mut().ok_or_else(|| {
@@ -198,6 +207,8 @@ pub(super) async fn fix_tags_and_references(
             .await?;
 
             *solid = new_solid;
+            solid.label = bom_label;
+            solid.properties = bom_properties;
 
             restore_face_tags(solid, &old_face_tag_names, exec_state);
         }

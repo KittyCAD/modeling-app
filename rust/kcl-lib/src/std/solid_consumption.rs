@@ -230,6 +230,8 @@ mod tests {
             pending_edge_cut_ids: vec![],
             units: UnitLength::Millimeters,
             sectional: false,
+            label: None,
+            properties: Default::default(),
             meta: vec![SourceRange::default().into()],
         }
     }

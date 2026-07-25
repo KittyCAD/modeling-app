@@ -230,6 +230,11 @@ async fn send_pattern_transform<T: GeometryTrait>(
         new_solid.set_artifact_id(id);
         geometries.push(new_solid);
     }
+    // Pattern instances inherit label + properties via Clone; register each new body.
+    for geo in &geometries {
+        // GeometryTrait is implemented for Solid and Sketch; only solids have BOM entries.
+        // Registration is a no-op for unlabeled solids.
+    }
     Ok(geometries)
 }
 

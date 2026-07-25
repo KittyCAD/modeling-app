@@ -122,6 +122,8 @@ pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
+pub use execution::BomEntry;
+pub use execution::PropertyValue;
 pub use execution::pre_execute_transpile;
 pub use execution::transpile_all_old_sketches_to_new;
 pub use execution::transpile_old_sketch_to_new;

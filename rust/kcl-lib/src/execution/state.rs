@@ -97,6 +97,11 @@ pub(super) struct GlobalState {
     /// the entire execution, including while executing the body of the sketch
     /// block being edited.
     pub sketch_mode: bool,
+    /// Global BOM membership for solids that have label + properties.
+    /// Keyed by solid `artifact_id`. Lives on `GlobalState` (not `ModuleState`)
+    /// so it survives per-module `mod_local` swaps during execution and is
+    /// snapshotted with the execution cache via `global`.
+    pub(super) bom_registry: crate::execution::bom::BomRegistry,
 }
 
 impl GlobalState {
@@ -770,6 +775,38 @@ impl ExecState {
         self.mod_local.consumed_solid_ids.get(id)
     }
 
+    /// Register or update a solid's BOM entry (keyed by `artifact_id`).
+    pub(crate) fn bom_register(&mut self, artifact_id: ArtifactId, entry: crate::execution::bom::BomEntry) {
+        self.global.bom_registry.insert(artifact_id, entry);
+    }
+
+    /// Register or update from a labeled solid. No-op if the solid has no label.
+    pub(crate) fn bom_register_solid(&mut self, solid: &crate::execution::Solid) {
+        if let Some(entry) = solid.bom_entry() {
+            self.bom_register(solid.artifact_id, entry);
+        }
+    }
+
+    /// Remove a solid from the BOM registry.
+    pub(crate) fn bom_unregister(&mut self, artifact_id: ArtifactId) {
+        self.global.bom_registry.shift_remove(&artifact_id);
+    }
+
+    /// Remove a solid from the BOM registry by its artifact id.
+    pub(crate) fn bom_unregister_solid(&mut self, solid: &crate::execution::Solid) {
+        self.bom_unregister(solid.artifact_id);
+    }
+
+    /// Iterate BOM registry entries in insertion order.
+    pub(crate) fn bom_entries(&self) -> impl Iterator<Item = (&ArtifactId, &crate::execution::bom::BomEntry)> {
+        self.global.bom_registry.iter()
+    }
+
+    /// Number of solids currently registered for the BOM.
+    pub(crate) fn bom_len(&self) -> usize {
+        self.global.bom_registry.len()
+    }
+
     /// Follow direct replacement links until we find the latest known output.
     /// Used only on error paths so diagnostics can suggest the current solid.
     pub(crate) fn latest_consumed_output(
@@ -1204,6 +1241,7 @@ impl GlobalState {
             segment_ids_edited,
             drag_anchors: Vec::new(),
             sketch_mode: false,
+            bom_registry: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -1517,18 +1555,110 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
+    use indexmap::IndexMap;
+    use kcl_api::UnitLength;
     use uuid::Uuid;
 
+    use super::GlobalState;
     use super::ModuleArtifactState;
     use crate::NodePath;
     use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
+    use crate::execution::ExecutorSettings;
+    use crate::execution::PropertyValue;
+    use crate::execution::Solid;
+    use crate::execution::SolidCreator;
     use crate::front::Object;
     use crate::front::ObjectId;
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
+
+    fn test_solid(artifact: u128) -> Solid {
+        let id = Uuid::from_u128(artifact);
+        Solid {
+            id,
+            value_id: id,
+            artifact_id: ArtifactId::new(id),
+            value: vec![],
+            faces: Default::default(),
+            creator: SolidCreator::Procedural,
+            start_cap_id: None,
+            end_cap_id: None,
+            edge_cuts: vec![],
+            pending_edge_cut_ids: vec![],
+            units: UnitLength::Millimeters,
+            sectional: false,
+            label: None,
+            properties: Default::default(),
+            meta: vec![],
+        }
+    }
+
+    #[test]
+    fn solid_bom_properties_clone_independently() {
+        let mut solid = test_solid(1);
+        let mut props = IndexMap::new();
+        props.insert(
+            "length".to_owned(),
+            PropertyValue::Number {
+                value: 1550.0,
+                ty: Default::default(),
+            },
+        );
+        solid.set_bom_properties("stud", props);
+
+        let mut cloned = solid.clone();
+        cloned.properties.insert(
+            "sku".to_owned(),
+            PropertyValue::String {
+                value: "90x45".to_owned(),
+            },
+        );
+        cloned.label = Some("mutated".to_owned());
+
+        assert_eq!(solid.label.as_deref(), Some("stud"));
+        assert!(!solid.properties.contains_key("sku"));
+        assert_eq!(cloned.label.as_deref(), Some("mutated"));
+        assert!(cloned.properties.contains_key("sku"));
+    }
+
+    #[test]
+    fn bom_registry_on_global_state_clones_with_cache() {
+        let mut global = GlobalState::new(&ExecutorSettings::default(), Default::default());
+        let solid = {
+            let mut s = test_solid(42);
+            s.set_bom_properties("stud", IndexMap::new());
+            s
+        };
+        global
+            .bom_registry
+            .insert(solid.artifact_id, solid.bom_entry().unwrap());
+
+        let cached = global.clone();
+        assert_eq!(cached.bom_registry.len(), 1);
+        assert_eq!(cached.bom_registry.get(&solid.artifact_id).unwrap().label, "stud");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_state_bom_register_helpers() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = crate::execution::ExecState::new_mock(&ctx, &crate::MockConfig::default());
+        let mut solid = test_solid(7);
+        solid.set_bom_properties("stud", IndexMap::new());
+
+        exec_state.bom_register_solid(&solid);
+        assert_eq!(exec_state.bom_len(), 1);
+        assert_eq!(
+            exec_state.bom_entries().next().unwrap().1.label,
+            "stud"
+        );
+
+        exec_state.bom_unregister_solid(&solid);
+        assert_eq!(exec_state.bom_len(), 0);
+        ctx.close().await;
+    }
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {

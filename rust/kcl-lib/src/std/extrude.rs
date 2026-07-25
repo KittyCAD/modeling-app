@@ -1042,6 +1042,8 @@ pub(crate) async fn after_surface_creation(
         end_cap_id: None,
         edge_cuts: Vec::new(),
         pending_edge_cut_ids: Vec::new(),
+        label: None,
+        properties: Default::default(),
     })
 }
 
@@ -1350,6 +1352,8 @@ pub(crate) async fn do_post_extrude<'a>(
         end_cap_id,
         edge_cuts: vec![],
         pending_edge_cut_ids: vec![],
+        label: None,
+        properties: Default::default(),
     })
 }
 

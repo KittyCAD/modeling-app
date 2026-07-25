@@ -22,6 +22,7 @@ pub mod math;
 pub mod mirror;
 pub mod patterns;
 pub mod planes;
+pub mod properties;
 pub mod revolve;
 pub mod runtime;
 pub mod segment;
@@ -373,6 +374,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "appearance") => (
             |e, a| Box::pin(crate::std::appearance::appearance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::appearance"),
+        ),
+        ("solid", "setProperties") => (
+            |e, a| Box::pin(crate::std::properties::set_properties(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::setProperties"),
+        ),
+        ("solid", "getProperties") => (
+            |e, a| Box::pin(crate::std::properties::get_properties(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::getProperties"),
+        ),
+        ("solid", "clearProperties") => (
+            |e, a| Box::pin(crate::std::properties::clear_properties(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::clearProperties"),
         ),
         ("solid", "flipSurface") => (
             |e, a| Box::pin(crate::std::surfaces::flip_surface(e, a).map(|r| r.map(KclValue::continue_))),

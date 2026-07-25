@@ -1974,3 +1974,79 @@ export fn joinSurfaces(
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
 ): Solid {}
+
+/// Attach a part label and free-form properties to a solid for BOM / cut-list use.
+///
+/// The label is the stable grouping key (for example `"stud"`). Properties are
+/// free-form fabrication data such as length, section, or end angles. Geometry
+/// values are not allowed in the properties map.
+///
+/// ```kcl,legacySketch
+/// stud = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [45, 0])
+///   |> line(end = [0, 90])
+///   |> line(end = [-45, 0])
+///   |> close()
+///   |> extrude(length = 1550)
+///   |> setProperties(
+///        label = "stud",
+///        properties = {
+///          sku = "90x45",
+///          length = 1550mm,
+///        },
+///      )
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn setProperties(
+  /// The solid to attach properties to.
+  @solid: Solid,
+  /// Part label used for BOM grouping (for example `"stud"` or `"batten"`).
+  label: string,
+  /// Free-form fabrication properties. Allowed values: string, number, bool, or nested objects of those types.
+  properties: {},
+): Solid {}
+
+/// Read the label and properties previously attached with `setProperties`.
+///
+/// Errors if the solid has no properties.
+///
+/// ```kcl,legacySketch
+/// stud = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [45, 0])
+///   |> line(end = [0, 90])
+///   |> line(end = [-45, 0])
+///   |> close()
+///   |> extrude(length = 1550)
+///   |> setProperties(
+///        label = "stud",
+///        properties = { length = 1550mm },
+///      )
+///
+/// info = getProperties(stud)
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn getProperties(
+  /// The solid whose properties are being read.
+  @solid: Solid,
+): { label: string, properties: {} } {}
+
+/// Remove the label and properties from a solid and unregister it from the BOM.
+///
+/// ```kcl,legacySketch
+/// stud = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [45, 0])
+///   |> line(end = [0, 90])
+///   |> line(end = [-45, 0])
+///   |> close()
+///   |> extrude(length = 1550)
+///   |> setProperties(label = "stud", properties = { length = 1550mm })
+///   |> clearProperties()
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn clearProperties(
+  /// The solid whose properties are being cleared.
+  @solid: Solid,
+): Solid {}

@@ -24,6 +24,11 @@ pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::Operation;
 use kcl_api::ast::node_path::NodePath;
+/// BOM label + free-form properties types (see solid-properties-and-bom plan).
+#[allow(unused_imports)] // public API for Phase 2+ stdlib / TS; not yet referenced in-crate
+pub use bom::BomEntry;
+#[allow(unused_imports)]
+pub use bom::PropertyValue;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
@@ -140,6 +145,7 @@ impl OperationsByModule {
 
 pub(crate) mod annotations;
 mod artifact;
+pub(crate) mod bom;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -2171,10 +2177,10 @@ pub(crate) async fn parse_execute_with_project_dir(
 #[cfg(test)]
 #[derive(Debug)]
 pub(crate) struct ExecTestResults {
-    program: crate::Program,
-    mem_env: EnvironmentRef,
-    exec_ctxt: ExecutorContext,
-    exec_state: ExecState,
+    pub(crate) program: crate::Program,
+    pub(crate) mem_env: EnvironmentRef,
+    pub(crate) exec_ctxt: ExecutorContext,
+    pub(crate) exec_state: ExecState,
 }
 
 #[cfg(test)]

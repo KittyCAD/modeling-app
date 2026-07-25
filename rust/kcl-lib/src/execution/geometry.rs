@@ -33,6 +33,8 @@ use crate::execution::ExecutorContext;
 use crate::execution::Metadata;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
+use crate::execution::bom::BomEntry;
+use crate::execution::bom::PropertyValue;
 use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
@@ -1295,6 +1297,14 @@ pub struct Solid {
     pub units: UnitLength,
     /// Is this a sectional solid?
     pub sectional: bool,
+    /// Part label for BOM membership (e.g. `"stud"`). Set only via `setProperties`.
+    /// Copied by clone / pattern / mirror. Not sent to the modeling engine.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+    /// Free-form fabrication / BOM fields. Copied by clone / pattern / mirror.
+    /// Not sent to the modeling engine.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub properties: IndexMap<String, PropertyValue>,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -1367,6 +1377,38 @@ impl Solid {
             .iter()
             .map(|foc| foc.id())
             .chain(self.pending_edge_cut_ids.iter().copied())
+    }
+
+    /// True when this solid has a BOM label (and is eligible for `bom()`).
+    pub fn has_bom_entry(&self) -> bool {
+        self.label.is_some()
+    }
+
+    /// Build a BOM registry row from this solid, if labeled.
+    pub fn bom_entry(&self) -> Option<BomEntry> {
+        self.label.as_ref().map(|label| BomEntry {
+            label: label.clone(),
+            properties: self.properties.clone(),
+        })
+    }
+
+    /// Replace label + properties on this solid (does not touch the ExecState registry).
+    pub fn set_bom_properties(&mut self, label: impl Into<String>, properties: IndexMap<String, PropertyValue>) {
+        self.label = Some(label.into());
+        self.properties = properties;
+    }
+
+    /// Copy label + properties from another solid (does not touch the ExecState registry).
+    /// Used by clone / pattern / mirror after geometry rebuilds that drop these fields.
+    pub fn copy_bom_properties_from(&mut self, source: &Solid) {
+        self.label = source.label.clone();
+        self.properties = source.properties.clone();
+    }
+
+    /// Clear label + properties on this solid (does not touch the ExecState registry).
+    pub fn clear_bom_properties(&mut self) {
+        self.label = None;
+        self.properties.clear();
     }
 }
 
