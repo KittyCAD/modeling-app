@@ -751,9 +751,19 @@ impl TypeDeclaration {
 
 impl EnumDeclaration {
     fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        // Only comments decide the layout: blank lines in a body with no arms
+        // carry no information and are not re-emitted, so counting them here
+        // would make formatting non-idempotent (the multi-line output would
+        // reparse with no non-code at all and then collapse).
+        let has_start_comment = self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+
         // An enum with no variants and no comments stays on one line, keeping
         // the standalone arm marker which classifies the body as an enum.
-        if self.variants.is_empty() && self.non_code_meta.is_empty() {
+        if self.variants.is_empty() && !has_start_comment {
             buf.push_str(" { | }");
             return;
         }
@@ -764,12 +774,7 @@ impl EnumDeclaration {
 
         // Comments before the first arm (or around a standalone `|`),
         // mirroring how `recast_body` renders `start_nodes`.
-        let has_non_newline_start_node = self
-            .non_code_meta
-            .start_nodes
-            .iter()
-            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
-        if has_non_newline_start_node {
+        if has_start_comment {
             let mut pending_newline = false;
             for start_node in &self.non_code_meta.start_nodes {
                 if matches!(start_node.value, NonCodeValue::NewLine) {
@@ -1649,6 +1654,25 @@ export type Color {
 type Empty { | }
 "#;
         assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_no_variants_collapses_blank_lines() {
+        // Blank lines around a lone arm marker are not content: the body
+        // collapses in one pass, not two.
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty {
+
+  |
+
+}
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Empty { | }
+"#;
+        assert_recast(input, expected);
     }
 
     #[test]
