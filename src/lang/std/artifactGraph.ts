@@ -679,6 +679,9 @@ export function isFaceFromLegacySketch(
   if (err(body)) {
     return false
   }
+  if (!body.pathId) {
+    return false
+  }
 
   const path = getArtifactOfTypes(
     {
@@ -738,6 +741,7 @@ function getPlaneFromCap(
     graph
   )
   if (err(sweep)) return sweep
+  if (!sweep.pathId) return new Error('sweep has no pathId')
   const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
@@ -751,6 +755,7 @@ function getPlaneFromWall(
     graph
   )
   if (err(sweep)) return sweep
+  if (!sweep.pathId) return new Error('sweep has no pathId')
   const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
@@ -1167,10 +1172,12 @@ export function coerceSelectionsToBody(
       }
 
       // Prefer the path over the sweep for the final selection
-      const maybePath = getArtifactOfTypes(
-        { key: maybeSweep.pathId, types: ['path'] },
-        artifactGraph
-      )
+      const maybePath = maybeSweep.pathId
+        ? getArtifactOfTypes(
+            { key: maybeSweep.pathId, types: ['path'] },
+            artifactGraph
+          )
+        : new Error('sweep has no pathId')
       if (!err(maybePath)) {
         // Successfully got the path from the sweep
         if (!seenBodyIds.has(maybePath.id)) {

@@ -229,7 +229,7 @@ impl Artifact {
             Artifact::SketchBlockConstraint(_) => Vec::new(),
             Artifact::PlaneOfFace(a) => vec![a.face_id],
             Artifact::Sweep(a) => {
-                let mut ids = vec![a.path_id];
+                let mut ids = a.path_id.into_iter().collect::<Vec<_>>();
                 if let Some(trajectory_id) = a.trajectory_id {
                     ids.push(trajectory_id);
                 }

@@ -1658,7 +1658,7 @@ function getSplitOutputExprFromSelection(
   type SplitOutputArtifact = Artifact & {
     subType?: string
     outputIndex?: number | null
-    pathId?: string
+    pathId?: string | null
   }
   const artifact: SplitOutputArtifact | null =
     resolvedSelection?.artifact?.type === 'compositeSolid' ||
@@ -1774,7 +1774,7 @@ function getMultiOutputExtrudeInputExprFromPath(
 }
 
 function getMultiRegionExtrudeOutputIndex(
-  artifact: Artifact & { pathId?: string },
+  artifact: Artifact & { pathId?: string | null },
   ast: Node<Program>,
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph
@@ -2788,6 +2788,9 @@ export function getSketchSegmentNameFromSourceSurface(
   }
 
   if (selectedSegment) {
+    if (!sourceSurfaceArtifact.pathId) {
+      return null
+    }
     const pathArtifact = getArtifactOfTypes(
       { key: sourceSurfaceArtifact.pathId, types: ['path'] },
       artifactGraph
