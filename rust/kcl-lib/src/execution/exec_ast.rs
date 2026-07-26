@@ -2518,7 +2518,7 @@ impl Node<MemberExpression> {
         };
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
-        let property = match Property::try_from(
+        let property_result = Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -2528,8 +2528,8 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await
-        {
+        .await;
+        let property = match property_result {
             Ok(property) => property,
             // The property expression exited, e.g. by calling exit().
             // Propagate the exit so that it terminates the enclosing module.
