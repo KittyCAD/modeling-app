@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing runtime_exit_in_imported_module.kcl
+---
+@settings(experimentalFeatures = allow)
+
+import partial from "exits_early.kcl"
+
+// The imported module exited early, but this module continues executing.
+assert(partial, isEqualTo = 1)
+
+stillRuns = 42
+assert(stillRuns, isEqualTo = 42)
