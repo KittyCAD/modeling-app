@@ -259,7 +259,7 @@ async fn inner_fillet(
         extra_face_ids.push(exec_state.next_uuid());
     }
     exec_state
-        .batch_end_cmd(
+        .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dCutEdges::builder()
