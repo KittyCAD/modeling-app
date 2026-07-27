@@ -500,23 +500,23 @@ async fn inner_planar_surface(
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
-    
+
     let mut curve_ids: Vec<uuid::Uuid> = Vec::new();
     for curve in curves {
         let id = curve.operation_id(&args).await?;
         curve_ids.push(id);
     }
-    
+
     // Surface-extrude an edge.
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(
-        mcmd::CreatePlanarSurface::builder()
-            .curve_ids(curve_ids)
-            .tolerance(tolerance)
-            .build(),
-    ),
+                mcmd::CreatePlanarSurface::builder()
+                    .curve_ids(curve_ids)
+                    .tolerance(tolerance)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
