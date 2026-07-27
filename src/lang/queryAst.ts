@@ -2459,6 +2459,7 @@ export function getSketchSegmentNameFromSourceSurface(
     if (!err(pathArtifact) && pathArtifact.type === 'path') {
       const matchingSegmentIndex = pathArtifact.segIds.findIndex(
         (segmentId) =>
+          segmentId === selectedSegment.sourceSegmentId ||
           segmentId === selectedSegment.originalSegId ||
           segmentId === selectedSegment.id
       )

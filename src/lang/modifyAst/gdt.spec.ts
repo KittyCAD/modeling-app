@@ -27,7 +27,7 @@ import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
-  getSweepEdgesForBody,
+  getClonedSweepEdges,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -1100,11 +1100,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = getSweepEdgesForBody(
-        clonedRegionBody,
-        'cube2',
-        artifactGraph
-      ).find((artifact) =>
+      const edge = getClonedSweepEdges(artifactGraph).find((artifact) =>
         artifact.commonSurfaceIds.some(
           (id) => artifactGraph.get(id)?.type === 'cap'
         )

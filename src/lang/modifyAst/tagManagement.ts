@@ -37,9 +37,8 @@ import {
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
-  getArtifactsOfTypes,
   getCommonFacesForEdge,
-  getOriginalSegmentArtifact,
+  getSourceSegmentArtifact,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import {
@@ -394,34 +393,6 @@ function getExprName(expr: Expr): string | null {
   return null
 }
 
-function getOriginalFaceForCopiedEdge(
-  selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
-  sourceFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[],
-  artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
-  if (selectedFace.type === 'cap') {
-    const sourceCap = sourceFaces.find(
-      (face) => face.type === 'cap' && face.subType === selectedFace.subType
-    )
-    return sourceCap ?? new Error('Could not map copied cap to its source cap')
-  }
-
-  const originalSegment = getOriginalSegmentArtifact(
-    selectedFace.segId,
-    artifactGraph
-  )
-  if (!originalSegment) {
-    return new Error('Could not resolve copied wall segment')
-  }
-
-  const sourceWall = sourceFaces.find((face) => {
-    if (face.type !== 'wall') return false
-    const sourceSegment = getOriginalSegmentArtifact(face.segId, artifactGraph)
-    return sourceSegment?.id === originalSegment.id
-  })
-  return sourceWall ?? new Error('Could not map copied wall to its source wall')
-}
-
 /**
  * Handles edge selection by finding the common faces and tagging both
  * An edge is defined by two intersecting faces, so this tags both faces
@@ -470,27 +441,10 @@ function modifyAstWithTagsForEdgeSelection(
       )
     if (err(edgeContext)) return edgeContext
 
-    const sourceFaces = edgeContext.isClone
-      ? [
-          ...getArtifactsOfTypes(
-            {
-              keys: edgeContext.sourceSweep.surfaceIds,
-              types: ['wall', 'cap'],
-            },
-            artifactGraph
-          ).values(),
-        ]
-      : selectedFaces
-
     for (const selectedFace of selectedFaces) {
-      const sourceFace = edgeContext.isClone
-        ? getOriginalFaceForCopiedEdge(selectedFace, sourceFaces, artifactGraph)
-        : selectedFace
-      if (err(sourceFace)) return sourceFace
-
       const faceSelection: Selection = {
         ...selection,
-        artifact: sourceFace,
+        artifact: selectedFace,
       }
 
       const result = modifyAstWithTagForFaceSelection(
@@ -700,12 +654,17 @@ function modifyAstWithTagForWallFace(
   )
   if (err(segment)) return segment
 
-  const pathToSegmentNode = segment.codeRef.pathToNode
+  const sourceSegment = getSourceSegmentArtifact(segment.id, artifactGraph)
+  if (!sourceSegment) {
+    return new Error('Could not resolve the wall source segment')
+  }
+  const isClone = sourceSegment.id !== segment.id
+  const pathToSegmentNode = sourceSegment.codeRef.pathToNode
 
   // No tag path: just retrieve the sketch block segment
   const regionTagExpr = getRegionTagExprFromSegmentId(
     astClone,
-    segment.id,
+    sourceSegment.id,
     artifactGraph,
     wasmInstance
   )
@@ -717,12 +676,14 @@ function modifyAstWithTagForWallFace(
   }
 
   // No tag path, no region (surface modeling): retrieve the segment through .sketch
-  const sketchSolveSurfaceTagExpr = getSketchSolveSurfaceTagExprForWallFace(
-    astClone,
-    wallFace,
-    artifactGraph,
-    wasmInstance
-  )
+  const sketchSolveSurfaceTagExpr = isClone
+    ? null
+    : getSketchSolveSurfaceTagExprForWallFace(
+        astClone,
+        wallFace,
+        artifactGraph,
+        wasmInstance
+      )
   if (sketchSolveSurfaceTagExpr) {
     return {
       modifiedAst: astClone,
@@ -816,11 +777,19 @@ function modifyAstWithTagForCapFace(
   const astClone = structuredClone(ast)
 
   // Get the sweep artifact for this cap
-  const sweepArtifact = getArtifactOfTypes(
+  let sweepArtifact = getArtifactOfTypes(
     { key: capFace.sweepId, types: ['sweep'] },
     artifactGraph
   )
   if (err(sweepArtifact)) return sweepArtifact
+
+  if (sweepArtifact.sourceSweepId) {
+    sweepArtifact = getArtifactOfTypes(
+      { key: sweepArtifact.sourceSweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(sweepArtifact)) return sweepArtifact
+  }
 
   const pathToSweepNode = sweepArtifact.codeRef.pathToNode
 

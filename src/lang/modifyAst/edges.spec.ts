@@ -10,7 +10,12 @@ import {
 } from '@src/lang/modifyAst/edges'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
+import {
+  type Artifact,
+  type PathToNode,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -19,7 +24,7 @@ import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getAstAndArtifactGraph,
-  getSweepEdgesForBody,
+  getClonedSweepEdges,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { isOverlap } from '@src/lib/utils'
@@ -195,11 +200,7 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const clonedEdge = getSweepEdgesForBody(
-        clonedRegionBody,
-        'cube2',
-        artifactGraph
-      ).find((artifact) =>
+      const clonedEdge = getClonedSweepEdges(artifactGraph).find((artifact) =>
         artifact.commonSurfaceIds.some(
           (id) => artifactGraph.get(id)?.type === 'cap'
         )
@@ -250,11 +251,16 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const cloneStart = clonedRegionBody.indexOf('cube2 = clone')
-      const originalSweep = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweep' && artifact.codeRef.range[0] < cloneStart
+      const clonedSweep = [...artifactGraph.values()].find(
+        (
+          artifact
+        ): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep' &&
+          artifact.sourceSweepId !== undefined
       )
+      const originalSweep = clonedSweep?.sourceSweepId
+        ? artifactGraph.get(clonedSweep.sourceSweepId)
+        : undefined
       if (!originalSweep) {
         throw new Error('Original sweep artifact not found')
       }
@@ -1300,11 +1306,7 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const clonedEdges = getSweepEdgesForBody(
-        clonedRegionBody,
-        'cube2',
-        artifactGraph
-      ).slice(0, 2)
+      const clonedEdges = getClonedSweepEdges(artifactGraph).slice(0, 2)
       if (clonedEdges.length !== 2) {
         throw new Error('Expected two cloned sweep edges')
       }

@@ -43,26 +43,21 @@ cube1 = extrude(region001, length = 2)
 cube2 = clone(cube1)
   |> translate(x = 5)`
 
-export function getSweepEdgesForBody(
-  code: string,
-  variableName: string,
-  artifactGraph: ArtifactGraph
-) {
-  const bodyStart = code.indexOf(`${variableName} =`)
-  if (bodyStart < 0) return []
-  const bodyPath = [...artifactGraph.values()].find(
-    (artifact) =>
-      artifact.type === 'path' && artifact.codeRef.range[0] >= bodyStart
+export function getClonedSweepEdges(artifactGraph: ArtifactGraph) {
+  const clonedSweep = [...artifactGraph.values()].find(
+    (
+      artifact
+    ): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
   )
-  if (!bodyPath) return []
+  if (!clonedSweep) return []
 
-  return [...artifactGraph.values()].filter(
-    (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> => {
-      if (artifact.type !== 'sweepEdge') return false
-      const segment = artifactGraph.get(artifact.segId)
-      return segment?.type === 'segment' && segment.pathId === bodyPath.id
-    }
-  )
+  return clonedSweep.edgeIds
+    .map((edgeId) => artifactGraph.get(edgeId))
+    .filter(
+      (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+        artifact?.type === 'sweepEdge'
+    )
 }
 
 export async function enginelessExecutor(
