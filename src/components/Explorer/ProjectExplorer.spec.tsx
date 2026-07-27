@@ -824,9 +824,11 @@ describe('ProjectExplorer', () => {
 
     expect(selectedFolder).toHaveAttribute('aria-expanded', 'true')
     expect(activeFolder).not.toHaveAttribute('aria-expanded', 'true')
-    expect(
-      screen.getByTestId('file-rename-field').closest('[role="treeitem"]')
-    ).toHaveAttribute('aria-level', '2')
+    const newFileRow = screen
+      .getByTestId('file-rename-field')
+      .closest('[role="treeitem"]')
+    expect(selectedFolder.nextElementSibling).toBe(newFileRow)
+    expect(newFileRow).toHaveAttribute('aria-level', '2')
   })
   it('should render a placefolder for a folder when create folder is pressed', () => {
     const mainFile = createFile('main.kcl')
