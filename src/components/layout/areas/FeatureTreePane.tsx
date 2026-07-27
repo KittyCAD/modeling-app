@@ -123,6 +123,7 @@ const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
   'extrude',
   'revolve',
   'helix',
+  // 'mirror3d', add in when edit from feature tree is supported
   'gdt::flatness',
   'gdt::straightness',
   'gdt::circularity',

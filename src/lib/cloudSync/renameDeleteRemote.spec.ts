@@ -1,0 +1,173 @@
+import 'fake-indexeddb/auto'
+import {
+  cloudSyncRemoteProjects,
+  configureCloudSyncEngine,
+  deleteRemoteCloudProject,
+  getCloudSyncProjectMetadata,
+  renameRemoteCloudProject,
+} from '@src/lib/cloudSync'
+import { putProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import {
+  deleteCloudSyncTestDatabase,
+  getFetchMethod,
+  getFetchUrl,
+  jsonResponse,
+} from '@src/lib/cloudSync/testUtils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const projectPath = '/documents/Projects/bracket'
+const remoteProjectId = 'remote-project-123'
+const baseUrl = 'https://example.test'
+const remoteProjectUrl = `${baseUrl}/user/projects/${remoteProjectId}`
+const remoteProjectDownloadUrl = `${remoteProjectUrl}/download?format=zip`
+
+const fetchMock = vi.fn<typeof fetch>()
+
+describe('renameRemoteCloudProject', () => {
+  beforeEach(async () => {
+    await deleteCloudSyncTestDatabase()
+    fetchMock.mockReset()
+    cloudSyncRemoteProjects.value = [{ id: remoteProjectId, title: 'Bracket' }]
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      projectDirectoryPath: '/documents/Projects',
+    })
+    vi.stubGlobal('fetch', fetchMock)
+  })
+
+  afterEach(async () => {
+    configureCloudSyncEngine({ enabled: false })
+    vi.unstubAllGlobals()
+    await deleteCloudSyncTestDatabase()
+  })
+
+  it('re-uploads the remote project archive with the new title', async () => {
+    let uploadedTitle: string | undefined
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+
+      if (url === remoteProjectUrl && method === 'GET') {
+        return jsonResponse({
+          id: remoteProjectId,
+          title: 'Bracket',
+          revision: 'rev-1',
+        })
+      }
+      if (url === remoteProjectDownloadUrl && method === 'GET') {
+        return jsonResponse({
+          files: [
+            { relativePath: 'main.kcl', contents: 'foo = 1' },
+            { relativePath: 'project.toml', contents: 'title = "Bracket"\n' },
+          ],
+        })
+      }
+      if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
+        const body = init?.body as FormData
+        uploadedTitle = JSON.parse(
+          await (body.get('body') as Blob).text()
+        ).title
+        return jsonResponse({
+          id: remoteProjectId,
+          title: 'Housing',
+          revision: 'rev-2',
+        })
+      }
+
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+
+    await renameRemoteCloudProject(remoteProjectId, 'Housing')
+
+    expect(uploadedTitle).toBe('Housing')
+    expect(fetchMock).toHaveBeenCalledWith(
+      remoteProjectDownloadUrl,
+      expect.objectContaining({ credentials: 'include' })
+    )
+    expect(
+      fetchMock.mock.calls.some(
+        ([input, init]) =>
+          getFetchUrl(input) ===
+            `${remoteProjectUrl}?expected_revision=rev-1` &&
+          getFetchMethod(input, init) === 'PUT'
+      )
+    ).toBe(true)
+    expect(cloudSyncRemoteProjects.value).toEqual([
+      { id: remoteProjectId, title: 'Housing' },
+    ])
+  })
+
+  it('does nothing when the requested name is blank', async () => {
+    await renameRemoteCloudProject(remoteProjectId, '   ')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('deleteRemoteCloudProject', () => {
+  beforeEach(async () => {
+    await deleteCloudSyncTestDatabase()
+    fetchMock.mockReset()
+    cloudSyncRemoteProjects.value = [
+      { id: remoteProjectId },
+      { id: 'other-project' },
+    ]
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      projectDirectoryPath: '/documents/Projects',
+    })
+    vi.stubGlobal('fetch', fetchMock)
+  })
+
+  afterEach(async () => {
+    configureCloudSyncEngine({ enabled: false })
+    vi.unstubAllGlobals()
+    await deleteCloudSyncTestDatabase()
+  })
+
+  it('deletes the remote project and clears any lingering local metadata', async () => {
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+      if (url === remoteProjectUrl && method === 'DELETE') {
+        return new Response(null, { status: 204 })
+      }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: projectPath,
+      projectName: 'bracket',
+      remoteProjectId,
+    })
+
+    await deleteRemoteCloudProject(remoteProjectId)
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      remoteProjectUrl,
+      expect.objectContaining({ credentials: 'include', method: 'DELETE' })
+    )
+    expect(await getCloudSyncProjectMetadata(projectPath)).toBeUndefined()
+    expect(cloudSyncRemoteProjects.value).toEqual([{ id: 'other-project' }])
+  })
+
+  it('tolerates a remote project that is already gone (404)', async () => {
+    fetchMock.mockImplementation(async () =>
+      jsonResponse({ message: 'Not found.' }, 404)
+    )
+
+    await expect(
+      deleteRemoteCloudProject(remoteProjectId)
+    ).resolves.toBeUndefined()
+    expect(cloudSyncRemoteProjects.value).toEqual([{ id: 'other-project' }])
+  })
+})

@@ -50,7 +50,7 @@ describe('FeatureTreePane', () => {
       )
     })
 
-    it.each(['gdt::note', 'appearance', 'scale'])(
+    it.each(['mirror3d', 'gdt::note', 'appearance', 'scale'])(
       'does not support pre-edit Z0006 auto-fix for %s',
       (name) => {
         expect(

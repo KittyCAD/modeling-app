@@ -27800,7 +27800,7 @@ description: Result of parsing stylized-cybertruck.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive, Maker",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

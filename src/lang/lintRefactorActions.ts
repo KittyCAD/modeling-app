@@ -147,12 +147,7 @@ function computeZ0006RefactorSource({
 > & {
   sourceRange?: [number, number, number]
 }): string | null {
-  if (
-    !artifactGraph ||
-    (!edgeRefactorMetadata?.length && !directTagFilletMetadata?.length)
-  ) {
-    return null
-  }
+  if (!artifactGraph) return null
 
   const newSourceResult = refactorZ0006Unified(
     ast,
@@ -199,11 +194,7 @@ async function createZ0006Actions({
   RefactorLintActionsParams,
   'rustContext' | 'shouldShowZ0005'
 >): Promise<RefactorLintActionsResult> {
-  if (
-    lint.finding.code !== 'Z0006' ||
-    !artifactGraph ||
-    (!edgeRefactorMetadata?.length && !directTagFilletMetadata?.length)
-  ) {
+  if (lint.finding.code !== 'Z0006' || !artifactGraph) {
     return {}
   }
 
