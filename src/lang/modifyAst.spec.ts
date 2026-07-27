@@ -869,6 +869,69 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
     }
   )
 
+  it('deletes a piped face-API edge treatment through its execution artifact', async () => {
+    const codeBefore = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+body001 = extrude(
+  region001,
+  length = 12,
+  tagStart = $startCap,
+  tagEnd = $endCap,
+)
+  |> fillet(
+       radius = 2,
+       edges = [{ sideFaces = [region001.tags.bottom, endCap] }],
+     )
+  |> chamfer(
+       length = 3,
+       edges = [{ sideFaces = [region001.tags.top, endCap] }],
+     )`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const filletOperation = getAllOperations(execState.operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'fillet'
+    )
+    if (!filletOperation || filletOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find fillet operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        filletOperation.sourceRange,
+        execState.artifactGraph,
+        'edgeCut'
+      ) ?? undefined
+    expect(artifact?.type).toBe('edgeCut')
+    if (artifact?.type === 'edgeCut') {
+      expect(artifact.consumedEdgeId).toBeUndefined()
+    }
+
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(filletOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).toContain('body001 = extrude(')
+    expect(newCode).toContain('region001,')
+    expect(newCode).not.toContain('|> fillet(')
+    expect(newCode).toContain('|> chamfer(')
+  })
+
   const cases = [
     [
       'basicCase',

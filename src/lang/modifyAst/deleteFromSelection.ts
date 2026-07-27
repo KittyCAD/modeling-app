@@ -165,6 +165,10 @@ export async function deleteFromSelection(
   const selectedNode = varDec.node
   const isSelectedCallExpression = selectedNode.type === 'CallExpressionKw'
 
+  if (selection.artifact?.type === 'edgeCut') {
+    return deleteEdgeTreatment(astClone, selection, wasmInstance)
+  }
+
   if (
     selection.artifact?.type === 'pattern' &&
     selectedNode.type === 'VariableDeclarator' &&
@@ -453,8 +457,6 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
-  } else if (selection.artifact?.type === 'edgeCut') {
-    return deleteEdgeTreatment(astClone, selection, wasmInstance)
   } else if (
     selectedNode.type === 'VariableDeclarator' &&
     selectedNode.init.type === 'PipeExpression'

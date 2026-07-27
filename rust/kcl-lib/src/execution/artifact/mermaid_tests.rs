@@ -238,7 +238,7 @@ impl Artifact {
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
-            Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
+            Artifact::EdgeCut(a) => a.consumed_edge_id.into_iter().collect(),
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::GdtAnnotation(_) => Vec::new(),

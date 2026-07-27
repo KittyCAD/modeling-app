@@ -466,7 +466,8 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
@@ -1405,7 +1406,7 @@ fn remap_artifact_for_clone(
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            consumed_edge_id: remap_id_for_clone(source.consumed_edge_id, entity_id_map),
+            consumed_edge_id: remap_opt_id_for_clone(source.consumed_edge_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
@@ -2771,7 +2772,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: edge_id,
+                consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
@@ -2796,7 +2797,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: edge_id,
+                consumed_edge_id: Some(edge_id),
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
@@ -2810,6 +2811,16 @@ fn artifacts_to_update(
                 // TODO: Handle other types like SweepEdge.
             }
             return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
+            return Ok(vec![Artifact::EdgeCut(EdgeCut {
+                id,
+                sub_type: cmd.cut_type.into(),
+                consumed_edge_id: None,
+                edge_ids: Vec::new(),
+                surface_id: None,
+                code_ref,
+            })]);
         }
         ModelingCmd::EntityMakeHelix(cmd) => {
             let cylinder_id = ArtifactId::new(cmd.cylinder_id);

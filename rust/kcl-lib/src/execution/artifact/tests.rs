@@ -938,6 +938,60 @@ fn edge_specifier_surface_extrude_creates_sweep_without_path_id() {
 }
 
 #[test]
+fn edge_specifier_cut_creates_edge_cut_without_consumed_edge_id() {
+    let cmd_id = Uuid::new_v4();
+    let object_id = Uuid::new_v4();
+    let side_face_a = Uuid::new_v4();
+    let side_face_b = Uuid::new_v4();
+    let edge_reference = kcmc::shared::EdgeSpecifier::builder()
+        .side_faces(vec![side_face_a, side_face_b])
+        .build();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::Solid3dCutEdgeReferences::builder()
+            .object_id(object_id)
+            .edges_references(vec![edge_reference])
+            .cut_type(kcmc::shared::CutTypeV2::Fillet {
+                radius: kcmc::length_unit::LengthUnit(1.0),
+                second_length: None,
+            })
+            .tolerance(kcmc::length_unit::LengthUnit(0.0001))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    assert!(matches!(
+        &updated[0],
+        Artifact::EdgeCut(EdgeCut {
+            id,
+            sub_type: EdgeCutSubType::Fillet,
+            consumed_edge_id: None,
+            ..
+        }) if *id == ArtifactId::new(cmd_id)
+    ));
+}
+
+#[test]
 fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
     let body_id = ArtifactId::new(Uuid::new_v4());
     let face_id = Uuid::new_v4();

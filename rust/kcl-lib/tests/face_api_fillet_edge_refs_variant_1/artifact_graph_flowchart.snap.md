@@ -68,6 +68,8 @@ flowchart LR
   38["SweepEdge Adjacent"]
   39["CompositeSolid Subtract<br>[836, 875, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  40["EdgeCut Fillet<br>[877, 945, 0]"]
+    %% [ProgramBodyItem { index: 9 }, ExpressionStatementExpr]
   1 --- 2
   2 --- 3
   2 --- 4

@@ -77,7 +77,7 @@ export type CapArtifact = RustCapArtifact & {
   edgeCutEdgeIds?: ArtifactId[]
 }
 export type EdgeCut = RustEdgeCut & {
-  consumedEdgeId?: ArtifactId
+  consumedEdgeId?: ArtifactId | null
   edgeIds?: ArtifactId[]
 }
 export type SweepEdgeArtifact = {
