@@ -13508,6 +13508,84 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_patterned_primitive_index_face() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(
+  region(point = [0mm, 0mm], sketch = baseSketch),
+  length = 5mm
+)
+
+pattern001 = patternLinear3d(
+  baseBody,
+  instances = 3,
+  distance = 20mm,
+  axis = X
+)";
+        let expected_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(region(point = [0mm, 0mm], sketch = baseSketch), length = 5mm)
+
+pattern001 = patternLinear3d(
+  baseBody,
+  instances = 3,
+  distance = 20mm,
+  axis = X,
+)
+face001 = faceOf(pattern001[1], face = faceId(pattern001[1], index = 1))
+sketch001 = sketch(on = face001) {
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let solid_id = match outcome.variables.get("pattern001") {
+            Some(KclValueView::HomArray { value }) => match value.get(1) {
+                Some(KclValueView::Solid { value }) => value.id,
+                value => panic!("expected pattern001[1] to be a solid, got {value:?}"),
+            },
+            value => panic!("expected pattern001 to be an array, got {value:?}"),
+        };
+        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables);
+
+        let mut ast = program.ast;
+        let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &scene_graph,
+            &solid_references,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 1 }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let face_source = source_from_ast(&ast);
+        let new_source = format!("{face_source}sketch001 = sketch(on = face001) {{\n}}\n");
+        assert_eq!(new_source, expected_source);
+
+        let program = Program::parse(&new_source).unwrap().0.unwrap();
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_on_wall_artifact_from_region_extrude() {
         let initial_source = "\
 s = sketch(on = YZ) {

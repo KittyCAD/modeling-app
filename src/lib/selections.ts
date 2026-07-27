@@ -1226,6 +1226,26 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
+
+  if (
+    _artifact.type === 'pattern' &&
+    _artifact.copyFaceIds.includes(selectedEngineEntityId)
+  ) {
+    const primitiveSelection = await getPrimitiveSelectionForEntity(
+      selectedEngineEntityId,
+      engineCommandManager
+    )
+    if (primitiveSelection?.primitiveType === 'face') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'enginePrimitiveSelection',
+          selection: primitiveSelection,
+        },
+      }
+    }
+  }
+
   const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
     return {
