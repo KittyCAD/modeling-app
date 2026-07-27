@@ -10,7 +10,6 @@ import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -18,12 +17,13 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import fsZds from '@src/lib/fs-zds'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -31,8 +31,6 @@ import {
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -98,7 +96,7 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
-import { createActor, waitFor } from 'xstate'
+import { createActor } from 'xstate'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const appCommandsSlot = new Slot()
@@ -436,27 +434,6 @@ export class App implements AppSubsystems {
     this.billing.actor.stop()
     this.userFeatures.actor.stop()
     this.registry[Symbol.dispose]()
-  }
-
-  async flushProjectWrites(projectPath?: string) {
-    const currentProject = this.project
-
-    await flushActiveTextFileWrite({ throwOnError: true })
-    await waitFor(this.settings.actor, (state) => state.matches('idle'))
-
-    if (
-      !currentProject ||
-      (projectPath &&
-        fsZds.resolve(currentProject.path) !== fsZds.resolve(projectPath))
-    ) {
-      return
-    }
-
-    await Promise.all(
-      Array.from(currentProject.editors.values(), (editor) =>
-        editor.flushPendingWriteToFile()
-      )
-    )
   }
 
   closeProject() {

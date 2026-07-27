@@ -895,17 +895,11 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       duplicateProject: {
         run: async ({ project }) => {
-          const systemIOService = systemIO.value
-          if (
-            !systemIOService ||
-            !project.localProjectName ||
-            !project.localProjectPath
-          ) {
+          if (!project.localProjectName || !project.localProjectPath) {
             return undefined
           }
 
           const result = await duplicateProjectInDirectory({
-            app: systemIOService.actor.getSnapshot().context.app,
             source: {
               directoryName: project.localProjectName,
               displayName: getHomeProjectDisplayName(project),
@@ -913,12 +907,6 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             },
             projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
             requestedProjectTitle: getHomeProjectDisplayName(project),
-            unavailableProjectTitles: ctx.valueSpecs
-              .get(homeProjectEntriesValueSpec)
-              .filter((entry) =>
-                entry.libraryIds?.includes(PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
-              )
-              .map(getHomeProjectDisplayName),
             wasmInstance: await getWasmPromise(),
           })
           refreshLocalCloudProjectEntries()

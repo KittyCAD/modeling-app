@@ -36,7 +36,6 @@ type HomeLoaderApp = {
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory
     }) => void
   }
-  flushProjectWrites: () => Promise<void>
   closeProject: () => void
   settings: {
     actor: {
@@ -95,8 +94,7 @@ export async function webHomeRouteEnabled(app: WebHomeApp) {
   )
 }
 
-export async function loadHomeProjects(app: HomeLoaderApp) {
-  await app.flushProjectWrites()
+export function loadHomeProjects(app: HomeLoaderApp) {
   app.systemIOActor.send({
     type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
   })

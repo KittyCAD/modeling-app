@@ -1007,7 +1007,7 @@ export const systemIOMachine = setup({
           },
         ],
         [SystemIOMachineEvents.duplicateProject]: {
-          actions: [SystemIOMachineActions.deferSystemIOEvent],
+          target: SystemIOMachineStates.duplicatingProject,
         },
         [SystemIOMachineEvents.renameProject]: [
           {
@@ -1110,7 +1110,6 @@ export const systemIOMachine = setup({
               },
               pendingRenamedProjectName: () => undefined, // clear after redirect
             }),
-            SystemIOMachineActions.flushDeferredSystemIOEvent,
           ],
         },
         onError: {
@@ -1119,7 +1118,6 @@ export const systemIOMachine = setup({
             assign({
               folders: ({ context }) => context.folders ?? [],
               hasListedProjects: true,
-              deferredSystemIOEvent: undefined,
             }),
           ],
         },

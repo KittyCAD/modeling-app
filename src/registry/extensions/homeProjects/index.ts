@@ -253,8 +253,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       ),
     canDuplicate: (project) =>
       Boolean(
-        systemIO.value &&
-          project.localProjectName &&
+        project.localProjectName &&
           project.localProjectPath &&
           getProjectOperation(project, 'duplicateProject')
       ),
@@ -303,11 +302,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     },
     duplicate: async (project) => {
       const duplicateProject = getProjectOperation(project, 'duplicateProject')
-      if (
-        !serviceImpl.canDuplicate(project) ||
-        !duplicateProject ||
-        !project.localProjectName
-      ) {
+      if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
         return
       }
 
@@ -602,17 +597,11 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             },
             duplicateProject: {
               run: async ({ library, project }) => {
-                const systemIOService = systemIO.value
-                if (
-                  !systemIOService ||
-                  !project.localProjectName ||
-                  !project.localProjectPath
-                ) {
+                if (!project.localProjectName || !project.localProjectPath) {
                   return undefined
                 }
 
                 const result = await duplicateProjectInDirectory({
-                  app: systemIOService.actor.getSnapshot().context.app,
                   source: {
                     directoryName: project.localProjectName,
                     displayName: getHomeProjectDisplayName(project),
@@ -620,13 +609,9 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   },
                   projectDirectoryPath: library.path,
                   requestedProjectTitle: getHomeProjectDisplayName(project),
-                  unavailableProjectTitles: ctx.valueSpecs
-                    .get(homeProjectEntriesValueSpec)
-                    .filter((entry) => entry.libraryIds?.includes(library.id))
-                    .map(getHomeProjectDisplayName),
                   wasmInstance: await getWasmPromise(),
                 })
-                systemIOService.actor.send({
+                systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
                 invalidateConfiguredProjectLibraryEntries()

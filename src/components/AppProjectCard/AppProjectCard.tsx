@@ -362,11 +362,7 @@ function AppProjectCard({
               disabled={!canDuplicate}
               data-testid="project-card-context-duplicate"
               onClick={() => {
-                void projectActions.duplicate(project).catch((error) => {
-                  trap(
-                    error instanceof Error ? error : new Error(String(error))
-                  )
-                })
+                void projectActions.duplicate(project).catch(trap)
               }}
             >
               Duplicate project

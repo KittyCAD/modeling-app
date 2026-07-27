@@ -48,7 +48,6 @@ import {
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 
-export { getDuplicateProjectBaseName } from '@src/lib/projectDuplication'
 export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
@@ -153,28 +152,6 @@ async function getUniqueProjectNameForCreate({
   return getUniqueProjectName(requestedProjectName, existingEntries)
 }
 
-function normalizeProjectPathForCloudMetadata(projectPath: string) {
-  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
-}
-
-async function runWithProjectTargetLock<T>(
-  targetPath: string,
-  operation: () => Promise<T>
-) {
-  const lockManager =
-    typeof navigator !== 'undefined' ? navigator.locks : undefined
-  if (!lockManager) {
-    return operation()
-  }
-
-  const normalizedTargetPath = normalizeProjectPathForCloudMetadata(
-    fsZds.resolve(targetPath)
-  ).toLowerCase()
-  return lockManager.request(
-    `zds:project-target:${normalizedTargetPath}`,
-    operation
-  )
-}
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
@@ -478,30 +455,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectDirectoryName: requestedProjectName,
           uniqueProjectDirectoryName: uniqueName,
         })
-        const createProject = async () =>
-          createNewProjectDirectory(
-            uniqueName,
-            await input.context.wasmInstancePromise,
-            undefined,
-            undefined,
-            undefined,
-            projectDirectoryPath,
-            uniqueProjectTitle
-          )
-
-        if (projectDirectoryPath) {
-          const targetPath = fsZds.join(projectDirectoryPath, uniqueName)
-          await runWithProjectTargetLock(targetPath, async () => {
-            if (await pathExists(targetPath)) {
-              return Promise.reject(
-                new Error(`Project "${uniqueName}" already exists`)
-              )
-            }
-            await createProject()
-          })
-        } else {
-          await createProject()
-        }
+        await createNewProjectDirectory(
+          uniqueName,
+          await input.context.wasmInstancePromise,
+          undefined,
+          undefined,
+          undefined,
+          projectDirectoryPath,
+          uniqueProjectTitle
+        )
         return {
           message: `Successfully created "${uniqueProjectTitle}"`,
           name: uniqueName,
@@ -537,7 +499,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
         return duplicateProjectInDirectory({
-          app: input.context.app,
           source: {
             directoryName: project.name,
             displayName: getProjectDisplayName(project),
@@ -545,7 +506,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           },
           projectDirectoryPath,
           requestedProjectTitle: input.requestedProjectName,
-          unavailableProjectTitles: folders.map(getProjectDisplayName),
           wasmInstance: await input.context.wasmInstancePromise,
         })
       }

@@ -9,12 +9,12 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -771,48 +771,6 @@ describe('project system', () => {
 
       expect(app.project).toBeUndefined()
     } finally {
-      app.dispose()
-    }
-  })
-
-  it('waits for project settings writes after the project has closed', async () => {
-    const app = createAppForTest()
-    const originalSettings = app.settings
-    let notifyWaitStarted = () => {}
-    const waitStarted = new Promise<void>((resolve) => {
-      notifyWaitStarted = resolve
-    })
-    let releaseSettingsWrite = () => {}
-    app.settings = {
-      ...originalSettings,
-      actor: {
-        getSnapshot: () => ({ matches: () => false }),
-        subscribe: (observer: {
-          next: (snapshot: { matches: (state: string) => boolean }) => void
-        }) => {
-          notifyWaitStarted()
-          releaseSettingsWrite = () => {
-            observer.next({ matches: (state) => state === 'idle' })
-          }
-          return { unsubscribe: () => {} }
-        },
-      },
-    } as unknown as App['settings']
-
-    try {
-      let flushFinished = false
-      const flushPromise = app.flushProjectWrites().then(() => {
-        flushFinished = true
-      })
-
-      await waitStarted
-      expect(flushFinished).toBe(false)
-
-      releaseSettingsWrite()
-      await flushPromise
-      expect(flushFinished).toBe(true)
-    } finally {
-      app.settings = originalSettings
       app.dispose()
     }
   })

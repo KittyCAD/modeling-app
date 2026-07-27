@@ -57,7 +57,6 @@ let latestOpenRequestId = 0
  */
 let pendingWrite: { path: string; text: string } | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
-let inFlightWritePromise: Promise<void> | undefined
 
 /** Whether a file at `path` can be opened + edited as plain text in the code pane. */
 export function isEditableTextFile(path: string): boolean {
@@ -74,32 +73,10 @@ async function performWrite(path: string, text: string): Promise<void> {
     if (isPathNotFoundError(error)) {
       return
     }
-    return Promise.reject(error)
+    // Surface (but never throw) so a transient auto-save failure can't turn into
+    // an unhandled rejection.
+    reportRejection(error)
   }
-}
-
-function startWrite(
-  write: { path: string; text: string },
-  reportErrors: boolean
-): Promise<void> {
-  const writePromise = performWrite(write.path, write.text)
-  inFlightWritePromise = writePromise
-  void writePromise.then(
-    () => {
-      if (inFlightWritePromise === writePromise) {
-        inFlightWritePromise = undefined
-      }
-    },
-    (error) => {
-      if (inFlightWritePromise === writePromise) {
-        inFlightWritePromise = undefined
-      }
-      if (reportErrors) {
-        reportRejection(error)
-      }
-    }
-  )
-  return writePromise
 }
 
 /**
@@ -107,42 +84,15 @@ function startWrite(
  * different file (or clearing) so edits typed within the debounce window aren't
  * lost. Writes to the pending write's own path, not the currently-active file.
  */
-export async function flushActiveTextFileWrite(
-  options: { throwOnError?: boolean } = {}
-): Promise<void> {
-  while (inFlightWritePromise || pendingWrite) {
-    const inFlightWrite = inFlightWritePromise
-    if (inFlightWrite) {
-      try {
-        await inFlightWrite
-      } catch (error) {
-        if (options.throwOnError) {
-          return Promise.reject(error)
-        }
-      }
-      continue
-    }
-    if (pendingWriteTimeout !== undefined) {
-      clearTimeout(pendingWriteTimeout)
-      pendingWriteTimeout = undefined
-    }
-    const write = pendingWrite
-    pendingWrite = null
-    if (write) {
-      try {
-        await startWrite(write, !options.throwOnError)
-      } catch (error) {
-        // Keep a failed edit available for a later flush unless a newer edit
-        // arrived while this write was in flight.
-        if (pendingWrite === null) {
-          pendingWrite = write
-        }
-        if (options.throwOnError) {
-          return Promise.reject(error)
-        }
-        return
-      }
-    }
+export async function flushActiveTextFileWrite(): Promise<void> {
+  if (pendingWriteTimeout !== undefined) {
+    clearTimeout(pendingWriteTimeout)
+    pendingWriteTimeout = undefined
+  }
+  const write = pendingWrite
+  pendingWrite = null
+  if (write) {
+    await performWrite(write.path, write.text)
   }
 }
 
@@ -162,7 +112,11 @@ export function scheduleActiveTextFileWrite(path: string, text: string): void {
   }
   pendingWriteTimeout = setTimeout(() => {
     pendingWriteTimeout = undefined
-    void flushActiveTextFileWrite()
+    const write = pendingWrite
+    pendingWrite = null
+    if (write) {
+      void performWrite(write.path, write.text)
+    }
   }, WRITE_DEBOUNCE_MS)
 }
 
@@ -180,7 +134,7 @@ export function clearActiveTextFile(): void {
  */
 export async function openActiveTextFile(path: string): Promise<void> {
   // Persist edits to the outgoing file before switching.
-  await flushActiveTextFileWrite({ throwOnError: true })
+  await flushActiveTextFileWrite()
 
   const requestId = ++latestOpenRequestId
   const name = fsZds.basename(path)
