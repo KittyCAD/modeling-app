@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 import {
-  cloudSyncStatus,
   cloudSyncRemoteProjects,
+  cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
@@ -14,12 +14,17 @@ import {
   getAllOutboxEntries,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
+import {
+  createCloudSyncTestFs,
+  deleteCloudSyncTestDatabase,
+  getFetchMethod,
+  getFetchUrl,
+  jsonResponse,
+} from '@src/lib/cloudSync/testUtils'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const syncDatabaseName = 'zds-opfs-cloud-sync'
+const projectDirectory = '/documents/Projects'
 const projectPath = '/documents/Projects/bracket'
 const projectTomlPath = `${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`
 const remoteProjectId = 'remote-project-123'
@@ -30,72 +35,6 @@ let deleteProjectFetch: typeof fetch = async () =>
   new Response(null, { status: 204 })
 
 const fetchMock = vi.fn<typeof fetch>()
-
-function normalizePath(path: string) {
-  return path.replace(/\/+/g, '/')
-}
-
-function joinPaths(...parts: string[]) {
-  return normalizePath(webSafeJoin(parts))
-}
-
-function dirname(path: string) {
-  return webSafeJoin(webSafePathSplit(path).slice(0, -1)) || '/'
-}
-
-function basename(path: string) {
-  return webSafePathSplit(path).at(-1) || ''
-}
-
-function getFetchUrl(input: Parameters<typeof fetch>[0]) {
-  if (typeof input === 'string') {
-    return input
-  }
-  if (input instanceof URL) {
-    return input.toString()
-  }
-  return input.url
-}
-
-function getFetchMethod(
-  input: Parameters<typeof fetch>[0],
-  init?: Parameters<typeof fetch>[1]
-) {
-  if (init?.method) {
-    return init.method
-  }
-  if (typeof input === 'object' && 'method' in input) {
-    return input.method
-  }
-  return 'GET'
-}
-
-async function deleteSyncDatabase() {
-  if (typeof indexedDB === 'undefined') {
-    return Promise.reject(
-      new Error('IndexedDB is unavailable in this test environment.')
-    )
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error(`IndexedDB database ${syncDatabaseName} is blocked.`))
-    }, 1000)
-    const request = indexedDB.deleteDatabase(syncDatabaseName)
-    request.onerror = () => {
-      clearTimeout(timeout)
-      reject(
-        request.error ??
-          new Error(`Failed to delete IndexedDB database ${syncDatabaseName}.`)
-      )
-    }
-    request.onblocked = () => undefined
-    request.onsuccess = () => {
-      clearTimeout(timeout)
-      resolve()
-    }
-  })
-}
 
 function installFetchMock() {
   deleteProjectFetch = async () => new Response(null, { status: 204 })
@@ -109,129 +48,12 @@ function installFetchMock() {
     }
 
     if (url === 'https://example.test/user/projects' && method === 'GET') {
-      return new Response(JSON.stringify([]), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      return jsonResponse([])
     }
 
-    return new Response(
-      JSON.stringify({ message: `Unexpected fetch: ${method} ${url}` }),
-      {
-        status: 500,
-        statusText: 'Unexpected fetch',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    return jsonResponse({ message: `Unexpected fetch: ${method} ${url}` }, 500)
   })
   vi.stubGlobal('fetch', fetchMock)
-}
-
-function createStat(mode: number, size = 0): IStat {
-  const date = new Date(0)
-  return {
-    dev: 0,
-    ino: 0,
-    mode,
-    nlink: 0,
-    uid: 0,
-    gid: 0,
-    rdev: 0,
-    size,
-    blksize: 0,
-    blocks: 0,
-    atimeMs: 0,
-    mtimeMs: 0,
-    ctimeMs: 0,
-    birthtimeMs: 0,
-    atime: date,
-    mtime: date,
-    ctime: date,
-    birthtime: date,
-  }
-}
-
-function createTestFs(files: Map<string, string>) {
-  const directories = new Set([
-    '/documents',
-    '/documents/Projects',
-    projectPath,
-  ])
-  return {
-    resolve: joinPaths,
-    join: joinPaths,
-    relative: (from: string, to: string) =>
-      normalizePath(to).replace(`${normalizePath(from)}/`, ''),
-    extname: (path: string) => {
-      const fileName = basename(path)
-      const extensionStart = fileName.lastIndexOf('.')
-      return extensionStart === -1 ? '' : fileName.slice(extensionStart)
-    },
-    sep: '/',
-    basename,
-    dirname,
-    getPath: async () => '/documents',
-    access: async (path: string) => {
-      const normalizedPath = normalizePath(path)
-      if (!files.has(normalizedPath) && !directories.has(normalizedPath)) {
-        return Promise.reject('ENOENT')
-      }
-    },
-    cp: async () => undefined,
-    readFile: async (
-      path: string,
-      options?: { encoding?: string } | string
-    ) => {
-      const normalizedPath = normalizePath(path)
-      const contents = files.get(normalizedPath)
-      if (contents === undefined) {
-        return Promise.reject('ENOENT')
-      }
-      if (
-        options === 'utf8' ||
-        (typeof options === 'object' && options.encoding === 'utf-8')
-      ) {
-        return contents
-      }
-      return new TextEncoder().encode(contents)
-    },
-    rename: async () => undefined,
-    writeFile: async (path: string, data: Uint8Array<ArrayBuffer>) => {
-      files.set(normalizePath(path), new TextDecoder().decode(data))
-    },
-    readdir: async (path: string) => {
-      const normalizedPath = normalizePath(path)
-      return [...directories, ...files.keys()]
-        .filter((entry) => dirname(entry) === normalizedPath)
-        .map(basename)
-    },
-    stat: async (path: string) => {
-      const normalizedPath = normalizePath(path)
-      if (directories.has(normalizedPath)) {
-        return createStat(0o040000)
-      }
-      const contents = files.get(normalizedPath)
-      if (contents !== undefined) {
-        return createStat(0o100000, contents.length)
-      }
-      return Promise.reject('ENOENT')
-    },
-    mkdir: async (path: string) => {
-      directories.add(normalizePath(path))
-      return undefined
-    },
-    rm: async (path: string) => {
-      const normalizedPath = normalizePath(path)
-      directories.delete(normalizedPath)
-      files.delete(normalizedPath)
-    },
-    detach: async () => undefined,
-    attach: async () => undefined,
-  } as IZooDesignStudioFS
 }
 
 async function seedLinkedProject() {
@@ -250,7 +72,7 @@ async function seedLinkedProject() {
 
 describe('disconnectCloudSyncProject', () => {
   beforeEach(async () => {
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
     installFetchMock()
     cloudSyncRemoteProjects.value = [{ id: remoteProjectId }]
     configureCloudSyncEngine({
@@ -264,7 +86,7 @@ describe('disconnectCloudSyncProject', () => {
   afterEach(async () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {
@@ -274,7 +96,9 @@ describe('disconnectCloudSyncProject', () => {
         `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
       ],
     ])
-    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
     await seedLinkedProject()
     await appendOutboxEntry({
       projectPath,
@@ -339,7 +163,9 @@ describe('disconnectCloudSyncProject', () => {
         `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
       ],
     ])
-    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
     await seedLinkedProject()
     deleteProjectFetch = async () =>
       new Response(JSON.stringify({ message: 'Remote delete failed.' }), {
@@ -374,7 +200,7 @@ describe('disconnectCloudSyncProject', () => {
 
 describe('cloud sync upload failures', () => {
   beforeEach(async () => {
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
     installFetchMock()
   })
 
@@ -382,7 +208,7 @@ describe('cloud sync upload failures', () => {
     setCloudSyncProjectScope(undefined)
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
   })
 
   it('records a blocked upload failure when the remote project is readable but not writable', async () => {
@@ -393,7 +219,9 @@ describe('cloud sync upload failures', () => {
         `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
       ],
     ])
-    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
     await seedLinkedProject()
     await appendOutboxEntry({
       projectPath,
@@ -406,19 +234,11 @@ describe('cloud sync upload failures', () => {
       const method = getFetchMethod(input, init)
 
       if (url === remoteProjectUrl && method === 'GET') {
-        return new Response(
-          JSON.stringify({
-            id: remoteProjectId,
-            title: 'Bracket',
-            revision: remoteRevision,
-          }),
-          {
-            status: 200,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
+        return jsonResponse({
+          id: remoteProjectId,
+          title: 'Bracket',
+          revision: remoteRevision,
+        })
       }
 
       if (
@@ -434,15 +254,9 @@ describe('cloud sync upload failures', () => {
         })
       }
 
-      return new Response(
-        JSON.stringify({ message: `Unexpected fetch: ${method} ${url}` }),
-        {
-          status: 500,
-          statusText: 'Unexpected fetch',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
       )
     })
 

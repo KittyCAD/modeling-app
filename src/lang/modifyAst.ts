@@ -1289,10 +1289,6 @@ export function pathsReferToSamePipe(
   first: PathToNode,
   second: PathToNode
 ): boolean {
-  if (stringifyPathToNode(first) === stringifyPathToNode(second)) {
-    return true
-  }
-
   const firstPipe = splitPathAtPipeExpression(first)
   const secondPipe = splitPathAtPipeExpression(second)
   return (
@@ -1331,9 +1327,10 @@ export function setCallInAst({
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
     if (pathIfNewPipe && !pathsReferToSamePipe(pathIfNewPipe, pathToEdit)) {
-      return new Error(
-        'Cannot edit the call in place because its reconstructed input belongs to a different pipe'
-      )
+      // A pipe substitution reconstructed outside the edited call's pipe is
+      // invalid. Discard the reconstruction so replaceCallInPlace preserves
+      // the existing unlabeled argument and applies only the labeled edits.
+      call.unlabeled = null
     }
 
     const result = getNodeFromPath<CallExpressionKw>(
