@@ -34,7 +34,11 @@ import {
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  NO_PROJECT_DIRECTORY,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectActionsService,
@@ -269,10 +273,28 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       }
 
       const updateEntries = () => {
+        const snapshot = service.actor.getSnapshot()
+        const context = snapshot.context
+        const projects = context.folders
         entries.value = localHomeProjectEntriesFromProjects(
-          service.actor.getSnapshot().context.folders,
+          projects,
           DEFAULT_PROJECT_LIBRARY_ID
         )
+
+        if (
+          projects &&
+          snapshot.matches(SystemIOMachineStates.idle) &&
+          context.requestedProjectName.name === NO_PROJECT_DIRECTORY
+        ) {
+          scheduleProjectDirectoryNameSyncFromTitles({
+            projects,
+            onProjectDirectoriesRenamed: () => {
+              service.actor.send({
+                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              })
+            },
+          })
+        }
       }
 
       updateEntries()
