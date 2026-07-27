@@ -247,8 +247,6 @@ export const ProjectExplorer = ({
   const [isCopying, setIsCopying] = useState<boolean>(false)
   const [isFileTreeMutationPending, setIsFileTreeMutationPending] =
     useState<boolean>(false)
-  const lastIndexBeforeNothing = useRef<number>(-2)
-
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
 
@@ -326,15 +324,12 @@ export const ProjectExplorer = ({
       return
     }
 
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
+    const row = selectedRowRef.current
     setFakeRow({ entry: row, isFile: true })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
+    if (row && row.children !== null) {
+      // Open the selected folder so the new-file placeholder is visible.
       const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
+      newOpenedRows[row.key] = true
       setOpenedRows(newOpenedRows)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -348,15 +343,12 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
+    const row = selectedRowRef.current
     setFakeRow({ entry: row, isFile: false })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
+    if (row && row.children !== null) {
+      // Open the selected folder so the new-folder placeholder is visible.
       const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
+      newOpenedRows[row.key] = true
       setOpenedRows(newOpenedRows)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -533,13 +525,14 @@ export const ProjectExplorer = ({
       return
     }
 
+    setSelectedRowWrapper(focusedEntry)
     const newOpenedRows = { ...openedRowsRef.current }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
     onRowEnterRef.current(focusedEntry, activeIndexRef.current)
-  }, [setOpenedRowsWrapper])
+  }, [setOpenedRowsWrapper, setSelectedRowWrapper])
 
   const handleRenameCommand = useCallback(() => {
     if (
@@ -857,7 +850,7 @@ export const ProjectExplorer = ({
     const didProjectChange = previousProject.current.name !== project.name
     if (didProjectChange) {
       setOpenedRows({})
-      setSelectedRow(null)
+      setSelectedRowWrapper(null)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
       setRowsToRender([])
       setContextMenuRow(null)
@@ -1439,9 +1432,6 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
-        if (activeIndexRef.current > 0) {
-          lastIndexBeforeNothing.current = activeIndexRef.current
-        }
         keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         setActiveIndexWrapper(NOTHING_IS_SELECTED)
