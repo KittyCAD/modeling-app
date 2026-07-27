@@ -768,7 +768,7 @@ describe('ProjectExplorer', () => {
     const renameField = screen.getByTestId('file-rename-field')
     expect(renameField.innerText).toBe('')
   })
-  it('should create a file inside the selected folder rather than the active folder', async () => {
+  it('should create a file in the folder targeted by the toolbar or context menu', async () => {
     project.children = [
       createFolder('active-folder'),
       createFolder('selected-folder'),
@@ -829,6 +829,22 @@ describe('ProjectExplorer', () => {
       .closest('[role="treeitem"]')
     expect(selectedFolder.nextElementSibling).toBe(newFileRow)
     expect(newFileRow).toHaveAttribute('aria-level', '2')
+
+    fireEvent.keyDown(screen.getByTestId('file-rename-field'), {
+      key: 'Escape',
+    })
+    await waitFor(() => {
+      expect(screen.queryByTestId('file-rename-field')).not.toBeInTheDocument()
+    })
+
+    fireEvent.contextMenu(activeFolder)
+    fireEvent.click(await screen.findByTestId('context-menu-create-file'))
+
+    const contextMenuFileRow = screen
+      .getByTestId('file-rename-field')
+      .closest('[role="treeitem"]')
+    expect(activeFolder.nextElementSibling).toBe(contextMenuFileRow)
+    expect(contextMenuFileRow).toHaveAttribute('aria-level', '2')
   })
   it('should render a placefolder for a folder when create folder is pressed', () => {
     const mainFile = createFile('main.kcl')

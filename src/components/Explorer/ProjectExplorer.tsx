@@ -311,6 +311,18 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
+  const startCreatingEntry = useCallback(
+    (entry: FileExplorerEntry | null, isFile: boolean) => {
+      setFakeRow({ entry, isFile })
+      if (entry && entry.children !== null) {
+        const newOpenedRows = { ...openedRowsRef.current }
+        newOpenedRows[entry.key] = true
+        setOpenedRows(newOpenedRows)
+      }
+    },
+    []
+  )
+
   /**
    * External state handlers since the callback logic lives here.
    * If code wants to externall trigger creating a file pass in a new timestamp.
@@ -325,15 +337,9 @@ export const ProjectExplorer = ({
     }
 
     const row = selectedRowRef.current
-    setFakeRow({ entry: row, isFile: true })
-    if (row && row.children !== null) {
-      // Open the selected folder so the new-file placeholder is visible.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    startCreatingEntry(row, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFilePressed])
+  }, [createFilePressed, startCreatingEntry])
 
   useEffect(() => {
     if (
@@ -344,15 +350,9 @@ export const ProjectExplorer = ({
       return
     }
     const row = selectedRowRef.current
-    setFakeRow({ entry: row, isFile: false })
-    if (row && row.children !== null) {
-      // Open the selected folder so the new-folder placeholder is visible.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    startCreatingEntry(row, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFolderPressed])
+  }, [createFolderPressed, startCreatingEntry])
 
   useEffect(() => {
     if (refreshExplorerPressed <= 0) {
@@ -1024,6 +1024,17 @@ export const ProjectExplorer = ({
             focusProjectExplorer()
             setActiveIndexWrapper(domIndex)
             setContextMenuRow(child)
+          },
+          onCreateFile: () => {
+            if (
+              readOnly ||
+              isFileTreeInteractionDisabledRef.current ||
+              child.children === null
+            ) {
+              return
+            }
+            setSelectedRowWrapper(child)
+            startCreatingEntry(child, true)
           },
           isFake: false,
           activeIndex: activeIndex,
