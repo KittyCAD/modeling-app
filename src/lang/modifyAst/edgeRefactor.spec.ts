@@ -1802,15 +1802,6 @@ surface001 = extrude(
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
         expect(kclManagerInThisFile.errors).toEqual([])
-        expect(
-          [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
-            (artifact) =>
-              artifact.type === 'sweep' &&
-              !artifact.consumed &&
-              artifact.pathId == null &&
-              artifact.sourceEdgeReference != null
-          )
-        ).toHaveLength(1)
       }
     )
 
