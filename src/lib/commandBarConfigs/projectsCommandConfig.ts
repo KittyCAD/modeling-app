@@ -1,17 +1,17 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import {
   getProjectDirectoryOptions,
   getProjectDisplayName,
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
-import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -30,6 +30,10 @@ export type ProjectsCommandSchema = {
     name: string
     libraryId?: string
   }
+  'Move to library': {
+    project: string
+    library: string
+  }
   'Import file from URL': {
     name: string
     code?: string
@@ -46,7 +50,7 @@ export interface CreateProjectLibraryTarget {
   >
 }
 
-type HomeProjectCommandAction = 'open' | 'rename' | 'delete'
+type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'moveToLibrary'
 
 interface HomeProjectCommandTarget {
   actions: HomeProjectActionsService
@@ -117,6 +121,8 @@ export function createProjectCommands({
         return actions.canRename(project)
       case 'delete':
         return actions.canDelete(project)
+      case 'moveToLibrary':
+        return actions.canMoveToLibrary(project)
     }
   }
 
@@ -157,6 +163,10 @@ export function createProjectCommands({
     }))
 
   const projectOptions = (action: HomeProjectCommandAction) => {
+    if (action === 'moveToLibrary') {
+      return homeProjectOptions(action) ?? []
+    }
+
     return (
       homeProjectOptions(action) ??
       getProjectDirectoryOptions(folderSnapshot(), {
@@ -228,6 +238,52 @@ export function createProjectCommands({
       ''
     )
   }
+
+  const moveToLibraryTargets = (projectId: unknown) => {
+    const target = selectedHomeProjectTarget(projectId, 'moveToLibrary')
+    if (!target) {
+      return []
+    }
+
+    return target.actions
+      .getMoveToLibraryTargets(target.project)
+      .map((moveTarget) => ({
+        actions: target.actions,
+        project: target.project,
+        moveTarget,
+      }))
+  }
+
+  const selectedMoveToLibraryTarget = ({
+    projectId,
+    libraryId,
+  }: {
+    projectId: unknown
+    libraryId: unknown
+  }) => {
+    if (typeof libraryId !== 'string') {
+      return undefined
+    }
+
+    return moveToLibraryTargets(projectId).find(
+      ({ moveTarget }) => moveTarget.library.id === libraryId
+    )
+  }
+
+  const moveToLibraryOptions = ({
+    argumentsToSubmit,
+  }: {
+    argumentsToSubmit: Record<string, unknown>
+  }) =>
+    moveToLibraryTargets(argumentsToSubmit.project).map(({ moveTarget }) => ({
+      name: moveTarget.library.title,
+      value: moveTarget.library.id,
+      isCurrent: false,
+    }))
+
+  const defaultMoveToLibraryId = (
+    context: ContextFrom<typeof commandBarMachine>
+  ) => moveToLibraryOptions(context)[0]?.value ?? ''
 
   const openProjectCommand: Command = {
     icon: 'folder',
@@ -337,6 +393,80 @@ export function createProjectCommands({
             )?.name ?? 'Library'
           )
         },
+      },
+    },
+  }
+
+  const moveToLibraryCommand: Command = {
+    icon: 'folder',
+    name: 'Move to library',
+    displayName: 'Move to library',
+    description: 'Move a project to another library',
+    groupId: 'projects',
+    needsReview: true,
+    onSubmit: (record) => {
+      if (!record) {
+        return
+      }
+
+      const target = selectedMoveToLibraryTarget({
+        projectId: record.project,
+        libraryId: record.library,
+      })
+      if (!target) {
+        toast.error('Select a library that can receive this project.')
+        return
+      }
+
+      return target.actions
+        .moveToLibrary(target.project, target.moveTarget.library.id)
+        .then((result) => {
+          if (isCurrentHomeProject(target.project) && result?.defaultFile) {
+            navigateToProjectFile(result.defaultFile)
+          }
+        })
+    },
+    reviewMessage: ({ argumentsToSubmit }) => {
+      const target = selectedMoveToLibraryTarget({
+        projectId: argumentsToSubmit.project,
+        libraryId: argumentsToSubmit.library,
+      })
+      const projectName = projectDisplayNameFromCommandValue(
+        argumentsToSubmit.project,
+        'moveToLibrary'
+      )
+      const sourceLibrary = target?.moveTarget.sourceLibrary
+      const targetLibrary = target?.moveTarget.library
+      const differentType =
+        sourceLibrary &&
+        targetLibrary &&
+        sourceLibrary.type !== targetLibrary.type
+
+      return CommandBarOverwriteWarning({
+        heading: differentType
+          ? 'Move project to a different library type?'
+          : 'Move project?',
+        message: target
+          ? `This will move "${projectName}" from "${sourceLibrary?.title}" to "${targetLibrary?.title}".${
+              differentType
+                ? ' Library-specific behavior such as cloud syncing may change.'
+                : ''
+            }`
+          : `This will move "${projectName}" to another library.`,
+      })
+    },
+    args: {
+      project: {
+        inputType: 'options',
+        required: true,
+        options: () => projectOptions('moveToLibrary'),
+      },
+      library: {
+        inputType: 'options',
+        required: true,
+        prepopulate: true,
+        options: moveToLibraryOptions,
+        defaultValue: defaultMoveToLibraryId,
       },
     },
   }
@@ -528,6 +658,7 @@ export function createProjectCommands({
     ? [
         openProjectCommand,
         createProjectCommand,
+        moveToLibraryCommand,
         deleteProjectCommand,
         renameProjectCommand,
         importFileFromURL,
