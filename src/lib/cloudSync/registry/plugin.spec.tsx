@@ -15,6 +15,7 @@ import {
   getCloudSyncStatusBarPresentation,
   preserveCloudProjectDefaultFile,
 } from '@src/lib/cloudSync/registry/plugin'
+import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -25,7 +26,10 @@ import {
 import { Themes } from '@src/lib/theme'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
+import {
+  type HomeProjectEntry,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
   projectLibrariesValueSpec,
@@ -328,18 +332,34 @@ describe('cloud sync project library', () => {
     registry.configure([cloudSyncProjectLibraryType])
 
     try {
-      expect(
-        registry
-          .get(projectLibraryTypesValueSpec)
-          .get(CLOUD_PROJECT_LIBRARY_TYPE)
-      ).toMatchObject({
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType).toMatchObject({
         title: 'Cloud',
         icon: 'network',
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
         operations: {
           duplicateProject: expect.any(Object),
+          openProject: expect.any(Object),
         },
       })
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      const project = {
+        ...homeProjectEntryFromProject(projectWellFormed),
+        id: `local:${projectWellFormed.path}`,
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+      } satisfies HomeProjectEntry
+
+      expect(
+        cloudLibraryType?.operations?.openProject?.run({
+          library: cloudLibrary,
+          project,
+        })
+      ).toEqual({ defaultFile: projectWellFormed.default_file })
     } finally {
       registry[Symbol.dispose]()
     }

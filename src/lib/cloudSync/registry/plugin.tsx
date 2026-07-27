@@ -884,6 +884,15 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           return project
         },
       },
+      openProject: {
+        run: ({ project }) => {
+          if (!project.readWriteAccess || !project.defaultFile) {
+            return undefined
+          }
+
+          return { defaultFile: project.defaultFile }
+        },
+      },
       duplicateProject: {
         run: async ({ project }) => {
           const systemIOService = systemIO.value
