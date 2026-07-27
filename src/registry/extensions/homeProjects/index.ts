@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -16,17 +17,18 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
-import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  NEW_PROJECT_LIBRARY_TITLE,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultProjectLibrarySettings,
+  NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -40,9 +42,10 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryOperation,
-  projectLibrariesValueSpec,
-  projectLibraryTypesValueSpec,
   type ProjectLibraryTypeOperations,
+  projectLibrariesValueSpec,
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
@@ -51,7 +54,7 @@ import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
 
-function invalidateConfiguredProjectLibraryEntries() {
+export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
 }
 
@@ -145,17 +148,17 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
       ),
+    // A local materialization is not required: cloud library operations can act
+    // on a remote-only project directly. Each library type's operation guards
+    // its own local-vs-remote handling, so the shared capability check only
+    // needs write access plus a registered operation.
     canRename: (project) =>
       Boolean(
-        project.localProjectPath &&
-          project.readWriteAccess &&
-          getProjectOperation(project, 'renameProject')
+        project.readWriteAccess && getProjectOperation(project, 'renameProject')
       ),
     canDelete: (project) =>
       Boolean(
-        project.localProjectPath &&
-          project.readWriteAccess &&
-          getProjectOperation(project, 'deleteProject')
+        project.readWriteAccess && getProjectOperation(project, 'deleteProject')
       ),
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')
@@ -171,7 +174,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
-        project.remoteProjectId
+        project.remoteProjectId,
+        await getDefaultCloudProjectDirectoryPath()
       )
       if (!syncedProject) {
         return undefined
@@ -349,6 +353,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           },
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
+          hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
@@ -426,11 +431,36 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.directory-library-type')
 
+const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
+  id: 'home-projects.directory-library-default-policy',
+  provides: [
+    provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+      id: 'home-projects.directory-library-default-policy',
+      priority: 0,
+      /**
+       * Product policy: the directory library owns the legacy default project
+       * directory fallback. Other library systems can contribute
+       * higher-priority policies without `loadAndValidateSettings()` knowing
+       * about their storage type.
+       */
+      getDefaultLibraries: ({ legacyProjectDirectory, initialDefaultDir }) =>
+        getDefaultProjectLibrarySettings(
+          legacyProjectDirectory ?? initialDefaultDir
+        ),
+    }),
+  ],
+})
+
 const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
   const entries = signal<HomeProjectEntryContribution[]>([])
   const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
+  // Diagnostic dedupe: a configured library whose type has no registered
+  // handler cannot be listed and would silently vanish from Home. This should
+  // not happen (the cloud and directory types are always-on), so warn once per
+  // library rather than swallowing it.
+  const warnedMissingTypeLibraryIds = new Set<string>()
   let abortController: AbortController | undefined
   let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
@@ -480,6 +510,12 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
         if (!readEntries) {
+          if (!warnedMissingTypeLibraryIds.has(library.id)) {
+            warnedMissingTypeLibraryIds.add(library.id)
+            console.warn(
+              `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
+            )
+          }
           continue
         }
 
@@ -538,6 +574,7 @@ const homeProjectsExtension = defineRegistryItem({
   uses: [
     configuredProjectLibraries,
     configuredProjectLibraryEntries,
+    directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,
     homeProjectActions,
     systemIOLocalHomeProjectEntries,
