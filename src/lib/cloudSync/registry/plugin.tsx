@@ -33,6 +33,7 @@ import {
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
+  scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -70,7 +71,6 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
-  type ProjectLibrarySettingsDetailsProps,
   type ProjectLibraryTypeContribution,
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
@@ -99,9 +99,7 @@ type CloudSyncStatusBarPresentation = {
   tooltip: string
 }
 
-function CloudProjectLibrarySettingsDetails({
-  library,
-}: ProjectLibrarySettingsDetailsProps) {
+function CloudProjectLibrarySettingsDetails() {
   const [storagePath, setStoragePath] = useState<string>()
 
   useEffect(() => {
@@ -629,7 +627,9 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const userFeatures = ctx.services.signal(userFeaturesService)
   function CloudSyncStatusBarItemWithSettings() {
-    const settingsValues = settings.value!.useSettings()
+    const settingsValues = (
+      settings.value as NonNullable<typeof settings.value>
+    ).useSettings()
     return (
       <CloudSyncStatusBarItem
         resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
@@ -1115,6 +1115,13 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         wasmInstancePromise: getWasmPromise(),
         signal,
       })
+      if (!signal.aborted) {
+        scheduleCloudProjectDirectoryNameSyncFromTitles({
+          projects,
+          onProjectDirectoriesRenamed:
+            invalidateConfiguredProjectLibraryEntries,
+        })
+      }
 
       return projects.map((project) => ({
         ...homeProjectEntryFromProject(project),
