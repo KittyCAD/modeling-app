@@ -670,14 +670,6 @@ function buildEdgeExpr(
   }
 }
 
-/** Set localStorage DEBUG_FILLET_SELECTION=1 for topology / groupSelectionsByBody diagnostics. */
-function debugFilletTopologyLogs(): boolean {
-  return (
-    typeof localStorage !== 'undefined' &&
-    localStorage.getItem('DEBUG_FILLET_SELECTION') === '1'
-  )
-}
-
 export function getPrimitiveEdgeSelections(
   edges: Selections
 ): EnginePrimitiveSelection[] {
@@ -2963,22 +2955,9 @@ export function groupSelectionsByBodyAndAddTags(
     for (const v2Sel of selections.graphSelections) {
       const topo = getEngineTopologyFallbackNormalized(v2Sel)
       if (!topo) continue
-      const debugFillet = debugFilletTopologyLogs()
-      if (debugFillet) {
-        console.info(
-          '[groupSelectionsByBodyAndAddTags topology loop] primitive-edge topology candidate',
-          {
-            parentId: topo.parentId,
-            primitiveIndex: topo.primitiveIndex,
-            hasGraphEntityRef: Boolean(v2Sel.entityRef),
-            hasGraphCodeRefPath: Boolean(v2Sel.codeRef?.pathToNode),
-          }
-        )
-      }
       const { parentId, primitiveIndex } = topo
 
       let sweepArtifact: SweepArtifact | null = null
-      let usedParentIdFallback = false
 
       const resolved = resolveToCodeRef(v2Sel, artifactGraph)
       if (resolved) {
@@ -3013,26 +2992,9 @@ export function groupSelectionsByBodyAndAddTags(
             }
           }
         }
-        if (sweepArtifact) {
-          usedParentIdFallback = true
-        }
       }
 
       if (!sweepArtifact) {
-        if (debugFilletTopologyLogs()) {
-          const fp = getBodySelectionFromPrimitiveParentEntityId(
-            parentId,
-            artifactGraph
-          )
-          console.info(
-            '[groupSelectionsByBodyAndAddTags topology loop] skip: no sweepArtifact after resolve + parentId',
-            {
-              parentId,
-              primitiveIndex,
-              fromParentType: fp?.artifact?.type ?? null,
-            }
-          )
-        }
         continue
       }
 
@@ -3040,17 +3002,6 @@ export function groupSelectionsByBodyAndAddTags(
       const bodySelection: ResolvedGraphSelection = {
         artifact: sweepArtifact as Artifact,
         codeRef: sweepArtifact.codeRef,
-      }
-      if (debugFillet) {
-        console.info(
-          '[groupSelectionsByBodyAndAddTags topology loop] assigning primitive indices to body',
-          {
-            parentId,
-            primitiveIndex,
-            bodyKeySnippet: bodyKey.slice(0, 80),
-            sweepArtifactType: (sweepArtifact as Artifact).type,
-          }
-        )
       }
       const byBody = primitiveSelectionsByBody.get(bodyKey)
       if (byBody) {
@@ -3067,24 +3018,6 @@ export function groupSelectionsByBodyAndAddTags(
         selectionsByBody.set(bodyKey, {
           graphSelections: [],
           otherSelections: [],
-        })
-      }
-
-      if (usedParentIdFallback) {
-        console.warn(
-          '[fillet primitive-edge topology path] entity_get_parent_id lookup executed — engine should now provide sweep/composite artifacts',
-          {
-            bodyKeySnippet: bodyKey.slice(0, 80),
-            primitiveIndex,
-            parentId,
-          }
-        )
-      } else if (debugFillet) {
-        console.info('[fillet primitive-edge topology path]', {
-          bodyKeySnippet: bodyKey.slice(0, 80),
-          primitiveIndex,
-          parentId,
-          usedParentIdFallback,
         })
       }
     }
@@ -3285,46 +3218,15 @@ function groupSelectionsByBody(
   for (const v2Sel of selections.graphSelections) {
     const resolved = resolveToCodeRef(v2Sel, artifactGraph)
     const topologyNormalized = getEngineTopologyFallbackNormalized(v2Sel)
-    const debugFillet = debugFilletTopologyLogs()
-    const rawTopologyCamel = v2Sel.engineTopologyFallback ?? undefined
-    const rawTopologySnake = (v2Sel as { engine_topology_fallback?: unknown })
-      .engine_topology_fallback
     if (!resolved) {
-      if (debugFillet) {
-        console.info('[groupSelectionsByBody] v2 iteration', {
-          resolved: false,
-          engineTopologyFallbackCamel: rawTopologyCamel ?? null,
-          engineTopologyFallbackSnake: rawTopologySnake ?? null,
-          topologyNormalized,
-        })
-      }
       continue
     }
     const sweepArtifact = getSweepArtifactFromSelection(resolved, artifactGraph)
-    if (debugFillet) {
-      console.info('[groupSelectionsByBody] v2 iteration', {
-        resolved: true,
-        resolvedArtifactType: resolved.artifact?.type,
-        sweepFailed: err(sweepArtifact),
-        engineTopologyFallbackCamel: rawTopologyCamel ?? null,
-        engineTopologyFallbackSnake: rawTopologySnake ?? null,
-        topologyNormalized,
-      })
-    }
     if (err(sweepArtifact)) {
       // Shell inner edges: graph may not resolve to a sweep; use the primitive-edge topology path
       // and edgeId(index) below. Use normalized topology data so snake_case engine_topology_fallback
       // is honored the same way as the topology grouping loop.
       if (topologyNormalized) {
-        if (debugFillet) {
-          console.info(
-            '[groupSelectionsByBody] sweep lookup failed; deferring to primitive-edge topology path',
-            {
-              topologyNormalized,
-              codeRefPath: resolved.codeRef.pathToNode,
-            }
-          )
-        }
         continue
       }
       return sweepArtifact

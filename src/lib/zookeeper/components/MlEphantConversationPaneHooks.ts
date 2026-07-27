@@ -1,5 +1,4 @@
 import { type MlToolResult } from '@kittycad/lib'
-import { isDeletedFileReasoning } from '@src/lib/mlReasoningTypes'
 import type { FileEntry } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
@@ -85,7 +84,10 @@ export const useWatchForNewFileRequestsFromMlEphant = (
           if (!('reasoning' in response)) {
             return []
           }
-          if (!isDeletedFileReasoning(response.reasoning)) {
+          if (
+            response.reasoning.type !== 'deleted_kcl_file' &&
+            response.reasoning.type !== 'deleted_project_file'
+          ) {
             return []
           }
           return response.reasoning.file_name

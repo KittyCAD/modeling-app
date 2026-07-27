@@ -1694,7 +1694,6 @@ export async function getEventForQueryEntityTypeWithPoint(
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
-  let topologyResolutionOutcome: 'unchanged' | 'normalized' | null = null
   if (engineTopologyFallbackEarly && engineCommandManager) {
     const resolvedParentId = await resolveSweepParentEntityIdForEdge(
       engineTopologyFallbackEarly.parentId,
@@ -1702,14 +1701,11 @@ export async function getEventForQueryEntityTypeWithPoint(
       artifactGraph
     )
     if (resolvedParentId) {
-      if (resolvedParentId === engineTopologyFallbackEarly.parentId) {
-        topologyResolutionOutcome = 'unchanged'
-      } else {
+      if (resolvedParentId !== engineTopologyFallbackEarly.parentId) {
         engineTopologyFallbackResolved = {
           parentId: resolvedParentId,
           primitiveIndex: engineTopologyFallbackEarly.primitiveIndex,
         }
-        topologyResolutionOutcome = 'normalized'
       }
     }
   }
@@ -1790,23 +1786,6 @@ export async function getEventForQueryEntityTypeWithPoint(
     ...(engineTopologyFallbackResolved
       ? { engineTopologyFallback: engineTopologyFallbackResolved }
       : {}),
-  }
-
-  if (
-    typeof localStorage !== 'undefined' &&
-    localStorage.getItem('DEBUG_FILLET_SELECTION') === '1' &&
-    engineTopologyFallbackEarly
-  ) {
-    try {
-      console.info('[engine topology resolution]', {
-        rawParentId: engineTopologyFallbackEarly?.parentId ?? null,
-        resolvedParentId: engineTopologyFallbackResolved?.parentId ?? null,
-        primitiveIndex: engineTopologyFallbackResolved?.primitiveIndex ?? null,
-        outcome: topologyResolutionOutcome ?? 'missing-resolution',
-      })
-    } catch {
-      // ignore logging errors (e.g. console not available)
-    }
   }
 
   return {
