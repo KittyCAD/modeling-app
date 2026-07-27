@@ -426,7 +426,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           },
         })
 
-        if (!signal.aborted) {
+        if (
+          !signal.aborted &&
+          context.requestedProjectName.name === NO_PROJECT_DIRECTORY
+        ) {
           scheduleProjectDirectoryNameSyncFromTitles({
             projects,
             onProjectDirectoriesRenamed: () => {
