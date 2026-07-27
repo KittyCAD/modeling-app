@@ -128,6 +128,31 @@ export function setProjectTitleInProjectTomlContents(
   return stringifyProjectToml(table)
 }
 
+export function prepareProjectTomlForDuplication(
+  contents: string,
+  title: string,
+  projectId: string
+) {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error('Unable to parse project.toml while duplicating project')
+  }
+
+  table.title = title
+  delete table.cloud
+
+  if (!isTomlTable(table.settings)) {
+    table.settings = {}
+  }
+  const settings = table.settings
+  if (!isTomlTable(settings.meta)) {
+    settings.meta = {}
+  }
+  settings.meta.id = projectId
+
+  return stringifyProjectToml(table)
+}
+
 export function preserveProjectTomlMetadataInProjectSettingsContents(
   existingContents: string,
   nextProjectSettingsContents: string

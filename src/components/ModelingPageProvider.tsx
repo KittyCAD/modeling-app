@@ -204,6 +204,7 @@ export const ModelingPageProvider = ({
     navigate,
     settings: settingsValues,
     settingsActor,
+    systemIOActor,
   })
   useMenuListener(cb)
 

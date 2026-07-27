@@ -16,6 +16,7 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -285,6 +286,29 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
+        project
+          ? {
+              id: 'duplicate-project',
+              Element: 'button' as const,
+              children: (
+                <span
+                  className="flex-1"
+                  data-testid="project-sidebar-duplicate-project"
+                >
+                  Duplicate project
+                </span>
+              ),
+              onClick: () => {
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.duplicateProject,
+                  data: {
+                    projectName: project.name,
+                    requestedProjectName: getProjectDisplayName(project),
+                  },
+                })
+              },
+            }
+          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
@@ -460,6 +484,7 @@ function ProjectMenuPopover({
       project,
       contributedProjectMenuItems,
       commands.actor,
+      app.systemIOActor,
       file,
       filePath,
       machineCount,

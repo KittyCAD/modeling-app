@@ -336,6 +336,9 @@ describe('cloud sync project library', () => {
         title: 'Cloud',
         icon: 'network',
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
+        operations: {
+          duplicateProject: expect.any(Object),
+        },
       })
     } finally {
       registry[Symbol.dispose]()

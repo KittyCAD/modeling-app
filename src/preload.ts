@@ -11,6 +11,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
+import { cp } from '@src/lib/fs-zds/nodefs'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
@@ -386,5 +387,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  cp: fs.cp,
+  cp,
 })

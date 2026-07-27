@@ -48,6 +48,7 @@ function createProjectActions({
   rename?: HomeProjectActionsService['rename']
 } = {}): HomeProjectActionsService {
   return {
+    canDuplicate: () => true,
     canOpen,
     canRename: () => true,
     canDelete: () => true,
@@ -55,6 +56,7 @@ function createProjectActions({
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
+    duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
@@ -110,6 +112,17 @@ describe('ProjectCard', () => {
       createObjectURL: createObjectURLMock,
       revokeObjectURL: revokeObjectURLMock,
     })
+  })
+
+  test('duplicates a local project from its card action', async () => {
+    const { projectActions } = renderProjectCard()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
+
+    await waitFor(() =>
+      expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
+    )
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {

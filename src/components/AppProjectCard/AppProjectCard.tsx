@@ -233,6 +233,7 @@ function AppProjectCard({
   }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
+  const canDuplicate = projectActions.canDuplicate(project)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
@@ -355,6 +356,17 @@ function AppProjectCard({
         <ContextMenu
           menuTargetElement={menuTargetElement}
           items={[
+            <ContextMenuItem
+              key="duplicate"
+              icon="clone"
+              disabled={!canDuplicate}
+              data-testid="project-card-context-duplicate"
+              onClick={() => {
+                void projectActions.duplicate(project).catch(reportRejection)
+              }}
+            >
+              Duplicate project
+            </ContextMenuItem>,
             <ContextMenuItem
               key="rename"
               icon="sketch"

@@ -1282,11 +1282,11 @@ export const canReadWriteDirectory = async (
     }
   }
 
-  // bitwise OR to check read and write permissions
+  // Directories also require execute permission to traverse their entries.
   try {
     const canReadWrite = await fsZds.access(
       targetPath,
-      fsZdsConstants.R_OK | fsZdsConstants.W_OK
+      fsZdsConstants.R_OK | fsZdsConstants.W_OK | fsZdsConstants.X_OK
     )
     // This function returns undefined. If it cannot access the path it will throw an error
     return canReadWrite === undefined

@@ -42,9 +42,13 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectEntryFromProject,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
@@ -878,6 +882,39 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return project
+        },
+      },
+      duplicateProject: {
+        run: async ({ project }) => {
+          const systemIOService = systemIO.value
+          if (
+            !systemIOService ||
+            !project.localProjectName ||
+            !project.localProjectPath
+          ) {
+            return undefined
+          }
+
+          const result = await duplicateProjectInDirectory({
+            app: systemIOService.actor.getSnapshot().context.app,
+            source: {
+              directoryName: project.localProjectName,
+              displayName: getHomeProjectDisplayName(project),
+              path: project.localProjectPath,
+            },
+            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            requestedProjectTitle: getHomeProjectDisplayName(project),
+            unavailableProjectTitles: ctx.valueSpecs
+              .get(homeProjectEntriesValueSpec)
+              .filter((entry) =>
+                entry.libraryIds?.includes(PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+              )
+              .map(getHomeProjectDisplayName),
+            wasmInstance: await getWasmPromise(),
+          })
+          refreshLocalCloudProjectEntries()
+
+          return result
         },
       },
       // Rename/delete act on the remote project directly when it has not been

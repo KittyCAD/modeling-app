@@ -6,6 +6,7 @@ import {
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
   setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
@@ -87,6 +88,18 @@ describe('disconnectCloudSyncProject', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('ignores mutations inside hidden project roots', async () => {
+    const hiddenProjectPath = '/documents/Projects/.zds-duplicate-staging'
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(new Map(), { projectDirectory })
+    )
+
+    await notifyCloudSyncWriteLikeMutation(`${hiddenProjectPath}/project.toml`)
+
+    expect(await getCloudSyncProjectMetadata(hiddenProjectPath)).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {

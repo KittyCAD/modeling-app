@@ -360,6 +360,9 @@ describe('combineProjectLibraryTypes', () => {
     const openProject = {
       run: async () => undefined,
     }
+    const duplicateProject = {
+      run: async () => undefined,
+    }
     const renameProject = {
       run: async () => undefined,
     }
@@ -376,6 +379,7 @@ describe('combineProjectLibraryTypes', () => {
           operations: {
             createProject,
             openProject,
+            duplicateProject,
           },
         },
         {
@@ -395,6 +399,7 @@ describe('combineProjectLibraryTypes', () => {
       operations: {
         createProject,
         openProject,
+        duplicateProject,
         renameProject,
         deleteProject,
       },
