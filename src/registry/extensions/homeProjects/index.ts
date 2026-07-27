@@ -27,7 +27,10 @@ import {
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import {
+  readProjectsFromProjectDirectory,
+  scheduleProjectDirectoryNameSyncFromTitles,
+} from '@src/lib/projectLibraries/directoryScanner'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
@@ -360,6 +363,13 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               wasmInstancePromise: getWasmPromise(),
               signal,
             })
+            if (!signal.aborted) {
+              scheduleProjectDirectoryNameSyncFromTitles({
+                projects,
+                onProjectDirectoriesRenamed:
+                  invalidateConfiguredProjectLibraryEntries,
+              })
+            }
 
             return localHomeProjectEntriesFromProjects(projects, library.id)
           },
