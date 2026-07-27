@@ -253,6 +253,21 @@ impl Node<CallExpressionKw> {
     }
 }
 
+/// Guidance included in deprecation warnings for sketch v1 stdlib functions.
+/// The warning must stand on its own: a human or AI agent reading it should
+/// learn what replaces the function and where to find conversion examples
+/// without any other context.
+const SKETCH_V1_MIGRATION_HELP: &str = "It is part of the legacy sketch API (sketch v1), which is replaced by the sketch-solve API: draw profiles inside a `sketch(on = XY) { ... }` block using segment functions with absolute points, e.g. `line(start = [0, 0], end = [4, 3])`, optionally marking values as adjustable with `var` and constraining them with constraint functions like `coincident()` or `horizontal()`. See https://zoo.dev/docs/kcl-book/sketch2d_constraints.html for an introduction to sketch-solve with examples.";
+
+/// Migration guidance for a deprecated stdlib function, when it has a
+/// dedicated replacement story beyond its docs page.
+fn migration_help(fn_src: &FunctionSource) -> Option<&'static str> {
+    let name = &fn_src.std_props.as_ref()?.name;
+    // Every deprecated function in std::sketch is part of sketch v1, which
+    // sketch-solve replaces in KCL 2.0.
+    name.starts_with("std::sketch::").then_some(SKETCH_V1_MIGRATION_HELP)
+}
+
 impl FunctionSource {
     pub(crate) async fn call_kw(
         &self,
@@ -280,37 +295,35 @@ impl FunctionSource {
     ) -> Result<Option<KclValueControlFlow>, KclError> {
         // The KCL stdlib is allowed to use deprecated sketch1 functions inside.
         let warn_on_deprecated_usage = !exec_state.mod_local.inside_stdlib;
-        if warn_on_deprecated_usage && self.deprecated {
-            exec_state.warn(
-                CompilationIssue::err(
-                    callsite,
-                    format!(
-                        "{} is deprecated, see the docs for a recommended replacement",
-                        match &fn_name {
-                            Some(n) => format!("`{n}`"),
-                            None => "This function".to_owned(),
-                        }
-                    ),
-                ),
-                annotations::WARN_DEPRECATED,
-            );
-        } else if warn_on_deprecated_usage
-            && let Some(since) = &self.deprecated_since
-            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
-        {
-            exec_state.warn(
-                CompilationIssue::err(
-                    callsite,
-                    format!(
-                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
-                        match &fn_name {
-                            Some(n) => format!("`{n}`"),
-                            None => "This function".to_owned(),
-                        }
-                    ),
-                ),
-                annotations::WARN_DEPRECATED,
-            );
+        if warn_on_deprecated_usage {
+            let subject = match &fn_name {
+                Some(n) => format!("`{n}`"),
+                None => "This function".to_owned(),
+            };
+            let message = if self.deprecated {
+                Some(match migration_help(self) {
+                    Some(help) => format!("{subject} is deprecated. {help}"),
+                    None => format!("{subject} is deprecated, see the docs for a recommended replacement"),
+                })
+            } else if let Some(since) = &self.deprecated_since
+                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+            {
+                Some(match migration_help(self) {
+                    Some(help) => format!("{subject} is deprecated as of KCL {since}. {help}"),
+                    None => {
+                        format!(
+                            "{subject} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        )
+                    }
+                })
+            } else {
+                None
+            };
+            if let Some(message) = message {
+                let mut issue = CompilationIssue::err(callsite, message);
+                issue.tag = crate::errors::Tag::Deprecated;
+                exec_state.warn(issue, annotations::WARN_DEPRECATED);
+            }
         }
         if self.experimental {
             exec_state.warn_experimental(
@@ -359,10 +372,9 @@ impl FunctionSource {
                     Some(f) => format!("`{f}({label})`"),
                     None => format!("`{label}`"),
                 };
-                exec_state.warn(
-                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
-                    annotations::WARN_DEPRECATED,
-                );
+                let mut issue = CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}"));
+                issue.tag = crate::errors::Tag::Deprecated;
+                exec_state.warn(issue, annotations::WARN_DEPRECATED);
             }
         }
 
@@ -2214,5 +2226,40 @@ plane = startSketchOn(XY)
             "found {}",
             warnings[0].message
         );
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_sketch_v1_warning_explains_sketch_solve() {
+        // Sketch v1 deprecation warnings must be self-contained: they should
+        // say what replaces the function and link the conversion docs so both
+        // humans and AI agents can act on the warning alone.
+        let program = r#"@settings(kclVersion = 2.0)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(
+            warnings.len(),
+            3,
+            "expected one warning per sketch v1 call, got {warnings:#?}"
+        );
+        for warning in warnings {
+            assert!(
+                warning.message.contains("sketch-solve"),
+                "expected sketch-solve context in {}",
+                warning.message
+            );
+            assert!(
+                warning
+                    .message
+                    .contains("https://zoo.dev/docs/kcl-book/sketch2d_constraints.html"),
+                "expected docs URL in {}",
+                warning.message
+            );
+        }
     }
 }
