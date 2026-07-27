@@ -1824,9 +1824,7 @@ surface001 = extrude(
         const sweeps = [
           ...kclManagerInThisFile.execState.artifactGraph.values(),
         ].filter(
-          (
-            artifact
-          ): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
             artifact.type === 'sweep' && !artifact.consumed
         )
         expect(sweeps).toHaveLength(2)
