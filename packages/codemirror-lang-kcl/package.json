@@ -19,17 +19,17 @@
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@codemirror/language": "^6.12.3",
+    "@codemirror/language": "^6.12.4",
     "@codemirror/state": "^6.5.4",
     "@lezer/highlight": "^1.2.1",
     "typescript": "7.0.2"
   },
   "devDependencies": {
     "@lezer/generator": "^1.7.3",
-    "rollup": "^4.61.0",
+    "rollup": "^4.62.2",
     "rollup-plugin-esbuild": "^6.2.1",
     "vite-tsconfig-paths": "^6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   },
   "files": ["dist/"]
 }
