@@ -6233,6 +6233,27 @@ mod surface_extrude_edge_to {
         super::execute(TEST_NAME, true).await
     }
 }
+mod surface_extrude_edge_specifier_to {
+    const TEST_NAME: &str = "surface_extrude_edge_specifier_to";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod surface_extrude_edge_merge_error {
     const TEST_NAME: &str = "surface_extrude_edge_merge_error";
 
