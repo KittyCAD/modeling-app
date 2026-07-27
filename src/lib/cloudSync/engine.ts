@@ -1153,7 +1153,7 @@ export async function ensureCloudProjectLocallySynced(
     projectName
   )
   if (existingProjectPath) {
-    let nextMetadata = {
+    let nextMetadata: ProjectMetadata = {
       ...(await getOrCreateProjectMetadata(existingProjectPath)),
       remoteProjectId: projectId,
       tombstone: false,
@@ -2367,7 +2367,7 @@ async function syncRemoteIndex() {
         projectName
       )
       if (existingProjectPath) {
-        let nextMetadata = {
+        let nextMetadata: ProjectMetadata = {
           ...(await getOrCreateProjectMetadata(existingProjectPath)),
           remoteProjectId: remoteProject.id,
           remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
