@@ -51,7 +51,7 @@ export async function duplicateProjectInDirectory({
     children: [],
   }))
   const name = getUniqueProjectName(
-    requestedProjectDirectoryName,
+    `${requestedProjectDirectoryName}-1`,
     existingProjects
   )
   const title = getProjectTitleFromUniqueDirectoryName({
