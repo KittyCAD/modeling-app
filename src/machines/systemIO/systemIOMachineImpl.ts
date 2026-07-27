@@ -26,8 +26,8 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -410,7 +410,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return []
         }
 
-        return readProjectsFromProjectDirectory({
+        const projects = await readProjectsFromProjectDirectory({
           projectDirectoryPath,
           wasmInstancePromise: context.wasmInstancePromise,
           previousProjects: context.folders,
@@ -422,6 +422,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             })
           },
         })
+
+        return projects
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(

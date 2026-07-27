@@ -11,6 +11,7 @@ import type {
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
+import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
 import type { ComponentType } from 'react'
 
@@ -21,6 +22,24 @@ export type ProjectLibraryContribution =
 export type ProjectLibrarySettingDefaultContribution =
   | ProjectLibrarySetting
   | readonly ProjectLibrarySetting[]
+
+export interface ProjectLibrarySettingDefaultPolicyInput {
+  initialDefaultDir: string
+  legacyProjectDirectory?: string
+  isDesktop: boolean
+}
+
+export interface ProjectLibrarySettingDefaultPolicy {
+  id: string
+  priority?: number
+  getDefaultLibraries: (
+    input: ProjectLibrarySettingDefaultPolicyInput
+  ) => readonly ProjectLibrarySetting[] | undefined
+}
+
+export type ProjectLibrarySettingDefaultPolicyContribution =
+  | ProjectLibrarySettingDefaultPolicy
+  | readonly ProjectLibrarySettingDefaultPolicy[]
 
 export interface ProjectLibraryOperation<
   Input extends { library: ProjectLibrary },
@@ -68,6 +87,7 @@ export interface ProjectLibrarySettingsDetailsProps {
   index: number
   updateLibrary: (library: ProjectLibrarySetting) => void
   commitLibrary: (library?: ProjectLibrarySetting) => void
+  readOnly?: boolean
   chooseDirectory?: (input: {
     defaultPath?: string
     title?: string
@@ -85,6 +105,8 @@ export interface ProjectLibraryTypeContribution {
   newLibrarySetting?: ProjectLibrarySetting
   /** Optional detail cell rendered in the project libraries settings row. */
   settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
+  /** Hide this type from creation/editing UI while keeping runtime support. */
+  hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary
@@ -180,6 +202,33 @@ export function combineProjectLibrarySettingDefaults(
   )
 }
 
+export function combineProjectLibrarySettingDefaultPolicies(
+  contributions: readonly ProjectLibrarySettingDefaultPolicyContribution[]
+) {
+  return contributions
+    .flatMap((contribution) =>
+      isArray(contribution) ? contribution : [contribution]
+    )
+    .toSorted((a, b) => {
+      const priorityDiff = (b.priority ?? 0) - (a.priority ?? 0)
+      return priorityDiff === 0 ? a.id.localeCompare(b.id) : priorityDiff
+    })
+}
+
+export function resolveProjectLibrarySettingDefaults(
+  policies: readonly ProjectLibrarySettingDefaultPolicy[],
+  input: ProjectLibrarySettingDefaultPolicyInput
+) {
+  for (const policy of policies) {
+    const defaults = policy.getDefaultLibraries(input)
+    if (defaults && defaults.length > 0) {
+      return mergeProjectLibrarySettings(defaults)
+    }
+  }
+
+  return []
+}
+
 export const projectLibrariesContract = defineContract({
   projectLibrariesValueSpec: defineValueSpec<
     ProjectLibraryContribution,
@@ -205,10 +254,19 @@ export const projectLibrariesContract = defineContract({
     defaultValue: [],
     combine: combineProjectLibrarySettingDefaults,
   }),
+  projectLibrarySettingDefaultPoliciesValueSpec: defineValueSpec<
+    ProjectLibrarySettingDefaultPolicyContribution,
+    ProjectLibrarySettingDefaultPolicy[]
+  >({
+    name: 'project-library-setting-default-policies',
+    defaultValue: [],
+    combine: combineProjectLibrarySettingDefaultPolicies,
+  }),
 })
 
 export const {
   projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
+  projectLibrarySettingDefaultPoliciesValueSpec,
 } = projectLibrariesContract
