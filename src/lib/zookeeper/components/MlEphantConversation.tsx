@@ -524,7 +524,9 @@ export const MlEphantConversationInput = (
   }
 
   const selectionsContext = props.contexts.find(
-    (context): context is Extract<
+    (
+      context
+    ): context is Extract<
       MlEphantManagerPromptContext,
       { type: 'selections' }
     > => context.type === 'selections'
