@@ -61,6 +61,7 @@ export interface MlEphantConversationProps {
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
+  isLoadingAttachments?: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
@@ -74,7 +75,15 @@ const getModeOption = (
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => option.id === mode)
 
-const getFirstEnabledModeOption = (
+const getSelectableModeOption = (
+  mode: MlCopilotModeId | undefined,
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined => {
+  const option = getModeOption(mode, modeOptions)
+  return option && !option.disabled ? option : undefined
+}
+
+const getFirstSelectableMode = (
   modeOptions?: MlCopilotModeOption[]
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => !option.disabled)
@@ -107,14 +116,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
               {props.modeOptions.map((mode) => (
                 <button
                   type="button"
-                  disabled={mode.disabled}
                   key={mode.id}
+                  disabled={mode.disabled}
                   onClick={() => {
                     if (mode.disabled) return
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 text-left cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border disabled:cursor-not-allowed disabled:opacity-70 ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex w-full flex-row items-start gap-2 p-2 pr-4 rounded-md border text-left ${
+                    props.current === mode.id ? 'border-primary' : ''
+                  } ${
+                    mode.disabled
+                      ? 'cursor-not-allowed opacity-60'
+                      : 'cursor-pointer hover:bg-2'
+                  }`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -127,8 +142,8 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                       {mode.description}
                     </span>
                     {mode.disabled && (
-                      <span className="text-chalkboard-70 text-[11px] leading-tight">
-                        Upgrade your plan to use this mode
+                      <span className="text-primary text-[11px] leading-tight">
+                        Upgrade your plan to use this mode.
                       </span>
                     )}
                   </div>
@@ -143,7 +158,6 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface MlEphantExtraInputsProps {
-  // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
@@ -156,7 +170,7 @@ export interface MlEphantExtraInputsProps {
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const currentMode = getModeOption(props.mode, props.modeOptions)
+  const currentMode = getSelectableModeOption(props.mode, props.modeOptions)
   const modeOptions = props.modeOptions ?? []
 
   return (
@@ -165,7 +179,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       data-testid="ml-ephant-extra-inputs"
     >
       <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
-        {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
@@ -333,20 +346,16 @@ export const MlEphantConversationInput = (
   const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
     if (!modeOptions || modeOptions.length === 0) return
-    const currentMode = getModeOption(mode, modeOptions)
-    if (currentMode?.disabled) {
-      const fallbackMode = getFirstEnabledModeOption(modeOptions)?.id
+    const selectedMode = getSelectableModeOption(mode, modeOptions)
+    if (mode !== undefined && selectedMode === undefined) {
+      const fallbackMode =
+        getSelectableModeOption(props.initialMlCopilotMode, modeOptions) ??
+        getFirstSelectableMode(modeOptions)
       userHasPickedMode.current = false
-      setMode(fallbackMode)
-      onMlCopilotModeChange?.(fallbackMode)
-      return
+      setMode(fallbackMode?.id)
+      onMlCopilotModeChange?.(fallbackMode?.id)
     }
-    if (mode !== undefined && currentMode === undefined) {
-      userHasPickedMode.current = false
-      setMode(undefined)
-      onMlCopilotModeChange?.(undefined)
-    }
-  }, [modeOptions, mode, onMlCopilotModeChange])
+  }, [modeOptions, mode, onMlCopilotModeChange, props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -354,7 +363,11 @@ export const MlEphantConversationInput = (
     if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, getModeOption(mode, modeOptions)?.id, attachments)
+    props.onProcess(
+      value,
+      getSelectableModeOption(mode, modeOptions)?.id,
+      attachments
+    )
     setValue('')
     setAttachments([])
   }
@@ -396,18 +409,17 @@ export const MlEphantConversationInput = (
     })
   }
 
-  const onAttachFiles = () => {
-    if (props.disabled) return
-    fileInputRef.current?.click()
-  }
-
   const appendDataUrlAttachment = (dataUrl: string, fileName: string) => {
     const file = dataUrlToFile(dataUrl, fileName)
     if (err(file)) {
-      console.error('Failed to create screenshot attachment', file)
       return
     }
     appendAttachments([file])
+  }
+
+  const onAttachFiles = () => {
+    if (props.disabled) return
+    fileInputRef.current?.click()
   }
 
   const onCaptureScreenshot = () => {
@@ -511,9 +523,12 @@ export const MlEphantConversationInput = (
     appendAttachments(files)
   }
 
-  const selectionsContext:
-    | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-    | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
+  const selectionsContext = props.contexts.find(
+    (context): context is Extract<
+      MlEphantManagerPromptContext,
+      { type: 'selections' }
+    > => context.type === 'selections'
+  )
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -540,9 +555,6 @@ export const MlEphantConversationInput = (
         />
         <textarea
           {...noAutofillInputProps}
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
           data-testid="ml-ephant-conversation-input"
           onChange={(e) => setValue(e.target.value)}
           value={value}
@@ -644,7 +656,8 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
+        Zookeeper can make mistakes. We send selection context to help. Always
+        verify information.
       </div>
     </div>
   )
@@ -801,6 +814,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               ))}
             </div>
           )}
+          {props.isLoadingAttachments ? (
+            <div className="border-t b-4 px-4 py-2 bg-chalkboard-10 dark:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+              Progressively loading attachments into context...
+            </div>
+          ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
