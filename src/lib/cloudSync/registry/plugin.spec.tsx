@@ -13,6 +13,7 @@ import {
   cloudSyncPlugin,
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
+  preserveCloudProjectDefaultFile,
 } from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
 import {
@@ -422,6 +423,21 @@ describe('cloud sync project library', () => {
       expect(
         getProjectLibraryCreateProjectOperation(cloudLibraryType, cloudLibrary)
       ).toBeDefined()
+      expect(cloudLibraryType.operations?.openProject).toBeDefined()
+      expect(
+        cloudLibraryType.operations?.openProject?.run({
+          library: cloudLibrary,
+          project: {
+            id: 'local:/cloud/moved-project',
+            source: 'remote',
+            status: 'cloud-only',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+            name: 'moved-project',
+            defaultFile: '/cloud/moved-project/main.kcl',
+            readWriteAccess: true,
+          },
+        })
+      ).toEqual({ defaultFile: '/cloud/moved-project/main.kcl' })
       expect(cloudLibraryType.operations?.moveProjectFrom).toBeDefined()
       expect(cloudLibraryType.operations?.moveProjectTo).toBeDefined()
     } finally {
@@ -548,6 +564,61 @@ describe('cloud sync project library', () => {
 })
 
 describe('cloud sync home project entries', () => {
+  test('preserves the moved local default file while waiting for a remote id', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 1,
+    }
+    const movedProjectPath = '/some/path/moved-project'
+    const movedDefaultFile = `${movedProjectPath}/main.kcl`
+    preserveCloudProjectDefaultFile({
+      localProjectPath: movedProjectPath,
+      defaultFile: movedDefaultFile,
+    })
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          movedProjectPath,
+          {
+            schemaVersion: 1,
+            localProjectPath: movedProjectPath,
+            projectName: 'Moved project',
+            hasPendingChanges: true,
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      await waitFor(() =>
+        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+          expect.objectContaining({
+            source: 'remote',
+            status: 'cloud-only',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+            name: 'Moved project',
+            title: 'Moved project',
+            localProjectPath: movedProjectPath,
+            defaultFile: movedDefaultFile,
+            readWriteAccess: true,
+          }),
+        ])
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   test('contributes remote thumbnails for cloud-only home entries', async () => {
     cloudSyncStatus.value = {
       enabled: true,

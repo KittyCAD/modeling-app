@@ -35,7 +35,10 @@ import {
   retryCloudSync,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
-import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
+import {
+  getDefaultCloudProjectDirectoryPath,
+  normalizePathForSync,
+} from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -105,6 +108,34 @@ type CloudConflictProjectMenuDialog = {
 
 const cloudConflictProjectMenuDialog =
   signal<CloudConflictProjectMenuDialog | null>(null)
+
+const preservedCloudProjectDefaultFiles = signal<Map<string, string>>(new Map())
+
+export function preserveCloudProjectDefaultFile({
+  localProjectPath,
+  defaultFile,
+}: {
+  localProjectPath?: string
+  defaultFile?: string
+}) {
+  if (!localProjectPath || !defaultFile) {
+    return
+  }
+
+  const nextDefaultFiles = new Map(preservedCloudProjectDefaultFiles.value)
+  nextDefaultFiles.set(normalizePathForSync(localProjectPath), defaultFile)
+  preservedCloudProjectDefaultFiles.value = nextDefaultFiles
+}
+
+function getPreservedCloudProjectDefaultFile(
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined
+) {
+  return metadata
+    ? preservedCloudProjectDefaultFiles.value.get(
+        normalizePathForSync(metadata.localProjectPath)
+      )
+    : undefined
+}
 
 function CloudProjectLibrarySettingsDetails() {
   const [storagePath, setStoragePath] = useState<string>()
@@ -519,7 +550,8 @@ function shouldContributeCloudSyncMetadata(
 ) {
   return (
     Boolean(metadata.conflict) ||
-    metadata.lastFailure?.kind === 'remote-upload-forbidden'
+    metadata.lastFailure?.kind === 'remote-upload-forbidden' ||
+    Boolean(getPreservedCloudProjectDefaultFile(metadata))
   )
 }
 
@@ -602,6 +634,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           const metadata = cloudSyncMetadataByRemoteProjectId.get(project.id)
           const name = metadata?.projectName || project.title || project.id
           const thumbnailUrl = remoteThumbnailUrls.value.get(project.id)
+          const defaultFile = getPreservedCloudProjectDefaultFile(metadata)
 
           return {
             source: 'remote',
@@ -611,6 +644,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
             remoteProjectId: project.id,
             modified: getCloudSyncHomeProjectModifiedTime(project, metadata),
             readWriteAccess: true,
+            ...(defaultFile ? { defaultFile } : {}),
             ...(thumbnailUrl
               ? {
                   thumbnail: {
@@ -628,19 +662,21 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
             !metadata.remoteProjectId ||
             !remoteProjectIds.has(metadata.remoteProjectId)
         )
-        .map(
-          (metadata) =>
-            ({
-              source: 'remote',
-              ...homeProjectEntryCloudSyncFields(metadata),
-              name: metadata.projectName,
-              title: metadata.projectName,
-              localProjectPath: metadata.localProjectPath,
-              remoteProjectId: metadata.remoteProjectId,
-              modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
-              readWriteAccess: true,
-            }) satisfies HomeProjectEntryContribution
-        )
+        .map((metadata) => {
+          const defaultFile = getPreservedCloudProjectDefaultFile(metadata)
+
+          return {
+            source: 'remote',
+            ...homeProjectEntryCloudSyncFields(metadata),
+            name: metadata.projectName,
+            title: metadata.projectName,
+            localProjectPath: metadata.localProjectPath,
+            remoteProjectId: metadata.remoteProjectId,
+            modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
+            readWriteAccess: true,
+            ...(defaultFile ? { defaultFile } : {}),
+          } satisfies HomeProjectEntryContribution
+        })
 
       return [...remoteProjectEntries, ...localOnlyCloudSyncEntries]
     })
@@ -848,6 +884,15 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       // materialized locally. Once a local copy exists, they behave like a
       // normal local project: mutate the local files and let cloud sync
       // replicate the change to the remote.
+      openProject: {
+        run: ({ project }) => {
+          if (!project.readWriteAccess || !project.defaultFile) {
+            return undefined
+          }
+
+          return { defaultFile: project.defaultFile }
+        },
+      },
       renameProject: {
         run: async ({ project, requestedName }) => {
           const title = requestedName.trim()
@@ -906,6 +951,11 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             sourceProjectPath: source.localProjectPath,
             sourceProjectName: source.localProjectName,
             defaultFile: source.defaultFile,
+          })
+
+          preserveCloudProjectDefaultFile({
+            localProjectPath: result.localProjectPath,
+            defaultFile: result.defaultFile,
           })
 
           if (cloudSyncStatus.value.enabled) {
