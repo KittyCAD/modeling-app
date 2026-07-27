@@ -63,23 +63,9 @@ Settings that affect the behavior while modeling.
 
 This setting has the following nested options:
 
-##### backface_color
-
-The default color to use for surface backfaces.
-
-
-**Default:** None
-
 ##### base_unit
 
 The default unit to use in modeling dimensions. If not given, defaults to millimeters.
-
-
-**Default:** None
-
-##### camera_orbit
-
-The methodology the camera should use to orbit around the model.
 
 
 **Default:** None
@@ -91,16 +77,9 @@ The projection mode the camera should use while modeling.
 
 **Default:** None
 
-##### enable_ssao
+##### camera_orbit
 
-Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-
-
-**Default:** None
-
-##### fixed_size_grid
-
-When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+The methodology the camera should use to orbit around the model.
 
 
 **Default:** None
@@ -112,9 +91,30 @@ Highlight edges of 3D objects?
 
 **Default:** None
 
+##### enable_ssao
+
+Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+
+
+**Default:** None
+
+##### backface_color
+
+The default color to use for surface backfaces.
+
+
+**Default:** None
+
 ##### show_scale_grid
 
 Whether or not to show a scale grid in the 3D modeling view
+
+
+**Default:** None
+
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
 
 
 **Default:** None

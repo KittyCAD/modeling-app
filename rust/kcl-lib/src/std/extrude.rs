@@ -465,15 +465,6 @@ async fn inner_extrude(
         )));
     }
 
-    if let Some(bidirectional_length) = &bidirectional_length
-        && bidirectional_length.to_mm() < 0.0
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "`bidirectionalLength` must be greater than or equal to 0".to_owned(),
-            vec![args.source_range],
-        )));
-    }
-
     if (length.is_some() || twist_angle.is_some()) && to.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give `length` or `twist` params with the `to` param, you have to choose one or the other"
@@ -1561,7 +1552,7 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn extrude_rejects_negative_bidirectional_length_in_mock_exec() {
+    async fn extrude_accepts_negative_bidirectional_length_in_mock_exec() {
         let code = r#"
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -1572,14 +1563,17 @@ profile001 = startSketchOn(XY)
 extrude(profile001, length = 1, bidirectionalLength = -1)
 "#;
 
-        let err = parse_execute(code).await.unwrap_err();
+        let result = parse_execute(code).await.unwrap();
+        let extrude = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::Extrude(extrude) => Some(extrude),
+                _ => None,
+            })
+            .expect("expected an extrude command");
 
-        assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
-        assert!(
-            err.message()
-                .contains("`bidirectionalLength` must be greater than or equal to 0"),
-            "{err:?}"
-        );
+        assert_eq!(extrude.opposite, Opposite::Other(LengthUnit(-1.0)));
     }
 
     #[tokio::test(flavor = "multi_thread")]

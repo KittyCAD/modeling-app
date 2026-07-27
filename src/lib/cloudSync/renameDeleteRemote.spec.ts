@@ -7,9 +7,14 @@ import {
   renameRemoteCloudProject,
 } from '@src/lib/cloudSync'
 import { putProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import {
+  deleteCloudSyncTestDatabase,
+  getFetchMethod,
+  getFetchUrl,
+  jsonResponse,
+} from '@src/lib/cloudSync/testUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const syncDatabaseName = 'zds-opfs-cloud-sync'
 const projectPath = '/documents/Projects/bracket'
 const remoteProjectId = 'remote-project-123'
 const baseUrl = 'https://example.test'
@@ -18,60 +23,9 @@ const remoteProjectDownloadUrl = `${remoteProjectUrl}/download?format=zip`
 
 const fetchMock = vi.fn<typeof fetch>()
 
-function getFetchUrl(input: Parameters<typeof fetch>[0]) {
-  if (typeof input === 'string') {
-    return input
-  }
-  if (input instanceof URL) {
-    return input.toString()
-  }
-  return input.url
-}
-
-function getFetchMethod(
-  input: Parameters<typeof fetch>[0],
-  init?: Parameters<typeof fetch>[1]
-) {
-  if (init?.method) {
-    return init.method
-  }
-  if (typeof input === 'object' && 'method' in input) {
-    return input.method
-  }
-  return 'GET'
-}
-
-function jsonResponse(value: unknown, status = 200) {
-  return new Response(JSON.stringify(value), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
-async function deleteSyncDatabase() {
-  await new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error(`IndexedDB database ${syncDatabaseName} is blocked.`))
-    }, 1000)
-    const request = indexedDB.deleteDatabase(syncDatabaseName)
-    request.onerror = () => {
-      clearTimeout(timeout)
-      reject(
-        request.error ??
-          new Error(`Failed to delete IndexedDB database ${syncDatabaseName}.`)
-      )
-    }
-    request.onblocked = () => undefined
-    request.onsuccess = () => {
-      clearTimeout(timeout)
-      resolve()
-    }
-  })
-}
-
 describe('renameRemoteCloudProject', () => {
   beforeEach(async () => {
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
     fetchMock.mockReset()
     cloudSyncRemoteProjects.value = [{ id: remoteProjectId, title: 'Bracket' }]
     configureCloudSyncEngine({
@@ -86,7 +40,7 @@ describe('renameRemoteCloudProject', () => {
   afterEach(async () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
   })
 
   it('re-uploads the remote project archive with the new title', async () => {
@@ -156,7 +110,7 @@ describe('renameRemoteCloudProject', () => {
 
 describe('deleteRemoteCloudProject', () => {
   beforeEach(async () => {
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
     fetchMock.mockReset()
     cloudSyncRemoteProjects.value = [
       { id: remoteProjectId },
@@ -174,7 +128,7 @@ describe('deleteRemoteCloudProject', () => {
   afterEach(async () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
-    await deleteSyncDatabase()
+    await deleteCloudSyncTestDatabase()
   })
 
   it('deletes the remote project and clears any lingering local metadata', async () => {
