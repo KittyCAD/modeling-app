@@ -22,7 +22,10 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const projectDirectory = '/documents/Projects'
@@ -90,16 +93,18 @@ describe('disconnectCloudSyncProject', () => {
     await deleteCloudSyncTestDatabase()
   })
 
-  it('ignores mutations inside duplicate staging roots', async () => {
-    const stagingProjectPath = '/documents/Projects/.zds-duplicate-staging'
+  it('ignores mutations inside temporary duplicate roots', async () => {
+    const temporaryProjectPath = `${projectDirectory}/${DUPLICATE_PROJECT_TEMPORARY_PREFIX}temporary`
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
     )
 
-    await notifyCloudSyncWriteLikeMutation(`${stagingProjectPath}/project.toml`)
+    await notifyCloudSyncWriteLikeMutation(
+      `${temporaryProjectPath}/project.toml`
+    )
 
     expect(
-      await getCloudSyncProjectMetadata(stagingProjectPath)
+      await getCloudSyncProjectMetadata(temporaryProjectPath)
     ).toBeUndefined()
     expect(await getAllOutboxEntries()).toEqual([])
   })

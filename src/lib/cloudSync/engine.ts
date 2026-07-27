@@ -51,7 +51,11 @@ import type {
   RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
-import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_FOLDER,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
 import {
@@ -2779,7 +2783,9 @@ async function registerProjectMutation(
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
   if (
-    projectNameFromPath(normalizedProjectPath).startsWith('.zds-duplicate-')
+    projectNameFromPath(normalizedProjectPath).startsWith(
+      DUPLICATE_PROJECT_TEMPORARY_PREFIX
+    )
   ) {
     return
   }

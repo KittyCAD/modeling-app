@@ -1,4 +1,7 @@
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
@@ -73,20 +76,23 @@ export async function duplicateProjectInDirectory({
     return Promise.reject(duplicatedProjectToml)
   }
 
-  // Copy through a hidden directory so cloud sync only sees the duplicate
+  // Copy through a hidden temporary directory so cloud sync only sees the duplicate
   // after its project metadata no longer points at the source cloud project.
-  const stagingPath = fsZds.join(projectDirectoryPath, `.zds-duplicate-${v4()}`)
+  const temporaryPath = fsZds.join(
+    projectDirectoryPath,
+    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
+  )
   const targetPath = fsZds.join(projectDirectoryPath, name)
   try {
-    await fsZds.mkdir(stagingPath)
-    await fsZds.cp(source.path, stagingPath, { recursive: true })
+    await fsZds.mkdir(temporaryPath)
+    await fsZds.cp(source.path, temporaryPath, { recursive: true })
     await fsZds.writeFile(
-      fsZds.join(stagingPath, PROJECT_SETTINGS_FILE_NAME),
+      fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
       new TextEncoder().encode(duplicatedProjectToml)
     )
-    await fsZds.rename(stagingPath, targetPath)
+    await fsZds.rename(temporaryPath, targetPath)
   } catch (error) {
-    await fsZds.rm(stagingPath, { recursive: true }).catch(() => undefined)
+    await fsZds.rm(temporaryPath, { recursive: true }).catch(() => undefined)
     return Promise.reject(error)
   }
 
