@@ -1,6 +1,7 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
@@ -22,6 +23,7 @@ export function modelingMenuCallbackMostActions({
   filePath,
   authActor,
   commandBarActor,
+  currentProject,
   kclManager,
   settingsActor,
   systemIOActor,
@@ -31,6 +33,7 @@ export function modelingMenuCallbackMostActions({
   filePath: string | undefined
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
   systemIOActor: SystemIOActor
@@ -49,7 +52,6 @@ export function modelingMenuCallbackMostActions({
         },
       })
     } else if (data.menuLabel === 'File.Duplicate project') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
       if (!currentProject) {
         return
       }
