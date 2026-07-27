@@ -3413,6 +3413,16 @@ export fn region(
   /// The sketch that the region is from. This is required when point is a `Point2d`.
   sketch?: any,
 ): Sketch {}
+
+/// ```kcl,sketchSolve
+/// sketch001 = sketch(on = XY) {
+///   circle1 = circle(start = [var 0.87mm, var 0.63mm], center = [var -1.35mm, var 3mm])
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
+/// extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+/// planarSurface(extrude001.sketch.tags.circle1)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn planarSurface(
     /// Which sketch or sketches should be extruded.
