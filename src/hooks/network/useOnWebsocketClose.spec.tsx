@@ -1,5 +1,5 @@
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -53,7 +53,7 @@ describe('useOnWebsocketClose', () => {
         })
       )
       engineCommandManager.dispatchEvent(
-        new Event(EngineCommandManagerEvents.WebsocketClosed)
+        new Event(EngineConnectionManagerEvents.WebsocketClosed)
       )
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
@@ -72,7 +72,7 @@ describe('useOnWebsocketClose', () => {
         })
       )
       const infiniteEvent = new CustomEvent(
-        EngineCommandManagerEvents.WebsocketClosed,
+        EngineConnectionManagerEvents.WebsocketClosed,
         {
           detail: {
             code: '1006',

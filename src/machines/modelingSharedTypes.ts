@@ -18,7 +18,7 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -162,7 +162,7 @@ export interface SegmentOverlays {
 export interface EdgeCutInfo {
   type: 'edgeCut'
   tagName: string
-  subType: 'base' | 'opposite' | 'adjacent'
+  subType: 'base' | 'opposite' | 'adjacent' | 'previousAdjacent'
 }
 
 export interface CapInfo {

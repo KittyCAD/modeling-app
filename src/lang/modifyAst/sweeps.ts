@@ -1269,6 +1269,7 @@ function getEdgeProfileExprsFromSelection({
       sourceSurfaceInput &&
       (isCallExprWithName(sourceSurfaceInput, 'getOppositeEdge') ||
         isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'getPreviousAdjacentEdge') ||
         isCallExprWithName(sourceSurfaceInput, 'edgeId'))
 
     if (!edgeContext.isClone && sourceSurfaceInputIsEdgeExpr) {
@@ -1289,6 +1290,7 @@ function getEdgeProfileExprsFromSelection({
         variableInit &&
         (isCallExprWithName(variableInit, 'getOppositeEdge') ||
           isCallExprWithName(variableInit, 'getNextAdjacentEdge') ||
+          isCallExprWithName(variableInit, 'getPreviousAdjacentEdge') ||
           isCallExprWithName(variableInit, 'edgeId'))
       ) {
         exprs.push(

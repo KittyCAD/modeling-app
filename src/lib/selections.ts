@@ -110,7 +110,7 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
@@ -391,14 +391,11 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     lookUpPatternCopies?: boolean
   } = {}
 ): Selection | null {
-  const patternArtifact = getPatternArtifactForCopyId(
-    parentEntityId,
-    artifactGraph
-  )
-  if (patternArtifact && !lookUpPatternCopies) {
-    return null
-  }
-  const parentArtifact = patternArtifact ?? artifactGraph.get(parentEntityId)
+  const parentArtifact =
+    artifactGraph.get(parentEntityId) ??
+    (lookUpPatternCopies
+      ? getPatternArtifactForCopyId(parentEntityId, artifactGraph)
+      : undefined)
   if (!parentArtifact) {
     return null
   }
@@ -518,6 +515,13 @@ function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
 
   if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
     return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
+  }
+
+  if (
+    artifact.type === 'sweepEdge' &&
+    artifact.subType === 'previousAdjacent'
+  ) {
+    return createCallExpressionStdLibKw('getPreviousAdjacentEdge', tag, [])
   }
 
   return tag
@@ -1182,8 +1186,8 @@ export async function getEventForSelectWithPoint(
 
   const selectedEngineEntityId = data.entity_id
   let _artifact =
-    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph) ??
-    artifactGraph.get(selectedEngineEntityId)
+    artifactGraph.get(selectedEngineEntityId) ??
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 

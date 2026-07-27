@@ -46,6 +46,7 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
+  ProjectSyncFailureKind,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
@@ -96,6 +97,8 @@ export type CloudSyncConflictResolution = 'local' | 'cloud'
 const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
+const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
+  'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
 
 let localFs: IZooDesignStudioFS = opfs.impl
 
@@ -119,9 +122,13 @@ export const cloudSyncStatus = signal<CloudSyncStatus>({
 export const cloudSyncRemoteProjects = signal<RemoteProjectSummary[]>([])
 
 function updateStatus(next: Partial<CloudSyncStatus>) {
+  const shouldClearFailureKind =
+    Object.prototype.hasOwnProperty.call(next, 'lastFailure') &&
+    !Object.prototype.hasOwnProperty.call(next, 'lastFailureKind')
   cloudSyncStatus.value = {
     ...cloudSyncStatus.value,
     ...next,
+    ...(shouldClearFailureKind ? { lastFailureKind: undefined } : {}),
   }
 }
 
@@ -131,6 +138,42 @@ function nowIso() {
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+}
+
+function isProjectSyncFailureKind(
+  value: unknown
+): value is ProjectSyncFailureKind {
+  return value === 'remote-upload-forbidden'
+}
+
+function projectFailureKind(error: unknown) {
+  if (typeof error === 'object' && error !== null && 'kind' in error) {
+    const kind = error.kind
+    return isProjectSyncFailureKind(kind) ? kind : undefined
+  }
+  return undefined
+}
+
+function projectFailureError(
+  kind: ProjectSyncFailureKind,
+  message: string
+): Error & { kind: ProjectSyncFailureKind } {
+  const error = new Error(message) as Error & { kind: ProjectSyncFailureKind }
+  error.kind = kind
+  return error
+}
+
+function remoteUploadFailureFromError(error: unknown) {
+  return error instanceof CloudApiError && error.status === 403
+    ? projectFailureError(
+        'remote-upload-forbidden',
+        REMOTE_UPLOAD_FORBIDDEN_MESSAGE
+      )
+    : error
+}
+
+function rejectRemoteUploadFailure(error: unknown): Promise<never> {
+  return Promise.reject(remoteUploadFailureFromError(error))
 }
 
 function getConfiguredProjectDirectoryPath() {
@@ -1069,11 +1112,13 @@ async function markProjectFailure(
   error: unknown
 ): Promise<void> {
   const message = errorMessage(error)
+  const kind = projectFailureKind(error)
   const next = {
     ...metadata,
     lastFailure: {
       message,
       at: nowIso(),
+      kind,
     },
   }
   await putProjectMetadata(next)
@@ -1082,6 +1127,7 @@ async function markProjectFailure(
       state: 'failed',
       activeProjectPath: metadata.localProjectPath,
       lastFailure: message,
+      lastFailureKind: kind,
       lastFailureAt: next.lastFailure.at,
     })
   }
@@ -1186,7 +1232,7 @@ async function applyLocalDataForConflict(metadata: ProjectMetadata) {
     projectId: metadata.remoteProjectId,
     files: localFiles,
     expectedRevision: conflict.remoteRevision ?? metadata.remoteRevision,
-  })
+  }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteConflictCopy(conflict.conflictProjectPath)
   await markProjectSynced(
@@ -1714,7 +1760,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         projectId: remoteProjectId,
         files: localFiles,
         expectedRevision: metadata.remoteRevision,
-      })
+      }).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
@@ -2112,9 +2158,11 @@ async function runCloudSync() {
     }
   } catch (error) {
     const syncedAt = pendingStatusSyncedAt
+    const kind = projectFailureKind(error)
     updateStatus({
       state: 'failed',
       lastFailure: errorMessage(error),
+      lastFailureKind: kind,
       lastFailureAt: nowIso(),
       activeProjectPath: scopedProjectPath,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
@@ -2507,6 +2555,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
       enabled: false,
       state: 'disabled',
       activeProjectPath: undefined,
+      lastFailure: undefined,
+      lastFailureAt: undefined,
     })
     return
   }
@@ -2515,6 +2565,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   updateStatus({
     enabled: true,
     state: 'idle',
+    lastFailure: undefined,
+    lastFailureAt: undefined,
   })
   void refreshPendingCount()
   scheduleSync(0)

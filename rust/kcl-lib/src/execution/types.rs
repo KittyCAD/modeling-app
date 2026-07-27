@@ -45,6 +45,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Any)
     }
 
+    pub fn never() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Never)
+    }
+
     pub fn any_array() -> Self {
         RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::None)
     }
@@ -259,6 +263,7 @@ impl RuntimeType {
     ) -> Result<Self, CompilationIssue> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
+            AstPrimitiveType::Never => RuntimeType::never(),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
@@ -333,12 +338,13 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (Primitive(PrimitiveType::Never), _) => true,
             (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
 
-            (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
+            (Union(ts1), t2) => ts1.iter().all(|t| t.subtype(t2)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
 
             (Object(t1, _), Object(t2, _)) => t2
@@ -474,6 +480,7 @@ impl ArrayLen {
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Any,
+    Never,
     None,
     Number(NumericType),
     String,
@@ -501,6 +508,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "any values".to_owned(),
+            PrimitiveType::Never => "values of type `never`".to_owned(),
             PrimitiveType::None => "none values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
@@ -528,6 +536,7 @@ impl PrimitiveType {
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (PrimitiveType::Never, _) => true,
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
             (PrimitiveType::TaggedEdge, PrimitiveType::TaggedFace)
@@ -541,6 +550,7 @@ impl std::fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::Never => write!(f, "never"),
             PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
@@ -1339,6 +1349,7 @@ impl KclValue {
     ) -> Result<KclValue, CoercionError> {
         match ty {
             PrimitiveType::Any => Ok(self.clone()),
+            PrimitiveType::Never => Err(self.into()),
             PrimitiveType::None => match self {
                 KclValue::KclNone { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -2342,6 +2353,87 @@ mod test {
         ]);
         count.coerce(&tyb, true, &mut exec_state).unwrap_err();
         count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
+    }
+
+    #[test]
+    fn union_subtyping_uses_member_subtyping() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let tagged_edge_or_string = RuntimeType::Union(vec![tagged_edge.clone(), string.clone()]);
+        let edge_or_string = RuntimeType::Union(vec![edge.clone(), string.clone()]);
+
+        // TaggedEdge | string <: Edge | string
+        assert!(tagged_edge_or_string.subtype(&edge_or_string));
+        // Edge | string is not a subtype of TaggedEdge | string.
+        assert!(!edge_or_string.subtype(&tagged_edge_or_string));
+
+        // TaggedEdge | Edge <: Edge
+        assert!(RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]).subtype(&edge));
+        // TaggedEdge | bool is not a subtype of Edge.
+        assert!(!RuntimeType::Union(vec![tagged_edge, boolean]).subtype(&edge));
+
+        // The empty union is a subtype of string.
+        assert!(RuntimeType::Union(vec![]).subtype(&string));
+    }
+
+    #[test]
+    fn nested_union_subtyping_is_associative_and_recursive() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let left_associative = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![string.clone(), boolean.clone()]),
+            edge.clone(),
+        ]);
+        let right_associative =
+            RuntimeType::Union(vec![string, RuntimeType::Union(vec![boolean.clone(), edge.clone()])]);
+
+        // (string | bool) | Edge <: string | (bool | Edge)
+        assert!(left_associative.subtype(&right_associative));
+        // string | (bool | Edge) <: (string | bool) | Edge
+        assert!(right_associative.subtype(&left_associative));
+
+        let nested_edges = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]),
+            tagged_edge.clone(),
+        ]);
+        // (TaggedEdge | Edge) | TaggedEdge <: Edge
+        assert!(nested_edges.subtype(&edge));
+
+        let nested_with_bool = RuntimeType::Union(vec![RuntimeType::Union(vec![tagged_edge, boolean]), edge.clone()]);
+        // (TaggedEdge | bool) | Edge is not a subtype of Edge.
+        assert!(!nested_with_bool.subtype(&edge));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_is_bottom_and_uninhabited() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let never = RuntimeType::never();
+        let string = RuntimeType::string();
+
+        for ty in [
+            RuntimeType::any(),
+            string.clone(),
+            RuntimeType::Array(Box::new(string.clone()), ArrayLen::None),
+            RuntimeType::Tuple(vec![string.clone()]),
+            RuntimeType::Object(vec![("value".to_owned(), string.clone())], false),
+            RuntimeType::Union(vec![string.clone(), RuntimeType::bool()]),
+        ] {
+            assert!(never.subtype(&ty), "`never` should be a subtype of {ty}");
+        }
+
+        assert!(!string.subtype(&never));
+        assert!(RuntimeType::Union(vec![never.clone(), string.clone()]).subtype(&string));
+
+        for value in values(&mut exec_state) {
+            value.coerce(&never, true, &mut exec_state).unwrap_err();
+        }
         ctx.close().await;
     }
 

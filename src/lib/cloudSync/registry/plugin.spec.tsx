@@ -7,7 +7,10 @@ import { signal } from '@preact/signals-core'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
-import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
+import {
+  cloudSyncPlugin,
+  getCloudSyncStatusBarPresentation,
+} from '@src/lib/cloudSync/registry/plugin'
 import type { Project } from '@src/lib/project'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
@@ -130,6 +133,25 @@ afterEach(() => {
   }
   cloudSyncRemoteProjects.value = []
   vi.restoreAllMocks()
+})
+
+describe('cloud sync status presentation', () => {
+  test('labels remote upload permission failures as blocked sync', () => {
+    expect(
+      getCloudSyncStatusBarPresentation({
+        enabled: true,
+        state: 'failed',
+        pendingCount: 1,
+        lastFailure: 'Cloud sync cannot upload local changes.',
+        lastFailureKind: 'remote-upload-forbidden',
+        lastFailureAt: new Date(now).toISOString(),
+      })
+    ).toMatchObject({
+      label: 'Cloud sync blocked',
+      tooltip: 'Cloud sync cannot upload local changes.',
+      isBlocked: true,
+    })
+  })
 })
 
 describe('cloud sync project menu item', () => {
@@ -298,6 +320,74 @@ describe('cloud sync home project entries', () => {
             localProjectPath: '/some/path/local-project',
             conflict: expect.objectContaining({
               conflictProjectPath: '/some/path/local-project (cloud conflict)',
+            }),
+          }),
+        ])
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('adds sync failure metadata for remote upload permission failures', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'failed',
+      pendingCount: 1,
+      lastFailure: 'Cloud sync cannot upload local changes.',
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailureAt: new Date(now).toISOString(),
+    }
+    cloudSyncRemoteProjects.value = [
+      {
+        id: 'remote-123',
+        title: 'Remote title',
+        revision: 'remote-rev-1',
+        updated_at: '2026-06-02T20:00:00.000Z',
+      },
+    ]
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          '/some/path/local-project',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/some/path/local-project',
+            projectName: 'Local project',
+            remoteProjectId: 'remote-123',
+            remoteRevision: 'remote-rev-1',
+            hasPendingChanges: true,
+            lastFailure: {
+              kind: 'remote-upload-forbidden',
+              message: 'Cloud sync cannot upload local changes.',
+              at: new Date(now).toISOString(),
+            },
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+
+    try {
+      await waitFor(() =>
+        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+          expect.objectContaining({
+            source: 'remote',
+            status: 'cloud-only',
+            name: 'Local project',
+            title: 'Local project',
+            remoteProjectId: 'remote-123',
+            localProjectPath: '/some/path/local-project',
+            syncFailure: expect.objectContaining({
+              kind: 'remote-upload-forbidden',
+              message: 'Cloud sync cannot upload local changes.',
             }),
           }),
         ])

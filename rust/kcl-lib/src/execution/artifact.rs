@@ -81,6 +81,10 @@ pub struct ArtifactCommand {
 pub(crate) struct EntityCloneInfo {
     pub source_artifact_id: ArtifactId,
     pub result_artifact_id: ArtifactId,
+    /// The engine entity whose children describe the source body's topology.
+    /// Pattern copies have their own root and child IDs, but retain the
+    /// topology of the body from which they were patterned.
+    pub source_topology_id: ArtifactId,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -218,6 +222,10 @@ pub enum PathSubType {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// The original segment this segment was cloned from, if any. For clones
+    /// of clones, this continues to point to the originating segment.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_segment_id: Option<ArtifactId>,
     /// If this artifact is a segment in a region, the segment in the original
     /// sketch that this was derived from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -469,6 +477,7 @@ pub struct SweepEdge {
 pub enum SweepEdgeSubType {
     Opposite,
     Adjacent,
+    PreviousAdjacent,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -764,6 +773,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
+        self.source_segment_id = new.source_segment_id.or(self.source_segment_id);
         merge_opt_id(&mut self.original_seg_id, new.original_seg_id);
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
@@ -1136,7 +1146,9 @@ fn flatten_modeling_command_responses(
 struct PendingEntityCloneMapping {
     clone_cmd_id: Uuid,
     old_entity_id: Uuid,
+    source_topology_id: Uuid,
     old_child_ids: Option<Vec<Uuid>>,
+    source_topology_child_ids: Option<Vec<Uuid>>,
 }
 
 /// Build old->new entity ID maps for each clone command by pairing the
@@ -1151,10 +1163,16 @@ fn build_entity_clone_id_maps(
     for artifact_command in artifact_commands {
         match &artifact_command.command {
             ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
+                let source_topology_id = artifact_command
+                    .entity_clone_info
+                    .map(|info| Uuid::from(info.source_topology_id))
+                    .unwrap_or(*entity_id);
                 pending.push(PendingEntityCloneMapping {
                     clone_cmd_id: artifact_command.cmd_id,
                     old_entity_id: *entity_id,
+                    source_topology_id,
                     old_child_ids: None,
+                    source_topology_child_ids: None,
                 });
             }
             ModelingCmd::EntityGetAllChildUuids(kcmc::EntityGetAllChildUuids { entity_id, .. }) => {
@@ -1168,10 +1186,6 @@ fn build_entity_clone_id_maps(
                 let mut completed_index = None;
                 for index in (0..pending.len()).rev() {
                     let pending_map = &mut pending[index];
-                    if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
-                        pending_map.old_child_ids = Some(child_ids.clone());
-                        break;
-                    }
                     if let Some(old_child_ids) = &pending_map.old_child_ids
                         && *entity_id == pending_map.clone_cmd_id
                     {
@@ -1183,8 +1197,26 @@ fn build_entity_clone_id_maps(
                         for (old_id, new_id) in old_child_ids.iter().zip(child_ids.iter()) {
                             id_map.insert(ArtifactId::new(*old_id), ArtifactId::new(*new_id));
                         }
+                        if pending_map.source_topology_id != pending_map.old_entity_id
+                            && let Some(source_topology_child_ids) = &pending_map.source_topology_child_ids
+                        {
+                            for (source_id, new_id) in source_topology_child_ids.iter().zip(child_ids.iter()) {
+                                id_map.insert(ArtifactId::new(*source_id), ArtifactId::new(*new_id));
+                            }
+                        }
                         clone_id_maps.insert(pending_map.clone_cmd_id, id_map);
                         completed_index = Some(index);
+                        break;
+                    }
+                    if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
+                        pending_map.old_child_ids = Some(child_ids.clone());
+                        if pending_map.source_topology_id == pending_map.old_entity_id {
+                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        }
+                        break;
+                    }
+                    if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
+                        pending_map.source_topology_child_ids = Some(child_ids.clone());
                         break;
                     }
                 }
@@ -1318,6 +1350,7 @@ fn remap_artifact_for_clone(
         Artifact::Segment(source) => Artifact::Segment(Segment {
             id: remap_id_for_clone(source.id, entity_id_map),
             path_id: remap_id_for_clone(source.path_id, entity_id_map),
+            source_segment_id: source.source_segment_id.or(Some(source.id)),
             original_seg_id: remap_opt_id_for_clone(source.original_seg_id, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
@@ -1483,6 +1516,27 @@ fn pattern_source_ids(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: Art
     unique
 }
 
+fn pattern_source_body_id_for_copy(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    copy_id: ArtifactId,
+) -> Option<ArtifactId> {
+    artifacts.values().find_map(|artifact| {
+        let Artifact::Pattern(pattern) = artifact else {
+            return None;
+        };
+        if !pattern.copy_ids.contains(&copy_id) {
+            return None;
+        }
+
+        pattern_source_ids(artifacts, pattern.source_id).into_iter().find(|id| {
+            matches!(
+                artifacts.get(id),
+                Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+            )
+        })
+    })
+}
+
 fn pattern_artifact_updates(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     pattern_id: ArtifactId,
@@ -1505,10 +1559,6 @@ fn pattern_artifact_updates(
         .collect::<Vec<_>>();
 
     let source_ids = pattern_source_ids(artifacts, source_id);
-    let source_body = source_ids.iter().find_map(|source_id| match artifacts.get(source_id) {
-        Some(artifact @ (Artifact::Sweep(_) | Artifact::CompositeSolid(_))) => Some(artifact),
-        _ => None,
-    });
     let mut return_arr = vec![Artifact::Pattern(Pattern {
         id: pattern_id,
         sub_type,
@@ -1516,82 +1566,8 @@ fn pattern_artifact_updates(
         copy_ids,
         copy_face_ids,
         copy_edge_ids,
-        code_ref: code_ref.clone(),
+        code_ref,
     })];
-
-    // Pattern copies are top-level engine bodies, but the Pattern artifact
-    // alone only records their IDs. Materialize a body artifact for each copy
-    // so later operations such as clone() can resolve the copy by engine ID.
-    if let Some(source_body) = source_body {
-        for face_edge_info in face_edge_infos {
-            let copy_id = ArtifactId::new(face_edge_info.object_id);
-            match source_body {
-                Artifact::Sweep(source) => {
-                    let mut topology_id_map = AHashMap::default();
-                    topology_id_map.insert(source.id, copy_id);
-                    for (source_id, copy_id) in source
-                        .surface_ids
-                        .iter()
-                        .copied()
-                        .zip(face_edge_info.faces.iter().copied().map(ArtifactId::new))
-                    {
-                        topology_id_map.insert(source_id, copy_id);
-                    }
-                    for (source_id, copy_id) in source
-                        .edge_ids
-                        .iter()
-                        .copied()
-                        .zip(face_edge_info.edges.iter().copied().map(ArtifactId::new))
-                    {
-                        topology_id_map.insert(source_id, copy_id);
-                    }
-
-                    let mut copy = source.clone();
-                    copy.id = copy_id;
-                    copy.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
-                    copy.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
-                    copy.code_ref = code_ref.clone();
-                    copy.consumed = false;
-                    copy.pattern_ids = Vec::new();
-                    return_arr.push(Artifact::Sweep(copy));
-
-                    // Preserve the structural face/edge artifacts as well as
-                    // the body's flat topology lists. Their sketch links stay
-                    // on the source geometry, while ownership moves to the
-                    // materialized copy Sweep.
-                    for topology_id in source.surface_ids.iter().chain(&source.edge_ids) {
-                        let Some(source_artifact) = artifacts.get(topology_id) else {
-                            continue;
-                        };
-                        if !matches!(
-                            source_artifact,
-                            Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)
-                        ) {
-                            continue;
-                        }
-                        return_arr.push(remap_artifact_for_clone(
-                            source_artifact,
-                            &topology_id_map,
-                            &code_ref,
-                            pattern_id.into(),
-                            source.id,
-                        ));
-                    }
-                }
-                Artifact::CompositeSolid(source) => {
-                    let mut copy = source.clone();
-                    copy.id = copy_id;
-                    copy.consumed = false;
-                    copy.output_index = None;
-                    copy.code_ref = code_ref.clone();
-                    copy.composite_solid_id = None;
-                    copy.pattern_ids = Vec::new();
-                    return_arr.push(Artifact::CompositeSolid(copy));
-                }
-                _ => {}
-            }
-        }
-    }
 
     for source_id in source_ids {
         let Some(artifact) = artifacts.get(&source_id) else {
@@ -1998,6 +1974,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
+                source_segment_id: None,
                 original_seg_id: None,
                 surface_id: None,
                 edge_ids: Vec::new(),
@@ -2079,6 +2056,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: ArtifactId::new(*segment_id),
                         path_id: id,
+                        source_segment_id: None,
                         original_seg_id: Some(ArtifactId::new(*original_segment_id)),
                         surface_id: None,
                         edge_ids: Vec::new(),
@@ -2230,6 +2208,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Segment(Segment {
                         id: edge_id,
                         path_id: path.id,
+                        source_segment_id: None,
                         original_seg_id: None,
                         surface_id: None,
                         edge_ids: Vec::new(),
@@ -2247,18 +2226,22 @@ fn artifacts_to_update(
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
             let source_entity_id = ArtifactId::new(*entity_id);
-            // A separate body identity is only meaningful when the source
-            // artifact is distinct from the cloned engine entity. Composite
-            // solids use the engine entity as their body artifact directly.
-            let entity_clone_info = artifact_command
-                .entity_clone_info
-                .filter(|info| info.source_artifact_id != source_entity_id);
+            let entity_clone_info = artifact_command.entity_clone_info;
             let source_id = entity_clone_info
                 .map(|info| info.source_artifact_id)
                 .unwrap_or(source_entity_id);
             let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
-            let Some(source_artifact) = artifacts.get(&source_id) else {
+            // Pattern copies are represented by their owning Pattern rather
+            // than eagerly materialized body artifacts. Resolve the source
+            // body only when a copy is actually cloned.
+            let pattern_source_body_id = if artifacts.contains_key(&source_id) {
+                None
+            } else {
+                pattern_source_body_id_for_copy(artifacts, source_id)
+            };
+            let source_artifact_id = pattern_source_body_id.unwrap_or(source_id);
+            let Some(source_artifact) = artifacts.get(&source_artifact_id) else {
                 return Ok(Vec::new());
             };
 
@@ -2268,19 +2251,26 @@ fn artifacts_to_update(
             // distinct result ID, allowing its Path and Sweep to coexist.
             entity_id_map.insert(source_entity_id, id);
             entity_id_map.insert(source_id, result_id);
+            entity_id_map.insert(source_artifact_id, result_id);
 
             let mut cloned_artifacts = Vec::new();
-            cloned_artifacts.push(remap_artifact_for_clone(
+            let mut cloned_source = remap_artifact_for_clone(
                 source_artifact,
                 &entity_id_map,
                 &code_ref,
                 artifact_command.cmd_id,
-                source_id,
-            ));
+                source_artifact_id,
+            );
+            if pattern_source_body_id.is_some()
+                && let Artifact::Sweep(sweep) = &mut cloned_source
+            {
+                sweep.source_sweep_id = Some(source_id);
+            }
+            cloned_artifacts.push(cloned_source);
 
             for artifact in artifacts.values() {
                 let artifact_id = artifact.id();
-                if artifact_id == source_id || !entity_id_map.contains_key(&artifact_id) {
+                if artifact_id == source_artifact_id || !entity_id_map.contains_key(&artifact_id) {
                     continue;
                 }
                 cloned_artifacts.push(remap_artifact_for_clone(
@@ -2288,7 +2278,7 @@ fn artifacts_to_update(
                     &entity_id_map,
                     &code_ref,
                     artifact_command.cmd_id,
-                    source_id,
+                    source_artifact_id,
                 ));
             }
 
@@ -2639,6 +2629,11 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
+            let adjacent_edge_ids = info
+                .edges
+                .iter()
+                .filter_map(|edge| edge.adjacent_info.as_ref().map(|info| info.edge_id))
+                .collect::<AHashSet<_>>();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
@@ -2717,6 +2712,34 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Sweep(new_sweep));
                     let mut new_wall = wall.clone();
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                // Internal edges are already represented as the next adjacent edge of
+                // the preceding segment. Only add the open component's start edge.
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info
+                    && !adjacent_edge_ids.contains(&previous_adjacent_info.edge_id)
+                {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: previous_adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::PreviousAdjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: previous_adjacent_info
+                            .faces
+                            .iter()
+                            .map(|face| ArtifactId::new(*face))
+                            .collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![previous_adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
             }

@@ -225,7 +225,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
     let mut geometries = vec![solid.clone()];
     for id in entity_ids.iter().copied() {
-        let pattern_source_id = solid.pattern_source_id();
+        let pattern_source_id = solid.pattern_source_id(exec_state);
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         new_solid.set_artifact_id(id);
@@ -449,7 +449,7 @@ pub trait GeometryTrait: Clone {
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
-    fn pattern_source_id(&self) -> Uuid;
+    fn pattern_source_id(&self, exec_state: &ExecState) -> Uuid;
     fn set_pattern_source_id(&mut self, id: Uuid);
     fn array_to_point3d(
         val: &KclValue,
@@ -468,7 +468,7 @@ impl GeometryTrait for Sketch {
     fn set_artifact_id(&mut self, id: Uuid) {
         self.artifact_id = ArtifactId::new(id);
     }
-    fn pattern_source_id(&self) -> Uuid {
+    fn pattern_source_id(&self, _exec_state: &ExecState) -> Uuid {
         self.original_id
     }
     fn set_pattern_source_id(&mut self, id: Uuid) {
@@ -509,8 +509,12 @@ impl GeometryTrait for Solid {
     fn set_artifact_id(&mut self, id: Uuid) {
         self.artifact_id = ArtifactId::new(id);
     }
-    fn pattern_source_id(&self) -> Uuid {
-        self.original_id()
+    fn pattern_source_id(&self, exec_state: &ExecState) -> Uuid {
+        if crate::std::solid_consumption::is_consuming_operation_output(self, exec_state) {
+            self.id
+        } else {
+            self.original_id()
+        }
     }
     fn set_pattern_source_id(&mut self, id: Uuid) {
         if let Some(sketch) = self.sketch_mut() {
@@ -1087,13 +1091,14 @@ async fn pattern_circular(
             Geometries::Sketches(geometries)
         }
         Geometry::Solid(solid) => {
+            let pattern_source_id = solid.pattern_source_id(exec_state);
             let mut geometries = vec![solid.clone()];
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
                 new_solid.artifact_id = ArtifactId::new(id);
                 if let Some(sketch) = new_solid.sketch_mut() {
-                    sketch.original_id = solid.original_id();
+                    sketch.original_id = pattern_source_id;
                 }
                 geometries.push(new_solid);
             }

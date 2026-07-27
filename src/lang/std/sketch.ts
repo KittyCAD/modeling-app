@@ -3853,10 +3853,13 @@ function addTagToEdgeCut(
     // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     const tagMatchesAdjacentTagType =
-      edgeCutMeta?.subType === 'adjacent' &&
+      (edgeCutMeta?.subType === 'adjacent' ||
+        edgeCutMeta?.subType === 'previousAdjacent') &&
       tag.type === 'CallExpressionKw' &&
-      (tag.callee.name.name === 'getNextAdjacentEdge' ||
-        tag.callee.name.name === 'getPrevAdjacentEdge') &&
+      ((edgeCutMeta.subType === 'adjacent' &&
+        tag.callee.name.name === 'getNextAdjacentEdge') ||
+        (edgeCutMeta.subType === 'previousAdjacent' &&
+          tag.callee.name.name === 'getPreviousAdjacentEdge')) &&
       tag.unlabeled?.type === 'Name' &&
       tag.unlabeled.name.name === edgeCutMeta.tagName
     if (tagMatchesAdjacentTagType) return true

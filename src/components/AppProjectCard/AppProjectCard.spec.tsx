@@ -82,13 +82,8 @@ function renderProjectCard({
 }
 
 function clickRenameProject() {
-  const renameButton = screen.getByText('Rename project').closest('button')
-  expect(renameButton).not.toBeNull()
-  if (!renameButton) {
-    return
-  }
-
-  fireEvent.click(renameButton)
+  fireEvent.contextMenu(screen.getByTestId('project-link'))
+  fireEvent.click(screen.getByTestId('project-card-context-rename'))
 }
 
 function submitRenameProject() {
@@ -243,6 +238,77 @@ describe('ProjectCard', () => {
 
     expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
     expect(screen.queryByTestId('cloud-conflict-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows project actions in the card context menu', () => {
+    renderProjectCard()
+
+    expect(screen.queryByText('Rename project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Delete project')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+
+    expect(screen.getByTestId('project-card-context-rename')).toHaveTextContent(
+      'Rename project'
+    )
+    expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
+      'Delete project'
+    )
+  })
+
+  test('selects the project title when opening rename from the context menu', async () => {
+    renderProjectCard()
+
+    clickRenameProject()
+
+    const input = screen.getByTestId('project-rename-input')
+    if (!(input instanceof HTMLInputElement)) {
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      return
+    }
+
+    await waitFor(() => expect(input).toHaveFocus())
+
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
