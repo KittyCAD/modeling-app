@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+assertion_line: 233
+description: Result of unparsing surface_extrude_edge_specifier_to.kcl
+---
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [10, 0])
+  line2 = line(start = [10, 0], end = [10, 10])
+  line3 = line(start = [10, 10], end = [0, 10])
+  line4 = line(start = [0, 10], end = [0, 0])
+}
+
+region001 = region(point = [5, 5], sketch = sketch001)
+body001 = extrude(region001, length = 5, tagEnd = $endCap)
+
+surface001 = extrude(
+  {
+    sideFaces = [region001.tags.line1, endCap]
+  },
+  to = offsetPlane(XY, offset = 10),
+  bodyType = SURFACE,
+  method = NEW,
+)

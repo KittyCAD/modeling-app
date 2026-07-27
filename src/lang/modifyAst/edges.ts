@@ -1751,7 +1751,7 @@ function findExtrudeEdgeArgumentExpr(
 }
 
 function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
-  return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
+  return findKwArg('twistAngle', call) != null
 }
 
 function resolveTopLevelArrayExpression(
