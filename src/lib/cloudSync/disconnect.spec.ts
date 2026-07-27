@@ -90,15 +90,17 @@ describe('disconnectCloudSyncProject', () => {
     await deleteCloudSyncTestDatabase()
   })
 
-  it('ignores mutations inside hidden project roots', async () => {
-    const hiddenProjectPath = '/documents/Projects/.zds-duplicate-staging'
+  it('ignores mutations inside duplicate staging roots', async () => {
+    const stagingProjectPath = '/documents/Projects/.zds-duplicate-staging'
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
     )
 
-    await notifyCloudSyncWriteLikeMutation(`${hiddenProjectPath}/project.toml`)
+    await notifyCloudSyncWriteLikeMutation(`${stagingProjectPath}/project.toml`)
 
-    expect(await getCloudSyncProjectMetadata(hiddenProjectPath)).toBeUndefined()
+    expect(
+      await getCloudSyncProjectMetadata(stagingProjectPath)
+    ).toBeUndefined()
     expect(await getAllOutboxEntries()).toEqual([])
   })
 

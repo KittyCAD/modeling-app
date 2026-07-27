@@ -2778,7 +2778,9 @@ async function registerProjectMutation(
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
-  if (projectNameFromPath(normalizedProjectPath).startsWith('.')) {
+  if (
+    projectNameFromPath(normalizedProjectPath).startsWith('.zds-duplicate-')
+  ) {
     return
   }
   let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
