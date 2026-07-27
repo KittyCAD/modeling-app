@@ -1,5 +1,4 @@
 import { BillingDialog } from '@kittycad/ui-components'
-import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -31,7 +30,7 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -55,10 +54,7 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   type HomeProjectActionsService,
@@ -98,7 +94,6 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -281,37 +276,6 @@ const Home = () => {
   const autoUpdateReady = autoUpdateReadySignal.value
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    let disposed = false
-    let lastHandledSyncedAt: string | undefined
-
-    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
-      const syncedAt = cloudSyncStatus.value.lastSyncedAt
-      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
-        return
-      }
-
-      lastHandledSyncedAt = syncedAt
-      void waitFor(systemIOActor, (state) =>
-        state.matches(SystemIOMachineStates.idle)
-      )
-        .then(() => {
-          if (disposed || lastHandledSyncedAt !== syncedAt) {
-            return
-          }
-          systemIOActor.send({
-            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-          })
-        })
-        .catch(reportRejection)
-    })
-
-    return () => {
-      disposed = true
-      disposeCloudSyncRefreshEffect()
-    }
-  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {

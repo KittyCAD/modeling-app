@@ -301,9 +301,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         syncedProject.projectPath,
         await getWasmPromise()
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
       return { defaultFile: projectInfo.default_file }
     },
     duplicate: async (project) => {
