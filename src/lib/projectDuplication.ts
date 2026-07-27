@@ -1,4 +1,3 @@
-import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import type { App } from '@src/lib/app'
 import { getCloudSyncProjectMetadataIndex } from '@src/lib/cloudSync'
 import {
@@ -17,7 +16,6 @@ import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { v4 } from 'uuid'
-import { waitFor } from 'xstate'
 
 type DuplicateProjectSource = {
   directoryName: string
@@ -138,25 +136,6 @@ async function getAvailableDuplicateProjectNames({
   }
 }
 
-async function flushOpenProjectWrites(app: App, projectPath: string) {
-  await flushActiveTextFileWrite({ throwOnError: true })
-
-  const currentProject = app.project
-  if (
-    !currentProject ||
-    fsZds.resolve(currentProject.path) !== fsZds.resolve(projectPath)
-  ) {
-    return
-  }
-
-  await waitFor(app.settings.actor, (state) => state.matches('idle'))
-  await Promise.all(
-    Array.from(currentProject.editors.values(), (editor) =>
-      editor.flushPendingWriteToFile()
-    )
-  )
-}
-
 export async function duplicateProjectInDirectory({
   app,
   source,
@@ -191,7 +170,7 @@ export async function duplicateProjectInDirectory({
     )
   }
 
-  await flushOpenProjectWrites(app, source.path)
+  await app.flushProjectWrites(source.path)
 
   const projectTitle = requestedProjectTitle.trim() || source.displayName
   const duplicateProjectNames = await getAvailableDuplicateProjectNames({

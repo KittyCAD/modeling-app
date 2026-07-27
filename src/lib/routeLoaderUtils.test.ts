@@ -56,6 +56,7 @@ function createFakeActor<TSnapshot>(initialSnapshot: TSnapshot) {
 
 function createAppWithWebHomeFeature(enabled: boolean) {
   const closeProject = vi.fn()
+  const flushProjectWrites = vi.fn().mockResolvedValue(undefined)
   const authActor = createFakeActor(
     createFakeSnapshot('loggedIn', { token: 'token' })
   )
@@ -75,6 +76,7 @@ function createAppWithWebHomeFeature(enabled: boolean) {
     systemIOActor: {
       send: vi.fn(),
     },
+    flushProjectWrites,
     closeProject,
     settings: {
       actor: {
@@ -87,6 +89,7 @@ function createAppWithWebHomeFeature(enabled: boolean) {
     app,
     authActor,
     closeProject,
+    flushProjectWrites,
     userFeaturesActor,
   }
 }
@@ -108,12 +111,25 @@ describe('route loaders', () => {
     await expect(webHomeRouteEnabled(app)).resolves.toBe(false)
   })
 
-  it('loads Home project state without touching the demo-project flow', () => {
-    const { app, closeProject } = createAppWithWebHomeFeature(true)
+  it('flushes project writes before loading Home project state', async () => {
+    const { app, closeProject, flushProjectWrites } =
+      createAppWithWebHomeFeature(true)
+    let finishFlush = () => {}
+    flushProjectWrites.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishFlush = resolve
+        })
+    )
 
-    const result = loadHomeProjects(app)
+    const resultPromise = loadHomeProjects(app)
 
-    expect(result).toEqual({})
+    expect(flushProjectWrites).toHaveBeenCalledOnce()
+    expect(app.systemIOActor.send).not.toHaveBeenCalled()
+    expect(closeProject).not.toHaveBeenCalled()
+
+    finishFlush()
+    await expect(resultPromise).resolves.toEqual({})
     expect(app.systemIOActor.send).toHaveBeenCalledWith({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
@@ -121,6 +137,9 @@ describe('route loaders', () => {
     expect(app.settings.actor.send).toHaveBeenCalledWith({
       type: 'clear.project',
     })
+    expect(flushProjectWrites.mock.invocationCallOrder[0]).toBeLessThan(
+      closeProject.mock.invocationCallOrder[0]
+    )
   })
 
   it('waits for user features before deciding whether web Home is enabled', async () => {

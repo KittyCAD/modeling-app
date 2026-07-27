@@ -10,7 +10,7 @@ import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
   HomeProjectActionsService,
@@ -362,7 +362,11 @@ function AppProjectCard({
               disabled={!canDuplicate}
               data-testid="project-card-context-duplicate"
               onClick={() => {
-                void projectActions.duplicate(project).catch(reportRejection)
+                void projectActions.duplicate(project).catch((error) => {
+                  trap(
+                    error instanceof Error ? error : new Error(String(error))
+                  )
+                })
               }}
             >
               Duplicate project
