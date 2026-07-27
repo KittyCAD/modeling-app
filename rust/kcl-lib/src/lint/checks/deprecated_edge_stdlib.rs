@@ -98,7 +98,7 @@ fn get_unlabeled_arg(call: &CallExpressionKw) -> Option<&Expr> {
 
 fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
     let mut arguments = Vec::with_capacity(3);
-    let requires_concrete_target = get_arg(call, "twistAngle").is_some();
+    let requires_concrete_target = ["to", "twistAngle"].iter().any(|label| get_arg(call, label).is_some());
     if !requires_concrete_target
         && get_unlabeled_arg(call).is_some_and(|expr| {
             contains_deprecated_edge_stdlib(expr, prog)
@@ -565,7 +565,7 @@ extrude(cylinder3, to = targetEdge)
     }
 
     #[test]
-    fn z0006_fires_for_extrude_target_with_to() {
+    fn z0006_does_not_fire_for_extrude_target_with_to() {
         let kcl = r#"extrude(
   getOppositeEdge(edge1),
   to = offsetPlane(XY, offset = 10),
@@ -575,8 +575,10 @@ extrude(cylinder3, to = targetEdge)
         let prog = crate::Program::parse_no_errs(kcl).unwrap();
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
-        assert_eq!(z0006.len(), 1, "extrude-to-reference source targets can now migrate");
-        assert!(z0006[0].description.contains("target"));
+        assert!(
+            z0006.is_empty(),
+            "a target that must remain concrete should not receive impossible migration guidance"
+        );
     }
 
     #[test]

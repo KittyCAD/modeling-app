@@ -620,12 +620,6 @@ const KCL_EXTRUDE_TARGET_DIRECT_TAG =
     'extrude001.sketch.tags.line1'
   )
 
-const KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE_TO =
-  KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE.replace(
-    'length = 6.7mm,',
-    'to = offsetPlane(XY, offset = 10),'
-  )
-
 const KCL_EXTRUDE_DIRECTION_GET_COMMON_EDGE = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [2, 2])
   |> yLine(length = 1)
@@ -1163,33 +1157,16 @@ describe('refactorZ0006Unified', () => {
       ])
     })
 
-    it('finds an extrude-to-reference target from execution metadata', () => {
-      const ast = assertParse(
-        'extrude(getOppositeEdge(edge1), to = face1)',
-        wasmInstance
-      )
-      const metadata: EdgeRefactorMeta[] = [
-        {
-          edgeId: '00000000-0000-0000-0000-000000000000',
-          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
-          faceIds: facePair(
-            '00000000-0000-0000-0000-000000000001',
-            '00000000-0000-0000-0000-000000000002'
-          ),
-          stdlibFn: 'getOppositeEdge',
-        },
-      ]
-
-      const callsToFix = findExtrudeEdgeCallsToFix(ast, metadata)
-      expect(callsToFix).toHaveLength(1)
-      expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
-        'target',
-      ])
-    })
-
-    it('does not refactor the concrete target of a twist extrude', () => {
-      const kcl =
-        'extrude(getOppositeEdge(edge1), length = 5, twistAngle = 90deg)'
+    it.each([
+      {
+        name: 'extrude-to-reference',
+        kcl: 'extrude(getOppositeEdge(edge1), to = face1)',
+      },
+      {
+        name: 'twist extrude',
+        kcl: 'extrude(getOppositeEdge(edge1), length = 5, twistAngle = 90deg)',
+      },
+    ])('does not refactor the concrete target of a $name', ({ kcl }) => {
       const ast = assertParse(kcl, wasmInstance)
       const metadata: EdgeRefactorMeta[] = [
         {
@@ -1846,11 +1823,7 @@ surface001 = extrude(
         expect(kclManagerInThisFile.errors).toEqual([])
         expect(
           [...kclManagerInThisFile.execState.artifactGraph.values()].filter(
-            (artifact) =>
-              artifact.type === 'sweep' &&
-              !artifact.consumed &&
-              artifact.pathId == null &&
-              artifact.sourceEdgeReference != null
+            (artifact) => artifact.type === 'sweep' && !artifact.consumed
           )
         ).toHaveLength(1)
       }
@@ -2022,12 +1995,6 @@ surface001 = extrude(
       {
         name: 'target',
         kcl: KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE,
-        oldSyntax: 'getOppositeEdge(',
-        newSyntax: 'extrude( { sideFaces = [',
-      },
-      {
-        name: 'target with to',
-        kcl: KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE_TO,
         oldSyntax: 'getOppositeEdge(',
         newSyntax: 'extrude( { sideFaces = [',
       },
