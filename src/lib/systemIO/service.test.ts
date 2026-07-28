@@ -350,7 +350,7 @@ describe('systemIO service', () => {
 
     expect(actor.send).toHaveBeenCalledWith({
       type: SystemIOMachineEvents.setFolders,
-      data: { folders: projects },
+      data: { folders: projects, projectDirectoryPath: '/projects' },
     })
     expect(systemIO.projects.value).toEqual(projects)
   })

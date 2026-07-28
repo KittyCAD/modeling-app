@@ -77,10 +77,13 @@ export function createSystemIOService(
     projects.value = nextProjects
   }
 
-  const syncActorFolders = (nextProjects: readonly Project[]) => {
+  const syncActorFolders = (
+    nextProjects: readonly Project[],
+    projectDirectoryPath: string
+  ) => {
     actor?.send({
       type: SystemIOMachineEvents.setFolders,
-      data: { folders: [...nextProjects] },
+      data: { folders: [...nextProjects], projectDirectoryPath },
     })
   }
 
@@ -98,7 +101,7 @@ export function createSystemIOService(
             return
           }
           setProjects(nextProjects)
-          syncActorFolders(nextProjects)
+          syncActorFolders(nextProjects, request.input.projectDirectoryPath)
         }
         const nextProjects =
           await dependencies.readProjectsFromProjectDirectory(
