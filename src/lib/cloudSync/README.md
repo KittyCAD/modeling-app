@@ -31,6 +31,15 @@ Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-
 - Directory -> Directory: leave cloud sync state alone. This preserves support for individually synced projects outside cloud-type libraries.
 - Library move availability is a declared library-type capability. Libraries whose type does not implement `moveProjectFrom` or `moveProjectTo` must not appear as move sources or targets. Future read-only/virtual types such as "recents" should omit both capabilities.
 
+### Deleting projects
+
+Deleting a cloud-backed project means deleting the project everywhere. This applies both to projects in cloud-type libraries and to individually synced projects shown in directory-type libraries.
+
+- Local materialized cloud project: remove the local project directory and delete the linked remote cloud project before reporting success. The filesystem observer may enqueue a tombstone as part of the local delete, but product actions must not rely on background sync as the only remote deletion path.
+- Remote-only cloud project: delete the remote cloud project. There is no local materialization to remove.
+- Local-only directory project: remove only the local project directory.
+- If the remote delete fails for a cloud-backed project, the delete action should fail rather than show success while the cloud project can still reappear from the remote index.
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
@@ -117,7 +126,8 @@ flowchart TD
 - If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
-- Home rename/delete of a cloud project act on the local materialization when one exists (and let normal sync replicate the change), and act directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
+- Home rename of a cloud project acts on the local materialization when one exists and acts directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
+- Home delete of a cloud-backed project must remove both the local materialization, when present, and the linked remote project before reporting success.
 
 ## Persistent State
 

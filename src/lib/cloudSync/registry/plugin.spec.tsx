@@ -15,6 +15,7 @@ import {
   getCloudSyncStatusBarPresentation,
   preserveCloudProjectDefaultFile,
 } from '@src/lib/cloudSync/registry/plugin'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -120,6 +121,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     setProjectScope: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
+    deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
     getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),
@@ -498,6 +500,122 @@ describe('cloud sync project library', () => {
         localProjectName: 'bracket',
         defaultFile: '/cloud/bracket/main.kcl',
       })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('deletes both local and remote state for a materialized cloud project', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    const cloudSync = createCloudSyncService()
+    const removeProjectDirectory = vi
+      .spyOn(fsZds, 'rm')
+      .mockResolvedValue(undefined)
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncProjectLibraryType])
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType).toBeDefined()
+      const deleteProject = cloudLibraryType?.operations?.deleteProject
+      expect(deleteProject).toBeDefined()
+      if (!deleteProject) {
+        return
+      }
+
+      await deleteProject.run({
+        library: {
+          ...getDefaultCloudProjectLibrarySetting(),
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        },
+        project: {
+          id: 'local:/cloud/bracket',
+          source: 'both',
+          status: 'synced',
+          libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+          name: 'bracket',
+          localProjectPath: '/cloud/bracket',
+          localProjectName: 'bracket',
+          remoteProjectId: 'remote-123',
+          defaultFile: '/cloud/bracket/main.kcl',
+          readWriteAccess: true,
+        },
+      })
+
+      expect(removeProjectDirectory).toHaveBeenCalledWith('/cloud/bracket', {
+        recursive: true,
+      })
+      expect(cloudSync.deleteRemoteProject).toHaveBeenCalledWith('remote-123')
+      expect(removeProjectDirectory.mock.invocationCallOrder[0]).toBeLessThan(
+        vi.mocked(cloudSync.deleteRemoteProject).mock.invocationCallOrder[0]
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not locally delete a cloud-backed project when remote delete is unavailable', async () => {
+    cloudSyncStatus.value = {
+      enabled: false,
+      state: 'disabled',
+      pendingCount: 0,
+    }
+    const cloudSync = createCloudSyncService()
+    const removeProjectDirectory = vi
+      .spyOn(fsZds, 'rm')
+      .mockResolvedValue(undefined)
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncProjectLibraryType])
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      const deleteProject = cloudLibraryType?.operations?.deleteProject
+      expect(deleteProject).toBeDefined()
+      if (!deleteProject) {
+        return
+      }
+
+      await expect(
+        deleteProject.run({
+          library: {
+            ...getDefaultCloudProjectLibrarySetting(),
+            id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          },
+          project: {
+            id: 'local:/cloud/bracket',
+            source: 'both',
+            status: 'synced',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+            name: 'bracket',
+            localProjectPath: '/cloud/bracket',
+            localProjectName: 'bracket',
+            remoteProjectId: 'remote-123',
+            defaultFile: '/cloud/bracket/main.kcl',
+            readWriteAccess: true,
+          },
+        })
+      ).rejects.toThrow('Cloud sync is not enabled.')
+
+      expect(removeProjectDirectory).not.toHaveBeenCalled()
+      expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
     } finally {
       registry[Symbol.dispose]()
     }

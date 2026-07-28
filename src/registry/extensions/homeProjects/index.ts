@@ -497,6 +497,7 @@ const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
+  const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
@@ -593,9 +594,26 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   return
                 }
 
+                const cloudSyncActions = project.remoteProjectId
+                  ? cloudSync.value
+                  : undefined
+                if (
+                  project.remoteProjectId &&
+                  cloudSyncActions?.status.value.enabled !== true
+                ) {
+                  return Promise.reject(new Error('Cloud sync is not enabled.'))
+                }
+
                 await fsZds.rm(project.localProjectPath, {
                   recursive: true,
                 })
+                // Individually synced directory projects follow the same
+                // delete-everywhere policy as cloud-library projects.
+                if (project.remoteProjectId) {
+                  await cloudSyncActions?.deleteRemoteProject(
+                    project.remoteProjectId
+                  )
+                }
                 refreshLocalProjectEntries()
               },
             },

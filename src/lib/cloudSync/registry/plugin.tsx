@@ -29,7 +29,6 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
-  deleteRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
@@ -916,14 +915,30 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       deleteProject: {
         run: async ({ project }) => {
+          const remoteProjectId = project.remoteProjectId
+          const cloudSyncActions = remoteProjectId
+            ? ctx.services.get(cloudSyncService)
+            : undefined
+          if (
+            remoteProjectId &&
+            cloudSyncActions?.status.value.enabled !== true
+          ) {
+            return Promise.reject(new Error('Cloud sync is not enabled.'))
+          }
+
           if (project.localProjectPath && project.readWriteAccess) {
             await fsZds.rm(project.localProjectPath, { recursive: true })
+            // Cloud-backed deletes are explicit local + remote product
+            // actions, not just local tombstones for background sync.
+            if (remoteProjectId) {
+              await cloudSyncActions?.deleteRemoteProject(remoteProjectId)
+            }
             refreshLocalCloudProjectEntries()
             return
           }
 
-          if (project.remoteProjectId) {
-            await deleteRemoteCloudProject(project.remoteProjectId)
+          if (remoteProjectId) {
+            await cloudSyncActions?.deleteRemoteProject(remoteProjectId)
           }
         },
       },
