@@ -930,9 +930,18 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       moveProjectFrom: {
         canMoveProject: ({ project }) =>
           Boolean(project.localProjectPath && project.readWriteAccess),
-        run: ({ project }) => {
+        run: async ({ project, targetLibrary }) => {
           if (!project.localProjectPath || !project.readWriteAccess) {
             return undefined
+          }
+
+          // Moving out of a cloud library is the product-level "make
+          // local-only" policy. Detach before moving so the destination
+          // directory cannot be re-adopted by its existing cloud project ID.
+          if (targetLibrary.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
+            await ctx.services
+              .get(cloudSyncService)
+              .disconnectProjectSync(project.localProjectPath)
           }
 
           return {

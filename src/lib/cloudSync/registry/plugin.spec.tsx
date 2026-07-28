@@ -18,6 +18,7 @@ import {
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrarySetting,
@@ -439,6 +440,64 @@ describe('cloud sync project library', () => {
       ).toEqual({ defaultFile: '/cloud/moved-project/main.kcl' })
       expect(cloudLibraryType.operations?.moveProjectFrom).toBeDefined()
       expect(cloudLibraryType.operations?.moveProjectTo).toBeDefined()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('disconnects cloud sync before moving a cloud project to a directory library', async () => {
+    const cloudSync = createCloudSyncService()
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncProjectLibraryType])
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      expect(cloudLibraryType).toBeDefined()
+      const moveProjectFrom = cloudLibraryType?.operations?.moveProjectFrom
+      expect(moveProjectFrom).toBeDefined()
+      if (!moveProjectFrom) {
+        return
+      }
+
+      const source = await moveProjectFrom.run({
+        library: {
+          ...getDefaultCloudProjectLibrarySetting(),
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        },
+        targetLibrary: {
+          id: 'default-project-directory',
+          title: 'Default Projects Directory',
+          path: '/projects',
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        },
+        project: {
+          id: 'local:/cloud/bracket',
+          source: 'remote',
+          status: 'synced',
+          libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+          name: 'bracket',
+          localProjectPath: '/cloud/bracket',
+          localProjectName: 'bracket',
+          defaultFile: '/cloud/bracket/main.kcl',
+          readWriteAccess: true,
+        },
+      })
+
+      expect(cloudSync.disconnectProjectSync).toHaveBeenCalledWith(
+        '/cloud/bracket'
+      )
+      expect(source).toEqual({
+        localProjectPath: '/cloud/bracket',
+        localProjectName: 'bracket',
+        defaultFile: '/cloud/bracket/main.kcl',
+      })
     } finally {
       registry[Symbol.dispose]()
     }

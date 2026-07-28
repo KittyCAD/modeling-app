@@ -19,6 +19,18 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 - Linux and Windows: `~/documents/zoo-design-studio-projects`
 - macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
 
+## Product Policies
+
+Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-facing model is library membership. A project is normally made cloud-backed by moving it into a cloud-type project library, and made local-only by moving it out of a cloud-type project library.
+
+### Moving projects between libraries
+
+- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. If the project already has a valid cloud project ID, the engine may bind to that remote project; otherwise the next sync creates one.
+- Cloud -> Directory: treat this as "make local-only." Before the filesystem move, run the user-initiated disconnect flow: remove the local `project.toml` cloud project ID, clear pending cloud sync work, mark the local project `syncExcluded` with `reason: "user-disconnected"`, delete the remote cloud project, and update the remote project index. If remote deletion fails, the disconnect restores the local cloud link and the move should fail rather than leaving a half-detached project.
+- Cloud -> Cloud: if we add multiple cloud-type libraries, moving between them should preserve the cloud binding. Do not disconnect unless the target library type is not cloud.
+- Directory -> Directory: leave cloud sync state alone. This preserves support for individually synced projects outside cloud-type libraries.
+- Library move availability is a declared library-type capability. Libraries whose type does not implement `moveProjectFrom` or `moveProjectTo` must not appear as move sources or targets. Future read-only/virtual types such as "recents" should omit both capabilities.
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
