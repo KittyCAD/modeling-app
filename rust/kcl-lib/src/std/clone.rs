@@ -644,6 +644,24 @@ clonedComposite = clone(composite)
         assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
         assert!(!cloned_artifact.consumed);
 
+        let cloned_face_sweep_ids = result
+            .artifact_graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::Wall(wall) if wall.cmd_id == cloned_composite.id => Some(wall.sweep_id),
+                Artifact::Cap(cap) if cap.cmd_id == cloned_composite.id => Some(cap.sweep_id),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert!(!cloned_face_sweep_ids.is_empty());
+        for sweep_id in cloned_face_sweep_ids {
+            let Some(Artifact::Sweep(sweep)) = result.artifact_graph.get(&sweep_id) else {
+                panic!("Expected every cloned composite face to reference a sweep");
+            };
+            assert_eq!(sweep.code_ref, cloned_artifact.code_ref);
+            assert!(sweep.source_sweep_id.is_some());
+        }
+
         ctx.close().await;
     }
 
