@@ -27,18 +27,11 @@ import {
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
-import {
-  readProjectsFromProjectDirectory,
-  scheduleProjectDirectoryNameSyncFromTitles,
-} from '@src/lib/projectLibraries/directoryScanner'
+import { scheduleProjectDirectoryNameSyncFromTitles } from '@src/lib/projectLibraries/directoryScanner'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
-import {
-  NO_PROJECT_DIRECTORY,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectActionsService,
@@ -55,7 +48,10 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
+import {
+  type SystemIOService,
+  systemIOService,
+} from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
@@ -67,6 +63,32 @@ export function invalidateConfiguredProjectLibraryEntries() {
 
 function readConfiguredProjectLibraryEntriesInvalidation() {
   return configuredProjectLibraryEntriesInvalidation.value
+}
+
+function requestProjectDirectoryRefresh(
+  systemIO: SystemIOService | undefined,
+  projectDirectoryPath: string | undefined
+) {
+  if (!systemIO || !projectDirectoryPath) {
+    return
+  }
+
+  void systemIO
+    .scanProjectDirectory({
+      projectDirectoryPath,
+      publishToCurrentProjectDirectory: true,
+    })
+    .catch(reportRejection)
+}
+
+function requestDefaultProjectDirectoryRefresh(
+  systemIO: SystemIOService | undefined,
+  settings: SettingsType | undefined
+) {
+  requestProjectDirectoryRefresh(
+    systemIO,
+    getDefaultDirectoryProjectLibraryPath(settings?.app.libraries.current)
+  )
 }
 
 function localHomeProjectEntriesFromProjects(
@@ -102,6 +124,7 @@ function homeProjectDisplayNameExists({
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
+  const settings = ctx.services.signal(settingsService)
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
@@ -192,9 +215,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         syncedProject.projectPath,
         await getWasmPromise()
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      requestDefaultProjectDirectoryRefresh(
+        systemIO.value,
+        settings.value?.current.value
+      )
       return { defaultFile: projectInfo.default_file }
     },
     rename: async (project, requestedName) => {
@@ -253,8 +277,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   const entries = signal<HomeProjectEntryContribution[]>([])
   const systemIO = ctx.services.signal(systemIOService)
-  let systemIOSubscription: { unsubscribe: () => void } | undefined
-  let disposeSystemIOEffect: (() => void) | undefined
+  const settings = ctx.services.signal(settingsService)
+  let disposeSystemIORefreshEffect: (() => void) | undefined
+  let disposeSystemIOEntriesEffect: (() => void) | undefined
+  let lastRefreshKey: string | undefined
   let disposed = false
 
   queueMicrotask(() => {
@@ -262,43 +288,46 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       return
     }
 
-    disposeSystemIOEffect = effect(() => {
+    disposeSystemIORefreshEffect = effect(() => {
       const service = systemIO.value
-      systemIOSubscription?.unsubscribe()
-      systemIOSubscription = undefined
-      entries.value = []
+      const defaultProjectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
+        settings.value?.current.value.app.libraries.current
+      )
 
-      if (!service) {
+      if (!service || !defaultProjectDirectoryPath) {
+        lastRefreshKey = undefined
+        entries.value = []
         return
       }
 
-      const updateEntries = () => {
-        const snapshot = service.actor.getSnapshot()
-        const context = snapshot.context
-        const projects = context.folders
-        entries.value = localHomeProjectEntriesFromProjects(
-          projects,
-          DEFAULT_PROJECT_LIBRARY_ID
-        )
-
-        if (
-          projects &&
-          snapshot.matches(SystemIOMachineStates.idle) &&
-          context.requestedProjectName.name === NO_PROJECT_DIRECTORY
-        ) {
-          scheduleProjectDirectoryNameSyncFromTitles({
-            projects,
-            onProjectDirectoriesRenamed: () => {
-              service.actor.send({
-                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-              })
-            },
-          })
-        }
+      const refreshKey = defaultProjectDirectoryPath
+      if (refreshKey === lastRefreshKey) {
+        return
       }
 
-      updateEntries()
-      systemIOSubscription = service.actor.subscribe(updateEntries)
+      lastRefreshKey = refreshKey
+      entries.value = []
+      void service
+        .scanProjectDirectory({
+          projectDirectoryPath: defaultProjectDirectoryPath,
+          publishToCurrentProjectDirectory: true,
+        })
+        .catch((error) => {
+          // A failed refresh must not permanently short-circuit this effect for
+          // the directory; clear the guard so a later run can retry it.
+          if (lastRefreshKey === refreshKey) {
+            lastRefreshKey = undefined
+          }
+          reportRejection(error)
+        })
+    })
+
+    disposeSystemIOEntriesEffect = effect(() => {
+      const projects = systemIO.value?.projects.value
+      entries.value = localHomeProjectEntriesFromProjects(
+        projects,
+        DEFAULT_PROJECT_LIBRARY_ID
+      )
     })
   })
 
@@ -312,8 +341,8 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       ],
       dispose: () => {
         disposed = true
-        disposeSystemIOEffect?.()
-        systemIOSubscription?.unsubscribe()
+        disposeSystemIORefreshEffect?.()
+        disposeSystemIOEntriesEffect?.()
       },
     }),
   }
@@ -380,11 +409,13 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
           hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
-            const projects = await readProjectsFromProjectDirectory({
-              projectDirectoryPath: library.path,
-              wasmInstancePromise: getWasmPromise(),
-              signal,
-            })
+            const projects =
+              (await systemIO.value?.scanProjectDirectory(
+                {
+                  projectDirectoryPath: library.path,
+                },
+                { signal }
+              )) ?? []
             if (!signal.aborted) {
               scheduleProjectDirectoryNameSyncFromTitles({
                 projects,
@@ -408,9 +439,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   requestedProjectTitle,
                   wasmInstancePromise: getWasmPromise(),
                 })
-                systemIO.value?.actor.send({
-                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                })
+                requestDefaultProjectDirectoryRefresh(
+                  systemIO.value,
+                  ctx.services.get(settingsService).current.value
+                )
                 invalidateConfiguredProjectLibraryEntries()
 
                 return project
@@ -435,9 +467,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   project.localProjectPath,
                   requestedName
                 )
-                systemIO.value?.actor.send({
-                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                })
+                requestDefaultProjectDirectoryRefresh(
+                  systemIO.value,
+                  ctx.services.get(settingsService).current.value
+                )
                 invalidateConfiguredProjectLibraryEntries()
               },
             },
@@ -450,9 +483,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 await fsZds.rm(project.localProjectPath, {
                   recursive: true,
                 })
-                systemIO.value?.actor.send({
-                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                })
+                requestDefaultProjectDirectoryRefresh(
+                  systemIO.value,
+                  ctx.services.get(settingsService).current.value
+                )
                 invalidateConfiguredProjectLibraryEntries()
               },
             },
@@ -537,7 +571,11 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
             defaultProjectDirectory,
           })
         )
-        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+        .filter(
+          (library) =>
+            library.id !== DEFAULT_PROJECT_LIBRARY_ID &&
+            library.path !== defaultProjectDirectory
+        )
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries

@@ -44,11 +44,11 @@ import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
+  getDefaultDirectoryProjectLibraryPath,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import {
   canRevealInFileExplorer,
@@ -56,7 +56,6 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type CloudSyncRegistryService,
@@ -796,6 +795,20 @@ function pruneRemoteThumbnailState({
   }
 }
 
+function normalizeProjectDirectoryPath(path: string | undefined) {
+  return path?.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+function sameProjectDirectoryPath(
+  left: string | undefined,
+  right: string | undefined
+) {
+  return (
+    normalizeProjectDirectoryPath(left) !== undefined &&
+    normalizeProjectDirectoryPath(left) === normalizeProjectDirectoryPath(right)
+  )
+}
+
 const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   (ctx) => {
     const cloudSync = ctx.services.signal(cloudSyncService)
@@ -1023,6 +1036,7 @@ const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
+  const settings = ctx.services.signal(settingsService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
@@ -1032,9 +1046,19 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
   // local mutations show up regardless of which surface owns the entry.
   const refreshLocalCloudProjectEntries = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
+    void (async () => {
+      const projectDirectoryPath = await getDefaultCloudProjectDirectoryPath()
+      const currentProjectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
+        settings.value?.current.value.app.libraries.current
+      )
+      await systemIO.value?.scanProjectDirectory({
+        projectDirectoryPath,
+        publishToCurrentProjectDirectory: sameProjectDirectoryPath(
+          projectDirectoryPath,
+          currentProjectDirectoryPath
+        ),
+      })
+    })().catch(reportRejection)
     invalidateConfiguredProjectLibraryEntries()
   }
 
@@ -1110,11 +1134,14 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
     },
     readEntries: async ({ signal }) => {
-      const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
-        wasmInstancePromise: getWasmPromise(),
-        signal,
-      })
+      const projectDirectoryPath = await getDefaultCloudProjectDirectoryPath()
+      const projects =
+        (await systemIO.value?.scanProjectDirectory(
+          {
+            projectDirectoryPath,
+          },
+          { signal }
+        )) ?? []
       if (!signal.aborted) {
         scheduleCloudProjectDirectoryNameSyncFromTitles({
           projects,

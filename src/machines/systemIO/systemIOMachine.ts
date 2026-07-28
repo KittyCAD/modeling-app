@@ -55,7 +55,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.setFolders
-          data: { folders: Project[] }
+          data: { folders: Project[]; projectDirectoryPath?: string }
         }
       | {
           type: SystemIOMachineEvents.done_checkReadWrite
@@ -345,6 +345,24 @@ export const systemIOMachine = setup({
           SystemIOMachineEvents.setFolders,
         ])
         return 'output' in event ? event.output : event.data.folders
+      },
+      projectDirectoryPath: ({ context, event }) => {
+        assertEvent(event, [
+          SystemIOMachineEvents.done_readFoldersFromProjectDirectory,
+          SystemIOMachineEvents.setFolders,
+        ])
+        return 'data' in event && event.data.projectDirectoryPath !== undefined
+          ? event.data.projectDirectoryPath
+          : context.projectDirectoryPath
+      },
+      hasListedProjects: ({ context, event }) => {
+        assertEvent(event, [
+          SystemIOMachineEvents.done_readFoldersFromProjectDirectory,
+          SystemIOMachineEvents.setFolders,
+        ])
+        return 'data' in event && event.data.projectDirectoryPath !== undefined
+          ? true
+          : context.hasListedProjects
       },
     }),
     [SystemIOMachineActions.setProjectDirectoryPath]: assign({
@@ -856,6 +874,12 @@ export const systemIOMachine = setup({
     [SystemIOMachineStates.idle]: {
       on: {
         // on can be an action
+        // The systemIO service now sits in `idle` and pushes refresh results
+        // into the actor via `setFolders` as a legacy bridge, so `idle` must
+        // handle it too (it is otherwise only handled while `readingFolders`).
+        [SystemIOMachineEvents.setFolders]: {
+          actions: SystemIOMachineActions.setFolders,
+        },
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
           target: SystemIOMachineStates.readingFolders,
         },

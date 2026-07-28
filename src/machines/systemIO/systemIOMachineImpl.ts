@@ -418,7 +418,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           onProgress: (folders) => {
             context.app.systemIOActor.send({
               type: SystemIOMachineEvents.setFolders,
-              data: { folders },
+              data: { folders, projectDirectoryPath },
             })
           },
         })

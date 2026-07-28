@@ -15,6 +15,7 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  type SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
   buildTheWorldAndNoEngineConnection,
@@ -165,6 +166,105 @@ describe('systemIOMachine - XState', () => {
         }).start()
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
+      })
+      it('accepts setFolders while idle so the systemIO service bridge works', () => {
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        expect(actor.getSnapshot().value).toBe(SystemIOMachineStates.idle)
+
+        const folders = [mockProject('bravo'), mockProject('alpha')]
+        actor.send({
+          type: SystemIOMachineEvents.setFolders,
+          data: {
+            folders,
+            projectDirectoryPath: '/projects',
+          },
+        })
+
+        expect(actor.getSnapshot().context.folders).toStrictEqual(folders)
+        expect(actor.getSnapshot().context.projectDirectoryPath).toBe(
+          '/projects'
+        )
+        expect(actor.getSnapshot().context.hasListedProjects).toBe(true)
+        expect(actor.getSnapshot().value).toBe(SystemIOMachineStates.idle)
+        actor.stop()
+      })
+      it('uses the bridged project directory path for import-from-url writes', async () => {
+        type CreateKCLFileInput = {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedSubDirectory?: string
+          requestedFileNameWithExtension: string
+          requestedCode: string
+          requestedSubRoute?: string
+          app: App
+        }
+        type CreateKCLFileOutput = {
+          message: string
+          fileName: string
+          projectName: string
+          subRoute: string
+        }
+
+        let createKCLFileInput: CreateKCLFileInput | undefined
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.createKCLFile]: fromPromise(
+                async ({ input }: { input: CreateKCLFileInput }) => {
+                  createKCLFileInput = input
+                  return new Promise<CreateKCLFileOutput>(() => {})
+                }
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          const folders = [mockProject('testProjectDir')]
+          actor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: {
+              folders,
+              projectDirectoryPath: '/projects',
+            },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.importFileFromURL,
+            data: {
+              requestedProjectName: 'testProjectDir',
+              requestedFileNameWithExtension: 'main.kcl',
+              requestedCode: 'extrusionDistance = 12',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.importFileFromURL)
+          )
+
+          expect(createKCLFileInput).toMatchObject({
+            context: {
+              folders,
+              projectDirectoryPath: '/projects',
+            },
+            requestedProjectName: 'testProjectDir',
+            requestedFileNameWithExtension: 'main.kcl',
+            requestedCode: 'extrusionDistance = 12',
+          })
+        } finally {
+          actor.stop()
+        }
       })
       it('defers bulk edit success until file navigation completes', async () => {
         const onSuccess = vi.fn()
