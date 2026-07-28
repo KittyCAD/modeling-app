@@ -916,6 +916,9 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
           "[uuid]"
         ],
         "cut_type": {
@@ -928,73 +931,11 @@ description: Artifact commands multi-axis-robot.kcl
         },
         "tolerance": 0.0000001,
         "strategy": "automatic",
-        "extra_face_ids": []
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
+        "extra_face_ids": [
+          "[uuid]",
+          "[uuid]",
           "[uuid]"
-        ],
-        "cut_type": {
-          "chamfer": {
-            "distance": 25.4,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "chamfer": {
-            "distance": 25.4,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
-        ],
-        "cut_type": {
-          "chamfer": {
-            "distance": 25.4,
-            "second_distance": null,
-            "angle": null,
-            "swap": false
-          }
-        },
-        "tolerance": 0.0000001,
-        "strategy": "automatic",
-        "extra_face_ids": []
+        ]
       }
     }
   ],
