@@ -242,6 +242,11 @@ export const homeProjectsContract = defineContract({
   homeProjectActionsService: defineService<HomeProjectActionsService>(
     'home-project-actions'
   ),
+  homeProjectEntriesLoadingValueSpec: defineValueSpec<boolean, boolean>({
+    name: 'home-project-entries-loading',
+    defaultValue: false,
+    combine: (contributions) => contributions.some(Boolean),
+  }),
   homeProjectEntriesValueSpec: defineValueSpec<
     HomeProjectEntryContributionGroup,
     HomeProjectEntry[]
@@ -252,5 +257,8 @@ export const homeProjectsContract = defineContract({
   }),
 })
 
-export const { homeProjectActionsService, homeProjectEntriesValueSpec } =
-  homeProjectsContract
+export const {
+  homeProjectActionsService,
+  homeProjectEntriesLoadingValueSpec,
+  homeProjectEntriesValueSpec,
+} = homeProjectsContract

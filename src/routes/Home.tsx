@@ -50,17 +50,13 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+import { useCanReadWriteProjectDirectory } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   homeProjectActionsService,
+  homeProjectEntriesLoadingValueSpec,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import {
@@ -145,9 +141,11 @@ const Home = () => {
   const hasUnlimitedCredits = billingContext.balance === Infinity
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
-  const projects = useFolders()
-  const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeProjectEntriesLoading = registry.signal(
+    homeProjectEntriesLoadingValueSpec
+  ).value
+  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
     projectLibraryTypesValueSpec
@@ -551,7 +549,7 @@ const Home = () => {
           <ProjectGrid
             searchResults={searchResults ?? []}
             projects={scopedHomeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            projectEntriesLoading={homeProjectEntriesLoading}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -567,7 +565,7 @@ const Home = () => {
             libraries={projectLibraries}
             searchResults={searchResults ?? []}
             projects={homeProjectEntries}
-            localProjectsLoaded={projects !== undefined}
+            projectEntriesLoading={homeProjectEntriesLoading}
             query={query}
             sort={sort}
             projectStatuses={projectStatuses}
@@ -731,7 +729,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   libraries: ProjectLibrary[]
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectEntriesLoading: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
@@ -760,20 +758,11 @@ function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
 }
 
-function shouldShowLoadingMoreProjects(
-  state: ReturnType<typeof useSystemIOState>
-) {
-  return (
-    state.matches(SystemIOMachineStates.readingFolders) &&
-    !state.context.hasListedProjects
-  )
-}
-
 function ProjectLibraryOverview({
   libraries,
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectEntriesLoading,
   query,
   sort,
   projectStatuses,
@@ -782,7 +771,6 @@ function ProjectLibraryOverview({
   onMoveToLibrary,
   ...rest
 }: ProjectLibraryOverviewProps) {
-  const state = useSystemIOState()
   const libraryRows = libraries
     .map((library) => ({
       library,
@@ -792,11 +780,12 @@ function ProjectLibraryOverview({
       ).toSorted(getSortFunction(sort)),
     }))
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
-    <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
-    </div>
-  ) : null
+  const loadingMore =
+    projectEntriesLoading && projects.length > 0 ? (
+      <div className="py-4">
+        <Loading isDummy={true}>Loading more projects...</Loading>
+      </div>
+    ) : null
 
   if (libraries.length === 0) {
     return <ProjectLibrariesEmptyState {...rest} />
@@ -804,7 +793,7 @@ function ProjectLibraryOverview({
 
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
+      {projectEntriesLoading && projects.length === 0 ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
@@ -952,7 +941,7 @@ function ProjectLibraryPreviewRow({
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   searchResults: HomeProjectEntry[]
   projects: HomeProjectEntry[]
-  localProjectsLoaded: boolean
+  projectEntriesLoading: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
@@ -966,7 +955,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
 function ProjectGrid({
   searchResults,
   projects,
-  localProjectsLoaded,
+  projectEntriesLoading,
   query,
   sort,
   projectStatuses,
@@ -977,17 +966,17 @@ function ProjectGrid({
   projectLibraryEmptyTestId,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
-    <div className="py-4">
-      <Loading isDummy={true}>Loading more projects...</Loading>
-    </div>
-  ) : null
+  const loadingMore =
+    projectEntriesLoading && projects.length > 0 ? (
+      <div className="py-4">
+        <Loading isDummy={true}>Loading more projects...</Loading>
+      </div>
+    ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
-      {!localProjectsLoaded && projects.length === 0 ? (
+      {projectEntriesLoading && projects.length === 0 ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
