@@ -1298,6 +1298,35 @@ fn remap_mapped_ids_for_clone(ids: &[ArtifactId], entity_id_map: &AHashMap<Artif
     ids.iter().filter_map(|id| entity_id_map.get(id).copied()).collect()
 }
 
+fn add_composite_sweep_clone_id_mappings(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    clone_cmd_id: Uuid,
+    entity_id_map: &mut AHashMap<ArtifactId, ArtifactId>,
+) {
+    let source_sweep_ids = artifacts
+        .values()
+        .filter_map(|artifact| {
+            let Artifact::Sweep(sweep) = artifact else {
+                return None;
+            };
+            if entity_id_map.contains_key(&sweep.id) {
+                return None;
+            }
+
+            let has_mapped_topology = entity_id_map.contains_key(&sweep.path_id)
+                || sweep.surface_ids.iter().any(|id| entity_id_map.contains_key(id))
+                || sweep.edge_ids.iter().any(|id| entity_id_map.contains_key(id));
+            has_mapped_topology.then_some(sweep.id)
+        })
+        .collect::<Vec<_>>();
+
+    for source_sweep_id in source_sweep_ids {
+        let source_uuid = Uuid::from(source_sweep_id);
+        let cloned_sweep_id = ArtifactId::new(Uuid::new_v5(&clone_cmd_id, source_uuid.as_bytes()));
+        entity_id_map.insert(source_sweep_id, cloned_sweep_id);
+    }
+}
+
 fn remap_artifact_for_clone(
     artifact: &Artifact,
     entity_id_map: &AHashMap<ArtifactId, ArtifactId>,
@@ -2255,20 +2284,22 @@ fn artifacts_to_update(
             entity_id_map.insert(source_entity_id, id);
             entity_id_map.insert(source_id, result_id);
             entity_id_map.insert(source_artifact_id, result_id);
+            if matches!(source_artifact, Artifact::CompositeSolid(_)) {
+                // Composite topology can contain semantic Sweep IDs that are
+                // distinct from the engine child IDs returned by clone().
+                // Give each participating sweep a stable cloned artifact ID
+                // so cloned faces never retain ownership links to the source.
+                add_composite_sweep_clone_id_mappings(artifacts, artifact_command.cmd_id, &mut entity_id_map);
+            }
 
             let mut cloned_artifacts = Vec::new();
-            let mut cloned_source = remap_artifact_for_clone(
+            let cloned_source = remap_artifact_for_clone(
                 source_artifact,
                 &entity_id_map,
                 &code_ref,
                 artifact_command.cmd_id,
                 source_artifact_id,
             );
-            if pattern_source_body_id.is_some()
-                && let Artifact::Sweep(sweep) = &mut cloned_source
-            {
-                sweep.source_sweep_id = Some(source_id);
-            }
             cloned_artifacts.push(cloned_source);
 
             for artifact in artifacts.values() {

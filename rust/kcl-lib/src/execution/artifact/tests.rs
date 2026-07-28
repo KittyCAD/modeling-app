@@ -1265,7 +1265,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
     };
     assert_eq!(cloned_sweep.surface_ids, vec![cloned_face_id, cloned_cap_id]);
     assert_eq!(cloned_sweep.edge_ids, vec![cloned_edge_id]);
-    assert_eq!(cloned_sweep.source_sweep_id, Some(ArtifactId::new(copy_id)));
+    assert_eq!(cloned_sweep.source_sweep_id, Some(source_sweep_id));
     assert!(!cloned_sweep.consumed);
     assert!(updated.iter().any(|artifact| {
         matches!(
