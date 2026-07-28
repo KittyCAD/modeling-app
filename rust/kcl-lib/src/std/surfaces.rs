@@ -341,6 +341,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
     let solid = Solid {
         id,
         value_id: id,
+        topology_id: id,
         artifact_id: id.into(),
         value: vec![],
         faces: Default::default(),
@@ -408,6 +409,7 @@ async fn inner_join(
         let solid = Solid {
             id: body_out_id,
             value_id: body_out_id,
+            topology_id: body_out_id,
             artifact_id: body_out_id.into(),
             value: vec![],
             faces: Default::default(),

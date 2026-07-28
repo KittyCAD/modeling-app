@@ -45,18 +45,6 @@ assert(count(newArr), isEqualTo = 6, tolerance = 0.00001)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the concat function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-concat0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 // Concatenating an empty array has no effect.
@@ -69,17 +57,5 @@ assert(count(newArr), isEqualTo = 3, tolerance = 0.00001)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the concat function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-concat1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 

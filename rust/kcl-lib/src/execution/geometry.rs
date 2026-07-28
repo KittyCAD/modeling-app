@@ -1269,6 +1269,12 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub value_id: uuid::Uuid,
+    /// The engine entity whose children correspond to the topology references
+    /// stored on this solid. Pattern copies retain their source topology,
+    /// while consuming operations and clones replace it with their output.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) topology_id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -1360,6 +1366,10 @@ impl Solid {
 
     pub fn original_id(&self) -> uuid::Uuid {
         self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
+    pub(crate) fn topology_id(&self) -> uuid::Uuid {
+        self.topology_id
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {

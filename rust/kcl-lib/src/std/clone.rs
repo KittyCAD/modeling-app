@@ -10,7 +10,6 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::extrude::do_post_extrude;
-use super::solid_consumption::is_consuming_operation_output;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::EntityCloneInfo;
@@ -73,13 +72,7 @@ async fn inner_clone(
         // the clone's child IDs.
         let source_topology_id = match &geometry {
             GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
-            GeometryWithImportedGeometry::Solid(solid) => {
-                if is_consuming_operation_output(solid, exec_state) {
-                    solid.id
-                } else {
-                    solid.original_id()
-                }
-            }
+            GeometryWithImportedGeometry::Solid(solid) => solid.topology_id(),
             GeometryWithImportedGeometry::ImportedGeometry(_) => old_id,
         };
         let mut entity_clone_info = None;
@@ -125,6 +118,7 @@ async fn inner_clone(
                 });
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
+                new_solid.topology_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -486,7 +480,37 @@ mod tests {
 
     use crate::exec::KclValueView;
     use crate::execution::Artifact;
+    use crate::execution::ArtifactGraph;
     use crate::execution::ArtifactId;
+    use crate::execution::Solid;
+
+    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &Solid) {
+        let Some(Artifact::CompositeSolid(cloned_artifact)) = artifact_graph.get(&cloned_composite.artifact_id) else {
+            panic!("Expected a cloned composite solid artifact at the engine entity ID");
+        };
+        assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
+        assert!(!cloned_artifact.consumed);
+
+        let cloned_face_sweep_ids = artifact_graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::Wall(wall) if wall.cmd_id == cloned_composite.id => Some(wall.sweep_id),
+                Artifact::Cap(cap) if cap.cmd_id == cloned_composite.id => Some(cap.sweep_id),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert!(!cloned_face_sweep_ids.is_empty());
+
+        for sweep_id in cloned_face_sweep_ids {
+            let Some(Artifact::Sweep(sweep)) = artifact_graph.get(&sweep_id) else {
+                panic!("Expected every cloned composite face to reference a sweep");
+            };
+            assert_eq!(sweep.code_ref, cloned_artifact.code_ref);
+            let source_sweep_id = sweep.source_sweep_id.expect("Expected cloned sweep provenance");
+            assert_ne!(sweep.id, source_sweep_id);
+            assert!(matches!(artifact_graph.get(&source_sweep_id), Some(Artifact::Sweep(_))));
+        }
+    }
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -635,39 +659,18 @@ clonedComposite = clone(composite)
         assert_eq!(cloned_composite.artifact_id, cloned_composite.id.into());
         assert_ne!(composite.id, cloned_composite.id);
         assert_ne!(composite.original_id(), composite.id);
+        assert_eq!(composite.topology_id(), composite.id);
         assert_eq!(cloned_composite.original_id(), cloned_composite.id);
+        assert_eq!(cloned_composite.topology_id(), cloned_composite.id);
 
-        let Some(Artifact::CompositeSolid(cloned_artifact)) = result.artifact_graph.get(&cloned_composite.artifact_id)
-        else {
-            panic!("Expected a cloned composite solid artifact at the engine entity ID");
-        };
-        assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
-        assert!(!cloned_artifact.consumed);
-
-        let cloned_face_sweep_ids = result
-            .artifact_graph
-            .values()
-            .filter_map(|artifact| match artifact {
-                Artifact::Wall(wall) if wall.cmd_id == cloned_composite.id => Some(wall.sweep_id),
-                Artifact::Cap(cap) if cap.cmd_id == cloned_composite.id => Some(cap.sweep_id),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        assert!(!cloned_face_sweep_ids.is_empty());
-        for sweep_id in cloned_face_sweep_ids {
-            let Some(Artifact::Sweep(sweep)) = result.artifact_graph.get(&sweep_id) else {
-                panic!("Expected every cloned composite face to reference a sweep");
-            };
-            assert_eq!(sweep.code_ref, cloned_artifact.code_ref);
-            assert!(sweep.source_sweep_id.is_some());
-        }
+        assert_cloned_composite_topology(&result.artifact_graph, cloned_composite);
 
         ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_clone_patterned_composite_uses_composite_topology() {
-        let code = r#"left = startSketchOn(XY)
+    async fn kcl_test_clone_imported_patterned_composite_uses_composite_topology() {
+        let module_code = r#"left = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line(end = [10, 0])
     |> line(end = [0, 10])
@@ -683,7 +686,10 @@ right = startSketchOn(XY)
     |> close()
     |> extrude(length = 5)
 
-composite = union([left, right])
+export composite = union([left, right])
+"#;
+        let code = r#"import composite from 'composite.kcl'
+
 patterned = patternLinear3d(
     composite,
     instances = 2,
@@ -693,7 +699,12 @@ patterned = patternLinear3d(
 patternCopy = patterned[1]
 clonedCopy = clone(patternCopy)
 "#;
-        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let tmpdir = tempfile::TempDir::with_prefix("clone_imported_patterned_composite").unwrap();
+        let main_path = tmpdir.path().join("main.kcl");
+        std::fs::write(tmpdir.path().join("composite.kcl"), module_code).unwrap();
+        std::fs::write(&main_path, code).unwrap();
+
+        let ctx = crate::test_server::new_context(true, Some(main_path)).await.unwrap();
         let program = crate::Program::parse_no_errs(code).unwrap();
 
         let result = ctx.run_with_caching(program).await.unwrap();
@@ -707,15 +718,14 @@ clonedCopy = clone(patternCopy)
             panic!("Expected clonedCopy to be a solid");
         };
 
-        assert_eq!(pattern_copy.original_id(), composite.id);
+        assert_eq!(composite.topology_id(), composite.id);
+        assert_eq!(pattern_copy.topology_id(), composite.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
+        assert_eq!(cloned_copy.topology_id(), cloned_copy.id);
         assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
         assert_ne!(pattern_copy.id, cloned_copy.id);
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
-        assert!(matches!(
-            result.artifact_graph.get(&cloned_copy.artifact_id),
-            Some(Artifact::CompositeSolid(_))
-        ));
+        assert_cloned_composite_topology(&result.artifact_graph, cloned_copy);
 
         ctx.close().await;
     }
