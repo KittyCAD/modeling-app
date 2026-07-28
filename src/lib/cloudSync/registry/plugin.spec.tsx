@@ -41,9 +41,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
-const conflict: unknown = undefined
 const cloudConflictDialogMocks = vi.hoisted(() => ({
-  conflict,
+  conflict: undefined as unknown,
 }))
 
 vi.mock('@src/components/CloudConflictDialog', () => ({
