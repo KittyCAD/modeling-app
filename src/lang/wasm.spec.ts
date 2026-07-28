@@ -100,8 +100,8 @@ afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
 
-describe('KCL lint options', () => {
-  it('only returns Z0006 when explicitly enabled', async () => {
+describe('KCL lint registration', () => {
+  it('does not return Z0006', async () => {
     const ast = assertParse(
       'revolve(profile, axis = getOppositeEdge(seg01))',
       instanceInThisFile
@@ -111,11 +111,6 @@ describe('KCL lint options', () => {
     expect(
       defaultFindings.some((finding) => finding.finding.code === 'Z0006')
     ).toBe(false)
-
-    const optedInFindings = await kclLint(ast, instanceInThisFile, true)
-    expect(
-      optedInFindings.some((finding) => finding.finding.code === 'Z0006')
-    ).toBe(true)
   })
 })
 
