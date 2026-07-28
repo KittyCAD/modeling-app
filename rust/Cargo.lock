@@ -2356,6 +2356,7 @@ dependencies = [
  "pyo3-stub-gen",
  "schemars 0.8.22",
  "serde",
+ "serde_json",
  "ts-rs",
  "uuid",
 ]
