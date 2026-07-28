@@ -49,18 +49,6 @@ assert(count(s), isEqualTo = 2)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the slice function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-slice0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-slice0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 s = slice([1, 2, 3, 4, 5], end = -2)
@@ -72,18 +60,6 @@ assert(count(s), isEqualTo = 3)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the slice function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-slice1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-slice1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 s = slice([1, 2, 3, 4, 5], start = -2)
@@ -94,17 +70,5 @@ assert(count(s), isEqualTo = 2)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the slice function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-slice2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-slice2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 

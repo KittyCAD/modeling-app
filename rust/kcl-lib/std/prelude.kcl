@@ -284,7 +284,7 @@ export fn helix(
 /// loft([squareSketch, circleSketch])
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // A circle on the XY plane
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
