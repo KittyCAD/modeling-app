@@ -28,6 +28,12 @@ const cloudSyncPathMocks = vi.hoisted(() => ({
   getDefaultCloudProjectDirectoryPath: vi.fn(),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({
+  getModule: vi.fn(),
+  init: vi.fn(),
+  reloadModule: vi.fn(),
+}))
+
 vi.mock('@src/lib/desktop', () => {
   return {
     canReadWriteDirectory: vi.fn().mockResolvedValue({
@@ -126,10 +132,8 @@ describe('home project actions', () => {
   })
 
   it('opens remote-only cloud projects without forcing a full folder rescan', async () => {
-    const wasmInstance = {}
-    const wasmPromise = Promise.resolve(wasmInstance) as Parameters<
-      typeof provideWasmPromise
-    >[0]
+    const wasmInstance = {} as never
+    const wasmPromise = Promise.resolve(wasmInstance)
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService({
       ensureProjectLocallySynced: vi.fn().mockResolvedValue({
