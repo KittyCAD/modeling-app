@@ -140,9 +140,40 @@ export async function getAllProjectMetadata() {
 }
 
 export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
-  await withStore<IDBValidKey>(OUTBOX_STORE, 'readwrite', (store) =>
-    store.add(entry)
-  )
+  const normalizedProjectPath = normalizePathForSync(entry.projectPath)
+  const db = await openSyncDb()
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
+    const store = transaction.objectStore(OUTBOX_STORE)
+    const request = store.openCursor()
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        store.add({
+          ...entry,
+          projectPath: normalizedProjectPath,
+        })
+        return
+      }
+
+      const existingEntry = cursor.value as OutboxEntry
+      if (
+        normalizePathForSync(existingEntry.projectPath) ===
+        normalizedProjectPath
+      ) {
+        cursor.delete()
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+  })
 }
 
 export async function getAllOutboxEntries() {

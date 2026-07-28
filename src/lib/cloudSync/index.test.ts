@@ -606,6 +606,41 @@ describe('cloudSync sync helpers', () => {
     })
   })
 
+  it('counts pending cloud sync work by project instead of raw outbox rows', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/project.toml',
+        createdAt: '2026-06-12T00:00:01.000Z',
+      },
+      {
+        projectPath: '/projects/other',
+        kind: 'upsert',
+        targetPath: '/projects/other/main.kcl',
+        createdAt: '2026-06-12T00:00:02.000Z',
+      },
+    ]
+
+    expect(getCloudSyncScopePlan(entries)).toEqual({
+      shouldSyncRemoteIndex: true,
+      projectPaths: ['/projects/current', '/projects/other'],
+      pendingCount: 2,
+    })
+
+    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 1,
+    })
+  })
+
   it('keeps syncing the open project even when it has no queued local edits', () => {
     expect(getCloudSyncScopePlan([], '/projects/current')).toEqual({
       shouldSyncRemoteIndex: false,
