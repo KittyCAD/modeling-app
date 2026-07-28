@@ -1,15 +1,22 @@
 import {
   defineRegistryItem,
+  provide,
   provideService,
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { cloudSyncProjectLibraryType } from '@src/lib/cloudSync/registry/plugin'
+import {
+  getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+} from '@src/lib/projectLibraries'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
   homeProjectActionsService,
 } from '@src/registry/contracts/homeProjects'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
@@ -18,7 +25,7 @@ import {
 } from '@src/registry/contracts/systemIO'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const desktopMocks = vi.hoisted(() => ({
   getProjectInfo: vi.fn(),
@@ -125,6 +132,10 @@ function createCloudSyncService(
 describe('home project actions', () => {
   let registry: Registry | undefined
 
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   afterEach(() => {
     registry?.[Symbol.dispose]()
     registry = undefined
@@ -194,6 +205,68 @@ describe('home project actions', () => {
       '/cloud-projects/remote-title',
       wasmInstance
     )
+    expect(systemIO.send).not.toHaveBeenCalled()
+  })
+
+  it('opens locally materialized cloud library projects without re-syncing them first', async () => {
+    const wasmInstance = {} as never
+    const wasmPromise = Promise.resolve(wasmInstance)
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const localCloudProject = {
+      id: 'remote:remote-123',
+      source: 'both',
+      status: 'synced',
+      libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+      name: 'remote-title',
+      title: 'Remote title',
+      localProjectPath: '/cloud-projects/remote-title',
+      localProjectName: 'remote-title',
+      remoteProjectId: 'remote-123',
+      defaultFile: '/cloud-projects/remote-title/main.kcl',
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(settingsService, createSettingsService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-library',
+        provides: [
+          provide(projectLibrariesValueSpec, {
+            ...getDefaultCloudProjectLibrarySetting(),
+            id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          }),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(wasmPromise)],
+      }),
+      cloudSyncProjectLibraryType,
+      homeProjectsExtension,
+    ])
+
+    await expect(
+      registry.get(homeProjectActionsService).open(localCloudProject)
+    ).resolves.toEqual({
+      defaultFile: '/cloud-projects/remote-title/main.kcl',
+    })
+    expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
+    expect(desktopMocks.getProjectInfo).not.toHaveBeenCalled()
     expect(systemIO.send).not.toHaveBeenCalled()
   })
 })
