@@ -2154,7 +2154,10 @@ extrude001 = extrude(region001, length = -12)`
     await test.step(`Open chamfer UI without selecting edges`, async () => {
       // The preceding edit leaves its edge selected; clear it so this exercises
       // opening Chamfer without a preselection.
-      await page.keyboard.press('Escape')
+      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clearSelection()
       await expect(toolbar.selectionStatus).not.toContainText('edge')
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()

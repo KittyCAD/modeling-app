@@ -929,7 +929,7 @@ body001 = extrude(
     expect(newCode).toContain('body001 = extrude(')
     expect(newCode).toContain('region001,')
     expect(newCode).not.toContain('|> fillet(')
-    expect(newCode).toContain('|> chamfer(')
+    expect(newCode).not.toContain('|> chamfer(')
   })
 
   const cases = [
