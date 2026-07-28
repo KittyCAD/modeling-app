@@ -5,7 +5,7 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
@@ -22,9 +22,11 @@ import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
+  getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
   NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
+  projectLibraryFromSetting,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import {
@@ -56,6 +58,7 @@ import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contract
 import {
   getProjectLibraryOperation,
   type ProjectLibraryTypeOperations,
+  projectLibrariesValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -486,6 +489,59 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
+const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraries = computed<ProjectLibrary[]>(() => {
+    const currentSettings = settings.value?.current.value
+    if (!currentSettings) {
+      return []
+    }
+
+    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+      currentSettings.app.libraries.current
+    )
+
+    return currentSettings.app.libraries.current.map((library, index) => ({
+      ...projectLibraryFromSetting(library, index, {
+        defaultProjectDirectory,
+      }),
+      icon: 'folder',
+      order: index,
+    }))
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.configured-project-libraries',
+      provides: [
+        provide(projectLibrariesValueSpec, libraries, {
+          key: 'home-projects.configured-project-libraries',
+        }),
+      ],
+    }),
+  }
+}, 'home-projects.configured-project-libraries')
+
+function areProjectLibrariesEqual(
+  left: readonly ProjectLibrary[],
+  right: readonly ProjectLibrary[]
+) {
+  return (
+    left.length === right.length &&
+    left.every((library, index) => {
+      const otherLibrary = right[index]
+      return (
+        otherLibrary !== undefined &&
+        library.id === otherLibrary.id &&
+        library.title === otherLibrary.title &&
+        library.path === otherLibrary.path &&
+        library.type === otherLibrary.type &&
+        library.order === otherLibrary.order
+      )
+    })
+  )
+}
+
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
@@ -691,6 +747,9 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
   let loadId = 0
+  let lastScannedConfiguredLibraries: ProjectLibrary[] | undefined
+  let lastScannedLibraryTypes: typeof libraryTypes.value | undefined
+  let lastScannedInvalidation = -1
 
   const updateEntries = () => {
     entries.value = Array.from(entriesByLibraryId.values()).flat()
@@ -709,7 +768,35 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       // Directory library operations mutate the filesystem without changing
       // settings or library type registrations. Read this signal so known
       // mutations can invalidate and rescan configured library entries.
-      readConfiguredProjectLibraryEntriesInvalidation()
+      const invalidation = readConfiguredProjectLibraryEntriesInvalidation()
+
+      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+        currentSettings?.app.libraries.current
+      )
+      const configuredLibraries =
+        currentSettings?.app.libraries.current
+          .map((library, index) =>
+            projectLibraryFromSetting(library, index, {
+              defaultProjectDirectory,
+            })
+          )
+          .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID) ?? []
+
+      if (
+        lastScannedLibraryTypes === typeById &&
+        lastScannedInvalidation === invalidation &&
+        lastScannedConfiguredLibraries &&
+        areProjectLibrariesEqual(
+          lastScannedConfiguredLibraries,
+          configuredLibraries
+        )
+      ) {
+        return
+      }
+
+      lastScannedLibraryTypes = typeById
+      lastScannedInvalidation = invalidation
+      lastScannedConfiguredLibraries = configuredLibraries
       const nextLoadId = ++loadId
 
       abortController?.abort()
@@ -717,14 +804,6 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       abortController = loadController
       entriesByLibraryId.clear()
       entries.value = []
-
-      if (!currentSettings) {
-        return
-      }
-
-      const configuredLibraries = projectLibrariesFromSettings(
-        currentSettings.app.libraries.current
-      ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
@@ -848,6 +927,7 @@ const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
+    configuredProjectLibraries,
     configuredProjectLibraryEntries,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,

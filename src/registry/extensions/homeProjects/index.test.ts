@@ -9,14 +9,20 @@ import { cloudSyncProjectLibraryType } from '@src/lib/cloudSync/registry/plugin'
 import {
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
+  type HomeProjectEntryContribution,
+  homeProjectEntriesValueSpec,
   homeProjectActionsService,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
+import {
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
@@ -25,6 +31,7 @@ import {
 } from '@src/registry/contracts/systemIO'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import { waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const desktopMocks = vi.hoisted(() => ({
@@ -80,6 +87,38 @@ function createSettingsService(): SettingsRegistryService {
     send: vi.fn(),
     useSettings: () => current.value,
   } as unknown as SettingsRegistryService
+}
+
+function createMutableSettingsService({
+  libraries,
+}: {
+  libraries: { title: string; path: string; type: string }[]
+}) {
+  const current = signal({
+    app: {
+      libraries: {
+        current: libraries,
+      },
+    },
+    unrelated: {
+      value: 0,
+    },
+  })
+
+  return {
+    current,
+    service: {
+      actor: {
+        getSnapshot: () => ({
+          matches: (state: string) => state === 'idle',
+        }),
+      },
+      current,
+      get: () => current.value,
+      send: vi.fn(),
+      useSettings: () => current.value,
+    } as unknown as SettingsRegistryService,
+  }
 }
 
 function createSystemIOService() {
@@ -140,6 +179,100 @@ describe('home project actions', () => {
     registry?.[Symbol.dispose]()
     registry = undefined
     vi.restoreAllMocks()
+  })
+
+  it('does not clear configured library entries for unrelated settings updates', async () => {
+    const settings = createMutableSettingsService({
+      libraries: [
+        {
+          title: 'Custom Cloud',
+          path: '/custom-cloud',
+          type: 'custom-cloud',
+        },
+      ],
+    })
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const readEntries = vi.fn(({ library }: { library: ProjectLibrary }) =>
+      Promise.resolve([
+        {
+          source: 'local',
+          status: 'synced',
+          libraryId: library.id,
+          name: 'untitled-43',
+          title: 'untitled-43',
+          localProjectPath: '/custom-cloud/untitled-43',
+          localProjectName: 'untitled-43',
+          remoteProjectId: 'remote-123',
+          defaultFile: '/custom-cloud/untitled-43/main.kcl',
+          readWriteAccess: true,
+          thumbnail: {
+            type: 'local',
+            path: '/custom-cloud/untitled-43/thumbnail.png',
+          },
+        },
+      ] satisfies HomeProjectEntryContribution[])
+    )
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.custom-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: 'custom-cloud',
+            title: 'Custom Cloud',
+            readEntries,
+          }),
+        ],
+      }),
+      homeProjectsExtension,
+    ])
+
+    await waitFor(() =>
+      expect(registry?.get(homeProjectEntriesValueSpec)).toEqual([
+        expect.objectContaining({
+          name: 'untitled-43',
+          thumbnail: {
+            type: 'local',
+            path: '/custom-cloud/untitled-43/thumbnail.png',
+          },
+        }),
+      ])
+    )
+
+    readEntries.mockClear()
+    settings.current.value = {
+      ...settings.current.value,
+      unrelated: {
+        value: 1,
+      },
+    }
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(readEntries).not.toHaveBeenCalled()
+    expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+      expect.objectContaining({
+        name: 'untitled-43',
+        thumbnail: {
+          type: 'local',
+          path: '/custom-cloud/untitled-43/thumbnail.png',
+        },
+      }),
+    ])
   })
 
   it('opens remote-only cloud projects without forcing a full folder rescan', async () => {
