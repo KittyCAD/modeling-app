@@ -22,9 +22,9 @@ solver::angleDimension(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `lines` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2] | The two line segments whose selected angle sector should match the value set with `==`. | Yes |
-| `sector` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Which of the four angle sectors to constrain, numbered around the line intersection. | Yes |
-| `inverse` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether to constrain the inverse of the selected sector. | No |
+| `lines` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 2] | The ordered pair of line segments whose selected angle sector should match the value set with `==`. A line's positive direction runs from its start point to its end point; its negative direction is the reverse. | Yes |
+| `sector` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Which counterclockwise sweep about the line intersection to constrain: `1`, first line's positive direction to the second line's positive direction; `2`, second positive to first negative; `3`, first negative to second negative; or `4`, second negative to first positive. | Yes |
+| `inverse` | [`bool`](/docs/kcl-std/types/std-types-bool) | Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`. | No |
 | `labelPosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The desired position of the constraint label. | No |
 
 
