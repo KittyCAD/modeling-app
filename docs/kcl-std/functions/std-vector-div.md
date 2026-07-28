@@ -41,17 +41,5 @@ assert(v2[2], isEqualTo = 3.333, tolerance = 0.01)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the vector::div function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-vector-div0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-vector-div0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 

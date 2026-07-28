@@ -203,7 +203,7 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
 /// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
 /// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")

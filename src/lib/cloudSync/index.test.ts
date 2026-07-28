@@ -18,7 +18,10 @@ import {
   projectManifestsEqual,
   shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
-import { DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH } from '@src/lib/cloudSync/paths'
+import {
+  DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
+  isCloudSyncExcludedPath,
+} from '@src/lib/cloudSync/paths'
 import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
@@ -243,6 +246,31 @@ describe('cloudSync sync helpers', () => {
       '.gitignore',
       'nested/.gitignore',
       'nested/part.kcl',
+    ])
+  })
+
+  it('excludes VCS metadata from cloud sync manifests without .gitignore entries', () => {
+    expect(isCloudSyncExcludedPath('.git')).toBe(true)
+    expect(isCloudSyncExcludedPath('.git/objects/pack.idx')).toBe(true)
+    expect(isCloudSyncExcludedPath('nested/.git/HEAD')).toBe(true)
+    expect(isCloudSyncExcludedPath('.gitignore')).toBe(false)
+    expect(isCloudSyncExcludedPath('.github/workflows/test.yml')).toBe(false)
+
+    const files = filterCloudSyncProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile('.git/HEAD', 'ref: refs/heads/main\n'),
+      projectFile('.git/objects/pack/pack-123.idx', 'pack index'),
+      projectFile('.gitignore', 'dist/\n'),
+      projectFile('.github/workflows/test.yml', 'name: test\n'),
+      projectFile('.hg/store/data', 'hg data'),
+      projectFile('.svn/entries', 'svn entries'),
+      projectFile('.jj/repo/store/git/HEAD', 'jj data'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual([
+      'main.kcl',
+      '.gitignore',
+      '.github/workflows/test.yml',
     ])
   })
 

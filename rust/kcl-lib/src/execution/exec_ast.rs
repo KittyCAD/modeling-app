@@ -1654,7 +1654,7 @@ impl Node<SketchBlock> {
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
             let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Plane(plane) => Some(super::artifact::artifact_plane_info(&plane.info)),
                 SketchSurface::Face(_) => None,
             };
 
@@ -3856,7 +3856,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Angle;
                             use crate::front::SourceRef;
 
@@ -3878,7 +3877,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -3986,7 +3985,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4027,7 +4025,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4133,7 +4131,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4161,7 +4158,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4277,7 +4274,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4301,7 +4297,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4373,7 +4369,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4401,7 +4396,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4513,7 +4508,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4537,7 +4531,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4696,7 +4690,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4720,7 +4713,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4921,7 +4914,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::SourceRef;
                             let segment_object_id = match target_segment {
                                 CircularSegmentConstraintTarget::Arc { object_id, .. }
@@ -4960,7 +4952,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5034,7 +5026,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5075,7 +5066,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5147,7 +5138,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5188,7 +5178,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
