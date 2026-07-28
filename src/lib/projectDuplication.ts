@@ -2,9 +2,7 @@ import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
-import type { FileEntry } from '@src/lib/project'
 import {
   getProjectDirectoryNameFromTitle,
   getProjectTitleFromUniqueDirectoryName,
@@ -27,6 +25,21 @@ export type DuplicateProjectResult = {
   title: string
 }
 
+function getUniqueDuplicateProjectDirectoryName(
+  directoryName: string,
+  existingProjectNames: string[]
+) {
+  const existingNames = new Set(
+    existingProjectNames.map((name) => name.toLowerCase())
+  )
+  for (let duplicateNumber = 1; ; duplicateNumber += 1) {
+    const name = `${directoryName}-${duplicateNumber}`
+    if (!existingNames.has(name.toLowerCase())) {
+      return name
+    }
+  }
+}
+
 export async function duplicateProjectInDirectory({
   source,
   projectDirectoryPath,
@@ -43,16 +56,9 @@ export async function duplicateProjectInDirectory({
     projectTitle,
     source.directoryName
   )
-  const existingProjects: FileEntry[] = (
+  const name = getUniqueDuplicateProjectDirectoryName(
+    requestedProjectDirectoryName,
     await fsZds.readdir(projectDirectoryPath)
-  ).map((name) => ({
-    name,
-    path: fsZds.join(projectDirectoryPath, name),
-    children: [],
-  }))
-  const name = getUniqueProjectName(
-    `${requestedProjectDirectoryName}-1`,
-    existingProjects
   )
   const title = getProjectTitleFromUniqueDirectoryName({
     requestedProjectTitle: projectTitle,
