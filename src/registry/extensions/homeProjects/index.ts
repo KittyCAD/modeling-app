@@ -332,17 +332,6 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         projects,
         DEFAULT_PROJECT_LIBRARY_ID
       )
-      if (projects) {
-        scheduleProjectDirectoryNameSyncFromTitles({
-          projects,
-          onProjectDirectoriesRenamed: () => {
-            requestDefaultProjectDirectoryRefresh(
-              systemIO.value,
-              settings.value?.current.value
-            )
-          },
-        })
-      }
     })
   })
 
@@ -584,7 +573,11 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
             defaultProjectDirectory,
           })
         )
-        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+        .filter(
+          (library) =>
+            library.id !== DEFAULT_PROJECT_LIBRARY_ID &&
+            library.path !== defaultProjectDirectory
+        )
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
