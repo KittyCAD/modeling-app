@@ -322,6 +322,7 @@ pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
+    HelixSet(Vec<Helix>),
 }
 
 impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
@@ -358,6 +359,21 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            SolidOrSketchOrImportedGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
         }
     }
 }
@@ -372,6 +388,7 @@ impl SolidOrSketchOrImportedGeometry {
             }
             SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrSketchOrImportedGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
 }
