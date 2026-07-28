@@ -50,4 +50,52 @@ describe('cloud sync outbox persistence', () => {
       },
     ])
   })
+
+  it('keeps existing project upload work when a duplicate upsert is registered', async () => {
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-07-28T12:00:00.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket',
+      createdAt: '2026-07-28T12:01:00.000Z',
+    })
+
+    await expect(getAllOutboxEntries()).resolves.toMatchObject([
+      {
+        projectPath: '/projects/bracket',
+        kind: 'upsert',
+        targetPath: '/projects/bracket/main.kcl',
+        createdAt: '2026-07-28T12:00:00.000Z',
+      },
+    ])
+  })
+
+  it('keeps project delete work when a later upsert is registered for the tombstoned project', async () => {
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'delete',
+      targetPath: '/projects/bracket',
+      createdAt: '2026-07-28T12:00:00.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-07-28T12:01:00.000Z',
+    })
+
+    await expect(getAllOutboxEntries()).resolves.toMatchObject([
+      {
+        projectPath: '/projects/bracket',
+        kind: 'delete',
+        targetPath: '/projects/bracket',
+        createdAt: '2026-07-28T12:00:00.000Z',
+      },
+    ])
+  })
 })
