@@ -68,6 +68,7 @@ import {
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDirectoryNameFromTitle,
+  getUniqueDuplicateProjectName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
 import {
@@ -1239,19 +1240,13 @@ export async function renameRemoteCloudProject(
 }
 
 function getRemoteDuplicateProjectTitle(sourceTitle: string) {
-  const existingTitles = new Set(
+  return getUniqueDuplicateProjectName(
+    sourceTitle,
     cloudSyncRemoteProjects.value.flatMap((project) => {
       const title = project.title?.trim()
-      return title ? [title.toLowerCase()] : []
+      return title ? [title] : []
     })
   )
-
-  for (let duplicateNumber = 1; ; duplicateNumber += 1) {
-    const title = `${sourceTitle}-${duplicateNumber}`
-    if (!existingTitles.has(title.toLowerCase())) {
-      return title
-    }
-  }
 }
 
 function prepareRemoteProjectFilesForDuplication(

@@ -6,6 +6,7 @@ import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryNameFromTitle,
   getProjectTitleFromUniqueDirectoryName,
+  getUniqueDuplicateProjectName,
 } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
@@ -25,21 +26,6 @@ export type DuplicateProjectResult = {
   title: string
 }
 
-function getUniqueDuplicateProjectDirectoryName(
-  directoryName: string,
-  existingProjectNames: string[]
-) {
-  const existingNames = new Set(
-    existingProjectNames.map((name) => name.toLowerCase())
-  )
-  for (let duplicateNumber = 1; ; duplicateNumber += 1) {
-    const name = `${directoryName}-${duplicateNumber}`
-    if (!existingNames.has(name.toLowerCase())) {
-      return name
-    }
-  }
-}
-
 export async function duplicateProjectInDirectory({
   source,
   projectDirectoryPath,
@@ -56,7 +42,7 @@ export async function duplicateProjectInDirectory({
     projectTitle,
     source.directoryName
   )
-  const name = getUniqueDuplicateProjectDirectoryName(
+  const name = getUniqueDuplicateProjectName(
     requestedProjectDirectoryName,
     await fsZds.readdir(projectDirectoryPath)
   )

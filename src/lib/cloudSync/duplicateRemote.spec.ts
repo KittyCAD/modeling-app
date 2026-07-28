@@ -28,7 +28,7 @@ describe('duplicateRemoteCloudProject', () => {
     fetchMock.mockReset()
     cloudSyncRemoteProjects.value = [
       { id: remoteProjectId, title: 'Bracket' },
-      { id: 'remote-project-1', title: 'Bracket-1' },
+      { id: 'remote-project-1', title: 'Bracket-copy' },
     ]
     configureCloudSyncEngine({
       enabled: true,
@@ -74,7 +74,7 @@ describe('duplicateRemoteCloudProject', () => {
         ).text()
         return jsonResponse({
           id: 'duplicated-remote-project',
-          title: 'Bracket-2',
+          title: 'Bracket-copy-1',
           revision: 'rev-1',
         })
       }
@@ -89,7 +89,7 @@ describe('duplicateRemoteCloudProject', () => {
 
     expect(result).toEqual({
       id: 'duplicated-remote-project',
-      title: 'Bracket-2',
+      title: 'Bracket-copy-1',
     })
     expect(
       fetchMock.mock.calls.map(([input, init]) => [
@@ -101,7 +101,7 @@ describe('duplicateRemoteCloudProject', () => {
       ['POST', remoteProjectsUrl],
     ])
     expect(uploadedBody).toEqual({
-      title: 'Bracket-2',
+      title: 'Bracket-copy-1',
       description: '',
       category_ids: [],
       entrypoint_path: 'main.kcl',
@@ -109,14 +109,14 @@ describe('duplicateRemoteCloudProject', () => {
     })
     expect(uploadedMainKcl).toBe('value = 42')
     expect(uploadedProjectToml).toBe(
-      'title = "Bracket-2"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "duplicate-project-uuid"\n'
+      'title = "Bracket-copy-1"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "duplicate-project-uuid"\n'
     )
     expect(cloudSyncRemoteProjects.value).toEqual([
       { id: remoteProjectId, title: 'Bracket' },
-      { id: 'remote-project-1', title: 'Bracket-1' },
+      { id: 'remote-project-1', title: 'Bracket-copy' },
       {
         id: 'duplicated-remote-project',
-        title: 'Bracket-2',
+        title: 'Bracket-copy-1',
         revision: 'rev-1',
       },
     ])

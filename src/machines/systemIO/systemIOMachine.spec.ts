@@ -208,15 +208,15 @@ describe('systemIOMachine - XState', () => {
           })
 
           duplicate.resolve({
-            message: 'Successfully duplicated "Bracket" as "Bracket-1"',
-            name: 'bracket-1',
+            message: 'Successfully duplicated "Bracket" as "Bracket-copy"',
+            name: 'bracket-copy',
           })
           await waitFor(actor, (state) =>
             state.matches(SystemIOMachineStates.readingFolders)
           )
           expect(actor.getSnapshot().context).toMatchObject({
             lastOperation: SystemIOMachineStates.duplicatingProject,
-            requestedProjectName: { name: 'bracket-1' },
+            requestedProjectName: { name: 'bracket-copy' },
           })
         } finally {
           actor.stop()
