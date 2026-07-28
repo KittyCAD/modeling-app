@@ -37,7 +37,7 @@ import Axis3d from "std::types"
 /// example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // Mirror a un-closed sketch across an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])

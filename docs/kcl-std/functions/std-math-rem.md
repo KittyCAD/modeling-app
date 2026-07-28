@@ -41,17 +41,5 @@ assert(rem(6.5, divisor = 2), isEqualTo = 0.5, error = "remainder is 0.5")
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the rem function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-math-rem0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-math-rem0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 
