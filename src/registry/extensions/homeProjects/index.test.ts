@@ -4,7 +4,6 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -29,11 +28,17 @@ const cloudSyncPathMocks = vi.hoisted(() => ({
   getDefaultCloudProjectDirectoryPath: vi.fn(),
 }))
 
-vi.mock('@src/lib/desktop', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@src/lib/desktop')>()
+vi.mock('@src/lib/desktop', () => {
   return {
-    ...actual,
+    canReadWriteDirectory: vi.fn().mockResolvedValue({
+      value: true,
+      error: undefined,
+    }),
+    createNewProjectDirectory: vi.fn(),
     getProjectInfo: desktopMocks.getProjectInfo,
+    isPathNotFoundError: vi.fn(() => false),
+    mkdirOrNOOP: vi.fn().mockResolvedValue(undefined),
+    writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
   }
 })
 
@@ -121,8 +126,10 @@ describe('home project actions', () => {
   })
 
   it('opens remote-only cloud projects without forcing a full folder rescan', async () => {
-    const wasmInstance = {} as ModuleType
-    const wasmPromise = Promise.resolve(wasmInstance)
+    const wasmInstance = {}
+    const wasmPromise = Promise.resolve(wasmInstance) as Parameters<
+      typeof provideWasmPromise
+    >[0]
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService({
       ensureProjectLocallySynced: vi.fn().mockResolvedValue({
