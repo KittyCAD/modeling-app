@@ -7,10 +7,12 @@ import {
 import { signal } from '@preact/signals-core'
 import { cloudSyncProjectLibraryType } from '@src/lib/cloudSync/registry/plugin'
 import {
+  DEFAULT_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
+import type { Project } from '@src/lib/project'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -143,6 +145,54 @@ function createSystemIOService() {
   }
 }
 
+function createMutableSystemIOService({
+  folders,
+}: {
+  folders: Project[] | undefined
+}) {
+  const send = vi.fn()
+  const subscribers = new Set<() => void>()
+  let snapshot = {
+    context: {
+      folders,
+      requestedProjectName: {
+        name: 'active-project',
+      },
+    },
+    matches: (state: string) => state === 'idle',
+  }
+
+  return {
+    service: {
+      actor: {
+        send,
+        getSnapshot: () => snapshot,
+        subscribe: vi.fn((callback: () => void) => {
+          subscribers.add(callback)
+          return {
+            unsubscribe: () => {
+              subscribers.delete(callback)
+            },
+          }
+        }),
+      },
+    } as unknown as SystemIORegistryService,
+    send,
+    setFolders: (foldersNext: Project[] | undefined) => {
+      snapshot = {
+        ...snapshot,
+        context: {
+          ...snapshot.context,
+          folders: foldersNext,
+        },
+      }
+      for (const subscriber of subscribers) {
+        subscriber()
+      }
+    },
+  }
+}
+
 function createCloudSyncService(
   overrides: Partial<CloudSyncRegistryService> = {}
 ): CloudSyncRegistryService {
@@ -179,6 +229,75 @@ describe('home project actions', () => {
     registry?.[Symbol.dispose]()
     registry = undefined
     vi.restoreAllMocks()
+  })
+
+  it('keeps default directory entries while System IO folders are temporarily unset', async () => {
+    const project = {
+      name: 'local-project',
+      title: 'Local Project',
+      path: '/projects/local-project',
+      default_file: '/projects/local-project/main.kcl',
+      children: [],
+      metadata: {
+        accessed: null,
+        created: null,
+        modified: 100,
+        permission: null,
+        size: 1,
+        type: 'directory',
+      },
+      kcl_file_count: 1,
+      directory_count: 0,
+      readWriteAccess: true,
+    } satisfies Project
+    const systemIO = createMutableSystemIOService({
+      folders: [project],
+    })
+    const cloudSync = createCloudSyncService()
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(settingsService, createSettingsService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      homeProjectsExtension,
+    ])
+
+    await waitFor(() =>
+      expect(registry?.get(homeProjectEntriesValueSpec)).toEqual([
+        expect.objectContaining({
+          name: 'local-project',
+          libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+        }),
+      ])
+    )
+
+    systemIO.setFolders(undefined)
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+      expect.objectContaining({
+        name: 'local-project',
+        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+      }),
+    ])
+
+    systemIO.setFolders([])
+    await waitFor(() =>
+      expect(registry?.get(homeProjectEntriesValueSpec)).toEqual([])
+    )
   })
 
   it('does not clear configured library entries for unrelated settings updates', async () => {

@@ -446,10 +446,12 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         const snapshot = service.actor.getSnapshot()
         const context = snapshot.context
         const projects = context.folders
-        entries.value = localHomeProjectEntriesFromProjects(
-          projects,
-          DEFAULT_PROJECT_LIBRARY_ID
-        )
+        if (projects !== undefined) {
+          entries.value = localHomeProjectEntriesFromProjects(
+            projects,
+            DEFAULT_PROJECT_LIBRARY_ID
+          )
+        }
 
         if (
           projects &&
