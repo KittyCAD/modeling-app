@@ -49,19 +49,38 @@ export type SystemIOOperation<
   cancel: () => void
 }
 
-export type SystemIORefreshProjectsInput = {
+export type SystemIOScanProjectDirectoryInput = {
   readonly projectDirectoryPath: string
+  /**
+   * Transitional compatibility bridge for the legacy default-directory state.
+   * Library scans should leave this false so arbitrary source reads do not
+   * replace `projects`/`projectHandles` or sync folders into the XState actor.
+   */
+  readonly publishToCurrentProjectDirectory?: boolean
 }
 
-export type SystemIORefreshProjectsRequest = SystemIORequestBase<
-  'projects.refresh',
-  SystemIORefreshProjectsInput
+export type SystemIOScanProjectDirectoryRequest = SystemIORequestBase<
+  'projectDirectory.scan',
+  SystemIOScanProjectDirectoryInput
 >
 
-export type SystemIORequest = SystemIORefreshProjectsRequest
+export type SystemIORequest = SystemIOScanProjectDirectoryRequest
 
 export type SystemIORequestResult<TRequest extends SystemIORequest> =
-  TRequest extends SystemIORefreshProjectsRequest ? Projects : never
+  TRequest extends SystemIOScanProjectDirectoryRequest ? Projects : never
+
+export type SystemIORequestOptions = {
+  readonly signal?: AbortSignal
+}
+
+export function scanProjectDirectoryRequest(
+  input: SystemIOScanProjectDirectoryInput
+): SystemIOScanProjectDirectoryRequest {
+  return {
+    type: 'projectDirectory.scan',
+    input,
+  }
+}
 
 export type SystemIOService = {
   /**
@@ -79,6 +98,10 @@ export type SystemIOService = {
   readonly operationRecordLimit: Signal<number>
   readonly projectHandles: ReadonlySignal<ProjectHandles>
   readonly projects: ReadonlySignal<Projects>
+  scanProjectDirectory: (
+    input: SystemIOScanProjectDirectoryInput,
+    options?: SystemIORequestOptions
+  ) => Promise<Projects>
   startActor: (input: SystemIOInput) => SystemIOActor
   request: <TRequest extends SystemIORequest>(
     request: TRequest

@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
+import { scanProjectDirectoryRequest } from '@src/lib/systemIO/registry/contract'
 import {
   createSystemIOAbortError,
   createSystemIOOperationQueue,
@@ -11,8 +12,9 @@ import type {
   ProjectHandles,
   Projects,
   SystemIOOperation,
-  SystemIORefreshProjectsRequest,
+  SystemIOScanProjectDirectoryRequest,
   SystemIORequest,
+  SystemIORequestOptions,
   SystemIORequestResult,
   SystemIOService,
 } from '@src/lib/systemIO/registry/contract'
@@ -59,16 +61,10 @@ export function createSystemIOService(
   const projects = signal<Projects>(undefined)
   let actor: SystemIOActor | undefined
   let actorSubscription: { unsubscribe: () => void } | undefined
-  // `projects`/`projectHandles` model a single "current" project directory, so
-  // this counter is intentionally global rather than per-directory: the most
-  // recently *started* refresh becomes the source of truth and any earlier
-  // refresh still in flight (including one for a different directory the user
-  // navigated away from) must not clobber it when it finally resolves. Same
-  // directory refreshes can never overlap here because the operation queue
-  // serializes them by resource key, so the guard only ever arbitrates between
-  // refreshes of different directories. See the "does not let stale refresh
-  // results overwrite newer refresh state" service test.
-  let latestRefreshId = 0
+  // `projects`/`projectHandles` model a single legacy "current" project
+  // directory. Arbitrary library scans share this queue but must not publish
+  // into that compatibility state unless explicitly requested.
+  let latestPublishedScanId = 0
 
   const setProjects = (nextProjects: readonly Project[] | undefined) => {
     projectHandles.value = nextProjects
@@ -87,17 +83,24 @@ export function createSystemIOService(
     })
   }
 
-  const requestRefreshProjects = (request: SystemIORefreshProjectsRequest) => {
+  const requestScanProjectDirectory = (
+    request: SystemIOScanProjectDirectoryRequest
+  ) => {
+    const shouldPublish = Boolean(
+      request.input.publishToCurrentProjectDirectory
+    )
     return queue.enqueue(
       {
         request,
         resourceKey: `project-directory:${request.input.projectDirectoryPath}`,
-        coalesceKey: `projects.refresh:${request.input.projectDirectoryPath}`,
+        coalesceKey: `projectDirectory.scan:${request.input.projectDirectoryPath}:${shouldPublish ? 'publish' : 'read'}`,
       },
       async (context) => {
-        const refreshId = ++latestRefreshId
+        const publishedScanId = shouldPublish
+          ? ++latestPublishedScanId
+          : undefined
         const setCurrentProjects = (nextProjects: readonly Project[]) => {
-          if (refreshId !== latestRefreshId) {
+          if (!shouldPublish || publishedScanId !== latestPublishedScanId) {
             return
           }
           setProjects(nextProjects)
@@ -107,9 +110,9 @@ export function createSystemIOService(
           await dependencies.readProjectsFromProjectDirectory(
             {
               projectDirectoryPath: request.input.projectDirectoryPath,
-              previousProjects: projects.value,
+              previousProjects: shouldPublish ? projects.value : undefined,
               signal: context.signal,
-              onProgress: setCurrentProjects,
+              onProgress: shouldPublish ? setCurrentProjects : undefined,
             },
             context
           )
@@ -124,17 +127,37 @@ export function createSystemIOService(
     )
   }
 
+  const bindExternalSignal = <TResult, TRequest extends SystemIORequest>(
+    operation: SystemIOOperation<TResult, TRequest>,
+    options: SystemIORequestOptions = {}
+  ) => {
+    const signal = options.signal
+    if (!signal) {
+      return operation.result
+    }
+
+    if (signal.aborted) {
+      operation.cancel()
+      return operation.result
+    }
+
+    const cancelOperation = () => operation.cancel()
+    signal.addEventListener('abort', cancelOperation, { once: true })
+    return operation.result.finally(() => {
+      signal.removeEventListener('abort', cancelOperation)
+    })
+  }
+
   const requestOperation: SystemIOService['request'] = <
     TRequest extends SystemIORequest,
   >(
     systemIORequest: TRequest
   ) => {
     switch (systemIORequest.type) {
-      case 'projects.refresh':
-        return requestRefreshProjects(systemIORequest) as SystemIOOperation<
-          SystemIORequestResult<TRequest>,
-          TRequest
-        >
+      case 'projectDirectory.scan':
+        return requestScanProjectDirectory(
+          systemIORequest
+        ) as SystemIOOperation<SystemIORequestResult<TRequest>, TRequest>
     }
   }
 
@@ -146,6 +169,11 @@ export function createSystemIOService(
     operationRecordLimit: queue.recordLimit,
     projectHandles,
     projects,
+    scanProjectDirectory: (input, options) =>
+      bindExternalSignal(
+        requestOperation(scanProjectDirectoryRequest(input)),
+        options
+      ),
     startActor: (input) => {
       if (actor) {
         return actor

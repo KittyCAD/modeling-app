@@ -132,11 +132,11 @@ describe('systemIO operation queue', () => {
     const handler = vi.fn(() => refresh.promise)
     const operationRequest = {
       request: {
-        type: 'projects.refresh',
+        type: 'projectDirectory.scan',
         input: { projectDirectoryPath: '/projects' },
       },
       resourceKey: 'project-directory:/projects',
-      coalesceKey: 'projects.refresh:/projects',
+      coalesceKey: 'projectDirectory.scan:/projects:read',
     }
 
     const firstOperation = queue.enqueue(operationRequest, handler)
@@ -192,11 +192,11 @@ describe('systemIO operation queue', () => {
       .mockReturnValueOnce(second.promise)
     const operationRequest = {
       request: {
-        type: 'projects.refresh',
+        type: 'projectDirectory.scan',
         input: { projectDirectoryPath: '/projects' },
       },
       resourceKey: 'project-directory:/projects',
-      coalesceKey: 'projects.refresh:/projects',
+      coalesceKey: 'projectDirectory.scan:/projects:read',
     }
 
     const firstOperation = queue.enqueue(operationRequest, handler)

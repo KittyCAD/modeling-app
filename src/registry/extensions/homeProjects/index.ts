@@ -27,10 +27,7 @@ import {
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
-import {
-  readProjectsFromProjectDirectory,
-  scheduleProjectDirectoryNameSyncFromTitles,
-} from '@src/lib/projectLibraries/directoryScanner'
+import { scheduleProjectDirectoryNameSyncFromTitles } from '@src/lib/projectLibraries/directoryScanner'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -68,13 +65,6 @@ function readConfiguredProjectLibraryEntriesInvalidation() {
   return configuredProjectLibraryEntriesInvalidation.value
 }
 
-function refreshProjectsRequest(projectDirectoryPath: string) {
-  return {
-    type: 'projects.refresh' as const,
-    input: { projectDirectoryPath },
-  }
-}
-
 function requestProjectDirectoryRefresh(
   systemIO: SystemIOService | undefined,
   projectDirectoryPath: string | undefined
@@ -84,8 +74,11 @@ function requestProjectDirectoryRefresh(
   }
 
   void systemIO
-    .request(refreshProjectsRequest(projectDirectoryPath))
-    .result.catch(reportRejection)
+    .scanProjectDirectory({
+      projectDirectoryPath,
+      publishToCurrentProjectDirectory: true,
+    })
+    .catch(reportRejection)
 }
 
 function requestDefaultProjectDirectoryRefresh(
@@ -315,8 +308,11 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       lastRefreshKey = refreshKey
       entries.value = []
       void service
-        .request(refreshProjectsRequest(defaultProjectDirectoryPath))
-        .result.catch((error) => {
+        .scanProjectDirectory({
+          projectDirectoryPath: defaultProjectDirectoryPath,
+          publishToCurrentProjectDirectory: true,
+        })
+        .catch((error) => {
           // A failed refresh must not permanently short-circuit this effect for
           // the directory; clear the guard so a later run can retry it.
           if (lastRefreshKey === refreshKey) {
@@ -413,11 +409,13 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
           hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
-            const projects = await readProjectsFromProjectDirectory({
-              projectDirectoryPath: library.path,
-              wasmInstancePromise: getWasmPromise(),
-              signal,
-            })
+            const projects =
+              (await systemIO.value?.scanProjectDirectory(
+                {
+                  projectDirectoryPath: library.path,
+                },
+                { signal }
+              )) ?? []
             if (!signal.aborted) {
               scheduleProjectDirectoryNameSyncFromTitles({
                 projects,

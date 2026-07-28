@@ -4,6 +4,7 @@ import {
   type SystemIOProjectsReader,
   type SystemIOProjectsReaderInput,
 } from '@src/lib/systemIO/service'
+import { scanProjectDirectoryRequest } from '@src/lib/systemIO/registry/contract'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -50,11 +51,11 @@ function createServiceOptions() {
   }
 }
 
-function refreshProjectsRequest(projectDirectoryPath: string) {
-  return {
-    type: 'projects.refresh' as const,
-    input: { projectDirectoryPath },
-  }
+function publishProjectDirectoryScanRequest(projectDirectoryPath: string) {
+  return scanProjectDirectoryRequest({
+    projectDirectoryPath,
+    publishToCurrentProjectDirectory: true,
+  })
 }
 
 function createSystemIOActor() {
@@ -119,7 +120,9 @@ describe('systemIO service', () => {
       readProjectsFromProjectDirectory
     )
 
-    const operation = systemIO.request(refreshProjectsRequest('/projects'))
+    const operation = systemIO.request(
+      publishProjectDirectoryScanRequest('/projects')
+    )
 
     await expect(operation.result).resolves.toBe(projects)
 
@@ -143,11 +146,46 @@ describe('systemIO service', () => {
         id: 'operation-1',
         status: 'succeeded',
         request: expect.objectContaining({
-          type: 'projects.refresh',
-          input: { projectDirectoryPath: '/projects' },
+          type: 'projectDirectory.scan',
+          input: {
+            projectDirectoryPath: '/projects',
+            publishToCurrentProjectDirectory: true,
+          },
         }),
       }),
     ])
+  })
+
+  it('scans library directories without publishing to current project state', async () => {
+    const projects = [createProject('/library/bracket')]
+    const readProjectsFromProjectDirectory = vi.fn(async () => projects)
+    const { actor, systemIO } = createTestSystemIOService(
+      readProjectsFromProjectDirectory
+    )
+
+    systemIO.startActor({
+      wasmInstancePromise: Promise.resolve({}),
+      app: {},
+    } as never)
+
+    await expect(
+      systemIO.scanProjectDirectory({ projectDirectoryPath: '/library' })
+    ).resolves.toBe(projects)
+
+    expect(readProjectsFromProjectDirectory).toHaveBeenCalledWith(
+      expect.objectContaining({
+        projectDirectoryPath: '/library',
+        previousProjects: undefined,
+        signal: expect.any(AbortSignal),
+        onProgress: undefined,
+      }),
+      expect.objectContaining({
+        signal: expect.any(AbortSignal),
+      })
+    )
+    expect(systemIO.projects.value).toBeUndefined()
+    expect(systemIO.projectHandles.value).toBeUndefined()
+    expect(actor.send).not.toHaveBeenCalled()
   })
 
   it('publishes refresh progress while the request is running', async () => {
@@ -164,7 +202,7 @@ describe('systemIO service', () => {
     )
 
     await expect(
-      systemIO.request(refreshProjectsRequest('/projects')).result
+      systemIO.request(publishProjectDirectoryScanRequest('/projects')).result
     ).resolves.toBe(projects)
 
     expect(systemIO.projects.value).toBe(projects)
@@ -184,9 +222,11 @@ describe('systemIO service', () => {
       readProjectsFromProjectDirectory
     )
 
-    const firstOperation = systemIO.request(refreshProjectsRequest('/projects'))
+    const firstOperation = systemIO.request(
+      publishProjectDirectoryScanRequest('/projects')
+    )
     const secondOperation = systemIO.request(
-      refreshProjectsRequest('/projects')
+      publishProjectDirectoryScanRequest('/projects')
     )
 
     expect(secondOperation).toBe(firstOperation)
@@ -213,8 +253,12 @@ describe('systemIO service', () => {
       readProjectsFromProjectDirectory
     )
 
-    const oldOperation = systemIO.request(refreshProjectsRequest('/old'))
-    const newOperation = systemIO.request(refreshProjectsRequest('/new'))
+    const oldOperation = systemIO.request(
+      publishProjectDirectoryScanRequest('/old')
+    )
+    const newOperation = systemIO.request(
+      publishProjectDirectoryScanRequest('/new')
+    )
 
     await flushPromises()
 
@@ -244,11 +288,11 @@ describe('systemIO service', () => {
     )
 
     await expect(
-      systemIO.request(refreshProjectsRequest('/projects')).result
+      systemIO.request(publishProjectDirectoryScanRequest('/projects')).result
     ).resolves.toBe(initialProjects)
 
     await expect(
-      systemIO.request(refreshProjectsRequest('/projects')).result
+      systemIO.request(publishProjectDirectoryScanRequest('/projects')).result
     ).rejects.toThrow('could not read projects')
 
     expect(systemIO.projects.value).toBe(initialProjects)
@@ -269,8 +313,8 @@ describe('systemIO service', () => {
 
     systemIO.operationRecordLimit.value = 1
 
-    await systemIO.request(refreshProjectsRequest('/a')).result
-    await systemIO.request(refreshProjectsRequest('/b')).result
+    await systemIO.request(publishProjectDirectoryScanRequest('/a')).result
+    await systemIO.request(publishProjectDirectoryScanRequest('/b')).result
 
     expect(systemIO.operations.value).toHaveLength(1)
     expect(systemIO.operations.value.at(-1)).toEqual(
@@ -315,7 +359,7 @@ describe('systemIO service', () => {
     } as never)
 
     await expect(
-      systemIO.request(refreshProjectsRequest('/projects')).result
+      systemIO.request(publishProjectDirectoryScanRequest('/projects')).result
     ).resolves.toBe(projects)
     expect(systemIO.projects.value).toEqual(projects)
 
@@ -345,7 +389,7 @@ describe('systemIO service', () => {
     } as never)
 
     await expect(
-      systemIO.request(refreshProjectsRequest('/projects')).result
+      systemIO.request(publishProjectDirectoryScanRequest('/projects')).result
     ).resolves.toBe(projects)
 
     expect(actor.send).toHaveBeenCalledWith({
