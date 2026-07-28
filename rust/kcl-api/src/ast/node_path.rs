@@ -1,5 +1,6 @@
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 /// A traversal path through the AST to a node.
 ///

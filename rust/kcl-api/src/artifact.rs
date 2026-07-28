@@ -1,12 +1,17 @@
 use indexmap::IndexMap;
-use parse_display::{Display, FromStr};
+use kcl_error::SourceRange;
+use parse_display::Display;
+use parse_display::FromStr;
 use schemars::JsonSchema;
+use serde::Deserialize;
+use serde::Serialize;
 use serde::ser::SerializeSeq;
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{ArtifactId, NodePath, ObjectId, UnitLength};
-use kcl_error::SourceRange;
+use crate::ArtifactId;
+use crate::NodePath;
+use crate::ObjectId;
+use crate::UnitLength;
 
 pub type DummyPathToNode = Vec<()>;
 
