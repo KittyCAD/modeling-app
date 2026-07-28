@@ -3365,14 +3365,21 @@ piped = "  ready  " |> string::trimEnd()
         // Each case runs on its own so a failure names the expression that
         // produced it rather than collapsing the whole table.
         for (name, expr, expected) in [
+            // Every row of the table in the `toString` doc comment appears
+            // here, so the documentation cannot drift from the behaviour.
             ("unitless integer", "12", "12"),
             ("unitless fractional", "1.5", "1.5"),
+            ("no digits dropped", "0.1 + 0.2", "0.30000000000000004"),
             ("unitless negative", "-7", "-7"),
             ("unitless zero", "0", "0"),
+            ("negative zero", "-0", "0"),
             ("count", "3_", "3_"),
             ("millimeters", "12mm", "12mm"),
             ("centimeters", "12cm", "12cm"),
+            ("meters", "12m", "12m"),
             ("inches", "1.5in", "1.5in"),
+            ("feet", "2ft", "2ft"),
+            ("yards", "3yd", "3yd"),
             ("degrees", "90deg", "90deg"),
             ("radians", "1.5rad", "1.5rad"),
             // Arithmetic keeps the unit it started with.
@@ -3443,9 +3450,10 @@ piped = "  ready  " |> string::trimEnd()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_string_to_string_reproduces_the_source_literal() {
-        // Converting a literal must yield text identical to the literal that
-        // was written, which is the round-trip property stated in the docs.
+    async fn test_string_to_string_echoes_how_the_literal_was_written() {
+        // Reading the output back is not a supported operation, but for a
+        // literal that carries its own units the text still comes out looking
+        // like what the author typed, which is what makes it readable.
         for literal in [
             "12",
             "1.5",
@@ -3475,27 +3483,28 @@ piped = "  ready  " |> string::trimEnd()
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_string_to_string_rejects_non_finite_numbers() {
-        // Division is unguarded, so these are reachable from ordinary KCL.
+    async fn test_string_to_string_spells_out_non_finite_numbers() {
+        // Division is unguarded, so these are reachable from ordinary KCL. They
+        // convert like any other number: the point of the function is to build
+        // a message, and a message about a NaN is exactly when you need one.
         for (name, expr, expected) in [
             ("positive infinity", "1 / 0", "Infinity"),
             ("negative infinity", "-1 / 0", "-Infinity"),
             ("nan", "0 / 0", "NaN"),
-            ("infinity with a unit", "1mm / 0", "Infinity"),
+            // The unit is dropped: no length is described by "Infinitymm".
+            ("infinity from a length", "1mm / 0", "Infinity"),
+            ("nan from a length", "0mm / 0", "NaN"),
+            ("infinity from an angle", "1deg / 0", "Infinity"),
         ] {
             let code = format!("actual = string::toString({expr})");
-            let error = parse_execute(&code).await.unwrap_err();
+            let result = parse_execute(&code).await.unwrap();
 
             assert_eq!(
-                error.message(),
-                format!("Cannot convert a non-finite number to a string: {expected}"),
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                expected,
                 "case: {name}"
-            );
-            // Rejecting an argument is ordinary type validation. `UserDefined`
-            // would claim the user's own code called `fail`.
-            assert!(
-                matches!(error, KclError::Type { .. }),
-                "case: {name}, expected a Type error, found {error:?}"
             );
         }
     }

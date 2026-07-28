@@ -1,7 +1,6 @@
 //! Standard library string operations.
 
 use crate::errors::KclError;
-use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::types::NumericType;
@@ -91,36 +90,30 @@ pub async fn trim_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     })
 }
 
-/// An infinity or a NaN, which KCL has no literal syntax for and so cannot be
-/// written as source. Holds the label to show the user.
-#[derive(Debug, PartialEq, Eq)]
-struct NonFiniteNumber(&'static str);
-
-/// Render a number the way it would be written in KCL source.
+/// Render a number as text for a person to read.
 ///
-/// The numeric text is the shortest form that reads back as the same `f64`, so
-/// the result round-trips through the parser. A suffix is appended only when
+/// Every `number` value has a rendering, including the non-finite ones, so this
+/// cannot fail. `f64` spells the non-finite values `inf`, `-inf`, and `NaN`;
+/// they are written out in full here instead. A suffix is appended only when
 /// the concrete unit is known; when it is not, the bare number is all that can
 /// be said truthfully about the value, so that is what callers get.
 ///
-/// Deliberately not built on its near twin `crate::fmt::format_number_value`:
-/// - that function errors on `Unknown`, `Any`, `GenericLength`, and
-///   `GenericAngle`; this one returns the bare number.
-/// - that function has no non-finite handling: an infinity or a NaN formats as
-///   `inf` or `NaN`, which KCL cannot parse.
-fn format_number(n: f64, ty: NumericType) -> Result<String, NonFiniteNumber> {
+/// The output is for reading, not for parsing. Some of it is not valid KCL
+/// source, which is why `crate::fmt::format_number_value` is not used here even
+/// though it looks similar: that function generates KCL source for the user
+/// interface, so it errors on `Unknown`, `Any`, `GenericLength`, and
+/// `GenericAngle`, where this one returns the bare number.
+fn format_number(n: f64, ty: NumericType) -> String {
+    // Non-finite values are reported without a unit. There is no length that
+    // `Infinitymm` describes, so the suffix would add noise rather than meaning.
     if n.is_nan() {
-        return Err(NonFiniteNumber("NaN"));
+        return "NaN".to_owned();
     }
     if n.is_infinite() {
-        return Err(NonFiniteNumber(if n.is_sign_positive() {
-            "Infinity"
-        } else {
-            "-Infinity"
-        }));
+        return if n.is_sign_positive() { "Infinity" } else { "-Infinity" }.to_owned();
     }
 
-    let n = crate::fmt::normalize_negative_zero(n);
+    let value = crate::fmt::normalize_negative_zero(n);
     let suffix = match ty {
         // `to_suffix` yields nothing for the generic length and angle types,
         // which is the same "units unclear" case as the arms below.
@@ -128,24 +121,17 @@ fn format_number(n: f64, ty: NumericType) -> Result<String, NonFiniteNumber> {
         NumericType::Default { .. } | NumericType::Unknown | NumericType::Any => String::new(),
     };
 
-    Ok(format!("{n}{suffix}"))
+    format!("{value}{suffix}")
 }
 
-/// Convert a number to text that reads like KCL source.
+/// Convert a number to human-readable text.
 pub async fn number_to_string(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Reading the argument as `Any` preserves whatever numeric type it already
     // has rather than erasing it, which is what the suffix depends on.
     let num: TyF64 = args.get_unlabeled_kw_arg("num", &RuntimeType::num_any(), exec_state)?;
 
-    let value = format_number(num.n, num.ty).map_err(|NonFiniteNumber(label)| {
-        KclError::new_type(KclErrorDetails::new(
-            format!("Cannot convert a non-finite number to a string: {label}"),
-            vec![args.source_range],
-        ))
-    })?;
-
     Ok(KclValue::String {
-        value,
+        value: format_number(num.n, num.ty),
         meta: args.into(),
     })
 }
@@ -218,39 +204,50 @@ mod tests {
             ("unknown", 20.0, NumericType::Unknown, "20"),
             ("any", 12.0, NumericType::Any, "12"),
         ] {
-            assert_eq!(format_number(n, ty).unwrap(), expected, "case: {name}");
+            assert_eq!(format_number(n, ty), expected, "case: {name}");
         }
     }
 
     #[test]
-    fn format_number_rejects_non_finite_values() {
-        // The finiteness check runs before the suffix is chosen, so a unit on
-        // the value cannot smuggle an infinity through.
+    fn format_number_spells_out_non_finite_values() {
+        // Rust prints these as `inf`, `-inf`, and `NaN`; the words are spelled
+        // out in full instead. The unit is dropped whatever it was, so the
+        // numeric type cannot change the result.
         for (name, n, ty, expected) in [
             ("positive infinity", f64::INFINITY, default_units(), "Infinity"),
             ("negative infinity", f64::NEG_INFINITY, default_units(), "-Infinity"),
             ("nan", f64::NAN, default_units(), "NaN"),
             (
-                "infinity with a unit",
+                "infinity with a length",
                 f64::INFINITY,
                 length(UnitLength::Millimeters),
                 "Infinity",
             ),
-            ("nan with a unit", f64::NAN, angle(UnitAngle::Degrees), "NaN"),
+            (
+                "negative infinity with an angle",
+                f64::NEG_INFINITY,
+                angle(UnitAngle::Degrees),
+                "-Infinity",
+            ),
+            ("nan with an angle", f64::NAN, angle(UnitAngle::Degrees), "NaN"),
             ("nan as a count", f64::NAN, NumericType::Known(UnitType::Count), "NaN"),
+            (
+                "infinity with unclear units",
+                f64::INFINITY,
+                NumericType::Unknown,
+                "Infinity",
+            ),
         ] {
-            assert_eq!(
-                format_number(n, ty).unwrap_err(),
-                NonFiniteNumber(expected),
-                "case: {name}"
-            );
+            assert_eq!(format_number(n, ty), expected, "case: {name}");
         }
     }
 
     #[test]
-    fn format_number_round_trips_through_f64() {
-        // The rendered text must read back as bit-identical to what went in,
-        // which is why no rounding or precision parameter exists.
+    fn format_number_does_not_lose_precision() {
+        // Reading the output back is not a supported operation, but the text
+        // must still name the value exactly rather than an approximation of it,
+        // which is why no rounding or precision parameter exists. Parsing is
+        // just a convenient way to assert that no digits were dropped.
         for (name, n) in [
             ("one tenth", 0.1),
             ("sum that is not exact", 0.1 + 0.2),
@@ -262,7 +259,7 @@ mod tests {
             ("small magnitude", 1e-300),
             ("negative fractional", -123.456),
         ] {
-            let text = format_number(n, default_units()).unwrap();
+            let text = format_number(n, default_units());
             let reparsed: f64 = text.parse().unwrap();
             assert_eq!(reparsed.to_bits(), n.to_bits(), "case: {name}, rendered as {text}");
         }
@@ -271,9 +268,9 @@ mod tests {
     #[test]
     fn format_number_loses_the_sign_of_negative_zero() {
         // Deliberate: `-0` and `0` are the same quantity, and the existing
-        // formatter for generated KCL already normalizes the sign away. This is
-        // the one value that does not round-trip bit-for-bit.
-        let text = format_number(-0.0, default_units()).unwrap();
+        // formatter for generated KCL already normalizes the sign away. It is
+        // the one value whose text does not name it exactly.
+        let text = format_number(-0.0, default_units());
         assert_eq!(text, "0");
 
         let reparsed: f64 = text.parse().unwrap();
@@ -283,15 +280,17 @@ mod tests {
 
     #[test]
     fn format_number_never_uses_exponent_notation() {
-        // KCL number literals have no exponent form, so output that used one
-        // would not parse as KCL even though it parses as a Rust float.
+        // A run of 300 digits is easier to read than a mantissa and exponent
+        // for the magnitudes KCL models actually use, and Rust's `f64` display
+        // never emits an exponent, so this records the behaviour rather than
+        // asking for it.
         for (name, n) in [
             ("large magnitude", 1e300),
             ("small magnitude", 1e-300),
             ("largest finite", f64::MAX),
             ("smallest subnormal", f64::from_bits(1)),
         ] {
-            let text = format_number(n, default_units()).unwrap();
+            let text = format_number(n, default_units());
             assert!(!text.contains('e'), "case: {name}, rendered as {text}");
             assert!(!text.contains('E'), "case: {name}, rendered as {text}");
         }
