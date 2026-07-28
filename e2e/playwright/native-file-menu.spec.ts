@@ -273,7 +273,7 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Duplicate project')
         await expect(page.getByTestId('app-header-project-name')).toHaveText(
-          `${sourceProjectName}-1`
+          `${sourceProjectName}-copy`
         )
       })
       await test.step('Modeling.File.Open project', async () => {
