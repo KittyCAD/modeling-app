@@ -135,10 +135,7 @@ export function createSystemIOOperationQueue<
           // Adopt the newest request/handler so the freshest intent runs when
           // the still-queued operation starts, rather than silently discarding
           // this caller's work in favor of whatever enqueued first.
-          existing.replacePending(
-            request,
-            handler as SystemIOOperationHandler<unknown>
-          )
+          existing.replacePending(request, handler)
           return existing.operation as SystemIOOperation<TResult, TRequest>
         }
       }
