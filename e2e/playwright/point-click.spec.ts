@@ -2152,6 +2152,10 @@ extrude001 = extrude(region001, length = -12)`
 
     // Test 2: Command bar flow without preselected edges
     await test.step(`Open chamfer UI without selecting edges`, async () => {
+      // The preceding edit leaves its edge selected; clear it so this exercises
+      // opening Chamfer without a preselection.
+      await page.keyboard.press('Escape')
+      await expect(toolbar.selectionStatus).not.toContainText('edge')
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
       await expect
@@ -2700,7 +2704,7 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test(`Delete face on an unmapped face-API chamfer`, async ({
+  test(`Delete face on a face-API chamfer using its edge-cut tag`, async ({
     page,
     homePage,
     scene,
@@ -2749,9 +2753,9 @@ chamfer001 = chamfer(
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
-    await editor.expectEditor.toContain('face001 = faceId(chamfer001, index = ')
+    await editor.expectEditor.toContain('tag = $seg01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = face001)'
+      'surface001 = deleteFace(chamfer001, faces = seg01)'
     )
   })
 

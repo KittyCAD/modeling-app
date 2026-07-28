@@ -870,7 +870,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
   )
 
   it('deletes a piped face-API edge treatment through its execution artifact', async () => {
-    const codeBefore = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+    const codeBefore = `@settings(defaultLengthUnit = mm)
 
 sketch001 = sketch(on = XY) {
   bottom = line(start = [0, 0], end = [30, 0])

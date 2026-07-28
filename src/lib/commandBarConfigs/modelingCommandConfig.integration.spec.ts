@@ -433,9 +433,15 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
+      ['Extrude', { sketches: selectionsForArtifact() }, false],
       ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Revolve', { axis: selectionsForArtifact() }, false],
+      ['Helix', { axis: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
+      ['Chamfer', { edges: selectionsForArtifact() }, false],
+      ['Chamfer', { version: parsedLength('2') }, true],
+      ['Mirror 3D', { across: selectionsForArtifact() }, false],
       ['Helical Gear', {}, true],
     ]
 
