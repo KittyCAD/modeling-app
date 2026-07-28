@@ -14,6 +14,7 @@ use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
 use crate::execution::ArtifactGraph;
+use crate::execution::ArtifactGraphMermaidExt;
 use crate::execution::EnvironmentRef;
 use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;

@@ -29,7 +29,6 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
-  deleteRemoteCloudProject,
   duplicateRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
@@ -959,23 +958,48 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       deleteProject: {
         run: async ({ project }) => {
+          const remoteProjectId = project.remoteProjectId
+          const cloudSyncActions = remoteProjectId
+            ? ctx.services.get(cloudSyncService)
+            : undefined
+          if (
+            remoteProjectId &&
+            cloudSyncActions?.status.value.enabled !== true
+          ) {
+            return Promise.reject(new Error('Cloud sync is not enabled.'))
+          }
+
           if (project.localProjectPath && project.readWriteAccess) {
             await fsZds.rm(project.localProjectPath, { recursive: true })
+            // Cloud-backed deletes are explicit local + remote product
+            // actions, not just local tombstones for background sync.
+            if (remoteProjectId) {
+              await cloudSyncActions?.deleteRemoteProject(remoteProjectId)
+            }
             refreshLocalCloudProjectEntries()
             return
           }
 
-          if (project.remoteProjectId) {
-            await deleteRemoteCloudProject(project.remoteProjectId)
+          if (remoteProjectId) {
+            await cloudSyncActions?.deleteRemoteProject(remoteProjectId)
           }
         },
       },
       moveProjectFrom: {
         canMoveProject: ({ project }) =>
           Boolean(project.localProjectPath && project.readWriteAccess),
-        run: ({ project }) => {
+        run: async ({ project, targetLibrary }) => {
           if (!project.localProjectPath || !project.readWriteAccess) {
             return undefined
+          }
+
+          // Moving out of a cloud library is the product-level "make
+          // local-only" policy. Detach before moving so the destination
+          // directory cannot be re-adopted by its existing cloud project ID.
+          if (targetLibrary.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
+            await ctx.services
+              .get(cloudSyncService)
+              .disconnectProjectSync(project.localProjectPath)
           }
 
           return {

@@ -4,17 +4,8 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-pub use artifact::Artifact;
 pub use artifact::ArtifactCommand;
-pub use artifact::ArtifactGraph;
-pub use artifact::CapSubType;
-pub use artifact::CodeRef;
-pub use artifact::GdtAnnotationArtifact;
-pub use artifact::SketchBlock;
-pub use artifact::SketchBlockConstraint;
-pub use artifact::SketchBlockConstraintType;
-pub use artifact::StartSketchOnFace;
-pub use artifact::StartSketchOnPlane;
+pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
@@ -23,6 +14,17 @@ pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::Operation;
+pub use kcl_api::artifact::Artifact;
+pub use kcl_api::artifact::ArtifactGraph;
+pub use kcl_api::artifact::CapSubType;
+pub use kcl_api::artifact::CodeRef;
+pub use kcl_api::artifact::GdtAnnotationArtifact;
+pub use kcl_api::artifact::SketchBlock;
+pub use kcl_api::artifact::SketchBlockConstraint;
+#[allow(unused_imports)]
+pub use kcl_api::artifact::SketchBlockConstraintType;
+pub use kcl_api::artifact::StartSketchOnFace;
+pub use kcl_api::artifact::StartSketchOnPlane;
 use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
@@ -140,6 +142,8 @@ impl OperationsByModule {
 
 pub(crate) mod annotations;
 mod artifact;
+#[cfg(test)]
+pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;

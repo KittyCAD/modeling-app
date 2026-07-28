@@ -1240,7 +1240,7 @@ impl GlobalState {
 
 impl ArtifactState {
     pub fn cached_body_items(&self) -> usize {
-        self.graph.item_count
+        self.graph.item_count()
     }
 
     pub(crate) fn clear(&mut self) {
