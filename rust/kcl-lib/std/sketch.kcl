@@ -324,7 +324,7 @@ export fn startSketchOn(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // Create a sketch plane.
 /// mySketch = startSketchOn(XY)
 ///
@@ -360,13 +360,13 @@ export fn startProfile(
 ///
 /// A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(center = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
 ///   |> rectangle(corner = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
@@ -437,7 +437,7 @@ export fn circle(
 /// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
 /// of ellipse is still under development.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -1239,7 +1239,7 @@ export fn revolve(
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // Each instance will be shifted along the X axis.
 /// fn transform(@id) {
 ///   return { translate = [4 * id, 0] }
@@ -2410,7 +2410,7 @@ export fn segAng(
 /// rectangleExtrude = extrude(rectangleSketch, length = 10)
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// bottom = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> arc(
@@ -2422,7 +2422,7 @@ export fn segAng(
 ///   |> close()
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// circSketch = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius= 3, tag = $circ)
 ///
@@ -2457,7 +2457,7 @@ export fn profileStart(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -26.6deg, length = 50)
@@ -2472,7 +2472,7 @@ export fn profileStartX(
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// sketch001 = startSketchOn(XY)
 ///  |> startProfile(at = [5, 2])
 ///  |> angledLine(angle = -60deg, length = 14 )
@@ -2490,7 +2490,7 @@ export fn profileStartY(
 /// [sketch-solve](/docs/kcl-std/modules/std-solver) and the
 /// [gear module](/docs/kcl-std/modules/std-gear).
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// a = 10
 /// b = 14
 /// startSketchOn(XZ)
@@ -3068,7 +3068,7 @@ export fn conic(
 /// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
 /// of parabolic is still under development.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -3099,7 +3099,7 @@ export fn parabolic(
 
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,no3d,sketchSyntaxAgnostic
 /// point001 = parabolicPoint(x = 5, coefficients = [0.1, 0, 0])
 /// point002 = parabolicPoint(y = 2.5, coefficients = [0.1, 0, 0])
 /// assert(point001[0], isEqualTo = point002[0])
@@ -3121,7 +3121,7 @@ export fn parabolicPoint(
 /// [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
 /// of hyperbolic is still under development.
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// @settings(experimentalFeatures = allow)
 ///
 /// exampleSketch = startSketchOn(XY)
@@ -3156,7 +3156,7 @@ export fn hyperbolic(
 
 /// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,no3d,sketchSyntaxAgnostic
 /// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
 ///```
 @(impl = std_rust, feature_tree = false)
@@ -3217,7 +3217,7 @@ export fn elliptic(
 
 /// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,no3d,sketchSyntaxAgnostic
 /// point001 = ellipticPoint(x = 2, majorRadius = 2, minorRadius = 1)
 /// point002 = ellipticPoint(y = 0, majorRadius = 2, minorRadius = 1)
 /// assert(point001[0], isEqualTo = point002[0])
