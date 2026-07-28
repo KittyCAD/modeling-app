@@ -45,9 +45,7 @@ cube2 = clone(cube1)
 
 export function getClonedSweepEdges(artifactGraph: ArtifactGraph) {
   const clonedSweep = [...artifactGraph.values()].find(
-    (
-      artifact
-    ): artifact is Extract<Artifact, { type: 'sweep' }> =>
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
       artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
   )
   if (!clonedSweep) return []

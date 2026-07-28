@@ -252,11 +252,8 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
         kclManagerInThisFile
       )
       const clonedSweep = [...artifactGraph.values()].find(
-        (
-          artifact
-        ): artifact is Extract<Artifact, { type: 'sweep' }> =>
-          artifact.type === 'sweep' &&
-          artifact.sourceSweepId !== undefined
+        (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+          artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
       )
       const originalSweep = clonedSweep?.sourceSweepId
         ? artifactGraph.get(clonedSweep.sourceSweepId)
