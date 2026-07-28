@@ -1721,14 +1721,19 @@ mod test {
                 &result.image,
                 0.99,
             );
-            for gltf_file in result.gltf {
-                let path = format!(
-                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
-                    qualname.replace("::", "-"),
-                    gltf_file.name,
-                );
-                let mut f = std::fs::File::create(path).expect("could not create file");
-                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            // Doc generation omits the model viewer for a `no3d` example, so
+            // writing its glTF would produce a file no page can ever link to.
+            // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
+            if !eg.1.no3d {
+                for gltf_file in result.gltf {
+                    let path = format!(
+                        "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                        qualname.replace("::", "-"),
+                        gltf_file.name,
+                    );
+                    let mut f = std::fs::File::create(path).expect("could not create file");
+                    std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+                }
             }
             return;
         }
