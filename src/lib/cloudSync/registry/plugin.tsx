@@ -30,6 +30,7 @@ import {
   cloudSyncRemoteProjects,
   cloudSyncStatus,
   deleteRemoteCloudProject,
+  duplicateRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
@@ -895,38 +896,46 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       duplicateProject: {
         run: async ({ project }) => {
-          if (!project.localProjectName || !project.localProjectPath) {
+          if (project.localProjectName && project.localProjectPath) {
+            const result = await duplicateProjectInDirectory({
+              source: {
+                directoryName: project.localProjectName,
+                displayName: getHomeProjectDisplayName(project),
+                path: project.localProjectPath,
+              },
+              projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+              requestedProjectTitle: getHomeProjectDisplayName(project),
+              wasmInstance: await getWasmPromise(),
+            })
+            refreshLocalCloudProjectEntries()
+
+            return result
+          }
+
+          if (!project.remoteProjectId) {
             return undefined
           }
 
-          const result = await duplicateProjectInDirectory({
-            source: {
-              directoryName: project.localProjectName,
-              displayName: getHomeProjectDisplayName(project),
-              path: project.localProjectPath,
-            },
-            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
-            requestedProjectTitle: getHomeProjectDisplayName(project),
-            wasmInstance: await getWasmPromise(),
-          })
-          refreshLocalCloudProjectEntries()
+          const sourceTitle = getHomeProjectDisplayName(project)
+          const duplicatedProject = await duplicateRemoteCloudProject(
+            project.remoteProjectId,
+            sourceTitle
+          )
+          if (!duplicatedProject) {
+            return undefined
+          }
 
-          return result
+          return {
+            message: `Successfully duplicated "${sourceTitle}" as "${duplicatedProject.title}"`,
+            name: duplicatedProject.id,
+            title: duplicatedProject.title,
+          }
         },
       },
       // Rename/delete act on the remote project directly when it has not been
       // materialized locally. Once a local copy exists, they behave like a
       // normal local project: mutate the local files and let cloud sync
       // replicate the change to the remote.
-      openProject: {
-        run: ({ project }) => {
-          if (!project.readWriteAccess || !project.defaultFile) {
-            return undefined
-          }
-
-          return { defaultFile: project.defaultFile }
-        },
-      },
       renameProject: {
         run: async ({ project, requestedName }) => {
           const title = requestedName.trim()

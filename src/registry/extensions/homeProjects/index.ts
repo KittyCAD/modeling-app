@@ -253,8 +253,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       ),
     canDuplicate: (project) =>
       Boolean(
-        project.localProjectName &&
-          project.localProjectPath &&
+        ((project.localProjectName && project.localProjectPath) ||
+          project.remoteProjectId) &&
           getProjectOperation(project, 'duplicateProject')
       ),
     // A local materialization is not required: cloud library operations can act

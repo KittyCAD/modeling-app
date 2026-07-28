@@ -73,11 +73,13 @@ import {
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  prepareProjectTomlForDuplication,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
+import { v4 } from 'uuid'
 
 export { getCloudSyncProjectRoot } from '@src/lib/cloudSync/paths'
 export {
@@ -1234,6 +1236,104 @@ export async function renameRemoteCloudProject(
         : project
   )
   scheduleRemoteIndexSync(0)
+}
+
+function getRemoteDuplicateProjectTitle(sourceTitle: string) {
+  const existingTitles = new Set(
+    cloudSyncRemoteProjects.value.flatMap((project) => {
+      const title = project.title?.trim()
+      return title ? [title.toLowerCase()] : []
+    })
+  )
+
+  for (let duplicateNumber = 1; ; duplicateNumber += 1) {
+    const title = `${sourceTitle}-${duplicateNumber}`
+    if (!existingTitles.has(title.toLowerCase())) {
+      return title
+    }
+  }
+}
+
+function prepareRemoteProjectFilesForDuplication(
+  files: ProjectArchiveFile[],
+  title: string
+) {
+  const projectTomlFileIndex = files.findIndex(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  const projectToml = prepareProjectTomlForDuplication(
+    projectTomlFileIndex === -1
+      ? ''
+      : new TextDecoder().decode(files[projectTomlFileIndex].data),
+    title,
+    v4()
+  )
+  if (isErr(projectToml)) {
+    return projectToml
+  }
+
+  const duplicatedFiles = [...files]
+  const projectTomlFile = {
+    relativePath: PROJECT_SETTINGS_FILE_NAME,
+    data: new TextEncoder().encode(projectToml),
+  }
+  if (projectTomlFileIndex === -1) {
+    duplicatedFiles.push(projectTomlFile)
+  } else {
+    duplicatedFiles[projectTomlFileIndex] = projectTomlFile
+  }
+  return duplicatedFiles
+}
+
+/**
+ * Duplicate a remote-only cloud project without creating a local
+ * materialization. The copied archive receives a new project UUID and has its
+ * source cloud binding removed before it is uploaded as a new cloud project.
+ */
+export async function duplicateRemoteCloudProject(
+  remoteProjectId: string,
+  requestedTitle: string
+) {
+  if (!isConfiguredForCloud()) {
+    return undefined
+  }
+
+  const projectId = remoteProjectId.trim()
+  if (!projectId) {
+    return undefined
+  }
+
+  const sourceTitle = getRemoteProjectTitleForProjectToml(requestedTitle)
+  const title = getRemoteDuplicateProjectTitle(sourceTitle)
+  const files = prepareRemoteProjectFilesForDuplication(
+    filterCloudSyncProjectFilesForSync(
+      await parseProjectArchive(
+        await downloadRemoteProjectArchive(config, projectId)
+      )
+    ),
+    title
+  )
+  if (isErr(files)) {
+    return Promise.reject(files)
+  }
+
+  const created = await createRemoteProject(config, title, files)
+  const duplicatedProject = {
+    ...created,
+    title: created.title?.trim() || title,
+  }
+  cloudSyncRemoteProjects.value = [
+    ...cloudSyncRemoteProjects.value.filter(
+      (project) => project.id !== duplicatedProject.id
+    ),
+    duplicatedProject,
+  ]
+  scheduleRemoteIndexSync(0)
+
+  return {
+    id: duplicatedProject.id,
+    title: duplicatedProject.title,
+  }
 }
 
 /**
