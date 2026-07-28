@@ -12,7 +12,7 @@ import {
 } from '@src/lib/cloudSync/cloudApi'
 import {
   getCloudSyncProjectRoot,
-  INTERNAL_OPFS_META_FILE,
+  isCloudSyncExcludedPath,
   isCloudSyncProjectDirectoryPath,
   isProjectRootPath,
   normalizePathForSync,
@@ -379,13 +379,8 @@ export function filterCloudSyncProjectFilesForSync(
 
   return normalizedFiles.filter(
     (file) =>
+      !isCloudSyncExcludedPath(file.relativePath) &&
       !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
-  )
-}
-
-function isInternalOpfsPath(targetPath: string) {
-  return webSafePathSplit(normalizePathForSync(targetPath)).includes(
-    INTERNAL_OPFS_META_FILE
   )
 }
 
@@ -879,7 +874,7 @@ async function collectLocalProjectFiles(projectRoot: string) {
   ) => {
     const entries = await localFs.readdir(currentPath)
     for (const entry of entries) {
-      if (entry === INTERNAL_OPFS_META_FILE) {
+      if (isCloudSyncExcludedPath(entry)) {
         continue
       }
 
@@ -2773,7 +2768,7 @@ async function registerProjectMutation(
   targetPath: string,
   sourcePath?: string
 ) {
-  if (!isConfiguredForCloud() || isInternalOpfsPath(targetPath)) {
+  if (!isConfiguredForCloud() || isCloudSyncExcludedPath(targetPath)) {
     return
   }
 

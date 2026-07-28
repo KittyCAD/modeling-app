@@ -1,5 +1,5 @@
 import {
-  INTERNAL_OPFS_META_FILE,
+  isCloudSyncExcludedPath,
   normalizeRelativePath,
 } from '@src/lib/cloudSync/paths'
 import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
@@ -139,7 +139,7 @@ async function scanProjectFiles(projectRoot: string) {
     const entries = (await fsZds.readdir(currentPath)).toSorted()
 
     for (const entry of entries) {
-      if (entry === INTERNAL_OPFS_META_FILE) {
+      if (isCloudSyncExcludedPath(entry)) {
         continue
       }
 
