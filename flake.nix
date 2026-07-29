@@ -112,12 +112,7 @@
 
           src = ./rust;
 
-          cargoLock = {
-            lockFile = ./rust/Cargo.lock;
-            outputHashes = {
-              "kittycad-modeling-cmds-0.2.218" = "sha256-Nse9v4pcpBREAnfMx+nvdW2v1zjNWGiRO6BvSbVBQMU=";
-            };
-          };
+          cargoLock.lockFile = ./rust/Cargo.lock;
           cargoBuildFlags = [
             "-p"
             "kcl-language-server"
