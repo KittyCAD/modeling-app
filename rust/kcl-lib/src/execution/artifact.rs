@@ -1575,9 +1575,14 @@ fn artifacts_to_update(
                 ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
-                | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+                | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. }) => {
                     cmd_id_ref_to_artifact_id(target)
+                }
+                ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference {
+                    target: Some(target), ..
+                }) => cmd_id_ref_to_artifact_id(target),
+                ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target: None, .. }) => {
+                    return Ok(Vec::new());
                 }
                 _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
             };
