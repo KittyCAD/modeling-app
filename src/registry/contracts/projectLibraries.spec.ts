@@ -1,28 +1,28 @@
 import {
-  combineProjectLibrarySettingDefaultPolicies,
-  combineProjectLibrarySettingDefaults,
-  combineProjectLibraryTypes,
-  combineProjectLibraries,
-  getHomeProjectEntriesForLibrary,
-  getProjectLibraryOperation,
-  resolveProjectLibrarySettingDefaults,
-} from '@src/registry/contracts/projectLibraries'
-import {
-  DEFAULT_PROJECT_LIBRARY_ID,
-  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  getDefaultCloudProjectLibrarySetting,
   areProjectLibrarySettingsEqual,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+  DEFAULT_PROJECT_LIBRARY_ID,
   getContainingDirectoryProjectLibraryPath,
-  getDefaultDirectoryProjectLibrarySetting,
+  getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryIdFromSetting,
   moveProjectLibrarySetting,
   normalizeProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
+import {
+  combineProjectLibraries,
+  combineProjectLibrarySettingDefaultPolicies,
+  combineProjectLibrarySettingDefaults,
+  combineProjectLibraryTypes,
+  getHomeProjectEntriesForLibrary,
+  getProjectLibraryOperation,
+  resolveProjectLibrarySettingDefaults,
+} from '@src/registry/contracts/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
 describe('project library settings', () => {

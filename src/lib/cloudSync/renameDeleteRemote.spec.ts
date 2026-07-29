@@ -170,4 +170,13 @@ describe('deleteRemoteCloudProject', () => {
     ).resolves.toBeUndefined()
     expect(cloudSyncRemoteProjects.value).toEqual([{ id: 'other-project' }])
   })
+
+  it('fails when cloud sync is not enabled', async () => {
+    configureCloudSyncEngine({ enabled: false })
+
+    await expect(deleteRemoteCloudProject(remoteProjectId)).rejects.toThrow(
+      'Cloud sync is not enabled.'
+    )
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })
