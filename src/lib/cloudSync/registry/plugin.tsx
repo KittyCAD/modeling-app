@@ -884,15 +884,6 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           return project
         },
       },
-      openProject: {
-        run: ({ project }) => {
-          if (!project.readWriteAccess || !project.defaultFile) {
-            return undefined
-          }
-
-          return { defaultFile: project.defaultFile }
-        },
-      },
       duplicateProject: {
         run: async ({ project }) => {
           if (project.localProjectName && project.localProjectPath) {
@@ -935,6 +926,15 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       // materialized locally. Once a local copy exists, they behave like a
       // normal local project: mutate the local files and let cloud sync
       // replicate the change to the remote.
+      openProject: {
+        run: ({ project }) => {
+          if (!project.readWriteAccess || !project.defaultFile) {
+            return undefined
+          }
+
+          return { defaultFile: project.defaultFile }
+        },
+      },
       renameProject: {
         run: async ({ project, requestedName }) => {
           const title = requestedName.trim()
