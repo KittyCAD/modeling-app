@@ -5,33 +5,86 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
+import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
 import {
   getHomeProjectDisplayName,
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  DEFAULT_PROJECT_LIBRARY_ID,
+  DEFAULT_PROJECT_LIBRARY_TITLE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  getDefaultDirectoryProjectLibraryPath,
+  getDefaultProjectLibrarySettings,
+  NEW_PROJECT_LIBRARY_TITLE,
+  type ProjectLibrary,
+  projectLibraryFromSetting,
+} from '@src/lib/projectLibraries'
+import {
+  readProjectsFromProjectDirectory,
+  scheduleProjectDirectoryNameSyncFromTitles,
+} from '@src/lib/projectLibraries/directoryScanner'
+import {
+  createProjectInLocalDirectory,
+  moveProjectIntoLocalDirectory,
+} from '@src/lib/projectLibraries/operations'
+import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import { reportRejection } from '@src/lib/trap'
+import {
+  NO_PROJECT_DIRECTORY,
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { commandSystemService } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
+  type HomeProjectMoveToLibraryTarget,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import {
+  getProjectLibraryOperation,
+  type ProjectLibraryTypeOperations,
+  projectLibrariesValueSpec,
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
+const configuredProjectLibraryEntriesInvalidation = signal(0)
+
+export function invalidateConfiguredProjectLibraryEntries() {
+  configuredProjectLibraryEntriesInvalidation.value += 1
+}
+
+function readConfiguredProjectLibraryEntriesInvalidation() {
+  return configuredProjectLibraryEntriesInvalidation.value
+}
+
 function localHomeProjectEntriesFromProjects(
-  projects: readonly Project[] | undefined
+  projects: readonly Project[] | undefined,
+  libraryId?: string
 ): HomeProjectEntryContribution[] {
-  return projects?.map(homeProjectEntryFromProject) ?? []
+  return (
+    projects?.map((project) => ({
+      ...homeProjectEntryFromProject(project),
+      libraryId,
+    })) ?? []
+  )
 }
 
 function homeProjectDisplayNameExists({
@@ -52,6 +105,19 @@ function homeProjectDisplayNameExists({
   )
 }
 
+function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
+  if (!project.localProjectPath || !project.readWriteAccess) {
+    return undefined
+  }
+
+  return {
+    localProjectPath: project.localProjectPath,
+    localProjectName:
+      project.localProjectName ?? fsZds.basename(project.localProjectPath),
+    defaultFile: project.defaultFile,
+  }
+}
+
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
@@ -60,19 +126,150 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
 
+  const getProjectOperation = <
+    OperationName extends keyof ProjectLibraryTypeOperations,
+  >(
+    project: HomeProjectEntry,
+    operationName: OperationName
+  ):
+    | {
+        library: ProjectLibrary
+        operation: NonNullable<ProjectLibraryTypeOperations[OperationName]>
+      }
+    | undefined => {
+    const projectLibraryIds = new Set(project.libraryIds ?? [])
+    if (projectLibraryIds.size === 0) {
+      return undefined
+    }
+
+    const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+    for (const library of ctx.valueSpecs.get(projectLibrariesValueSpec)) {
+      if (!projectLibraryIds.has(library.id)) {
+        continue
+      }
+
+      const operation = getProjectLibraryOperation(
+        libraryTypes.get(library.type),
+        library,
+        operationName
+      )
+      if (!operation) {
+        continue
+      }
+
+      return {
+        library,
+        operation,
+      }
+    }
+
+    return undefined
+  }
+
+  const getProjectLibraries = (project: HomeProjectEntry) => {
+    const projectLibraryIds = new Set(project.libraryIds ?? [])
+    if (projectLibraryIds.size === 0) {
+      return []
+    }
+
+    return ctx.valueSpecs
+      .get(projectLibrariesValueSpec)
+      .filter((library) => projectLibraryIds.has(library.id))
+  }
+
+  const getMoveToLibraryTargets = (
+    project: HomeProjectEntry
+  ): HomeProjectMoveToLibraryTarget[] => {
+    const projectLibraryIds = new Set(project.libraryIds ?? [])
+    const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+    const libraries = ctx.valueSpecs.get(projectLibrariesValueSpec)
+    const targets: HomeProjectMoveToLibraryTarget[] = []
+    const targetLibraryIds = new Set<string>()
+
+    for (const sourceLibrary of getProjectLibraries(project)) {
+      const moveFrom = getProjectLibraryOperation(
+        libraryTypes.get(sourceLibrary.type),
+        sourceLibrary,
+        'moveProjectFrom'
+      )
+      if (
+        !moveFrom ||
+        moveFrom.canMoveProject?.({ library: sourceLibrary, project }) === false
+      ) {
+        continue
+      }
+
+      for (const library of libraries) {
+        if (
+          projectLibraryIds.has(library.id) ||
+          targetLibraryIds.has(library.id)
+        ) {
+          continue
+        }
+
+        const moveTo = getProjectLibraryOperation(
+          libraryTypes.get(library.type),
+          library,
+          'moveProjectTo'
+        )
+        if (
+          !moveTo ||
+          moveTo.canReceiveProject?.({
+            library,
+            sourceLibrary,
+            project,
+          }) === false
+        ) {
+          continue
+        }
+
+        targets.push({
+          library,
+          sourceLibrary,
+        })
+        targetLibraryIds.add(library.id)
+      }
+    }
+
+    return targets
+  }
+
+  const getMoveToLibraryTarget = (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) =>
+    getMoveToLibraryTargets(project).find(
+      (target) => target.library.id === targetLibraryId
+    )
+
   const serviceImpl: HomeProjectActionsService = {
     canOpen: (project) =>
       Boolean(
-        (project.readWriteAccess && project.defaultFile) ||
+        (project.readWriteAccess &&
+          project.defaultFile &&
+          getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
       ),
+    // A local materialization is not required: cloud library operations can act
+    // on a remote-only project directly. Each library type's operation guards
+    // its own local-vs-remote handling, so the shared capability check only
+    // needs write access plus a registered operation.
     canRename: (project) =>
-      Boolean(project.localProjectPath && project.readWriteAccess),
+      Boolean(
+        project.readWriteAccess && getProjectOperation(project, 'renameProject')
+      ),
     canDelete: (project) =>
-      Boolean(project.localProjectName && project.readWriteAccess),
+      Boolean(
+        project.readWriteAccess && getProjectOperation(project, 'deleteProject')
+      ),
+    canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
     open: async (project) => {
-      if (project.readWriteAccess && project.defaultFile) {
-        return { defaultFile: project.defaultFile }
+      const openProject = getProjectOperation(project, 'openProject')
+      if (openProject && project.readWriteAccess && project.defaultFile) {
+        return openProject.operation.run({
+          library: openProject.library,
+          project,
+        })
       }
 
       if (!project.remoteProjectId) {
@@ -80,7 +277,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
-        project.remoteProjectId
+        project.remoteProjectId,
+        await getDefaultCloudProjectDirectoryPath()
       )
       if (!syncedProject) {
         return undefined
@@ -96,7 +294,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return { defaultFile: projectInfo.default_file }
     },
     rename: async (project, requestedName) => {
-      if (!serviceImpl.canRename(project) || !project.localProjectPath) {
+      const renameProject = getProjectOperation(project, 'renameProject')
+      if (!serviceImpl.canRename(project) || !renameProject) {
         return
       }
 
@@ -112,28 +311,75 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return Promise.reject(new Error(message))
       }
 
-      await writeProjectTitleToProjectToml(
-        project.localProjectPath,
-        requestedName
-      )
+      await renameProject.operation.run({
+        library: renameProject.library,
+        project,
+        requestedName,
+      })
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
     },
     delete: async (project) => {
-      if (!serviceImpl.canDelete(project) || !project.localProjectName) {
+      const deleteProject = getProjectOperation(project, 'deleteProject')
+      if (!serviceImpl.canDelete(project) || !deleteProject) {
         return
       }
 
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.deleteProject,
-        data: {
-          requestedProjectName: project.localProjectName,
-        },
+      await deleteProject.operation.run({
+        library: deleteProject.library,
+        project,
       })
+      toast.success(
+        `Successfully deleted "${getHomeProjectDisplayName(project)}"`
+      )
+    },
+    getMoveToLibraryTargets,
+    moveToLibrary: async (project, targetLibraryId) => {
+      const target = getMoveToLibraryTarget(project, targetLibraryId)
+      if (!target) {
+        return undefined
+      }
+
+      const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+      const moveFrom = getProjectLibraryOperation(
+        libraryTypes.get(target.sourceLibrary.type),
+        target.sourceLibrary,
+        'moveProjectFrom'
+      )
+      const moveTo = getProjectLibraryOperation(
+        libraryTypes.get(target.library.type),
+        target.library,
+        'moveProjectTo'
+      )
+      if (!moveFrom || !moveTo) {
+        return undefined
+      }
+
+      const source = await moveFrom.run({
+        library: target.sourceLibrary,
+        project,
+        targetLibrary: target.library,
+      })
+      if (!source) {
+        return undefined
+      }
+
+      const result = await moveTo.run({
+        library: target.library,
+        sourceLibrary: target.sourceLibrary,
+        project,
+        source,
+      })
+      toast.success(
+        `Moved "${getHomeProjectDisplayName(project)}" to "${target.library.title}".`
+      )
+
+      return result?.defaultFile
+        ? {
+            defaultFile: result.defaultFile,
+          }
+        : undefined
     },
   }
 
@@ -170,9 +416,28 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       }
 
       const updateEntries = () => {
+        const snapshot = service.actor.getSnapshot()
+        const context = snapshot.context
+        const projects = context.folders
         entries.value = localHomeProjectEntriesFromProjects(
-          service.actor.getSnapshot().context.folders
+          projects,
+          DEFAULT_PROJECT_LIBRARY_ID
         )
+
+        if (
+          projects &&
+          snapshot.matches(SystemIOMachineStates.idle) &&
+          context.requestedProjectName.name === NO_PROJECT_DIRECTORY
+        ) {
+          scheduleProjectDirectoryNameSyncFromTitles({
+            projects,
+            onProjectDirectoriesRenamed: () => {
+              service.actor.send({
+                type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              })
+            },
+          })
+        }
       }
 
       updateEntries()
@@ -197,9 +462,392 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
+const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraries = computed<ProjectLibrary[]>(() => {
+    const currentSettings = settings.value?.current.value
+    if (!currentSettings) {
+      return []
+    }
+
+    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+      currentSettings.app.libraries.current
+    )
+
+    return currentSettings.app.libraries.current.map((library, index) => ({
+      ...projectLibraryFromSetting(library, index, {
+        defaultProjectDirectory,
+      }),
+      icon: 'folder',
+      order: index,
+    }))
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.configured-project-libraries',
+      provides: [
+        provide(projectLibrariesValueSpec, libraries, {
+          key: 'home-projects.configured-project-libraries',
+        }),
+      ],
+    }),
+  }
+}, 'home-projects.configured-project-libraries')
+
+const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const systemIO = ctx.services.signal(systemIOService)
+  const cloudSync = ctx.services.signal(cloudSyncService)
+  const getWasmPromise = () =>
+    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+    Promise.reject(new Error('Missing WASM promise registry value.'))
+  const refreshLocalProjectEntries = () => {
+    systemIO.value?.actor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+    invalidateConfiguredProjectLibraryEntries()
+  }
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.directory-library-type',
+      provides: [
+        provide(projectLibraryTypesValueSpec, {
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          title: 'Directory',
+          icon: 'folder',
+          order: 0,
+          defaultSetting: {
+            title: DEFAULT_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
+          newLibrarySetting: {
+            title: NEW_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
+          settingsDetails: DirectoryProjectLibrarySettingsDetails,
+          hideInSettingsOnPlatform: 'web',
+          readEntries: async ({ library, signal }) => {
+            const projects = await readProjectsFromProjectDirectory({
+              projectDirectoryPath: library.path,
+              wasmInstancePromise: getWasmPromise(),
+              signal,
+            })
+            if (!signal.aborted) {
+              scheduleProjectDirectoryNameSyncFromTitles({
+                projects,
+                onProjectDirectoriesRenamed:
+                  invalidateConfiguredProjectLibraryEntries,
+              })
+            }
+
+            return localHomeProjectEntriesFromProjects(projects, library.id)
+          },
+          operations: {
+            createProject: {
+              run: async ({
+                library,
+                requestedProjectName,
+                requestedProjectTitle,
+              }) => {
+                const project = await createProjectInLocalDirectory({
+                  projectDirectoryPath: library.path,
+                  requestedProjectName,
+                  requestedProjectTitle,
+                  wasmInstancePromise: getWasmPromise(),
+                })
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+                invalidateConfiguredProjectLibraryEntries()
+
+                return project
+              },
+            },
+            openProject: {
+              run: ({ project }) => {
+                if (!project.readWriteAccess || !project.defaultFile) {
+                  return undefined
+                }
+
+                return { defaultFile: project.defaultFile }
+              },
+            },
+            renameProject: {
+              run: async ({ project, requestedName }) => {
+                if (!project.localProjectPath || !project.readWriteAccess) {
+                  return
+                }
+
+                await writeProjectTitleToProjectToml(
+                  project.localProjectPath,
+                  requestedName
+                )
+                refreshLocalProjectEntries()
+              },
+            },
+            deleteProject: {
+              run: async ({ project }) => {
+                if (!project.localProjectPath || !project.readWriteAccess) {
+                  return
+                }
+
+                const cloudSyncActions = project.remoteProjectId
+                  ? cloudSync.value
+                  : undefined
+                if (
+                  project.remoteProjectId &&
+                  cloudSyncActions?.status.value.enabled !== true
+                ) {
+                  return Promise.reject(new Error('Cloud sync is not enabled.'))
+                }
+
+                await fsZds.rm(project.localProjectPath, {
+                  recursive: true,
+                })
+                // Individually synced directory projects follow the same
+                // delete-everywhere policy as cloud-library projects.
+                if (project.remoteProjectId) {
+                  await cloudSyncActions?.deleteRemoteProject(
+                    project.remoteProjectId
+                  )
+                }
+                refreshLocalProjectEntries()
+              },
+            },
+            moveProjectFrom: {
+              canMoveProject: ({ project }) =>
+                Boolean(project.localProjectPath && project.readWriteAccess),
+              run: ({ project }) => getProjectMoveSource({ project }),
+            },
+            moveProjectTo: {
+              run: async ({ library, source }) => {
+                const result = await moveProjectIntoLocalDirectory({
+                  projectDirectoryPath: library.path,
+                  sourceProjectPath: source.localProjectPath,
+                  sourceProjectName: source.localProjectName,
+                  defaultFile: source.defaultFile,
+                })
+                refreshLocalProjectEntries()
+
+                return result
+              },
+            },
+          },
+        }),
+      ],
+    }),
+  }
+}, 'home-projects.directory-library-type')
+
+const directoryProjectLibraryDefaultPolicy = defineRegistryItem({
+  id: 'home-projects.directory-library-default-policy',
+  provides: [
+    provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+      id: 'home-projects.directory-library-default-policy',
+      priority: 0,
+      /**
+       * Product policy: the directory library owns the legacy default project
+       * directory fallback. Other library systems can contribute
+       * higher-priority policies without `loadAndValidateSettings()` knowing
+       * about their storage type.
+       */
+      getDefaultLibraries: ({ legacyProjectDirectory, initialDefaultDir }) =>
+        getDefaultProjectLibrarySettings(
+          legacyProjectDirectory ?? initialDefaultDir
+        ),
+    }),
+  ],
+})
+
+const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
+  const entries = signal<HomeProjectEntryContribution[]>([])
+  const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
+  // Diagnostic dedupe: a configured library whose type has no registered
+  // handler cannot be listed and would silently vanish from Home. This should
+  // not happen (the cloud and directory types are always-on), so warn once per
+  // library rather than swallowing it.
+  const warnedMissingTypeLibraryIds = new Set<string>()
+  let abortController: AbortController | undefined
+  let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
+  let disposed = false
+  let loadId = 0
+
+  const updateEntries = () => {
+    entries.value = Array.from(entriesByLibraryId.values()).flat()
+  }
+
+  // Defer because `effect` runs immediately, and service reads are blocked
+  // while the registry graph is still being built.
+  queueMicrotask(() => {
+    if (disposed) {
+      return
+    }
+
+    disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
+      const currentSettings = settings.value?.current.value
+      const typeById = libraryTypes.value
+      // Directory library operations mutate the filesystem without changing
+      // settings or library type registrations. Read this signal so known
+      // mutations can invalidate and rescan configured library entries.
+      readConfiguredProjectLibraryEntriesInvalidation()
+      const nextLoadId = ++loadId
+
+      abortController?.abort()
+      const loadController = new AbortController()
+      abortController = loadController
+      entriesByLibraryId.clear()
+      entries.value = []
+
+      if (!currentSettings) {
+        return
+      }
+
+      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+        currentSettings.app.libraries.current
+      )
+      const configuredLibraries = currentSettings.app.libraries.current
+        .map((library, index) =>
+          projectLibraryFromSetting(library, index, {
+            defaultProjectDirectory,
+          })
+        )
+        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+
+      for (const library of configuredLibraries) {
+        const readEntries = typeById.get(library.type)?.readEntries
+        if (!readEntries) {
+          if (!warnedMissingTypeLibraryIds.has(library.id)) {
+            warnedMissingTypeLibraryIds.add(library.id)
+            console.warn(
+              `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
+            )
+          }
+          continue
+        }
+
+        readEntries({
+          library,
+          signal: loadController.signal,
+        })
+          .then((libraryEntries) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.set(library.id, libraryEntries)
+            updateEntries()
+          })
+          .catch((error: unknown) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.delete(library.id)
+            updateEntries()
+            reportRejection(error)
+          })
+      }
+    })
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.configured-project-library-entries',
+      provides: [
+        provide(homeProjectEntriesValueSpec, entries, {
+          key: 'home-projects.configured-project-library-entries',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        abortController?.abort()
+        disposeConfiguredProjectLibraryEntriesEffect?.()
+      },
+    }),
+  }
+}, 'home-projects.configured-project-library-entries')
+
+function findHomeProjectEntryByProjectPath(
+  entries: readonly HomeProjectEntry[],
+  projectPath: string
+) {
+  return entries.find((entry) => entry.localProjectPath === projectPath)
+}
+
+const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
+  const findProject = (projectPath: string) =>
+    findHomeProjectEntryByProjectPath(
+      ctx.valueSpecs.get(homeProjectEntriesValueSpec),
+      projectPath
+    )
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.move-to-library-project-menu-item',
+      provides: [
+        provide(
+          projectExplorerProjectMenuItemsValueSpec,
+          {
+            id: 'home-projects.move-to-library-project-menu-item',
+            order: 10,
+            label: 'Move to library',
+            dataTestId: 'project-sidebar-move-to-library',
+            isVisible: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const actions = ctx.services.optional(homeProjectActionsService)
+
+              return Boolean(project && actions?.canMoveToLibrary(project))
+            },
+            onSelect: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const commandSystem = ctx.services.optional(commandSystemService)
+              if (!project || !commandSystem) {
+                return
+              }
+
+              commandSystem.send({
+                type: 'Find and select command',
+                data: {
+                  groupId: 'projects',
+                  name: 'Move to library',
+                  argDefaultValues: {
+                    project: project.id,
+                  },
+                },
+              })
+            },
+          },
+          { key: 'home-projects.move-to-library-project-menu-item' }
+        ),
+      ],
+    }),
+  }
+}, 'home-projects.move-to-library-project-menu-item')
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
-  uses: [homeProjectActions, systemIOLocalHomeProjectEntries],
+  uses: [
+    configuredProjectLibraries,
+    configuredProjectLibraryEntries,
+    directoryProjectLibraryDefaultPolicy,
+    directoryProjectLibraryType,
+    homeProjectActions,
+    moveProjectToLibraryProjectMenuItem,
+    systemIOLocalHomeProjectEntries,
+  ],
 })
 
 export default homeProjectsExtension

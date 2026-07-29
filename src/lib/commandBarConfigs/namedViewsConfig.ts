@@ -15,7 +15,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'

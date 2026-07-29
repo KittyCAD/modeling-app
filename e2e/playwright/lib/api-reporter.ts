@@ -106,6 +106,7 @@ class APIReporter implements Reporter {
       GITHUB_HEAD_REF: process.env.GITHUB_HEAD_REF || null,
       GITHUB_REF_NAME: process.env.GITHUB_REF_NAME || null,
       GITHUB_REF: process.env.GITHUB_REF || null,
+      GITHUB_REPOSITORY: process.env.GITHUB_REPOSITORY || null,
       GITHUB_RUN_ID: process.env.GITHUB_RUN_ID || null,
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,

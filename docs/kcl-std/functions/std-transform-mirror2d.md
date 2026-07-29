@@ -105,18 +105,7 @@ sketch001 = startSketchOn(XZ)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the mirror2d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of mirror2d 2](/kcl-test-outputs/serial_test_example_fn_std-transform-mirror2d2.png)
 
 ```kcl
 // Mirror an un-closed sketch across a line from a sketch block.

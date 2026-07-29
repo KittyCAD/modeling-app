@@ -21,7 +21,6 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
 use crate::execution::ConstraintKind;
-use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
@@ -106,6 +105,7 @@ use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
 use crate::std::StdFnProps;
@@ -1088,8 +1088,8 @@ impl ExecutorContext {
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
-                            Some(alias) => {
+                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.definition {
+                            TypeDeclarationDefinition::Alias { ty: alias } => {
                                 let value = KclValue::Type {
                                     value: TypeDef::Alias(
                                         RuntimeType::from_parsed(
@@ -1119,9 +1119,15 @@ impl ExecutorContext {
                                     exec_state.mod_local.module_exports.push(name_in_mem);
                                 }
                             }
-                            None => {
+                            TypeDeclarationDefinition::Bare => {
                                 return Err(KclError::new_semantic(KclErrorDetails::new(
                                     "User-defined types are not yet supported.".to_owned(),
+                                    vec![metadata.source_range],
+                                )));
+                            }
+                            TypeDeclarationDefinition::Enum(_) => {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Enum declarations are not yet supported.".to_owned(),
                                     vec![metadata.source_range],
                                 )));
                             }
@@ -1648,13 +1654,13 @@ impl Node<SketchBlock> {
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
             let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Plane(plane) => Some(super::artifact::artifact_plane_info(&plane.info)),
                 SketchSurface::Face(_) => None,
             };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) => None,
+                Plane::Object(_) | Plane::PrimitiveFace(_) => None,
             };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
@@ -1750,7 +1756,19 @@ impl Node<SketchBlock> {
         };
 
         // Propagate errors.
-        return_result?;
+        let return_control_flow = return_result?;
+        // If the sketch block body exited early (e.g. via `exit()`), propagate
+        // the exit so that the rest of the program terminates instead of only
+        // ending this sketch block. Without this, execution would fall through,
+        // solve the partial sketch, and continue on to later statements.
+        if let Some(control_flow) = return_control_flow
+            && control_flow.is_some_return()
+        {
+            // Balance the GroupBegin operation pushed above so the feature tree
+            // stays well-formed.
+            exec_state.push_op(Operation::GroupEnd);
+            return Ok(control_flow);
+        }
         let Some(sketch_block_state) = sketch_block_state else {
             debug_assert!(false, "Sketch block state should still be set to Some from just above");
             return Err(internal_err(
@@ -1883,7 +1901,7 @@ impl Node<SketchBlock> {
                         // it's not a user error. We should investigate this.
                         #[cfg(target_arch = "wasm32")]
                         web_sys::console::error_1(
-                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                            &format!("Internal error from constraint solver: {}", failure.error).into(),
                         );
                         return Err(internal_err(
                             format!("Internal error from constraint solver: {}", failure.error),
@@ -2500,7 +2518,7 @@ impl Node<MemberExpression> {
         };
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
-        let property = Property::try_from(
+        let property_result = Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -2510,7 +2528,14 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await?;
+        .await;
+        let property = match property_result {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
         let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
@@ -3831,7 +3856,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Angle;
                             use crate::front::SourceRef;
 
@@ -3853,7 +3877,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -3961,7 +3985,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4002,7 +4025,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4108,7 +4131,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4136,7 +4158,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4252,7 +4274,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4276,7 +4297,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4348,7 +4369,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4376,7 +4396,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4488,7 +4508,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4512,7 +4531,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4671,7 +4690,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4695,7 +4713,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4896,7 +4914,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::SourceRef;
                             let segment_object_id = match target_segment {
                                 CircularSegmentConstraintTarget::Arc { object_id, .. }
@@ -4935,7 +4952,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5009,7 +5026,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5050,7 +5066,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5122,7 +5138,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5163,7 +5178,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5192,6 +5207,21 @@ impl Node<BinaryExpression> {
                     )));
                 }
             }
+        }
+
+        // Inside sketch blocks, `==` is reserved for equivalence constraints
+        // and has already been handled above.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq)
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
+                (&left_value, &right_value)
+        {
+            let is_equal = left == right;
+            let value = if self.operator == BinaryOperator::Eq {
+                is_equal
+            } else {
+                !is_equal
+            };
+            return Ok(KclValue::Bool { value, meta });
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;
@@ -5758,7 +5788,7 @@ impl Property {
         metadata: &Metadata,
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
-    ) -> Result<Self, KclError> {
+    ) -> Result<Self, EarlyReturn> {
         let property_sr = vec![sr];
         if !computed {
             let Expr::Name(identifier) = value else {
@@ -5767,7 +5797,8 @@ impl Property {
                     "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
                         .to_owned(),
                     property_sr,
-                )));
+                ))
+                .into());
             };
             return Ok(Property::String(identifier.to_string()));
         }
@@ -5775,14 +5806,9 @@ impl Property {
         let prop_value = ctx
             .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
             .await?;
-        let prop_value = match prop_value.control {
-            ControlFlowKind::Continue => prop_value.into_value(),
-            ControlFlowKind::Exit => {
-                let message = "Early return inside array brackets is currently not supported".to_owned();
-                debug_assert!(false, "{}", &message);
-                return Err(internal_err(message, sr));
-            }
-        };
+        // If the property expression exited, e.g. by calling exit(), propagate
+        // the exit so that it terminates the enclosing module.
+        let prop_value = early_return!(prop_value);
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -5796,7 +5822,8 @@ impl Property {
                             "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
                         ),
                         property_sr,
-                    )));
+                    ))
+                    .into());
                 }
                 if let Some(x) = crate::try_f64_to_usize(value) {
                     Ok(Property::UInt(x))
@@ -5804,13 +5831,15 @@ impl Property {
                     Err(KclError::new_semantic(KclErrorDetails::new(
                         format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                         property_sr,
-                    )))
+                    ))
+                    .into())
                 }
             }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Only numbers (>= 0) can be indexes".to_owned(),
                 vec![sr],
-            ))),
+            ))
+            .into()),
         }
     }
 }

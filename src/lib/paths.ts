@@ -2,6 +2,10 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  isProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
 
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -11,6 +15,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SETTINGS = '/settings'
 const HOME = '/home'
+const LIBRARY = '/library'
 
 export type ProjectRoute = {
   projectName: string | null
@@ -22,6 +27,11 @@ export type ProjectRoute = {
 function getProjectDirectorySetting(
   configuration: DeepPartial<Configuration>
 ): string | undefined {
+  const libraries = configuration.settings?.app?.libraries
+  if (isProjectLibrarySettings(libraries)) {
+    return getDefaultDirectoryProjectLibraryPath(libraries)
+  }
+
   const projectSettings = configuration.settings?.project
   if (
     !projectSettings ||
@@ -35,9 +45,30 @@ function getProjectDirectorySetting(
   return typeof directory === 'string' ? directory : undefined
 }
 
+function getRelativePathIfContained(
+  parentDirectory: string,
+  targetPath: string
+): string | undefined {
+  const relativePath = fsZds.relative(parentDirectory, targetPath)
+  if (relativePath === '') {
+    return relativePath
+  }
+  if (
+    relativePath === '..' ||
+    relativePath.startsWith(`..${fsZds.sep}`) ||
+    relativePath.startsWith('/') ||
+    relativePath.startsWith('\\') ||
+    /^[a-zA-Z]:/.test(relativePath)
+  ) {
+    return undefined
+  }
+  return relativePath
+}
+
 export const PATHS = {
   INDEX: '/',
   HOME,
+  LIBRARY,
   FILE: '/file',
   SETTINGS,
   SETTINGS_USER: `${SETTINGS}?tab=user` as const,
@@ -111,10 +142,14 @@ export function parseProjectRoute(
   let currentFileName = null
   let currentFilePath = null
   const projectDirectory = getProjectDirectorySetting(configuration)
-  if (projectDirectory && id.startsWith(projectDirectory)) {
-    const relativeToRoot = fsZds.relative(projectDirectory, id)
+  const relativeToRoot = projectDirectory
+    ? getRelativePathIfContained(projectDirectory, id)
+    : undefined
+  if (projectDirectory && relativeToRoot !== undefined) {
     projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = fsZds.join(projectDirectory, projectName)
+    projectPath = projectName
+      ? fsZds.join(projectDirectory, projectName)
+      : projectDirectory
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
@@ -202,37 +237,35 @@ export function getProjectDirectoryFromKCLFilePath(
   targetPath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = targetPath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return projectDirectory
-  }
-  return ''
+  const relativePath = getRelativePathIfContained(
+    applicationProjectDirectory,
+    targetPath
+  )
+  if (relativePath === undefined) return ''
+  return desktopSafePathSplit(relativePath)[0] ?? ''
 }
 
 export function parentPathRelativeToProject(
   absoluteFilePath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, _projectDirectory, ...rest] =
-    desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return desktopSafePathJoin(rest)
-  }
-  return ''
+  const relativePath = getRelativePathIfContained(
+    applicationProjectDirectory,
+    absoluteFilePath
+  )
+  if (relativePath === undefined) return ''
+  const [_projectDirectory, ...rest] = desktopSafePathSplit(relativePath)
+  return desktopSafePathJoin(rest)
 }
 
 export function parentPathRelativeToApplicationDirectory(
   absoluteFilePath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, ...rest] = desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return desktopSafePathJoin(rest)
-  }
-  return ''
+  return (
+    getRelativePathIfContained(applicationProjectDirectory, absoluteFilePath) ??
+    ''
+  )
 }
 
 export { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
@@ -275,19 +308,6 @@ export function desktopSafePathSplit(targetPath: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
-}
-
-/**
- * Don't pass a folder path, only files with extensions for best results.
- */
-export const enforceFileEXT = (
-  filePath: string,
-  ext: string | null
-): string | null => {
-  if (ext === null) {
-    return null
-  }
-  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
 }
 
 export const getEXTNoPeriod = (filePath: string) => {

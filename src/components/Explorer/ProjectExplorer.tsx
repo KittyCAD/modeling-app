@@ -26,9 +26,7 @@ import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
-  enforceFileEXT,
   fileNameHasExtension,
-  getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
@@ -195,7 +193,7 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, settings, systemIOActor } = useApp()
+  const { commands, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -214,9 +212,8 @@ export const ProjectExplorer = ({
     (state) => state.context.lastRecursiveMoveTarget
   )
   const errors = kclManager.errorsSignal.value
-  const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
-    settingsValues.app.projectDirectory.current
+    overrideApplicationProjectDirectory || getParentAbsolutePath(project.path)
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -224,7 +221,7 @@ export const ProjectExplorer = ({
    */
   const defaultFileKey = parentPathRelativeToApplicationDirectory(
     file?.path || project.default_file,
-    overrideApplicationProjectDirectory || applicationProjectDirectory
+    applicationProjectDirectory
   )
   const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)
@@ -1240,8 +1237,7 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        overrideApplicationProjectDirectory ||
-                          applicationProjectDirectory
+                        applicationProjectDirectory
                       )
                     sendFileTreeMutationEvent({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -1292,8 +1288,7 @@ export const ProjectExplorer = ({
                 // Create the KCL file and navigate to (open) it in the editor.
                 const pathRelativeToParent = parentPathRelativeToProject(
                   requestedAbsolutePath,
-                  overrideApplicationProjectDirectory ||
-                    applicationProjectDirectory
+                  applicationProjectDirectory
                 )
                 sendFileTreeMutationEvent({
                   type: SystemIOMachineEvents.importFileFromURL,
@@ -1315,16 +1310,12 @@ export const ProjectExplorer = ({
                 })
               }
             } else {
-              // rename a file
-              const originalExt = getEXTWithPeriod(name)
-              const fileNameForcedWithOriginalExt = enforceFileEXT(
-                requestedName,
-                originalExt
-              )
-              if (!fileNameForcedWithOriginalExt) {
-                // TODO: OH NO!
-                return
-              }
+              // Respect a user-typed extension otherwise assume the file is KCL.
+              const fileName =
+                fileNameHasExtension(requestedName) ||
+                requestedName.startsWith('.')
+                  ? requestedName
+                  : requestedName + FILE_EXT
 
               const requestedAbsoluteFilePathWithExtension = joinOSPaths(
                 getParentAbsolutePath(row.path),
@@ -1340,7 +1331,7 @@ export const ProjectExplorer = ({
                   ? SystemIOMachineEvents.renameFileAndNavigateToFile
                   : SystemIOMachineEvents.renameFile,
                 data: {
-                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
+                  requestedFileNameWithExtension: fileName,
                   fileNameWithExtension: name,
                   absolutePathToParentDirectory: getParentAbsolutePath(
                     row.path

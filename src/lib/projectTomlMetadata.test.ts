@@ -1,12 +1,22 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  normalizeProjectTomlContents,
   preserveProjectTomlMetadataInProjectSettingsContents,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { describe, expect, it } from 'vitest'
+
+function expectOrdered(contents: string, markers: string[]) {
+  let previousIndex = -1
+  for (const marker of markers) {
+    const index = contents.indexOf(marker)
+    expect(index, marker).toBeGreaterThan(previousIndex)
+    previousIndex = index
+  }
+}
 
 describe('projectTomlMetadata', () => {
   it('reads project title from the root title field', () => {
@@ -55,6 +65,24 @@ describe('projectTomlMetadata', () => {
     expect(toml).not.toContain('old-settings-id')
   })
 
+  it('normalizes project metadata table ordering', () => {
+    const localOrder =
+      'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+    const cloudOrder =
+      'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
+    const normalized = normalizeProjectTomlContents(localOrder)
+
+    expect(normalized).toBe(normalizeProjectTomlContents(cloudOrder))
+    expectOrdered(normalized, [
+      'title = "demo-project"',
+      'default_file = "main.kcl"',
+      '[settings.app]',
+      '[settings.meta]',
+      '[settings.modeling]',
+      '[cloud."dev.zoo.dev"]',
+    ])
+  })
+
   it('reads cloud project ids from environment-scoped metadata', () => {
     const toml =
       '[cloud."zoo.dev"]\nproject_id = "project-123"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-456"\n'
@@ -67,7 +95,7 @@ describe('projectTomlMetadata', () => {
 
   it('writes cloud project ids without dropping project settings', () => {
     const toml = setCloudProjectIdInProjectTomlContents(
-      'title = "Some demo"\ndefault_file = "main.kcl"\n',
+      'title = "Some demo"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n',
       'zoo.dev',
       'project-123'
     )
@@ -77,6 +105,12 @@ describe('projectTomlMetadata', () => {
       'project-123'
     )
     expect(toml).toContain('default_file = "main.kcl"')
+    expectOrdered(toml, [
+      'title = "Some demo"',
+      'default_file = "main.kcl"',
+      '[settings.meta]',
+      '[cloud."zoo.dev"]',
+    ])
   })
 
   it('updates existing cloud project ids for an environment', () => {

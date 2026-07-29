@@ -2,12 +2,13 @@ import type { Feature } from '@kittycad/lib'
 import {
   Registry,
   defineRegistryItem,
+  provide,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
-  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
@@ -27,7 +28,10 @@ import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import layoutRegistryItem from '@src/lib/layout/registry/extension'
-import { layoutService } from '@src/lib/layout/registry/contract'
+import {
+  layoutService,
+  layoutUserFeatureTransformationsValueSpec,
+} from '@src/lib/layout/registry/contract'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const playwrightRuntime: RuntimeInfo = {
@@ -137,18 +141,41 @@ function createUserFeaturesService(
   }
 }
 
-function hasBodiesPane(rootLayout: Layout) {
-  const featureTreePane = findLayoutChildNode({
-    rootLayout,
-    targetNodeId: DefaultLayoutPaneID.FeatureTree,
-  })
+const FEATURE_CONTROLLED_PANE_ID = 'test-feature-controlled-pane'
 
-  return (
-    featureTreePane?.type === LayoutType.Splits &&
-    featureTreePane.children.some(
-      (child) =>
-        child.type === LayoutType.Simple && child.areaType === AreaType.Bodies
-    )
+function setFeatureControlledPaneEnabled(rootLayout: Layout, enabled: boolean) {
+  const toolbar = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: DefaultLayoutToolbarID.Left,
+  })
+  if (toolbar?.type !== LayoutType.Panes) {
+    return rootLayout
+  }
+
+  const paneIndex = toolbar.children.findIndex(
+    (child) => child.id === FEATURE_CONTROLLED_PANE_ID
+  )
+  if (enabled && paneIndex === -1) {
+    toolbar.children.push({
+      id: FEATURE_CONTROLLED_PANE_ID,
+      label: 'Feature-controlled pane',
+      icon: 'model',
+      type: LayoutType.Simple,
+      areaType: AreaType.Debug,
+    })
+  } else if (!enabled && paneIndex !== -1) {
+    toolbar.children.splice(paneIndex, 1)
+  }
+
+  return rootLayout
+}
+
+function hasFeatureControlledPane(rootLayout: Layout) {
+  return Boolean(
+    findLayoutChildNode({
+      rootLayout,
+      targetNodeId: FEATURE_CONTROLLED_PANE_ID,
+    })
   )
 }
 
@@ -193,7 +220,7 @@ describe('layout extension', () => {
     })
   })
 
-  it('syncs bodies pane when feature flags load after settings hydrate', () => {
+  it('applies contributed user-feature transformations after settings hydrate', () => {
     const settings = createSettings()
     settings.layout.configs.user = {
       default: createLayoutWithMetadata(structuredClone(defaultLayoutConfig)),
@@ -224,15 +251,27 @@ describe('layout extension', () => {
           provideService(userFeaturesService, testUserFeaturesService),
         ],
       }),
+      defineRegistryItem({
+        id: 'test-user-feature-layout',
+        provides: [
+          provide(layoutUserFeatureTransformationsValueSpec, {
+            id: 'test-user-feature-layout',
+            feature: OPFS_CLOUD_FEATURE_FLAG,
+            transform: setFeatureControlledPaneEnabled,
+          }),
+        ],
+      }),
       layoutRegistryItem,
     ])
 
     const layout = registry.get(layoutService)
     testSettingsService.resolve()
-    expect(hasBodiesPane(layout.get())).toBe(false)
+    expect(hasFeatureControlledPane(layout.get())).toBe(false)
 
-    testUserFeaturesService.setFeatureIds([BODIES_PANE_FEATURE_FLAG])
+    testUserFeaturesService.setFeatureIds([OPFS_CLOUD_FEATURE_FLAG])
+    expect(hasFeatureControlledPane(layout.get())).toBe(true)
 
-    expect(hasBodiesPane(layout.get())).toBe(true)
+    testUserFeaturesService.setFeatureIds([])
+    expect(hasFeatureControlledPane(layout.get())).toBe(false)
   })
 })

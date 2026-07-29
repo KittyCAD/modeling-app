@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
+pub mod fail;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
@@ -29,6 +30,7 @@ pub mod shell;
 pub mod sketch;
 pub(crate) mod solid_consumption;
 pub(crate) mod solver;
+pub mod string;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -296,9 +298,41 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::assert::assert_is(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assertIs"),
         ),
+        ("prelude", "fail") => (
+            |e, a| Box::pin(crate::std::fail::fail(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::fail"),
+        ),
         ("runtime", "exit") => (
             |e, a| Box::pin(crate::std::runtime::exit(e, a)),
             StdFnProps::default("std::runtime::exit"),
+        ),
+        ("string", "uppercase") => (
+            |e, a| Box::pin(crate::std::string::uppercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::uppercase"),
+        ),
+        ("string", "lowercase") => (
+            |e, a| Box::pin(crate::std::string::lowercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::lowercase"),
+        ),
+        ("string", "isEqual") => (
+            |e, a| Box::pin(crate::std::string::is_equal(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::isEqual"),
+        ),
+        ("string", "trim") => (
+            |e, a| Box::pin(crate::std::string::trim(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trim"),
+        ),
+        ("string", "trimStart") => (
+            |e, a| Box::pin(crate::std::string::trim_start(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimStart"),
+        ),
+        ("string", "trimEnd") => (
+            |e, a| Box::pin(crate::std::string::trim_end(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimEnd"),
+        ),
+        ("string", "toString") => (
+            |e, a| Box::pin(crate::std::string::number_to_string(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::toString"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),
@@ -329,7 +363,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::solid::subtract"),
         ),
         ("solid", "patternTransform") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
             StdFnProps::default("std::solid::patternTransform"),
         ),
         ("solid", "patternLinear3d") => (
@@ -353,11 +387,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::solid::split"),
         ),
         ("array", "map") => (
-            |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::array::map(e, a)),
             StdFnProps::default("std::array::map"),
         ),
         ("array", "reduce") => (
-            |e, a| Box::pin(crate::std::array::reduce(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::array::reduce(e, a)),
             StdFnProps::default("std::array::reduce"),
         ),
         ("array", "push") => (
@@ -437,7 +471,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::sketch::extrude"),
         ),
         ("sketch", "patternTransform2d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a).map(|r| r.map(KclValue::continue_))),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
             StdFnProps::default("std::sketch::patternTransform2d"),
         ),
         ("sketch", "revolve") => (

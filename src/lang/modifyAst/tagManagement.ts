@@ -252,6 +252,15 @@ export function createTagExpressions(
             tagCall,
             []
           )
+        } else if (
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'previousAdjacent'
+        ) {
+          tagCall = createCallExpressionStdLibKw(
+            'getPreviousAdjacentEdge',
+            tagCall,
+            []
+          )
         }
         return tagCall
       }

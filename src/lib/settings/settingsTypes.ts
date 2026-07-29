@@ -1,4 +1,5 @@
-import type { UnitAngle, UnitLength } from '@kittycad/lib'
+import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
+import type { Registry } from '@kittycad/registry'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -82,6 +83,16 @@ export type DynamicBooleanSetEvent = {
 /** Platform values for hiding settings */
 export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
 
+export interface SettingComponentProps<T = unknown> {
+  value: T
+  updateValue: (newValue: T) => void
+  category: string
+  settingName: string
+  settingsLevel: SettingsLevel
+  settingsContext: SettingsType
+  registry: Registry
+}
+
 export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
@@ -131,16 +142,26 @@ export interface SettingProps<T = unknown> {
     | HideOnPlatformValue
     | (() => Promise<HideOnPlatformValue | null>)
   /**
+   * Whether to hide the setting unless a user feature flag is enabled.
+   * This will be applied in the settings panel, settings search, and command bar.
+   */
+  hideWithoutFeature?: Feature
+  /**
+   * Whether to hide the setting on a specific platform unless a user feature
+   * flag is enabled. This is useful when a feature flag gates web-only access
+   * to a desktop-default capability.
+   */
+  hideWithoutFeatureOnPlatform?: Partial<
+    Record<Exclude<HideOnPlatformValue, 'both'>, Feature>
+  >
+  /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`
    * of the commandConfig will be used to determine the component.
    * If this is not provided and there is no commandConfig, the
    * setting will not be able to be edited directly by the user.
    */
-  Component?: React.ComponentType<{
-    value: T
-    updateValue: (newValue: T) => void
-  }>
+  Component?: React.ComponentType<SettingComponentProps<T>>
 }
 
 /** The levels available to set settings at.

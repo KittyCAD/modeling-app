@@ -1,0 +1,21 @@
+@settings(defaultLengthUnit = mm)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var 0, var 10])
+  line4 = line(start = [var 0, var 10], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+baseRegion = region(point = [5, 5], sketch = baseSketch)
+baseSolid = extrude(baseRegion, length = 5, tagEnd = $capEnd)
+mirrored = mirror3d(
+  baseSolid,
+  across = {
+    sideFaces = [baseRegion.tags.line1, capEnd]
+  },
+)

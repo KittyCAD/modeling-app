@@ -21,6 +21,7 @@ import {
   getNodeFromPath,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
+  getSelectedSketchTarget,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -50,7 +51,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -1146,6 +1147,25 @@ plane001 = offsetPlane(YZ, offset = 10)
     }
 
     expect(result?.value).toBe('XY')
+  })
+})
+
+describe('Testing getSelectedSketchTarget', () => {
+  it('returns an engine primitive face entity', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'primitive-face-entity',
+          parentEntityId: 'solid-entity',
+          primitiveIndex: 6,
+          primitiveType: 'face',
+        },
+      ],
+    }
+
+    expect(getSelectedSketchTarget(selections)).toBe('primitive-face-entity')
   })
 })
 

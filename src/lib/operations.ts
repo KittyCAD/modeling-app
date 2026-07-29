@@ -64,7 +64,7 @@ import {
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -99,6 +99,23 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+function retrieveUnlabeledSelectionsForEdit(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+): Selections {
+  if (!operation.unlabeledArg) {
+    return { graphSelections: [], otherSelections: [] }
+  }
+
+  const selections = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    artifactGraph
+  )
+  return isErr(selections)
+    ? { graphSelections: [], otherSelections: [] }
+    : selections
 }
 
 function getProfileFunctionFromOperationName(
@@ -385,18 +402,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled arguments to solid2d selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const sketches = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
-  }
+  const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the length argument from a string to a KCL expression
   let length: KclCommandValue | undefined
@@ -625,18 +631,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to solid2d selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const sketches = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
-  }
+  const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2.
   // vDegree argument from a string to a KCL expression
@@ -1383,18 +1378,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to solid2d selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const sketches = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
-  }
+  const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Prepare labeled arguments
   if (!operation.labeledArgs.path) {
@@ -1689,18 +1673,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to solid2d selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const sketches = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(sketches)) {
-    return { reason: "Couldn't retrieve sketches" }
-  }
+  const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Prepare labeled arguments
   // axis options string arg
@@ -1835,18 +1808,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to solid selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const solids = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(solids)) {
-    return { reason: "Couldn't retrieve solids" }
-  }
+  const solids = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the instances argument from a string to a KCL expression
   const instancesArg = operation.labeledArgs?.['instances']
@@ -1965,18 +1927,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to solid selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const solids = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(solids)) {
-    return { reason: "Couldn't retrieve solids" }
-  }
+  const solids = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the instances argument from a string to a KCL expression
   const instancesArg = operation.labeledArgs?.['instances']
@@ -3321,17 +3272,7 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  if (!operation.unlabeledArg) {
-    return { reason: "Couldn't retrieve operation arguments" }
-  }
-
-  const targets = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(targets)) {
-    return { reason: "Couldn't retrieve targets" }
-  }
+  const targets = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   let tools: Selections | undefined
   const toolsArg = operation.labeledArgs?.tools
@@ -4099,18 +4040,7 @@ async function prepareToEditTranslate({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const objects = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(objects)) {
-    return { reason: "Couldn't retrieve objects" }
-  }
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
   let x: KclCommandValue | undefined = undefined
@@ -4209,18 +4139,7 @@ async function prepareToEditScale({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const objects = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(objects)) {
-    return { reason: "Couldn't retrieve objects" }
-  }
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
   let x: KclCommandValue | undefined = undefined
@@ -4295,18 +4214,7 @@ async function prepareToEditRotate({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const objects = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(objects)) {
-    return { reason: objects.message }
-  }
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
   let roll: KclCommandValue | undefined = undefined
@@ -4404,18 +4312,7 @@ async function prepareToEditAppearance({
   /** Version of `toUtf16` bound to our code, for mapping source range values. */
   const boundToUtf16 = (n: number) => toUtf16(n, code)
 
-  // 1. Map the unlabeled arguments to selections
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
-  const objects = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
-  )
-  if (err(objects)) {
-    return { reason: "Couldn't retrieve objects" }
-  }
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the color argument from a string to a KCL expression
   if (!operation.labeledArgs.color) {

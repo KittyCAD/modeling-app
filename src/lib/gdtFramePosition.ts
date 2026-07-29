@@ -23,7 +23,7 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type Axis = 'x' | 'y' | 'z'
 type GdtFramePlane =

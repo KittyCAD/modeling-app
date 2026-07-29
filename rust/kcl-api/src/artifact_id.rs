@@ -1,8 +1,9 @@
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {

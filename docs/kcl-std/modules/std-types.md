@@ -42,6 +42,7 @@ does.
 * [`in`](/docs/kcl-std/types/std-types-in)
 * [`m`](/docs/kcl-std/types/std-types-m)
 * [`mm`](/docs/kcl-std/types/std-types-mm)
+* [`never`](/docs/kcl-std/types/std-types-never)
 * [`none`](/docs/kcl-std/types/std-types-none)
 * [`number`](/docs/kcl-std/types/std-types-number)
 * [`rad`](/docs/kcl-std/types/std-types-rad)
