@@ -43,22 +43,27 @@ export function getProjectTitleFromUniqueDirectoryName({
   )}`
 }
 
+export function getUniqueProjectNameFromExistingNames(
+  name: string,
+  existingNames: readonly string[]
+) {
+  const names = new Set(existingNames.map((entry) => entry.toLowerCase()))
+  let uniqueName = name
+  while (names.has(uniqueName.toLowerCase())) {
+    const nameEndsWithNumber = uniqueName.match(/\d+$/)
+    uniqueName = nameEndsWithNumber
+      ? uniqueName.replace(/\d+$/, (num) => `${parseInt(num, 10) + 1}`)
+      : `${name}-1`
+  }
+  return uniqueName
+}
+
 export function getUniqueDuplicateProjectName(
   sourceName: string,
-  existingProjectNames: string[]
+  existingProjectNames: readonly string[]
 ) {
-  const existingNames = new Set(
-    existingProjectNames.map((name) => name.toLowerCase())
+  return getUniqueProjectNameFromExistingNames(
+    `${sourceName}-copy`,
+    existingProjectNames
   )
-  const copyName = `${sourceName}-copy`
-  if (!existingNames.has(copyName.toLowerCase())) {
-    return copyName
-  }
-
-  for (let duplicateNumber = 1; ; duplicateNumber += 1) {
-    const name = `${copyName}-${duplicateNumber}`
-    if (!existingNames.has(name.toLowerCase())) {
-      return name
-    }
-  }
 }

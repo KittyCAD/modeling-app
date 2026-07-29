@@ -195,7 +195,7 @@ export function withProjectTitleInArchiveFiles(
     return files
   }
 
-  return withProjectTomlArchiveFile(files, (contents) =>
+  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
     setProjectTitleInProjectTomlContents(contents, title)
   )
 }
@@ -209,14 +209,22 @@ export function withProjectCloudProjectIdInArchiveFiles(
     return files
   }
 
-  return withProjectTomlArchiveFile(files, (contents) =>
+  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
     setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
   )
 }
 
-function withProjectTomlArchiveFile(
+export function withUpdatedProjectTomlInArchiveFiles(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
+): ProjectArchiveFile[]
+export function withUpdatedProjectTomlInArchiveFiles(
+  files: ProjectArchiveFile[],
+  update: (contents: string) => string | Error
+): ProjectArchiveFile[] | Error
+export function withUpdatedProjectTomlInArchiveFiles(
+  files: ProjectArchiveFile[],
+  update: (contents: string) => string | Error
 ) {
   const nextFiles = [...files]
   const projectTomlFileIndex = nextFiles.findIndex(
@@ -226,9 +234,13 @@ function withProjectTomlArchiveFile(
     projectTomlFileIndex === -1
       ? ''
       : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
+  const nextProjectToml = update(existingProjectToml)
+  if (nextProjectToml instanceof Error) {
+    return nextProjectToml
+  }
   const nextProjectTomlFile = {
     relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(update(existingProjectToml)),
+    data: new TextEncoder().encode(nextProjectToml),
   }
 
   if (projectTomlFileIndex === -1) {

@@ -27,6 +27,7 @@ import {
   toArrayBuffer,
   withProjectTitleInArchiveFiles,
   withRemoteProjectMetadataInArchiveFiles,
+  withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -1248,31 +1249,9 @@ function prepareRemoteProjectFilesForDuplication(
   files: ProjectArchiveFile[],
   title: string
 ) {
-  const projectTomlFileIndex = files.findIndex(
-    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  return withUpdatedProjectTomlInArchiveFiles(files, (projectToml) =>
+    prepareProjectTomlForDuplication(projectToml, title, v4())
   )
-  const projectToml = prepareProjectTomlForDuplication(
-    projectTomlFileIndex === -1
-      ? ''
-      : new TextDecoder().decode(files[projectTomlFileIndex].data),
-    title,
-    v4()
-  )
-  if (isErr(projectToml)) {
-    return projectToml
-  }
-
-  const duplicatedFiles = [...files]
-  const projectTomlFile = {
-    relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(projectToml),
-  }
-  if (projectTomlFileIndex === -1) {
-    duplicatedFiles.push(projectTomlFile)
-  } else {
-    duplicatedFiles[projectTomlFileIndex] = projectTomlFile
-  }
-  return duplicatedFiles
 }
 
 /**
