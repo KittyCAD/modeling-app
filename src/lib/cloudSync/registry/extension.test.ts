@@ -23,6 +23,7 @@ const cloudSyncMocks = vi.hoisted(() => ({
 vi.mock('@src/lib/cloudSync', () => ({
   cloudSyncStatus: cloudSyncMocks.cloudSyncStatus,
   configureCloudSync: cloudSyncMocks.configureCloudSync,
+  deleteRemoteCloudProject: vi.fn(),
   ensureCloudProjectLocallySynced: vi.fn(),
   startCloudSyncProject: vi.fn(),
   disconnectCloudSyncProject: vi.fn(),

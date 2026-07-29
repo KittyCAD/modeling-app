@@ -12,7 +12,7 @@ import {
 } from '@src/lib/cloudSync/cloudApi'
 import {
   getCloudSyncProjectRoot,
-  INTERNAL_OPFS_META_FILE,
+  isCloudSyncExcludedPath,
   isCloudSyncProjectDirectoryPath,
   isProjectRootPath,
   normalizePathForSync,
@@ -379,13 +379,8 @@ export function filterCloudSyncProjectFilesForSync(
 
   return normalizedFiles.filter(
     (file) =>
+      !isCloudSyncExcludedPath(file.relativePath) &&
       !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
-  )
-}
-
-function isInternalOpfsPath(targetPath: string) {
-  return webSafePathSplit(normalizePathForSync(targetPath)).includes(
-    INTERNAL_OPFS_META_FILE
   )
 }
 
@@ -879,7 +874,7 @@ async function collectLocalProjectFiles(projectRoot: string) {
   ) => {
     const entries = await localFs.readdir(currentPath)
     for (const entry of entries) {
-      if (entry === INTERNAL_OPFS_META_FILE) {
+      if (isCloudSyncExcludedPath(entry)) {
         continue
       }
 
@@ -1237,14 +1232,16 @@ export async function renameRemoteCloudProject(
  * remote that is already gone (404). Any local sync metadata still pointing at
  * it is cleared so the project neither reappears nor lingers as a tombstone.
  *
- * This targets *remote-only* projects; callers that own a local materialization
- * should remove the local project instead and let sync replicate the deletion.
+ * This targets the remote side of a user-visible delete. Callers that own a
+ * local materialization must remove the local project as well before reporting
+ * success.
  */
 export async function deleteRemoteCloudProject(
   remoteProjectId: string
 ): Promise<void> {
   if (!isConfiguredForCloud()) {
-    return
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
   }
 
   const projectId = remoteProjectId.trim()
@@ -2773,7 +2770,7 @@ async function registerProjectMutation(
   targetPath: string,
   sourcePath?: string
 ) {
-  if (!isConfiguredForCloud() || isInternalOpfsPath(targetPath)) {
+  if (!isConfiguredForCloud() || isCloudSyncExcludedPath(targetPath)) {
     return
   }
 
