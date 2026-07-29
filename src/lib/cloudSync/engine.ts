@@ -924,6 +924,20 @@ async function collectLocalProjectFiles(projectRoot: string) {
   )
 }
 
+function getRemoteProjectEntrypointPath(remoteProject: RemoteProject) {
+  const candidates = [
+    remoteProject.entrypoint_path,
+    remoteProject.entrypointPath,
+    remoteProject.entrypoint,
+  ]
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return normalizeRelativePath(candidate)
+    }
+  }
+  return undefined
+}
+
 async function replaceLocalProjectWithFiles(
   projectPath: string,
   files: ProjectArchiveFile[]
@@ -1257,7 +1271,8 @@ async function cloneRemoteProjectToLocal(
       await parseProjectArchive(archive),
       remoteProject.title,
       remoteProject.id,
-      getEnvironmentName()
+      getEnvironmentName(),
+      getRemoteProjectEntrypointPath(remoteProject)
     )
   )
   const nextMetadata = {
@@ -1424,7 +1439,8 @@ export async function renameRemoteCloudProject(
     ),
     title,
     projectId,
-    getEnvironmentName()
+    getEnvironmentName(),
+    getRemoteProjectEntrypointPath(remoteProject)
   )
   const updated = await updateRemoteProject({
     config,
@@ -2337,7 +2353,8 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         await parseProjectArchive(remoteArchive),
         remoteProject.title,
         remoteProjectId,
-        getEnvironmentName()
+        getEnvironmentName(),
+        getRemoteProjectEntrypointPath(remoteProject)
       )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
