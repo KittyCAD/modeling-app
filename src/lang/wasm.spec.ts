@@ -10,10 +10,9 @@ import type {
   ParseResult,
 } from '@src/lang/wasm'
 import {
-  applyOperationCallbackToOperationsByModule,
+  applyOperationCallbacksToOperationsByModule,
   assertParse,
   countOperations,
-  defaultNodePath,
   errFromErrWithOutputs,
   formatNumberLiteral,
   kclLint,
@@ -140,47 +139,15 @@ it('can execute parsed AST', async () => {
   expect(x.value).toEqual(1)
 })
 
-it('applies operation callbacks to operations-by-module incrementally', () => {
-  const operation = {
-    type: 'VariableDeclaration',
-    name: 'part001',
-    value: { type: 'Number', value: 1, ty: { type: 'Unknown' } },
-    visibility: 'default',
-    nodePath: defaultNodePath(),
-    sourceRange: [0, 1, 0] as [number, number, number],
-  } as const
-
-  const next = applyOperationCallbackToOperationsByModule({
-    operationsByModule: { map: {} },
-    callback: {
-      moduleId: 7,
-      operation,
-      index: 0,
-    },
-  })
-
-  expect(next).toEqual({
-    map: {
-      7: [operation],
-    },
-  })
-})
-
 it('matches client-built operations map to ExecOutcome.operations', async () => {
   const ast = assertParse(
     'base = 2\nheight = base + 3\narea = base * height\n',
     instanceInThisFile
   )
-  const callbackOperations: OperationsByModule = { map: {} }
+  const operationCallbacks: OperationCallbackArgs[] = []
   const callbacks: ExecCallbacks = {
-    onOperation({ moduleId, operation, index }: OperationCallbackArgs) {
-      Object.assign(
-        callbackOperations,
-        applyOperationCallbackToOperationsByModule({
-          operationsByModule: callbackOperations,
-          callback: { moduleId, operation, index },
-        })
-      )
+    onOperation(callback) {
+      operationCallbacks.push(callback)
     },
   }
 
@@ -191,6 +158,10 @@ it('matches client-built operations map to ExecOutcome.operations', async () => 
     false,
     callbacks
   )
+  const callbackOperations = applyOperationCallbacksToOperationsByModule({
+    operationsByModule: { map: {} },
+    callbacks: operationCallbacks,
+  })
 
   expect(countOperations(callbackOperations)).toBeGreaterThan(0)
   expect(normalizeOperationsByModule(callbackOperations)).toEqual(

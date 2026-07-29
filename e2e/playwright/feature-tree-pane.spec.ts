@@ -4,6 +4,96 @@ import * as fsp from 'fs/promises'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
+const LIVE_OPERATION_PRESSURE_PROJECT_NAME =
+  'issue-12676-live-operation-pressure'
+const LIVE_OPERATION_PRESSURE_MODULE_COUNT = 8
+const LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE = 16
+const LIVE_OPERATION_PRESSURE_INSTANCES_PER_MODULE = 4
+
+interface LiveOperationPressureMetrics {
+  mountedFeatureTreeCallbackCount: number
+  insideOnOperation: boolean
+  synchronousPublications: number
+  totalPublications: number
+  originalCreateExecutionCallbacks: LiveOperationPressureManager['createExecutionCallbacks']
+  originalDispatchUpdateOperations: LiveOperationPressureManager['dispatchUpdateOperations']
+}
+
+interface LiveOperationPressureManager {
+  createExecutionCallbacks(executionId: number): {
+    onOperation(args: unknown): void
+  }
+  dispatchUpdateOperations(operations: unknown[]): void
+  isExecuting: boolean
+  __issue12676Metrics?: LiveOperationPressureMetrics
+}
+
+function zeroPaddedIndex(index: number) {
+  return String(index).padStart(2, '0')
+}
+
+function createLiveOperationPressureModule(moduleIndex: number) {
+  return Array.from(
+    { length: LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE },
+    (_, operationIndex) => {
+      const valueName = `value${zeroPaddedIndex(operationIndex)}`
+      if (operationIndex === 0) {
+        return `${valueName} = ${moduleIndex}`
+      }
+
+      const previousValueName = `value${zeroPaddedIndex(operationIndex - 1)}`
+      const exportPrefix =
+        operationIndex === LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE - 1
+          ? 'export '
+          : ''
+      return `${exportPrefix}${valueName} = ${previousValueName} + 1`
+    }
+  ).join('\n')
+}
+
+function createLiveOperationPressureProjectFiles() {
+  const exportedValueName = `value${zeroPaddedIndex(
+    LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE - 1
+  )}`
+  const imports = Array.from(
+    { length: LIVE_OPERATION_PRESSURE_MODULE_COUNT },
+    (_, moduleIndex) => {
+      const index = zeroPaddedIndex(moduleIndex)
+      return `import ${exportedValueName} as part${index} from "part-${index}.kcl"`
+    }
+  ).join('\n')
+  const instances = Array.from(
+    { length: LIVE_OPERATION_PRESSURE_MODULE_COUNT },
+    (_, moduleIndex) => {
+      const index = zeroPaddedIndex(moduleIndex)
+      return Array.from(
+        { length: LIVE_OPERATION_PRESSURE_INSTANCES_PER_MODULE },
+        (_, instanceIndex) => `assembly${index}_${instanceIndex} = part${index}`
+      ).join('\n')
+    }
+  ).join('\n')
+  const main = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+${imports}
+
+${instances}
+
+body = startSketchOn(XY)
+  |> circle(center = [0mm, 0mm], radius = 5mm)
+  |> extrude(length = 1mm)
+`
+  const files: Record<string, string> = { 'main.kcl': main }
+  for (
+    let moduleIndex = 0;
+    moduleIndex < LIVE_OPERATION_PRESSURE_MODULE_COUNT;
+    moduleIndex += 1
+  ) {
+    files[`part-${zeroPaddedIndex(moduleIndex)}.kcl`] =
+      createLiveOperationPressureModule(moduleIndex)
+  }
+  return files
+}
+
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
 }
@@ -84,6 +174,201 @@ hidden001 = hide([cylinder, extrude001])
 `
 
 test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
+  test('coalesces live operation publications for a large multi-file Feature Tree', async ({
+    homePage,
+    scene,
+    toolbar,
+    page,
+    folderSetupFn,
+  }) => {
+    test.slow()
+
+    await folderSetupFn(async (dir) => {
+      const warmupDir = join(dir, 'feature-tree-warmup')
+      const pressureProjectDir = join(dir, LIVE_OPERATION_PRESSURE_PROJECT_NAME)
+      await Promise.all([
+        fsp.mkdir(warmupDir, { recursive: true }),
+        fsp.mkdir(pressureProjectDir, { recursive: true }),
+      ])
+      await fsp.writeFile(
+        join(warmupDir, 'main.kcl'),
+        `warmup = startSketchOn(XY)
+  |> circle(center = [0mm, 0mm], radius = 1mm)
+  |> extrude(length = 1mm)
+`,
+        'utf-8'
+      )
+      await Promise.all(
+        Object.entries(createLiveOperationPressureProjectFiles()).map(
+          ([fileName, code]) =>
+            fsp.writeFile(join(pressureProjectDir, fileName), code, 'utf-8')
+        )
+      )
+    })
+
+    const recursiveUpdateErrors: string[] = []
+    const recordRecursiveUpdateError = (message: string) => {
+      if (message.includes('Maximum update depth exceeded')) {
+        recursiveUpdateErrors.push(message)
+      }
+    }
+    const consoleListener = (message: { text(): string }) => {
+      recordRecursiveUpdateError(message.text())
+    }
+    const pageErrorListener = (error: Error) => {
+      recordRecursiveUpdateError(error.message)
+    }
+    page.on('console', consoleListener)
+    page.on('pageerror', pageErrorListener)
+
+    try {
+      await homePage.openProject('feature-tree-warmup')
+      await scene.connectionEstablished()
+      await scene.settled()
+      await toolbar.openFeatureTreePane()
+      await expect(toolbar.featureTreePane).toBeVisible()
+
+      await toolbar.logoLink.click()
+      await homePage.expectIsCurrentPage()
+
+      await page.evaluate(() => {
+        const manager = window.app.singletons
+          .kclManager as unknown as LiveOperationPressureManager
+        const originalCreateExecutionCallbacks =
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          manager.createExecutionCallbacks
+        const originalDispatchUpdateOperations =
+          // eslint-disable-next-line @typescript-eslint/unbound-method
+          manager.dispatchUpdateOperations
+        const metrics: LiveOperationPressureMetrics = {
+          mountedFeatureTreeCallbackCount: 0,
+          insideOnOperation: false,
+          synchronousPublications: 0,
+          totalPublications: 0,
+          originalCreateExecutionCallbacks,
+          originalDispatchUpdateOperations,
+        }
+        manager.__issue12676Metrics = metrics
+        manager.createExecutionCallbacks = (executionId) => {
+          const callbacks = originalCreateExecutionCallbacks.call(
+            manager,
+            executionId
+          )
+          return {
+            ...callbacks,
+            onOperation(args) {
+              if (document.querySelector('#operations-list-pane')) {
+                metrics.mountedFeatureTreeCallbackCount += 1
+              }
+              metrics.insideOnOperation = true
+              try {
+                callbacks.onOperation(args)
+              } finally {
+                metrics.insideOnOperation = false
+              }
+            },
+          }
+        }
+        manager.dispatchUpdateOperations = (operations) => {
+          metrics.totalPublications += 1
+          if (metrics.insideOnOperation) {
+            metrics.synchronousPublications += 1
+          }
+          originalDispatchUpdateOperations.call(manager, operations)
+        }
+      })
+
+      const getExecutionMetrics = () =>
+        page.evaluate(() => {
+          const manager = window.app.singletons
+            .kclManager as unknown as LiveOperationPressureManager
+          const metrics = manager.__issue12676Metrics
+          return metrics
+            ? {
+                mountedFeatureTreeCallbackCount:
+                  metrics.mountedFeatureTreeCallbackCount,
+                synchronousPublications: metrics.synchronousPublications,
+                totalPublications: metrics.totalPublications,
+              }
+            : null
+        })
+
+      await homePage.openProject(LIVE_OPERATION_PRESSURE_PROJECT_NAME)
+      await expect
+        .poll(
+          async () =>
+            (await getExecutionMetrics())?.mountedFeatureTreeCallbackCount ?? 0,
+          { timeout: 30_000 }
+        )
+        .toBeGreaterThan(50)
+      await expect
+        .poll(
+          () =>
+            page.evaluate(() => window.app.singletons.kclManager.isExecuting),
+          { timeout: 30_000 }
+        )
+        .toBe(false)
+      await scene.settled()
+
+      await expect(toolbar.featureTreePane).toBeVisible()
+      await expect(page.getByText('Building feature tree')).not.toBeVisible()
+      await expect(
+        toolbar.featureTreePane.getByRole('button', {
+          name: 'body',
+          exact: true,
+        })
+      ).toBeVisible()
+
+      const operationStats = await page.evaluate(() => {
+        const operationMap =
+          window.app.singletons.kclManager.operationsByModule.map
+        return {
+          moduleCount: Object.keys(operationMap).length,
+          operationCount: Object.values(operationMap).reduce(
+            (count, operations) => count + operations.length,
+            0
+          ),
+        }
+      })
+      expect(operationStats.moduleCount).toBeGreaterThanOrEqual(
+        LIVE_OPERATION_PRESSURE_MODULE_COUNT + 1
+      )
+      expect(operationStats.operationCount).toBeGreaterThanOrEqual(
+        LIVE_OPERATION_PRESSURE_MODULE_COUNT *
+          LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE
+      )
+      const executionMetrics = await getExecutionMetrics()
+      expect(executionMetrics?.synchronousPublications).toBe(0)
+      expect(executionMetrics?.totalPublications).toBeGreaterThan(0)
+      expect(
+        await page.evaluate(
+          () => window.app.singletons.kclManager.errors.length
+        )
+      ).toBe(0)
+      expect(recursiveUpdateErrors).toEqual([])
+    } finally {
+      page.off('console', consoleListener)
+      page.off('pageerror', pageErrorListener)
+      if (!page.isClosed()) {
+        await page
+          .evaluate(() => {
+            const manager = window.app.singletons
+              .kclManager as unknown as LiveOperationPressureManager
+            const metrics = manager.__issue12676Metrics
+            if (!metrics) {
+              return
+            }
+            manager.createExecutionCallbacks =
+              metrics.originalCreateExecutionCallbacks
+            manager.dispatchUpdateOperations =
+              metrics.originalDispatchUpdateOperations
+            delete manager.__issue12676Metrics
+          })
+          .catch(() => {})
+      }
+    }
+  })
+
   test('User can go to definition and go to function definition', async ({
     homePage,
     scene,
