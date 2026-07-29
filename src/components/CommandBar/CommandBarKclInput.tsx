@@ -4,7 +4,10 @@ import { Compartment, EditorState } from '@codemirror/state'
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { createCommandBarKclInputKeymap } from '@src/components/CommandBar/commandBarKclInputKeymap'
+import {
+  createCommandBarKclInputKeymap,
+  createCommandBarKclInputPendingEnterExtension,
+} from '@src/components/CommandBar/commandBarKclInputKeymap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { editorTheme } from '@src/editor/plugins/theme'
@@ -145,6 +148,8 @@ function CommandBarKclInput({
   )
   const editorRef = useRef<HTMLDivElement>(null)
   const miniEditorRef = useRef<EditorView | null>(null)
+  const handleSubmitRef = useRef(handleSubmit)
+  handleSubmitRef.current = handleSubmit
   const editorCompartments = useMemo(
     () => ({
       keymap: new Compartment(),
@@ -221,6 +226,9 @@ function CommandBarKclInput({
           closeBrackets(),
           keymap.of(closeBracketsKeymap),
           editorCompartments.keymap.of([]),
+          createCommandBarKclInputPendingEnterExtension({
+            onSubmit: () => handleSubmitRef.current(),
+          }),
           EditorView.updateListener.of((vu: ViewUpdate) => {
             if (vu.docChanged) {
               setValue(vu.state.doc.toString())
