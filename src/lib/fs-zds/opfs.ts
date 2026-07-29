@@ -492,7 +492,7 @@ const cp = async (
     }
   } else {
     await scan(sourcePath, async (cwd, handle) => {
-      const relativePathToSourcePath = path.basename(cwd, sourcePath)
+      const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
         targetPath,
         relativePathToSourcePath,
