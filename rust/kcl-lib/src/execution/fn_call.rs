@@ -257,7 +257,11 @@ impl Node<CallExpressionKw> {
 /// The warning must stand on its own: a human or AI agent reading it should
 /// learn what replaces the function and where to find conversion examples
 /// without any other context.
-const SKETCH_V1_MIGRATION_HELP: &str = "It is part of the legacy sketch API (sketch v1), which is replaced by the sketch-solve API: draw profiles inside a `sketch(on = XY) { ... }` block using segment functions with absolute points, e.g. `line(start = [0, 0], end = [4, 3])`, optionally marking values as adjustable with `var` and constraining them with constraint functions like `coincident()` or `horizontal()`. See https://zoo.dev/docs/kcl-book/sketch2d_constraints.html for an introduction to sketch-solve with examples.";
+const SKETCH_V1_MIGRATION_HELP: &str = "It is part of the legacy sketch API (sketch v1), which is replaced by the sketch-solve API.
+
+See https://zoo.dev/docs/kcl-book/sketch2d_constraints.html for an introduction to sketch-solve with examples.
+
+    Draw profiles inside a `sketch(on = XY) { ... }` block using segment functions with absolute points, e.g. `line(start = [0, 0], end = [4, 3])`, optionally marking values as adjustable with `var` and constraining them with constraint functions like `coincident()` or `horizontal()`. ";
 
 /// Migration guidance for a deprecated stdlib function, when it has a
 /// dedicated replacement story beyond its docs page.
