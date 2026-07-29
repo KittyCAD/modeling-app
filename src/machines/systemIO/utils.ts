@@ -34,6 +34,7 @@ export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   createProject = 'create project',
+  duplicateProject = 'duplicate project',
   renameProject = 'rename project',
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
@@ -64,6 +65,7 @@ export enum SystemIOMachineStates {
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
+  duplicatingProject = 'duplicatingProject',
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
@@ -132,7 +134,7 @@ export type SystemIOContext = SystemIOInput & {
    * We watch objects because we want to be able to navigate to itself
    * if we used a string the useEffect would not change
    */
-  requestedProjectName: { name: string; subRoute?: string }
+  requestedProjectName: { name: string; path?: string; subRoute?: string }
   requestedFileName: {
     project: string
     file: string

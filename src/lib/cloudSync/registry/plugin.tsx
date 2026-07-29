@@ -29,6 +29,7 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  duplicateRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
@@ -41,9 +42,13 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectEntryFromProject,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
@@ -834,6 +839,44 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return project
+        },
+      },
+      duplicateProject: {
+        run: async ({ project }) => {
+          if (project.localProjectName && project.localProjectPath) {
+            const result = await duplicateProjectInDirectory({
+              source: {
+                directoryName: project.localProjectName,
+                displayName: getHomeProjectDisplayName(project),
+                path: project.localProjectPath,
+              },
+              projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+              requestedProjectTitle: getHomeProjectDisplayName(project),
+              wasmInstance: await getWasmPromise(),
+            })
+            refreshLocalCloudProjectEntries()
+
+            return result
+          }
+
+          if (!project.remoteProjectId) {
+            return undefined
+          }
+
+          const sourceTitle = getHomeProjectDisplayName(project)
+          const duplicatedProject = await duplicateRemoteCloudProject(
+            project.remoteProjectId,
+            sourceTitle
+          )
+          if (!duplicatedProject) {
+            return undefined
+          }
+
+          return {
+            message: `Successfully duplicated "${sourceTitle}" as "${duplicatedProject.title}"`,
+            name: duplicatedProject.id,
+            title: duplicatedProject.title,
+          }
         },
       },
       // Rename/delete act on the remote project directly when it has not been

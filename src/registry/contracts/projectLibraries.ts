@@ -1,5 +1,6 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { Project } from '@src/lib/project'
+import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -58,6 +59,8 @@ export interface ProjectLibraryProjectInput {
 
 export type ProjectLibraryOpenProjectInput = ProjectLibraryProjectInput
 
+export type ProjectLibraryDuplicateProjectInput = ProjectLibraryProjectInput
+
 export interface ProjectLibraryRenameProjectInput
   extends ProjectLibraryProjectInput {
   requestedName: string
@@ -113,6 +116,10 @@ export interface ProjectLibraryTypeOperations {
   openProject?: ProjectLibraryOperation<
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined
+  >
+  duplicateProject?: ProjectLibraryOperation<
+    ProjectLibraryDuplicateProjectInput,
+    DuplicateProjectResult | undefined
   >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
