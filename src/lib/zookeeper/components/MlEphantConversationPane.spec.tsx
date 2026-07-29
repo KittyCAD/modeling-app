@@ -30,13 +30,13 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/lib/zookeeper/mlEphantManagerMachine'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 
 const completedConversation: Conversation = {
   exchanges: [

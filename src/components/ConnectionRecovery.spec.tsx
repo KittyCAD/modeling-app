@@ -21,7 +21,13 @@ test('ConnectionRecovery shows the shared recovery UI and reconnects', () => {
     screen
       .getByTestId('connection-recovery')
       .querySelector('svg[aria-label="close"]')
-  ).toHaveClass('h-8', 'w-8')
+  ).toHaveClass(
+    'h-8',
+    'w-8',
+    'rounded-full',
+    'bg-destroy-60',
+    '!text-chalkboard-10'
+  )
   expect(screen.getByRole('separator')).toBeInTheDocument()
   const statusLink = screen.getByRole('link', {
     name: 'the problem may be on our side',

@@ -29,7 +29,7 @@ export const ConnectionRecovery = ({
     >
       <CustomIcon
         name="close"
-        className="h-8 w-8 shrink-0 text-destroy-60"
+        className="h-8 w-8 shrink-0 rounded-full bg-destroy-60 !text-chalkboard-10"
         aria-hidden={true}
         focusable="false"
       />

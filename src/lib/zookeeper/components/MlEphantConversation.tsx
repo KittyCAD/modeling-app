@@ -727,12 +727,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                   role="alert"
                 >
                   <div className="flex items-start gap-2">
-                    <CustomIcon
-                      name="close"
-                      className="h-7 w-7 shrink-0 rounded-sm bg-chalkboard-20 text-destroy-70 dark:bg-chalkboard-80 dark:text-destroy-20"
-                      aria-hidden={true}
-                      focusable="false"
-                    />
                     <div className="flex flex-col gap-1">
                       <p className="font-semibold">
                         {props.connectionError ??
