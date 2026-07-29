@@ -51,6 +51,7 @@ refer to that point to create the region.
 ```kcl
 @settings(kclVersion = 2.0)
 
+// `region` traces counterclockwise by default.
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -97,9 +98,6 @@ trapezoid = sketch(on = XY) {
   vertical(line1)
   horizontal(line2)
   parallel([line2, line4])
-  line5 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
-  coincident([line5.start, line4.end])
-  coincident([line5.end, line3.start])
 }
 
 r = region(segments = [trapezoid.line1, trapezoid.line2], direction = CW)
