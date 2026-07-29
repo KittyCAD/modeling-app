@@ -9,6 +9,7 @@ use kcl_api::UnitLength;
 use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
 use serde::Serialize;
+use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
@@ -264,7 +265,7 @@ pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
     /// Lightweight map from engine solid IDs to their latest KCL references.
-    solid_references: HashMap<uuid::Uuid, SolidAstReference>,
+    solid_references: HashMap<Uuid, SolidAstReference>,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
@@ -5152,7 +5153,7 @@ fn only_sketch_block(
 fn sketch_on_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     scene_graph: &SceneGraph,
-    solid_references: &HashMap<uuid::Uuid, SolidAstReference>,
+    solid_references: &HashMap<Uuid, SolidAstReference>,
     on: &Plane,
 ) -> Result<ast::Expr, KclError> {
     match on {
@@ -5183,7 +5184,7 @@ fn sketch_on_ast_expr(
 fn solid_references_from_variables(
     ast: &ast::Node<ast::Program>,
     variables: &IndexMap<String, KclValueView>,
-) -> HashMap<uuid::Uuid, SolidAstReference> {
+) -> HashMap<Uuid, SolidAstReference> {
     let mut references = HashMap::new();
 
     // In-place operations such as shell reuse their input solid's engine ID.
@@ -5227,10 +5228,7 @@ fn solid_references_from_variables(
     references
 }
 
-fn solid_expr_for_engine_id(
-    solid_references: &HashMap<uuid::Uuid, SolidAstReference>,
-    solid_id: uuid::Uuid,
-) -> Option<ast::Expr> {
+fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, SolidAstReference>, solid_id: Uuid) -> Option<ast::Expr> {
     let reference = solid_references.get(&solid_id)?;
     let solid_expr = ast_name_expr(reference.variable_name.clone());
     Some(indexed_solid_expr_for_sweep_output(solid_expr, reference.output_index))
@@ -13634,9 +13632,6 @@ sketch001 = sketch(on = XY) {
 }
 extrude001 = extrude(region(point = [0mm, 0mm], sketch = sketch001), length = 5, tagEnd = $capEnd001)
 shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
-        let expected_source = format!(
-            "{initial_source}\nface001 = faceOf(shell001, face = faceId(shell001, index = 6))\nsketch002 = sketch(on = face001) {{\n}}\n"
-        );
         let program = Program::parse(initial_source).unwrap().0.unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
         let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
@@ -13666,7 +13661,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             ))));
         let face_source = source_from_ast(&ast);
         let new_source = format!("{face_source}sketch002 = sketch(on = face001) {{\n}}\n");
-        assert_eq!(new_source, expected_source);
+        insta::assert_snapshot!("test_new_sketch_on_primitive_index_face", new_source);
 
         let program = Program::parse(&new_source).unwrap().0.unwrap();
         ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
