@@ -416,6 +416,12 @@ function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
   )
 }
 
+function outboxProjectPaths(entries: OutboxEntry[]) {
+  return Array.from(
+    new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
+  )
+}
+
 export type CloudSyncScopePlan = {
   shouldSyncRemoteIndex: boolean
   projectPaths: string[]
@@ -434,16 +440,17 @@ export function getCloudSyncScopePlan(
       shouldSyncRemoteIndex: false,
       projectPaths: [normalizedScopeProjectPath],
       pendingCount: outboxEntriesForProject(entries, normalizedScopeProjectPath)
-        .length,
+        .length
+        ? 1
+        : 0,
     }
   }
 
+  const projectPaths = outboxProjectPaths(entries)
   return {
     shouldSyncRemoteIndex: true,
-    projectPaths: Array.from(
-      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
-    ),
-    pendingCount: entries.length,
+    projectPaths,
+    pendingCount: projectPaths.length,
   }
 }
 
@@ -3163,12 +3170,24 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     return
   }
 
+  const shouldResetEnabledStatus =
+    !previousConfig.enabled ||
+    cloudIdentityChanged ||
+    projectDirectoryChanged ||
+    syncPolicyChanged ||
+    cloudSyncStatus.value.state === 'disabled'
+
   attachVisibilityChangeListener()
   updateStatus({
     enabled: true,
-    state: 'idle',
-    lastFailure: undefined,
-    lastFailureAt: undefined,
+    ...(shouldResetEnabledStatus
+      ? {
+          state: 'idle',
+          activeProjectPath: undefined,
+          lastFailure: undefined,
+          lastFailureAt: undefined,
+        }
+      : {}),
   })
   void refreshPendingCount()
   scheduleSync(0)
