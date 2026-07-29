@@ -1,11 +1,11 @@
 ---
 title: "vector::add"
 subtitle: "Function in std::vector"
-excerpt: "Adds every element of u to its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition."
+excerpt: "Adds every element of u to its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise addition."
 layout: manual
 ---
 
-Adds every element of u to its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise addition.
+Adds every element of u to its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise addition.
 
 ```kcl
 vector::add(
