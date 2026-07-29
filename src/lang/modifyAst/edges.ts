@@ -832,6 +832,70 @@ export function createEdgeRefObjectExpression(
     )
   }
 
+  const getSegmentExtrudeFaceExpr = (faceArtifact: Artifact): Expr | null => {
+    if (faceArtifact.type !== 'wall') return null
+
+    const segment = getArtifactOfTypes(
+      { key: faceArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (err(segment)) return null
+
+    const faceCodeRef = getFaceCodeRef(faceArtifact)
+    if (!faceCodeRef) return null
+    const sweep = getSweepArtifactFromSelection(
+      { artifact: faceArtifact, codeRef: faceCodeRef },
+      artifactGraph
+    )
+    if (err(sweep)) return null
+
+    const sweepCall = getNodeFromPath<CallExpressionKw>(
+      currentAst,
+      sweep.codeRef.pathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (
+      err(sweepCall) ||
+      sweepCall.node.callee.name.name !== 'extrude' ||
+      sweepCall.node.unlabeled?.type !== 'MemberExpression'
+    ) {
+      return null
+    }
+
+    const segmentName =
+      sweepCall.node.unlabeled.property.type === 'Name'
+        ? sweepCall.node.unlabeled.property.name.name
+        : getSketchSegmentName(
+            currentAst,
+            segment.originalSegId ?? segment.id,
+            artifactGraph,
+            wasmInstance
+          )
+    if (!segmentName) return null
+
+    const surfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            entityRef: artifactToEntityRef('sweep', sweep.id),
+            codeRef: sweep.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      currentAst,
+      wasmInstance
+    )
+    if (err(surfaceVars) || surfaceVars.exprs.length !== 1) return null
+
+    return createMemberExpression(
+      createMemberExpression(surfaceVars.exprs[0], 'faces'),
+      segmentName
+    )
+  }
+
   for (const faceId of payload.side_faces) {
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
@@ -852,6 +916,12 @@ export function createEdgeRefObjectExpression(
     const existingSketchTagExpr = getExistingSketchTagExprForFace(faceArtifact)
     if (existingSketchTagExpr) {
       sideFaceExprs.push(existingSketchTagExpr)
+      continue
+    }
+
+    const segmentExtrudeFaceExpr = getSegmentExtrudeFaceExpr(faceArtifact)
+    if (segmentExtrudeFaceExpr) {
+      sideFaceExprs.push(segmentExtrudeFaceExpr)
       continue
     }
 

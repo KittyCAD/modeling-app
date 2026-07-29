@@ -39,7 +39,9 @@ use crate::execution::Extrudable;
 use crate::execution::ExtrudePlane;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
+use crate::execution::Geometry;
 use crate::execution::KclValue;
+use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::ProfileClosed;
@@ -49,6 +51,8 @@ use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
@@ -157,6 +161,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             Some(tag.clone())
         })
         .collect::<Vec<_>>();
+    let extruding_sketch_segments = sketch_values.iter().all(|value| value.clone().into_segment().is_some());
     let sketches = coerce_extrude_targets(
         sketch_values,
         body_type.unwrap_or_default(),
@@ -189,6 +194,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         method,
         hide_seams,
         body_type,
+        extruding_sketch_segments,
         exec_state,
         args,
     )
@@ -412,6 +418,7 @@ async fn inner_extrude(
     method: Option<String>,
     hide_seams: Option<bool>,
     body_type: Option<BodyType>,
+    extruding_sketch_segments: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -803,6 +810,7 @@ async fn inner_extrude(
         };
 
         let being_extruded = match extrudable {
+            Extrudable::Sketch(..) if extruding_sketch_segments => BeingExtruded::SketchSegments,
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
             Extrudable::FaceTag(face_tag) => {
                 let face_id = concrete_target()?;
@@ -908,6 +916,7 @@ pub(crate) struct NamedCapTags<'a> {
 #[derive(Debug, Clone, Copy)]
 pub enum BeingExtruded {
     Sketch,
+    SketchSegments,
     Face { face_id: Uuid, solid_id: Uuid },
     Edge,
 }
@@ -1107,11 +1116,11 @@ pub(crate) async fn do_post_extrude<'a>(
             // So we need a new ID, the extrude command ID.
             sketch.id = extrude_cmd_id.into();
         }
-        (ExtrudeMethod::New, BeingExtruded::Sketch) => {
+        (ExtrudeMethod::New, BeingExtruded::Sketch | BeingExtruded::SketchSegments) => {
             // If we are creating a new body we need to preserve its new id.
             // The sketch's ID is already correct here, it should be the ID of the sketch.
         }
-        (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
+        (ExtrudeMethod::Merge, BeingExtruded::Sketch | BeingExtruded::SketchSegments) => {
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
@@ -1311,7 +1320,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let units = sketch.units;
     let id = sketch.id;
     let creator = match being_extruded {
-        BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
+        BeingExtruded::Sketch | BeingExtruded::SketchSegments => SolidCreator::Sketch(sketch),
         BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
             face_id,
             solid_id,
@@ -1327,7 +1336,7 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     };
 
-    Ok(Solid {
+    let mut solid = Solid {
         id,
         value_id: extrude_cmd_id.into(),
         artifact_id: extrude_cmd_id,
@@ -1341,7 +1350,36 @@ pub(crate) async fn do_post_extrude<'a>(
         end_cap_id,
         edge_cuts: vec![],
         pending_edge_cut_ids: vec![],
-    })
+    };
+
+    if matches!(being_extruded, BeingExtruded::SketchSegments) {
+        let geometry = Geometry::Solid(solid.clone());
+        for surface in &solid.value {
+            let Some(tag) = surface.get_tag() else {
+                continue;
+            };
+            solid.faces.insert(
+                tag.name.clone(),
+                TagIdentifier {
+                    value: tag.name.clone(),
+                    info: vec![(
+                        exec_state.stack().current_epoch(),
+                        TagEngineInfo {
+                            id: surface.get_id(),
+                            surface: Some(surface.clone()),
+                            path: None,
+                            geometry: geometry.clone(),
+                        },
+                    )],
+                    meta: vec![Metadata {
+                        source_range: tag.clone().into(),
+                    }],
+                },
+            );
+        }
+    }
+
+    Ok(solid)
 }
 
 #[derive(Debug, Default)]

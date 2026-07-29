@@ -1994,6 +1994,80 @@ describe('getSelectionTypeDisplayText', () => {
     })
   })
 
+  test('falls back to a primitive selection for a surface boundary edge without face metadata', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'surface-sweep',
+        {
+          type: 'sweep',
+          id: 'surface-sweep',
+          codeRef: {
+            range: [0, 0, 0],
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
+          pathId: '',
+          surfaceIds: [],
+          edgeIds: [],
+        } as unknown as Artifact,
+      ],
+    ])
+    const modelingResponse = (modeling_response: unknown) => ({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: { modeling_response },
+      },
+    })
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'entity_get_primitive_index') {
+          return modelingResponse({
+            type: 'entity_get_primitive_index',
+            data: { primitive_index: 1, entity_type: 'edge' },
+          })
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return modelingResponse({
+            type: 'entity_get_parent_id',
+            data: { entity_id: 'surface-sweep' },
+          })
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'surface-edge',
+          reference: { type: 'edge', side_faces: [] },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: {
+          type: 'enginePrimitive',
+          entityId: 'surface-edge',
+          parentEntityId: 'surface-sweep',
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        },
+      },
+    })
+  })
+
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection: Selections = {

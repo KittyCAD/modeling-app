@@ -1568,17 +1568,6 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (
-    entityRef.type === 'edge' &&
-    entityRef.side_faces.length === 0 &&
-    (!entityRef.end_faces || entityRef.end_faces.length === 0)
-  ) {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor', selection: {} },
-    }
-  }
-
   // Only convert face to solid2d when face_id directly references a solid2d (un-extruded profile).
   // Do not convert wall/cap (extruded) faces to solid2d so the engine can highlight the face and we send face_id to select_entity.
   if (entityRef.type === 'face' && entityRef.face_id) {
@@ -1609,6 +1598,17 @@ export async function getEventForQueryEntityTypeWithPoint(
           selection: primitiveSel,
         },
       }
+    }
+  }
+
+  if (
+    entityRef.type === 'edge' &&
+    entityRef.side_faces.length === 0 &&
+    (!entityRef.end_faces || entityRef.end_faces.length === 0)
+  ) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor', selection: {} },
     }
   }
 
