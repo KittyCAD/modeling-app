@@ -61,11 +61,8 @@ export const MlEphantConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
-  const initiallyOffline = useRef(
-    typeof navigator !== 'undefined' && navigator.onLine === false
-  )
   const [showManualConnect, setShowManualConnect] = useState(
-    initiallyOffline.current
+    typeof navigator !== 'undefined' && navigator.onLine === false
   )
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
@@ -73,7 +70,6 @@ export const MlEphantConversationPane = (props: {
   const savedProjectConversationLookupPath = useRef(props.theProject?.path)
   const actorConversationProjectPath = useRef(props.theProject?.path)
   const reconnectAfterSavedConversationLookup = useRef(false)
-  const savedProjectConversationLookupGeneration = useRef(0)
   const clearChatOperationGeneration = useRef(0)
   const loaderFileRef = useRef(props.loaderFile)
   useEffect(() => {
@@ -234,7 +230,7 @@ export const MlEphantConversationPane = (props: {
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
 
   useEffect(() => {
-    if (!initiallyOffline.current) {
+    if (typeof navigator === 'undefined' || navigator.onLine) {
       return
     }
     props.mlEphantManagerActor.send({
@@ -360,7 +356,7 @@ export const MlEphantConversationPane = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClearingChatPending, isPromptRunning, isReady, queue])
 
-  const onClickClearChat = () => {
+  const onClickClearChat = async () => {
     if (isClearingChat.current) {
       return
     }
@@ -373,86 +369,61 @@ export const MlEphantConversationPane = (props: {
     const isCurrentClearOperation = () =>
       clearChatOperationGeneration.current === clearOperationGeneration
 
-    const finishClearChat = () => {
+    const projectId = props.settings.meta.id.current
+    try {
+      if (projectId !== undefined && projectId !== uuidNIL) {
+        await props.conversationStore.deleteProjectConversationId(projectId)
+      }
+    } catch (error: unknown) {
       if (!isCurrentClearOperation()) {
         return
       }
       isClearingChat.current = false
       setIsClearingChatPending(false)
+      trap(error instanceof Error ? error : new Error(String(error)), {
+        altErr: new Error('Could not clear chat. Please try again.'),
+      })
+      return
     }
 
-    const closeAndStartFreshConversation = () => {
-      let startedFreshConversation = false
-      let sub:
-        | ReturnType<typeof props.mlEphantManagerActor.subscribe>
-        | undefined
+    if (!isCurrentClearOperation()) {
+      return
+    }
 
-      const cleanupSubscriptions = () => {
-        sub?.unsubscribe()
+    steeredId.current = null
+    setQueue([])
+    savedProjectConversationLookupLoaded.current = true
+    savedProjectConversationId.current = undefined
+
+    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    const startFreshConversation = () => {
+      sub?.unsubscribe()
+      if (!isCurrentClearOperation() || !isClearingChat.current) {
+        return
       }
 
-      const startFreshConversation = () => {
-        if (startedFreshConversation || !isCurrentClearOperation()) {
-          cleanupSubscriptions()
-          return
-        }
-        startedFreshConversation = true
-        actorConversationProjectPath.current = props.theProject?.path
-        props.mlEphantManagerActor.send({
-          type: MlEphantManagerTransitions.CacheSetupAndConnect,
-          refParentSend: props.mlEphantManagerActor.send,
-          conversationId: undefined,
-        })
-        cleanupSubscriptions()
-        finishClearChat()
-      }
-
-      sub = props.mlEphantManagerActor.subscribe((next) => {
-        if (!next.matches(S.Await)) {
-          return
-        }
-
-        startFreshConversation()
-      })
-
+      actorConversationProjectPath.current = props.theProject?.path
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.ConversationClose,
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
       })
-
-      if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
-        startFreshConversation()
-      }
+      isClearingChat.current = false
+      setIsClearingChatPending(false)
     }
 
-    const projectId = props.settings.meta.id.current
-    const clearSavedConversation =
-      projectId !== undefined && projectId !== uuidNIL
-        ? Promise.resolve().then(() =>
-            props.conversationStore.deleteProjectConversationId(projectId)
-          )
-        : Promise.resolve()
+    sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (next.matches(S.Await)) {
+        startFreshConversation()
+      }
+    })
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
 
-    void clearSavedConversation
-      .then(() => {
-        if (!isCurrentClearOperation()) {
-          return
-        }
-        steeredId.current = null
-        setQueue([])
-        savedProjectConversationLookupGeneration.current += 1
-        savedProjectConversationLookupLoaded.current = true
-        savedProjectConversationId.current = undefined
-        closeAndStartFreshConversation()
-      })
-      .catch((error: unknown) => {
-        if (!isCurrentClearOperation()) {
-          return
-        }
-        finishClearChat()
-        trap(error instanceof Error ? error : new Error(String(error)), {
-          altErr: new Error('Could not clear chat. Please try again.'),
-        })
-      })
+    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+      startFreshConversation()
+    }
   }
 
   const tryToGetExchanges = () => {
@@ -560,9 +531,6 @@ export const MlEphantConversationPane = (props: {
     savedProjectConversationLookupPath.current = props.theProject?.path
     savedProjectConversationLookupLoaded.current = false
     savedProjectConversationId.current = undefined
-    const lookupGeneration =
-      savedProjectConversationLookupGeneration.current + 1
-    savedProjectConversationLookupGeneration.current = lookupGeneration
     const projectId = props.settings.meta.id.current
     let canceled = false
     const continueAfterSavedConversationLookup = () => {
@@ -580,11 +548,7 @@ export const MlEphantConversationPane = (props: {
       void props.conversationStore
         .getProjectConversationId(projectId)
         .then((conversationId) => {
-          if (
-            canceled ||
-            savedProjectConversationLookupGeneration.current !==
-              lookupGeneration
-          ) {
+          if (canceled || savedProjectConversationLookupLoaded.current) {
             return
           }
           savedProjectConversationLookupLoaded.current = true
@@ -592,11 +556,7 @@ export const MlEphantConversationPane = (props: {
           continueAfterSavedConversationLookup()
         })
         .catch((error: unknown) => {
-          if (
-            canceled ||
-            savedProjectConversationLookupGeneration.current !==
-              lookupGeneration
-          ) {
+          if (canceled || savedProjectConversationLookupLoaded.current) {
             return
           }
           savedProjectConversationLookupLoaded.current = true
@@ -681,7 +641,9 @@ export const MlEphantConversationPane = (props: {
       ) => {
         onProcessOrQueue(request, mode, attachments)
       }}
-      onClickClearChat={onClickClearChat}
+      onClickClearChat={() => {
+        void onClickClearChat()
+      }}
       onReconnect={onReconnect}
       connectionError={
         showManualConnect ? 'No internet connection.' : closeReason
