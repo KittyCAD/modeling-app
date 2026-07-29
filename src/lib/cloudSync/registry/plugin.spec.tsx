@@ -22,6 +22,7 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { Themes } from '@src/lib/theme'
@@ -30,7 +31,6 @@ import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -346,7 +346,7 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('toggles only the personal cloud library row with the plugin, keeping the type', () => {
+  test('does not synthesize a personal cloud library row when toggled', () => {
     const registry = new Registry()
     registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
 
@@ -362,37 +362,25 @@ describe('cloud sync project library', () => {
 
       const pluginToggle = registry.get(pluginService)
       expect(pluginToggle.active.value).toBe(false)
-      // Type is always available; only the Personal Cloud row is gated.
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
-      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
 
       pluginToggle.enable()
-
-      expect(registry.get(projectLibrariesValueSpec)).toEqual([
-        expect.objectContaining({
-          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-          title: 'Personal Cloud',
-          path: getDefaultCloudProjectLibrarySetting().path,
-          type: CLOUD_PROJECT_LIBRARY_TYPE,
-          icon: 'network',
-        }),
-      ])
-
-      pluginToggle.disable()
-
-      // Disabling sync removes the row contribution but must NOT remove the
-      // type handler — otherwise a settings-configured cloud library would
-      // become unusable.
       expect(
         registry
           .get(projectLibraryTypesValueSpec)
           .has(CLOUD_PROJECT_LIBRARY_TYPE)
       ).toBe(true)
-      expect(registry.get(projectLibrariesValueSpec)).toEqual([])
+
+      pluginToggle.disable()
+      expect(
+        registry
+          .get(projectLibraryTypesValueSpec)
+          .has(CLOUD_PROJECT_LIBRARY_TYPE)
+      ).toBe(true)
     } finally {
       registry[Symbol.dispose]()
     }
@@ -624,7 +612,7 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('preserves configured personal cloud library order', () => {
+  test('leaves configured personal cloud library order in settings', () => {
     const registry = new Registry()
     const settings = createSettingsService({
       libraries: [
@@ -655,7 +643,15 @@ describe('cloud sync project library', () => {
 
       registry.get(pluginService).enable()
 
-      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+      expect(
+        projectLibrariesFromSettings(
+          settings.service.get().app.libraries.current
+        )
+      ).toEqual([
+        expect.objectContaining({
+          title: 'Directory',
+          order: 0,
+        }),
         expect.objectContaining({
           id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
           order: 1,
