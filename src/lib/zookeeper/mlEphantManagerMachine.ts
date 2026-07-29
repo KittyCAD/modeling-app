@@ -6,6 +6,7 @@ import type {
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import { getZookeeperProjectFilesValidationError } from '@src/lib/zookeeper/projectContext'
 import { createActorContext } from '@xstate/react'
 import ms from 'ms'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
@@ -1033,6 +1034,11 @@ export const mlEphantManagerMachine = setup({
         return Promise.reject(new Error('WebSocket not present'))
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
+      const projectFilesValidationError =
+        getZookeeperProjectFilesValidationError(event.projectFiles)
+      if (projectFilesValidationError) {
+        return Promise.reject(projectFilesValidationError)
+      }
 
       const requestData = constructMultiFileIterationRequestWithPromptHelpers({
         conversationId: context.conversationId ?? '',
@@ -1101,6 +1107,11 @@ export const mlEphantManagerMachine = setup({
         return Promise.reject(new Error('WebSocket not present'))
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
+      const projectFilesValidationError =
+        getZookeeperProjectFilesValidationError(event.projectFiles)
+      if (projectFilesValidationError) {
+        return Promise.reject(projectFilesValidationError)
+      }
 
       // If nothing was interrupted move onto the next phase
       if (!hasBeenInterruptedOnLast(context.conversation?.exchanges)) {

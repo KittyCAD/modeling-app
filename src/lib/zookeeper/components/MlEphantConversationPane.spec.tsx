@@ -361,6 +361,71 @@ beforeAll(async () => {
 })
 
 describe('MlEphantConversationPane', () => {
+  test('does not send a prompt containing a nested project', async () => {
+    const projectPath = `/tmp/zookeeper-nested-project-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const nestedSettingsPath = fsZds.join(
+      projectPath,
+      'nested-project',
+      'project.toml'
+    )
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    await fsZds.mkdir(fsZds.dirname(nestedSettingsPath), { recursive: true })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode('cube()'))
+    await fsZds.writeFile(
+      nestedSettingsPath,
+      new TextEncoder().encode('title = "Nested"')
+    )
+
+    try {
+      const mlEphantManagerActor = createFakeActor({
+        awaitingResponse: false,
+      })
+      renderPane({
+        mlEphantManagerActor,
+        theProject: {
+          name: 'outer-project',
+          path: projectPath,
+        },
+        kclManager: {
+          code: 'cube()',
+          path: mainPath,
+          execState: {
+            filenames: [],
+          },
+          artifactGraph: {},
+        },
+        loaderFile: {
+          name: 'main.kcl',
+          path: mainPath,
+          children: null,
+        },
+      })
+
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'make it taller' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith(
+          new Error(
+            'Zookeeper cannot use nested projects. Move "nested-project/project.toml" into a separate top-level project folder and try again.'
+          )
+        )
+      )
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.MessageSend,
+        })
+      )
+    } finally {
+      errorSpy.mockRestore()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   test('keeps the cancel button visible while the actor is still awaiting a response', () => {
     renderPane()
 

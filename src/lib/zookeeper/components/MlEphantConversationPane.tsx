@@ -10,8 +10,9 @@ import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection, trap } from '@src/lib/trap'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { getZookeeperProjectFilesValidationError } from '@src/lib/zookeeper/projectContext'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -36,6 +37,10 @@ type MlEphantConversationPaneUser = {
 const awaitingResponseSelector = (
   snapshot: SnapshotFrom<MlEphantManagerActor>
 ) => snapshot.context.awaitingResponse
+
+function reportZookeeperPromptRejection(reason: unknown) {
+  trap(isErr(reason) ? reason : new Error(String(reason)))
+}
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
@@ -125,6 +130,11 @@ export const MlEphantConversationPane = (props: {
       fileNames: props.kclManager.execState.filenames,
       projectContext: project,
     })
+    const projectFilesValidationError =
+      getZookeeperProjectFilesValidationError(projectFiles)
+    if (projectFilesValidationError) {
+      return Promise.reject(projectFilesValidationError)
+    }
 
     // Only on initial project creation do we call the create endpoint, which
     // has more data for initial creations. Improvements to the TTC service
@@ -180,7 +190,7 @@ export const MlEphantConversationPane = (props: {
       ])
       return
     }
-    onProcess(request, mode, attachments).catch(reportRejection)
+    onProcess(request, mode, attachments).catch(reportZookeeperPromptRejection)
   }
 
   const onRemoveFromQueue = useCallback((id: string) => {
@@ -239,7 +249,7 @@ export const MlEphantConversationPane = (props: {
         setQueue((prev) => prev.slice(1))
       }
       onProcess(next.text, next.mode, next.attachments)
-        .catch(reportRejection)
+        .catch(reportZookeeperPromptRejection)
         .finally(() => {
           isSubmittingFromQueue.current = false
         })

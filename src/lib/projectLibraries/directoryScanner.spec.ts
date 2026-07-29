@@ -141,6 +141,20 @@ describe('directory project scanner', () => {
     mocks.fsZds.rename.mockResolvedValue(undefined)
   })
 
+  it('rejects a project directory that is itself a project', async () => {
+    mocks.fsZds.readdir.mockResolvedValue(['project.toml', 'nested-project'])
+
+    await expect(
+      readProjectsFromProjectDirectory({
+        projectDirectoryPath: '/projects',
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+      })
+    ).rejects.toThrow(
+      'The project library "/projects" is also a project because it contains project.toml.'
+    )
+    expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalled()
+  })
+
   it('schedules stale project directory name syncs after the scan returns', async () => {
     const project = createProject()
     let finishRename: () => void = () => undefined

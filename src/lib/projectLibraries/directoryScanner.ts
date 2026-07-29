@@ -3,7 +3,10 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
-import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   getProjectInfo,
@@ -27,6 +30,47 @@ type ProjectDirectoryEntry = {
 }
 
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
+
+export function getDirectoryProjectLibraryValidationError({
+  projectDirectoryPath,
+  entries,
+}: {
+  projectDirectoryPath: string
+  entries: readonly string[]
+}): Error | undefined {
+  if (
+    !entries.some(
+      (entry) =>
+        entry.toLowerCase() === PROJECT_SETTINGS_FILE_NAME.toLowerCase()
+    )
+  ) {
+    return undefined
+  }
+
+  return new Error(
+    `The project library "${projectDirectoryPath}" is also a project because it contains ${PROJECT_SETTINGS_FILE_NAME}. Choose a container folder that holds separate project folders.`
+  )
+}
+
+export async function validateDirectoryProjectLibrary(
+  projectDirectoryPath: string
+): Promise<Error | undefined> {
+  let entries: string[]
+  try {
+    entries = await fsZds.readdir(projectDirectoryPath)
+  } catch (error) {
+    // A manually entered directory can be created later by the project scanner.
+    if (isPathNotFoundError(error)) {
+      return undefined
+    }
+    return Promise.reject(error)
+  }
+
+  return getDirectoryProjectLibraryValidationError({
+    projectDirectoryPath,
+    entries,
+  })
+}
 
 function projectDirectoryEntryNamesToProjects(
   projectDirectoryPath: string,
@@ -238,6 +282,15 @@ export async function readProjectsFromProjectDirectory({
   }
 
   await mkdirOrNOOP(projectDirectoryPath)
+  const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
+  const validationError = getDirectoryProjectLibraryValidationError({
+    projectDirectoryPath,
+    entries: projectDirectoryEntries,
+  })
+  if (validationError) {
+    return Promise.reject(validationError)
+  }
+
   const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
     ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
     : new Map()
@@ -245,7 +298,7 @@ export async function readProjectsFromProjectDirectory({
 
   // Gotcha: readdir will list folders even without read/write access to the
   // parent directory path. Each candidate still needs to be stat/read checked.
-  for (const entry of await fsZds.readdir(projectDirectoryPath)) {
+  for (const entry of projectDirectoryEntries) {
     if (signal?.aborted) {
       return projects
     }

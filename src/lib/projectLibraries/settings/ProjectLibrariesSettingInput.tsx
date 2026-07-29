@@ -16,7 +16,8 @@ import {
   type ProjectLibraryType,
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
-import { reportRejection } from '@src/lib/trap'
+import { validateDirectoryProjectLibrary } from '@src/lib/projectLibraries/directoryScanner'
+import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
   ProjectLibrarySettingsDetailsProps,
@@ -253,6 +254,19 @@ export function DirectoryProjectLibrarySettingsDetails({
   readOnly = false,
   chooseDirectory,
 }: ProjectLibrarySettingsDetailsProps) {
+  async function commitLibraryPath(nextLibrary = library) {
+    if (chooseDirectory) {
+      const validationError = await validateDirectoryProjectLibrary(
+        nextLibrary.path
+      )
+      if (trap(validationError)) {
+        return
+      }
+    }
+
+    commitLibrary(nextLibrary)
+  }
+
   async function chooseLibraryPath() {
     if (!chooseDirectory) {
       return
@@ -266,7 +280,7 @@ export function DirectoryProjectLibrarySettingsDetails({
       return
     }
 
-    commitLibrary({
+    await commitLibraryPath({
       ...library,
       path: selectedPath,
     })
@@ -292,7 +306,7 @@ export function DirectoryProjectLibrarySettingsDetails({
             path: event.target.value,
           })
         }
-        onBlur={() => commitLibrary()}
+        onBlur={toSync(() => commitLibraryPath(), reportRejection)}
         className="min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
         data-testid={
           index === 0 ? 'project-directory-input' : 'project-library-path'

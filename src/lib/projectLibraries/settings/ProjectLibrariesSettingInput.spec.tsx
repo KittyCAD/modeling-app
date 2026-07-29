@@ -1,3 +1,4 @@
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
   DirectoryProjectLibrarySettingsDetails,
@@ -6,8 +7,8 @@ import {
   type ProjectLibraryTypeOption,
   projectLibraryTypeOptionsFromContributions,
 } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { beforeAll, describe, expect, test, vi } from 'vitest'
 
 const defaultLibraries: ProjectLibrarySetting[] = [
   {
@@ -56,7 +57,55 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
   },
 ]
 
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
 describe('ProjectLibrariesSettingInput', () => {
+  test('does not commit a project folder as a project library', async () => {
+    const projectPath = `/tmp/project-library-root-${crypto.randomUUID()}`
+    const commitLibrary = vi.fn()
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'project.toml'),
+      new TextEncoder().encode('title = "Not a library"')
+    )
+
+    try {
+      render(
+        <DirectoryProjectLibrarySettingsDetails
+          library={{
+            title: 'Default Projects Directory',
+            path: '/projects',
+            type: 'directory',
+          }}
+          index={0}
+          updateLibrary={vi.fn()}
+          commitLibrary={commitLibrary}
+          chooseDirectory={vi.fn(async () => projectPath)}
+        />
+      )
+
+      fireEvent.click(screen.getByTestId('project-directory-button'))
+
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith(
+          new Error(
+            `The project library "${projectPath}" is also a project because it contains project.toml. Choose a container folder that holds separate project folders.`
+          )
+        )
+      )
+      expect(commitLibrary).not.toHaveBeenCalled()
+    } finally {
+      errorSpy.mockRestore()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
 
