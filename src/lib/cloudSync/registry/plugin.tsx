@@ -927,7 +927,14 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           if (project.localProjectPath && project.readWriteAccess) {
-            await fsZds.rm(project.localProjectPath, { recursive: true })
+            if (remoteProjectId) {
+              await cloudSyncActions?.deleteLocalProjectRealizations(
+                remoteProjectId,
+                project.localProjectPath
+              )
+            } else {
+              await fsZds.rm(project.localProjectPath, { recursive: true })
+            }
             // Cloud-backed deletes are explicit local + remote product
             // actions, not just local tombstones for background sync.
             if (remoteProjectId) {
