@@ -49,6 +49,8 @@ refer to that point to create the region.
 ### Examples
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -80,21 +82,27 @@ extrude(r, length = 5)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 2.0)
+
+// Set `direction = CW` when the segments trace the boundary clockwise.
 trapezoid = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
-  line3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
-  line4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
+  line2 = line(start = [var 0mm, var 3mm], end = [var 4mm, var 3mm])
+  line3 = line(start = [var 4mm, var 3mm], end = [var 4mm, var 0mm])
+  line4 = line(start = [var 4mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line1.end, line2.start])
   coincident([line2.end, line3.start])
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
-  vertical(line2)
-  horizontal(line3)
-  parallel([line1, line3])
+  vertical(line1)
+  horizontal(line2)
+  parallel([line2, line4])
+  line5 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  coincident([line5.start, line4.end])
+  coincident([line5.end, line3.start])
 }
 
-r = region(segments = [trapezoid.line1, trapezoid.line2])
+r = region(segments = [trapezoid.line1, trapezoid.line2], direction = CW)
 extrude(r, length = 3)
 
 ```
