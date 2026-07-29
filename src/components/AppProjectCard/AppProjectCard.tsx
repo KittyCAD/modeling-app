@@ -1,10 +1,12 @@
-import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
-import { ActionButton } from '@src/components/ActionButton'
+import {
+  type ProjectCardClassNames,
+  ProjectCard as UiProjectCard,
+} from '@kittycad/ui-components'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { FILE_EXT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
@@ -24,7 +26,11 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
   projectActions: HomeProjectActionsService
   projectStatus?: ProjectStatus
+  density?: 'default' | 'compact'
   showCloudSyncUi?: boolean
+  showDetails?: boolean
+  showSourceStatusBadges?: boolean
+  onMoveToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -35,6 +41,20 @@ const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
     synced: 'Synced',
     conflicted: 'Conflicted',
   }
+
+const compactProjectCardClassNames: ProjectCardClassNames = {
+  thumbnailFrame:
+    'h-24 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
+  body: 'pb-2 flex flex-col flex-grow flex-auto gap-1 rounded-b-sm',
+  title: 'font-sans relative z-0 p-2 text-sm truncate',
+}
+
+function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
+  return (
+    project.syncFailure?.message ||
+    'Cloud sync cannot upload local changes right now.'
+  )
+}
 
 function getDisplayedTime(dateTimeMs: number) {
   const date = new Date(dateTimeMs)
@@ -114,7 +134,11 @@ function AppProjectCard({
   project,
   projectActions,
   projectStatus,
+  density = 'default',
   showCloudSyncUi = true,
+  showDetails = true,
+  showSourceStatusBadges = true,
+  onMoveToLibrary,
   ...props
 }: AppProjectCardProps) {
   const navigate = useNavigate()
@@ -126,6 +150,7 @@ function AppProjectCard({
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
+  const hasCloudSyncFailure = Boolean(showCloudSyncUi && project.syncFailure)
   const imageUrl = useProjectThumbnailUrl(project.thumbnail)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
@@ -173,10 +198,23 @@ function AppProjectCard({
   }
 
   useEffect(() => {
-    if (inputRef.current && isEditing) {
+    if (!isEditing) {
+      return
+    }
+
+    // Context menu actions run before the Headless UI dialog finishes closing.
+    // Select after that focus restoration so project rename behaves like the
+    // old hover action buttons.
+    const timeout = window.setTimeout(() => {
+      if (!inputRef.current) {
+        return
+      }
+
       inputRef.current.focus()
       inputRef.current.select()
-    }
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [isEditing])
 
   useEffect(() => {
@@ -198,17 +236,21 @@ function AppProjectCard({
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
+  const canMoveToLibrary = Boolean(
+    onMoveToLibrary && projectActions.canMoveToLibrary(project)
+  )
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    !showCloudSyncUi || project.source === 'both'
+    !showCloudSyncUi || !showSourceStatusBadges || project.source === 'both'
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
+    hasCloudSyncFailure ||
     hasChangesRequested) && (
     <>
       {statusBadgeLabel && (
@@ -227,6 +269,15 @@ function AppProjectCard({
           Cloud conflict
         </span>
       )}
+      {hasCloudSyncFailure && (
+        <span
+          className="rounded bg-destroy-10 px-1.5 py-0.5 text-[10px] font-medium text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10"
+          data-testid="cloud-sync-blocked-badge"
+        >
+          Cloud sync blocked
+          <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
+        </span>
+      )}
       {hasChangesRequested && (
         <span
           className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
@@ -238,7 +289,7 @@ function AppProjectCard({
     </>
   )
 
-  const details = (
+  const details = showDetails ? (
     <>
       {project.kclFileCount !== undefined && (
         <span className="px-2 text-chalkboard-60 text-xs">
@@ -264,46 +315,7 @@ function AppProjectCard({
         </span>
       </span>
     </>
-  )
-
-  const actions = (
-    <>
-      <ActionButton
-        disabled={!canRename}
-        Element="button"
-        iconStart={{
-          icon: 'sketch',
-          iconClassName: 'dark:!text-chalkboard-20',
-          bgClassName: '!bg-transparent',
-        }}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsEditing(true)
-        }}
-        className="!p-0"
-      >
-        <Tooltip position="top-right">Rename project</Tooltip>
-      </ActionButton>
-      <ActionButton
-        disabled={!canDelete}
-        Element="button"
-        iconStart={{
-          icon: 'trash',
-          iconClassName: 'dark:!text-chalkboard-30',
-          bgClassName: '!bg-transparent',
-        }}
-        className="!p-0"
-        onClick={(e) => {
-          e.stopPropagation()
-          e.nativeEvent.stopPropagation()
-          setIsConfirmingDelete(true)
-        }}
-      >
-        <Tooltip position="top-right">Delete project</Tooltip>
-      </ActionButton>
-    </>
-  )
+  ) : undefined
 
   const dialogs = (
     <>
@@ -339,8 +351,43 @@ function AppProjectCard({
       thumbnailUrl={imageUrl}
       badges={badges}
       details={details}
-      actions={actions}
-      actionsLabel={project.name?.replace(FILE_EXT, '')}
+      renderContextMenu={({ menuTargetElement }) => (
+        <ContextMenu
+          menuTargetElement={menuTargetElement}
+          items={[
+            <ContextMenuItem
+              key="rename"
+              icon="sketch"
+              disabled={!canRename}
+              data-testid="project-card-context-rename"
+              onClick={() => setIsEditing(true)}
+            >
+              Rename project
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="move-to-library"
+              icon="folder"
+              disabled={!canMoveToLibrary}
+              data-testid="project-card-context-move-to-library"
+              onClick={() => onMoveToLibrary?.(project)}
+            >
+              Move to library
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="delete"
+              icon="trash"
+              disabled={!canDelete}
+              data-testid="project-card-context-delete"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete project
+            </ContextMenuItem>,
+          ]}
+        />
+      )}
+      classNames={
+        density === 'compact' ? compactProjectCardClassNames : undefined
+      }
       renameForm={
         <ProjectCardRenameForm
           onSubmit={handleSave}

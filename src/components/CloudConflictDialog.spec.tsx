@@ -1,9 +1,8 @@
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
 import fsZds from '@src/lib/fs-zds'
-import {
-  getCloudSyncProjectMetadata,
-  resolveCloudSyncProjectConflict,
-} from '@src/lib/cloudSync'
+import { resolveCloudSyncProjectConflict } from '@src/lib/cloudSync'
+import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import { Themes } from '@src/lib/theme'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -47,6 +46,20 @@ vi.mock('@src/lib/cloudSync', async () => {
     resolveCloudSyncProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
 })
+
+vi.mock('@src/lib/cloudSync/syncDb', () => ({
+  getCloudSyncProjectMetadata: vi.fn().mockResolvedValue({
+    schemaVersion: 1,
+    localProjectPath: '/projects/local',
+    projectName: 'Local project',
+    remoteProjectId: 'remote-123',
+    conflict: {
+      conflictProjectPath: '/projects/local (cloud conflict)',
+      createdAt: '2026-07-17T12:00:00.000Z',
+      remoteRevision: 'remote-revision-2',
+    },
+  }),
+}))
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -93,10 +106,22 @@ describe('CloudConflictDialog', () => {
   test('shows changed files with expanded diffs and resolution actions', async () => {
     vi.mocked(fsZds.readdir).mockImplementation(async (path) => {
       if (path === '/projects/local') {
-        return ['main.kcl', 'local-only.txt', 'thumbnail.png', 'project.toml']
+        return [
+          'main.kcl',
+          'local-only.txt',
+          'thumbnail.png',
+          'project.toml',
+          '.git',
+        ]
       }
       if (path === '/projects/local (cloud conflict)') {
-        return ['main.kcl', 'cloud-only.txt', 'thumbnail.png', 'project.toml']
+        return [
+          'main.kcl',
+          'cloud-only.txt',
+          'thumbnail.png',
+          'project.toml',
+          '.git',
+        ]
       }
       return []
     })
@@ -142,7 +167,7 @@ describe('CloudConflictDialog', () => {
       <CloudConflictDialog
         projectPath="/projects/local"
         projectName="local-folder"
-        resolvedTheme="light"
+        resolvedTheme={Themes.Light}
         onDismiss={onDismiss}
       />
     )
@@ -156,6 +181,7 @@ describe('CloudConflictDialog', () => {
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
     expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
+    expect(screen.queryByText('.git')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
     expect(
       screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
@@ -185,5 +211,9 @@ describe('CloudConflictDialog', () => {
     )
 
     expect(getCloudSyncProjectMetadata).toHaveBeenCalledWith('/projects/local')
+    expect(fsZds.stat).not.toHaveBeenCalledWith('/projects/local/.git')
+    expect(fsZds.stat).not.toHaveBeenCalledWith(
+      '/projects/local (cloud conflict)/.git'
+    )
   })
 })

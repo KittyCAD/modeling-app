@@ -4,17 +4,8 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-pub use artifact::Artifact;
 pub use artifact::ArtifactCommand;
-pub use artifact::ArtifactGraph;
-pub use artifact::CapSubType;
-pub use artifact::CodeRef;
-pub use artifact::GdtAnnotationArtifact;
-pub use artifact::SketchBlock;
-pub use artifact::SketchBlockConstraint;
-pub use artifact::SketchBlockConstraintType;
-pub use artifact::StartSketchOnFace;
-pub use artifact::StartSketchOnPlane;
+pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
@@ -23,6 +14,17 @@ pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::Operation;
+pub use kcl_api::artifact::Artifact;
+pub use kcl_api::artifact::ArtifactGraph;
+pub use kcl_api::artifact::CapSubType;
+pub use kcl_api::artifact::CodeRef;
+pub use kcl_api::artifact::GdtAnnotationArtifact;
+pub use kcl_api::artifact::SketchBlock;
+pub use kcl_api::artifact::SketchBlockConstraint;
+#[allow(unused_imports)]
+pub use kcl_api::artifact::SketchBlockConstraintType;
+pub use kcl_api::artifact::StartSketchOnFace;
+pub use kcl_api::artifact::StartSketchOnPlane;
 use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
@@ -140,6 +142,8 @@ impl OperationsByModule {
 
 pub(crate) mod annotations;
 mod artifact;
+#[cfg(test)]
+pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -3075,6 +3079,441 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_uppercase() {
+        let composed = "\u{e9}";
+        let uppercase_composed = "\u{c9}";
+        let decomposed = "e\u{301}";
+        let uppercase_decomposed = "E\u{301}";
+        let code = format!(
+            r#"
+ascii = string::uppercase("Kcl")
+unicode_expansion = string::uppercase("Straße")
+uncased = string::uppercase("東京")
+empty = string::uppercase("")
+composed = string::uppercase("{composed}")
+decomposed = string::uppercase("{decomposed}")
+piped = "ready" |> string::uppercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("unicode_expansion", "STRASSE"),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", uppercase_composed),
+            ("decomposed", uppercase_decomposed),
+            ("piped", "READY"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_lowercase() {
+        let composed = "\u{c9}";
+        let lowercase_composed = "\u{e9}";
+        let decomposed = "E\u{301}";
+        let lowercase_decomposed = "e\u{301}";
+        let expanded = "i\u{307}";
+        let code = format!(
+            r#"
+ascii = string::lowercase("KCL")
+final_sigma = string::lowercase("ΟΣ")
+medial_sigma = string::lowercase("ΟΣΑ")
+unicode_expansion = string::lowercase("İ")
+uncased = string::lowercase("東京")
+empty = string::lowercase("")
+composed = string::lowercase("{composed}")
+decomposed = string::lowercase("{decomposed}")
+piped = "READY" |> string::lowercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "kcl"),
+            ("final_sigma", "ος"),
+            ("medial_sigma", "οσα"),
+            ("unicode_expansion", expanded),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", lowercase_composed),
+            ("decomposed", lowercase_decomposed),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+exact_same = string::isEqual("KCL", to = "KCL")
+exact_different_case = string::isEqual("KCL", to = "kcl")
+explicit_case_sensitive = string::isEqual("KCL", to = "kcl", caseInsensitive = false)
+case_insensitive_ascii = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+case_fold_expansion = string::isEqual("Straße", to = "STRASSE", caseInsensitive = true)
+case_fold_expansion_reversed = string::isEqual("STRASSE", to = "Straße", caseInsensitive = true)
+case_fold_sigma = string::isEqual("ος", to = "οσ", caseInsensitive = true)
+case_fold_non_turkic = string::isEqual("I", to = "i", caseInsensitive = true)
+case_fold_not_turkic = string::isEqual("I", to = "ı", caseInsensitive = true)
+empty_same = string::isEqual("", to = "")
+empty_different = string::isEqual("", to = "KCL")
+exact_without_normalization = string::isEqual("{composed}", to = "{decomposed}")
+case_fold_without_normalization = string::isEqual("{composed}", to = "{decomposed}", caseInsensitive = true)
+piped = "ready" |> string::isEqual(to = "READY", caseInsensitive = true)
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("exact_same", true),
+            ("exact_different_case", false),
+            ("explicit_case_sensitive", false),
+            ("case_insensitive_ascii", true),
+            ("case_fold_expansion", true),
+            ("case_fold_expansion_reversed", true),
+            ("case_fold_sigma", true),
+            ("case_fold_non_turkic", true),
+            ("case_fold_not_turkic", false),
+            ("empty_same", true),
+            ("empty_different", false),
+            ("exact_without_normalization", false),
+            ("case_fold_without_normalization", false),
+            ("piped", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal_inside_sketch_block_is_predicate() {
+        let code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+}
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trim("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trim("  KCL{tab}strings  ")
+unicode = string::trim("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trim("{ascii_whitespace}{non_breaking_space}")
+empty = string::trim("")
+unchanged = string::trim("KCL")
+without_normalization = string::trim(" {decomposed} ")
+non_whitespace = string::trim("{zero_width_space}KCL{zero_width_space}")
+piped = "  ready  " |> string::trim()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let non_whitespace = format!("{zero_width_space}KCL{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("internal", "KCL\tstrings"),
+            ("unicode", "KCL"),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace", non_whitespace.as_str()),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_start() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimStart("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimStart("  KCL{tab}strings")
+unicode = string::trimStart("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trimStart("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimStart("")
+unchanged = string::trimStart("KCL")
+without_normalization = string::trimStart(" {decomposed}")
+non_whitespace_prefix = string::trimStart("{zero_width_space}{ascii_whitespace}KCL")
+piped = "  ready  " |> string::trimStart()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("KCL{ascii_whitespace}");
+        let unicode = format!("KCL{ideographic_space}");
+        let non_whitespace_prefix = format!("{zero_width_space}{ascii_whitespace}KCL");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_prefix", non_whitespace_prefix.as_str()),
+            ("piped", "ready  "),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_end() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimEnd("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimEnd("KCL{tab}strings  ")
+unicode = string::trimEnd("{non_breaking_space}KCL{em_space}{ideographic_space}")
+all_whitespace = string::trimEnd("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimEnd("")
+unchanged = string::trimEnd("KCL")
+without_normalization = string::trimEnd("{decomposed} ")
+non_whitespace_suffix = string::trimEnd("KCL{ascii_whitespace}{zero_width_space}")
+piped = "  ready  " |> string::trimEnd()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("{ascii_whitespace}KCL");
+        let unicode = format!("{non_breaking_space}KCL");
+        let non_whitespace_suffix = format!("KCL{ascii_whitespace}{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_suffix", non_whitespace_suffix.as_str()),
+            ("piped", "  ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string() {
+        // Each case runs on its own so a failure names the expression that
+        // produced it rather than collapsing the whole table.
+        for (name, expr, expected) in [
+            // Every row of the table in the `toString` doc comment appears
+            // here, so the documentation cannot drift from the behaviour.
+            ("unitless integer", "12", "12"),
+            ("unitless fractional", "1.5", "1.5"),
+            ("no digits dropped", "0.1 + 0.2", "0.30000000000000004"),
+            ("unitless negative", "-7", "-7"),
+            ("unitless zero", "0", "0"),
+            ("negative zero", "-0", "0"),
+            ("count", "3_", "3_"),
+            ("millimeters", "12mm", "12mm"),
+            ("centimeters", "12cm", "12cm"),
+            ("meters", "12m", "12m"),
+            ("inches", "1.5in", "1.5in"),
+            ("feet", "2ft", "2ft"),
+            ("yards", "3yd", "3yd"),
+            ("degrees", "90deg", "90deg"),
+            ("radians", "1.5rad", "1.5rad"),
+            // Arithmetic keeps the unit it started with.
+            ("length arithmetic", "2mm + 10mm", "12mm"),
+            // Multiplying two lengths exceeds what the type system tracks, so
+            // only the numeric component survives.
+            ("units the type system loses", "2mm * 10mm", "20"),
+            ("unitless arithmetic", "1 + 2", "3"),
+        ] {
+            let code = format!("actual = string::toString({expr})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "case: {name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_ignores_the_files_default_unit() {
+        // A value with no suffix has the file's default unit attached, but that
+        // unit was never written down, so neither is it in the output. Reading
+        // the result back in a file with a different default gives a different
+        // quantity; the guarantee is about the number, not the measurement.
+        let code = "@settings(defaultLengthUnit = inch)\nactual = string::toString(12)";
+        let result = parse_execute(code).await.unwrap();
+
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                .as_str()
+                .unwrap(),
+            "12"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_rejects_a_non_number() {
+        let error = parse_execute(r#"actual = string::toString("already text")"#)
+            .await
+            .unwrap_err();
+
+        // The declared signature rejects this before the implementation runs,
+        // so the diagnostic names the function and both types.
+        assert_eq!(
+            error.message(),
+            "The input argument of `string::toString` requires a value with type `number`, but found a value with type `string`."
+        );
+        assert!(
+            matches!(error, KclError::Argument { .. }),
+            "expected an Argument error, found {error:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_accepts_a_piped_argument() {
+        let result = parse_execute("actual = 12mm |> string::toString()").await.unwrap();
+
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                .as_str()
+                .unwrap(),
+            "12mm"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_echoes_how_the_literal_was_written() {
+        // Reading the output back is not a supported operation, but for a
+        // literal that carries its own units the text still comes out looking
+        // like what the author typed, which is what makes it readable.
+        for literal in [
+            "12",
+            "1.5",
+            "0.30000000000000004",
+            "3_",
+            // A fractional count and a negative both have to survive the trip,
+            // since the formatter emits them.
+            "2.5_",
+            "-4_",
+            "12mm",
+            "-5mm",
+            "1.5in",
+            "90deg",
+            "1.5rad",
+        ] {
+            let code = format!("actual = string::toString({literal})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                literal,
+                "literal: {literal}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_spells_out_non_finite_numbers() {
+        // Division is unguarded, so these are reachable from ordinary KCL. They
+        // convert like any other number: the point of the function is to build
+        // a message, and a message about a NaN is exactly when you need one.
+        for (name, expr, expected) in [
+            ("positive infinity", "1 / 0", "Infinity"),
+            ("negative infinity", "-1 / 0", "-Infinity"),
+            ("nan", "0 / 0", "NaN"),
+            // The unit is dropped: no length is described by "Infinitymm".
+            ("infinity from a length", "1mm / 0", "Infinity"),
+            ("nan from a length", "0mm / 0", "NaN"),
+            ("infinity from an angle", "1deg / 0", "Infinity"),
+        ] {
+            let code = format!("actual = string::toString({expr})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "case: {name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";
@@ -4234,5 +4673,38 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_declaration_is_experimental() {
+        // Without opting in, executing a program with an enum declaration
+        // fails at the parsing stage with the experimental diagnostic.
+        let code = "type Color { | Red }";
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Use of enum declarations is experimental and may change or be removed."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_declaration_execution_not_yet_supported() {
+        // Enums parse but do not execute until their runtime representation
+        // lands; until then execution reports a graceful error.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Enum declarations are not yet supported."
+        );
+
+        // Exported enums take the same path.
+        let code = r#"@settings(experimentalFeatures = allow)
+export type Color { | Red }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Enum declarations are not yet supported."
+        );
     }
 }

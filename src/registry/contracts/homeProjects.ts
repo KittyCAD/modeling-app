@@ -3,6 +3,8 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export type HomeProjectSource = 'local' | 'remote' | 'both'
@@ -24,6 +26,12 @@ export type HomeProjectThumbnail =
       url: string
     }
 
+export type HomeProjectSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
 export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
@@ -41,6 +49,7 @@ export interface HomeProjectEntry {
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
 }
 
 export type HomeProjectEntryContribution = Omit<
@@ -61,15 +70,28 @@ export type HomeProjectOpenResult = {
   defaultFile: string
 }
 
+export interface HomeProjectMoveToLibraryTarget {
+  library: ProjectLibrary
+  sourceLibrary: ProjectLibrary
+}
+
 export interface HomeProjectActionsService {
   canOpen: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
+  canMoveToLibrary: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
+  getMoveToLibraryTargets: (
+    project: HomeProjectEntry
+  ) => readonly HomeProjectMoveToLibraryTarget[]
+  moveToLibrary: (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) => Promise<HomeProjectOpenResult | undefined>
 }
 
 function contributionBucketKey(entry: HomeProjectEntryContribution) {
@@ -90,12 +112,6 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
     return `remote:${entry.remoteProjectId}`
   }
   return `${entry.source}:${entry.id ?? entry.name}`
-}
-
-function uniqueStrings(values: readonly (string | undefined)[]) {
-  return Array.from(
-    new Set(values.filter((value): value is string => Boolean(value)))
-  )
 }
 
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
@@ -133,6 +149,7 @@ function mergeHomeProjectEntries(
   }
 
   const conflict = local.conflict ?? remote.conflict
+  const syncFailure = local.syncFailure ?? remote.syncFailure
 
   return {
     ...remote,
@@ -145,6 +162,7 @@ function mergeHomeProjectEntries(
         ? 'syncing'
         : 'synced',
     conflict,
+    syncFailure,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,
@@ -155,6 +173,11 @@ function mergeHomeProjectEntries(
   }
 }
 
+/**
+ * Same-source entries can overlap when multiple libraries point at the same
+ * local or remote project. Keep the newest display data while preserving every
+ * library membership so library-filtered views can still find the project.
+ */
 function mergeSameSourceHomeProjectEntries(
   existing: HomeProjectEntry | undefined,
   next: HomeProjectEntry

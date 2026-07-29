@@ -1,3 +1,4 @@
+import type { Feature } from '@kittycad/lib'
 import type {
   PluginRecord,
   Registry,
@@ -5,8 +6,10 @@ import type {
 } from '@kittycad/registry'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import type { Setting } from '@src/lib/settings/initialSettings'
 import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
+import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
@@ -22,13 +25,36 @@ type PluginsListProps = {
 export const PluginsList = forwardRef(
   (props: PluginsListProps, scrollRef: ForwardedRef<HTMLDivElement>) => {
     const app = useApp()
-    const hasCloudSyncFeature = app.userFeatures.useHas(
-      OPFS_CLOUD_FEATURE_FLAG,
-      false
+    const settingsContext = app.settings.useSettings()
+    const userFeaturesContext = app.userFeatures.useContext()
+    const hasFeature = (feature: Feature) =>
+      userFeaturesContextHas(userFeaturesContext, feature, false)
+    const activationSettings = props.registry.get(
+      zdsPluginActivationSettingsValueSpec
     )
-    const visiblePlugins = props.plugins.filter(
-      (plugin) => plugin.id !== 'cloud-sync' || hasCloudSyncFeature
-    )
+
+    // A plugin's activation toggle is a settings entry, so it obeys the same
+    // visibility rules: hide it here whenever that setting is hidden on this
+    // platform/level or gated behind a feature the user lacks. This keeps the
+    // plugins list in sync with the settings panel and command bar instead of
+    // hardcoding per-plugin exceptions (e.g. cloud sync, which is web-only
+    // infrastructure and must not expose a toggle there).
+    const settingsByCategory = settingsContext as unknown as Record<
+      string,
+      Record<string, Setting | undefined> | undefined
+    >
+    const visiblePlugins = props.plugins.filter((plugin) => {
+      const activation = activationSettings.find(
+        (setting) => setting.pluginId === plugin.id
+      )
+      if (!activation) {
+        return true
+      }
+
+      const setting =
+        settingsByCategory[activation.category]?.[activation.settingName]
+      return !setting || !shouldHideSetting(setting, 'user', hasFeature)
+    })
 
     // This is how we will get the interaction map from the context
     // in the future whene franknoirot/editable-hotkeys is merged.

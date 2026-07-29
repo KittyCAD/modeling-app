@@ -11,7 +11,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
-import { EngineConnectionStateType } from '@src/network/utils'
+import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import {
   commandSystemService,
   provideCommand,

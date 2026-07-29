@@ -12,9 +12,11 @@ import {
 import opfs from '@src/lib/fs-zds/opfs'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
+  getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   normalizeProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
+  setProjectDefaultFileInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isArray } from '@src/lib/utils'
@@ -131,7 +133,17 @@ function getProjectTomlTitle(files: ProjectArchiveFile[]) {
   )
 }
 
-function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
+export function getProjectArchiveEntrypointPath(
+  files: ProjectArchiveFile[],
+  preferredEntrypointPath?: string
+) {
+  const normalizedPreferredEntrypointPath = preferredEntrypointPath
+    ? normalizeRelativePath(preferredEntrypointPath)
+    : undefined
+  if (normalizedPreferredEntrypointPath) {
+    return normalizedPreferredEntrypointPath
+  }
+
   const filePaths = new Set(files.map((file) => file.relativePath))
   const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
   if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
@@ -151,6 +163,15 @@ function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
     return fallbackKclFile
   }
 
+  return undefined
+}
+
+function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
+  const entrypointPath = getProjectArchiveEntrypointPath(files)
+  if (entrypointPath) {
+    return entrypointPath
+  }
+
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   throw new Error('Cloud sync needs at least one KCL file to upload a project.')
 }
@@ -163,11 +184,9 @@ function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
     return undefined
   }
 
-  const projectToml = new TextDecoder().decode(projectTomlFile.data)
-  const defaultFile = projectToml.match(
-    /^\s*default_file\s*=\s*["']([^"']+)["']/m
-  )?.[1]
-  return defaultFile ? normalizeRelativePath(defaultFile) : undefined
+  return getProjectDefaultFileFromProjectTomlContents(
+    new TextDecoder().decode(projectTomlFile.data)
+  )
 }
 
 export function getMimeType(fileName: string) {
@@ -214,6 +233,19 @@ export function withProjectCloudProjectIdInArchiveFiles(
   )
 }
 
+export function withProjectDefaultFileInArchiveFiles(
+  files: ProjectArchiveFile[],
+  defaultFile?: string
+) {
+  if (!defaultFile) {
+    return files
+  }
+
+  return withProjectTomlArchiveFile(files, (contents) =>
+    setProjectDefaultFileInProjectTomlContents(contents, defaultFile)
+  )
+}
+
 function withProjectTomlArchiveFile(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
@@ -244,15 +276,20 @@ export function withRemoteProjectMetadataInArchiveFiles(
   files: ProjectArchiveFile[],
   title: string | undefined,
   projectId: string,
-  environmentName?: string
+  environmentName?: string,
+  entrypointPath?: string
 ) {
-  return withProjectCloudProjectIdInArchiveFiles(
+  const filesWithMetadata = withProjectCloudProjectIdInArchiveFiles(
     withProjectTitleInArchiveFiles(
       files,
       getRemoteProjectTitleForProjectToml(title)
     ),
     projectId,
     environmentName
+  )
+  return withProjectDefaultFileInArchiveFiles(
+    filesWithMetadata,
+    getProjectArchiveEntrypointPath(filesWithMetadata, entrypointPath)
   )
 }
 

@@ -3,6 +3,10 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import {
+  getSelectedPlaneId,
+  getSelectedSketchTarget as getSelectedSketchTargetId,
+} from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -2581,31 +2585,16 @@ function getSelectedSketchTarget(selectionRanges: Selections): {
     }
   }
 
-  const planeSelection = getSelectedSketchTargetPlane(selectionRanges)
-  const artifact = planeSelection?.artifact
-  if (!artifact?.id) {
-    return null
-  }
+  const id = getSelectedSketchTargetId(selectionRanges)
+  if (!id) return null
 
   return {
-    id: artifact.id,
+    id,
     title:
-      artifact.type === 'plane'
+      getSelectedPlaneId(selectionRanges) === id
         ? 'Start Sketch on plane'
         : 'Start Sketch on face',
   }
-}
-
-function getSelectedSketchTargetPlane(selectionRanges: Selections) {
-  return selectionRanges.graphSelections.find((selection) => {
-    const artifact = selection.artifact
-    return (
-      artifact?.type === 'plane' ||
-      artifact?.type === 'wall' ||
-      artifact?.type === 'cap' ||
-      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
-    )
-  })
 }
 
 function getSelectedSketchIconColor(
@@ -2623,7 +2612,7 @@ function getSelectedSketchIconColor(
     }
   }
 
-  return getSelectedSketchTargetPlane(selectionRanges)
+  return getSelectedSketchTargetId(selectionRanges)
     ? `rgb(${SKETCH_SELECTION_RGB_STR})`
     : undefined
 }

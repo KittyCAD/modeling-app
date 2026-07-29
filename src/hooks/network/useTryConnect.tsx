@@ -12,8 +12,8 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { getDimensions } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 import toast from 'react-hot-toast'
 

@@ -1,8 +1,8 @@
 import { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { getDimensions } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useEffect, useRef } from 'react'
 
 const TIME_TO_WAIT_AFTER_DEBOUNCE_IS_DONE = 250
