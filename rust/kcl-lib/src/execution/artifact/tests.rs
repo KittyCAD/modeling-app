@@ -892,7 +892,7 @@ fn edge_specifier_surface_extrude_creates_sweep_without_path_id() {
         .build();
     let command = ModelingCmd::from(
         kcmc::each_cmd::Extrude::builder()
-            .target_reference(edge_reference.clone())
+            .target_reference(edge_reference)
             .distance(10.0.into())
             .body_type(kittycad_modeling_cmds::shared::BodyType::Surface)
             .extrude_method(kittycad_modeling_cmds::shared::ExtrudeMethod::New)

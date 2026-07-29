@@ -1578,7 +1578,7 @@ extrude001 = extrude(region001, length = 10mm, tagEnd = $capEnd001)`
                 type: 'edge',
                 side_faces: [wallArtifact.id, endCapArtifact.id],
               },
-              codeRef: wallArtifact.codeRef,
+              codeRef: wallArtifact.faceCodeRef,
             },
           ],
           otherSelections: [],

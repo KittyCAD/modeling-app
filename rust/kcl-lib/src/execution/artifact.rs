@@ -2180,7 +2180,7 @@ fn artifacts_to_update(
         ModelingCmd::Solid3dCutEdgeReferences(cmd) => {
             return Ok(vec![Artifact::EdgeCut(EdgeCut {
                 id,
-                sub_type: edge_cut_sub_type_v2(cmd.cut_type.clone()),
+                sub_type: edge_cut_sub_type_v2(cmd.cut_type),
                 consumed_edge_id: None,
                 edge_ids: Vec::new(),
                 surface_id: None,
