@@ -247,7 +247,6 @@ export interface Store {
   videoElement?: HTMLVideoElement
   cameraProjection?: Setting<CameraProjectionType>
   useSketchSolveMode?: Setting<boolean>
-  useNewSketchMode?: Setting<boolean>
   defaultUnit?: Setting<BaseUnit>
 }
 

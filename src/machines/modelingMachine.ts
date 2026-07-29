@@ -3256,19 +3256,23 @@ export const modelingMachine = setup({
           return reject(new Error('Please select a valid sketch plane.'))
         }
 
-        const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
+        const selectedFaceArtifact =
+          result.type === 'extrudeFace'
+            ? kclManager.artifactGraph.get(result.faceId)
+            : undefined
+        const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
-          result.faceInfo.type === 'wall' &&
-          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+          (selectedFaceArtifact?.type === 'edgeCut' ||
+            (result.faceInfo.type === 'wall' &&
+              isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
             ? result
             : null
 
-        if (legacyExtrudeFaceTemporaryCompat) {
-          // Temporary compatibility branch for legacy sketch V1.
-          // Remove this once sketch-on-face always originates from sketch
-          // blocks and no longer needs a JS-side code mod before sketch solve.
+        if (faceRequiringSourceMaterialization) {
+          // Edge-cut faces and legacy sketch V1 walls need a concrete Face
+          // expression before the Rust frontend can create a sketch on them.
           const legacyFaceArtifact = kclManager.artifactGraph.get(
-            legacyExtrudeFaceTemporaryCompat.faceId
+            faceRequiringSourceMaterialization.faceId
           )
           const legacyFaceCodeRef = legacyFaceArtifact
             ? getFaceCodeRef(legacyFaceArtifact)
@@ -3284,8 +3288,8 @@ export const modelingMachine = setup({
             {
               codeRef: legacyFaceCodeRef,
             },
-            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
-            legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
+            faceRequiringSourceMaterialization.sketchPathToNode,
+            faceRequiringSourceMaterialization.extrudePathToNode,
             kclManager.artifactGraph,
             wasmInstance
           )

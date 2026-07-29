@@ -2600,6 +2600,55 @@ export function getLastVariable(
   return null
 }
 
+export function getOwningSweepForEdgeCut(
+  edgeCut: Extract<Artifact, { type: 'edgeCut' }>,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    edgeCut.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  const inputName =
+    !err(edgeCutCall) && edgeCutCall.node.unlabeled?.type === 'Name'
+      ? edgeCutCall.node.unlabeled.name.name
+      : null
+  if (!inputName) {
+    return new Error('Edge-cut operation does not have a named input')
+  }
+
+  for (const candidate of artifactGraph.values()) {
+    if (candidate.type !== 'sweep') continue
+    const vars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: candidate,
+            codeRef: candidate.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      wasmInstance
+    )
+    if (
+      !err(vars) &&
+      vars.exprs.length === 1 &&
+      vars.exprs[0].type === 'Name' &&
+      vars.exprs[0].name.name === inputName
+    ) {
+      return candidate
+    }
+  }
+
+  return new Error(`No sweep found for edge-cut input ${inputName}`)
+}
+
 export function getEdgeCutMeta(
   artifact: Artifact,
   ast: Node<Program>,

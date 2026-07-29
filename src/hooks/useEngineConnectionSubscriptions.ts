@@ -215,7 +215,7 @@ export function useEngineConnectionSubscriptions() {
           if (planeId) {
             void selectSketchPlane(
               planeId,
-              context.store.useNewSketchMode?.current,
+              context.store.useSketchSolveMode?.current,
               kclManager
             )
           }
@@ -249,7 +249,7 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
-    context.store.useNewSketchMode,
+    context.store.useSketchSolveMode,
     kclManager,
     send,
     engineCommandManager,

@@ -42,6 +42,7 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getOwningSweepForEdgeCut,
   getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
@@ -3343,7 +3344,15 @@ export async function selectionBodyFace(
 
   // Artifact is likely an sweep face
   const faceId = planeOrFaceId
-  const extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  let extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  if (err(extrusion) && artifact?.type === 'edgeCut') {
+    extrusion = getOwningSweepForEdgeCut(
+      artifact,
+      artifactGraph,
+      ast,
+      systemDeps.wasmInstance
+    )
+  }
   if (!err(extrusion)) {
     const maybeImportNode = getNodeFromPath<ImportStatement>(
       ast,

@@ -571,6 +571,45 @@ sketch001 = startSketchOn(part001, face = seg01)`)
   |> extrude(length = 5 + 7)
 sketch001 = startSketchOn(part001, face = END)`)
   })
+  test('it should reuse an existing extrusion cap tag', async () => {
+    const code = `part001 = startSketchOn(-XZ)
+  |> startProfile(at = [3.58, 2.06])
+  |> line(end = [9.7, 9.19])
+  |> line(end = [8.62, -9.57])
+  |> close()
+  |> extrude(length = 12, tagEnd = $endCap)`
+    const ast = assertParse(code, instanceInThisFile)
+    const sketchSnippet = `startProfile(at = [3.58, 2.06])`
+    const sketchPathToNode = getNodePathFromSourceRange(
+      ast,
+      topLevelRange(
+        code.indexOf(sketchSnippet),
+        code.indexOf(sketchSnippet) + sketchSnippet.length
+      )
+    )
+    const extrudeSnippet = `extrude(length = 12, tagEnd = $endCap)`
+    const extrudePathToNode = getNodePathFromSourceRange(
+      ast,
+      topLevelRange(
+        code.indexOf(extrudeSnippet),
+        code.indexOf(extrudeSnippet) + extrudeSnippet.length
+      )
+    )
+
+    const result = sketchOnExtrudedFace(
+      ast,
+      sketchPathToNode,
+      extrudePathToNode,
+      addTagForSketchOnFace,
+      instanceInThisFile,
+      { type: 'cap', subType: 'end' }
+    )
+    if (err(result)) throw result
+
+    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+      'sketch001 = startSketchOn(part001, face = endCap)'
+    )
+  })
   test('it should ensure that the new sketch is inserted after the extrude', async () => {
     const code = `sketch001 = startSketchOn(-XZ)
     |> startProfile(at = [3.29, 7.86])

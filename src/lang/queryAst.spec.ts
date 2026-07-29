@@ -20,6 +20,7 @@ import {
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
+  getOwningSweepForEdgeCut,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
   getVariableExprsFromSelection,
@@ -35,7 +36,12 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  Identifier,
+  PathToNode,
+  SourceRange,
+} from '@src/lang/wasm'
 import {
   assertParse,
   defaultNodePath,
@@ -1116,6 +1122,72 @@ plane001 = offsetPlane(YZ, offset = 10)
     }
 
     expect(result?.value).toBe('XY')
+  })
+})
+
+describe('getOwningSweepForEdgeCut', () => {
+  const makeArtifacts = (code: string) => {
+    const ast = assertParse(code, instanceInThisFile)
+    const sweepStart = code.indexOf('extrude(')
+    const edgeCutStart = code.indexOf('chamfer(')
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        ...codeRefFromRange(
+          [sweepStart, code.indexOf('\n', sweepStart), 0],
+          ast
+        ),
+        nodePath: defaultNodePath(),
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const edgeCut: Artifact = {
+      type: 'edgeCut',
+      id: 'edge-cut-1',
+      subType: 'chamfer',
+      consumedEdgeId: '',
+      edgeIds: [],
+      codeRef: {
+        ...codeRefFromRange([edgeCutStart, code.length, 0], ast),
+        nodePath: defaultNodePath(),
+      },
+    }
+    return { ast, sweep, edgeCut }
+  }
+
+  it('finds the sweep named as the edge-cut input', () => {
+    const code = `body001 = extrude(profile001, length = 5)
+chamfer001 = chamfer(body001, tags = edge001, length = 1)`
+    const { ast, sweep, edgeCut } = makeArtifacts(code)
+    if (edgeCut.type !== 'edgeCut') throw new Error('Expected edge cut')
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(edgeCut.id, edgeCut)
+
+    expect(
+      getOwningSweepForEdgeCut(edgeCut, artifactGraph, ast, instanceInThisFile)
+    ).toEqual(sweep)
+  })
+
+  it('does not associate an edge cut with an unrelated sweep', () => {
+    const code = `otherBody = extrude(profile001, length = 5)
+chamfer001 = chamfer(body001, tags = edge001, length = 1)`
+    const { ast, sweep, edgeCut } = makeArtifacts(code)
+    if (edgeCut.type !== 'edgeCut') throw new Error('Expected edge cut')
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(edgeCut.id, edgeCut)
+
+    expect(
+      getOwningSweepForEdgeCut(edgeCut, artifactGraph, ast, instanceInThisFile)
+    ).toBeInstanceOf(Error)
   })
 })
 
