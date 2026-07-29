@@ -19,6 +19,10 @@ import {
   shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
 import {
+  DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
+  isCloudSyncExcludedPath,
+} from '@src/lib/cloudSync/paths'
+import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
   withRemoteProjectMetadataInArchiveFiles,
@@ -46,6 +50,24 @@ function readProjectFile(files: ProjectArchiveFile[], relativePath: string) {
 }
 
 describe('cloudSync sync helpers', () => {
+  it('uses the web project directory as the default cloud project directory fallback', () => {
+    expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
+      `/documents/${PROJECT_FOLDER}`
+    )
+  })
+
+  it('identifies project roots beneath the personal Zoo cloud directory', () => {
+    expect(
+      getCloudSyncProjectRoot(
+        '/Users/frank/Library/CloudStorage/Zoo/personal/bracket/main.kcl'
+      )
+    ).toBe('/Users/frank/Library/CloudStorage/Zoo/personal/bracket')
+
+    expect(
+      getCloudSyncProjectRoot('/Users/frank/Library/CloudStorage/Zoo/personal')
+    ).toBeUndefined()
+  })
+
   it('identifies project roots beneath the OPFS project directory', () => {
     expect(
       getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}/bracket/main.kcl`)
@@ -224,6 +246,31 @@ describe('cloudSync sync helpers', () => {
       '.gitignore',
       'nested/.gitignore',
       'nested/part.kcl',
+    ])
+  })
+
+  it('excludes VCS metadata from cloud sync manifests without .gitignore entries', () => {
+    expect(isCloudSyncExcludedPath('.git')).toBe(true)
+    expect(isCloudSyncExcludedPath('.git/objects/pack.idx')).toBe(true)
+    expect(isCloudSyncExcludedPath('nested/.git/HEAD')).toBe(true)
+    expect(isCloudSyncExcludedPath('.gitignore')).toBe(false)
+    expect(isCloudSyncExcludedPath('.github/workflows/test.yml')).toBe(false)
+
+    const files = filterCloudSyncProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile('.git/HEAD', 'ref: refs/heads/main\n'),
+      projectFile('.git/objects/pack/pack-123.idx', 'pack index'),
+      projectFile('.gitignore', 'dist/\n'),
+      projectFile('.github/workflows/test.yml', 'name: test\n'),
+      projectFile('.hg/store/data', 'hg data'),
+      projectFile('.svn/entries', 'svn entries'),
+      projectFile('.jj/repo/store/git/HEAD', 'jj data'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual([
+      'main.kcl',
+      '.gitignore',
+      '.github/workflows/test.yml',
     ])
   })
 
@@ -549,6 +596,41 @@ describe('cloudSync sync helpers', () => {
     expect(getCloudSyncScopePlan(entries)).toEqual({
       shouldSyncRemoteIndex: true,
       projectPaths: ['/projects/current', '/projects/conflicted'],
+      pendingCount: 2,
+    })
+
+    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 1,
+    })
+  })
+
+  it('counts pending cloud sync work by project instead of raw outbox rows', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/project.toml',
+        createdAt: '2026-06-12T00:00:01.000Z',
+      },
+      {
+        projectPath: '/projects/other',
+        kind: 'upsert',
+        targetPath: '/projects/other/main.kcl',
+        createdAt: '2026-06-12T00:00:02.000Z',
+      },
+    ]
+
+    expect(getCloudSyncScopePlan(entries)).toEqual({
+      shouldSyncRemoteIndex: true,
+      projectPaths: ['/projects/current', '/projects/other'],
       pendingCount: 2,
     })
 

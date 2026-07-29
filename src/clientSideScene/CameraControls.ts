@@ -40,8 +40,11 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { type ConnectionManager } from '@src/network/connectionManager'
-import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type {
+  Subscription,
+  UnreliableSubscription,
+} from '@src/lib/engineConnection/utils'
 import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20

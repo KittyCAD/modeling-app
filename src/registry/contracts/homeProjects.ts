@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
@@ -25,6 +26,12 @@ export type HomeProjectThumbnail =
       url: string
     }
 
+export type HomeProjectSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
 export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
@@ -42,6 +49,7 @@ export interface HomeProjectEntry {
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
 }
 
 export type HomeProjectEntryContribution = Omit<
@@ -62,15 +70,28 @@ export type HomeProjectOpenResult = {
   defaultFile: string
 }
 
+export interface HomeProjectMoveToLibraryTarget {
+  library: ProjectLibrary
+  sourceLibrary: ProjectLibrary
+}
+
 export interface HomeProjectActionsService {
   canOpen: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
+  canMoveToLibrary: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
+  getMoveToLibraryTargets: (
+    project: HomeProjectEntry
+  ) => readonly HomeProjectMoveToLibraryTarget[]
+  moveToLibrary: (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) => Promise<HomeProjectOpenResult | undefined>
 }
 
 function contributionBucketKey(entry: HomeProjectEntryContribution) {
@@ -128,6 +149,7 @@ function mergeHomeProjectEntries(
   }
 
   const conflict = local.conflict ?? remote.conflict
+  const syncFailure = local.syncFailure ?? remote.syncFailure
 
   return {
     ...remote,
@@ -140,6 +162,7 @@ function mergeHomeProjectEntries(
         ? 'syncing'
         : 'synced',
     conflict,
+    syncFailure,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,

@@ -4,6 +4,7 @@ use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::SegmentDragAnchor;
+use kcl_lib::front::ConstraintLabelPositionEdit;
 use kcl_lib::front::EditDistanceConstraintLabelPositionOptions;
 use kcl_lib::front::EditSegmentsOptions;
 use kcl_lib::front::Error;
@@ -413,6 +414,7 @@ impl Context {
         anchor_segment_ids_json: &str,
         drag_anchors_json: &str,
         commit_solver_results: bool,
+        constraint_label_edits_json: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -431,6 +433,9 @@ impl Context {
                 .map_err(|e| format!("Could not deserialize anchor segment ObjectIds: {e}"))?;
         let drag_anchors: Vec<SegmentDragAnchor> = serde_json::from_str(drag_anchors_json)
             .map_err(|e| format!("Could not deserialize segment drag anchors: {e}"))?;
+        let constraint_label_edits: Vec<ConstraintLabelPositionEdit> =
+            serde_json::from_str(constraint_label_edits_json)
+                .map_err(|e| format!("Could not deserialize constraint label edits: {e}"))?;
 
         let ctx = self
             .create_executor_ctx(settings, None, true)
@@ -447,6 +452,7 @@ impl Context {
                 EditSegmentsOptions {
                     anchor_segment_ids,
                     drag_anchors,
+                    constraint_label_edits,
                     commit_solved_initial_guesses: commit_solver_results,
                 },
             )

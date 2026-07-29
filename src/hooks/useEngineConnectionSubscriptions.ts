@@ -52,12 +52,11 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
-          if (
-            stateRef.current.matches('Sketch no face') ||
-            // Ignore select_with_point in sketch solve: without this selection is overridden
-            // and breaks multiple line highlights
-            stateRef.current.matches('sketchSolveMode')
-          ) {
+          const selectingSketchPlane =
+            stateRef.current.matches('Sketch no face')
+          // Ignore select_with_point in sketch solve: without this selection is overridden
+          // and breaks multiple line highlights
+          if (stateRef.current.matches('sketchSolveMode')) {
             return
           }
           const event = await getEventForSelectWithPoint(engineEvent, {
@@ -67,15 +66,22 @@ export function useEngineConnectionSubscriptions() {
             wasmInstance,
             useSegmentsBasedRegions,
           })
-          // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
-          // This is probably rare, but we do go into sketch mode on double click.
+          // Check state again, in case it changed before
+          // getEventForSelectWithPoint returned.
           if (
-            stateRef.current.matches('Sketch no face') ||
-            stateRef.current.matches('sketchSolveMode')
+            stateRef.current.matches('sketchSolveMode') ||
+            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
           ) {
             return
           }
           if (event) send(event)
+          if (selectingSketchPlane) {
+            await selectSketchPlane(
+              engineEvent.data.entity_id,
+              context.store.useSketchSolveMode?.current,
+              kclManager
+            )
+          }
         })().catch(reportRejection)
       },
     })
@@ -91,30 +97,7 @@ export function useEngineConnectionSubscriptions() {
     rustContext,
     wasmInstance,
     useSegmentsBasedRegions,
-  ])
-
-  useEffect(() => {
-    if (!engineCommandManager) return
-
-    const unSub = engineCommandManager.subscribeTo({
-      event: 'select_with_point',
-      callback: state.matches('Sketch no face')
-        ? ({ data }) => {
-            void selectSketchPlane(
-              data.entity_id,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
-          }
-        : () => {},
-    })
-    return unSub
-  }, [
     context.store.useSketchSolveMode,
-    state,
-    kclManager,
-    rustContext,
-    engineCommandManager,
   ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side

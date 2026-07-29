@@ -51,11 +51,14 @@ function createProjectActions({
     canOpen,
     canRename: () => true,
     canDelete: () => true,
+    canMoveToLibrary: () => true,
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
+    getMoveToLibraryTargets: vi.fn(() => []),
+    moveToLibrary: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -256,6 +259,24 @@ describe('ProjectCard', () => {
     )
   })
 
+  test('opens move to library from the card context menu', () => {
+    const onMoveToLibrary = vi.fn()
+    render(
+      <BrowserRouter>
+        <AppProjectCard
+          project={cloudProject}
+          projectActions={createProjectActions()}
+          onMoveToLibrary={onMoveToLibrary}
+        />
+      </BrowserRouter>
+    )
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
+
+    expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
+  })
+
   test('selects the project title when opening rename from the context menu', async () => {
     renderProjectCard()
 
@@ -271,6 +292,44 @@ describe('ProjectCard', () => {
 
     expect(input.selectionStart).toBe(0)
     expect(input.selectionEnd).toBe(input.value.length)
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {

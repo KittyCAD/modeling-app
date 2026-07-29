@@ -1702,7 +1702,7 @@ function hasLaterMatchingArtifact(
   return false
 }
 
-function getSketchVariableNameForSegment(
+export function getSketchVariableNameForSegment(
   ast: Node<Program>,
   segmentId: string,
   artifactGraph: ArtifactGraph,

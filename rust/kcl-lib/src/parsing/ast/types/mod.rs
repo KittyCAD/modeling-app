@@ -413,14 +413,22 @@ impl Node<Program> {
     }
 
     pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
-        let rules = vec![
+        self.lint_all_with_options(crate::lint::LintOptions::default())
+    }
+
+    /// Check the provided Program using the standard lint rules and explicitly
+    /// enabled opt-in rules.
+    pub fn lint_all_with_options(&self, options: crate::lint::LintOptions) -> Result<Vec<crate::lint::Discovered>> {
+        let mut rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
-            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
         ];
+        if options.z0006_enabled() {
+            rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
+        }
 
         let mut findings = vec![];
         for rule in rules {
@@ -2696,7 +2704,7 @@ pub struct TypeDeclaration {
     pub args: Option<NodeList<Identifier>>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
-    pub alias: Option<Node<Type>>,
+    pub definition: TypeDeclarationDefinition,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -2707,6 +2715,54 @@ impl TypeDeclaration {
     pub(crate) fn name(&self) -> &str {
         &self.name.name
     }
+}
+
+/// What a type declaration declares its name to be.
+///
+/// A discriminated definition rather than optional fields so that impossible
+/// combinations (e.g. a declaration that is both an alias and an enum) cannot
+/// be represented. A future nominal product (struct) definition would be added
+/// as another variant here.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum TypeDeclarationDefinition {
+    /// A declaration with no definition, e.g. `type Sketch`. Used for types
+    /// implemented in Rust and primitives, whose declarations exist for
+    /// documentation.
+    Bare,
+    /// An alias of another type, e.g. `type Temperature = number(_)`.
+    Alias { ty: BoxNode<Type> },
+    /// A nominal sum type with nullary variants, e.g. `type Color { | Red | Green | Blue }`.
+    Enum(Box<EnumDeclaration>),
+}
+
+/// The body of an enum type declaration: its variants, e.g. `{ | Red | Green | Blue }`.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct EnumDeclaration {
+    pub variants: NodeList<EnumVariant>,
+    /// Comments and blank lines inside the enum body which are not strongly
+    /// associated with a variant, keyed by variant index like
+    /// `Program::non_code_meta`.
+    pub non_code_meta: NonCodeMeta,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+/// A single nullary enum variant, e.g. `| Red`.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct EnumVariant {
+    pub name: Node<Identifier>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -4718,8 +4774,13 @@ cylinder = startSketchOn(-XZ)
 
     #[test]
     fn test_parse_never_type() {
-        let program =
-            parse("@settings(experimentalFeatures = allow)\nfn stop(@impossible: never): never { return impossible }");
+        let program = parse(
+            "@settings(experimentalFeatures = allow)\n\
+             fn stop(@impossible: never): never { return impossible }\n\
+             type impossible = never\n\
+             type neverReturns = fn(): never\n\
+             type valueOrNever = string | never",
+        );
         let BodyItem::VariableDeclaration(var_decl) = program.body.first().unwrap() else {
             panic!("expected a variable declaration")
         };
@@ -4735,6 +4796,41 @@ cylinder = startSketchOn(-XZ)
             function.return_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::Never)
         );
+
+        let BodyItem::TypeDeclaration(impossible) = &program.body[1] else {
+            panic!("expected a type declaration")
+        };
+        let TypeDeclarationDefinition::Alias { ty: impossible } = &impossible.definition else {
+            panic!("expected a type alias")
+        };
+        assert_eq!(impossible.inner, Type::Primitive(PrimitiveType::Never));
+
+        let BodyItem::TypeDeclaration(never_returns) = &program.body[2] else {
+            panic!("expected a type declaration")
+        };
+        let TypeDeclarationDefinition::Alias { ty: never_returns } = &never_returns.definition else {
+            panic!("expected a type alias")
+        };
+        let Type::Primitive(PrimitiveType::Function(never_returns)) = &never_returns.inner else {
+            panic!("expected a function type")
+        };
+        assert_eq!(
+            never_returns.return_type.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+
+        let BodyItem::TypeDeclaration(value_or_never) = &program.body[3] else {
+            panic!("expected a type declaration")
+        };
+        let TypeDeclarationDefinition::Alias { ty: value_or_never } = &value_or_never.definition else {
+            panic!("expected a type alias")
+        };
+        let Type::Union { tys } = &value_or_never.inner else {
+            panic!("expected a union type")
+        };
+        assert_eq!(tys[0].inner, Type::Primitive(PrimitiveType::String));
+        assert_eq!(tys[1].inner, Type::Primitive(PrimitiveType::Never));
+
         assert_eq!(
             serde_json::to_value(PrimitiveType::Never).unwrap(),
             serde_json::json!({ "p_type": "Never" })

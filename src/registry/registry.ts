@@ -11,6 +11,7 @@ const bundledRegistryItemModules: Record<string, RegistryItemModule> =
       './extensions/*/index.ts',
       './plugins/*/index.ts',
       '../lib/*/registry/index.ts',
+      '../lang/*/registry/index.ts',
     ],
     {
       eager: true,
@@ -23,8 +24,7 @@ export const appRegistryOverridesSlot = new Slot()
 const bundledRegistryItemKindOrder = (path: string) =>
   path.includes('/plugins/') ? 1 : 0
 
-// Core app registry items discovered from src/registry/extensions/*/index.ts,
-// src/registry/plugins/*/index.ts, and src/lib/*/registry/index.ts.
+// Core app registry items discovered from the glob patterns in `bundledRegistryItemModules`.
 //
 // Extensions are always-on app infrastructure. Plugins are user-visible,
 // runtime-toggleable bundles that may depend on extension contracts.

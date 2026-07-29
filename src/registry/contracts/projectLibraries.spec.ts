@@ -1,19 +1,28 @@
 import {
-  combineProjectLibrarySettingDefaults,
-  combineProjectLibraryTypes,
-  combineProjectLibraries,
-  getHomeProjectEntriesForLibrary,
-  getProjectLibraryOperation,
-} from '@src/registry/contracts/projectLibraries'
-import {
+  areProjectLibrarySettingsEqual,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
   DEFAULT_PROJECT_LIBRARY_ID,
   getContainingDirectoryProjectLibraryPath,
-  getDefaultDirectoryProjectLibrarySetting,
+  getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryIdFromSetting,
+  moveProjectLibrarySetting,
+  normalizeProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
+  updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
+import {
+  combineProjectLibraries,
+  combineProjectLibrarySettingDefaultPolicies,
+  combineProjectLibrarySettingDefaults,
+  combineProjectLibraryTypes,
+  getHomeProjectEntriesForLibrary,
+  getProjectLibraryOperation,
+  resolveProjectLibrarySettingDefaults,
+} from '@src/registry/contracts/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
 describe('project library settings', () => {
@@ -51,6 +60,18 @@ describe('project library settings', () => {
     )
   })
 
+  test('maps the default cloud library to the stable cloud library id', () => {
+    expect(
+      projectLibraryFromSetting(getDefaultCloudProjectLibrarySetting())
+    ).toEqual(
+      expect.objectContaining({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+      })
+    )
+  })
+
   test('treats the first directory library as the default local project target', () => {
     const libraries = [
       {
@@ -78,6 +99,11 @@ describe('project library settings', () => {
       path: '/client-projects',
       type: 'directory',
     })
+  })
+
+  test('allows the project libraries setting to be absent', () => {
+    expect(getDefaultDirectoryProjectLibraryPath(undefined)).toBeUndefined()
+    expect(getDefaultDirectoryProjectLibrarySetting(undefined)).toBeUndefined()
   })
 
   test('finds the most specific directory library containing a project path', () => {
@@ -153,6 +179,92 @@ describe('project library settings', () => {
       },
     ])
   })
+
+  test('normalizes project library settings using the matching type fallback', () => {
+    expect(
+      normalizeProjectLibrarySetting(
+        {
+          title: '  ',
+          path: '  ',
+          type: 'cloud',
+        },
+        {
+          title: 'Cloud',
+          path: 'zoo-cloud',
+          type: 'cloud',
+        }
+      )
+    ).toEqual({
+      title: 'Cloud',
+      path: 'zoo-cloud',
+      type: 'cloud',
+    })
+  })
+
+  test('compares project library settings by persisted fields and order', () => {
+    const libraries = [
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ]
+
+    expect(areProjectLibrarySettingsEqual(libraries, [...libraries])).toBe(true)
+    expect(
+      areProjectLibrarySettingsEqual(libraries, [libraries[1], libraries[0]])
+    ).toBe(false)
+  })
+
+  test('updates and moves project library settings without mutating the source list', () => {
+    const libraries = [
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ]
+
+    expect(
+      updateProjectLibrarySettingAt(libraries, 1, (library) => ({
+        ...library,
+        title: 'Personal Cloud',
+      }))
+    ).toEqual([
+      libraries[0],
+      {
+        title: 'Personal Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ])
+    expect(moveProjectLibrarySetting(libraries, 1, 0)).toEqual([
+      libraries[1],
+      libraries[0],
+    ])
+    expect(libraries).toEqual([
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ])
+  })
 })
 
 describe('combineProjectLibraries', () => {
@@ -190,6 +302,51 @@ describe('combineProjectLibraries', () => {
         id: 'external',
         title: 'External Projects',
       }),
+    ])
+  })
+})
+
+describe('project library default policies', () => {
+  test('resolves the highest-priority default library policy', () => {
+    const directoryPolicy = {
+      id: 'directory',
+      priority: 0,
+      getDefaultLibraries: () => [
+        {
+          title: 'Projects',
+          path: '/projects',
+          type: 'directory',
+        },
+      ],
+    }
+    const cloudPolicy = {
+      id: 'cloud',
+      priority: 10,
+      getDefaultLibraries: () => [
+        {
+          title: 'Personal Cloud',
+          path: '/personal',
+          type: 'cloud',
+        },
+      ],
+    }
+
+    const policies = combineProjectLibrarySettingDefaultPolicies([
+      directoryPolicy,
+      cloudPolicy,
+    ])
+
+    expect(
+      resolveProjectLibrarySettingDefaults(policies, {
+        initialDefaultDir: '/projects',
+        isDesktop: false,
+      })
+    ).toEqual([
+      {
+        title: 'Personal Cloud',
+        path: '/personal',
+        type: 'cloud',
+      },
     ])
   })
 })
