@@ -41,12 +41,11 @@ fn entity_clone_remaps_sweep_ids() {
             id: source_id,
             sub_type: SweepSubType::Revolve,
             path_id: Some(source_path_id),
-            source_edge_reference: None,
             surface_ids: vec![source_surface_id],
             edge_ids: vec![source_edge_id],
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             trajectory_id: Some(source_trajectory_id),
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -93,7 +92,7 @@ fn entity_clone_remaps_sweep_ids() {
     assert_eq!(clone_sweep.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_sweep.sub_type, SweepSubType::Revolve);
     assert_eq!(clone_sweep.path_id, Some(cloned_path_id));
-    assert_eq!(clone_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(clone_sweep.method, ArtifactSweepMethod::New);
     assert_eq!(clone_sweep.surface_ids, vec![cloned_surface_id]);
     assert_eq!(clone_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(clone_sweep.trajectory_id, Some(cloned_trajectory_id));
@@ -387,12 +386,11 @@ fn entity_clone_clones_mapped_child_artifacts() {
             id: source_sweep_id,
             sub_type: SweepSubType::Extrusion,
             path_id: Some(source_path_id),
-            source_edge_reference: None,
             surface_ids: vec![source_wall_id],
             edge_ids: Vec::new(),
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -570,12 +568,11 @@ fn surface_blend_creates_blend_sweep_artifact() {
             id: source_surface_one_id,
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_one_id),
-            source_edge_reference: None,
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: source_code_ref.clone(),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -586,12 +583,11 @@ fn surface_blend_creates_blend_sweep_artifact() {
             id: source_surface_two_id,
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_two_id),
-            source_edge_reference: None,
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: source_code_ref,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -655,7 +651,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.sub_type, SweepSubType::Blend);
     assert_eq!(blend_sweep.path_id, Some(path_one_id));
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
-    assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(blend_sweep.method, ArtifactSweepMethod::New);
     assert!(!blend_sweep.consumed);
 }
 
@@ -778,12 +774,11 @@ fn pattern_artifact_links_to_source_geometry() {
             id: sweep_id,
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_id),
-            source_edge_reference: None,
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: code_ref.clone(),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -931,9 +926,8 @@ fn edge_specifier_surface_extrude_creates_sweep_without_path_id() {
         Artifact::Sweep(Sweep {
             id,
             path_id: None,
-            source_edge_reference,
             ..
-        }) if *id == ArtifactId::new(cmd_id) && source_edge_reference == &Some(edge_reference)
+        }) if *id == ArtifactId::new(cmd_id)
     ));
 }
 
@@ -1005,12 +999,11 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
             id: body_id,
             sub_type: SweepSubType::Extrusion,
             path_id: None,
-            source_edge_reference: None,
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: code_ref.clone(),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -1122,12 +1115,11 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             id: source_sweep_id,
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_id),
-            source_edge_reference: None,
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),

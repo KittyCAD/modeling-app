@@ -9,6 +9,13 @@ export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
   'documents',
   PROJECT_FOLDER,
 ])}`
+const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
+  INTERNAL_OPFS_META_FILE,
+  '.git',
+  '.hg',
+  '.svn',
+  '.jj',
+])
 
 export async function getDefaultCloudProjectDirectoryPath() {
   if (typeof window !== 'undefined' && window.electron?.os.isMac) {
@@ -56,6 +63,12 @@ export function normalizeRelativePath(relativePath: string) {
     .replaceAll('\\', '/')
     .replace(/^\/+/g, '')
     .replace(/^(?:\.\/)+/g, '')
+}
+
+export function isCloudSyncExcludedPath(targetPath: string) {
+  return webSafePathSplit(normalizePathForSync(targetPath)).some((part) =>
+    CLOUD_SYNC_EXCLUDED_PATH_PARTS.has(part)
+  )
 }
 
 function getProjectRootFromProjectDirectoryParts(

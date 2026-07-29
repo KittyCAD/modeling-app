@@ -51,11 +51,14 @@ function createProjectActions({
     canOpen,
     canRename: () => true,
     canDelete: () => true,
+    canMoveToLibrary: () => true,
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
+    getMoveToLibraryTargets: vi.fn(() => []),
+    moveToLibrary: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -254,6 +257,24 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
       'Delete project'
     )
+  })
+
+  test('opens move to library from the card context menu', () => {
+    const onMoveToLibrary = vi.fn()
+    render(
+      <BrowserRouter>
+        <AppProjectCard
+          project={cloudProject}
+          projectActions={createProjectActions()}
+          onMoveToLibrary={onMoveToLibrary}
+        />
+      </BrowserRouter>
+    )
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
+
+    expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
   })
 
   test('selects the project title when opening rename from the context menu', async () => {
