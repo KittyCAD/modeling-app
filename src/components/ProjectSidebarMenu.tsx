@@ -303,6 +303,7 @@ function ProjectMenuPopover({
                   type: SystemIOMachineEvents.duplicateProject,
                   data: {
                     projectName: project.name,
+                    projectPath: project.path,
                     requestedProjectName: getProjectDisplayName(project),
                   },
                 })

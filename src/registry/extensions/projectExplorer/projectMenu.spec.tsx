@@ -112,6 +112,7 @@ describe('project explorer project menu', () => {
         type: 'duplicate project',
         data: {
           projectName: projectWellFormed.name,
+          projectPath: projectWellFormed.path,
           requestedProjectName: projectWellFormed.title,
         },
       })

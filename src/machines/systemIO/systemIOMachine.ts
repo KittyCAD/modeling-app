@@ -89,7 +89,11 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.duplicateProject
-          data: { projectName: string; requestedProjectName: string }
+          data: {
+            projectName: string
+            projectPath: string
+            requestedProjectName: string
+          }
         }
       | {
           type: SystemIOMachineEvents.renameProject
@@ -504,15 +508,16 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.duplicateProject]: fromPromise(
       async ({
-        input: { context, projectName, requestedProjectName },
+        input: { context, projectName, projectPath, requestedProjectName },
       }: {
         input: {
           context: SystemIOContext
           projectName: string
+          projectPath: string
           requestedProjectName: string
         }
       }) => {
-        return { message: '', name: '' }
+        return { message: '', name: '', title: '', projectPath: '' }
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -1164,6 +1169,7 @@ export const systemIOMachine = setup({
           return {
             context,
             projectName: event.data.projectName,
+            projectPath: event.data.projectPath,
             requestedProjectName: event.data.requestedProjectName,
           }
         },
@@ -1172,9 +1178,17 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               lastOperation: SystemIOMachineStates.duplicatingProject,
-              requestedProjectName: ({ event }) => ({
-                name: (event as { output: { name: string } }).output.name,
-              }),
+              requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { name: string; projectPath: string }
+                  }
+                ).output
+                return {
+                  name: output.name,
+                  path: output.projectPath,
+                }
+              },
             }),
             SystemIOMachineActions.toastSuccess,
           ],

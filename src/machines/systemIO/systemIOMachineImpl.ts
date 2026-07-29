@@ -477,37 +477,25 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           projectName: string
+          projectPath: string
           requestedProjectName: string
         }
       }) => {
-        const folders = input.context.folders
-        if (!folders) {
-          return Promise.reject(new Error('Projects have not finished loading'))
-        }
-
-        const project = folders.find(({ name }) => name === input.projectName)
-        if (!project) {
-          return Promise.reject(
-            new Error(`Project "${input.projectName}" does not exist`)
-          )
-        }
-
-        const projectDirectoryPath = input.context.projectDirectoryPath
-        if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-          return Promise.reject(
-            new Error('Unable to determine the project directory.')
-          )
-        }
-        return duplicateProjectInDirectory({
+        const projectDirectoryPath = fsZds.dirname(input.projectPath)
+        const result = await duplicateProjectInDirectory({
           source: {
-            directoryName: project.name,
-            displayName: getProjectDisplayName(project),
-            path: project.path,
+            directoryName: input.projectName,
+            displayName: input.requestedProjectName,
+            path: input.projectPath,
           },
           projectDirectoryPath,
           requestedProjectTitle: input.requestedProjectName,
           wasmInstance: await input.context.wasmInstancePromise,
         })
+        return {
+          ...result,
+          projectPath: fsZds.join(projectDirectoryPath, result.name),
+        }
       }
     ),
     [SystemIOMachineActors.renameProject]: fromPromise(

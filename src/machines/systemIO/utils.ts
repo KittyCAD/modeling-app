@@ -134,7 +134,7 @@ export type SystemIOContext = SystemIOInput & {
    * We watch objects because we want to be able to navigate to itself
    * if we used a string the useEffect would not change
    */
-  requestedProjectName: { name: string; subRoute?: string }
+  requestedProjectName: { name: string; path?: string; subRoute?: string }
   requestedFileName: {
     project: string
     file: string

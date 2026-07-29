@@ -59,6 +59,7 @@ export function modelingMenuCallbackMostActions({
         type: SystemIOMachineEvents.duplicateProject,
         data: {
           projectName: currentProject.name,
+          projectPath: currentProject.path,
           requestedProjectName: getProjectDisplayName(currentProject),
         },
       })

@@ -167,7 +167,12 @@ describe('systemIOMachine - XState', () => {
         expect(state).toBe(SystemIOMachineStates.idle)
       })
       it('routes project duplication through its actor', async () => {
-        const duplicate = deferred<{ message: string; name: string }>()
+        const duplicate = deferred<{
+          message: string
+          name: string
+          title: string
+          projectPath: string
+        }>()
         let receivedInput: unknown
         const actor = createActor(
           systemIOMachine.provide({
@@ -195,6 +200,7 @@ describe('systemIOMachine - XState', () => {
             type: SystemIOMachineEvents.duplicateProject,
             data: {
               projectName: 'bracket',
+              projectPath: '/custom-projects/bracket',
               requestedProjectName: 'Bracket',
             },
           })
@@ -204,19 +210,25 @@ describe('systemIOMachine - XState', () => {
           )
           expect(receivedInput).toMatchObject({
             projectName: 'bracket',
+            projectPath: '/custom-projects/bracket',
             requestedProjectName: 'Bracket',
           })
 
           duplicate.resolve({
             message: 'Successfully duplicated "Bracket" as "Bracket-copy"',
             name: 'bracket-copy',
+            title: 'Bracket-copy',
+            projectPath: '/custom-projects/bracket-copy',
           })
           await waitFor(actor, (state) =>
             state.matches(SystemIOMachineStates.readingFolders)
           )
           expect(actor.getSnapshot().context).toMatchObject({
             lastOperation: SystemIOMachineStates.duplicatingProject,
-            requestedProjectName: { name: 'bracket-copy' },
+            requestedProjectName: {
+              name: 'bracket-copy',
+              path: '/custom-projects/bracket-copy',
+            },
           })
         } finally {
           actor.stop()
