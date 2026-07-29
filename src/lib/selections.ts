@@ -1178,8 +1178,9 @@ export async function getEventForSelectWithPoint(
   }
 
   const selectedEngineEntityId = data.entity_id
-  let _artifact =
-    artifactGraph.get(selectedEngineEntityId) ??
+  const directArtifact = artifactGraph.get(selectedEngineEntityId)
+  const _artifact =
+    directArtifact ??
     getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
@@ -1227,10 +1228,8 @@ export async function getEventForSelectWithPoint(
     }
   }
 
-  if (
-    _artifact.type === 'pattern' &&
-    _artifact.copyFaceIds.includes(selectedEngineEntityId)
-  ) {
+  const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
+  if (!directArtifact || !codeRefs) {
     const primitiveSelection = await getPrimitiveSelectionForEntity(
       selectedEngineEntityId,
       engineCommandManager
@@ -1246,8 +1245,7 @@ export async function getEventForSelectWithPoint(
     }
   }
 
-  const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
-  if (_artifact && codeRefs) {
+  if (codeRefs) {
     return {
       type: 'Set selection',
       data: {

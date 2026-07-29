@@ -1256,7 +1256,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       copyFaceIds: ['copy-face-id'],
       copyEdgeIds: ['copy-edge-id'],
     } as unknown as Artifact
-    const engineCommandManager = createPrimitiveEngineCommandManager({
+    const engineCommandManager = createPrimitiveEngineConnectionManager({
       parentEntityId: 'copy-body-id',
       primitiveIndex: 1,
       primitiveType: 'face',
