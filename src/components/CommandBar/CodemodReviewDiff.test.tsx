@@ -1,3 +1,5 @@
+import { EditorState, type Extension } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -13,14 +15,35 @@ vi.mock('@codemirror/merge', () => ({
       b,
       parent,
     }: {
-      a: { doc: string }
-      b: { doc: string }
+      a: { doc: string; extensions: Extension }
+      b: { doc: string; extensions: Extension }
       parent: Element
     }) {
       this.dom = document.createElement('div')
       this.dom.dataset.testid = 'mock-merge-view'
       this.dom.dataset.before = a.doc
       this.dom.dataset.after = b.doc
+
+      for (const editorConfig of [a, b]) {
+        const editor = document.createElement('div')
+        editor.setAttribute('role', 'textbox')
+        const state = EditorState.create({
+          doc: editorConfig.doc,
+          extensions: editorConfig.extensions,
+        })
+        editor.setAttribute(
+          'contenteditable',
+          state.facet(EditorView.editable) ? 'true' : 'false'
+        )
+        editor.setAttribute('aria-readonly', state.readOnly ? 'true' : 'false')
+        for (const attributes of state.facet(EditorView.contentAttributes)) {
+          for (const [name, value] of Object.entries(attributes)) {
+            editor.setAttribute(name, value)
+          }
+        }
+        this.dom.appendChild(editor)
+      }
+
       parent.appendChild(this.dom)
     }
 
@@ -43,7 +66,9 @@ describe('CodemodReviewDiff', () => {
       />
     )
 
-    const toggle = screen.getByRole('button', { name: 'Codemod' })
+    const toggle = screen.getByRole('button', {
+      name: 'Code changes',
+    })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByTestId('cmd-bar-codemod-diff')).not.toBeInTheDocument()
 
@@ -51,7 +76,14 @@ describe('CodemodReviewDiff', () => {
 
     expect(toggle).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByText('Current file')).toBeInTheDocument()
-    expect(screen.getAllByText('Codemod')).toHaveLength(2)
+    expect(screen.getByText('Code changes')).toBeInTheDocument()
+    expect(screen.getByText('Proposed file')).toBeInTheDocument()
+    const currentFile = screen.getByRole('textbox', { name: 'Current file' })
+    const proposedFile = screen.getByRole('textbox', { name: 'Proposed file' })
+    expect(currentFile).toHaveAttribute('contenteditable', 'true')
+    expect(currentFile).toHaveAttribute('aria-readonly', 'true')
+    expect(proposedFile).toHaveAttribute('contenteditable', 'true')
+    expect(proposedFile).toHaveAttribute('aria-readonly', 'true')
     expect(screen.getByTestId('cmd-bar-codemod-diff')).toBeInTheDocument()
     expect(screen.getByTestId('mock-merge-view')).toHaveAttribute(
       'data-before',

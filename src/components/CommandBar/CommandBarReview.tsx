@@ -12,6 +12,18 @@ import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { useMemo } from 'react'
 
+function validationErrorParts(error: string) {
+  const separatorIndex = error.indexOf(': ')
+  if (separatorIndex < 1) {
+    return { message: error }
+  }
+
+  return {
+    category: error.slice(0, separatorIndex),
+    message: error.slice(separatorIndex + 2),
+  }
+}
+
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
   const resolvedTheme = useResolvedTheme()
@@ -108,6 +120,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     }
     return s
   }, [selectedCommand, commandBarState.context])
+  const validationError = reviewValidationError
+    ? validationErrorParts(reviewValidationError)
+    : undefined
+
   return (
     <CommandBarHeaderFooter
       stepBack={stepBack}
@@ -120,23 +136,6 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
           </p>
-          <CommandBarDivider />
-        </>
-      )}
-      {reviewValidationError && (
-        <>
-          <p
-            className="px-4 py-2 text-red-500 text-sm"
-            data-testid="cmd-bar-review-validation-error"
-          >
-            {reviewValidationError}
-          </p>
-          {reviewValidationDetails?.type === 'codemod' && (
-            <CodemodReviewDiff
-              details={reviewValidationDetails}
-              resolvedTheme={resolvedTheme}
-            />
-          )}
           <CommandBarDivider />
         </>
       )}
@@ -219,6 +218,43 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               }
             )}
           </div>
+          <CommandBarDivider />
+        </>
+      )}
+      {validationError && (
+        <>
+          <div
+            role="alert"
+            className="mx-4 my-3 flex items-start gap-3 rounded-md border border-destroy-30 bg-destroy-10/40 px-3 py-2.5 dark:border-destroy-70 dark:bg-destroy-80/15"
+          >
+            <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-destroy-20/70 text-destroy-80 dark:bg-destroy-80/60 dark:text-destroy-20">
+              <CustomIcon name="triangleExclamation" className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-medium text-sm text-destroy-80 dark:text-destroy-20">
+                Check these arguments
+              </p>
+              <p
+                className="mt-0.5 break-words text-sm leading-5 text-chalkboard-80 dark:text-chalkboard-20"
+                data-testid="cmd-bar-review-validation-error"
+              >
+                {validationError.category && (
+                  <>
+                    <span className="mr-1 inline-flex rounded bg-destroy-20/60 px-1.5 py-0.5 text-[11px] font-medium leading-none capitalize text-destroy-80 dark:bg-destroy-80/50 dark:text-destroy-20">
+                      {validationError.category}:
+                    </span>{' '}
+                  </>
+                )}
+                {validationError.message}
+              </p>
+            </div>
+          </div>
+          {reviewValidationDetails?.type === 'codemod' && (
+            <CodemodReviewDiff
+              details={reviewValidationDetails}
+              resolvedTheme={resolvedTheme}
+            />
+          )}
           <CommandBarDivider />
         </>
       )}

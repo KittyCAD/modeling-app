@@ -19,7 +19,7 @@ export function CodemodReviewDiff({
     <div className="mx-4 mb-3 overflow-hidden rounded border border-chalkboard-20 dark:border-chalkboard-70">
       <button
         type="button"
-        aria-label="Codemod"
+        aria-label="Code changes"
         aria-controls={contentId}
         aria-expanded={expanded}
         onClick={() => setExpanded((current) => !current)}
@@ -31,7 +31,7 @@ export function CodemodReviewDiff({
             expanded ? '' : '-rotate-90'
           }`}
         />
-        <span className="font-medium">Codemod</span>
+        <span className="font-medium">Code changes</span>
       </button>
       {expanded && (
         <div
@@ -42,9 +42,10 @@ export function CodemodReviewDiff({
             beforeText={details.currentCode}
             afterText={details.proposedCode}
             beforeLabel="Current file"
-            afterLabel="Codemod"
+            afterLabel="Proposed file"
             language="kcl"
             resolvedTheme={resolvedTheme}
+            compact
             testId="cmd-bar-codemod-diff"
           />
         </div>

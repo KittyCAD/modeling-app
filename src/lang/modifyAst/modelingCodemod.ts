@@ -90,22 +90,27 @@ export async function runModelingCodemod<CommandArgs>({
   commandArgs,
   kclManager,
   wasmInstance,
+  sourceSnapshot,
 }: {
   codemod: ModelingCodemod<CommandArgs>
   commandArgs: CommandArgs
   kclManager: KclManager
   wasmInstance?: ModuleType
+  sourceSnapshot?: {
+    ast: Node<Program>
+    code: string
+  }
 }) {
   const resolvedWasmInstance =
     wasmInstance ?? (await kclManager.wasmInstancePromise)
-  let ast = kclManager.ast
+  let ast = sourceSnapshot?.ast ?? kclManager.ast
 
   if (
     shouldEnableExperimentalFeatures(codemod, commandArgs) &&
     kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
   ) {
     const astWithNewSetting = setExperimentalFeatures(
-      kclManager.code,
+      sourceSnapshot?.code ?? kclManager.code,
       {
         type: 'Allow',
       },
@@ -155,13 +160,17 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       return hasConnectionRes
     }
 
-    const currentCode = kclManager.code
     const wasmInstance = await context.wasmInstancePromise
+    const sourceSnapshot = {
+      ast: kclManager.ast,
+      code: kclManager.code,
+    }
     const codemodResult = await runModelingCodemod({
       codemod,
       commandArgs: context.argumentsToSubmit as CommandArgs,
       kclManager,
       wasmInstance,
+      sourceSnapshot,
     })
     if (err(codemodResult)) {
       return codemodResult
@@ -180,7 +189,7 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       return Object.assign(new Error(execRes.message, { cause: execRes }), {
         reviewDetails: {
           type: 'codemod' as const,
-          currentCode,
+          currentCode: sourceSnapshot.code,
           proposedCode,
         },
       })

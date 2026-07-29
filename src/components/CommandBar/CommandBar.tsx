@@ -162,7 +162,7 @@ export const CommandBar = () => {
         >
           <WrapperComponent.Panel
             className={`relative z-50 pointer-events-auto w-full ${
-              showsCodemodReview ? 'max-w-5xl' : 'max-w-xl'
+              showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
             } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
             as="div"
             data-testid="command-bar"

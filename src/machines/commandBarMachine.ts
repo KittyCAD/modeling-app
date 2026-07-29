@@ -211,6 +211,8 @@ export const commandBarMachine = setup({
     }),
     'Clear selected command': assign({
       selectedCommand: undefined,
+      reviewValidationError: undefined,
+      reviewValidationDetails: undefined,
     }),
     'Set current argument to first non-skippable': assign({
       currentArgument: ({ context, event }) => {
