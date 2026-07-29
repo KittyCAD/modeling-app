@@ -216,6 +216,18 @@ impl ObjectKind {
 pub enum Plane {
     Object(ObjectId),
     Default(PlaneName),
+    PrimitiveFace(PrimitiveFacePlane),
+}
+
+/// An indexed face on a solid which has not yet been materialized as a KCL
+/// `Face` value.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PrimitiveFacePlane {
+    /// Engine ID of the solid which owns the face.
+    pub solid_id: uuid::Uuid,
+    pub index: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
