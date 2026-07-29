@@ -1976,6 +1976,20 @@ box = extrude(profile, length = 30)`
           reviewValidationError:
             'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
+
+        const codemodToggle = cmdBar.cmdBarElement.getByRole('button', {
+          name: 'Codemod',
+        })
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'false')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).not.toBeAttached()
+
+        await codemodToggle.click()
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'true')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).toBeVisible()
       })
 
       await test.step('Add x translation', async () => {
@@ -2004,6 +2018,9 @@ box = extrude(profile, length = 30)`
           },
           commandName: 'Translate',
         })
+        await expect(
+          cmdBar.cmdBarElement.getByRole('button', { name: 'Codemod' })
+        ).not.toBeAttached()
         await cmdBar.submit()
         await scene.settled()
       })

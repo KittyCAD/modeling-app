@@ -6,10 +6,11 @@ import {
   updateModelingState,
 } from '@src/lang/modelingWorkflows'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import type { PathToNode, Program } from '@src/lang/wasm'
+import { recast, type PathToNode, type Program } from '@src/lang/wasm'
+import type { CommandReviewValidationError } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -142,7 +143,7 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
         }
       }
     }
-  ): Promise<undefined | Error> => {
+  ): Promise<undefined | CommandReviewValidationError> => {
     if (!modelingActor) {
       return new Error('modelingMachine not found')
     }
@@ -154,11 +155,13 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       return hasConnectionRes
     }
 
+    const currentCode = kclManager.code
+    const wasmInstance = await context.wasmInstancePromise
     const codemodResult = await runModelingCodemod({
       codemod,
       commandArgs: context.argumentsToSubmit as CommandArgs,
       kclManager,
-      wasmInstance: await context.wasmInstancePromise,
+      wasmInstance,
     })
     if (err(codemodResult)) {
       return codemodResult
@@ -168,8 +171,19 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       codemodResult.modifiedAst,
       rustContext
     )
-    if (err(execRes)) {
-      return execRes
+    if (isErr(execRes)) {
+      const proposedCode = recast(codemodResult.modifiedAst, wasmInstance)
+      if (isErr(proposedCode)) {
+        return execRes
+      }
+
+      return Object.assign(new Error(execRes.message, { cause: execRes }), {
+        reviewDetails: {
+          type: 'codemod' as const,
+          currentCode,
+          proposedCode,
+        },
+      })
     }
   }
 }

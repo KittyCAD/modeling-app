@@ -2,19 +2,27 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
+import { CodemodReviewDiff } from '@src/components/CommandBar/CodemodReviewDiff'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { useMemo } from 'react'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
+  const resolvedTheme = useResolvedTheme()
   const commandBarState = commands.useState()
   const {
-    context: { argumentsToSubmit, selectedCommand, reviewValidationError },
+    context: {
+      argumentsToSubmit,
+      selectedCommand,
+      reviewValidationError,
+      reviewValidationDetails,
+    },
   } = commandBarState
 
   useHotkeys('backspace+meta', stepBack, {
@@ -123,6 +131,12 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           >
             {reviewValidationError}
           </p>
+          {reviewValidationDetails?.type === 'codemod' && (
+            <CodemodReviewDiff
+              details={reviewValidationDetails}
+              resolvedTheme={resolvedTheme}
+            />
+          )}
           <CommandBarDivider />
         </>
       )}
