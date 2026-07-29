@@ -6,15 +6,18 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 export const DIAGNOSING_NETWORK_ISSUES_URL =
   'https://community.zoo.dev/t/diagnosing-network-connection-issues/156'
+export const ZOO_STATUS_URL = 'https://status.zoo.dev'
 
 export const ConnectionRecovery = ({
   title = 'Failed to connect.',
+  description,
   onReconnect,
   reconnectDisabled,
   className,
   dataTestId = 'connection-recovery',
 }: {
   title?: ReactNode
+  description?: ReactNode
   onReconnect: () => void
   reconnectDisabled?: boolean
   className?: string
@@ -28,25 +31,29 @@ export const ConnectionRecovery = ({
     >
       <CustomIcon
         name="close"
-        className="h-8 w-8 rounded-full bg-destroy-60 !text-chalkboard-10"
+        className="h-4 w-4 shrink-0 text-destroy-60"
+        aria-hidden={true}
+        focusable="false"
       />
-      <p className="mt-4 text-base text-destroy-60">{title}</p>
-      <div className="mt-2 mb-2 w-full max-w-xl px-4 pt-2 pb-6 text-base">
-        Click below to try again. If it persists, please visit the community
-        support thread on{' '}
-        <a
-          className="contents text-chalkboard-80 dark:text-chalkboard-10"
-          href={DIAGNOSING_NETWORK_ISSUES_URL}
-          onClick={openExternalBrowserIfDesktop(DIAGNOSING_NETWORK_ISSUES_URL)}
-        >
-          <span className="underline underline-offset-1">
-            diagnosing network connection issues
-          </span>
-        </a>
-        .
-      </div>
+      <h2 className="mt-3 text-base font-normal text-destroy-60">{title}</h2>
+      <hr className="mt-3 w-full max-w-[22rem] border-0 border-t border-chalkboard-30 dark:border-chalkboard-70" />
+      <p className="mt-4 mb-3 w-full max-w-[22rem] text-base leading-tight text-chalkboard-70 dark:text-chalkboard-30">
+        {description ?? (
+          <>
+            Click below to try again. If it persists,{' '}
+            <a
+              className="underline underline-offset-1"
+              href={ZOO_STATUS_URL}
+              onClick={openExternalBrowserIfDesktop(ZOO_STATUS_URL)}
+            >
+              the problem may be on our side
+            </a>
+            .
+          </>
+        )}
+      </p>
       <ActionButton
-        className="h-5"
+        className="h-6 focus-visible:outline-appForeground"
         Element="button"
         iconStart={{
           icon: 'refresh',
@@ -55,7 +62,7 @@ export const ConnectionRecovery = ({
         disabled={reconnectDisabled}
         tabIndex={0}
       >
-        reconnect
+        Reconnect
       </ActionButton>
     </div>
   )

@@ -1,6 +1,6 @@
 import {
   ConnectionRecovery,
-  DIAGNOSING_NETWORK_ISSUES_URL,
+  ZOO_STATUS_URL,
 } from '@src/components/ConnectionRecovery'
 import Loading from '@src/components/Loading'
 import { fireEvent, render, screen } from '@testing-library/react'
@@ -11,15 +11,18 @@ test('ConnectionRecovery shows the shared recovery UI and reconnects', () => {
 
   render(<ConnectionRecovery onReconnect={onReconnect} />)
 
-  expect(screen.getByRole('alert')).toHaveTextContent('Failed to connect.')
+  expect(
+    screen.getByRole('heading', { name: 'Failed to connect.' })
+  ).toBeInTheDocument()
   expect(screen.getByRole('alert')).toHaveTextContent(
-    'diagnosing network connection issues'
+    'Click below to try again. If it persists, the problem may be on our side.'
   )
+  expect(screen.getByRole('separator')).toBeInTheDocument()
   expect(
     screen.getByRole('link', {
-      name: 'diagnosing network connection issues',
+      name: 'the problem may be on our side',
     })
-  ).toHaveAttribute('href', DIAGNOSING_NETWORK_ISSUES_URL)
+  ).toHaveAttribute('href', ZOO_STATUS_URL)
   expect(
     screen.queryByRole('button', { name: /clear chat/i })
   ).not.toBeInTheDocument()
@@ -29,10 +32,11 @@ test('ConnectionRecovery shows the shared recovery UI and reconnects', () => {
   expect(onReconnect).toHaveBeenCalledTimes(1)
 })
 
-test('ConnectionRecovery accepts a contextual title', () => {
+test('ConnectionRecovery accepts contextual recovery copy', () => {
   render(
     <ConnectionRecovery
       title="No internet connection."
+      description="Check your network connection, then try again."
       onReconnect={() => {}}
     />
   )
@@ -40,6 +44,25 @@ test('ConnectionRecovery accepts a contextual title', () => {
   expect(screen.getByTestId('connection-recovery')).toHaveTextContent(
     'No internet connection.'
   )
+  expect(screen.getByTestId('connection-recovery')).toHaveTextContent(
+    'Check your network connection, then try again.'
+  )
+  expect(
+    screen.queryByRole('link', { name: 'the problem may be on our side' })
+  ).not.toBeInTheDocument()
+})
+
+test('ConnectionRecovery disables reconnecting when requested', () => {
+  const onReconnect = vi.fn()
+
+  render(
+    <ConnectionRecovery onReconnect={onReconnect} reconnectDisabled={true} />
+  )
+
+  const reconnectButton = screen.getByRole('button', { name: /reconnect/i })
+  expect(reconnectButton).toBeDisabled()
+  fireEvent.click(reconnectButton)
+  expect(onReconnect).not.toHaveBeenCalled()
 })
 
 test('Loading uses ConnectionRecovery for Engine manual reconnects', () => {

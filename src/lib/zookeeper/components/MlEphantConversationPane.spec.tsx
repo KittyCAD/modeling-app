@@ -410,7 +410,12 @@ describe('MlEphantConversationPane', () => {
       expect(screen.getByRole('alert')).toHaveTextContent(
         'No internet connection.'
       )
-      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Check your network connection, then click below to try again.'
+      )
+      const recovery = screen.getByTestId('connection-recovery')
+      expect(recovery).toHaveClass('h-full')
+      expect(recovery.parentElement).toHaveClass('h-full')
       expect(
         screen.queryByRole('button', { name: /clear chat/i })
       ).not.toBeInTheDocument()

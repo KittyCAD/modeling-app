@@ -701,11 +701,19 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
-            <div className="overflow-auto" ref={refScroll}>
+            <div
+              className={
+                props.showManualConnect
+                  ? 'h-full min-h-0 overflow-auto'
+                  : 'overflow-auto'
+              }
+              ref={refScroll}
+            >
               {props.showManualConnect ? (
                 <ConnectionRecovery
-                  className="min-h-[12rem] w-full"
+                  className="h-full min-h-[12rem] w-full"
                   title={props.connectionError ?? 'No internet connection.'}
+                  description="Check your network connection, then click below to try again."
                   onReconnect={props.onReconnect}
                   reconnectDisabled={props.isClearingChat}
                 />
