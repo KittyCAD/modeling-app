@@ -38,7 +38,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import {
+  type ProjectLibrary,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -72,7 +75,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
-  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
   filterStatusBarItemsForScopes,
@@ -149,7 +152,16 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectLibraries = registry.signal(projectLibrariesValueSpec).value
+  const settingsValues = settings.useSettings()
+  const projectLibraryTypes = registry.signal(
+    projectLibraryTypesValueSpec
+  ).value
+  const projectLibraries = projectLibrariesFromSettings(
+    settingsValues.app.libraries.current
+  ).map((library) => ({
+    ...library,
+    icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
+  }))
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -267,7 +279,6 @@ const Home = () => {
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 

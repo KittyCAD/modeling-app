@@ -75,6 +75,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 ## Tests
 
 - Unit tests use `*.test.ts` or `*.test.tsx` and run with `npm run test:unit`.
+- Never import `wasm-lib` in unit tests.
 - Integration tests use `*.spec.ts` or `*.spec.tsx` and run with `npm run test:integration`.
 - Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.spec.tsx`.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
