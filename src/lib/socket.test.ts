@@ -1,21 +1,15 @@
 import { Socket, type SocketConnectionError } from '@src/lib/socket'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 class TestWebSocket extends EventTarget {
   static latest: TestWebSocket
 
-  readonly url: string
-  readonly sentPayloads: string[] = []
+  send = vi.fn()
   close = vi.fn()
 
-  constructor(url: string) {
+  constructor(_url: string) {
     super()
-    this.url = url
     TestWebSocket.latest = this
-  }
-
-  send(payload: string) {
-    this.sentPayloads.push(payload)
   }
 }
 
@@ -24,10 +18,6 @@ const TestWebSocketConstructor = TestWebSocket as unknown as new (
 ) => WebSocket
 
 describe('Socket', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('authenticates and resolves after the websocket opens', async () => {
     const socketPromise = Socket(
       TestWebSocketConstructor,
@@ -39,14 +29,14 @@ describe('Socket', () => {
     socket.dispatchEvent(new Event('open'))
 
     await expect(socketPromise).resolves.toBe(socket)
-    expect(socket.sentPayloads).toStrictEqual([
+    expect(socket.send).toHaveBeenCalledWith(
       JSON.stringify({
         type: 'headers',
         headers: {
           Authorization: 'Bearer token',
         },
-      }),
-    ])
+      })
+    )
   })
 
   it('rejects when the websocket fails before opening', async () => {
@@ -70,10 +60,7 @@ describe('Socket', () => {
     )
 
     const closeEvent = new Event('close')
-    Object.defineProperties(closeEvent, {
-      code: { value: 1009 },
-      reason: { value: 'message too big' },
-    })
+    Object.defineProperty(closeEvent, 'code', { value: 1009 })
     TestWebSocket.latest.dispatchEvent(closeEvent)
 
     await expect(socketPromise).rejects.toThrow(
@@ -81,7 +68,6 @@ describe('Socket', () => {
     )
     await expect(socketPromise).rejects.toMatchObject({
       code: 1009,
-      reason: 'message too big',
     } satisfies Partial<SocketConnectionError>)
   })
 
@@ -91,9 +77,7 @@ describe('Socket', () => {
       TestWebSocketConstructor,
       'wss://example.test/socket',
       'token',
-      {
-        signal: abortController.signal,
-      }
+      abortController.signal
     )
     const socket = TestWebSocket.latest
 
@@ -101,7 +85,7 @@ describe('Socket', () => {
     socket.dispatchEvent(new Event('open'))
 
     expect(socket.close).toHaveBeenCalledTimes(1)
-    expect(socket.sentPayloads).toStrictEqual([])
+    expect(socket.send).not.toHaveBeenCalled()
     await expect(socketPromise).rejects.toThrow(
       'WebSocket connection was canceled'
     )

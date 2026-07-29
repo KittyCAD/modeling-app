@@ -1,14 +1,12 @@
+import { promiseFactory } from '@src/lib/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export class SocketConnectionError extends Error {
-  code?: number
-  reason?: string
+  readonly code?: number
 
-  constructor(message: string, options?: { code?: number; reason?: string }) {
+  constructor(message: string, code?: number) {
     super(message)
-    this.name = 'SocketConnectionError'
-    this.code = options?.code
-    this.reason = options?.reason
+    this.code = code
   }
 }
 
@@ -16,85 +14,75 @@ export function Socket<T extends WebSocket>(
   WsClass: new (url: string) => T,
   urlOrPath: string,
   token: string,
-  options?: {
-    signal?: AbortSignal
-  }
+  signal?: AbortSignal
 ): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const ws = new WsClass(
-      urlOrPath.includes('ws:') || urlOrPath.includes('wss:')
-        ? urlOrPath
-        : withAPIBaseURL(urlOrPath)
-    )
-    let pending = true
+  const { promise, resolve, reject } = promiseFactory<T>()
+  const rejectError = reject as (reason?: unknown) => void
 
-    function cleanupPendingConnectionListeners() {
-      options?.signal?.removeEventListener('abort', handleAbort)
-      ws.removeEventListener('error', handleError)
-      ws.removeEventListener('open', handleOpen)
+  let ws: T
+
+  if (urlOrPath.includes('ws:') || urlOrPath.includes('wss:')) {
+    ws = new WsClass(urlOrPath)
+  } else {
+    ws = new WsClass(withAPIBaseURL(urlOrPath))
+  }
+
+  let pending = true
+  function finishPending() {
+    if (!pending) {
+      return false
     }
-
-    function handleAbort() {
-      if (!pending) {
-        return
-      }
-      pending = false
-      cleanupPendingConnectionListeners()
-      ws.close()
-      reject(new SocketConnectionError('WebSocket connection was canceled'))
-    }
-
-    function handleError() {
-      if (!pending) {
-        return
-      }
-      pending = false
-      cleanupPendingConnectionListeners()
-      ws.close()
-      reject(new SocketConnectionError('WebSocket connection failed'))
-    }
-
-    function handleOpen() {
-      if (!pending) {
-        return
-      }
-      pending = false
-      cleanupPendingConnectionListeners()
-      ws.send(
-        JSON.stringify({
-          type: 'headers',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      )
-      resolve(ws)
-    }
-
-    if (options?.signal?.aborted) {
-      handleAbort()
+    pending = false
+    signal?.removeEventListener('abort', handleAbort)
+    return true
+  }
+  function handleAbort() {
+    if (!finishPending()) {
       return
     }
+    ws.close()
+    rejectError(new SocketConnectionError('WebSocket connection was canceled'))
+  }
 
-    options?.signal?.addEventListener('abort', handleAbort, { once: true })
-    ws.addEventListener('error', handleError)
-    ws.addEventListener('open', handleOpen, { once: true })
-
-    ws.addEventListener('close', (event: CloseEvent) => {
-      console.log(urlOrPath, 'closed')
-      if (!pending) {
-        return
-      }
-      pending = false
-      cleanupPendingConnectionListeners()
-      reject(
-        new SocketConnectionError('WebSocket closed before opening', {
-          code: event.code,
-          reason: event.reason,
-        })
-      )
-    })
+  ws.addEventListener('open', () => {
+    if (!finishPending()) {
+      return
+    }
+    ws.send(
+      JSON.stringify({
+        type: 'headers',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      })
+    )
+    resolve(ws)
   })
+
+  ws.addEventListener('error', () => {
+    if (!finishPending()) {
+      return
+    }
+    ws.close()
+    rejectError(new SocketConnectionError('WebSocket connection failed'))
+  })
+
+  ws.addEventListener('close', (event) => {
+    console.log(urlOrPath, 'closed')
+    if (!finishPending()) {
+      return
+    }
+    rejectError(
+      new SocketConnectionError('WebSocket closed before opening', event.code)
+    )
+  })
+
+  signal?.addEventListener('abort', handleAbort, { once: true })
+  if (signal?.aborted) {
+    handleAbort()
+  }
+
+  return promise
 }
 
 export function ZooSocket(path: string, token: string): Promise<WebSocket> {

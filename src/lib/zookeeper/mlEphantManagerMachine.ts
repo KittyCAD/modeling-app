@@ -865,9 +865,12 @@ export const mlEphantManagerMachine = setup({
       // Defensive: if there's already an open connection, close it.
       closeMlEphantWebSocket(args.input.context.ws)
 
-      const ws = await Socket(WebSocket, url, args.input.context.apiToken, {
-        signal: args.signal,
-      })
+      const ws = await Socket(
+        WebSocket,
+        url,
+        args.input.context.apiToken,
+        args.signal
+      )
       ws.binaryType = 'arraybuffer'
 
       logZookeeperDisconnect('websocket opened and authenticated', {
