@@ -330,6 +330,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::string::trim_end(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::string::trimEnd"),
         ),
+        ("string", "toString") => (
+            |e, a| Box::pin(crate::std::string::number_to_string(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::toString"),
+        ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::fillet"),

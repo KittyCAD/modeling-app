@@ -227,6 +227,29 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(projectToml).toContain('title = "Untitled"')
+    expect(projectToml).toContain('default_file = "main.kcl"')
+    expect(projectToml).toContain('project_id = "remote-project-123"')
+  })
+
+  it('adds project.toml default_file from remote entrypoint metadata', () => {
+    const files = withRemoteProjectMetadataInArchiveFiles(
+      [
+        projectFile('main.kcl'),
+        projectFile('nested/part.kcl'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
+      ],
+      'Bracket',
+      'remote-project-123',
+      'dev.zoo.dev',
+      'nested/part.kcl'
+    )
+    const projectToml = new TextDecoder().decode(
+      files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
+        ?.data
+    )
+
+    expect(projectToml).toContain('title = "Bracket"')
+    expect(projectToml).toContain('default_file = "nested/part.kcl"')
     expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
@@ -596,6 +619,41 @@ describe('cloudSync sync helpers', () => {
     expect(getCloudSyncScopePlan(entries)).toEqual({
       shouldSyncRemoteIndex: true,
       projectPaths: ['/projects/current', '/projects/conflicted'],
+      pendingCount: 2,
+    })
+
+    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: ['/projects/current'],
+      pendingCount: 1,
+    })
+  })
+
+  it('counts pending cloud sync work by project instead of raw outbox rows', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+      {
+        projectPath: '/projects/current',
+        kind: 'upsert',
+        targetPath: '/projects/current/project.toml',
+        createdAt: '2026-06-12T00:00:01.000Z',
+      },
+      {
+        projectPath: '/projects/other',
+        kind: 'upsert',
+        targetPath: '/projects/other/main.kcl',
+        createdAt: '2026-06-12T00:00:02.000Z',
+      },
+    ]
+
+    expect(getCloudSyncScopePlan(entries)).toEqual({
+      shouldSyncRemoteIndex: true,
+      projectPaths: ['/projects/current', '/projects/other'],
       pendingCount: 2,
     })
 

@@ -10,12 +10,12 @@ import {
   moveProjectLibrarySetting,
   normalizeProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  projectLibrariesFromSettings,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
 import {
-  combineProjectLibraries,
   combineProjectLibrarySettingDefaultPolicies,
   combineProjectLibrarySettingDefaults,
   combineProjectLibraryTypes,
@@ -267,40 +267,45 @@ describe('project library settings', () => {
   })
 })
 
-describe('combineProjectLibraries', () => {
-  test('merges duplicate library contributions by id and sorts by order', () => {
+describe('projectLibrariesFromSettings', () => {
+  test('derives visible library instances from settings order', () => {
     expect(
-      combineProjectLibraries([
+      projectLibrariesFromSettings([
         {
-          id: 'external',
           title: 'External',
           path: 'external://projects',
           type: 'external',
-          order: 10,
         },
         {
-          id: 'default-project-directory',
           title: 'Default Projects Directory',
           path: '/projects',
           type: 'directory',
-          order: 0,
         },
         {
-          id: 'external',
-          title: 'External Projects',
-          path: 'external://projects',
-          type: 'external',
-          order: 10,
+          title: 'Personal Cloud',
+          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+          type: 'cloud',
         },
       ])
     ).toEqual([
       expect.objectContaining({
-        id: 'default-project-directory',
-        title: 'Default Projects Directory',
+        id: getProjectLibraryIdFromSetting({
+          title: 'External',
+          path: 'external://projects',
+          type: 'external',
+        }),
+        title: 'External',
+        order: 0,
       }),
       expect.objectContaining({
-        id: 'external',
-        title: 'External Projects',
+        id: DEFAULT_PROJECT_LIBRARY_ID,
+        title: 'Default Projects Directory',
+        order: 1,
+      }),
+      expect.objectContaining({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        title: 'Personal Cloud',
+        order: 2,
       }),
     ])
   })

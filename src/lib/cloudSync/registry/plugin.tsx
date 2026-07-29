@@ -53,7 +53,6 @@ import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
@@ -79,7 +78,6 @@ import {
 } from '@src/registry/contracts/projectExplorer'
 import {
   type ProjectLibraryTypeContribution,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -786,47 +784,6 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
-const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const library = computed<ProjectLibrary[]>(() => {
-    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
-    const configuredLibraries =
-      settings.value?.current.value.app.libraries?.current
-    const configuredCloudLibraryIndex =
-      configuredLibraries?.findIndex(
-        (library) =>
-          library.type === defaultCloudLibrary.type &&
-          library.path === defaultCloudLibrary.path
-      ) ?? -1
-    const configuredCloudLibrary =
-      configuredCloudLibraryIndex === -1
-        ? undefined
-        : configuredLibraries?.[configuredCloudLibraryIndex]
-
-    return [
-      {
-        ...defaultCloudLibrary,
-        ...configuredCloudLibrary,
-        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        icon: 'network',
-        order:
-          configuredCloudLibraryIndex === -1 ? 10 : configuredCloudLibraryIndex,
-      },
-    ]
-  })
-
-  return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.project-library',
-      provides: [
-        provide(projectLibrariesValueSpec, library, {
-          key: 'cloud-sync.project-library',
-        }),
-      ],
-    }),
-  }
-}, 'cloud-sync.project-library')
-
 /**
  * The `cloud` project-library *type* handler (browse/create in the local
  * Personal Cloud folder). This is registered as an always-on extension rather
@@ -970,7 +927,14 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           if (project.localProjectPath && project.readWriteAccess) {
-            await fsZds.rm(project.localProjectPath, { recursive: true })
+            if (remoteProjectId) {
+              await cloudSyncActions?.deleteLocalProjectRealizations(
+                remoteProjectId,
+                project.localProjectPath
+              )
+            } else {
+              await fsZds.rm(project.localProjectPath, { recursive: true })
+            }
             // Cloud-backed deletes are explicit local + remote product
             // actions, not just local tombstones for background sync.
             if (remoteProjectId) {
@@ -1076,7 +1040,6 @@ export const cloudSyncPlugin = createZdsPlugin({
   description: 'Cloud-backed project sync controls and status.',
   items: [
     cloudConflictProjectMenuItem,
-    cloudSyncProjectLibraryContribution,
     cloudSyncStatusBarItemContribution,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],

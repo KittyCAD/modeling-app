@@ -5,14 +5,13 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryNameFromTitle,
-  getProjectTitleFromUniqueDirectoryName,
-  getUniqueDuplicateProjectName,
+  getUniqueProjectNameFromExistingNames,
 } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { v4 } from 'uuid'
+import * as uuid from 'uuid'
 
 type DuplicateProjectSource = {
   directoryName: string
@@ -38,19 +37,16 @@ export async function duplicateProjectInDirectory({
   wasmInstance: ModuleType
 }): Promise<DuplicateProjectResult> {
   const projectTitle = requestedProjectTitle.trim() || source.displayName
-  const requestedProjectDirectoryName = getProjectDirectoryNameFromTitle(
-    projectTitle,
-    source.directoryName
+  const requestedCopyTitle = `${projectTitle}-copy`
+  const requestedCopyName = getProjectDirectoryNameFromTitle(
+    requestedCopyTitle,
+    `${source.directoryName}-copy`
   )
-  const name = getUniqueDuplicateProjectName(
-    requestedProjectDirectoryName,
+  const name = getUniqueProjectNameFromExistingNames(
+    requestedCopyName,
     await fsZds.readdir(projectDirectoryPath)
   )
-  const title = getProjectTitleFromUniqueDirectoryName({
-    requestedProjectTitle: projectTitle,
-    requestedProjectDirectoryName,
-    uniqueProjectDirectoryName: name,
-  })
+  const title = `${requestedCopyTitle}${name.slice(requestedCopyName.length)}`
 
   const projectToml = await getProjectTomlContents({
     projectPath: source.path,
@@ -62,7 +58,7 @@ export async function duplicateProjectInDirectory({
   const duplicatedProjectToml = prepareProjectTomlForDuplication(
     projectToml,
     title,
-    v4()
+    uuid.v4()
   )
   if (isErr(duplicatedProjectToml)) {
     return Promise.reject(duplicatedProjectToml)
@@ -72,7 +68,7 @@ export async function duplicateProjectInDirectory({
   // after its project metadata no longer points at the source cloud project.
   const temporaryPath = fsZds.join(
     projectDirectoryPath,
-    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
+    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${uuid.v4()}`
   )
   const targetPath = fsZds.join(projectDirectoryPath, name)
   try {

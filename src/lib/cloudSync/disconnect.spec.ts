@@ -315,5 +315,19 @@ describe('cloud sync upload failures', () => {
       lastFailureKind: 'remote-upload-forbidden',
       lastFailure: expect.stringContaining('does not have edit access'),
     })
+
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl: 'https://example.test',
+      environmentName: 'dev.zoo.dev',
+      projectDirectoryPath: '/documents/Projects',
+    })
+
+    expect(cloudSyncStatus.value).toMatchObject({
+      state: 'failed',
+      activeProjectPath: projectPath,
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailure: expect.stringContaining('does not have edit access'),
+    })
   })
 })
