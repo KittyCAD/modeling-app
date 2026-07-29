@@ -122,6 +122,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
+    deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
     getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),
@@ -500,9 +501,6 @@ describe('cloud sync project library', () => {
       pendingCount: 0,
     }
     const cloudSync = createCloudSyncService()
-    const removeProjectDirectory = vi
-      .spyOn(fsZds, 'rm')
-      .mockResolvedValue(undefined)
     const registry = new Registry()
     const cloudSyncServiceExtension = defineRegistryItem({
       id: 'test-cloud-sync-service',
@@ -541,11 +539,15 @@ describe('cloud sync project library', () => {
         },
       })
 
-      expect(removeProjectDirectory).toHaveBeenCalledWith('/cloud/bracket', {
-        recursive: true,
-      })
+      expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+        'remote-123',
+        '/cloud/bracket'
+      )
       expect(cloudSync.deleteRemoteProject).toHaveBeenCalledWith('remote-123')
-      expect(removeProjectDirectory.mock.invocationCallOrder[0]).toBeLessThan(
+      expect(
+        vi.mocked(cloudSync.deleteLocalProjectRealizations).mock
+          .invocationCallOrder[0]
+      ).toBeLessThan(
         vi.mocked(cloudSync.deleteRemoteProject).mock.invocationCallOrder[0]
       )
     } finally {
@@ -603,6 +605,7 @@ describe('cloud sync project library', () => {
       ).rejects.toThrow('Cloud sync is not enabled.')
 
       expect(removeProjectDirectory).not.toHaveBeenCalled()
+      expect(cloudSync.deleteLocalProjectRealizations).not.toHaveBeenCalled()
       expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
     } finally {
       registry[Symbol.dispose]()
