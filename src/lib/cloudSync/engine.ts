@@ -1979,12 +1979,14 @@ async function markProjectConflict(
         at: createdAt,
       },
     })
-    updateStatus({
-      state: 'conflict',
-      activeProjectPath: metadata.localProjectPath,
-      lastFailure: 'Cloud sync conflict: local and remote both changed.',
-      lastFailureAt: createdAt,
-    })
+    if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+      updateStatus({
+        state: 'conflict',
+        activeProjectPath: metadata.localProjectPath,
+        lastFailure: 'Cloud sync conflict: local and remote both changed.',
+        lastFailureAt: createdAt,
+      })
+    }
     return
   }
 
