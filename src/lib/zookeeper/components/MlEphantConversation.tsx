@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -52,6 +53,7 @@ export interface MlEphantConversationProps {
   onReconnect: () => void
   connectionError?: string
   connectionFailed?: boolean
+  showManualConnect?: boolean
   canClearChat?: boolean
   isClearingChat?: boolean
   loadingMessage?: string
@@ -700,7 +702,14 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div className="overflow-auto" ref={refScroll}>
-              {props.needsReconnect && props.connectionFailed ? (
+              {props.showManualConnect ? (
+                <ConnectionRecovery
+                  className="min-h-[12rem] w-full"
+                  title={props.connectionError ?? 'No internet connection.'}
+                  onReconnect={props.onReconnect}
+                  reconnectDisabled={props.isClearingChat}
+                />
+              ) : props.needsReconnect && props.connectionFailed ? (
                 <div
                   className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-90"
                   role="alert"

@@ -644,7 +644,8 @@ export const MlEphantConversationPane = (props: {
       connectionError={
         showManualConnect ? 'No internet connection.' : closeReason
       }
-      connectionFailed={setupFailed || showManualConnect}
+      connectionFailed={setupFailed}
+      showManualConnect={showManualConnect}
       canClearChat={setupFailed && conversationId !== undefined}
       isClearingChat={isClearingChatPending}
       loadingMessage={

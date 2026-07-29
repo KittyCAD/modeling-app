@@ -410,6 +410,10 @@ describe('MlEphantConversationPane', () => {
       expect(screen.getByRole('alert')).toHaveTextContent(
         'No internet connection.'
       )
+      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /clear chat/i })
+      ).not.toBeInTheDocument()
       expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
         type: MlEphantManagerTransitions.NetworkOffline,
       })
@@ -437,7 +441,8 @@ describe('MlEphantConversationPane', () => {
       expect(screen.getByRole('alert')).toHaveTextContent(
         'No internet connection.'
       )
-      expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
       expect(
         screen.queryByRole('button', { name: /Clear chat/ })
       ).not.toBeInTheDocument()
@@ -455,6 +460,13 @@ describe('MlEphantConversationPane', () => {
           type: MlEphantManagerTransitions.CacheSetupAndConnect,
         })
       )
+
+      fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: mlEphantManagerActor.send,
+        conversationId: 'conversation-id',
+      })
     } finally {
       vi.useRealTimers()
     }
