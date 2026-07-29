@@ -61,6 +61,9 @@ type FakeMlEphantSnapshot = {
   value: string
   context: {
     abruptlyClosed: boolean
+    setupFailed?: boolean
+    setupAttempt?: number
+    closeReason?: string
     awaitingResponse: boolean
     attachmentsLoadedForCurrentPrompt: boolean
     conversation?: Conversation
@@ -85,21 +88,31 @@ const createFakeActor = ({
   modeOptions = undefined,
   value = 'ready',
   awaitingResponse = true,
+  abruptlyClosed = false,
+  setupFailed = false,
+  setupAttempt = 0,
+  includeConversationId = true,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   value?: string
   awaitingResponse?: boolean
+  abruptlyClosed?: boolean
+  setupFailed?: boolean
+  setupAttempt?: number
+  includeConversationId?: boolean
 } = {}): FakeMlEphantActor => {
   const snapshot: FakeMlEphantSnapshot = {
     value,
     context: {
-      abruptlyClosed: false,
+      abruptlyClosed,
+      setupFailed,
+      setupAttempt,
       awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation,
-      conversationId: 'conversation-id',
+      conversationId: includeConversationId ? 'conversation-id' : undefined,
       defaultMode,
       modeOptions,
     },
@@ -172,6 +185,8 @@ const createStatefulClearChatActor = () => {
     value: 'ready',
     context: {
       abruptlyClosed: false,
+      setupFailed: false,
+      setupAttempt: 0,
       awaitingResponse: false,
       attachmentsLoadedForCurrentPrompt: true,
       conversation: completedConversation,
@@ -226,6 +241,8 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
     value: 'ready',
     context: {
       abruptlyClosed: false,
+      setupFailed: false,
+      setupAttempt: 0,
       awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation: completedConversation,
@@ -264,12 +281,43 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
         listener(snapshot)
       }
     },
+    setConnectionState: (value: string, nextAwaitingResponse: boolean) => {
+      snapshot = {
+        ...snapshot,
+        value,
+        context: {
+          ...snapshot.context,
+          awaitingResponse: nextAwaitingResponse,
+        },
+      }
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
+    },
   }
 
   return actor
 }
 
-const renderPane = ({
+type RenderPaneOptions = {
+  mlEphantManagerActor?: FakeMlEphantActor
+  conversationStore?: FakeConversationStore
+  theProject?: any
+  settingsMetaId?: string
+  settingsProjectDirectory?: string
+  zookeeperMode?: {
+    current?: MlCopilotModeId
+    project?: MlCopilotModeId
+    user?: MlCopilotModeId
+  }
+  kclManager?: any
+  loaderFile?: any
+  sendBillingUpdate?: () => void
+  sendBillingUsageStarted?: () => void
+  sendBillingUsageEnded?: () => void
+}
+
+const createPaneElement = ({
   mlEphantManagerActor = createFakeActor(),
   conversationStore = createFakeConversationStore(),
   theProject = undefined,
@@ -287,24 +335,8 @@ const renderPane = ({
   sendBillingUpdate = vi.fn(),
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
-}: {
-  mlEphantManagerActor?: FakeMlEphantActor
-  conversationStore?: FakeConversationStore
-  theProject?: any
-  settingsMetaId?: string
-  settingsProjectDirectory?: string
-  zookeeperMode?: {
-    current?: MlCopilotModeId
-    project?: MlCopilotModeId
-    user?: MlCopilotModeId
-  }
-  kclManager?: any
-  loaderFile?: any
-  sendBillingUpdate?: () => void
-  sendBillingUsageStarted?: () => void
-  sendBillingUsageEnded?: () => void
-} = {}) => {
-  return render(
+}: RenderPaneOptions = {}) => {
+  return (
     <MemoryRouter>
       <MlEphantConversationPane
         mlEphantManagerActor={mlEphantManagerActor as any}
@@ -353,6 +385,9 @@ const renderPane = ({
   )
 }
 
+const renderPane = (options: RenderPaneOptions = {}) =>
+  render(createPaneElement(options))
+
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
@@ -361,6 +396,138 @@ beforeAll(async () => {
 })
 
 describe('MlEphantConversationPane', () => {
+  test('shows recovery immediately when mounted while the browser is already offline', () => {
+    const onlineSpy = vi
+      .spyOn(navigator, 'onLine', 'get')
+      .mockReturnValue(false)
+    const mlEphantManagerActor = createFakeActor({
+      awaitingResponse: false,
+    })
+
+    try {
+      renderPane({ mlEphantManagerActor })
+
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'No internet connection.'
+      )
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.NetworkOffline,
+      })
+    } finally {
+      onlineSpy.mockRestore()
+    }
+  })
+
+  test('shows recovery immediately and does not retry while the browser is offline', async () => {
+    vi.useFakeTimers()
+    const mlEphantManagerActor = createFakeActor({
+      awaitingResponse: false,
+    })
+
+    try {
+      renderPane({ mlEphantManagerActor })
+
+      act(() => {
+        window.dispatchEvent(new Event('offline'))
+      })
+
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.NetworkOffline,
+      })
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'No internet connection.'
+      )
+      expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+      expect(
+        screen.queryByRole('button', { name: /Clear chat/ })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeDisabled()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3000)
+      })
+
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        })
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('reconnects immediately when the browser comes back online', () => {
+    const mlEphantManagerActor = createFakeActor({
+      awaitingResponse: false,
+    })
+    renderPane({ mlEphantManagerActor })
+
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'No internet connection.'
+    )
+
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+
+    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+      type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      refParentSend: mlEphantManagerActor.send,
+      conversationId: 'conversation-id',
+    })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  test('does not automatically reconnect after setup gives up', async () => {
+    vi.useFakeTimers()
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      setupFailed: true,
+      conversation: undefined,
+      value: 'await',
+      awaitingResponse: false,
+    })
+
+    try {
+      renderPane({ mlEphantManagerActor })
+
+      await vi.advanceTimersByTimeAsync(3000)
+
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        })
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  test('does not offer Clear chat after a fresh conversation fails', () => {
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      setupFailed: true,
+      conversation: undefined,
+      includeConversationId: false,
+      value: 'await',
+      awaitingResponse: false,
+    })
+
+    renderPane({ mlEphantManagerActor })
+
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+    expect(
+      screen.queryByRole('button', { name: /Clear chat/ })
+    ).not.toBeInTheDocument()
+  })
+
   test('keeps the cancel button visible while the actor is still awaiting a response', () => {
     renderPane()
 
@@ -385,6 +552,28 @@ describe('MlEphantConversationPane', () => {
     } finally {
       warnSpy.mockRestore()
     }
+  })
+
+  test('keeps queued prompts while reconnecting instead of sending them during setup', () => {
+    const mlEphantManagerActor = createStatefulPromptActor(true)
+    renderPane({ mlEphantManagerActor })
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'send this after reconnecting' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+    expect(screen.getByText('send this after reconnecting')).toBeInTheDocument()
+
+    act(() => {
+      mlEphantManagerActor.setConnectionState('setup', false)
+    })
+
+    expect(screen.getByText('send this after reconnecting')).toBeInTheDocument()
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.MessageSend,
+      })
+    )
   })
 
   test('syncs billing when prompt processing finishes', () => {
@@ -696,11 +885,13 @@ describe('MlEphantConversationPane', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
 
-    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
-      'project-id'
-    )
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
-      type: MlEphantManagerTransitions.ConversationClose,
+    await waitFor(() => {
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).toHaveBeenCalledWith('project-id')
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.ConversationClose,
+      })
     })
     await waitFor(() => {
       expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
@@ -738,10 +929,12 @@ describe('MlEphantConversationPane', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
 
-    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
-      'project-id'
-    )
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+    await waitFor(() => {
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).toHaveBeenCalledWith('project-id')
+    })
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith({
       type: MlEphantManagerTransitions.ConversationClose,
     })
     expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
@@ -760,5 +953,143 @@ describe('MlEphantConversationPane', () => {
         })
       )
     })
+  })
+
+  test('keeps the current chat when deleting its saved mapping fails', async () => {
+    const mlEphantManagerActor = createStatefulClearChatActor()
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'old-conversation-id']]),
+    })
+    vi.mocked(
+      conversationStore.deleteProjectConversationId
+    ).mockRejectedValueOnce(new Error('storage unavailable'))
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    try {
+      renderPane({
+        mlEphantManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+        },
+      })
+      mlEphantManagerActor.send.mockClear()
+
+      fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+
+      await waitFor(() => {
+        expect(errorSpy).toHaveBeenCalled()
+      })
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.ConversationClose,
+      })
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          conversationId: undefined,
+        })
+      )
+      expect(
+        await conversationStore.getProjectConversationId('project-id')
+      ).toBe('old-conversation-id')
+    } finally {
+      errorSpy.mockRestore()
+    }
+  })
+
+  test('disables recovery actions while clearing a saved chat', async () => {
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      setupFailed: true,
+      conversation: undefined,
+      value: 'await',
+      awaitingResponse: false,
+    })
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'conversation-id']]),
+      completeDeletesAutomatically: false,
+    })
+
+    renderPane({
+      mlEphantManagerActor,
+      conversationStore,
+      settingsMetaId: 'project-id',
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+
+    await waitFor(() => {
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).toHaveBeenCalledWith('project-id')
+    })
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reconnect' }))
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+  })
+
+  test('does not finish clearing an old project after switching projects', async () => {
+    const mlEphantManagerActor = createStatefulClearChatActor()
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-a', 'old-conversation-id']]),
+      completeDeletesAutomatically: false,
+    })
+    const projectA = {
+      name: 'project-a',
+      path: '/tmp/project-a',
+    }
+    const { rerender } = renderPane({
+      mlEphantManagerActor,
+      conversationStore,
+      settingsMetaId: 'project-a',
+      theProject: projectA,
+    })
+
+    await waitFor(() => {
+      expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+        'project-a'
+      )
+    })
+    mlEphantManagerActor.send.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+    await waitFor(() => {
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).toHaveBeenCalledWith('project-a')
+    })
+
+    rerender(
+      createPaneElement({
+        mlEphantManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-b',
+        theProject: undefined,
+      })
+    )
+    mlEphantManagerActor.send.mockClear()
+
+    await act(async () => {
+      conversationStore.completeDelete()
+      await Promise.resolve()
+    })
+
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        conversationId: undefined,
+      })
+    )
   })
 })
