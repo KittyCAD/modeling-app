@@ -265,6 +265,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('stops retrying and exposes a recoverable failure after repeated setup errors', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       let setupAttempts = 0
       let shouldFail = true
       const machine = mlEphantManagerMachine.provide({
@@ -310,6 +311,18 @@ describe('mlEphantManagerMachine', () => {
       expect(actor.getSnapshot().context.closeReason).toContain(
         `${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts`
       )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        error_name: 'Error',
+        message: 'setup failed',
+      })
+      expect(JSON.parse(reports[0]?.stack ?? '{}')).toMatchObject({
+        terminal: true,
+        setupAttempt: NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+        conversationId: 'conversation-id',
+      })
 
       shouldFail = false
       actor.send({
@@ -334,6 +347,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('times out setup attempts instead of waiting forever', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       vi.useFakeTimers()
       let setupAttempts = 0
       const machine = mlEphantManagerMachine.provide({
@@ -373,6 +387,13 @@ describe('mlEphantManagerMachine', () => {
         expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
         expect(actor.getSnapshot().matches(S.Await)).toBe(true)
         expect(actor.getSnapshot().context.setupFailed).toBe(true)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(reports).toHaveLength(1)
+        expect(reports[0]).toMatchObject({
+          code: 'zookeeper_setup_error',
+          error_name: 'Error',
+          message: `Zookeeper couldn't load this conversation after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`,
+        })
       } finally {
         actor.stop()
         vi.useRealTimers()
@@ -380,6 +401,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('keeps a saved conversation id until the user explicitly clears it', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       const machine = mlEphantManagerMachine.provide({
         actors: {
           [MlEphantManagerStates.Setup]: fromPromise<
@@ -411,6 +433,13 @@ describe('mlEphantManagerMachine', () => {
       expect(actor.getSnapshot().context.closeReason).toContain(
         'load this conversation'
       )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        error_name: 'Error',
+        message: MlEphantSetupErrors.ConversationNotFound,
+      })
 
       actor.stop()
     })
@@ -744,6 +773,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('counts setup-time disconnects toward the retry limit', () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       let setupAttempts = 0
       const machine = mlEphantManagerMachine.provide({
         actors: {
@@ -786,6 +816,14 @@ describe('mlEphantManagerMachine', () => {
       expect(actor.getSnapshot().context.closeReason).toContain(
         'project files are too large'
       )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        error_name: 'Error',
+        message:
+          'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.',
+      })
 
       actor.stop()
     })

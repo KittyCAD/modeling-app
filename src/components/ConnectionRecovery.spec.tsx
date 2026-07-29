@@ -17,12 +17,20 @@ test('ConnectionRecovery shows the shared recovery UI and reconnects', () => {
   expect(screen.getByRole('alert')).toHaveTextContent(
     'Click below to try again. If it persists, the problem may be on our side.'
   )
-  expect(screen.getByRole('separator')).toBeInTheDocument()
   expect(
-    screen.getByRole('link', {
-      name: 'the problem may be on our side',
-    })
-  ).toHaveAttribute('href', ZOO_STATUS_URL)
+    screen
+      .getByTestId('connection-recovery')
+      .querySelector('svg[aria-label="close"]')
+  ).toHaveClass('h-8', 'w-8')
+  expect(screen.getByRole('separator')).toBeInTheDocument()
+  const statusLink = screen.getByRole('link', {
+    name: 'the problem may be on our side',
+  })
+  expect(statusLink).toHaveAttribute('href', ZOO_STATUS_URL)
+  expect(statusLink).toHaveClass(
+    'text-chalkboard-80',
+    'dark:text-chalkboard-10'
+  )
   expect(
     screen.queryByRole('button', { name: /clear chat/i })
   ).not.toBeInTheDocument()

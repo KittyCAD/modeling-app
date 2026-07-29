@@ -72,6 +72,7 @@ export const MlEphantConversationPane = (props: {
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
+  const reconnectAfterSavedConversationLookup = useRef(false)
   const savedProjectConversationLookupGeneration = useRef(0)
   const clearChatOperationGeneration = useRef(0)
   const loaderFileRef = useRef(props.loaderFile)
@@ -180,11 +181,22 @@ export const MlEphantConversationPane = (props: {
     if (isClearingChat.current) {
       return
     }
+
+    const actorConversationId =
+      props.mlEphantManagerActor.getSnapshot().context.conversationId
+    if (
+      actorConversationId === undefined &&
+      !savedProjectConversationLookupLoaded.current
+    ) {
+      reconnectAfterSavedConversationLookup.current = true
+      return
+    }
+
+    reconnectAfterSavedConversationLookup.current = false
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
-      conversationId:
-        props.mlEphantManagerActor.getSnapshot().context.conversationId,
+      conversationId: actorConversationId ?? savedProjectConversationId.current,
     })
   }, [props.mlEphantManagerActor])
 
@@ -196,6 +208,7 @@ export const MlEphantConversationPane = (props: {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
+        reconnectAfterSavedConversationLookup.current = false
         setShowManualConnect(true)
         props.mlEphantManagerActor.send({
           type: MlEphantManagerTransitions.NetworkOffline,
@@ -340,6 +353,7 @@ export const MlEphantConversationPane = (props: {
     }
 
     isClearingChat.current = true
+    reconnectAfterSavedConversationLookup.current = false
     setIsClearingChatPending(true)
     const clearOperationGeneration = clearChatOperationGeneration.current + 1
     clearChatOperationGeneration.current = clearOperationGeneration
@@ -535,9 +549,17 @@ export const MlEphantConversationPane = (props: {
     savedProjectConversationLookupGeneration.current = lookupGeneration
     const projectId = props.settings.meta.id.current
     let canceled = false
+    const continueAfterSavedConversationLookup = () => {
+      if (reconnectAfterSavedConversationLookup.current) {
+        reconnect()
+        return
+      }
+      tryToGetExchanges()
+    }
+
     if (projectId === undefined) {
       savedProjectConversationLookupLoaded.current = true
-      tryToGetExchanges()
+      continueAfterSavedConversationLookup()
     } else if (projectId !== uuidNIL) {
       void props.conversationStore
         .getProjectConversationId(projectId)
@@ -551,7 +573,7 @@ export const MlEphantConversationPane = (props: {
           }
           savedProjectConversationLookupLoaded.current = true
           savedProjectConversationId.current = conversationId
-          tryToGetExchanges()
+          continueAfterSavedConversationLookup()
         })
         .catch((error: unknown) => {
           if (
@@ -564,8 +586,11 @@ export const MlEphantConversationPane = (props: {
           savedProjectConversationLookupLoaded.current = true
           savedProjectConversationId.current = undefined
           reportRejection(error)
-          tryToGetExchanges()
+          continueAfterSavedConversationLookup()
         })
+    } else {
+      savedProjectConversationLookupLoaded.current = true
+      continueAfterSavedConversationLookup()
     }
 
     tryToGetExchanges()
@@ -574,6 +599,7 @@ export const MlEphantConversationPane = (props: {
       canceled = true
       clearChatOperationGeneration.current += 1
       isClearingChat.current = false
+      reconnectAfterSavedConversationLookup.current = false
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

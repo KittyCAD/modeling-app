@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -26,6 +27,9 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
+
+const terminalRecoveryButtonClassName =
+  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 hover:!border-chalkboard-40 hover:!bg-chalkboard-20 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:hover:!border-chalkboard-60 dark:hover:!bg-chalkboard-80'
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
@@ -725,7 +729,9 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                   <div className="flex items-start gap-2">
                     <CustomIcon
                       name="close"
-                      className="h-5 w-5 shrink-0 text-destroy-60"
+                      className="h-7 w-7 shrink-0 rounded-sm bg-chalkboard-20 text-destroy-70 dark:bg-chalkboard-80 dark:text-destroy-20"
+                      aria-hidden={true}
+                      focusable="false"
                     />
                     <div className="flex flex-col gap-1">
                       <p className="font-semibold">
@@ -739,14 +745,18 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                       </p>
                     </div>
                   </div>
-                  <button
+                  <ActionButton
+                    Element="button"
+                    aria-label="Reconnect"
                     type="button"
-                    className="w-fit"
+                    className={terminalRecoveryButtonClassName}
+                    iconStart={{ icon: 'refresh' }}
                     onClick={props.onReconnect}
                     disabled={props.isClearingChat}
+                    tabIndex={0}
                   >
                     Reconnect
-                  </button>
+                  </ActionButton>
                   {props.canClearChat && (
                     <div className="flex flex-col gap-2 border-t border-destroy-30 pt-3 dark:border-destroy-70">
                       <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
@@ -754,14 +764,24 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                         is a last resort. Previous conversation data will no
                         longer be visible in this pane.
                       </p>
-                      <button
+                      <ActionButton
+                        Element="button"
+                        aria-label={
+                          props.isClearingChat ? 'Clearing...' : 'Clear chat'
+                        }
                         type="button"
-                        className="w-fit bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10"
+                        className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
+                        iconStart={{
+                          icon: 'trash',
+                          iconClassName:
+                            '!text-destroy-80 dark:!text-destroy-20',
+                        }}
                         onClick={props.onClickClearChat}
                         disabled={props.isClearingChat}
+                        tabIndex={0}
                       >
                         {props.isClearingChat ? 'Clearing...' : 'Clear chat'}
-                      </button>
+                      </ActionButton>
                     </div>
                   )}
                 </div>
@@ -793,7 +813,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               ) : (
                 <div className="text-center p-4">
                   <Loading isDummy={true} className="!text-ml-green">
-                    {props.loadingMessage}
+                    {props.loadingMessage && (
+                      <span className="text-chalkboard-100 dark:text-chalkboard-10">
+                        {props.loadingMessage}
+                      </span>
+                    )}
                   </Loading>
                 </div>
               )}

@@ -31,7 +31,7 @@ export const ConnectionRecovery = ({
     >
       <CustomIcon
         name="close"
-        className="h-4 w-4 shrink-0 text-destroy-60"
+        className="h-8 w-8 shrink-0 text-destroy-60"
         aria-hidden={true}
         focusable="false"
       />
@@ -42,7 +42,7 @@ export const ConnectionRecovery = ({
           <>
             Click below to try again. If it persists,{' '}
             <a
-              className="underline underline-offset-1"
+              className="text-chalkboard-80 underline underline-offset-1 dark:text-chalkboard-10"
               href={ZOO_STATUS_URL}
               onClick={openExternalBrowserIfDesktop(ZOO_STATUS_URL)}
             >

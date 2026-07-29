@@ -502,6 +502,159 @@ describe('MlEphantConversationPane', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
+  test('waits for the saved conversation lookup before reconnecting an initially offline project', async () => {
+    let resolveLookup!: (conversationId: string | undefined) => void
+    const pendingLookup = new Promise<string | undefined>((resolve) => {
+      resolveLookup = resolve
+    })
+    const conversationStore = createFakeConversationStore()
+    vi.mocked(conversationStore.getProjectConversationId).mockReturnValue(
+      pendingLookup
+    )
+    const onlineSpy = vi
+      .spyOn(navigator, 'onLine', 'get')
+      .mockReturnValue(false)
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      awaitingResponse: false,
+      conversation: undefined,
+      includeConversationId: false,
+      value: 'await',
+    })
+
+    try {
+      renderPane({
+        mlEphantManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+        },
+      })
+
+      await waitFor(() => {
+        expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+          'project-id'
+        )
+      })
+      mlEphantManagerActor.send.mockClear()
+
+      onlineSpy.mockReturnValue(true)
+      act(() => {
+        window.dispatchEvent(new Event('online'))
+      })
+
+      expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        })
+      )
+
+      await act(async () => {
+        resolveLookup('saved-conversation-id')
+        await pendingLookup
+      })
+
+      await waitFor(() => {
+        expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
+        expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          refParentSend: mlEphantManagerActor.send,
+          conversationId: 'saved-conversation-id',
+        })
+      })
+    } finally {
+      onlineSpy.mockRestore()
+    }
+  })
+
+  test('reconnects an initially offline project after its saved conversation lookup has finished', async () => {
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'saved-conversation-id']]),
+    })
+    const onlineSpy = vi
+      .spyOn(navigator, 'onLine', 'get')
+      .mockReturnValue(false)
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      awaitingResponse: false,
+      conversation: undefined,
+      includeConversationId: false,
+      value: 'await',
+    })
+
+    try {
+      renderPane({
+        mlEphantManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+        },
+      })
+
+      await waitFor(() => {
+        expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+          'project-id'
+        )
+      })
+      await waitFor(() => {
+        expect(conversationStore.getProjectConversationId).toHaveResolvedWith(
+          'saved-conversation-id'
+        )
+      })
+      mlEphantManagerActor.send.mockClear()
+
+      onlineSpy.mockReturnValue(true)
+      act(() => {
+        window.dispatchEvent(new Event('online'))
+      })
+
+      expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: mlEphantManagerActor.send,
+        conversationId: 'saved-conversation-id',
+      })
+    } finally {
+      onlineSpy.mockRestore()
+    }
+  })
+
+  test('does not defer reconnecting a project without a saved project id', () => {
+    const onlineSpy = vi
+      .spyOn(navigator, 'onLine', 'get')
+      .mockReturnValue(false)
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      awaitingResponse: false,
+      conversation: undefined,
+      includeConversationId: false,
+      value: 'await',
+    })
+
+    try {
+      renderPane({ mlEphantManagerActor })
+      mlEphantManagerActor.send.mockClear()
+
+      onlineSpy.mockReturnValue(true)
+      act(() => {
+        window.dispatchEvent(new Event('online'))
+      })
+
+      expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+    } finally {
+      onlineSpy.mockRestore()
+    }
+  })
+
   test('does not automatically reconnect after setup gives up', async () => {
     vi.useFakeTimers()
     const mlEphantManagerActor = createFakeActor({

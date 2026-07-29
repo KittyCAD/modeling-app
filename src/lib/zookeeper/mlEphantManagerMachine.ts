@@ -399,15 +399,28 @@ function zookeeperErrorContext(
   }
 }
 
+function terminalSetupFailureMessage(
+  context: MlEphantManagerContext,
+  event: unknown
+): string {
+  return (
+    getSetupFailureReason(event) ??
+    context.setupFailureReason ??
+    (context.conversationId === undefined
+      ? `Zookeeper couldn't connect after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`
+      : `Zookeeper couldn't load this conversation after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`)
+  )
+}
+
 function reportZookeeperClientError(args: {
   code: ClientErrorCode
   error: Error
   dedupeKey?: string
   extra?: Record<string, unknown>
 }) {
-  // Keep this scoped to exceptions raised while the client handles the pane.
-  // Backend error responses and normal websocket lifecycle events are not
-  // client bugs, even when they produce user-visible Zookeeper errors.
+  // Transient backend and websocket lifecycle events are not reported
+  // individually. Setup failures are reported once only after retries are
+  // exhausted and the recovery UI becomes visible.
   void reportClientError({
     code: args.code,
     message: args.error.message,
@@ -649,17 +662,29 @@ export const mlEphantManagerMachine = setup({
       })
       toast.error(error.message)
     },
-    reportSetupError: ({ event, context }) => {
-      if (!('error' in event)) return
-      if (event.error === MlEphantSetupErrors.ConversationNotFound) return
-      if (!isErr(event.error)) return
-
+    reportTerminalSetupFailure: ({ event, context }) => {
+      const rejectedValue = 'error' in event ? event.error : undefined
+      const error = isErr(rejectedValue)
+        ? rejectedValue
+        : new Error(
+            typeof rejectedValue === 'string' && rejectedValue.length > 0
+              ? rejectedValue
+              : terminalSetupFailureMessage(context, event)
+          )
       reportZookeeperClientError({
         code: ClientErrorCode.ZookeeperSetupError,
-        error: event.error,
-        dedupeKey: `MlEphantManagerMachine:setup-error:${event.error.message}`,
+        error,
+        dedupeKey: `MlEphantManagerMachine:terminal-setup-error:${context.conversationId ?? 'new'}:${event.type}:${error.message}`,
         extra: {
           eventType: event.type,
+          terminal: true,
+          setupAttempt: context.setupAttempt,
+          setupFailureReason:
+            getSetupFailureReason(event) ?? context.setupFailureReason,
+          rejectedValue:
+            rejectedValue !== undefined && !isErr(rejectedValue)
+              ? String(rejectedValue)
+              : undefined,
           ...zookeeperErrorContext(context),
         },
       })
@@ -706,11 +731,7 @@ export const mlEphantManagerMachine = setup({
     markSetupFailed: assign(({ context, event }) => {
       const setupFailureReason =
         getSetupFailureReason(event) ?? context.setupFailureReason
-      const closeReason =
-        setupFailureReason ??
-        (context.conversationId === undefined
-          ? `Zookeeper couldn't connect after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`
-          : `Zookeeper couldn't load this conversation after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`)
+      const closeReason = terminalSetupFailureMessage(context, event)
       logZookeeperDisconnect('conversation setup attempts exhausted', {
         ...zookeeperErrorContext(context),
         setupAttempt: context.setupAttempt,
@@ -1385,7 +1406,7 @@ export const mlEphantManagerMachine = setup({
               },
               {
                 target: '#zookeeper-conversation-close',
-                actions: ['markSetupFailed'],
+                actions: ['reportTerminalSetupFailure', 'markSetupFailed'],
               },
             ],
           },
@@ -1433,12 +1454,12 @@ export const mlEphantManagerMachine = setup({
           {
             guard: 'canRetrySetup',
             target: MlEphantManagerStates.Setup,
-            actions: ['reportSetupError', 'prepareSetupRetry'],
+            actions: ['prepareSetupRetry'],
             reenter: true,
           },
           {
             target: MlEphantManagerTransitions.ConversationClose,
-            actions: ['reportSetupError', 'markSetupFailed'],
+            actions: ['reportTerminalSetupFailure', 'markSetupFailed'],
           },
         ],
       },
@@ -1452,7 +1473,7 @@ export const mlEphantManagerMachine = setup({
           },
           {
             target: '#zookeeper-conversation-close',
-            actions: ['markSetupFailed'],
+            actions: ['reportTerminalSetupFailure', 'markSetupFailed'],
           },
         ],
       },
@@ -1467,7 +1488,7 @@ export const mlEphantManagerMachine = setup({
           },
           {
             target: MlEphantManagerTransitions.ConversationClose,
-            actions: ['markSetupFailed'],
+            actions: ['reportTerminalSetupFailure', 'markSetupFailed'],
           },
         ],
         [MlEphantManagerTransitions.BackendShutdown]: {

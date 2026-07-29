@@ -157,8 +157,55 @@ describe('MlEphantConversation', () => {
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
     expect(screen.queryByText('Payment is required.')).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Reconnect' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Clear chat' }))
+    const failureIcon = screen
+      .getByRole('alert')
+      .querySelector('svg[aria-label="close"]')
+    const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
+    const clearChatButton = screen.getByRole('button', { name: 'Clear chat' })
+
+    expect(failureIcon).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
+    expect(failureIcon).toHaveAttribute('aria-hidden', 'true')
+    expect(reconnectButton).toHaveClass(
+      'action-button',
+      'h-7',
+      '!border-chalkboard-30',
+      '!bg-chalkboard-10',
+      'hover:!border-chalkboard-40',
+      'hover:!bg-chalkboard-20',
+      'dark:!border-chalkboard-70',
+      'dark:!bg-chalkboard-90',
+      'dark:hover:!border-chalkboard-60',
+      'dark:hover:!bg-chalkboard-80'
+    )
+    expect(reconnectButton).toHaveAttribute('type', 'button')
+    expect(reconnectButton).toHaveAttribute('tabindex', '0')
+    expect(
+      reconnectButton.querySelector('svg[aria-label="refresh"]')
+    ).toBeInTheDocument()
+    expect(clearChatButton).toHaveClass(
+      'action-button',
+      'h-7',
+      '!border-chalkboard-30',
+      '!bg-chalkboard-10',
+      '!text-destroy-80',
+      'hover:!border-chalkboard-40',
+      'hover:!bg-chalkboard-20',
+      'dark:!border-chalkboard-70',
+      'dark:!bg-chalkboard-90',
+      'dark:hover:!border-chalkboard-60',
+      'dark:hover:!bg-chalkboard-80'
+    )
+    expect(clearChatButton).toHaveAttribute('type', 'button')
+    expect(clearChatButton).toHaveAttribute('tabindex', '0')
+    expect(
+      clearChatButton.querySelector('svg[aria-label="trash"]')
+    ).toBeInTheDocument()
+    expect(
+      clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
+    ).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
+
+    fireEvent.click(reconnectButton)
+    fireEvent.click(clearChatButton)
 
     expect(onReconnect).toHaveBeenCalledTimes(1)
     expect(onClickClearChat).toHaveBeenCalledTimes(1)
@@ -216,7 +263,7 @@ describe('MlEphantConversation', () => {
 
     expect(
       screen.getByText('Connecting to Zookeeper (attempt 2 of 3)...')
-    ).toBeInTheDocument()
+    ).toHaveClass('text-chalkboard-100', 'dark:text-chalkboard-10')
   })
 
   function rendersRequestBubbleThenDisplayResponse(
