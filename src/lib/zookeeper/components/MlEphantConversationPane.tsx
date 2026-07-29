@@ -1,3 +1,8 @@
+import {
+  MlEphantConversation,
+  type QueuedMessage,
+} from '@src/lib/zookeeper/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
@@ -7,21 +12,14 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
-import {
-  MlEphantConversation,
-  type QueuedMessage,
-} from '@src/lib/zookeeper/components/MlEphantConversation'
-import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
-import type {
-  MlCopilotModeId,
-  MlEphantManagerActor,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { MlCopilotModeId } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
@@ -72,6 +70,8 @@ export const MlEphantConversationPane = (props: {
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
+  const savedProjectConversationLookupPath = useRef(props.theProject?.path)
+  const actorConversationProjectPath = useRef(props.theProject?.path)
   const reconnectAfterSavedConversationLookup = useRef(false)
   const savedProjectConversationLookupGeneration = useRef(0)
   const clearChatOperationGeneration = useRef(0)
@@ -182,23 +182,36 @@ export const MlEphantConversationPane = (props: {
       return
     }
 
+    const currentProjectPath = props.theProject?.path
     const actorConversationId =
       props.mlEphantManagerActor.getSnapshot().context.conversationId
+    const actorConversationMatchesCurrentProject =
+      actorConversationProjectPath.current === currentProjectPath
+    const savedProjectConversationLookupIsCurrent =
+      savedProjectConversationLookupPath.current === currentProjectPath &&
+      savedProjectConversationLookupLoaded.current
+
     if (
-      actorConversationId === undefined &&
-      !savedProjectConversationLookupLoaded.current
+      (!actorConversationMatchesCurrentProject ||
+        actorConversationId === undefined) &&
+      !savedProjectConversationLookupIsCurrent
     ) {
       reconnectAfterSavedConversationLookup.current = true
       return
     }
 
     reconnectAfterSavedConversationLookup.current = false
+    actorConversationProjectPath.current = currentProjectPath
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
-      conversationId: actorConversationId ?? savedProjectConversationId.current,
+      conversationId:
+        actorConversationMatchesCurrentProject &&
+        actorConversationId !== undefined
+          ? actorConversationId
+          : savedProjectConversationId.current,
     })
-  }, [props.mlEphantManagerActor])
+  }, [props.mlEphantManagerActor, props.theProject?.path])
 
   const onReconnect = useCallback(() => {
     setShowManualConnect(false)
@@ -384,6 +397,7 @@ export const MlEphantConversationPane = (props: {
           return
         }
         startedFreshConversation = true
+        actorConversationProjectPath.current = props.theProject?.path
         props.mlEphantManagerActor.send({
           type: MlEphantManagerTransitions.CacheSetupAndConnect,
           refParentSend: props.mlEphantManagerActor.send,
@@ -465,6 +479,7 @@ export const MlEphantConversationPane = (props: {
       props.theProject !== undefined &&
       props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
     ) {
+      actorConversationProjectPath.current = props.theProject.path
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
@@ -542,6 +557,7 @@ export const MlEphantConversationPane = (props: {
         tryToGetExchanges()
       })
 
+    savedProjectConversationLookupPath.current = props.theProject?.path
     savedProjectConversationLookupLoaded.current = false
     savedProjectConversationId.current = undefined
     const lookupGeneration =

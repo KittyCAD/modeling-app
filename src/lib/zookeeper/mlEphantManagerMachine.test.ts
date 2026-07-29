@@ -324,6 +324,21 @@ describe('mlEphantManagerMachine', () => {
         conversationId: 'conversation-id',
       })
 
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS * 2)
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(reports).toHaveLength(2)
+
       shouldFail = false
       actor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
@@ -335,7 +350,7 @@ describe('mlEphantManagerMachine', () => {
         state.matches(MlEphantManagerStates.WaitForContinueCheck)
       )
 
-      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS + 1)
+      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS * 2 + 1)
       expect(actor.getSnapshot().context).toMatchObject({
         abruptlyClosed: false,
         setupAttempt: 0,
@@ -523,6 +538,7 @@ describe('mlEphantManagerMachine', () => {
     })
 
     it('enforces the hard attempt deadline despite ongoing progress', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       vi.useFakeTimers()
       let setupAttempts = 0
       const machine = mlEphantManagerMachine.provide({
@@ -549,26 +565,34 @@ describe('mlEphantManagerMachine', () => {
           conversationId: 'conversation-id',
         })
 
-        const progressInterval = ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS - 1
-        const progressEventsBeforeHardDeadline = Math.floor(
-          ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS / progressInterval
-        )
         for (
-          let progressEvent = 0;
-          progressEvent < progressEventsBeforeHardDeadline;
-          progressEvent += 1
+          let attempt = 0;
+          attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
+          attempt += 1
         ) {
-          await vi.advanceTimersByTimeAsync(progressInterval)
-          actor.send({ type: MlEphantManagerTransitions.SetupProgress })
+          const progressInterval = ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS - 1
+          const progressEventsBeforeHardDeadline = Math.floor(
+            ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS / progressInterval
+          )
+          for (
+            let progressEvent = 0;
+            progressEvent < progressEventsBeforeHardDeadline;
+            progressEvent += 1
+          ) {
+            await vi.advanceTimersByTimeAsync(progressInterval)
+            actor.send({ type: MlEphantManagerTransitions.SetupProgress })
+          }
+          await vi.advanceTimersByTimeAsync(
+            ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS -
+              progressInterval * progressEventsBeforeHardDeadline
+          )
         }
 
-        expect(setupAttempts).toBe(1)
-
-        await vi.advanceTimersByTimeAsync(
-          ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS -
-            progressInterval * progressEventsBeforeHardDeadline
-        )
-        expect(setupAttempts).toBe(2)
+        expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
+        expect(actor.getSnapshot().matches(S.Await)).toBe(true)
+        expect(actor.getSnapshot().context.setupFailed).toBe(true)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(reports).toHaveLength(1)
       } finally {
         actor.stop()
         vi.useRealTimers()

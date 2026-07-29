@@ -92,6 +92,7 @@ const createFakeActor = ({
   setupFailed = false,
   setupAttempt = 0,
   includeConversationId = true,
+  conversationId = 'conversation-id',
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
@@ -102,6 +103,7 @@ const createFakeActor = ({
   setupFailed?: boolean
   setupAttempt?: number
   includeConversationId?: boolean
+  conversationId?: string
 } = {}): FakeMlEphantActor => {
   const snapshot: FakeMlEphantSnapshot = {
     value,
@@ -112,7 +114,7 @@ const createFakeActor = ({
       awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation,
-      conversationId: includeConversationId ? 'conversation-id' : undefined,
+      conversationId: includeConversationId ? conversationId : undefined,
       defaultMode,
       modeOptions,
     },
@@ -617,6 +619,76 @@ describe('MlEphantConversationPane', () => {
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: mlEphantManagerActor.send,
         conversationId: 'saved-conversation-id',
+      })
+    } finally {
+      onlineSpy.mockRestore()
+    }
+  })
+
+  test('uses the current project conversation when reconnecting after an offline project switch', async () => {
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([
+        ['project-a-id', 'project-a-conversation'],
+        ['project-b-id', 'project-b-conversation'],
+      ]),
+    })
+    const onlineSpy = vi
+      .spyOn(navigator, 'onLine', 'get')
+      .mockReturnValue(false)
+    const mlEphantManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      awaitingResponse: false,
+      conversation: undefined,
+      conversationId: 'project-a-conversation',
+      value: 'await',
+    })
+
+    try {
+      const { rerender } = renderPane({
+        mlEphantManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-a-id',
+        theProject: {
+          name: 'project-a',
+          path: '/tmp/project-a',
+        },
+      })
+
+      await waitFor(() => {
+        expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+          'project-a-id'
+        )
+      })
+
+      rerender(
+        createPaneElement({
+          mlEphantManagerActor,
+          conversationStore,
+          settingsMetaId: 'project-b-id',
+          theProject: {
+            name: 'project-b',
+            path: '/tmp/project-b',
+          },
+        })
+      )
+
+      await waitFor(() => {
+        expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+          'project-b-id'
+        )
+      })
+      mlEphantManagerActor.send.mockClear()
+
+      onlineSpy.mockReturnValue(true)
+      act(() => {
+        window.dispatchEvent(new Event('online'))
+      })
+
+      expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: mlEphantManagerActor.send,
+        conversationId: 'project-b-conversation',
       })
     } finally {
       onlineSpy.mockRestore()

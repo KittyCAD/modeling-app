@@ -4,8 +4,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
-export const DIAGNOSING_NETWORK_ISSUES_URL =
-  'https://community.zoo.dev/t/diagnosing-network-connection-issues/156'
 export const ZOO_STATUS_URL = 'https://status.zoo.dev'
 
 export const ConnectionRecovery = ({

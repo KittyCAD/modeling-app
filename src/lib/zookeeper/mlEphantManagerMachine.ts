@@ -4,31 +4,36 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
+import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import { createActorContext } from '@xstate/react'
+import ms from 'ms'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
+
 import {
   type CustomIconName,
   isCustomIconName,
 } from '@src/components/CustomIcon'
+
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
-import { getKclVersion } from '@src/lib/kclVersion'
-import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
-import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+
+import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
-import { createActorContext } from '@xstate/react'
-import ms from 'ms'
-import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+
+import { Socket, SocketConnectionError } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { FileEntry, Project } from '@src/lib/project'
-import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
 import toast from 'react-hot-toast'
 
@@ -674,7 +679,6 @@ export const mlEphantManagerMachine = setup({
       reportZookeeperClientError({
         code: ClientErrorCode.ZookeeperSetupError,
         error,
-        dedupeKey: `MlEphantManagerMachine:terminal-setup-error:${context.conversationId ?? 'new'}:${event.type}:${error.message}`,
         extra: {
           eventType: event.type,
           terminal: true,

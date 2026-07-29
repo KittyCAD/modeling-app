@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import {
-  ConnectionRecovery,
-  DIAGNOSING_NETWORK_ISSUES_URL,
-} from '@src/components/ConnectionRecovery'
+import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -27,6 +24,9 @@ interface LoadingProps extends React.PropsWithChildren {
 }
 
 const statusUrl = 'https://status.zoo.dev'
+const diagnosingNetworkIssuesUrl =
+  'https://community.zoo.dev/t/diagnosing-network-connection-issues/156'
+
 // This exists here and not in engineConnection because we want some styling
 // available to us.
 export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
@@ -198,10 +198,8 @@ const Loading = ({
             please visit the community support thread on{' '}
             <a
               className="contents text-chalkboard-80 dark:text-chalkboard-10"
-              href={DIAGNOSING_NETWORK_ISSUES_URL}
-              onClick={openExternalBrowserIfDesktop(
-                DIAGNOSING_NETWORK_ISSUES_URL
-              )}
+              href={diagnosingNetworkIssuesUrl}
+              onClick={openExternalBrowserIfDesktop(diagnosingNetworkIssuesUrl)}
             >
               <span className="underline underline-offset-1">
                 diagnosing network connection issues

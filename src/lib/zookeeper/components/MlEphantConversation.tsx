@@ -29,7 +29,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 const terminalRecoveryButtonClassName =
-  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 hover:!border-chalkboard-40 hover:!bg-chalkboard-20 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:hover:!border-chalkboard-60 dark:hover:!bg-chalkboard-80'
+  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 enabled:hover:!border-chalkboard-40 enabled:hover:!bg-chalkboard-20 disabled:!border-chalkboard-20 disabled:!bg-chalkboard-20/50 disabled:!text-chalkboard-60 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:enabled:hover:!border-chalkboard-60 dark:enabled:hover:!bg-chalkboard-80 dark:disabled:!border-chalkboard-70 dark:disabled:!bg-chalkboard-90 dark:disabled:!text-chalkboard-40'
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
@@ -771,11 +771,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                         }
                         type="button"
                         className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
-                        iconStart={{
-                          icon: 'trash',
-                          iconClassName:
-                            '!text-destroy-80 dark:!text-destroy-20',
-                        }}
+                        iconStart={{ icon: 'trash' }}
                         onClick={props.onClickClearChat}
                         disabled={props.isClearingChat}
                         tabIndex={0}

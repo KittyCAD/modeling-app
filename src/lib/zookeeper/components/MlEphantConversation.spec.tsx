@@ -123,29 +123,27 @@ describe('MlEphantConversation', () => {
   test('shows recovery actions after conversation loading gives up', () => {
     const onReconnect = vi.fn()
     const onClickClearChat = vi.fn()
-
-    render(
-      <MlEphantConversation
-        isLoading={true}
-        conversation={undefined}
-        connectionError="Zookeeper couldn't load this conversation after 3 attempts."
-        connectionFailed={true}
-        canClearChat={true}
-        onProcess={() => {}}
-        onClickClearChat={onClickClearChat}
-        onReconnect={onReconnect}
-        onCancel={() => {}}
-        needsReconnect={true}
-        contexts={[]}
-        disabled={true}
-        hasPromptCompleted={true}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-        blockedReason="Payment is required."
-      />
-    )
+    const recoveryProps = {
+      isLoading: true,
+      connectionError:
+        "Zookeeper couldn't load this conversation after 3 attempts.",
+      connectionFailed: true,
+      canClearChat: true,
+      onProcess: () => {},
+      onClickClearChat,
+      onReconnect,
+      onCancel: () => {},
+      needsReconnect: true,
+      contexts: [],
+      disabled: true,
+      hasPromptCompleted: true,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: () => {},
+      onSteer: () => {},
+      blockedReason: 'Payment is required.',
+    }
+    const { rerender } = render(<MlEphantConversation {...recoveryProps} />)
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       "Zookeeper couldn't load this conversation after 3 attempts."
@@ -170,12 +168,15 @@ describe('MlEphantConversation', () => {
       'h-7',
       '!border-chalkboard-30',
       '!bg-chalkboard-10',
-      'hover:!border-chalkboard-40',
-      'hover:!bg-chalkboard-20',
+      'enabled:hover:!border-chalkboard-40',
+      'enabled:hover:!bg-chalkboard-20',
+      'disabled:!bg-chalkboard-20/50',
+      'disabled:!text-chalkboard-60',
       'dark:!border-chalkboard-70',
       'dark:!bg-chalkboard-90',
-      'dark:hover:!border-chalkboard-60',
-      'dark:hover:!bg-chalkboard-80'
+      'dark:enabled:hover:!border-chalkboard-60',
+      'dark:enabled:hover:!bg-chalkboard-80',
+      'dark:disabled:!text-chalkboard-40'
     )
     expect(reconnectButton).toHaveAttribute('type', 'button')
     expect(reconnectButton).toHaveAttribute('tabindex', '0')
@@ -188,12 +189,15 @@ describe('MlEphantConversation', () => {
       '!border-chalkboard-30',
       '!bg-chalkboard-10',
       '!text-destroy-80',
-      'hover:!border-chalkboard-40',
-      'hover:!bg-chalkboard-20',
+      'enabled:hover:!border-chalkboard-40',
+      'enabled:hover:!bg-chalkboard-20',
+      'disabled:!bg-chalkboard-20/50',
+      'disabled:!text-chalkboard-60',
       'dark:!border-chalkboard-70',
       'dark:!bg-chalkboard-90',
-      'dark:hover:!border-chalkboard-60',
-      'dark:hover:!bg-chalkboard-80'
+      'dark:enabled:hover:!border-chalkboard-60',
+      'dark:enabled:hover:!bg-chalkboard-80',
+      'dark:disabled:!text-chalkboard-40'
     )
     expect(clearChatButton).toHaveAttribute('type', 'button')
     expect(clearChatButton).toHaveAttribute('tabindex', '0')
@@ -209,6 +213,11 @@ describe('MlEphantConversation', () => {
 
     expect(onReconnect).toHaveBeenCalledTimes(1)
     expect(onClickClearChat).toHaveBeenCalledTimes(1)
+
+    rerender(<MlEphantConversation {...recoveryProps} isClearingChat={true} />)
+
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
   })
 
   test('does not offer Clear chat when a fresh conversation fails to connect', () => {
