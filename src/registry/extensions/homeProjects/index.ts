@@ -21,7 +21,6 @@ import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
   NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
