@@ -2534,7 +2534,7 @@ mod test {
             .add(
                 format!("{}Color", memory::TYPE_PREFIX),
                 KclValue::Type {
-                    value: TypeDef::Enum(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()])),
+                    value: TypeDef::Enum(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()]).unwrap()),
                     experimental: false,
                     meta: vec![],
                 },

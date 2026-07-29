@@ -363,9 +363,42 @@ pub struct EnumTypeDef {
     variants: Vec<String>,
 }
 
+/// Two variants of one enum declared under the same name, e.g.
+/// `type Color { | Red | Red }`.
+///
+/// Carries indices into the variant list rather than source ranges so that
+/// `EnumTypeDef` stays independent of the AST and of diagnostic types. The
+/// caller holds the declaration, so it can turn an index back into the range it
+/// needs for the error it reports.
+#[derive(Debug, Clone, PartialEq)]
+pub struct DuplicateVariant {
+    /// The name declared twice.
+    pub name: String,
+    /// Where the name was first declared.
+    pub first_index: usize,
+    /// Where it was declared again. Always greater than `first_index`.
+    pub duplicate_index: usize,
+}
+
 impl EnumTypeDef {
-    pub fn new(id: EnumTypeId, variants: Vec<String>) -> Self {
-        Self { id, variants }
+    /// Variant names must be unique, so this is the only way to build an
+    /// `EnumTypeDef` and it rejects a repeat rather than dropping it. Silently
+    /// collapsing duplicates would deny the user a diagnostic naming the variant
+    /// they typed twice.
+    ///
+    /// Reports the earliest repeat when a declaration contains several.
+    pub fn new(id: EnumTypeId, variants: Vec<String>) -> Result<Self, DuplicateVariant> {
+        for (duplicate_index, variant) in variants.iter().enumerate() {
+            if let Some(first_index) = variants[..duplicate_index].iter().position(|v| v == variant) {
+                return Err(DuplicateVariant {
+                    name: variant.clone(),
+                    first_index,
+                    duplicate_index,
+                });
+            }
+        }
+
+        Ok(Self { id, variants })
     }
 
     pub fn id(&self) -> &EnumTypeId {
@@ -1327,7 +1360,8 @@ mod tests {
         let def = EnumTypeDef::new(
             EnumTypeId::new(ModuleId::default(), "Color"),
             vec!["Red".to_owned(), "Green".to_owned()],
-        );
+        )
+        .unwrap();
 
         assert_eq!(def.variants(), ["Red", "Green"]);
         assert!(def.has_variant("Red"));
@@ -1340,7 +1374,47 @@ mod tests {
                 EnumTypeId::new(ModuleId::from_usize(1), "Color"),
                 vec!["Red".to_owned(), "Green".to_owned()],
             )
+            .unwrap()
             .id()
         );
+    }
+
+    #[test]
+    fn enum_rejects_duplicate_variant() {
+        let err = EnumTypeDef::new(
+            EnumTypeId::new(ModuleId::default(), "Color"),
+            vec!["Red".to_owned(), "Green".to_owned(), "Red".to_owned()],
+        )
+        .unwrap_err();
+
+        assert_eq!(
+            err,
+            DuplicateVariant {
+                name: "Red".to_owned(),
+                first_index: 0,
+                duplicate_index: 2,
+            }
+        );
+    }
+
+    #[test]
+    fn enum_reports_earliest_duplicate() {
+        // `Green` repeats at index 3 and `Red` at index 4. The caller reports one
+        // duplicate, so it must be the one the user reads first.
+        let err = EnumTypeDef::new(
+            EnumTypeId::new(ModuleId::default(), "Color"),
+            vec![
+                "Red".to_owned(),
+                "Green".to_owned(),
+                "Blue".to_owned(),
+                "Green".to_owned(),
+                "Red".to_owned(),
+            ],
+        )
+        .unwrap_err();
+
+        assert_eq!(err.name, "Green");
+        assert_eq!(err.first_index, 1);
+        assert_eq!(err.duplicate_index, 3);
     }
 }
