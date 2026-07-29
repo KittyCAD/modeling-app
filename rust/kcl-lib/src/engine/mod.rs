@@ -13,15 +13,12 @@ use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
+pub use kcl_api::PlaneName;
 use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::websocket::WebSocketRequest;
 use kittycad_modeling_cmds::{self as kcmc};
-use parse_display::Display;
-use parse_display::FromStr;
-use serde::Deserialize;
-use serde::Serialize;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -176,30 +173,6 @@ impl Clone for EngineStats {
             batches_sent: AtomicUsize::new(self.batches_sent.load(Ordering::Relaxed)),
         }
     }
-}
-
-#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Display, FromStr)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum PlaneName {
-    /// The XY plane.
-    #[display("XY")]
-    Xy,
-    /// The opposite side of the XY plane.
-    #[display("-XY")]
-    NegXy,
-    /// The XZ plane.
-    #[display("XZ")]
-    Xz,
-    /// The opposite side of the XZ plane.
-    #[display("-XZ")]
-    NegXz,
-    /// The YZ plane.
-    #[display("YZ")]
-    Yz,
-    /// The opposite side of the YZ plane.
-    #[display("-YZ")]
-    NegYz,
 }
 
 /// Create a new zoo api client.

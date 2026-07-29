@@ -106,10 +106,22 @@ describe('CloudConflictDialog', () => {
   test('shows changed files with expanded diffs and resolution actions', async () => {
     vi.mocked(fsZds.readdir).mockImplementation(async (path) => {
       if (path === '/projects/local') {
-        return ['main.kcl', 'local-only.txt', 'thumbnail.png', 'project.toml']
+        return [
+          'main.kcl',
+          'local-only.txt',
+          'thumbnail.png',
+          'project.toml',
+          '.git',
+        ]
       }
       if (path === '/projects/local (cloud conflict)') {
-        return ['main.kcl', 'cloud-only.txt', 'thumbnail.png', 'project.toml']
+        return [
+          'main.kcl',
+          'cloud-only.txt',
+          'thumbnail.png',
+          'project.toml',
+          '.git',
+        ]
       }
       return []
     })
@@ -169,6 +181,7 @@ describe('CloudConflictDialog', () => {
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
     expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
+    expect(screen.queryByText('.git')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
     expect(
       screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
@@ -198,5 +211,9 @@ describe('CloudConflictDialog', () => {
     )
 
     expect(getCloudSyncProjectMetadata).toHaveBeenCalledWith('/projects/local')
+    expect(fsZds.stat).not.toHaveBeenCalledWith('/projects/local/.git')
+    expect(fsZds.stat).not.toHaveBeenCalledWith(
+      '/projects/local (cloud conflict)/.git'
+    )
   })
 })

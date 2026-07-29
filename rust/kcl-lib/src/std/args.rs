@@ -1041,18 +1041,23 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
             KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
                 let mut sketches = vec![];
+                let mut helices = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
                         KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
                         _ => return None,
                     }
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
+                } else if !helices.is_empty() {
+                    Some(Self::HelixSet(helices))
                 } else {
                     Some(Self::SketchSet(sketches))
                 }

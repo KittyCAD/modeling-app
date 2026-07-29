@@ -1,9 +1,4 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type {
-  HomeProjectEntry,
-  HomeProjectEntryContribution,
-  HomeProjectOpenResult,
-} from '@src/registry/contracts/homeProjects'
 import type { Project } from '@src/lib/project'
 import type {
   ProjectLibrary,
@@ -13,6 +8,11 @@ import type {
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
+import type {
+  HomeProjectEntry,
+  HomeProjectEntryContribution,
+  HomeProjectOpenResult,
+} from '@src/registry/contracts/homeProjects'
 import type { ComponentType } from 'react'
 
 export type ProjectLibraryContribution =
@@ -69,6 +69,46 @@ export interface ProjectLibraryRenameProjectInput
 
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
 
+export interface ProjectLibraryMoveProjectFromInput
+  extends ProjectLibraryProjectInput {
+  targetLibrary: ProjectLibrary
+}
+
+export interface ProjectLibraryMoveProjectSource {
+  localProjectPath: string
+  localProjectName: string
+  defaultFile?: string
+}
+
+export interface ProjectLibraryMoveProjectToInput
+  extends ProjectLibraryProjectInput {
+  sourceLibrary: ProjectLibrary
+  source: ProjectLibraryMoveProjectSource
+}
+
+export interface ProjectLibraryMoveProjectResult {
+  localProjectPath?: string
+  defaultFile?: string
+}
+
+export interface ProjectLibraryMoveProjectFromOperation
+  extends ProjectLibraryOperation<
+    ProjectLibraryMoveProjectFromInput,
+    ProjectLibraryMoveProjectSource | undefined
+  > {
+  canMoveProject?: (input: ProjectLibraryProjectInput) => boolean
+}
+
+export interface ProjectLibraryMoveProjectToOperation
+  extends ProjectLibraryOperation<
+    ProjectLibraryMoveProjectToInput,
+    ProjectLibraryMoveProjectResult | undefined
+  > {
+  canReceiveProject?: (
+    input: Omit<ProjectLibraryMoveProjectToInput, 'source'>
+  ) => boolean
+}
+
 export interface ProjectLibraryTypeOperations {
   createProject?: ProjectLibraryOperation<
     ProjectLibraryCreateProjectInput,
@@ -80,6 +120,8 @@ export interface ProjectLibraryTypeOperations {
   >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
+  moveProjectFrom?: ProjectLibraryMoveProjectFromOperation
+  moveProjectTo?: ProjectLibraryMoveProjectToOperation
 }
 
 export interface ProjectLibrarySettingsDetailsProps {
