@@ -38,7 +38,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import {
+  type ProjectLibrary,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -72,7 +75,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
-  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
   filterStatusBarItemsForScopes,
@@ -149,7 +152,16 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectLibraries = registry.signal(projectLibrariesValueSpec).value
+  const settingsValues = settings.useSettings()
+  const projectLibraryTypes = registry.signal(
+    projectLibraryTypesValueSpec
+  ).value
+  const projectLibraries = projectLibrariesFromSettings(
+    settingsValues.app.libraries.current
+  ).map((library) => ({
+    ...library,
+    icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
+  }))
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -192,6 +204,22 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+  const moveProjectToLibrary = (project: HomeProjectEntry) => {
+    if (!homeProjectActions.canMoveToLibrary(project)) {
+      return
+    }
+
+    commands.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Move to library',
+        argDefaultValues: {
+          project: project.id,
+        },
+      },
+    })
+  }
 
   useEffect(() => {
     app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
@@ -251,7 +279,6 @@ const Home = () => {
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
@@ -566,6 +593,7 @@ const Home = () => {
             projectActions={homeProjectActions}
             showCloudSyncUi={hasCloudSyncFeature}
             showSourceStatusBadges={false}
+            onMoveToLibrary={moveProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
@@ -580,6 +608,7 @@ const Home = () => {
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             showCloudSyncUi={hasCloudSyncFeature}
+            onMoveToLibrary={moveProjectToLibrary}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         )}
@@ -744,6 +773,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
+  onMoveToLibrary: (project: HomeProjectEntry) => void
 }
 
 function getProjectLibraryRoute(library: ProjectLibrary) {
@@ -772,6 +802,7 @@ function ProjectLibraryOverview({
   projectStatuses,
   projectActions,
   showCloudSyncUi,
+  onMoveToLibrary,
   ...rest
 }: ProjectLibraryOverviewProps) {
   const state = useSystemIOState()
@@ -812,6 +843,7 @@ function ProjectLibraryOverview({
                   projectStatuses={projectStatuses}
                   projectActions={projectActions}
                   showCloudSyncUi={showCloudSyncUi}
+                  onMoveToLibrary={onMoveToLibrary}
                 />
               ))}
             </div>
@@ -872,6 +904,7 @@ interface ProjectLibraryPreviewRowProps {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
+  onMoveToLibrary: (project: HomeProjectEntry) => void
 }
 
 function ProjectLibraryPreviewRow({
@@ -881,6 +914,7 @@ function ProjectLibraryPreviewRow({
   projectStatuses,
   projectActions,
   showCloudSyncUi,
+  onMoveToLibrary,
 }: ProjectLibraryPreviewRowProps) {
   const previewProjects =
     query.length > 0
@@ -923,6 +957,7 @@ function ProjectLibraryPreviewRow({
           projectActions={projectActions}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={false}
+          onMoveToLibrary={onMoveToLibrary}
           density="compact"
           className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
         />
@@ -947,6 +982,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
+  onMoveToLibrary: (project: HomeProjectEntry) => void
   showSourceStatusBadges?: boolean
   projectLibraryEmptyTestId?: string
 }
@@ -960,6 +996,7 @@ function ProjectGrid({
   projectStatuses,
   projectActions,
   showCloudSyncUi,
+  onMoveToLibrary,
   showSourceStatusBadges = true,
   projectLibraryEmptyTestId,
   ...rest
@@ -985,6 +1022,7 @@ function ProjectGrid({
               projectStatuses={projectStatuses}
               projectActions={projectActions}
               showCloudSyncUi={showCloudSyncUi}
+              onMoveToLibrary={onMoveToLibrary}
               showSourceStatusBadges={showSourceStatusBadges}
             />
           ) : (
@@ -1012,6 +1050,7 @@ interface ProjectCardListProps {
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
+  onMoveToLibrary: (project: HomeProjectEntry) => void
   density?: 'default' | 'compact'
   showDetails?: boolean
   showSourceStatusBadges?: boolean
@@ -1023,6 +1062,7 @@ function ProjectCardList({
   projectStatuses,
   projectActions,
   showCloudSyncUi,
+  onMoveToLibrary,
   density = 'default',
   showDetails = true,
   showSourceStatusBadges = true,
@@ -1044,6 +1084,7 @@ function ProjectCardList({
           showDetails={showDetails}
           showCloudSyncUi={showCloudSyncUi}
           showSourceStatusBadges={showSourceStatusBadges}
+          onMoveToLibrary={onMoveToLibrary}
         />
       ))}
     </ul>

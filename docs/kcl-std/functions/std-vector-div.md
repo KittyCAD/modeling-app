@@ -1,11 +1,11 @@
 ---
 title: "vector::div"
 subtitle: "Function in std::vector"
-excerpt: "Divides every element of u by its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise division."
+excerpt: "Divides every element of u by its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise division."
 layout: manual
 ---
 
-Divides every element of u by its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise division.
+Divides every element of u by its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise division.
 
 ```kcl
 vector::div(

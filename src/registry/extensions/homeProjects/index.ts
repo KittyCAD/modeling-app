@@ -5,7 +5,7 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, effect, signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
@@ -17,21 +17,24 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
   NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
-  projectLibraryFromSetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import {
   readProjectsFromProjectDirectory,
   scheduleProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/projectLibraries/directoryScanner'
-import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
+import {
+  createProjectInLocalDirectory,
+  moveProjectIntoLocalDirectory,
+} from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -40,17 +43,19 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { commandSystemService } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
+  type HomeProjectMoveToLibraryTarget,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import {
   getProjectLibraryOperation,
   type ProjectLibraryTypeOperations,
-  projectLibrariesValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -99,7 +104,21 @@ function homeProjectDisplayNameExists({
   )
 }
 
+function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
+  if (!project.localProjectPath || !project.readWriteAccess) {
+    return undefined
+  }
+
+  return {
+    localProjectPath: project.localProjectPath,
+    localProjectName:
+      project.localProjectName ?? fsZds.basename(project.localProjectPath),
+    defaultFile: project.defaultFile,
+  }
+}
+
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
 
@@ -124,7 +143,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     }
 
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    for (const library of ctx.valueSpecs.get(projectLibrariesValueSpec)) {
+    for (const library of getConfiguredProjectLibraries()) {
       if (!projectLibraryIds.has(library.id)) {
         continue
       }
@@ -147,6 +166,89 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     return undefined
   }
 
+  const getProjectLibraries = (project: HomeProjectEntry) => {
+    const projectLibraryIds = new Set(project.libraryIds ?? [])
+    if (projectLibraryIds.size === 0) {
+      return []
+    }
+
+    return getConfiguredProjectLibraries().filter((library) =>
+      projectLibraryIds.has(library.id)
+    )
+  }
+
+  const getConfiguredProjectLibraries = () => {
+    const currentSettings = settings.value?.current.value
+    return currentSettings
+      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+      : []
+  }
+
+  const getMoveToLibraryTargets = (
+    project: HomeProjectEntry
+  ): HomeProjectMoveToLibraryTarget[] => {
+    const projectLibraryIds = new Set(project.libraryIds ?? [])
+    const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+    const libraries = getConfiguredProjectLibraries()
+    const targets: HomeProjectMoveToLibraryTarget[] = []
+    const targetLibraryIds = new Set<string>()
+
+    for (const sourceLibrary of getProjectLibraries(project)) {
+      const moveFrom = getProjectLibraryOperation(
+        libraryTypes.get(sourceLibrary.type),
+        sourceLibrary,
+        'moveProjectFrom'
+      )
+      if (
+        !moveFrom ||
+        moveFrom.canMoveProject?.({ library: sourceLibrary, project }) === false
+      ) {
+        continue
+      }
+
+      for (const library of libraries) {
+        if (
+          projectLibraryIds.has(library.id) ||
+          targetLibraryIds.has(library.id)
+        ) {
+          continue
+        }
+
+        const moveTo = getProjectLibraryOperation(
+          libraryTypes.get(library.type),
+          library,
+          'moveProjectTo'
+        )
+        if (
+          !moveTo ||
+          moveTo.canReceiveProject?.({
+            library,
+            sourceLibrary,
+            project,
+          }) === false
+        ) {
+          continue
+        }
+
+        targets.push({
+          library,
+          sourceLibrary,
+        })
+        targetLibraryIds.add(library.id)
+      }
+    }
+
+    return targets
+  }
+
+  const getMoveToLibraryTarget = (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) =>
+    getMoveToLibraryTargets(project).find(
+      (target) => target.library.id === targetLibraryId
+    )
+
   const serviceImpl: HomeProjectActionsService = {
     canOpen: (project) =>
       Boolean(
@@ -154,6 +256,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           project.defaultFile &&
           getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
+      ),
+    canDuplicate: (project) =>
+      Boolean(
+        ((project.localProjectName && project.localProjectPath) ||
+          project.remoteProjectId) &&
+          getProjectOperation(project, 'duplicateProject')
       ),
     // A local materialization is not required: cloud library operations can act
     // on a remote-only project directly. Each library type's operation guards
@@ -167,6 +275,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       Boolean(
         project.readWriteAccess && getProjectOperation(project, 'deleteProject')
       ),
+    canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')
       if (openProject && project.readWriteAccess && project.defaultFile) {
@@ -196,6 +305,20 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
       return { defaultFile: projectInfo.default_file }
+    },
+    duplicate: async (project) => {
+      const duplicateProject = getProjectOperation(project, 'duplicateProject')
+      if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
+        return
+      }
+
+      const result = await duplicateProject.operation.run({
+        library: duplicateProject.library,
+        project,
+      })
+      if (result) {
+        toast.success(result.message)
+      }
     },
     rename: async (project, requestedName) => {
       const renameProject = getProjectOperation(project, 'renameProject')
@@ -237,6 +360,53 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       toast.success(
         `Successfully deleted "${getHomeProjectDisplayName(project)}"`
       )
+    },
+    getMoveToLibraryTargets,
+    moveToLibrary: async (project, targetLibraryId) => {
+      const target = getMoveToLibraryTarget(project, targetLibraryId)
+      if (!target) {
+        return undefined
+      }
+
+      const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
+      const moveFrom = getProjectLibraryOperation(
+        libraryTypes.get(target.sourceLibrary.type),
+        target.sourceLibrary,
+        'moveProjectFrom'
+      )
+      const moveTo = getProjectLibraryOperation(
+        libraryTypes.get(target.library.type),
+        target.library,
+        'moveProjectTo'
+      )
+      if (!moveFrom || !moveTo) {
+        return undefined
+      }
+
+      const source = await moveFrom.run({
+        library: target.sourceLibrary,
+        project,
+        targetLibrary: target.library,
+      })
+      if (!source) {
+        return undefined
+      }
+
+      const result = await moveTo.run({
+        library: target.library,
+        sourceLibrary: target.sourceLibrary,
+        project,
+        source,
+      })
+      toast.success(
+        `Moved "${getHomeProjectDisplayName(project)}" to "${target.library.title}".`
+      )
+
+      return result?.defaultFile
+        ? {
+            defaultFile: result.defaultFile,
+          }
+        : undefined
     },
   }
 
@@ -319,44 +489,18 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
-const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const libraries = computed<ProjectLibrary[]>(() => {
-    const currentSettings = settings.value?.current.value
-    if (!currentSettings) {
-      return []
-    }
-
-    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
-      currentSettings.app.libraries.current
-    )
-
-    return currentSettings.app.libraries.current.map((library, index) => ({
-      ...projectLibraryFromSetting(library, index, {
-        defaultProjectDirectory,
-      }),
-      icon: 'folder',
-      order: index,
-    }))
-  })
-
-  return {
-    item: defineRuntimeRegistryItem({
-      id: 'home-projects.configured-project-libraries',
-      provides: [
-        provide(projectLibrariesValueSpec, libraries, {
-          key: 'home-projects.configured-project-libraries',
-        }),
-      ],
-    }),
-  }
-}, 'home-projects.configured-project-libraries')
-
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
+  const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
+  const refreshLocalProjectEntries = () => {
+    systemIO.value?.actor.send({
+      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+    })
+    invalidateConfiguredProjectLibraryEntries()
+  }
 
   return {
     item: defineRuntimeRegistryItem({
@@ -425,6 +569,30 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 return { defaultFile: project.defaultFile }
               },
             },
+            duplicateProject: {
+              run: async ({ library, project }) => {
+                if (!project.localProjectName || !project.localProjectPath) {
+                  return undefined
+                }
+
+                const result = await duplicateProjectInDirectory({
+                  source: {
+                    directoryName: project.localProjectName,
+                    displayName: getHomeProjectDisplayName(project),
+                    path: project.localProjectPath,
+                  },
+                  projectDirectoryPath: library.path,
+                  requestedProjectTitle: getHomeProjectDisplayName(project),
+                  wasmInstance: await getWasmPromise(),
+                })
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+                invalidateConfiguredProjectLibraryEntries()
+
+                return result
+              },
+            },
             renameProject: {
               run: async ({ project, requestedName }) => {
                 if (!project.localProjectPath || !project.readWriteAccess) {
@@ -435,10 +603,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   project.localProjectPath,
                   requestedName
                 )
-                systemIO.value?.actor.send({
-                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                })
-                invalidateConfiguredProjectLibraryEntries()
+                refreshLocalProjectEntries()
               },
             },
             deleteProject: {
@@ -447,13 +612,45 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   return
                 }
 
+                const cloudSyncActions = project.remoteProjectId
+                  ? cloudSync.value
+                  : undefined
+                if (
+                  project.remoteProjectId &&
+                  cloudSyncActions?.status.value.enabled !== true
+                ) {
+                  return Promise.reject(new Error('Cloud sync is not enabled.'))
+                }
+
                 await fsZds.rm(project.localProjectPath, {
                   recursive: true,
                 })
-                systemIO.value?.actor.send({
-                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                // Individually synced directory projects follow the same
+                // delete-everywhere policy as cloud-library projects.
+                if (project.remoteProjectId) {
+                  await cloudSyncActions?.deleteRemoteProject(
+                    project.remoteProjectId
+                  )
+                }
+                refreshLocalProjectEntries()
+              },
+            },
+            moveProjectFrom: {
+              canMoveProject: ({ project }) =>
+                Boolean(project.localProjectPath && project.readWriteAccess),
+              run: ({ project }) => getProjectMoveSource({ project }),
+            },
+            moveProjectTo: {
+              run: async ({ library, source }) => {
+                const result = await moveProjectIntoLocalDirectory({
+                  projectDirectoryPath: library.path,
+                  sourceProjectPath: source.localProjectPath,
+                  sourceProjectName: source.localProjectName,
+                  defaultFile: source.defaultFile,
                 })
-                invalidateConfiguredProjectLibraryEntries()
+                refreshLocalProjectEntries()
+
+                return result
               },
             },
           },
@@ -528,16 +725,9 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+      const configuredLibraries = projectLibrariesFromSettings(
         currentSettings.app.libraries.current
-      )
-      const configuredLibraries = currentSettings.app.libraries.current
-        .map((library, index) =>
-          projectLibraryFromSetting(library, index, {
-            defaultProjectDirectory,
-          })
-        )
-        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+      ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
@@ -601,14 +791,71 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.configured-project-library-entries')
 
+function findHomeProjectEntryByProjectPath(
+  entries: readonly HomeProjectEntry[],
+  projectPath: string
+) {
+  return entries.find((entry) => entry.localProjectPath === projectPath)
+}
+
+const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
+  const findProject = (projectPath: string) =>
+    findHomeProjectEntryByProjectPath(
+      ctx.valueSpecs.get(homeProjectEntriesValueSpec),
+      projectPath
+    )
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.move-to-library-project-menu-item',
+      provides: [
+        provide(
+          projectExplorerProjectMenuItemsValueSpec,
+          {
+            id: 'home-projects.move-to-library-project-menu-item',
+            order: 10,
+            label: 'Move to library',
+            dataTestId: 'project-sidebar-move-to-library',
+            isVisible: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const actions = ctx.services.optional(homeProjectActionsService)
+
+              return Boolean(project && actions?.canMoveToLibrary(project))
+            },
+            onSelect: ({ projectPath }) => {
+              const project = findProject(projectPath)
+              const commandSystem = ctx.services.optional(commandSystemService)
+              if (!project || !commandSystem) {
+                return
+              }
+
+              commandSystem.send({
+                type: 'Find and select command',
+                data: {
+                  groupId: 'projects',
+                  name: 'Move to library',
+                  argDefaultValues: {
+                    project: project.id,
+                  },
+                },
+              })
+            },
+          },
+          { key: 'home-projects.move-to-library-project-menu-item' }
+        ),
+      ],
+    }),
+  }
+}, 'home-projects.move-to-library-project-menu-item')
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
-    configuredProjectLibraries,
     configuredProjectLibraryEntries,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,
     homeProjectActions,
+    moveProjectToLibraryProjectMenuItem,
     systemIOLocalHomeProjectEntries,
   ],
 })
