@@ -7,6 +7,7 @@ import { effect, signal, untracked } from '@preact/signals-core'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  deleteCloudSyncLocalProjectRealizations,
   deleteRemoteCloudProject,
   disconnectCloudSyncProject,
   ensureCloudProjectLocallySynced,
@@ -76,6 +77,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,
+    deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

@@ -416,6 +416,12 @@ function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
   )
 }
 
+function outboxProjectPaths(entries: OutboxEntry[]) {
+  return Array.from(
+    new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
+  )
+}
+
 export type CloudSyncScopePlan = {
   shouldSyncRemoteIndex: boolean
   projectPaths: string[]
@@ -434,16 +440,17 @@ export function getCloudSyncScopePlan(
       shouldSyncRemoteIndex: false,
       projectPaths: [normalizedScopeProjectPath],
       pendingCount: outboxEntriesForProject(entries, normalizedScopeProjectPath)
-        .length,
+        .length
+        ? 1
+        : 0,
     }
   }
 
+  const projectPaths = outboxProjectPaths(entries)
   return {
     shouldSyncRemoteIndex: true,
-    projectPaths: Array.from(
-      new Set(entries.map((entry) => normalizePathForSync(entry.projectPath)))
-    ),
-    pendingCount: entries.length,
+    projectPaths,
+    pendingCount: projectPaths.length,
   }
 }
 
@@ -917,6 +924,20 @@ async function collectLocalProjectFiles(projectRoot: string) {
   )
 }
 
+function getRemoteProjectEntrypointPath(remoteProject: RemoteProject) {
+  const candidates = [
+    remoteProject.entrypoint_path,
+    remoteProject.entrypointPath,
+    remoteProject.entrypoint,
+  ]
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return normalizeRelativePath(candidate)
+    }
+  }
+  return undefined
+}
+
 async function replaceLocalProjectWithFiles(
   projectPath: string,
   files: ProjectArchiveFile[]
@@ -999,10 +1020,25 @@ async function findLocalProjectPathByRemoteProjectId(
   remoteProjectId: string,
   preferredProjectName?: string
 ) {
+  return (
+    await findLocalProjectPathsByRemoteProjectId(
+      projectDirectory,
+      remoteProjectId,
+      preferredProjectName
+    )
+  )[0]
+}
+
+async function findLocalProjectPathsByRemoteProjectId(
+  projectDirectory: string,
+  remoteProjectId: string,
+  preferredProjectName?: string
+) {
   const candidateNames = new Set<string>()
   if (preferredProjectName) {
     candidateNames.add(preferredProjectName)
   }
+  const projectPaths: string[] = []
 
   const entries = await localFs.readdir(projectDirectory).catch((error) => {
     if (error === 'ENOENT') {
@@ -1030,11 +1066,192 @@ async function findLocalProjectPathByRemoteProjectId(
       candidatePath
     ).catch(() => undefined)
     if (candidateRemoteProjectId === remoteProjectId) {
-      return candidatePath
+      projectPaths.push(normalizePathForSync(candidatePath))
     }
   }
 
-  return undefined
+  return projectPaths
+}
+
+type LocalProjectRealizationCandidate = {
+  projectPath: string
+  metadata?: ProjectMetadata
+  manifest?: ProjectManifest
+}
+
+async function getLocalProjectRealizationCandidatesByRemoteProjectId(
+  projectDirectory: string,
+  remoteProjectId: string,
+  preferredProjectName?: string
+): Promise<LocalProjectRealizationCandidate[]> {
+  const paths = await findLocalProjectPathsByRemoteProjectId(
+    projectDirectory,
+    remoteProjectId,
+    preferredProjectName
+  )
+
+  return Promise.all(
+    paths.map(async (projectPath) => ({
+      projectPath,
+      metadata: await getProjectMetadata(projectPath),
+      manifest: await collectLocalProjectFiles(projectPath)
+        .then(projectManifestFromFiles)
+        .catch(() => undefined),
+    }))
+  )
+}
+
+function canDeleteDuplicateLocalRealization({
+  candidate,
+  baseManifest,
+  pendingProjectPaths,
+}: {
+  candidate: LocalProjectRealizationCandidate
+  baseManifest: ProjectManifest
+  pendingProjectPaths: ReadonlySet<string>
+}) {
+  const normalizedProjectPath = normalizePathForSync(candidate.projectPath)
+  return Boolean(
+    candidate.manifest &&
+      !pendingProjectPaths.has(normalizedProjectPath) &&
+      !candidate.metadata?.tombstone &&
+      !candidate.metadata?.conflict &&
+      !isProjectSyncExcluded(candidate.metadata) &&
+      projectManifestsEqual(candidate.manifest, baseManifest)
+  )
+}
+
+async function deleteLocalProjectRealization(projectPath: string) {
+  await clearOutboxEntriesForProject(projectPath)
+  if (await exists(projectPath)) {
+    await localFs.rm(projectPath, { recursive: true })
+  }
+  await deleteProjectMetadata(projectPath)
+}
+
+async function detachLocalProjectRealization(projectPath: string) {
+  await clearOutboxEntriesForProject(projectPath)
+  if (await exists(projectPath).catch(() => false)) {
+    await removeLocalProjectCloudProjectId(projectPath)
+  }
+  await deleteProjectMetadata(projectPath)
+}
+
+async function cleanupDuplicateLocalRealizationsForRemoteProject({
+  remoteProjectId,
+  projectDirectory,
+  keepProjectPath,
+}: {
+  remoteProjectId: string
+  projectDirectory: string
+  keepProjectPath: string
+}) {
+  const normalizedKeepProjectPath = normalizePathForSync(keepProjectPath)
+  const pendingProjectPaths = new Set(
+    (await getAllOutboxEntries()).map((entry) =>
+      normalizePathForSync(entry.projectPath)
+    )
+  )
+  const candidates =
+    await getLocalProjectRealizationCandidatesByRemoteProjectId(
+      projectDirectory,
+      remoteProjectId
+    )
+  const keepCandidate = candidates.find(
+    (candidate) =>
+      normalizePathForSync(candidate.projectPath) === normalizedKeepProjectPath
+  )
+
+  if (
+    !keepCandidate?.metadata?.baseManifest ||
+    !keepCandidate.manifest ||
+    !projectManifestsEqual(
+      keepCandidate.manifest,
+      keepCandidate.metadata.baseManifest
+    )
+  ) {
+    return []
+  }
+
+  const deletedProjectPaths: string[] = []
+  for (const candidate of candidates) {
+    const normalizedProjectPath = normalizePathForSync(candidate.projectPath)
+    if (normalizedProjectPath === normalizedKeepProjectPath) {
+      continue
+    }
+    if (
+      !canDeleteDuplicateLocalRealization({
+        candidate,
+        baseManifest: keepCandidate.manifest,
+        pendingProjectPaths,
+      })
+    ) {
+      continue
+    }
+
+    await deleteLocalProjectRealization(candidate.projectPath)
+    deletedProjectPaths.push(candidate.projectPath)
+  }
+
+  return deletedProjectPaths
+}
+
+export async function deleteCloudSyncLocalProjectRealizations(
+  remoteProjectId: string,
+  selectedProjectPath: string
+) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const normalizedSelectedProjectPath =
+    normalizePathForSync(selectedProjectPath)
+  if (!projectId || !normalizedSelectedProjectPath) {
+    return
+  }
+
+  const pendingProjectPaths = new Set(
+    (await getAllOutboxEntries()).map((entry) =>
+      normalizePathForSync(entry.projectPath)
+    )
+  )
+  const projectDirectory = localFs.dirname(normalizedSelectedProjectPath)
+  const candidates =
+    await getLocalProjectRealizationCandidatesByRemoteProjectId(
+      projectDirectory,
+      projectId
+    )
+  const selectedCandidate = candidates.find(
+    (candidate) =>
+      normalizePathForSync(candidate.projectPath) ===
+      normalizedSelectedProjectPath
+  )
+  const selectedManifest = selectedCandidate?.manifest
+
+  for (const candidate of candidates) {
+    const normalizedProjectPath = normalizePathForSync(candidate.projectPath)
+    if (normalizedProjectPath === normalizedSelectedProjectPath) {
+      await deleteLocalProjectRealization(candidate.projectPath)
+      continue
+    }
+
+    if (
+      selectedManifest &&
+      canDeleteDuplicateLocalRealization({
+        candidate,
+        baseManifest: selectedManifest,
+        pendingProjectPaths,
+      })
+    ) {
+      await deleteLocalProjectRealization(candidate.projectPath)
+      continue
+    }
+
+    await detachLocalProjectRealization(candidate.projectPath)
+  }
+
+  await refreshPendingCount()
 }
 
 async function cloneRemoteProjectToLocal(
@@ -1054,7 +1271,8 @@ async function cloneRemoteProjectToLocal(
       await parseProjectArchive(archive),
       remoteProject.title,
       remoteProject.id,
-      getEnvironmentName()
+      getEnvironmentName(),
+      getRemoteProjectEntrypointPath(remoteProject)
     )
   )
   const nextMetadata = {
@@ -1128,9 +1346,19 @@ export async function ensureCloudProjectLocallySynced(
       normalizePathForSync(nextMetadata.localProjectPath) !==
         normalizePathForSync(metadataBeforeDirectorySync.localProjectPath)
     ) {
+      await cleanupDuplicateLocalRealizationsForRemoteProject({
+        remoteProjectId: projectId,
+        projectDirectory,
+        keepProjectPath: nextMetadata.localProjectPath,
+      })
       scheduleSync(0)
       return localProjectFromMetadata(nextMetadata)
     }
+    await cleanupDuplicateLocalRealizationsForRemoteProject({
+      remoteProjectId: projectId,
+      projectDirectory,
+      keepProjectPath: knownLocalMetadata.localProjectPath,
+    })
     scheduleSync(0)
     return localProjectFromMetadata(knownLocalMetadata)
   }
@@ -1162,6 +1390,11 @@ export async function ensureCloudProjectLocallySynced(
       metadata: nextMetadata,
       title: await readLocalProjectTitle(nextMetadata.localProjectPath),
       pendingProjectPaths: new Set(),
+    })
+    await cleanupDuplicateLocalRealizationsForRemoteProject({
+      remoteProjectId: projectId,
+      projectDirectory,
+      keepProjectPath: nextMetadata.localProjectPath,
     })
     scheduleSync(0)
     return localProjectFromMetadata(nextMetadata)
@@ -1206,7 +1439,8 @@ export async function renameRemoteCloudProject(
     ),
     title,
     projectId,
-    getEnvironmentName()
+    getEnvironmentName(),
+    getRemoteProjectEntrypointPath(remoteProject)
   )
   const updated = await updateRemoteProject({
     config,
@@ -1260,8 +1494,7 @@ export async function deleteRemoteCloudProject(
 
   for (const metadata of await getAllProjectMetadata()) {
     if (metadata.remoteProjectId === projectId) {
-      await clearOutboxEntriesForProject(metadata.localProjectPath)
-      await deleteProjectMetadata(metadata.localProjectPath)
+      await detachLocalProjectRealization(metadata.localProjectPath)
     }
   }
 
@@ -2120,7 +2353,8 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         await parseProjectArchive(remoteArchive),
         remoteProject.title,
         remoteProjectId,
-        getEnvironmentName()
+        getEnvironmentName(),
+        getRemoteProjectEntrypointPath(remoteProject)
       )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
@@ -2354,6 +2588,15 @@ async function syncRemoteIndex() {
           }
           upsertMetadata(indexedMetadata)
         }
+        const deletedDuplicateProjectPaths =
+          await cleanupDuplicateLocalRealizationsForRemoteProject({
+            remoteProjectId: remoteProject.id,
+            projectDirectory,
+            keepProjectPath: nextLocalMetadata.localProjectPath,
+          })
+        for (const deletedProjectPath of deletedDuplicateProjectPaths) {
+          removeMetadata(deletedProjectPath)
+        }
         continue
       }
 
@@ -2393,6 +2636,15 @@ async function syncRemoteIndex() {
           (await getProjectMetadata(nextMetadata.localProjectPath))
         if (nextSyncedMetadata) {
           upsertMetadata(nextSyncedMetadata)
+          const deletedDuplicateProjectPaths =
+            await cleanupDuplicateLocalRealizationsForRemoteProject({
+              remoteProjectId: remoteProject.id,
+              projectDirectory,
+              keepProjectPath: nextSyncedMetadata.localProjectPath,
+            })
+          for (const deletedProjectPath of deletedDuplicateProjectPaths) {
+            removeMetadata(deletedProjectPath)
+          }
         }
       }
     } catch (error) {
@@ -2935,12 +3187,24 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     return
   }
 
+  const shouldResetEnabledStatus =
+    !previousConfig.enabled ||
+    cloudIdentityChanged ||
+    projectDirectoryChanged ||
+    syncPolicyChanged ||
+    cloudSyncStatus.value.state === 'disabled'
+
   attachVisibilityChangeListener()
   updateStatus({
     enabled: true,
-    state: 'idle',
-    lastFailure: undefined,
-    lastFailureAt: undefined,
+    ...(shouldResetEnabledStatus
+      ? {
+          state: 'idle',
+          activeProjectPath: undefined,
+          lastFailure: undefined,
+          lastFailureAt: undefined,
+        }
+      : {}),
   })
   void refreshPendingCount()
   scheduleSync(0)
