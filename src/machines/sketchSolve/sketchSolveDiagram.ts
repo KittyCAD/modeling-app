@@ -29,13 +29,8 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  CHILD_TOOL_DONE_EVENT,
-  ORIGIN_TARGET,
-  type SketchSolveContext,
-  type SketchSolveMachineEvent,
-  type SolveActionArgs,
-  type SpawnToolActor,
   buildSegmentCtorFromObject,
+  CHILD_TOOL_DONE_EVENT,
   cleanupSketchSolveGroup,
   clearDraftEntities,
   clearHoverCallbacks,
@@ -45,8 +40,13 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
+  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
+  type SketchSolveContext,
+  type SketchSolveMachineEvent,
+  type SolveActionArgs,
+  type SpawnToolActor,
   sendToActorIfActive,
   setDraftEntities,
   spawnTool,
@@ -57,12 +57,12 @@ import {
   updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
   type ConstraintToolName,
   constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
@@ -365,6 +365,10 @@ function isConstraintToolName(
   return constraintToolNameSet.has(toolName)
 }
 
+export function shouldPreserveSelectionForTool(toolName: string) {
+  return toolName === 'filletTool'
+}
+
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
@@ -397,7 +401,7 @@ export const sketchSolveMachine = setup({
     'send escape to tool': ({ context }) => {
       sendToActorIfActive(context.childTool, { type: 'escape' })
     },
-    'store pending tool': assign(({ event, system }) => {
+    'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
@@ -1036,6 +1040,14 @@ export const sketchSolveMachine = setup({
             actions: 'store pending tool',
           },
           {
+            guard: ({ event }) => {
+              assertEvent(event, 'equip tool')
+              return shouldPreserveSelectionForTool(event.data.tool)
+            },
+            target: 'using tool',
+            actions: ['refresh selection styling', 'store pending tool'],
+          },
+          {
             target: 'using tool',
             actions: [
               'clear selection',
@@ -1145,7 +1157,7 @@ export const sketchSolveMachine = setup({
             ({ event }) => {
               toastSketchSolveError(event, 'Failed to exit sketch cleanly')
             },
-            ({ event, context, self }) => {
+            ({ self }) => {
               // Clear draft entities even on error to allow exit to continue
               sendToActorIfActive(self, { type: 'clear draft entities' })
             },

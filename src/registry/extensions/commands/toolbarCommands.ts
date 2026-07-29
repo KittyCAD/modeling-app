@@ -48,6 +48,7 @@ export const TOOLBAR_COMMAND_IDS = {
     threePointArc: 'zds.toolbar.sketch.threePointArc',
     tangentialArc: 'zds.toolbar.sketch.tangentialArc',
     trim: 'zds.toolbar.sketch.trim',
+    fillet: 'zds.toolbar.sketch.fillet',
     cornerRectangle: 'zds.toolbar.sketch.cornerRectangle',
     centerRectangle: 'zds.toolbar.sketch.centerRectangle',
     angledRectangle: 'zds.toolbar.sketch.angledRectangle',
@@ -487,6 +488,14 @@ export const toolbarCommands: readonly Command[] = [
       'Draw a trimming line through parts of segments to be removed.',
     icon: 'trimTool',
     tool: 'trimTool',
+  }),
+  createSketchSolveToolCommand({
+    id: TOOLBAR_COMMAND_IDS.sketchSolve.fillet,
+    displayName: 'Fillet',
+    description:
+      'Round an adjacent pair of sketch segments with a tangent arc.',
+    icon: 'fillet3d',
+    tool: 'filletTool',
   }),
   createSketchSolveToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.cornerRectangle,

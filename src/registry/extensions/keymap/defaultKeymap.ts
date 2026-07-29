@@ -6,12 +6,12 @@ import {
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
+  keymapValueSpec,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
@@ -573,6 +573,13 @@ export const defaultKeymap: KeymapDocument = {
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       keystrokes: ['m'],
       command: TOOLBAR_COMMAND_IDS.sketchSolve.trim,
+    },
+    {
+      id: 'toolbar.sketch.fillet',
+      title: 'Fillet',
+      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      keystrokes: ['shift+f'],
+      command: TOOLBAR_COMMAND_IDS.sketchSolve.fillet,
     },
     {
       id: 'toolbar.sketch.corner-rectangle',
