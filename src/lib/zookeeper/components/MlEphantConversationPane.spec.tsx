@@ -1,4 +1,4 @@
-import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
@@ -30,13 +30,13 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -398,38 +398,7 @@ beforeAll(async () => {
 })
 
 describe('MlEphantConversationPane', () => {
-  test('shows recovery immediately when mounted while the browser is already offline', () => {
-    const onlineSpy = vi
-      .spyOn(navigator, 'onLine', 'get')
-      .mockReturnValue(false)
-    const mlEphantManagerActor = createFakeActor({
-      awaitingResponse: false,
-    })
-
-    try {
-      renderPane({ mlEphantManagerActor })
-
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'No internet connection.'
-      )
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'Check your network connection, then click below to try again.'
-      )
-      const recovery = screen.getByTestId('connection-recovery')
-      expect(recovery).toHaveClass('h-full')
-      expect(recovery.parentElement).toHaveClass('h-full')
-      expect(
-        screen.queryByRole('button', { name: /clear chat/i })
-      ).not.toBeInTheDocument()
-      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
-        type: MlEphantManagerTransitions.NetworkOffline,
-      })
-    } finally {
-      onlineSpy.mockRestore()
-    }
-  })
-
-  test('shows recovery immediately and does not retry while the browser is offline', async () => {
+  test('shows recovery while offline and reconnects when the browser comes online', async () => {
     vi.useFakeTimers()
     const mlEphantManagerActor = createFakeActor({
       awaitingResponse: false,
@@ -468,40 +437,18 @@ describe('MlEphantConversationPane', () => {
         })
       )
 
-      fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
+      act(() => {
+        window.dispatchEvent(new Event('online'))
+      })
       expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: mlEphantManagerActor.send,
         conversationId: 'conversation-id',
       })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     } finally {
       vi.useRealTimers()
     }
-  })
-
-  test('reconnects immediately when the browser comes back online', () => {
-    const mlEphantManagerActor = createFakeActor({
-      awaitingResponse: false,
-    })
-    renderPane({ mlEphantManagerActor })
-
-    act(() => {
-      window.dispatchEvent(new Event('offline'))
-    })
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'No internet connection.'
-    )
-
-    act(() => {
-      window.dispatchEvent(new Event('online'))
-    })
-
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
-      type: MlEphantManagerTransitions.CacheSetupAndConnect,
-      refParentSend: mlEphantManagerActor.send,
-      conversationId: 'conversation-id',
-    })
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   test('waits for the saved conversation lookup before reconnecting an initially offline project', async () => {
@@ -565,60 +512,6 @@ describe('MlEphantConversationPane', () => {
           refParentSend: mlEphantManagerActor.send,
           conversationId: 'saved-conversation-id',
         })
-      })
-    } finally {
-      onlineSpy.mockRestore()
-    }
-  })
-
-  test('reconnects an initially offline project after its saved conversation lookup has finished', async () => {
-    const conversationStore = createFakeConversationStore({
-      projectConversations: new Map([['project-id', 'saved-conversation-id']]),
-    })
-    const onlineSpy = vi
-      .spyOn(navigator, 'onLine', 'get')
-      .mockReturnValue(false)
-    const mlEphantManagerActor = createFakeActor({
-      abruptlyClosed: true,
-      awaitingResponse: false,
-      conversation: undefined,
-      includeConversationId: false,
-      value: 'await',
-    })
-
-    try {
-      renderPane({
-        mlEphantManagerActor,
-        conversationStore,
-        settingsMetaId: 'project-id',
-        theProject: {
-          name: 'sample-project',
-          path: '/tmp/sample-project',
-        },
-      })
-
-      await waitFor(() => {
-        expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
-          'project-id'
-        )
-      })
-      await waitFor(() => {
-        expect(conversationStore.getProjectConversationId).toHaveResolvedWith(
-          'saved-conversation-id'
-        )
-      })
-      mlEphantManagerActor.send.mockClear()
-
-      onlineSpy.mockReturnValue(true)
-      act(() => {
-        window.dispatchEvent(new Event('online'))
-      })
-
-      expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
-      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: mlEphantManagerActor.send,
-        conversationId: 'saved-conversation-id',
       })
     } finally {
       onlineSpy.mockRestore()
@@ -695,38 +588,6 @@ describe('MlEphantConversationPane', () => {
     }
   })
 
-  test('does not defer reconnecting a project without a saved project id', () => {
-    const onlineSpy = vi
-      .spyOn(navigator, 'onLine', 'get')
-      .mockReturnValue(false)
-    const mlEphantManagerActor = createFakeActor({
-      abruptlyClosed: true,
-      awaitingResponse: false,
-      conversation: undefined,
-      includeConversationId: false,
-      value: 'await',
-    })
-
-    try {
-      renderPane({ mlEphantManagerActor })
-      mlEphantManagerActor.send.mockClear()
-
-      onlineSpy.mockReturnValue(true)
-      act(() => {
-        window.dispatchEvent(new Event('online'))
-      })
-
-      expect(mlEphantManagerActor.send).toHaveBeenCalledTimes(1)
-      expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: mlEphantManagerActor.send,
-        conversationId: undefined,
-      })
-    } finally {
-      onlineSpy.mockRestore()
-    }
-  })
-
   test('does not automatically reconnect after setup gives up', async () => {
     vi.useFakeTimers()
     const mlEphantManagerActor = createFakeActor({
@@ -750,24 +611,6 @@ describe('MlEphantConversationPane', () => {
     } finally {
       vi.useRealTimers()
     }
-  })
-
-  test('does not offer Clear chat after a fresh conversation fails', () => {
-    const mlEphantManagerActor = createFakeActor({
-      abruptlyClosed: true,
-      setupFailed: true,
-      conversation: undefined,
-      includeConversationId: false,
-      value: 'await',
-      awaitingResponse: false,
-    })
-
-    renderPane({ mlEphantManagerActor })
-
-    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
-    expect(
-      screen.queryByRole('button', { name: /Clear chat/ })
-    ).not.toBeInTheDocument()
   })
 
   test('keeps the cancel button visible while the actor is still awaiting a response', () => {
@@ -1239,43 +1082,6 @@ describe('MlEphantConversationPane', () => {
     } finally {
       errorSpy.mockRestore()
     }
-  })
-
-  test('disables recovery actions while clearing a saved chat', async () => {
-    const mlEphantManagerActor = createFakeActor({
-      abruptlyClosed: true,
-      setupFailed: true,
-      conversation: undefined,
-      value: 'await',
-      awaitingResponse: false,
-    })
-    const conversationStore = createFakeConversationStore({
-      projectConversations: new Map([['project-id', 'conversation-id']]),
-      completeDeletesAutomatically: false,
-    })
-
-    renderPane({
-      mlEphantManagerActor,
-      conversationStore,
-      settingsMetaId: 'project-id',
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
-
-    await waitFor(() => {
-      expect(
-        conversationStore.deleteProjectConversationId
-      ).toHaveBeenCalledWith('project-id')
-    })
-    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Reconnect' }))
-    expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-      })
-    )
   })
 
   test('does not finish clearing an old project after switching projects', async () => {

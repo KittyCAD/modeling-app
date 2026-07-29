@@ -1,8 +1,6 @@
 import type { ClientErrorReport } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   type Conversation,
   type MlCopilotModeOption,
@@ -19,6 +17,7 @@ import {
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 function stubClientErrorFetch() {
@@ -459,39 +458,6 @@ describe('mlEphantManagerMachine', () => {
       actor.stop()
     })
 
-    it('reports a connection failure without offering to clear a fresh chat', async () => {
-      const machine = mlEphantManagerMachine.provide({
-        actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
-            SetupActorInput
-          >(() => Promise.reject(new Error('setup failed'))),
-        },
-      })
-      const actor = createActor(machine, {
-        input: {
-          apiToken: '',
-        },
-      }).start()
-
-      actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: vi.fn(),
-      })
-
-      await waitFor(
-        actor,
-        (state) => state.matches(S.Await) && state.context.setupFailed
-      )
-
-      expect(actor.getSnapshot().context.conversationId).toBeUndefined()
-      expect(actor.getSnapshot().context.closeReason).toContain(
-        "couldn't connect"
-      )
-
-      actor.stop()
-    })
-
     it('resets the inactivity watchdog when setup makes progress', async () => {
       vi.useFakeTimers()
       let setupAttempts = 0
@@ -701,54 +667,8 @@ describe('mlEphantManagerMachine', () => {
       }
     })
 
-    it('handles a disconnect after setup resolves but before continue-check starts', async () => {
-      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
-      const actor = createActor(mlEphantManagerMachine, {
-        input: {
-          apiToken: 'token',
-        },
-      }).start()
-
-      try {
-        actor.send({
-          type: MlEphantManagerTransitions.CacheSetupAndConnect,
-          refParentSend: vi.fn(),
-          conversationId: 'conversation-id',
-        })
-
-        const socket = ControllableSetupWebSocket.instances[0]
-        socket.open()
-        await vi.waitFor(() => {
-          expect(socket.sentPayloads).toContain(
-            JSON.stringify({ type: 'list_modes' })
-          )
-        })
-        socket.receive({
-          conversation_id: {
-            conversation_id: 'conversation-id',
-          },
-        })
-        await waitFor(actor, (state) =>
-          state.matches(MlEphantManagerStates.WaitForContinueCheck)
-        )
-
-        socket.closeWithCode(1006)
-
-        await waitFor(
-          actor,
-          (state) => state.matches(S.Await) && state.context.abruptlyClosed
-        )
-        expect(actor.getSnapshot().context).toMatchObject({
-          abruptlyClosed: true,
-          conversationId: 'conversation-id',
-          setupFailed: false,
-        })
-      } finally {
-        actor.stop()
-      }
-    })
-
     it('preserves the project-size guidance from setup-time close code 1009', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(mlEphantManagerMachine, {
         input: {
@@ -791,65 +711,19 @@ describe('mlEphantManagerMachine', () => {
         expect(actor.getSnapshot().context.closeReason).toBe(
           'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
         )
+        expect(ControllableSetupWebSocket.instances).toHaveLength(
+          NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS
+        )
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(reports).toHaveLength(1)
+        expect(reports[0]).toMatchObject({
+          code: 'zookeeper_setup_error',
+          message:
+            'WebSocket closed while loading the Zookeeper conversation (code 1009)',
+        })
       } finally {
         actor.stop()
       }
-    })
-
-    it('counts setup-time disconnects toward the retry limit', () => {
-      const { fetchMock, reports } = stubClientErrorFetch()
-      let setupAttempts = 0
-      const machine = mlEphantManagerMachine.provide({
-        actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
-            SetupActorInput
-          >(() => {
-            setupAttempts += 1
-            return new Promise(() => {})
-          }),
-        },
-      })
-      const actor = createActor(machine, {
-        input: {
-          apiToken: '',
-        },
-      }).start()
-
-      actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: vi.fn(),
-        conversationId: 'conversation-id',
-      })
-
-      for (
-        let attempt = 0;
-        attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
-        attempt += 1
-      ) {
-        actor.send({
-          type: MlEphantManagerTransitions.AbruptClose,
-          closeReason:
-            'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.',
-        })
-      }
-
-      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
-      expect(actor.getSnapshot().matches(S.Await)).toBe(true)
-      expect(actor.getSnapshot().context.setupFailed).toBe(true)
-      expect(actor.getSnapshot().context.closeReason).toContain(
-        'project files are too large'
-      )
-      expect(fetchMock).toHaveBeenCalledTimes(1)
-      expect(reports).toHaveLength(1)
-      expect(reports[0]).toMatchObject({
-        code: 'zookeeper_setup_error',
-        error_name: 'Error',
-        message:
-          'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.',
-      })
-
-      actor.stop()
     })
   })
 

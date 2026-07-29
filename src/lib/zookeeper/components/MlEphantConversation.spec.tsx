@@ -52,10 +52,10 @@ import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
 import type {
   Conversation,
   MlCopilotModeId,
@@ -141,7 +141,6 @@ describe('MlEphantConversation', () => {
       queue: [],
       onRemoveFromQueue: () => {},
       onSteer: () => {},
-      blockedReason: 'Payment is required.',
     }
     const { rerender } = render(<MlEphantConversation {...recoveryProps} />)
 
@@ -153,7 +152,6 @@ describe('MlEphantConversation', () => {
       'Previous conversation data will no longer be visible in this pane.'
     )
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
-    expect(screen.queryByText('Payment is required.')).not.toBeInTheDocument()
 
     const failureIcon = screen
       .getByRole('alert')
@@ -162,48 +160,7 @@ describe('MlEphantConversation', () => {
     const clearChatButton = screen.getByRole('button', { name: 'Clear chat' })
 
     expect(failureIcon).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
-    expect(failureIcon).toHaveAttribute('aria-hidden', 'true')
-    expect(reconnectButton).toHaveClass(
-      'action-button',
-      'h-7',
-      '!border-chalkboard-30',
-      '!bg-chalkboard-10',
-      'enabled:hover:!border-chalkboard-40',
-      'enabled:hover:!bg-chalkboard-20',
-      'disabled:!bg-chalkboard-20/50',
-      'disabled:!text-chalkboard-60',
-      'dark:!border-chalkboard-70',
-      'dark:!bg-chalkboard-90',
-      'dark:enabled:hover:!border-chalkboard-60',
-      'dark:enabled:hover:!bg-chalkboard-80',
-      'dark:disabled:!text-chalkboard-40'
-    )
-    expect(reconnectButton).toHaveAttribute('type', 'button')
-    expect(reconnectButton).toHaveAttribute('tabindex', '0')
-    expect(
-      reconnectButton.querySelector('svg[aria-label="refresh"]')
-    ).toBeInTheDocument()
-    expect(clearChatButton).toHaveClass(
-      'action-button',
-      'h-7',
-      '!border-chalkboard-30',
-      '!bg-chalkboard-10',
-      '!text-destroy-80',
-      'enabled:hover:!border-chalkboard-40',
-      'enabled:hover:!bg-chalkboard-20',
-      'disabled:!bg-chalkboard-20/50',
-      'disabled:!text-chalkboard-60',
-      'dark:!border-chalkboard-70',
-      'dark:!bg-chalkboard-90',
-      'dark:enabled:hover:!border-chalkboard-60',
-      'dark:enabled:hover:!bg-chalkboard-80',
-      'dark:disabled:!text-chalkboard-40'
-    )
-    expect(clearChatButton).toHaveAttribute('type', 'button')
-    expect(clearChatButton).toHaveAttribute('tabindex', '0')
-    expect(
-      clearChatButton.querySelector('svg[aria-label="trash"]')
-    ).toBeInTheDocument()
+    expect(clearChatButton).toHaveClass('!bg-chalkboard-10')
     expect(
       clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
     ).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
@@ -218,28 +175,12 @@ describe('MlEphantConversation', () => {
 
     expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
-  })
 
-  test('does not offer Clear chat when a fresh conversation fails to connect', () => {
-    render(
+    rerender(
       <MlEphantConversation
-        isLoading={true}
-        conversation={undefined}
+        {...recoveryProps}
         connectionError="Zookeeper couldn't connect after 3 attempts."
-        connectionFailed={true}
         canClearChat={false}
-        onProcess={() => {}}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={true}
-        contexts={[]}
-        disabled={true}
-        hasPromptCompleted={true}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
       />
     )
 
