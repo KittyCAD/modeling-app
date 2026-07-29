@@ -1,28 +1,21 @@
-import { useEffect, useMemo, useState } from 'react'
-
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import type { Program, VariableMap } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { useEffect, useState } from 'react'
 
 export function usePreviousVariables({
-  code,
   ast,
   variables,
   wasmInstance,
 }: {
-  code: string
   ast: Program
   variables: VariableMap
   wasmInstance: ModuleType
 }) {
   const { context } = useModelingContext()
-  const selectionFromContext =
+  const selectionRange =
     context.selectionRanges.graphSelections[0]?.codeRef?.range
-  const selectionRange = useMemo(
-    () => selectionFromContext || [code.length, code.length],
-    [selectionFromContext, code]
-  )
   const [previousVariablesInfo, setPreviousVariablesInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
   >({
@@ -32,7 +25,7 @@ export function usePreviousVariables({
   })
 
   useEffect(() => {
-    if (!variables || !selectionRange) return
+    if (!variables) return
     const varInfo = findAllPreviousVariables(
       ast,
       variables,

@@ -454,7 +454,6 @@ sketch001 = extrude(region001, length = -12)`
   })
 
   test(`Offset plane point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -462,8 +461,11 @@ sketch001 = extrude(region001, length = -12)`
     toolbar,
     cmdBar,
   }) => {
-    const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
+    const initialCode = `offsetDistance = 5`
+    const expectedOutput = `plane001 = offsetPlane(XZ, offset = offsetDistance)`
     await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await editor.expectEditor.toContain(initialCode)
     await scene.settled()
 
     await test.step(`Go through the command bar flow`, async () => {
@@ -489,6 +491,15 @@ sketch001 = extrude(region001, length = -12)`
         highlightedHeaderArg: 'offset',
         commandName: 'Offset plane',
       })
+      const offsetInput = cmdBar.currentArgumentInput.locator('.cm-content')
+      await offsetInput.fill('offsetD')
+      await expect(
+        page.locator('.cm-tooltip-autocomplete .cm-completionLabel', {
+          hasText: /^offsetDistance$/,
+        })
+      ).toBeVisible()
+      await offsetInput.press('Enter')
+      await expect(offsetInput).toHaveText('offsetDistance')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -505,6 +516,20 @@ sketch001 = extrude(region001, length = -12)`
         activeLines: [expectedOutput],
         highlightedCode: '',
       })
+    })
+
+    await test.step('Autocomplete still works after reopening the command', async () => {
+      await toolbar.offsetPlaneButton.click()
+      await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
+      const offsetInput = cmdBar.currentArgumentInput.locator('.cm-content')
+      await offsetInput.fill('offsetD')
+      await expect(
+        page.locator('.cm-tooltip-autocomplete .cm-completionLabel', {
+          hasText: /^offsetDistance$/,
+        })
+      ).toBeVisible()
+      await cmdBar.closeCmdBar()
     })
 
     await test.step('Delete offset plane via feature tree selection', async () => {

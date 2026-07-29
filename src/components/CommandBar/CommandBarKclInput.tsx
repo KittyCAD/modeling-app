@@ -1,68 +1,41 @@
 import type { Completion } from '@codemirror/autocomplete'
-import {
-  closeBrackets,
-  closeBracketsKeymap,
-  completionKeymap,
-  completionStatus,
-} from '@codemirror/autocomplete'
+import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
+import { Compartment, EditorState } from '@codemirror/state'
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
-
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
+import { createCommandBarKclInputKeymap } from '@src/components/CommandBar/commandBarKclInputKeymap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
+import { editorTheme } from '@src/editor/plugins/theme'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclManager'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
-import { useApp } from '@src/lib/boot'
-import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { getResolvedTheme } from '@src/lib/theme'
-import { err } from '@src/lib/trap'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import { roundOff, roundOffWithUnits } from '@src/lib/utils'
-import { varMentions } from '@src/lib/varCompletionExtension'
-
-import { Compartment, EditorState } from '@codemirror/state'
-import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
 import {
   noAutofillFormProps,
   noAutofillInputProps,
   setNoAutofillAttributes,
 } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { getResolvedTheme } from '@src/lib/theme'
+import { err } from '@src/lib/trap'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { roundOff, roundOffWithUnits } from '@src/lib/utils'
+import { varMentions } from '@src/lib/varCompletionExtension'
+import { useSelector } from '@xstate/react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
-
-const varMentionsCompartment = new Compartment()
-const setValueCompartment = new Compartment()
-const keymapCompartment = new Compartment()
-const kclLspCompartment = new Compartment()
-const kclAutocompleteCompartment = new Compartment()
-const miniEditor = new EditorView({
-  state: EditorState.create({
-    extensions: [
-      themeCompartment.of([]),
-      varMentionsCompartment.of([]),
-      setValueCompartment.of([]),
-      kclLspCompartment.of([]),
-      kclAutocompleteCompartment.of([]),
-      closeBrackets(),
-      keymap.of([...closeBracketsKeymap, ...completionKeymap]),
-      keymapCompartment.of([]),
-    ],
-  }),
-})
 
 function CommandBarKclInput({
   arg,
@@ -171,6 +144,15 @@ function CommandBarKclInput({
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
   const editorRef = useRef<HTMLDivElement>(null)
+  const miniEditorRef = useRef<EditorView | null>(null)
+  const editorCompartments = useMemo(
+    () => ({
+      keymap: new Compartment(),
+      theme: new Compartment(),
+      varMentions: new Compartment(),
+    }),
+    []
+  )
 
   const allowArrays = arg.allowArrays ?? false
   const allowStringArrays = arg.allowStringArrays ?? false
@@ -200,94 +182,118 @@ function CommandBarKclInput({
     options,
   })
 
-  const varMentionData: Completion[] = prevVariables.map((v) => {
-    const roundedWithUnits = (() => {
-      if (typeof v.value !== 'number' || !v.ty) {
-        return undefined
-      }
-      const numWithUnits = formatNumberValue(v.value, v.ty, wasmInstance)
-      if (err(numWithUnits)) {
-        return undefined
-      }
-      return roundOffWithUnits(numWithUnits)
-    })()
-    return {
-      label: v.key,
-      detail: roundedWithUnits ?? String(roundOff(Number(v.value))),
-    }
-  })
-  const varMentionsExtension = varMentions(varMentionData)
+  const varMentionData = useMemo<Completion[]>(
+    () =>
+      prevVariables.map((v) => {
+        const roundedWithUnits = (() => {
+          if (typeof v.value !== 'number' || !v.ty) {
+            return undefined
+          }
+          const numWithUnits = formatNumberValue(v.value, v.ty, wasmInstance)
+          if (err(numWithUnits)) {
+            return undefined
+          }
+          return roundOffWithUnits(numWithUnits)
+        })()
+        return {
+          label: v.key,
+          detail: roundedWithUnits ?? String(roundOff(Number(v.value))),
+        }
+      }),
+    [prevVariables, wasmInstance]
+  )
+  const varMentionsExtension = useMemo(
+    () =>
+      varMentions(varMentionData, {
+        activateOnTypingDelay: 0,
+        interactionDelay: 0,
+      }),
+    [varMentionData]
+  )
 
   useEffect(() => {
+    if (!editorRef.current) return
+    const miniEditor = new EditorView({
+      state: EditorState.create({
+        extensions: [
+          editorCompartments.theme.of([]),
+          editorCompartments.varMentions.of([]),
+          closeBrackets(),
+          keymap.of(closeBracketsKeymap),
+          editorCompartments.keymap.of([]),
+          EditorView.updateListener.of((vu: ViewUpdate) => {
+            if (vu.docChanged) {
+              setValue(vu.state.doc.toString())
+            }
+          }),
+        ],
+      }),
+      parent: editorRef.current,
+    })
+    miniEditorRef.current = miniEditor
+    setNoAutofillAttributes(editorRef.current)
+    setNoAutofillAttributes(miniEditor.dom)
+    setNoAutofillAttributes(miniEditor.contentDOM)
+
+    return () => {
+      miniEditor.destroy()
+      miniEditorRef.current = null
+    }
+  }, [editorCompartments])
+
+  useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) return
     miniEditor.dispatch({
       effects: [
-        keymapCompartment.reconfigure(
-          keymap.of([
-            {
-              key: 'Enter',
-              run: (editor) => {
-                // Only submit if there is no completion active
-                if (completionStatus(editor.state) !== null) return false
-                handleSubmit()
-                return true
-              },
-            },
-            {
-              key: 'Meta-Backspace',
-              run: () => {
-                stepBack()
-                return true
-              },
-            },
-          ])
+        editorCompartments.keymap.reconfigure(
+          keymap.of(
+            createCommandBarKclInputKeymap({
+              onSubmit: handleSubmit,
+              stepBack,
+            })
+          )
         ),
       ],
     })
   })
 
   useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) return
     miniEditor.dispatch({
-      effects: [varMentionsCompartment.reconfigure(varMentionsExtension)],
+      effects: [
+        editorCompartments.varMentions.reconfigure(varMentionsExtension),
+      ],
     })
-  }, [varMentionsExtension])
+  }, [editorCompartments.varMentions, varMentionsExtension])
 
   useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) return
     miniEditor.dispatch({
-      effects: themeCompartment.reconfigure(
+      effects: editorCompartments.theme.reconfigure(
         editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
       ),
     })
-  }, [settingsValues.app.theme])
+  }, [editorCompartments.theme, settingsValues.app.theme])
 
   useEffect(() => {
-    if (editorRef.current) {
-      setNoAutofillAttributes(editorRef.current)
-      setNoAutofillAttributes(miniEditor.dom)
-      setNoAutofillAttributes(miniEditor.contentDOM)
-      miniEditor.dispatch({
-        changes: {
-          from: 0,
-          to: miniEditor.state.doc.length,
-          insert: initialValue,
-        },
-        selection: {
-          anchor: 0,
-          head: initialValue.length,
-        },
-      })
-      editorRef.current.appendChild(miniEditor.dom)
-      miniEditor.focus()
-    }
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) return
     miniEditor.dispatch({
-      effects: setValueCompartment.reconfigure(
-        EditorView.updateListener.of((vu: ViewUpdate) => {
-          if (vu.docChanged) {
-            setValue(vu.state.doc.toString())
-          }
-        })
-      ),
+      changes: {
+        from: 0,
+        to: miniEditor.state.doc.length,
+        insert: initialValue,
+      },
+      selection: {
+        anchor: 0,
+        head: initialValue.length,
+      },
     })
-  }, [arg, editorRef, initialValue])
+    miniEditor.focus()
+  }, [arg, initialValue])
 
   useEffect(() => {
     const canUseUncalculatedValue =
