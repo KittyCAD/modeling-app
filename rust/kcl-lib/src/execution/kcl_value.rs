@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitLength;
 use serde::Serialize;
+use serde::Serializer;
 
 use crate::CompilationIssue;
 use crate::KclError;
@@ -321,7 +323,10 @@ pub enum FunctionBody {
 pub enum TypeDef {
     RustRepr(PrimitiveType, StdFnProps),
     Alias(RuntimeType),
-    Enum(EnumTypeDef),
+    /// Shared rather than owned so that every value of the enum points at the
+    /// one declaration object, and so that reading the type out of memory,
+    /// which clones the `KclValue`, does not copy the variant list.
+    Enum(Arc<EnumTypeDef>),
 }
 
 /// The nominal identity of an enum.
@@ -416,28 +421,51 @@ impl EnumTypeDef {
 
 /// A value of an enum type, i.e. one of its variants.
 ///
-/// V1 variants are nullary, so the variant name is the entire value. A
-/// variant's representation is deliberately absent: it is secondary metadata
-/// and never participates in identity or equality.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+/// V1 variants are nullary, so the variant name is the entire value. The value
+/// holds its declaration rather than only the declaration's identity, which is
+/// what lets a variant be projected to its declared representation: that
+/// representation is per-variant declaration data, and a value cannot find its
+/// declaration by name, because an import alias renames the binding and a value
+/// can reach a module that never imported the type at all. The declaration is
+/// reachable, not part of the value: identity and equality read the declaration's
+/// id and the variant name, never a representation.
+#[derive(Debug, Clone, Serialize)]
 pub struct EnumValue {
-    enum_id: EnumTypeId,
+    /// Serialized as `enum_id` so that the exposed shape stays the nominal
+    /// identity plus the variant, and no declaration data leaks into snapshots
+    /// or the memory pane.
+    #[serde(rename = "enum_id", serialize_with = "serialize_enum_def_id")]
+    def: Arc<EnumTypeDef>,
     variant: String,
     #[serde(skip)]
     meta: Vec<Metadata>,
 }
 
+fn serialize_enum_def_id<S: Serializer>(def: &Arc<EnumTypeDef>, serializer: S) -> Result<S::Ok, S::Error> {
+    def.id().serialize(serializer)
+}
+
+/// Two values are equal when they name the same variant of the same declaration.
+/// Written out rather than derived because the declaration handle is a route to
+/// the declaration and not part of the value: comparing it would, once variants
+/// carry representations, let a representation decide equality.
+impl PartialEq for EnumValue {
+    fn eq(&self, other: &Self) -> bool {
+        self.def.id() == other.def.id() && self.variant == other.variant
+    }
+}
+
 impl EnumValue {
-    pub fn new(enum_id: EnumTypeId, variant: impl Into<String>, meta: Vec<Metadata>) -> Self {
+    pub fn new(def: Arc<EnumTypeDef>, variant: impl Into<String>, meta: Vec<Metadata>) -> Self {
         Self {
-            enum_id,
+            def,
             variant: variant.into(),
             meta,
         }
     }
 
     pub fn enum_id(&self) -> &EnumTypeId {
-        &self.enum_id
+        self.def.id()
     }
 
     pub fn variant(&self) -> &str {
@@ -448,9 +476,20 @@ impl EnumValue {
         &self.meta
     }
 
+    /// The string this variant projects to under `enumValue: string`.
+    ///
+    /// The declared representation of the variant, which in V1 is always the
+    /// variant name because no variant can declare a `@repr` yet. This is the
+    /// single place that answers the question, so when `@repr` lands it reads the
+    /// declaration here rather than adding a second notion of representation at
+    /// the projection site.
+    pub fn declared_string_repr(&self) -> String {
+        self.variant.clone()
+    }
+
     /// How the value is written in KCL and shown to users, e.g. `Color::Red`.
     pub fn qualified_name(&self) -> String {
-        format!("{}::{}", self.enum_id.declared_name(), self.variant)
+        format!("{}::{}", self.def.id().declared_name(), self.variant)
     }
 }
 
@@ -1311,13 +1350,19 @@ mod tests {
         );
     }
 
+    fn color_def() -> Arc<EnumTypeDef> {
+        Arc::new(
+            EnumTypeDef::new(
+                EnumTypeId::new(ModuleId::default(), "Color"),
+                vec!["Red".to_owned(), "Green".to_owned()],
+            )
+            .unwrap(),
+        )
+    }
+
     fn color_red() -> KclValue {
         KclValue::Enum {
-            value: Box::new(EnumValue::new(
-                EnumTypeId::new(ModuleId::default(), "Color"),
-                "Red",
-                vec![],
-            )),
+            value: Box::new(EnumValue::new(color_def(), "Red", vec![])),
         }
     }
 
@@ -1352,6 +1397,24 @@ mod tests {
                 enum_name: "Color".to_owned(),
                 variant: "Red".to_owned(),
             }
+        );
+    }
+
+    /// Serialization is the third such surface, and the one that reaches
+    /// `program_memory.snap`. A value holds its whole declaration, so this pins
+    /// that only the identity and the variant are written out: the declaration
+    /// will carry `@repr` values, and those must not appear here.
+    #[test]
+    fn enum_values_serialize_as_identity_and_variant() {
+        assert_eq!(
+            serde_json::to_value(color_red()).unwrap(),
+            serde_json::json!({
+                "type": "Enum",
+                "value": {
+                    "enum_id": { "module_id": 0, "declared_name": "Color" },
+                    "variant": "Red",
+                },
+            })
         );
     }
 
