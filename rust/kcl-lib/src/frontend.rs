@@ -13303,6 +13303,96 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_final_tangent_to_exhaust_cam_issue_11370() {
+        clear_mem_cache().await;
+        let initial_source = r#"
+@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+
+baseCircle = 1.34
+exhaustLift = 0.235
+exhaustDuration = 246deg
+exhaustRb = baseCircle / 2
+exhaustTheta = exhaustDuration / 2
+exhaustLiftY = exhaustRb + exhaustLift
+exhaustRn = exhaustRb * 0.35
+exhaustBaseAngle = 90deg - (exhaustTheta / 2)
+exhaustNoseCenter = [0, exhaustLiftY - exhaustRn]
+exhaustRightBase = polar(angle = exhaustBaseAngle, length = exhaustRb)
+exhaustLeftBase = [-exhaustRightBase[0], exhaustRightBase[1]]
+exhaustRightNoseJoin = [exhaustRn * sin(35deg), exhaustNoseCenter[1] + exhaustRn * cos(35deg)]
+exhaustLeftNoseJoin = [-exhaustRightNoseJoin[0], exhaustRightNoseJoin[1]]
+
+exhaustProfile = sketch(on = XY) {
+  baseArc = arc(start = [var -0.59in, var 0.32in], end = [var 0.59in, var 0.32in], center = [var 0in, var 0in])
+  rightFlank = line(start = [var 0.59in, var 0.32in], end = [var 0.13in, var 0.86in], construction = true)
+  noseArc = arc(start = [var 0.13in, var 0.86in], end = [var -0.13in, var 0.86in], center = [var 0in, var 0.67in])
+  leftFlank = line(start = [var -0.13in, var 0.86in], end = [var -0.59in, var 0.32in], construction = true)
+  coincident([baseArc.end, rightFlank.start])
+  coincident([rightFlank.end, noseArc.start])
+  coincident([noseArc.end, leftFlank.start])
+  coincident([leftFlank.end, baseArc.start])
+  coincident([baseArc.center, ORIGIN])
+  fixed([baseArc.start, exhaustLeftBase])
+  fixed([baseArc.end, exhaustRightBase])
+  fixed([noseArc.center, exhaustNoseCenter])
+  fixed([noseArc.start, exhaustRightNoseJoin])
+  fixed([noseArc.end, exhaustLeftNoseJoin])
+  point1 = point(at = [var -0.48in, var 0.7in])
+  arc1 = arc(start = [var -0.22in, var 0.87in], end = [var -0.62in, var 0.4in], center = [var 0.01in, var 0.27in])
+  coincident([point1, arc1])
+  point2 = point(at = [var 0.54in, var 0.72in])
+  arc2 = arc(start = [var 0.69in, var 0.41in], end = [var 0.28in, var 0.89in], center = [var 0.08in, var 0.3in])
+  coincident([point2, arc2])
+  coincident([leftFlank.end, arc1.end])
+  coincident([leftFlank.start, arc1.start])
+  coincident([arc2.end, noseArc.start])
+  coincident([arc2.start, rightFlank.start])
+  tangent([baseArc, arc1])
+}
+"#;
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arcs = sketch
+            .segments
+            .iter()
+            .filter(|id| {
+                matches!(
+                    frontend.scene_graph.objects.get(id.0).map(|object| &object.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .copied()
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 4);
+
+        let constraint = Constraint::Tangent(Tangent {
+            input: vec![arcs[0], arcs[3]],
+        });
+        let (source_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+
+        assert!(source_delta.text.contains("tangent([baseArc, arc2])"));
+        assert!(
+            scene_delta.exec_outcome.issues.is_empty(),
+            "{:#?}",
+            scene_delta.exec_outcome.issues
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_point_midpoint() {
         let initial_source = "\
 sketch(on = XY) {

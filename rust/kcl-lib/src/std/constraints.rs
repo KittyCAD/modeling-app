@@ -363,6 +363,67 @@ fn arc_initial_radius(
     points_initial_distance(sketch_vars, arc.center, arc.start, exec_state, range)
 }
 
+fn datum_point_key(point: DatumPoint) -> (ezpz::Id, ezpz::Id) {
+    (point.x_id, point.y_id)
+}
+
+fn points_are_constrained_coincident(
+    point_a: DatumPoint,
+    point_b: DatumPoint,
+    constraints: &[SolverConstraint],
+) -> bool {
+    let target = datum_point_key(point_b);
+    let mut pending = vec![point_a];
+    let mut visited = Vec::new();
+
+    while let Some(point) = pending.pop() {
+        let point_key = datum_point_key(point);
+        if point_key == target {
+            return true;
+        }
+        if visited.contains(&point_key) {
+            continue;
+        }
+        visited.push(point_key);
+
+        for constraint in constraints {
+            let SolverConstraint::PointsCoincident(lhs, rhs) = constraint else {
+                continue;
+            };
+            if datum_point_key(*lhs) == point_key {
+                pending.push(*rhs);
+            } else if datum_point_key(*rhs) == point_key {
+                pending.push(*lhs);
+            }
+        }
+    }
+
+    false
+}
+
+fn shared_coincident_arc_endpoints(
+    arc_a: ArcVars,
+    arc_b: ArcVars,
+    constraints: &[SolverConstraint],
+    range: crate::SourceRange,
+) -> Result<Option<(DatumPoint, DatumPoint)>, KclError> {
+    let (Some(end_a), Some(end_b)) = (arc_a.end, arc_b.end) else {
+        return Ok(None);
+    };
+    let points_a = [datum_point(arc_a.start, range)?, datum_point(end_a, range)?];
+    let points_b = [datum_point(arc_b.start, range)?, datum_point(end_b, range)?];
+
+    for point_a in points_a {
+        for point_b in points_b {
+            if points_are_constrained_coincident(point_a, point_b, constraints) {
+                return Ok(Some((point_a, point_b)));
+            }
+        }
+    }
+
+    Ok(None)
+}
+
 fn constrainable_point_from_unsolved_segment(
     segment: &UnsolvedSegment,
     function_name: &str,
@@ -4039,7 +4100,37 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 .solver_constraints
                 .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
         }
-        TangentCase::CircularCircular(circular0, circular1) => {
+        TangentCase::CircularCircular(circular0, circular1) => 'circular_tangent: {
+            let shared_endpoint = {
+                let Some(sketch_state) = exec_state.sketch_block() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                shared_coincident_arc_endpoints(circular0, circular1, &sketch_state.solver_constraints, range)?
+            };
+
+            if let Some((endpoint0, endpoint1)) = shared_endpoint {
+                let radius_line0 = DatumLineSegment::new(datum_point(circular0.center, range)?, endpoint0);
+                let radius_line1 = DatumLineSegment::new(datum_point(circular1.center, range)?, endpoint1);
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                // When two arcs already share an endpoint, tangency at that
+                // point is exactly the requirement that their radii are
+                // collinear. This avoids the non-smooth absolute-radius
+                // branch in the general circle/circle tangent constraint.
+                sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
+                    radius_line0,
+                    radius_line1,
+                    AngleKind::Parallel,
+                ));
+                break 'circular_tangent;
+            }
             let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
             let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
                 Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
