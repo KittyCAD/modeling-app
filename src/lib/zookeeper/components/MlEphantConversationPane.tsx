@@ -17,7 +17,6 @@ import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMac
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
-  NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { MlCopilotModeId } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
@@ -91,9 +90,6 @@ export const MlEphantConversationPane = (props: {
   })
   const conversationId = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversationId
-  })
-  const setupAttempt = useSelector(props.mlEphantManagerActor, (actor) => {
-    return actor.context.setupAttempt
   })
   const isSettingUp = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.matches(MlEphantManagerStates.Setup)
@@ -654,7 +650,7 @@ export const MlEphantConversationPane = (props: {
       isClearingChat={isClearingChatPending}
       loadingMessage={
         isSettingUp
-          ? `Connecting to Zookeeper (attempt ${setupAttempt} of ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS})...`
+          ? 'Connecting to Zookeeper...'
           : needsReconnect
             ? 'Reconnecting...'
             : undefined
