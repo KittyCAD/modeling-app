@@ -13393,6 +13393,42 @@ exhaustProfile = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_four_shared_endpoint_tangencies_issue_11370() {
+        clear_mem_cache().await;
+        let source = r#"
+sketch001 = sketch(on = XY) {
+  arc1 = arc(start = [var -1.4in, var 0.75in], end = [var 1.41in, var 0.73in], center = [var 0in, var 0in])
+  coincident([arc1.center, ORIGIN])
+  line1 = line(start = [var 1.41in, var 0.73in], end = [var -0in, var 0in], construction = true)
+  coincident([line1.end, arc1.center])
+  line2 = line(start = [var -1.39in, var 0.75in], end = [var -0in, var 0in], construction = true)
+  coincident([line2.end, line1.end])
+  angle([line2, line1]) == 242deg
+  coincident([line1.start, arc1.end])
+  coincident([line2.start, arc1.start])
+  arc2 = arc(start = [var -0.49in, var 1.85in], end = [var -1.46in, var 0.99in], center = [var 1.92in, var -1.86in])
+  arc3 = arc(start = [var 0.57in, var 2.05in], end = [var -0.49in, var 1.85in], center = [var 0.1in, var 1.01in])
+  coincident([arc2.start, arc3.end])
+  tangent([arc2, arc3])
+  arc4 = arc(start = [var 1.36in, var 0.8in], end = [var 0.21in, var 1.86in], center = [var 0.26in, var 0.93in])
+  coincident([arc4.start, line1.start])
+  coincident([arc3.start, arc4.end])
+  tangent([arc3, arc4])
+  coincident([line2.start, arc2.end])
+  tangent([arc1, arc2])
+  tangent([arc1, arc4])
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        assert!(outcome.issues.is_empty(), "{:#?}", outcome.issues);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_point_midpoint() {
         let initial_source = "\
 sketch(on = XY) {
