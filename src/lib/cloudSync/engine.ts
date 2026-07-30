@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
+import { reportClientError } from '@src/lib/clientErrors'
 import {
   CloudApiError,
   createRemoteProject,
@@ -124,6 +125,17 @@ export function isCloudSyncConflictRevisionChangedError(error: unknown) {
     (error instanceof Error &&
       error.name === 'CloudSyncConflictRevisionChangedError')
   )
+}
+
+function reportCloudSyncConflictCopyDetected() {
+  void reportClientError({
+    code: 'cloud_sync_conflict_copy_detected',
+    errorName: 'CloudSyncConflictCopyDetected',
+    message: 'Cloud sync "conflict copy" folder detected',
+    extra: {
+      source: 'cloudSync',
+    },
+  })
 }
 
 const SYNC_DEBOUNCE_MS = 2500
@@ -1829,26 +1841,25 @@ export async function loadCloudSyncProjectConflictInspection(
   const remoteSnapshot = await downloadRemoteProjectSnapshot({
     projectId: metadata.remoteProjectId,
   })
+  const nextConflict = {
+    ...metadata.conflict,
+    remoteRevision: remoteSnapshot.revision ?? metadata.conflict.remoteRevision,
+    remoteUpdatedAt:
+      remoteSnapshot.updatedAt ?? metadata.conflict.remoteUpdatedAt,
+  }
   const nextMetadata: ProjectMetadata = {
     ...metadata,
-    conflict: {
-      ...metadata.conflict,
-      remoteRevision:
-        remoteSnapshot.revision ?? metadata.conflict.remoteRevision,
-      remoteUpdatedAt:
-        remoteSnapshot.updatedAt ?? metadata.conflict.remoteUpdatedAt,
-    },
+    conflict: nextConflict,
   }
   if (
-    nextMetadata.conflict?.remoteRevision !==
-      metadata.conflict.remoteRevision ||
-    nextMetadata.conflict?.remoteUpdatedAt !== metadata.conflict.remoteUpdatedAt
+    nextConflict.remoteRevision !== metadata.conflict.remoteRevision ||
+    nextConflict.remoteUpdatedAt !== metadata.conflict.remoteUpdatedAt
   ) {
     await putProjectMetadata(nextMetadata)
   }
 
-  const cloudSavedAtMs = nextMetadata.conflict.remoteUpdatedAt
-    ? Date.parse(nextMetadata.conflict.remoteUpdatedAt)
+  const cloudSavedAtMs = nextConflict.remoteUpdatedAt
+    ? Date.parse(nextConflict.remoteUpdatedAt)
     : undefined
   return buildConflictInspectionFromCloudFiles({
     projectPath,
@@ -1856,7 +1867,7 @@ export async function loadCloudSyncProjectConflictInspection(
     cloudFiles: remoteSnapshot.files,
     cloudSavedAtMs,
     fileSystem: localFs,
-    remoteRevision: nextMetadata.conflict.remoteRevision,
+    remoteRevision: nextConflict.remoteRevision,
   })
 }
 
@@ -1953,6 +1964,7 @@ async function markProjectConflict(
       at: createdAt,
     },
   })
+  reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',

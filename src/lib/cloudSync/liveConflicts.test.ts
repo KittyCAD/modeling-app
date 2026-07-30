@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto'
+import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
@@ -22,6 +23,18 @@ import {
 } from '@src/lib/cloudSync/testUtils'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const clientErrorsMock = vi.hoisted(() => ({
+  reportClientError: vi.fn(),
+}))
+
+vi.mock('@src/lib/clientErrors', async (importOriginal) => {
+  const actual = await importOriginal<typeof ClientErrorsModule>()
+  return {
+    ...actual,
+    reportClientError: clientErrorsMock.reportClientError,
+  }
+})
 
 const baseUrl = 'https://example.test'
 const projectDirectory = '/documents/Projects'
@@ -110,6 +123,7 @@ async function putConflictedProjectMetadata() {
 describe('cloud sync live conflicts', () => {
   beforeEach(async () => {
     await deleteCloudSyncTestDatabase()
+    clientErrorsMock.reportClientError.mockClear()
     fetchMock.mockReset()
     vi.stubGlobal('fetch', fetchMock)
   })
@@ -164,6 +178,18 @@ describe('cloud sync live conflicts', () => {
         },
       })
     })
+    await vi.waitFor(() =>
+      expect(clientErrorsMock.reportClientError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'cloud_sync_conflict_copy_detected',
+          errorName: 'CloudSyncConflictCopyDetected',
+          message: 'Cloud sync "conflict copy" folder detected',
+          extra: {
+            source: 'cloudSync',
+          },
+        })
+      )
+    )
     const metadata = await getCloudSyncProjectMetadata(projectPath)
     expect(metadata?.conflict?.conflictProjectPath).toBeUndefined()
     expect(
