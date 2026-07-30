@@ -5,26 +5,23 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { cloudSyncProjectLibraryType } from '@src/lib/cloudSync/registry/plugin'
+import type { Project } from '@src/lib/project'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import type { Project } from '@src/lib/project'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
   type HomeProjectEntryContribution,
-  homeProjectEntriesValueSpec,
   homeProjectActionsService,
+  homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import {
-  projectLibrariesValueSpec,
-  projectLibraryTypesValueSpec,
-} from '@src/registry/contracts/projectLibraries'
+import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
@@ -208,6 +205,8 @@ function createCloudSyncService(
     setProjectScope: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
+    deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
+    deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
     getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),
@@ -484,16 +483,12 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test.cloud-library',
-        provides: [
-          provide(projectLibrariesValueSpec, {
-            ...getDefaultCloudProjectLibrarySetting(),
-            id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-          }),
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [getDefaultCloudProjectLibrarySetting()],
+            }).service
+          ),
         ],
       }),
       defineRegistryItem({
@@ -508,7 +503,27 @@ describe('home project actions', () => {
         id: 'test.wasm',
         provides: [provideWasmPromise(wasmPromise)],
       }),
-      cloudSyncProjectLibraryType,
+      defineRegistryItem({
+        id: 'test.cloud-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: CLOUD_PROJECT_LIBRARY_TYPE,
+            title: 'Cloud',
+            readEntries: async () => [],
+            operations: {
+              openProject: {
+                run: ({ project }) => {
+                  if (!project.defaultFile) {
+                    return undefined
+                  }
+
+                  return { defaultFile: project.defaultFile }
+                },
+              },
+            },
+          }),
+        ],
+      }),
       homeProjectsExtension,
     ])
 
