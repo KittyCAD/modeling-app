@@ -173,7 +173,7 @@ describe('CloudConflictDialog', () => {
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
-    expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
+    expect(screen.queryByText('thumbnail.png')).not.toBeInTheDocument()
     expect(screen.queryByText('.git')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
     expect(
@@ -184,13 +184,6 @@ describe('CloudConflictDialog', () => {
 
     fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
-
-    fireEvent.click(
-      screen.getByTestId('cloud-conflict-file-toggle-thumbnail.png')
-    )
-    expect(
-      screen.getByText('Diff unavailable: Binary or non-UTF-8 file.')
-    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-close-button'))
     expect(onDismiss).toHaveBeenCalledTimes(1)

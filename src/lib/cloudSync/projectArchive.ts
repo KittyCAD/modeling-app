@@ -14,7 +14,6 @@ import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
-  normalizeProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectDefaultFileInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
@@ -69,12 +68,7 @@ export function normalizeProjectArchiveFilesForCloudSync(
     return {
       ...file,
       relativePath,
-      data:
-        relativePath === PROJECT_SETTINGS_FILE_NAME
-          ? new TextEncoder().encode(
-              normalizeProjectTomlContents(new TextDecoder().decode(file.data))
-            )
-          : file.data,
+      data: file.data,
     }
   })
 }

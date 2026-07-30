@@ -188,20 +188,18 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "bracket"')
   })
 
-  it('normalizes project.toml table order before cloud sync upload and manifest hashing', async () => {
+  it('preserves project.toml bytes before cloud sync upload and manifest hashing', async () => {
+    const localProjectToml =
+      'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+    const cloudProjectToml =
+      'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
     const localOrderFiles = normalizeProjectArchiveFilesForCloudSync([
       projectFile('main.kcl', 'cube = 1'),
-      projectFile(
-        PROJECT_SETTINGS_FILE_NAME,
-        'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
-      ),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, localProjectToml),
     ])
     const cloudOrderFiles = normalizeProjectArchiveFilesForCloudSync([
       projectFile('main.kcl', 'cube = 1'),
-      projectFile(
-        PROJECT_SETTINGS_FILE_NAME,
-        'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
-      ),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, cloudProjectToml),
     ])
     const uploadPayload = prepareProjectFilesForCloudUpload(
       '/projects/demo-project',
@@ -209,17 +207,17 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME)).toBe(
-      readProjectFile(cloudOrderFiles, PROJECT_SETTINGS_FILE_NAME)
+      localProjectToml
     )
     expect(
       readProjectFile(uploadPayload.files, PROJECT_SETTINGS_FILE_NAME)
-    ).toBe(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME))
+    ).toBe(cloudProjectToml)
     expect(
       projectManifestsEqual(
         await projectManifestFromFiles(localOrderFiles),
         await projectManifestFromFiles(cloudOrderFiles)
       )
-    ).toBe(true)
+    ).toBe(false)
   })
 
   it('adds an Untitled project.toml title when remote project metadata has no title', () => {
@@ -278,6 +276,15 @@ describe('cloudSync sync helpers', () => {
       'nested/.gitignore',
       'nested/part.kcl',
     ])
+  })
+
+  it('excludes generated thumbnails from cloud sync manifests and uploads', () => {
+    const files = filterCloudSyncProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile(PROJECT_IMAGE_NAME, 'generated image'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
   })
 
   it('excludes VCS metadata from cloud sync manifests without .gitignore entries', () => {

@@ -63,6 +63,7 @@ import type {
 import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -318,6 +319,7 @@ export function filterCloudSyncProjectFilesForSync(
   return normalizedFiles.filter(
     (file) =>
       !isCloudSyncExcludedPath(file.relativePath) &&
+      !isCloudSyncGeneratedArtifactPath(file.relativePath) &&
       !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
   )
 }
@@ -3104,6 +3106,62 @@ function attachVisibilityChangeListener() {
   }
 }
 
+function isCloudSyncGeneratedArtifactPath(relativePath: string) {
+  return normalizeRelativePath(relativePath) === PROJECT_IMAGE_NAME
+}
+
+async function createGitignoreStackForMutationTarget(
+  projectRoot: string,
+  relativeTargetPath: string
+) {
+  let gitignoreStack = await createInitialGitignoreStackWithFs(
+    localFs,
+    projectRoot
+  )
+  const parentParts = webSafePathSplit(relativeTargetPath)
+    .filter(Boolean)
+    .slice(0, -1)
+  let currentDirectory = projectRoot
+
+  for (const part of parentParts) {
+    currentDirectory = localFs.join(currentDirectory, part)
+    gitignoreStack = await appendGitignoreForDirectoryWithFs(
+      localFs,
+      gitignoreStack,
+      currentDirectory,
+      projectRoot
+    )
+  }
+
+  return gitignoreStack
+}
+
+async function isCloudSyncIgnoredMutationTarget(
+  projectRoot: string,
+  targetPath: string
+) {
+  const relativeTargetPath = normalizeRelativePath(
+    localFs.relative(projectRoot, targetPath)
+  )
+  if (!relativeTargetPath) {
+    return false
+  }
+  if (isCloudSyncGeneratedArtifactPath(relativeTargetPath)) {
+    return true
+  }
+
+  const gitignoreStack = await createGitignoreStackForMutationTarget(
+    projectRoot,
+    relativeTargetPath
+  )
+  const stat = await localFs.stat(targetPath).catch(() => undefined)
+  return isPathIgnoredByGitignore(
+    gitignoreStack,
+    relativeTargetPath,
+    stat ? statIsDirectory(stat) : false
+  )
+}
+
 async function registerProjectMutation(
   projectPath: string,
   kind: OutboxEntry['kind'],
@@ -3122,6 +3180,7 @@ async function registerProjectMutation(
   ) {
     return
   }
+  const normalizedTargetPath = normalizePathForSync(targetPath)
   const existingMetadata = await getProjectMetadata(normalizedProjectPath)
   if (kind === 'delete') {
     if (
@@ -3134,6 +3193,14 @@ async function registerProjectMutation(
     return
   }
 
+  if (
+    await isCloudSyncIgnoredMutationTarget(
+      normalizedProjectPath,
+      normalizedTargetPath
+    )
+  ) {
+    return
+  }
   let metadata =
     existingMetadata ??
     (await getOrCreateProjectMetadata(normalizedProjectPath))
@@ -3167,7 +3234,7 @@ async function registerProjectMutation(
   await appendOutboxEntry({
     projectPath: normalizedProjectPath,
     kind,
-    targetPath: normalizePathForSync(targetPath),
+    targetPath: normalizedTargetPath,
     sourcePath: sourcePath ? normalizePathForSync(sourcePath) : undefined,
     createdAt: nowIso(),
   })
