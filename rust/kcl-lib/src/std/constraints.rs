@@ -367,6 +367,8 @@ fn datum_point_key(point: DatumPoint) -> (ezpz::Id, ezpz::Id) {
     (point.x_id, point.y_id)
 }
 
+// Very similar to `getCoincidentCluster()` in the TypeScript constraint utilities,
+// but operates on solver point IDs during KCL execution.
 fn points_are_constrained_coincident(
     point_a: DatumPoint,
     point_b: DatumPoint,
