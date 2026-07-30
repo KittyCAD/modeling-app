@@ -95,6 +95,13 @@ The default unit to use in modeling dimensions.
 
 **Default:** None
 
+##### kcl_version
+
+The KittyCAD Language version for this project.
+
+
+**Default:** None
+
 ##### highlight_edges
 
 Highlight edges of 3D objects?
@@ -120,13 +127,6 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 ### cloud
 
-
-##### kcl_version
-
-The KittyCAD Language version for this project.
-
-
-**Default:** None
 
 
 
