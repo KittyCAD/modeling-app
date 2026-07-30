@@ -158,6 +158,12 @@ pub enum OpKclValue {
     String {
         value: String,
     },
+    /// Shown in the feature tree by nominal identity, e.g. `Color::Red`, not by
+    /// the variant's representation.
+    Enum {
+        enum_name: String,
+        variant: String,
+    },
     SketchVar {
         value: f64,
         ty: NumericType,

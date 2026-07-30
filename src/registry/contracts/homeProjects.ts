@@ -77,12 +77,14 @@ export interface HomeProjectMoveToLibraryTarget {
 
 export interface HomeProjectActionsService {
   canOpen: (project: HomeProjectEntry) => boolean
+  canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
   canMoveToLibrary: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
+  duplicate: (project: HomeProjectEntry) => Promise<void>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
   getMoveToLibraryTargets: (

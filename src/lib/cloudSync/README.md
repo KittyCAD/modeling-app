@@ -16,7 +16,8 @@ The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloud
 
 The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. At present, we only support a "personal" cloud library in our API (see [our docs](https://zoo.dev/docs/developer-tools/api/projects)), and the location on the disk where this library's contents are synced locally is not editable by users. The chosen locations are:
 - On web: `<opfs-root>/documents/zoo-design-studio-projects`
-- Linux and Windows: `~/documents/zoo-design-studio-projects`
+- Linux: `~/Zoo/personal`
+- Windows: `%USERPROFILE%\Zoo\personal`
 - macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
 
 ## Product Policies
