@@ -463,7 +463,7 @@ describe('MlEphantConversation', () => {
 
   test.each([
     'Manual edits detected since the last Zookeeper state.',
-    'Transient model streaming error; retrying.',
+    'Temporary connection issue. Retrying automatically…',
   ])(
     'keeps reasoning expanded for non-terminal info notices: %s',
     async (infoText) => {
@@ -511,7 +511,7 @@ describe('MlEphantConversation', () => {
         />
       )
 
-      if (infoText === 'Transient model streaming error; retrying.') {
+      if (infoText === 'Temporary connection issue. Retrying automatically…') {
         expect(
           screen.getByTestId('ml-response-retry-status')
         ).toHaveTextContent(
@@ -544,7 +544,7 @@ describe('MlEphantConversation', () => {
           responses: [
             {
               info: {
-                text: 'Transient model streaming error; retrying.',
+                text: 'Temporary connection issue. Retrying automatically…',
               },
             },
           ],

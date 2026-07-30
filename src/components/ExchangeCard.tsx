@@ -34,13 +34,12 @@ type MlCopilotServerMessageEndOfStream = Extract<
   { end_of_stream: unknown }
 >
 
-const TRANSIENT_RETRY_INFO_TEXT = 'Transient model streaming error; retrying.'
 const TRANSIENT_RETRY_STATUS_TEXT =
   'Temporary connection issue. Retrying automatically…'
 
 const NON_TERMINAL_INFO_TEXTS = [
   'Manual edits detected since the last Zookeeper state.',
-  TRANSIENT_RETRY_INFO_TEXT,
+  TRANSIENT_RETRY_STATUS_TEXT,
 ]
 
 const getEndOfStreamResponse = (
@@ -60,7 +59,8 @@ const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
 const isTransientRetryInfoResponse = (
   response: MlCopilotServerMessage
 ): boolean =>
-  'info' in response && response.info.text.startsWith(TRANSIENT_RETRY_INFO_TEXT)
+  'info' in response &&
+  response.info.text.startsWith(TRANSIENT_RETRY_STATUS_TEXT)
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
