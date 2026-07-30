@@ -359,19 +359,8 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const transientRetryItems = props.items.flatMap((response, index) =>
+  const hasTransientRetry = props.items.some((response) =>
     isTransientRetryInfoResponse(response)
-      ? [
-          <Delta key={index}>
-            <p
-              className="text-xs text-chalkboard-70 dark:text-chalkboard-30"
-              data-testid="ml-response-retry-status"
-            >
-              {TRANSIENT_RETRY_STATUS_TEXT}
-            </p>
-          </Delta>,
-        ]
-      : []
   )
 
   const infoItems = props.items.map(
@@ -414,11 +403,18 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const shouldShowResponseBubble =
     hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
 
-  return transientRetryItems.length > 0 ||
+  return hasTransientRetry ||
     infoItemsFilteredNulls.length > 0 ||
     shouldShowResponseBubble ? (
     <>
-      {transientRetryItems}
+      {hasTransientRetry && (
+        <p
+          className="text-xs text-chalkboard-70 dark:text-chalkboard-30"
+          data-testid="ml-response-retry-status"
+        >
+          {TRANSIENT_RETRY_STATUS_TEXT}
+        </p>
+      )}
       {infoItemsFilteredNulls.length > 0 && (
         <ChatBubble
           side={'left'}
