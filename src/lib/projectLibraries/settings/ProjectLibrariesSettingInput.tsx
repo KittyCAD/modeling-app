@@ -10,7 +10,6 @@ import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   moveProjectLibrarySetting,
   NEW_PROJECT_LIBRARY_TITLE,
   normalizeProjectLibrarySetting,
@@ -450,9 +449,8 @@ export function ProjectLibrariesSettingInput({
       return
     }
 
-    const selectedPath = await chooseDirectory({
-      defaultPath: getDefaultDirectoryProjectLibraryPath(draftLibraries),
-    })
+    const documentsPath = await electron.getPath('documents')
+    const selectedPath = await chooseDirectory({ defaultPath: documentsPath })
     if (!selectedPath) {
       return
     }

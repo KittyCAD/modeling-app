@@ -178,7 +178,8 @@ describe('ProjectLibrariesSettingInput', () => {
       canceled: false,
       filePaths: ['/client-projects'],
     })
-    window.electron = { open } as unknown as Window['electron']
+    const getPath = vi.fn().mockResolvedValue('/documents')
+    window.electron = { getPath, open } as unknown as Window['electron']
 
     render(
       <ProjectLibrariesSettingInput
@@ -219,9 +220,10 @@ describe('ProjectLibrariesSettingInput', () => {
     )
     expect(open).toHaveBeenCalledWith({
       properties: ['openDirectory', 'createDirectory'],
-      defaultPath: '/projects',
+      defaultPath: '/documents',
       title: 'Choose a project library folder',
     })
+    expect(getPath).toHaveBeenCalledWith('documents')
 
     fireEvent.click(screen.getAllByTestId('project-library-remove')[1])
 
