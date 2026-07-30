@@ -27,6 +27,7 @@ import {
   toArrayBuffer,
   withProjectTitleInArchiveFiles,
   withRemoteProjectMetadataInArchiveFiles,
+  withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
@@ -51,7 +52,11 @@ import type {
   RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
-import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_FOLDER,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
 import {
@@ -64,16 +69,19 @@ import {
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDirectoryNameFromTitle,
+  getUniqueDuplicateProjectName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  prepareProjectTomlForDuplication,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
+import { v4 } from 'uuid'
 
 export { getCloudSyncProjectRoot } from '@src/lib/cloudSync/paths'
 export {
@@ -1461,6 +1469,76 @@ export async function renameRemoteCloudProject(
   scheduleRemoteIndexSync(0)
 }
 
+function getRemoteDuplicateProjectTitle(sourceTitle: string) {
+  return getUniqueDuplicateProjectName(
+    sourceTitle,
+    cloudSyncRemoteProjects.value.flatMap((project) => {
+      const title = project.title?.trim()
+      return title ? [title] : []
+    })
+  )
+}
+
+function prepareRemoteProjectFilesForDuplication(
+  files: ProjectArchiveFile[],
+  title: string
+) {
+  return withUpdatedProjectTomlInArchiveFiles(files, (projectToml) =>
+    prepareProjectTomlForDuplication(projectToml, title, v4())
+  )
+}
+
+/**
+ * Duplicate a remote-only cloud project without creating a local
+ * materialization. The copied archive receives a new project UUID and has its
+ * source cloud binding removed before it is uploaded as a new cloud project.
+ */
+export async function duplicateRemoteCloudProject(
+  remoteProjectId: string,
+  requestedTitle: string
+) {
+  if (!isConfiguredForCloud()) {
+    return undefined
+  }
+
+  const projectId = remoteProjectId.trim()
+  if (!projectId) {
+    return undefined
+  }
+
+  const sourceTitle = getRemoteProjectTitleForProjectToml(requestedTitle)
+  const title = getRemoteDuplicateProjectTitle(sourceTitle)
+  const files = prepareRemoteProjectFilesForDuplication(
+    filterCloudSyncProjectFilesForSync(
+      await parseProjectArchive(
+        await downloadRemoteProjectArchive(config, projectId)
+      )
+    ),
+    title
+  )
+  if (isErr(files)) {
+    return Promise.reject(files)
+  }
+
+  const created = await createRemoteProject(config, title, files)
+  const duplicatedProject = {
+    ...created,
+    title: created.title?.trim() || title,
+  }
+  cloudSyncRemoteProjects.value = [
+    ...cloudSyncRemoteProjects.value.filter(
+      (project) => project.id !== duplicatedProject.id
+    ),
+    duplicatedProject,
+  ]
+  scheduleRemoteIndexSync(0)
+
+  return {
+    id: duplicatedProject.id,
+    title: duplicatedProject.title,
+  }
+}
+
 /**
  * Delete the remote cloud project identified by `remoteProjectId`, tolerating a
  * remote that is already gone (404). Any local sync metadata still pointing at
@@ -1901,12 +1979,14 @@ async function markProjectConflict(
         at: createdAt,
       },
     })
-    updateStatus({
-      state: 'conflict',
-      activeProjectPath: metadata.localProjectPath,
-      lastFailure: 'Cloud sync conflict: local and remote both changed.',
-      lastFailureAt: createdAt,
-    })
+    if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+      updateStatus({
+        state: 'conflict',
+        activeProjectPath: metadata.localProjectPath,
+        lastFailure: 'Cloud sync conflict: local and remote both changed.',
+        lastFailureAt: createdAt,
+      })
+    }
     return
   }
 
@@ -3027,6 +3107,13 @@ async function registerProjectMutation(
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (
+    projectNameFromPath(normalizedProjectPath).startsWith(
+      DUPLICATE_PROJECT_TEMPORARY_PREFIX
+    )
+  ) {
+    return
+  }
   let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(normalizedProjectPath)
