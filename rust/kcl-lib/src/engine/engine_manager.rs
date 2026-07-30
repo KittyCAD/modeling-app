@@ -72,7 +72,7 @@ impl ResponseInformation {
 pub struct EngineManager {
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
-    transport: Arc<Box<dyn EngineTransport>>,
+    pub transport: Arc<Box<dyn EngineTransport>>,
     responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     socket_health: Arc<RwLock<SocketHealth>>,

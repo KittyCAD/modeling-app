@@ -71,6 +71,7 @@ mod lsp;
 mod modules;
 mod parsing;
 mod project;
+mod runtime_flags;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -104,6 +105,7 @@ pub use errors::Report;
 pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
+pub use execution::EdgeRefactorMeta;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
@@ -114,6 +116,7 @@ pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
 pub use execution::Point2d;
+pub use execution::RefactorMetadata;
 pub use execution::SegmentDragAnchor;
 pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
@@ -125,6 +128,10 @@ pub use execution::transpile_old_sketch_to_new;
 pub use execution::transpile_old_sketch_to_new_ast;
 pub use execution::transpile_old_sketch_to_new_with_execution;
 pub use execution::typed_path::TypedPath;
+pub use fs::FileSystem;
+pub use fs::FileSystemHandle;
+pub use fs::in_memory::InMemoryFiles;
+pub use fs::new_file_system_handle;
 pub use kcl_error;
 pub use kcl_error::SourceRange;
 pub use lsp::ToLspRange;
@@ -135,8 +142,13 @@ pub use modules::ModuleId;
 pub use parsing::ast::types::FormatOptions;
 pub use parsing::ast::types::NodePath;
 pub use parsing::ast::types::NodePathExt;
+pub use parsing::ast::types::Program as AstProgram;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
+pub use runtime_flags::KclRuntimeFlags;
+pub use runtime_flags::RuntimeFlag;
+pub use runtime_flags::kcl_runtime_flags;
+pub use runtime_flags::set_kcl_runtime_flags;
 pub use settings::types::Configuration;
 pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
@@ -214,10 +226,11 @@ pub mod front {
             Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ControlPointSpline,
-            ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal,
-            Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
+            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
+            ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
+            Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
+            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,
+            Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
@@ -346,6 +359,10 @@ impl Program {
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
+    }
+
+    pub fn lint_all_with_options(&self, options: lint::LintOptions) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint_all_with_options(options)
     }
 
     pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {

@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 407
 description: Error from executing consumed_solid_original_issue.kcl
 ---
 KCL Engine error

@@ -36,7 +36,9 @@ impl FileManager {
     }
 }
 
+#[expect(unsafe_code)]
 unsafe impl Send for FileManager {}
+#[expect(unsafe_code)]
 unsafe impl Sync for FileManager {}
 
 #[async_trait::async_trait]

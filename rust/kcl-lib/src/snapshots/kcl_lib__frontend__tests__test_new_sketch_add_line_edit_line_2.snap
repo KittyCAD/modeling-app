@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch001 = sketch(on = XY) {
+  line(start = [1mm, 2mm], end = [13mm, 14mm])
+}
+

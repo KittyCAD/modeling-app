@@ -3,6 +3,8 @@
 This directory contains the memory backend implementations. Use
 `KCL_MEMORY_IMPL` to choose which backend to run:
 
+Note: The legacy backend no longer exists. Commands have been preserved to show intended use of commands.
+
 ```sh
 KCL_MEMORY_IMPL=legacy
 KCL_MEMORY_IMPL=arena

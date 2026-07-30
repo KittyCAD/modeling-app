@@ -1,7 +1,7 @@
 import type { MlToolResult } from '@kittycad/lib'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
-import type { ZookeeperEditPatch } from '@src/lib/zookeeperEditPatch'
+import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   collectProjectFiles,
   normalizeKCLFileDeletePath,

@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 2, var 3], end = [var 3, var 4])
+  fixed([line1.start, [2mm, 3mm]])
+}
+

@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "source_delta.text"
+---
+@settings(experimentalFeatures = allow, kclVersion = 2.0)
+
+sketch(on = XY) {
+  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
+}
+

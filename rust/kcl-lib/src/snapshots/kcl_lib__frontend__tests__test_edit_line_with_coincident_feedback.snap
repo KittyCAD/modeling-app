@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])
+  line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])
+  fixed([line1.start, [0, 0]])
+  coincident([line1.end, line2.start])
+  equalLength([line1, line2])
+}
+

@@ -65,7 +65,9 @@ describe('commands extension', () => {
       defineRegistryItem({
         id: 'test-machine-manager',
         providesServices: [
-          provideService(machineManagerService, new MachineManager()),
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
         ],
       }),
       commandsExtension,
@@ -237,7 +239,9 @@ describe('commands extension', () => {
       defineRegistryItem({
         id: 'test-machine-manager',
         providesServices: [
-          provideService(machineManagerService, new MachineManager()),
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
         ],
       }),
       commandsExtension,

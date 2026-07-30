@@ -47,7 +47,16 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
-type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+type CommandStatus =
+  | 'active'
+  | 'development'
+  | 'inactive'
+  | 'experimental'
+  | 'deprecated'
+type CommandArgumentStatus = Extract<
+  CommandStatus,
+  'experimental' | 'deprecated'
+>
 type CommandArgumentRequired<C> =
   | boolean
   | ((
@@ -60,7 +69,7 @@ type CommandArgumentStatusAndRequired<C> =
       required: false
     }
   | {
-      status?: undefined
+      status?: Extract<CommandStatus, 'deprecated'> | undefined
       required: CommandArgumentRequired<C>
     }
 export type CommandSelectionType =
@@ -126,7 +135,6 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
-  mlBranding?: boolean
 }
 
 export type CommandConfig<
@@ -154,7 +162,8 @@ export type CommandArgumentConfig<
 > = {
   displayName?: string
   description?: string
-  status?: Extract<CommandStatus, 'experimental'>
+  status?: CommandArgumentStatus
+  statusMessage?: string
   required: CommandArgumentRequired<C>
   /** If `true`, arg is used as passed-through data, never for user input */
   hidden?:
@@ -342,7 +351,8 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
-  status?: Extract<CommandStatus, 'experimental'>
+  status?: CommandArgumentStatus
+  statusMessage?: string
   required:
     | boolean
     | ((

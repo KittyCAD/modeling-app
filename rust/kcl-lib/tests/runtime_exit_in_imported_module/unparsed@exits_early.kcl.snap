@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/runtime_exit_in_imported_module/exits_early.kcl
+---
+@settings(experimentalFeatures = allow)
+
+export partial = 1
+
+// Stop this module, but not the module importing it.
+exit()
+
+// We should never reach this.
+assert(1, isEqualTo = 2)

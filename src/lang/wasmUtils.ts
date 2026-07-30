@@ -1,6 +1,7 @@
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 
 export const wasmUrl = () => {
   const wasmFile = '/kcl_wasm_lib_bg.wasm'
@@ -21,15 +22,37 @@ export const wasmUrl = () => {
 
   return fullUrl
 }
+
+// Renderer-side WASM start entry point. New startup paths should go through
+// this helper so lifecycle listeners see every active WASM instance and can
+// attach runtime state like feature flags.
+export const startWasmFromBuffer = async (
+  buffer: ArrayBuffer
+): Promise<ModuleType> => {
+  await reloadModule()
+  await init({ module_or_path: buffer })
+  const module = getModule()
+  await notifyActiveWasmInstance(module)
+  return module
+}
+
+// Renderer-side WASM restart entry point. Crash recovery paths should use this
+// helper for the same lifecycle notification contract as the first startup.
+export const restartWasmModule = async (): Promise<ModuleType> => {
+  await reloadModule()
+  const module = getModule()
+  await module.default()
+  await notifyActiveWasmInstance(module)
+  return module
+}
+
 // Initialise the wasm module.
 export const initialiseWasm = async (): Promise<ModuleType> => {
   try {
-    await reloadModule()
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
-    await init({ module_or_path: buffer })
-    return getModule()
+    return startWasmFromBuffer(buffer)
   } catch (e) {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)

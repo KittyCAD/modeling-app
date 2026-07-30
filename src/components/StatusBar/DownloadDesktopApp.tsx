@@ -13,11 +13,11 @@ export function DownloadDesktopApp() {
    * complexity. This warning can go away once the web app has cloud storage. */
 
   const { userFeatures } = useApp()
-  const hasOpfsCloudFeature = userFeatures.useHas(
+  const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
-  const shouldShowBrowserStorageWarning = !hasOpfsCloudFeature
+  const shouldShowBrowserStorageWarning = !hasCloudSyncFeature
   const [showingWarning, setShowingWarning] = useState(
     shouldShowBrowserStorageWarning
   )

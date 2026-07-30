@@ -41,7 +41,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -793,6 +793,10 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
+    if (event.button !== 0) {
+      return
+    }
+
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
@@ -842,6 +846,10 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    if (mouseEvent.button !== 0) {
+      return
+    }
+
     const wasmInstance = await this.wasmInstancePromise
     this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()

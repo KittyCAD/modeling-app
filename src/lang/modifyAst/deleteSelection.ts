@@ -3,7 +3,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
-import { executeAstMock } from '@src/lang/langHelpers'
+import { executeAstMock } from '@src/lang/executeAstMock'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'

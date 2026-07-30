@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
+  radius(arc1) == 5mm
+}
+

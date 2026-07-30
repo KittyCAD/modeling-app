@@ -17,7 +17,7 @@ tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 
 engine_error_file = os.path.join(
-    tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
+    tests_dir, "error_large_fillet_radius", "input.kcl"
 )
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
@@ -216,7 +216,10 @@ async def test_kcl_execute_code_and_snapshot():
         assert code is not None
         assert len(code) > 0
         image_bytes = await execute_with_retries(
-            kcl.execute_code_and_snapshot, code, kcl.ImageFormat.Jpeg
+            kcl.execute_code_and_snapshot,
+            code,
+            kcl.ImageFormat.Jpeg,
+            highlight_edges=False,
         )
         assert image_bytes is not None
         assert len(image_bytes) > 0
@@ -257,7 +260,11 @@ async def test_kcl_execute_dir_assembly():
 async def test_kcl_execute_and_snapshot():
     # Read from a file.
     image_bytes = await execute_with_retries(
-        kcl.execute_and_snapshot, lego_file, kcl.ImageFormat.Jpeg, zoom=False
+        kcl.execute_and_snapshot,
+        lego_file,
+        kcl.ImageFormat.Jpeg,
+        zoom=False,
+        highlight_edges=False,
     )
     assert image_bytes is not None
     assert len(image_bytes) > 0
@@ -280,7 +287,11 @@ async def test_kcl_execute_and_snapshot_options():
     ]
     # Read from a file.
     images = await execute_with_retries(
-        kcl.execute_and_snapshot_views, lego_file, kcl.ImageFormat.Jpeg, views
+        kcl.execute_and_snapshot_views,
+        lego_file,
+        kcl.ImageFormat.Jpeg,
+        views,
+        highlight_edges=False,
     )
     assert images is not None
     assert len(images) == len(views)
@@ -314,6 +325,7 @@ async def test_import_and_snapshots():
         input_format,
         kcl.ImageFormat.Jpeg,
         views,
+        highlight_edges=False,
     )
     assert images is not None
     assert len(images) == len(views)
@@ -330,7 +342,11 @@ async def test_import_and_snapshots_single():
     input_format = kcl.InputFormat3d.Step(step_options)
     print("The cube_step_file is", cube_step_file)
     image_bytes = await execute_with_retries(
-        kcl.import_and_snapshot, [cube_step_file], input_format, kcl.ImageFormat.Jpeg
+        kcl.import_and_snapshot,
+        [cube_step_file],
+        input_format,
+        kcl.ImageFormat.Jpeg,
+        highlight_edges=False,
     )
     assert image_bytes is not None
     assert len(image_bytes) > 0

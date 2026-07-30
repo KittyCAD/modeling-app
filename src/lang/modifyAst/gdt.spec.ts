@@ -8,6 +8,7 @@ import {
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
+  addNoteGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
   addPositionGdt,
@@ -29,7 +30,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -1864,6 +1865,54 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::annotation(')
       expect(newCode).toContain('annotation = "Break all sharp edges"')
       expect(newCode).toMatch(/faces = \[[^\]]+\]|edges = \[[^\]]+\]/)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addNoteGdt', () => {
+    it('should add a free-floating note on the default (XY) plane', async () => {
+      const { ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addNoteGdt({
+        ast,
+        note: 'Note:',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // A note is standalone: no faces/edges selection, just the text.
+      expect(newCode).toContain('gdt::note(note = "Note:")')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a note on a specified plane (framePlane)', async () => {
+      const { ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addNoteGdt({
+        ast,
+        note: 'On XZ',
+        framePlane: 'XZ',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::note(')
+      expect(newCode).toContain('note = "On XZ"')
+      expect(newCode).toContain('framePlane = XZ')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

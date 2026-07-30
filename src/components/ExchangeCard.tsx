@@ -7,7 +7,7 @@ import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import ms from 'ms'
 import {
   type ComponentProps,
@@ -359,11 +359,9 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const hasTransientRetry =
-    props.items.some((response) => isTransientRetryInfoResponse(response)) ||
-    (props.isLastResponse &&
-      new URLSearchParams(window.location.search).get('debugZookeeperRetry') ===
-        'true')
+  const hasTransientRetry = props.items.some((response) =>
+    isTransientRetryInfoResponse(response)
+  )
 
   const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
@@ -450,7 +448,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  let [startedAt] = useState<Date>(new Date())
+  let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)

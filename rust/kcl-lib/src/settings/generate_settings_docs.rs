@@ -15,7 +15,7 @@ name = "My Awesome Project"
 
 [settings.app.appearance]
 # Use dark mode theme
-theme = "dark" 
+theme = "dark"
 # Set the app color to blue (240.0 = blue, 0.0 = red, 120.0 = green)
 color = 240.0
 

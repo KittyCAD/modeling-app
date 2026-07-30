@@ -2,6 +2,7 @@ import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
+  ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -79,12 +80,27 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.createProject
-          data: { requestedProjectName: string }
+          data: {
+            /** Local project directory name used as the stable identifier. */
+            requestedProjectName: string
+            /** Human-facing project title to write to project.toml. */
+            requestedProjectTitle?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: {
+            projectName: string
+            projectPath: string
+            requestedProjectName: string
+          }
         }
       | {
           type: SystemIOMachineEvents.renameProject
           data: {
+            /** New human-facing project title to write to project.toml. */
             requestedProjectName: string
+            /** Existing local project directory name used as the stable identifier. */
             projectName: string
             redirect: boolean
           }
@@ -143,6 +159,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
@@ -168,6 +185,8 @@ export const systemIOMachine = setup({
             fileName: string
             shouldNavigate: boolean
             onProjectLoaderComplete?: () => void
+            message?: string
+            toastId?: string
           }
         }
       | {
@@ -311,30 +330,6 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.done_moveRecursiveAndNavigate
           output: { requestedProjectName: string; target: string }
-        }
-      | {
-          type: SystemIOMachineEvents.getMlEphantConversations
-        }
-      | {
-          type: SystemIOMachineEvents.done_getMlEphantConversations
-          output: SystemIOContext['mlEphantConversations']
-        }
-      | {
-          type: SystemIOMachineEvents.saveMlEphantConversations
-          data: {
-            projectId: string
-            conversationId: string
-          }
-        }
-      | {
-          type: SystemIOMachineEvents.deleteMlEphantConversation
-          data: {
-            projectId: string
-          }
-        }
-      | {
-          type: SystemIOMachineEvents.done_saveMlEphantConversations
-          output: SystemIOContext['mlEphantConversations']
         },
   },
   guards: {
@@ -408,6 +403,17 @@ export const systemIOMachine = setup({
       },
     }),
     [SystemIOMachineActions.toastSuccess]: ({ event }) => {
+      // Operations may carry a stable `toastId` on their output so repeated
+      // completions collapse into a single updating toast instead of stacking
+      // duplicates (e.g. Zookeeper streams several bulk writes per edit).
+      const toastId =
+        'output' in event &&
+        event.output !== null &&
+        typeof event.output === 'object' &&
+        'toastId' in event.output &&
+        typeof event.output.toastId === 'string'
+          ? event.output.toastId
+          : undefined
       toast.success(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
@@ -415,7 +421,8 @@ export const systemIOMachine = setup({
             'message' in event.output &&
             typeof event.output.message === 'string' &&
             event.output.message) ||
-          ''
+          '',
+        toastId ? { id: toastId } : undefined
       )
     },
     [SystemIOMachineActions.toastError]: ({ event }) => {
@@ -428,6 +435,18 @@ export const systemIOMachine = setup({
             event.error instanceof Error &&
             event.error.message) ||
           'Unknown error in SystemIOMachine.'
+      )
+    },
+    // Zookeeper streams several bulk writes per edit; a failing edit can reject
+    // each one back-to-back. Share a stable toast id so those errors collapse
+    // into a single toast instead of stacking duplicates.
+    [SystemIOMachineActions.toastErrorZookeeperFileWrite]: ({ event }) => {
+      toast.error(
+        ('error' in event &&
+          event.error instanceof Error &&
+          event.error.message) ||
+          'Unknown error in SystemIOMachine.',
+        { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
       )
     },
     [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({
@@ -453,15 +472,6 @@ export const systemIOMachine = setup({
         `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
       )
     },
-    [SystemIOMachineActions.setMlEphantConversations]: assign({
-      mlEphantConversations: ({ event }) => {
-        assertEvent(event, [
-          SystemIOMachineEvents.done_getMlEphantConversations,
-          SystemIOMachineEvents.done_saveMlEphantConversations,
-        ])
-        return event.output
-      },
-    }),
     [SystemIOMachineActions.deferSystemIOEvent]: assign({
       deferredSystemIOEvent: ({ event }) => event,
     }),
@@ -485,11 +495,29 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
-        input: { context, requestedProjectName },
+        input: { context, requestedProjectName, requestedProjectTitle },
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectTitle?: string
+        }
       }) => {
         return { message: '', name: '' }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName, projectPath, requestedProjectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          projectPath: string
+          requestedProjectName: string
+        }
+      }) => {
+        return { message: '', name: '', title: '', projectPath: '' }
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -668,6 +696,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
@@ -813,44 +842,6 @@ export const systemIOMachine = setup({
         }
       }
     ),
-    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
-      return new Map()
-    }),
-    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
-      async (args: {
-        input: {
-          context: SystemIOContext
-          event:
-            | {
-                type: SystemIOMachineEvents.saveMlEphantConversations
-                data: {
-                  projectId: string
-                  conversationId: string
-                }
-              }
-            | {
-                type: SystemIOMachineEvents.deleteMlEphantConversation
-                data: {
-                  projectId: string
-                }
-              }
-        }
-      }) => {
-        const next = new Map(args.input.context.mlEphantConversations)
-        if (
-          args.input.event.type ===
-          SystemIOMachineEvents.deleteMlEphantConversation
-        ) {
-          next.delete(args.input.event.data.projectId)
-        } else {
-          next.set(
-            args.input.event.data.projectId,
-            args.input.event.data.conversationId
-          )
-        }
-        return next
-      }
-    ),
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
@@ -882,7 +873,6 @@ export const systemIOMachine = setup({
     deferredSystemIOEvent: undefined,
     lastRecursiveMoveTarget: undefined,
     lastOperation: SystemIOMachineStates.idle,
-    mlEphantConversations: undefined,
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -910,6 +900,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -987,15 +980,6 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
           target: SystemIOMachineStates.movingRecursiveAndNavigate,
-        },
-        [SystemIOMachineEvents.getMlEphantConversations]: {
-          target: SystemIOMachineStates.gettingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.deleteMlEphantConversation]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
     },
@@ -1027,6 +1011,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1104,15 +1091,6 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
           target: SystemIOMachineStates.movingRecursiveAndNavigate,
-        },
-        [SystemIOMachineEvents.getMlEphantConversations]: {
-          target: SystemIOMachineStates.gettingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.deleteMlEphantConversation]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
       invoke: {
@@ -1159,6 +1137,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectTitle: event.data.requestedProjectTitle,
           }
         },
         onDone: {
@@ -1169,6 +1148,45 @@ export const systemIOMachine = setup({
               requestedProjectName: ({ event }) => {
                 return {
                   name: (event as { output: { name: string } }).output.name,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+            projectPath: event.data.projectPath,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
+              requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { name: string; projectPath: string }
+                  }
+                ).output
+                return {
+                  name: output.name,
+                  path: output.projectPath,
                 }
               },
             }),
@@ -1368,6 +1386,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,
@@ -1442,15 +1463,6 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.moveRecursiveAndNavigate]: {
           target: SystemIOMachineStates.movingRecursiveAndNavigate,
-        },
-        [SystemIOMachineEvents.getMlEphantConversations]: {
-          target: SystemIOMachineStates.gettingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-        },
-        [SystemIOMachineEvents.deleteMlEphantConversation]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
         },
       },
       invoke: {
@@ -1707,6 +1719,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            onFileSystemError: event.data.onFileSystemError,
             onFileSystemSuccess: event.data.onFileSystemSuccess,
             onSuccess: event.data.onSuccess,
           }
@@ -1753,7 +1766,7 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.toastError],
+          actions: [SystemIOMachineActions.toastErrorZookeeperFileWrite],
         },
       },
     },
@@ -2110,59 +2123,6 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.toastError],
-        },
-      },
-    },
-    [SystemIOMachineStates.gettingMlEphantConversations]: {
-      invoke: {
-        id: SystemIOMachineActors.getMlEphantConversations,
-        src: SystemIOMachineActors.getMlEphantConversations,
-        // No input required.
-        // Implicit input is settings path, which comes from a function
-        // we call internally.
-        input: ({ event }) => {
-          assertEvent(event, SystemIOMachineEvents.getMlEphantConversations)
-          return {}
-        },
-        onDone: {
-          target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.setMlEphantConversations],
-        },
-        onError: {
-          target: SystemIOMachineStates.idle,
-        },
-      },
-    },
-    [SystemIOMachineStates.savingMlEphantConversations]: {
-      on: {
-        [SystemIOMachineEvents.saveMlEphantConversations]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-          reenter: true,
-        },
-        [SystemIOMachineEvents.deleteMlEphantConversation]: {
-          target: SystemIOMachineStates.savingMlEphantConversations,
-          reenter: true,
-        },
-      },
-      invoke: {
-        id: SystemIOMachineActors.saveMlEphantConversations,
-        src: SystemIOMachineActors.saveMlEphantConversations,
-        input: ({ event, context }) => {
-          assertEvent(event, [
-            SystemIOMachineEvents.saveMlEphantConversations,
-            SystemIOMachineEvents.deleteMlEphantConversation,
-          ])
-          return {
-            context,
-            event,
-          }
-        },
-        onDone: {
-          target: SystemIOMachineStates.idle,
-          actions: [SystemIOMachineActions.setMlEphantConversations],
-        },
-        onError: {
-          target: SystemIOMachineStates.idle,
         },
       },
     },

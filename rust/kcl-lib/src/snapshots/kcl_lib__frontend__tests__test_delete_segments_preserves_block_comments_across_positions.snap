@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  /* above first - moves to middle */
+  /* above middle - stays */
+  point(at = [var 3, var 4])
+  /* above last - moves to trailing meta */
+}
+

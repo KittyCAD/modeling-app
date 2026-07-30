@@ -1876,11 +1876,36 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         },
         commandName: 'Revolve',
       })
+      await cmdBar.clickOptionalArgument('axis')
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'Sketch Axis',
+        currentArgValue: '',
+        headerArguments: {
+          'Sketch Axis': '',
+          Angle: newAngle,
+          BodyType: 'SURFACE',
+        },
+        highlightedHeaderArg: 'Sketch Axis',
+        stage: 'arguments',
+      })
+      await cmdBar.selectOption({ name: 'X Axis' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          'Sketch Axis': 'X',
+          Angle: newAngle,
+          BodyType: 'SURFACE',
+        },
+        commandName: 'Revolve',
+      })
       await cmdBar.progressCmdBar()
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        newCodeToFind
+          .replace('angle = 360deg', 'angle = angle001')
+          .replace('axis = rectangleSegmentA001', 'axis = X')
       )
     })
   })

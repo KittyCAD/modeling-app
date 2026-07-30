@@ -45,7 +45,7 @@ fn entity_clone_remaps_sweep_ids() {
             edge_ids: vec![source_edge_id],
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             trajectory_id: Some(source_trajectory_id),
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -67,6 +67,7 @@ fn entity_clone_remaps_sweep_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -91,7 +92,7 @@ fn entity_clone_remaps_sweep_ids() {
     assert_eq!(clone_sweep.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_sweep.sub_type, SweepSubType::Revolve);
     assert_eq!(clone_sweep.path_id, cloned_path_id);
-    assert_eq!(clone_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(clone_sweep.method, ArtifactSweepMethod::New);
     assert_eq!(clone_sweep.surface_ids, vec![cloned_surface_id]);
     assert_eq!(clone_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(clone_sweep.trajectory_id, Some(cloned_trajectory_id));
@@ -162,6 +163,7 @@ fn entity_clone_remaps_path_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -239,6 +241,7 @@ fn entity_clone_remaps_composite_solid_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -305,6 +308,7 @@ fn entity_clone_does_not_preserve_unmapped_pattern_links() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -386,7 +390,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
             edge_ids: Vec::new(),
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -421,6 +425,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -491,6 +496,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
             cmd_id: clone_cmd_id,
             range: SourceRange::synthetic(),
             command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(source_id).build()),
+            omit_from_graph: false,
         },
         ArtifactCommand {
             cmd_id: old_children_cmd_id,
@@ -500,6 +506,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .entity_id(source_id)
                     .build(),
             ),
+            omit_from_graph: false,
         },
         ArtifactCommand {
             cmd_id: new_children_cmd_id,
@@ -509,6 +516,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .entity_id(clone_cmd_id)
                     .build(),
             ),
+            omit_from_graph: false,
         },
     ];
 
@@ -564,7 +572,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             edge_ids: Vec::new(),
             code_ref: source_code_ref.clone(),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -579,7 +587,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             edge_ids: Vec::new(),
             code_ref: source_code_ref,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -616,6 +624,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -642,7 +651,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.sub_type, SweepSubType::Blend);
     assert_eq!(blend_sweep.path_id, path_one_id);
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
-    assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(blend_sweep.method, ArtifactSweepMethod::New);
     assert!(!blend_sweep.consumed);
 }
 
@@ -688,6 +697,7 @@ fn create_region_creates_region_path_sub_type() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -768,7 +778,7 @@ fn pattern_artifact_links_to_source_geometry() {
             edge_ids: Vec::new(),
             code_ref: code_ref.clone(),
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -913,7 +923,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             edge_ids: Vec::new(),
             code_ref,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -930,6 +940,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let mirror_response: kcmc::output::EntityMirrorAcross = serde_json::from_value(serde_json::json!({
         "entity_face_edge_ids": [
@@ -973,4 +984,38 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
                 && edge_ids == &vec![ArtifactId::new(edge_id)]
         )
     }));
+}
+
+#[test]
+fn failed_mirror_3d_command_does_not_update_artifact_graph() {
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityMirrorAcross::builder()
+            .ids(vec![Uuid::new_v4()])
+            .across(kittycad_modeling_cmds::shared::MirrorAcross::Plane { id: Uuid::new_v4() })
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert!(updated.is_empty());
 }

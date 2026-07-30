@@ -65,7 +65,7 @@ pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: tower_lsp::Client,
     /// The file system client to use.
-    pub fs: Arc<crate::fs::FileManager>,
+    pub fs: crate::fs::FileSystemHandle,
     /// The workspace folders.
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
@@ -94,7 +94,7 @@ impl crate::lsp::backend::Backend for Backend {
         &self.client
     }
 
-    fn fs(&self) -> &Arc<crate::fs::FileManager> {
+    fn fs(&self) -> &crate::fs::FileSystemHandle {
         &self.fs
     }
 
@@ -156,18 +156,23 @@ impl Backend {
         zoo_client: kittycad::Client,
         dev_mode: bool,
     ) -> Self {
-        Self::new(client, crate::fs::FileManager::new(fs), zoo_client, dev_mode)
+        Self::new(
+            client,
+            crate::fs::new_file_system_handle(crate::fs::FileManager::new(fs)),
+            zoo_client,
+            dev_mode,
+        )
     }
 
     pub fn new(
         client: tower_lsp::Client,
-        fs: crate::fs::FileManager,
+        fs: crate::fs::FileSystemHandle,
         zoo_client: kittycad::Client,
         dev_mode: bool,
     ) -> Self {
         Self {
             client,
-            fs: Arc::new(fs),
+            fs,
             workspace_folders: Default::default(),
             code_map: Default::default(),
             editor_info: Arc::new(RwLock::new(CopilotEditorInfo::default())),

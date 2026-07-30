@@ -1,3 +1,4 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { topLevelRange } from '@src/lang/util'
 import {
   buildSegmentCtorFromObject,
@@ -166,7 +167,11 @@ describe('updateSelectedCodeHighlight', () => {
           from,
           to,
           empty,
-        }: { from: number; to: number; empty: boolean }) => ({
+        }: {
+          from: number
+          to: number
+          empty: boolean
+        }) => ({
           from,
           to,
           empty,
@@ -293,6 +298,51 @@ describe('updateHoveredId', () => {
     expect(setHighlightRange).toHaveBeenCalledWith([
       [10, 20, 0],
       [30, 40, 0],
+    ])
+  })
+
+  test('uses named wall source ranges for hovered walls', () => {
+    const setHighlightRange = vi.fn()
+    const wall: ApiObject = {
+      id: 2,
+      kind: {
+        type: 'Wall',
+        id: 2,
+        source: {
+          solid: { range: [10, 20, 0], nodePath: null },
+          sweep: { range: [10, 20, 0], nodePath: null },
+          path: { range: [30, 40, 0], nodePath: null },
+          segment: { range: [50, 60, 0], nodePath: null },
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: {
+        type: 'BackTrace',
+        ranges: [[[100, 110, 0], null]],
+      },
+    }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([wall]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([
+      [10, 20, 0],
+      [30, 40, 0],
+      [50, 60, 0],
     ])
   })
 

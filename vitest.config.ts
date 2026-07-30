@@ -17,7 +17,7 @@ export default defineConfig({
     ],
     server: {
       deps: {
-        external: [/playwright/],
+        external: [/^playwright(?:\/|$)/, /^@playwright\//],
         inline: [/e2e/, /packages/],
       },
     },

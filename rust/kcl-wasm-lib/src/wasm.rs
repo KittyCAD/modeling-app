@@ -1,6 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
 use kcl_lib::exec::NumericType;
@@ -14,13 +15,14 @@ use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
 #[wasm_bindgen]
-pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
+pub async fn kcl_lint(program_ast_json: &str, enable_z0006: bool) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let program = program.fill_node_paths();
     let mut findings = vec![];
-    for discovered_finding in program.lint_all().into_iter().flatten() {
+    let options = kcl_lib::lint::LintOptions::default().with_z0006(enable_z0006);
+    for discovered_finding in program.lint_all_with_options(options).into_iter().flatten() {
         findings.push(discovered_finding);
     }
 
@@ -48,6 +50,15 @@ pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())
 }
 
+#[wasm_bindgen]
+pub fn set_kcl_runtime_flags(flags_json: &str) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+
+    let flags: KclRuntimeFlags = serde_json::from_str(flags_json).map_err(|e| e.to_string())?;
+    kcl_lib::set_kcl_runtime_flags(flags);
+    Ok(())
+}
+
 // wasm_bindgen wrapper for recast
 // test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
 #[wasm_bindgen]
@@ -72,10 +83,10 @@ pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String
     console_error_panic_hook::set_once();
 
     // ts-rs can't handle tuple types, so it mashes all of these types together.
-    if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json) {
-        if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
-            return Ok(formatted);
-        }
+    if let Ok(ty) = serde_json::from_str::<NumericType>(numeric_type_json)
+        && let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty)
+    {
+        return Ok(formatted);
     }
     if let Ok(unit_type) = serde_json::from_str::<UnitType>(numeric_type_json) {
         let ty = NumericType::Known(unit_type);

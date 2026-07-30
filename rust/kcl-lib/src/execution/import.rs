@@ -24,7 +24,6 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::annotations;
 use crate::execution::typed_path::TypedPath;
 use crate::execution::types::length_from_str;
-use crate::fs::FileSystem;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::Node;
 use crate::unit_conversion::ToKcmc;

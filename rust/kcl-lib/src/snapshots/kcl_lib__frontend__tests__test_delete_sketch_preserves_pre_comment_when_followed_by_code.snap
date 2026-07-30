@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+// keep me
+foo = 1
+

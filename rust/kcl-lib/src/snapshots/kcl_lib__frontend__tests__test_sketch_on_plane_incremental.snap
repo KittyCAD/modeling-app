@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+len = 2mm
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [len, 0], tag = $side)
+  |> line(end = [0, len])
+  |> line(end = [-len, 0])
+  |> line(end = [0, -len])
+  |> close()
+  |> extrude(length = len)
+
+plane = planeOf(cube, face = side)
+sketch001 = sketch(on = plane) {
+}
+

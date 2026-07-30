@@ -1,19 +1,17 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -23,22 +21,19 @@ import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  DefaultLayoutPaneID,
-  LayoutRootNode,
-  defaultLayout,
-  getOpenPanes,
-} from '@src/lib/layout'
+import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -46,7 +41,6 @@ import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
-import { BillingTransition } from '@src/machines/billingMachine'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
@@ -56,8 +50,8 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import {
-  TutorialRequestToast,
   needsToOnboard,
+  TutorialRequestToast,
   useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
@@ -89,7 +83,7 @@ export function OpenedProject() {
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
-  const { onProjectOpen } = useLspContext()
+  const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
@@ -102,10 +96,10 @@ export function OpenedProject() {
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
   useEffect(() => {
-    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+    setCloudSyncProjectScope(projectPath ?? undefined)
 
     return () => {
-      setOpfsCloudSyncProjectScope(undefined)
+      setCloudSyncProjectScope(undefined)
     }
   }, [projectPath])
 
@@ -170,11 +164,11 @@ export function OpenedProject() {
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen(
+    lsp.onProjectOpen(
       { name: projectName, path: projectPath },
       project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, project])
+  }, [lsp, projectName, projectPath, project])
 
   useHotKeyListener(kclManager)
 
@@ -320,21 +314,6 @@ export function OpenedProject() {
     }
   }, [])
 
-  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
-    () =>
-      getOpenPanes({ rootLayout: layout.signal.value }).includes(
-        DefaultLayoutPaneID.TTC
-      )
-        ? [
-            {
-              id: 'zookeeper-credits',
-              component: ZookeeperCreditsMenu,
-            },
-          ]
-        : [],
-    [layout.signal.value]
-  )
-
   const undoRedoButtons = useMemo(
     () => (
       <UndoRedoButtons
@@ -412,7 +391,6 @@ export function OpenedProject() {
                 ] satisfies StatusBarItemType[])
               : []),
             ...registryLocalStatusBarItems,
-            ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
         />

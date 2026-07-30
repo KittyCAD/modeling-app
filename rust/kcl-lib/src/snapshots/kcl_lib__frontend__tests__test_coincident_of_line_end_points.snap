@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 4, var 5])
+  line2 = line(start = [var 4, var 5], end = [var 7, var 8])
+  coincident([line1.end, line2.start])
+}
+

@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing runtime_exit_in_imported_module.kcl
+---
+{
+  "partial": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "stillRuns": {
+    "type": "Number",
+    "value": 42.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  }
+}

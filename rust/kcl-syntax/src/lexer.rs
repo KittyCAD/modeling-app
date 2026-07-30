@@ -101,8 +101,12 @@ impl<'a> Token<'a> {
 enum RawTokenKind {
     #[regex(r"[ \t\n\r]+")]
     Whitespace,
-    #[regex(r#""([^"\\\n\r]|\\[^\n\r])*""#)]
-    #[regex(r#"'([^'\\\n\r]|\\[^\n\r])*'"#)]
+    // A closed string may span newlines (KCL supports multiline strings), matching
+    // the legacy tokeniser: content is any char except the quote or backslash, or a
+    // backslash-escape of any char including a newline. Note the UnterminatedString
+    // patterns below deliberately still stop at a line boundary for recovery.
+    #[regex(r#""([^"\\]|\\[\s\S])*""#)]
+    #[regex(r#"'([^'\\]|\\[\s\S])*'"#)]
     String,
     #[regex(r#""([^"\\\n\r]|\\[^\n\r])*"#, unterminated_string)]
     #[regex(r#"'([^'\\\n\r]|\\[^\n\r])*"#, unterminated_string)]

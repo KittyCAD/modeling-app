@@ -29,7 +29,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     // Create the backend.
     let (service, _) = tower_lsp::LspService::build(|client| crate::lsp::kcl::Backend {
         client,
-        fs: Arc::new(crate::fs::FileManager::new()),
+        fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         workspace_folders: Default::default(),
         stdlib_completions,
         sketch_block_stdlib_completions,
@@ -71,7 +71,7 @@ pub async fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
     // Create the backend.
     let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::copilot::Backend {
         client,
-        fs: Arc::new(crate::fs::FileManager::new()),
+        fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         workspace_folders: Default::default(),
         code_map: Default::default(),
         zoo_client,

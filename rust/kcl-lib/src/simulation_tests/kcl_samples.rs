@@ -112,7 +112,7 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         }
         std::fs::copy(
             screenshot_file,
-            public_screenshot_dir.join(format!("{}.png", &tests.name)),
+            public_screenshot_dir.join(format!("{}.png", tests.name)),
         )
         .unwrap();
     }

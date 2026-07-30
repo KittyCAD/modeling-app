@@ -1,7 +1,16 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { type OperationsByModule, defaultNodePath } from '@src/lang/wasm'
-import { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+import {
+  type OperationsByModule,
+  type SourceRange,
+  defaultNodePath,
+} from '@src/lang/wasm'
+import {
+  buildOperationTree,
+  findSameVisibleStdLibOperationAfterSourceChange,
+} from '@src/lib/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
+
+type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 function createModuleInstanceOperation(
   moduleId: number,
@@ -28,6 +37,39 @@ function createVariableDeclarationOperation(
     visibility: 'default',
     nodePath: defaultNodePath(),
     sourceRange,
+  }
+}
+
+function createStdLibCallOperation(
+  name: string,
+  sourceRange: SourceRange
+): StdLibCallOperation {
+  return {
+    type: 'StdLibCall',
+    name,
+    unlabeledArg: null,
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange,
+    isError: false,
+  }
+}
+
+function createSketchBlockBegin(sourceRange: SourceRange): Operation {
+  return {
+    type: 'GroupBegin',
+    group: {
+      type: 'SketchBlock',
+      sketchId: 1,
+    },
+    nodePath: defaultNodePath(),
+    sourceRange,
+  }
+}
+
+function createGroupEnd(): Operation {
+  return {
+    type: 'GroupEnd',
   }
 }
 
@@ -186,5 +228,130 @@ describe('buildOperationTree', () => {
     )
     expect(lugNutParams).toBeDefined()
     expect(lugNutParams).not.toHaveProperty('children')
+  })
+})
+
+describe('findSameVisibleStdLibOperationAfterSourceChange', () => {
+  it('selects the operation at the same visible module-local index', () => {
+    const firstBefore = createStdLibCallOperation('fillet', [0, 10, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [20, 30, 0])
+    const firstAfter = createStdLibCallOperation('fillet', [0, 20, 0])
+    const clickedAfter = createStdLibCallOperation('fillet', [30, 50, 0])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [firstBefore, clickedBefore],
+      afterOperations: [firstAfter, clickedAfter],
+    })
+
+    expect(result).toBe(clickedAfter)
+  })
+
+  it('uses all visible operations in the module for the index', () => {
+    const precedingOperationBefore = createStdLibCallOperation(
+      'extrude',
+      [0, 10, 0]
+    )
+    const clickedBefore = createStdLibCallOperation('fillet', [20, 30, 0])
+    const precedingOperationAfter = createStdLibCallOperation(
+      'extrude',
+      [0, 20, 0]
+    )
+    const clickedAfter = createStdLibCallOperation('fillet', [30, 50, 0])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [precedingOperationBefore, clickedBefore],
+      afterOperations: [precedingOperationAfter, clickedAfter],
+    })
+
+    expect(result).toBe(clickedAfter)
+  })
+
+  it('matches only operations from the clicked operation module', () => {
+    const rootFilletBefore = createStdLibCallOperation('fillet', [0, 10, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [0, 10, 1])
+    const rootFilletAfter = createStdLibCallOperation('fillet', [0, 20, 0])
+    const clickedAfter = createStdLibCallOperation('fillet', [0, 20, 1])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [rootFilletBefore, clickedBefore],
+      afterOperations: [rootFilletAfter, clickedAfter],
+    })
+
+    expect(result).toBe(clickedAfter)
+  })
+
+  it('uses feature-tree-visible operations for the ordinal', () => {
+    const hiddenBefore = createStdLibCallOperation('fillet', [10, 20, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [30, 40, 0])
+    const hiddenAfter = createStdLibCallOperation('fillet', [10, 30, 0])
+    const clickedAfter = createStdLibCallOperation('fillet', [40, 60, 0])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [
+        createSketchBlockBegin([0, 10, 0]),
+        hiddenBefore,
+        createGroupEnd(),
+        clickedBefore,
+      ],
+      afterOperations: [
+        createSketchBlockBegin([0, 10, 0]),
+        hiddenAfter,
+        createGroupEnd(),
+        clickedAfter,
+      ],
+    })
+
+    expect(result).toBe(clickedAfter)
+  })
+
+  it('fails closed when the visible operation count changes', () => {
+    const firstBefore = createStdLibCallOperation('fillet', [0, 10, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [20, 30, 0])
+    const firstAfter = createStdLibCallOperation('fillet', [0, 20, 0])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [firstBefore, clickedBefore],
+      afterOperations: [firstAfter],
+    })
+
+    expect(result).toBeUndefined()
+  })
+
+  it('fails closed when the target slot has a different operation name', () => {
+    const firstBefore = createStdLibCallOperation('fillet', [0, 10, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [20, 30, 0])
+    const firstAfter = createStdLibCallOperation('fillet', [0, 20, 0])
+    const changedSlotAfter = createStdLibCallOperation('chamfer', [30, 50, 0])
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [firstBefore, clickedBefore],
+      afterOperations: [firstAfter, changedSlotAfter],
+    })
+
+    expect(result).toBeUndefined()
+  })
+
+  it('fails closed when the target slot has a different operation type', () => {
+    const firstBefore = createStdLibCallOperation('fillet', [0, 10, 0])
+    const clickedBefore = createStdLibCallOperation('fillet', [20, 30, 0])
+    const firstAfter = createStdLibCallOperation('fillet', [0, 20, 0])
+    const changedSlotAfter = createVariableDeclarationOperation(
+      [30, 50, 0],
+      'radius'
+    )
+
+    const result = findSameVisibleStdLibOperationAfterSourceChange({
+      operation: clickedBefore,
+      beforeOperations: [firstBefore, clickedBefore],
+      afterOperations: [firstAfter, changedSlotAfter],
+    })
+
+    expect(result).toBeUndefined()
   })
 })

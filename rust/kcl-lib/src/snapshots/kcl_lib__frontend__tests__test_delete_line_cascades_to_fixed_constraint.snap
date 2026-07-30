@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+}
+

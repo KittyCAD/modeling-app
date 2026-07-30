@@ -1,4 +1,4 @@
-import type { ProjectMetadata } from '@src/lib/fs-zds/opfsCloud'
+import type { CloudSyncProjectMetadata } from '@src/lib/cloudSync'
 
 /**
  * The permissions of a file.
@@ -26,6 +26,7 @@ export type FileMetadata = {
  * Information about a file or directory.
  */
 export type FileEntry = {
+  metadata?: FileMetadata | null
   /**
    * Absolute path
    * /home/kevin/Documents/zoo-design-studio-projects/level1/main.kcl
@@ -42,7 +43,7 @@ export type FileEntry = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
 }
 
 /**
@@ -65,7 +66,7 @@ export type Project = {
    * Cloud sync conflict metadata when this local project needs manual
    * resolution against a remote version.
    */
-  cloudConflict?: ProjectMetadata['conflict']
+  cloudConflict?: CloudSyncProjectMetadata['conflict']
   /**
    * Absolute path most likely to main.kcl within the project
    */
@@ -83,6 +84,6 @@ export type Project = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
   readWriteAccess: boolean
 }

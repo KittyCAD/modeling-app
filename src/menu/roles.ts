@@ -14,6 +14,7 @@ type HeaderLabel =
 type FileRoleLabel =
   | 'Open Project'
   | 'Create Project'
+  | 'Duplicate Project'
   | 'New Window'
   | 'Import File from URL'
   | 'Preferences'
@@ -32,7 +33,7 @@ type FileRoleLabel =
 type EditRoleLabel =
   | 'Rename Project'
   | 'Delete Project'
-  | 'Change Project Directory'
+  | 'Manage Project Libraries'
   | 'Undo'
   | 'Redo'
   | 'Speech'

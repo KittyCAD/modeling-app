@@ -26,7 +26,6 @@ use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchBlockConstraint;
-use crate::execution::SketchBlockConstraintType;
 use crate::execution::SketchConstraint;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchVarId;
@@ -2005,7 +2004,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "coincident supports point-point, point-segment, or segment-segment; found {:?} and {:?}",
-                        &unsolved0.kind, &unsolved1.kind
+                        unsolved0.kind, unsolved1.kind
                     ),
                     vec![args.source_range],
                 ))),
@@ -2408,7 +2407,7 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
         id: artifact_id,
         sketch_id,
         constraint_id,
-        constraint_type: SketchBlockConstraintType::from(&constraint),
+        constraint_type: crate::execution::sketch_block_constraint_type(&constraint),
         code_ref: CodeRef::placeholder(args.source_range),
     }));
     exec_state.add_scene_object(

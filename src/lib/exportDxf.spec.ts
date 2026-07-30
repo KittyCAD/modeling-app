@@ -113,6 +113,20 @@ const createMockOperation = (): StdLibCallOp => ({
   sourceRange: [0, 0, 0],
 })
 
+const createMockSketchBlockOperation = (): Parameters<
+  typeof exportSketchToDxf
+>[0] => ({
+  type: 'GroupBegin',
+  group: {
+    type: 'SketchBlock',
+    sketchId: 1,
+  },
+  nodePath: {
+    steps: [{ type: 'ProgramBodyItem', index: 0 }],
+  },
+  sourceRange: [10, 20, 0],
+})
+
 describe('DXF Export', () => {
   let mockDeps: Parameters<typeof exportSketchToDxf>[1]
   let mockOperation: StdLibCallOp
@@ -238,6 +252,89 @@ describe('DXF Export', () => {
           },
         ],
       })
+    })
+
+    it('should successfully export DXF for sketch block operations', async () => {
+      const sketchBlockOperation = createMockSketchBlockOperation()
+      const sketchBlockArtifact: Artifact = {
+        id: 'sketch-block-1',
+        type: 'sketchBlock',
+        pathId: 'path-1',
+        sketchId: 1,
+        codeRef: {
+          nodePath: sketchBlockOperation.nodePath,
+          range: sketchBlockOperation.sourceRange,
+          pathToNode: [],
+        },
+      }
+      const pathArtifact: Artifact = {
+        id: 'path-1',
+        type: 'path',
+        subType: 'sketch',
+        planeId: 'plane-id',
+        segIds: [],
+        codeRef: {
+          nodePath: sketchBlockOperation.nodePath,
+          range: sketchBlockOperation.sourceRange,
+          pathToNode: [],
+        },
+        trajectorySweepId: null,
+        consumed: false,
+        sketchBlockId: 'sketch-block-1',
+      }
+
+      mockDeps.kclManager.artifactGraph.set(
+        'sketch-block-1',
+        sketchBlockArtifact
+      )
+      mockDeps.kclManager.artifactGraph.set('path-1', pathArtifact)
+
+      const mockResponse: WebSocketResponse = {
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'export2d',
+              data: {
+                files: [{ contents: 'base64-content', name: 'sketch.dxf' }],
+              },
+            },
+          },
+        },
+      }
+      vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).mockResolvedValue(mockResponse)
+
+      vi.mocked(mockDeps.base64Decode).mockReturnValue(new ArrayBuffer(8))
+      mockElectron.save.mockResolvedValue({
+        canceled: false,
+        filePath: '/path/to/sketch.dxf',
+      })
+
+      const result = await exportSketchToDxf(sketchBlockOperation, mockDeps)
+
+      expect(result).toBe(true)
+      expect(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        mockDeps.engineCommandManager.sendSceneCommand
+      ).toHaveBeenCalledWith(
+        {
+          type: 'modeling_cmd_req',
+          cmd_id: 'test-uuid',
+          cmd: {
+            type: 'export2d',
+            entity_ids: ['path-1'],
+            format: {
+              type: 'dxf',
+              storage: 'ascii',
+            },
+          },
+        },
+        true
+      )
     })
 
     it('should successfully export DXF in desktop environment', async () => {

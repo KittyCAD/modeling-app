@@ -18,7 +18,7 @@ if (window.electron) {
   })
 } else {
   fsModulePromise = moduleFsViaModuleImport({
-    type: StorageName.OPFSCloud,
+    type: StorageName.OPFS,
     options: {},
   })
 }
@@ -30,7 +30,7 @@ await fsModulePromise
 // page.evaluate.
 if (typeof window !== 'undefined' && isPlaywright()) {
   void moduleFsViaWindow({
-    type: window.electron ? StorageName.ElectronFS : StorageName.OPFSCloud,
+    type: window.electron ? StorageName.ElectronFS : StorageName.OPFS,
     options: {},
   })
 }

@@ -23,7 +23,7 @@ export function HelpMenu() {
   const { settings, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
+  const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
   const resetOnboardingWorkflow = () => {
     const props = {

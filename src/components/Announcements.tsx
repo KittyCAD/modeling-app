@@ -45,11 +45,7 @@ export function Announcements({ token }: { token?: string }) {
   )
 }
 
-function AnnouncementBanner({
-  announcement,
-}: {
-  announcement: Announcement
-}) {
+function AnnouncementBanner({ announcement }: { announcement: Announcement }) {
   return (
     <section
       data-testid="announcement-banner"

@@ -1,6 +1,6 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d, UserFeature } from '@kittycad/lib'
+import type { Feature, OutputFormat3d } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
@@ -8,6 +8,7 @@ import type { Configuration } from '@src/lang/wasm'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  OPFS_CLOUD_FEATURE_FLAG,
   SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
@@ -34,7 +35,13 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import {
+  PLAYWRIGHT_PROJECT_DIRECTORY,
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+  playwrightPluginSettings,
+  playwrightProjectLibraries,
+} from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
@@ -54,17 +61,6 @@ export const PLAYWRIGHT_LAYOUT_SETTINGS = {
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
-
-export const headerMasks = (page: Page) => [
-  page.locator('#app-header'),
-  page.locator('#sidebar-top-ribbon'),
-  page.locator('#sidebar-bottom-ribbon'),
-]
-
-export const lowerRightMasks = (page: Page) => [
-  page.getByTestId(/network-toggle/),
-  page.getByTestId('billing-remaining-bar'),
-]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
@@ -942,7 +938,7 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly UserFeature[] = []
+  userFeatures: readonly Feature[] = []
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -986,19 +982,21 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          plugins: playwrightPluginSettings({
+            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+          }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
+            libraries: playwrightProjectLibraries(),
             onboarding_status: 'dismissed',
           },
           project: {
             ...testProjectSettings,
-            ...(typeof testProjectSettings?.directory === 'string'
-              ? { directory: testProjectSettings.directory }
-              : {}),
+            directory: PLAYWRIGHT_PROJECT_DIRECTORY,
           },
         },
       }),
@@ -1203,7 +1201,7 @@ export async function createProject({
 }) {
   await test.step(`Create project and navigate to it`, async () => {
     await page.getByRole('button', { name: 'Create project' }).click()
-    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByTestId('cmd-bar-arg-value').fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
     await closeOnboardingModalIfPresent(page)

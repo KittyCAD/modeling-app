@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "source_delta.text"
+---
+// added comment
+// added comment
+
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
+}
+

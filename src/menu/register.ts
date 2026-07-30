@@ -1,12 +1,18 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  SystemIOMachineEvents,
+  type SystemIOActor,
+} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
@@ -17,16 +23,20 @@ export function modelingMenuCallbackMostActions({
   filePath,
   authActor,
   commandBarActor,
+  currentProject,
   kclManager,
   settingsActor,
+  systemIOActor,
 }: {
   settings: SettingsType
   navigate: NavigateFunction
   filePath: string | undefined
   authActor: ActorRefFrom<typeof authMachine>
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  currentProject?: Project
   kclManager: KclManager
   settingsActor: SettingsActorType
+  systemIOActor: SystemIOActor
 }) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -39,6 +49,18 @@ export function modelingMenuCallbackMostActions({
           argDefaultValues: {
             name: settings.projects.defaultProjectName.current,
           },
+        },
+      })
+    } else if (data.menuLabel === 'File.Duplicate project') {
+      if (!currentProject) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.duplicateProject,
+        data: {
+          projectName: currentProject.name,
+          projectPath: currentProject.path,
+          requestedProjectName: getProjectDisplayName(currentProject),
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
@@ -91,7 +113,7 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#libraries')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')

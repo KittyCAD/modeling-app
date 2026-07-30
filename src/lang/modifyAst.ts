@@ -27,6 +27,7 @@ import {
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -1284,6 +1285,30 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
+export function pathsReferToSamePipe(
+  first: PathToNode,
+  second: PathToNode
+): boolean {
+  const firstPipe = splitPathAtPipeExpression(first)
+  const secondPipe = splitPathAtPipeExpression(second)
+  return (
+    firstPipe.index !== -1 &&
+    secondPipe.index !== -1 &&
+    stringifyPathToNode(firstPipe.path) === stringifyPathToNode(secondPipe.path)
+  )
+}
+
+export function replaceCallInPlace(
+  existingCall: CallExpressionKw,
+  replacementCall: CallExpressionKw
+) {
+  const unlabeled =
+    replacementCall.unlabeled === null
+      ? structuredClone(existingCall.unlabeled)
+      : replacementCall.unlabeled
+  Object.assign(existingCall, replacementCall, { unlabeled })
+}
+
 export function setCallInAst({
   ast,
   call,
@@ -1301,6 +1326,13 @@ export function setCallInAst({
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
+    if (pathIfNewPipe && !pathsReferToSamePipe(pathIfNewPipe, pathToEdit)) {
+      // A pipe substitution reconstructed outside the edited call's pipe is
+      // invalid. Discard the reconstruction so replaceCallInPlace preserves
+      // the existing unlabeled argument and applies only the labeled edits.
+      call.unlabeled = null
+    }
+
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToEdit,
@@ -1311,7 +1343,7 @@ export function setCallInAst({
       return result
     }
 
-    Object.assign(result.node, call)
+    replaceCallInPlace(result.node, call)
     pathToNode = pathToEdit
   } else if (pathIfNewPipe) {
     const pipe = getNodeFromPath<PipeExpression>(

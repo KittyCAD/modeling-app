@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
+  parallel([line1, line2])
+}
+

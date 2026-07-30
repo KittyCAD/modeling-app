@@ -45,9 +45,58 @@ import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
+import {
+  type ElectronPluginContext,
+  PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
+  type PluginIpcChannel,
+  type PluginIpcHandler,
+} from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
+
+type ElectronPluginModule = {
+  register?: (context: ElectronPluginContext) => void
+}
+
+const electronPluginModules: Record<string, ElectronPluginModule> =
+  import.meta.glob('./registry/plugins/*/electron.ts', {
+    eager: true,
+  })
+
+const activeElectronPluginIds = new Set<string>()
+
+function isPluginEnabled(pluginId: string) {
+  return activeElectronPluginIds.has(pluginId)
+}
+
+function handlePluginInvoke(
+  pluginId: string,
+  channel: PluginIpcChannel,
+  handler: PluginIpcHandler
+) {
+  ipcMain.handle(channel, (event, ...args) => {
+    if (!isPluginEnabled(pluginId)) {
+      return {
+        ok: false,
+        error: `The ${pluginId} plugin is disabled.`,
+      }
+    }
+
+    return handler(event, ...args)
+  })
+}
+
+function registerElectronPluginModules() {
+  for (const pluginModule of Object.values(electronPluginModules)) {
+    pluginModule.register?.({
+      ipcMain,
+      isPluginEnabled,
+      handlePluginInvoke,
+    })
+  }
+}
 
 // Linux hack for electron >= 38, here we're forcing XWayland due to issues we've experienced
 // https://github.com/electron/electron/issues/41551#issuecomment-3590685943
@@ -488,6 +537,29 @@ ipcMain.handle('app.resizeWindow', (event, data) => {
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
+
+ipcMain.handle(
+  PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
+  (_event, pluginIds: unknown) => {
+    if (!isArray(pluginIds)) {
+      return
+    }
+    if (
+      !pluginIds.every(
+        (pluginId): pluginId is string => typeof pluginId === 'string'
+      )
+    ) {
+      return
+    }
+
+    activeElectronPluginIds.clear()
+    for (const pluginId of pluginIds) {
+      activeElectronPluginIds.add(pluginId)
+    }
+  }
+)
+
+registerElectronPluginModules()
 
 ipcMain.handle('dialog.showOpenDialog', (event, data) => {
   const targetWindow = BrowserWindow.fromWebContents(event.sender)

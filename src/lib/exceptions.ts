@@ -1,9 +1,8 @@
-import toast from 'react-hot-toast'
-
 import type { KclManager } from '@src/lang/KclManager'
+import { restartWasmModule } from '@src/lang/wasmUtils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
-import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import toast from 'react-hot-toast'
 
 let initialized = false
 
@@ -30,10 +29,10 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
             'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
           )
           try {
-            const newModulePromise = reloadModule().then(() => getModule())
+            const newModulePromise = restartWasmModule()
             // Refresh kclManager singleton's reference to the current WASM module.
             kclManager.wasmInstancePromise = newModulePromise
-            await newModulePromise.then((newModule) => newModule.default())
+            await newModulePromise
             /**
              * If I do not cache bust, swapping between files when a rust runtime error happens
              * it will cache the result of the crashed result and not re executing a new good file

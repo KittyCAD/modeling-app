@@ -17,6 +17,7 @@ use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::CommentStyle;
 use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::EnumDeclaration;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::FormatOptions;
 use crate::parsing::ast::types::FunctionExpression;
@@ -44,6 +45,7 @@ use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableKind;
@@ -162,7 +164,7 @@ fn recast_body(
             BodyItem::VariableDeclaration(variable_declaration) => {
                 variable_declaration.recast(&mut result, options, indentation_level);
             }
-            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result),
+            BodyItem::TypeDeclaration(ty_declaration) => ty_declaration.recast(&mut result, options, indentation_level),
             BodyItem::ReturnStatement(return_statement) => {
                 write!(&mut result, "{indentation}return ").no_fail();
                 let mut tmp_buf = String::with_capacity(256);
@@ -492,6 +494,7 @@ impl CallExpressionKw {
             &self.callee,
             self.unlabeled.as_ref(),
             &self.arguments,
+            &self.non_code_meta,
             buf,
             options,
             indentation_level,
@@ -523,10 +526,12 @@ fn recast_args(
     arg_list
 }
 
+#[allow(clippy::too_many_arguments)]
 fn recast_call(
     callee: &Name,
     unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
+    non_code_meta: &NonCodeMeta,
     buf: &mut String,
     options: &FormatOptions,
     indentation_level: usize,
@@ -540,11 +545,93 @@ fn recast_call(
         return write!(buf, "{suggestion}").no_fail();
     }
 
-    let arg_list = recast_args(unlabeled, arguments, options, indentation_level, ctxt);
-    let has_lots_of_args = arg_list.len() >= 4;
-    let args = arg_list.join(", ");
-    let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
-    let multiline = has_lots_of_args || some_arg_is_already_multiline;
+    // An item is an argument (possibly with block comments glued before it),
+    // or a comment that needs its own line.
+    struct FormatItem {
+        text: String,
+        is_arg: bool,
+    }
+
+    // Reconstruct the order of arguments and non-code items (e.g. comments).
+    // Non-code nodes are keyed by their position in the source argument
+    // sequence, the same scheme as ArrayExpression. The unlabeled argument is
+    // not part of that sequence; it always comes first. Iterate enough slots
+    // that no argument or comment is dropped, even if AST edits left the
+    // indices inconsistent.
+    let build_items = |arg_indent: usize| -> Vec<FormatItem> {
+        let arg_list = recast_args(unlabeled, arguments, options, arg_indent, ctxt);
+        let mut arg_iter = arg_list.into_iter();
+        let mut items = Vec::with_capacity(arguments.len() + non_code_meta.non_code_nodes_len() + 1);
+        if unlabeled.is_some()
+            && let Some(first_arg) = arg_iter.next()
+        {
+            items.push(FormatItem {
+                text: first_arg,
+                is_arg: true,
+            });
+        }
+        let num_items = arguments.len() + non_code_meta.non_code_nodes_len();
+        let num_slots = non_code_meta
+            .non_code_nodes
+            .keys()
+            .max()
+            .map_or(num_items, |max| num_items.max(max + 1));
+        // Block comments don't need a line break, so they glue to whatever
+        // comes next instead of getting their own line.
+        let mut pending_block_comments = String::new();
+        for i in 0..num_slots {
+            if let Some(noncode) = non_code_meta.non_code_nodes.get(&i) {
+                for nc in noncode {
+                    match &nc.value {
+                        NonCodeValue::BlockComment {
+                            style: CommentStyle::Block,
+                            ..
+                        }
+                        | NonCodeValue::InlineComment {
+                            style: CommentStyle::Block,
+                            ..
+                        } => {
+                            pending_block_comments.push_str(nc.recast(options, 0).trim());
+                            pending_block_comments.push(' ');
+                        }
+                        _ => {
+                            // Line comments (and blank lines) need their own
+                            // line.
+                            let mut text = std::mem::take(&mut pending_block_comments);
+                            text.push_str(nc.recast(options, 0).trim_end_matches('\n'));
+                            items.push(FormatItem {
+                                text: text.trim().to_owned(),
+                                is_arg: false,
+                            });
+                        }
+                    }
+                }
+            } else if let Some(arg) = arg_iter.next() {
+                let mut text = std::mem::take(&mut pending_block_comments);
+                text.push_str(&arg);
+                items.push(FormatItem { text, is_arg: true });
+            }
+        }
+        items.extend(arg_iter.map(|arg| FormatItem {
+            text: arg,
+            is_arg: true,
+        }));
+        // Trailing block comments have no argument to glue to.
+        if !pending_block_comments.is_empty() {
+            items.push(FormatItem {
+                text: pending_block_comments.trim_end().to_owned(),
+                is_arg: false,
+            });
+        }
+        items
+    };
+
+    let items = build_items(indentation_level);
+    let has_lots_of_args = items.iter().filter(|item| item.is_arg).count() >= 4;
+    // Comments which need their own line force the multi-line layout.
+    let has_own_line_comment = items.iter().any(|item| !item.is_arg);
+    let some_arg_is_already_multiline = items.len() > 1 && items.iter().any(|item| item.text.contains('\n'));
+    let multiline = has_lots_of_args || some_arg_is_already_multiline || has_own_line_comment;
     if multiline {
         let next_indent = indentation_level + 1;
         let inner_indentation = if ctxt.in_pipe() {
@@ -552,10 +639,7 @@ fn recast_call(
         } else {
             options.get_indentation(next_indent)
         };
-        let arg_list = recast_args(unlabeled, arguments, options, next_indent, ctxt);
-        let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
-        args.push(',');
-        let args = args;
+        let items = build_items(next_indent);
         let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
@@ -567,9 +651,16 @@ fn recast_call(
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
-        write!(buf, "{inner_indentation}").no_fail();
-        write!(buf, "{args}").no_fail();
-        buf.push('\n');
+        for item in items {
+            if item.is_arg {
+                writeln!(buf, "{inner_indentation}{},", item.text).no_fail();
+            } else if item.text.is_empty() {
+                // A blank line between arguments.
+                buf.push('\n');
+            } else {
+                writeln!(buf, "{inner_indentation}{}", item.text).no_fail();
+            }
+        }
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
@@ -578,6 +669,11 @@ fn recast_call(
         }
         name.write_to(buf).no_fail();
         buf.push('(');
+        let args = items
+            .iter()
+            .map(|item| item.text.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
         write!(buf, "{args}").no_fail();
         buf.push(')');
     }
@@ -623,7 +719,8 @@ impl VariableDeclaration {
 }
 
 impl TypeDeclaration {
-    pub fn recast(&self, buf: &mut String) {
+    pub fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        options.write_indentation(buf, indentation_level);
         match self.visibility {
             ItemVisibility::Default => {}
             ItemVisibility::Export => buf.push_str("export "),
@@ -641,10 +738,112 @@ impl TypeDeclaration {
             }
             buf.push(')');
         }
-        if let Some(alias) = &self.alias {
-            buf.push_str(" = ");
-            write!(buf, "{alias}").no_fail();
+        match &self.definition {
+            TypeDeclarationDefinition::Bare => {}
+            TypeDeclarationDefinition::Alias { ty } => {
+                buf.push_str(" = ");
+                write!(buf, "{ty}").no_fail();
+            }
+            TypeDeclarationDefinition::Enum(e) => e.recast(buf, options, indentation_level),
         }
+    }
+}
+
+impl EnumDeclaration {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
+        // Only comments decide the layout: blank lines in a body with no arms
+        // carry no information and are not re-emitted, so counting them here
+        // would make formatting non-idempotent (the multi-line output would
+        // reparse with no non-code at all and then collapse).
+        let has_start_comment = self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+
+        // An enum with no variants and no comments stays on one line, keeping
+        // the standalone arm marker which classifies the body as an enum.
+        if self.variants.is_empty() && !has_start_comment {
+            buf.push_str(" { | }");
+            return;
+        }
+
+        let body_level = indentation_level + 1;
+        let body_indentation = options.get_indentation(body_level);
+        buf.push_str(" {\n");
+
+        // Comments before the first arm (or around a standalone `|`),
+        // mirroring how `recast_body` renders `start_nodes`.
+        if has_start_comment {
+            let mut pending_newline = false;
+            for start_node in &self.non_code_meta.start_nodes {
+                if matches!(start_node.value, NonCodeValue::NewLine) {
+                    pending_newline = true;
+                    continue;
+                }
+                if pending_newline {
+                    buf.push('\n');
+                    pending_newline = false;
+                }
+                buf.push_str(&start_node.recast(options, body_level));
+                if !buf.ends_with('\n') {
+                    buf.push('\n');
+                }
+            }
+            if pending_newline {
+                buf.push('\n');
+            }
+        }
+
+        if self.variants.is_empty() {
+            buf.push_str(&body_indentation);
+            buf.push_str("|\n");
+        }
+
+        for (index, variant) in self.variants.iter().enumerate() {
+            // Comments strongly associated with this arm, mirroring how
+            // `recast_body` renders body-item pre-comments.
+            let mut arm = String::new();
+            for comment in &variant.pre_comments {
+                if !comment.is_empty() {
+                    arm.push_str(&body_indentation);
+                    arm.push_str(comment);
+                }
+                if comment.is_empty() && !arm.ends_with('\n') {
+                    arm.push('\n');
+                }
+                if !arm.ends_with("\n\n") && arm != "\n" {
+                    arm.push('\n');
+                }
+            }
+            arm.push_str(&body_indentation);
+            arm.push_str("| ");
+            arm.push_str(&variant.name.name);
+            buf.push_str(&arm);
+
+            // Trailing comments and blank lines after this arm, mirroring how
+            // `recast_body` renders per-item non-code nodes.
+            if let Some(noncodes) = self.non_code_meta.non_code_nodes.get(&index) {
+                for (i, noncode) in noncodes.iter().enumerate() {
+                    let formatted = noncode.recast(options, body_level);
+                    if i == 0
+                        && !formatted.trim().is_empty()
+                        && matches!(noncode.value, NonCodeValue::BlockComment { .. })
+                    {
+                        buf.push('\n');
+                    }
+                    buf.push_str(&formatted);
+                }
+                if !buf.ends_with('\n') {
+                    buf.push('\n');
+                }
+            } else {
+                buf.push('\n');
+            }
+        }
+
+        options.write_indentation(buf, indentation_level);
+        buf.push('}');
     }
 }
 
@@ -1175,7 +1374,16 @@ impl SketchBlock {
             abs_path: false,
             digest: None,
         };
-        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
+        recast_call(
+            &name,
+            None,
+            &self.arguments,
+            &self.non_code_meta,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
 
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
@@ -1387,6 +1595,186 @@ foo = 42
         assert_eq!(output, input);
     }
 
+    /// Assert that `input` formats to `expected`, and that formatting is
+    /// idempotent: recasting the output parses and formats to itself.
+    #[track_caller]
+    fn assert_recast(input: &str, expected: &str) {
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, expected);
+        let reparsed = crate::parsing::top_level_parse(&output).unwrap();
+        assert_eq!(reparsed.recast_top(&Default::default(), 0), output);
+    }
+
+    #[test]
+    fn recast_enum_multi_line_is_stable() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  | Red
+  | Green
+  | Blue
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_expands_single_line() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color { | Red | Green | Blue }
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  | Red
+  | Green
+  | Blue
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_export() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+export type Color {
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_no_variants() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty { | }
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_no_variants_collapses_blank_lines() {
+        // Blank lines around a lone arm marker are not content: the body
+        // collapses in one pass, not two.
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty {
+
+  |
+
+}
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Empty { | }
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_no_variants_with_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Empty { /* a */ | /* b */ }
+"#;
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Empty {
+  /* a */
+  /* b */
+  |
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_with_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  // before red
+  | Red // after red
+  | /* inside green arm */ Green
+
+  | Blue
+  // trailing
+}
+"#;
+        // Comments between an arm's `|` and its name normalize to a line
+        // above the arm; everything else keeps its position.
+        let expected = r#"@settings(experimentalFeatures = allow)
+
+type Color {
+  // before red
+  | Red // after red
+  /* inside green arm */
+  | Green
+
+  | Blue
+  // trailing
+}
+"#;
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_enum_with_comment_above_declaration() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+// palette
+type Color {
+  // before red
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_with_outer_annotation() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+@(impl = kcl)
+type Color {
+  | Red
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_export_annotation_and_comments() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+// palette
+@(impl = kcl)
+export type Color {
+  | Red // warm
+}
+"#;
+        assert_recast(input, input);
+    }
+
+    #[test]
+    fn recast_enum_in_function_body() {
+        let input = r#"@settings(experimentalFeatures = allow)
+
+fn palette() {
+  type Color {
+    | Red
+    | Green
+  }
+  return 0
+}
+"#;
+        assert_recast(input, input);
+    }
+
     #[test]
     fn test_recast_if_else_if_same() {
         let input = r#"b = if false {
@@ -1490,6 +1878,29 @@ sketch(on) {
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_arg_shorthand_and_comment() {
+        // The comment stays after the shorthand argument: the parser moves the
+        // shorthand `on` from the unlabeled slot into the argument list, which
+        // must also shift the comment positions.
+        let input = r#"on = XY
+sketch(
+  on,
+  // plane
+) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&output).unwrap();
+        let output2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(output2, output);
     }
 
     #[test]
@@ -2803,6 +3214,101 @@ fn ghi(part001) {
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_comment_between_call_args() {
+        let some_program_string = r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  // Keep this comment
+  tags = [tag1, tag2],
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_line_comments_in_call_args_force_multiline() {
+        let some_program_string = r#"edged = chamfer(
+  body,
+  // leading
+  length = 1mm,
+  tags = [tag1],
+  // trailing
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_block_comment_in_call_args_stays_inline() {
+        // A block comment shouldn't force the call onto multiple lines.
+        let some_program_string = r#"rounded = fillet(body, radius = 1mm, /* mid */ tags = [tag1])
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_block_comment_in_multiline_call_args_stays_inline() {
+        // In a call that's multi-line anyway, a block comment stays glued to
+        // the argument it precedes.
+        let some_program_string = r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  /* mid */ tags = [tag1],
+  tag = $x,
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_comment_in_call_args_in_pipe() {
+        let some_program_string = r#"part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> fillet(
+       radius = 1,
+       // why
+       tags = [a],
+     )
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]

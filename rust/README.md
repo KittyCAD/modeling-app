@@ -15,7 +15,11 @@
 4. Push the changes and get your PR approved.
 5. Publish the crates:
     ```bash
-    just publish-kcl {version}
+    just publish-kcl-part1
+    ```
+    Follow the instructions for updating the old crate versions.
+    ```bash
+    just publish-kcl-part2 {version}
     ```
     - This will publish the relevant crates and push a new tag with the prefix
     `kcl-`. DO NOT SET THE PREFIX TO `kcl-` when you run the command. The `just`

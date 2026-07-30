@@ -20,11 +20,11 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
-  createMemberExpression,
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
 import {
+  createSketchTagMemberExpression,
   getEdgeCutMeta,
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
@@ -249,6 +249,15 @@ export function createTagExpressions(
         ) {
           tagCall = createCallExpressionStdLibKw(
             'getNextAdjacentEdge',
+            tagCall,
+            []
+          )
+        } else if (
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'previousAdjacent'
+        ) {
+          tagCall = createCallExpressionStdLibKw(
+            'getPreviousAdjacentEdge',
             tagCall,
             []
           )
@@ -589,14 +598,8 @@ function getSketchSolveSurfaceTagExprForWallFace(
     return null
   }
 
-  return createMemberExpression(
-    createMemberExpression(
-      createMemberExpression(
-        structuredClone(sourceSurfaceVars.exprs[0]),
-        'sketch'
-      ),
-      'tags'
-    ),
+  return createSketchTagMemberExpression(
+    sourceSurfaceVars.exprs[0],
     sketchSegmentName
   )
 }

@@ -1,4 +1,4 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
@@ -26,7 +26,11 @@ import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
-import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
+import {
+  TEST_SETTINGS,
+  playwrightPluginSettings,
+  playwrightProjectLibraries,
+} from '@e2e/playwright/storageStates'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
   getUtils,
@@ -57,7 +61,7 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '', userFeatures: readonly UserFeature[] = []) {
+  async initialise(code = '', userFeatures: readonly Feature[] = []) {
     await setup(this.context, this.page, this.testInfo, userFeatures)
     const u = await getUtils(this.page)
 
@@ -153,7 +157,7 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly UserFeature[] = []
+    userFeatures: readonly Feature[] = []
   ) {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -323,37 +327,34 @@ export class ElectronZoo {
 
     let settingsOverridesToml = ''
 
-    if (appSettings) {
-      settingsOverridesToml = settingsToToml({
-        settings: {
-          ...TEST_SETTINGS,
-          ...appSettings,
-          ...PLAYWRIGHT_LAYOUT_SETTINGS,
-          app: {
-            ...TEST_SETTINGS.app,
-            ...appSettings.app,
-          },
-          project: {
-            ...TEST_PROJECT_SETTINGS,
-            directory: this.projectDirName,
-          },
+    const appSettingsPlugins =
+      appSettings &&
+      typeof appSettings.plugins === 'object' &&
+      appSettings.plugins !== null &&
+      !isArray(appSettings.plugins)
+        ? appSettings.plugins
+        : {}
+
+    settingsOverridesToml = settingsToToml({
+      settings: {
+        ...TEST_SETTINGS,
+        ...appSettings,
+        plugins: {
+          ...playwrightPluginSettings(),
+          ...appSettingsPlugins,
         },
-      })
-    } else {
-      settingsOverridesToml = settingsToToml({
-        settings: {
-          ...TEST_SETTINGS,
-          ...PLAYWRIGHT_LAYOUT_SETTINGS,
-          app: {
-            ...TEST_SETTINGS.app,
-          },
-          project: {
-            ...TEST_PROJECT_SETTINGS,
-            directory: this.projectDirName,
-          },
+        ...PLAYWRIGHT_LAYOUT_SETTINGS,
+        app: {
+          ...TEST_SETTINGS.app,
+          libraries: playwrightProjectLibraries(this.projectDirName),
+          ...appSettings?.app,
         },
-      })
-    }
+        project: {
+          ...TEST_PROJECT_SETTINGS,
+          directory: this.projectDirName,
+        },
+      },
+    })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
   }
 }
@@ -387,7 +388,7 @@ const fixturesForWeb = {
     }: {
       page: Page
       context: BrowserContext
-      userFeatures: readonly UserFeature[]
+      userFeatures: readonly Feature[]
     },
     use: FnUse,
     testInfo: TestInfo

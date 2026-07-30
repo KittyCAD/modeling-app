@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 0])
+  coincident([point1, ORIGIN])
+}
+

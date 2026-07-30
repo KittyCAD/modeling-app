@@ -93,7 +93,7 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclEr
             waiting_modules.retain(|v| *v != stage_module.as_str());
 
             // remove any dependencies for the next run
-            for (_, waiting_for) in dep_map.iter_mut() {
+            for waiting_for in dep_map.values_mut() {
                 waiting_for.retain(|v| v != stage_module);
             }
         }

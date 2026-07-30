@@ -1,13 +1,20 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
+export type EngineDisconnectEvent =
+  | EngineConnectionManagerEvents.WebsocketClosed
+  | EngineConnectionManagerEvents.peerConnectionClosed
+  | EngineConnectionManagerEvents.peerConnectionDisconnected
+  | EngineConnectionManagerEvents.peerConnectionFailed
+  | EngineConnectionManagerEvents.dataChannelClose
+
 export interface IUseOnPeerConnectionClose {
-  callback: () => void
+  callback: (eventType: EngineDisconnectEvent) => void
   engineCommandManager: ConnectionManager
 }
 /**
- * During there process of engineCommandManager.start -> connection.connect() the new RTCPeerConnection
+ * During the engine connection manager start -> connection.connect() process, the new RTCPeerConnection
  * class has multiple event listeners attached to the instance of the RTCPeerConnection
  * If a state change happens and it is a closed, disconnected, or failed this is the one location
  * to handle the watching of that event.
@@ -20,48 +27,48 @@ export function useOnPeerConnectionClose({
 }: IUseOnPeerConnectionClose) {
   useEffect(() => {
     // same failure handler for all for now
-    const onFailure: EventListener = () => {
-      callback()
+    const onFailure: EventListener = (event) => {
+      callback(event.type as EngineDisconnectEvent)
     }
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.peerConnectionClosed,
+      EngineConnectionManagerEvents.peerConnectionClosed,
       onFailure
     )
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.peerConnectionDisconnected,
+      EngineConnectionManagerEvents.peerConnectionDisconnected,
       onFailure
     )
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.peerConnectionFailed,
+      EngineConnectionManagerEvents.peerConnectionFailed,
       onFailure
     )
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.dataChannelClose,
+      EngineConnectionManagerEvents.dataChannelClose,
       onFailure
     )
 
     return () => {
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.peerConnectionClosed,
+        EngineConnectionManagerEvents.peerConnectionClosed,
         onFailure
       )
 
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.peerConnectionDisconnected,
+        EngineConnectionManagerEvents.peerConnectionDisconnected,
         onFailure
       )
 
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.peerConnectionFailed,
+        EngineConnectionManagerEvents.peerConnectionFailed,
         onFailure
       )
 
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.dataChannelClose,
+        EngineConnectionManagerEvents.dataChannelClose,
         onFailure
       )
     }

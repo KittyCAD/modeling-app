@@ -585,7 +585,7 @@ export function updateSceneGraphFromDelta({
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
-    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // hackSetProgram in `src/lang/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
     const invalidateScene = sketchSolveGroup?.children.some((child) => {
       const childId = Number(child.name)
@@ -1003,6 +1003,20 @@ function getSourceRangesForObjectId(
   objectId: number
 ): SourceRange[] {
   const object = objects[objectId]
+  if (object?.kind.type === 'Wall') {
+    return uniqueSourceRanges([
+      object.kind.source.solid.range,
+      object.kind.source.sweep.range,
+      object.kind.source.path?.range,
+      object.kind.source.segment.range,
+    ])
+  }
+  if (object?.kind.type === 'Cap') {
+    return uniqueSourceRanges([
+      object.kind.source.solid.range,
+      object.kind.source.sweep.range,
+    ])
+  }
 
   if (object?.source.type === 'Simple') {
     return [object.source.range]
@@ -1011,6 +1025,12 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
+}
+
+function uniqueSourceRanges(ranges: Array<SourceRange | undefined>) {
+  return dedupeSourceRanges(
+    ranges.filter((range): range is SourceRange => range !== undefined)
+  )
 }
 
 function getObjectIdsForCodeSelectionRanges(
@@ -1571,11 +1591,7 @@ export function spawnTool(
 }
 
 export const tearDownSketchSolve = fromPromise(
-  async ({
-    input,
-  }: {
-    input: { context: SketchSolveContext }
-  }) => {
+  async ({ input }: { input: { context: SketchSolveContext } }) => {
     // Let the rust side know this sketch is being exited
     await input.context.rustContext.exitSketch(
       SKETCH_FILE_VERSION,

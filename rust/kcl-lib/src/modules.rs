@@ -13,8 +13,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
 use crate::execution::PreImportedGeometry;
 use crate::execution::typed_path::TypedPath;
-use crate::fs::FileManager;
-use crate::fs::FileSystem;
+use crate::fs::FileSystemHandle;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
@@ -93,6 +92,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
+        "string" => Some(include_str!("../std/string.kcl")),
         "units" => Some(include_str!("../std/units.kcl")),
         "array" => Some(include_str!("../std/array.kcl")),
         "sweep" => Some(include_str!("../std/sweep.kcl")),
@@ -179,7 +179,11 @@ impl ModulePath {
         }
     }
 
-    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
+    pub(crate) async fn source(
+        &self,
+        fs: &FileSystemHandle,
+        source_range: SourceRange,
+    ) -> Result<ModuleSource, KclError> {
         match self {
             ModulePath::Local { value: p, .. } => Ok(ModuleSource {
                 source: fs.read_to_string(p, source_range).await?,

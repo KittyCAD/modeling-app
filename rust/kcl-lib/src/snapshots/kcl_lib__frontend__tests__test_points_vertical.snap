@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch001 = sketch(on = XY) {
+  p0 = point(at = [var 4mm, var 3.1mm])
+  pf = point(at = [4, 4])
+  vertical([p0, pf])
+}
+

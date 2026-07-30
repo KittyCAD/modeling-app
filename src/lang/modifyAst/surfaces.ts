@@ -1,11 +1,20 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { createCallExpressionStdLibKw } from '@src/lang/create'
+import {
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+} from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getVariableExprsFromSelection } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -34,7 +43,7 @@ export function addFlipSurface({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast)
+  const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
@@ -57,7 +66,11 @@ export function addFlipSurface({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('flipSurface', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Flip Surface'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -92,12 +105,14 @@ export function addJoinSurfaces({
   ast,
   artifactGraph,
   selection,
+  tolerance,
   wasmInstance,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   selection: Selections
+  tolerance?: KclCommandValue
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -126,7 +141,14 @@ export function addJoinSurfaces({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('joinSurfaces', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Join Surfaces'),
+    objectsExpr,
+    tolerance ? [createLabeledArg('tolerance', valueOrVariable(tolerance))] : []
+  )
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

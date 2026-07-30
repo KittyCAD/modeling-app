@@ -1,14 +1,15 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { useLspContext } from '@src/components/LspProvider'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import type { ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styles from './AppHeader.module.css'
 
 interface AppHeaderProps extends React.PropsWithChildren {
@@ -35,13 +36,14 @@ export const AppHeader = ({
   const app = useApp()
   const { auth } = app
   const { kclManager } = useSingletons()
-  const { onProjectClose } = useLspContext()
+  const lsp = app.registry.get(lspService)
+  const navigate = useNavigate()
   const user = auth.useUser()
   const executingPath = app.project?.executingPathSignal.value?.value
   const absoluteFilePath = executingPath
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined
-  const hasOpfsCloudFeature = app.userFeatures.useHas(
+  const hasCloudSyncFeature = app.userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
@@ -65,8 +67,13 @@ export const AppHeader = ({
         project={project}
         file={file}
         absoluteFilePath={absoluteFilePath}
-        hasOpfsCloudFeature={hasOpfsCloudFeature}
-        onProjectClose={onProjectClose}
+        hasCloudSyncFeature={hasCloudSyncFeature}
+        onProjectClose={(closedFile, projectPath, redirect) => {
+          lsp.onProjectClose(closedFile, projectPath, redirect)
+          if (redirect) {
+            void navigate(PATHS.HOME)
+          }
+        }}
         onHomeNavigate={() => {
           kclManager.switchedFiles = true
         }}

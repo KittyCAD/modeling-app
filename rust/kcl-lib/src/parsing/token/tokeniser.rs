@@ -794,13 +794,13 @@ const things = "things"
                 assert!(
                     !actual.tokens[i].is_code_token(),
                     "failed test {i}: {:?}",
-                    &actual.tokens[i],
+                    actual.tokens[i],
                 );
             } else {
                 assert!(
                     actual.tokens[i].is_code_token(),
                     "failed test {i}: {:?}",
-                    &actual.tokens[i],
+                    actual.tokens[i],
                 );
             }
         }

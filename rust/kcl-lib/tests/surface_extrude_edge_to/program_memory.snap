@@ -310,6 +310,32 @@ description: Variables in memory after executing surface_extrude_edge_to.kcl
       "sectional": false
     }
   },
+  "extrude002": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "creatorType": "edge",
+        "edge_id": "[uuid]",
+        "body_id": "[uuid]"
+      },
+      "startCapId": null,
+      "endCapId": null,
+      "units": "mm",
+      "sectional": false
+    }
+  },
   "hidden001": {
     "type": "Sketch",
     "value": {

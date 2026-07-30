@@ -6,7 +6,9 @@ import type { ActorRefFrom } from 'xstate'
 
 export function createAuthCommands({
   authActor,
-}: { authActor: ActorRefFrom<typeof authMachine> }) {
+}: {
+  authActor: ActorRefFrom<typeof authMachine>
+}) {
   const authCommands: Command[] = [
     {
       groupId: 'auth',

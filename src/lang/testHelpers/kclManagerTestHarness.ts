@@ -2,16 +2,16 @@ import { type Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import type { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { isArray } from '@src/lib/utils'
-import { loadWasm } from '@src/unitTestUtils'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 
-const wasmPromise = loadWasm()
+const testWasmRegistryItem = createTestWasmRegistryItem()
 
 export function createKclManagerTestHarness(initialCode = ''): {
   app: App
   kclManager: KclManager
 } {
   const app = App.fromProvided({
-    wasmPromise,
+    registryOverrides: [testWasmRegistryItem],
   })
   const { kclManager } = app.singletons
 

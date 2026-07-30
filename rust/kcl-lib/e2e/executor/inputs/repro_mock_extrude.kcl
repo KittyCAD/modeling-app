@@ -1,0 +1,98 @@
+@settings(kclVersion = 2.0)
+
+// Demonstrates the bug at https://github.com/KittyCAD/modeling-app/issues/12498
+
+// punch holes
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 250mm], end = [var 150mm, var 250mm])
+  line2 = line(start = [var 150mm, var 250mm], end = [var 150mm, var -250mm])
+  line3 = line(start = [var 150mm, var -250mm], end = [var 0mm, var -250mm])
+  line4 = line(start = [var 0mm, var -250mm], end = [var 0mm, var 250mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  verticalDistance([line4.start, line4.end]) == 500
+  horizontalDistance([line3.end, line3.start]) == 150
+  vertical([line4.end, ORIGIN])
+  line5 = line(start = [var 0mm, var 0mm], end = [var 150mm, var 0mm], construction = true)
+  coincident([line5.start, ORIGIN])
+  coincident([line5.end, line2])
+  midpoint(line2, point = line5.end)
+  horizontal(line5)
+  line6 = line(start = [var 0mm, var -200mm], end = [var 150mm, var -200mm], construction = true)
+  vertical([line6.start, ORIGIN])
+  coincident([line6.end, line2])
+  line7 = line(start = [var 0mm, var 200mm], end = [var 150mm, var 200mm], construction = true)
+  vertical([line7.start, ORIGIN])
+  coincident([line7.end, line2])
+  horizontal(line6)
+  horizontal(line7)
+  verticalDistance([line7.end, line2.start]) == 50
+  verticalDistance([line3.start, line6.end]) == 50
+  circle1 = circle(start = [var 34.84mm, var -226.8mm], center = [var 25mm, var -225mm])
+  circle2 = circle(start = [var 132.97mm, var -231.04mm], center = [var 125mm, var -225mm])
+  circle3 = circle(start = [var 34.95mm, var 223.97mm], center = [var 25mm, var 225mm])
+  circle4 = circle(start = [var 134.84mm, var 223.23mm], center = [var 125mm, var 225mm])
+  equalRadius([circle3, circle4, circle1, circle2])
+  diameter(circle3) == 20
+  line8 = line(start = [var 25mm, var 225mm], end = [var 125mm, var 225mm], construction = true)
+  coincident([line8.start, circle3.center])
+  coincident([line8.end, circle4.center])
+  line9 = line(start = [var 25mm, var -225mm], end = [var 125mm, var -225mm], construction = true)
+  coincident([line9.start, circle1.center])
+  coincident([line9.end, circle2.center])
+  horizontal(line9)
+  horizontal(line8)
+  verticalDistance([line4.start, line9.start]) == 25
+  verticalDistance([line8.start, line4.end]) == 25
+  horizontalDistance([line4.end, line8.start]) == 25
+  horizontalDistance([line8.end, line2.start]) == 25
+  horizontalDistance([line6.start, line9.start]) == 25
+  horizontalDistance([line9.end, line6.end]) == 25
+}
+sweep001 = sweep(
+  sketch001.line4,
+  path = sketch001.line1,
+  bodyType = SURFACE,
+  version = 2,
+  translateProfileToPath = false,
+  orientProfilePerpendicular = false,
+)
+// surface001 = flipSurface(sweep001)
+extrude001 = extrude(
+  [
+    sketch001.circle1,
+    sketch001.circle2,
+    sketch001.circle3,
+    sketch001.circle4
+  ],
+  length = 5,
+  symmetric = true,
+  bodyType = SURFACE,
+)
+split001 = split(sweep001, tools = extrude001)
+hide([
+  split001[1],
+  split001[2],
+  split001[3],
+  split001[4]
+])
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var 182.38mm, var -106.07mm], end = [var 138.06mm, var -106.07mm])
+  line5 = line(start = [var 60.29mm, var 164.7mm], end = [var 182.38mm, var 164.7mm])
+  horizontal(line1)
+  horizontal(line5)
+  line6 = line(start = [var 182.38mm, var -106.07mm], end = [var 182.38mm, var 164.7mm])
+  coincident([line6.start, line1.start])
+  coincident([line6.end, line5.end])
+  vertical(line6)
+  line2 = line(start = [var 138.06mm, var -106.07mm], end = [var 60.29mm, var 164.7mm])
+  coincident([line2.start, line1.end])
+  coincident([line2.end, line5.start])
+}

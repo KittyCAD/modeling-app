@@ -18,7 +18,16 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['@kittycad/lib', 'react', 'react-dom', 'react/jsx-runtime'],
+      external: [
+        '@kittycad/lib',
+        '@tiptap/extension-link',
+        '@tiptap/markdown',
+        '@tiptap/react',
+        '@tiptap/starter-kit',
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+      ],
     },
   },
 })

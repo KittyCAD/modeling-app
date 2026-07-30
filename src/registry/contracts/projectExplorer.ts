@@ -1,5 +1,6 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type { ReactNode } from 'react'
+import type { Project } from '@src/lib/project'
+import type { ComponentType, ReactNode } from 'react'
 
 export interface ProjectExplorerRowContextMenuRow {
   path: string
@@ -26,19 +27,53 @@ export interface ProjectExplorerRowContextMenuItem {
 
 export interface ProjectExplorerProjectMenuItemContext {
   projectPath: string
+  project: Project
 }
 
-export interface ProjectExplorerProjectMenuItem {
+/**
+ * Render props for project menu contributions that need hooks, local state, or
+ * dialogs instead of a simple label and onSelect callback.
+ */
+export interface ProjectExplorerProjectMenuItemComponentProps {
+  context: ProjectExplorerProjectMenuItemContext
+  /** The base menu item classes from ProjectSidebarMenu. */
+  className: string
+  /** Close the menu popover before opening long-lived dialogs or async flows. */
+  close: () => void
+}
+
+type ProjectExplorerProjectMenuItemBase = {
   id: string
   order?: number
-  label: ReactNode
-  dataTestId?: string
   disabled?:
     | boolean
     | ((context: ProjectExplorerProjectMenuItemContext) => boolean)
   isVisible?: (context: ProjectExplorerProjectMenuItemContext) => boolean
-  onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
 }
+
+type ProjectExplorerProjectMenuItemSlotProps = {
+  label:
+    | ReactNode
+    | ((context: ProjectExplorerProjectMenuItemContext) => ReactNode)
+  dataTestId?:
+    | string
+    | ((context: ProjectExplorerProjectMenuItemContext) => string | undefined)
+  className?:
+    | string
+    | ((context: ProjectExplorerProjectMenuItemContext) => string | undefined)
+}
+
+export type ProjectExplorerProjectMenuItem =
+  /** Simple stateless menu item rendered by ProjectSidebarMenu. */
+  | (ProjectExplorerProjectMenuItemBase &
+      ProjectExplorerProjectMenuItemSlotProps & {
+        onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
+        Component?: undefined
+      })
+  /** Stateful menu item rendered by the contributing extension or plugin. */
+  | (ProjectExplorerProjectMenuItemBase & {
+      Component: ComponentType<ProjectExplorerProjectMenuItemComponentProps>
+    })
 
 const byOrder = (
   a: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem,

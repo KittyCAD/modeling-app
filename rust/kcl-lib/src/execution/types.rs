@@ -21,6 +21,7 @@ use crate::execution::Point3d;
 use crate::execution::SKETCH_OBJECT_META;
 use crate::execution::SKETCH_OBJECT_META_SKETCH;
 use crate::execution::annotations;
+use crate::execution::kcl_value::EnumTypeId;
 use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
@@ -38,11 +39,19 @@ pub enum RuntimeType {
     Union(Vec<RuntimeType>),
     Tuple(Vec<RuntimeType>),
     Object(Vec<(String, RuntimeType)>, bool),
+    /// A user-declared nominal enum, identified by its declaration rather than
+    /// its structure. Kept out of `PrimitiveType`, which is the closed set of
+    /// built-in types that `std_ty` can name.
+    Enum(EnumTypeId),
 }
 
 impl RuntimeType {
     pub fn any() -> Self {
         RuntimeType::Primitive(PrimitiveType::Any)
+    }
+
+    pub fn never() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Never)
     }
 
     pub fn any_array() -> Self {
@@ -259,6 +268,7 @@ impl RuntimeType {
     ) -> Result<Self, CompilationIssue> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
+            AstPrimitiveType::Never => RuntimeType::never(),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
@@ -294,6 +304,7 @@ impl RuntimeType {
                 let result = match value {
                     TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
                     TypeDef::Alias(ty) => ty,
+                    TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
                 };
                 if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
@@ -325,6 +336,7 @@ impl RuntimeType {
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Object(..) => format!("an object with fields {self}"),
+            RuntimeType::Enum(id) => id.declared_name().to_owned(),
         }
     }
 
@@ -333,17 +345,23 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (Primitive(PrimitiveType::Never), _) => true,
             (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
 
-            (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
+            (Union(ts1), t2) => ts1.iter().all(|t| t.subtype(t2)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
 
             (Object(t1, _), Object(t2, _)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
+
+            // Enums are nominal, so an enum is a subtype of itself and nothing
+            // else. This arm is load-bearing: the catch-all below would answer
+            // `false` for two identical enums and quietly break reflexivity.
+            (Enum(id1), Enum(id2)) => id1 == id2,
 
             // Equivalence between singleton types and single-item arrays/tuples of the same type (plus transitivity with the array subtyping).
             (t1, RuntimeType::Array(t2, l)) if t1.subtype(t2) && ArrayLen::Known(1).subtype(*l) => true,
@@ -395,6 +413,7 @@ impl RuntimeType {
                 .join(" or "),
             RuntimeType::Tuple(_) => "tuples".to_owned(),
             RuntimeType::Object(..) => format!("objects with fields {self}"),
+            RuntimeType::Enum(id) => format!("`{}` values", id.declared_name()),
         }
     }
 }
@@ -427,6 +446,7 @@ impl std::fmt::Display for RuntimeType {
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
+            RuntimeType::Enum(id) => write!(f, "{}", id.declared_name()),
         }
     }
 }
@@ -474,6 +494,7 @@ impl ArrayLen {
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Any,
+    Never,
     None,
     Number(NumericType),
     String,
@@ -501,6 +522,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "any values".to_owned(),
+            PrimitiveType::Never => "values of type `never`".to_owned(),
             PrimitiveType::None => "none values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
@@ -528,6 +550,7 @@ impl PrimitiveType {
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (PrimitiveType::Never, _) => true,
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
             (PrimitiveType::TaggedEdge, PrimitiveType::TaggedFace)
@@ -541,6 +564,7 @@ impl std::fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::Never => write!(f, "never"),
             PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
@@ -1328,6 +1352,18 @@ impl KclValue {
             RuntimeType::Object(tys, constrainable) => {
                 self.coerce_to_object_type(tys, *constrainable, convert_units, exec_state)
             }
+            RuntimeType::Enum(id) => self.coerce_to_enum_type(id),
+        }
+    }
+
+    /// Enums are nominal, so the only value that coerces to an enum type is a
+    /// value of that same enum, and it is returned unchanged. Projection out of
+    /// an enum (`Color::Red: string`) is explicit ascription, not coercion, and
+    /// is handled on its own path.
+    fn coerce_to_enum_type(&self, id: &EnumTypeId) -> Result<KclValue, CoercionError> {
+        match self {
+            KclValue::Enum { value } if value.enum_id() == id => Ok(self.clone()),
+            _ => Err(self.into()),
         }
     }
 
@@ -1339,6 +1375,7 @@ impl KclValue {
     ) -> Result<KclValue, CoercionError> {
         match ty {
             PrimitiveType::Any => Ok(self.clone()),
+            PrimitiveType::Never => Err(self.into()),
             PrimitiveType::None => match self {
                 KclValue::KclNone { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1771,6 +1808,7 @@ impl KclValue {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
+            KclValue::Enum { value } => Some(RuntimeType::Enum(value.enum_id().clone())),
             KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
             KclValue::SketchConstraint { .. } => Some(RuntimeType::Primitive(PrimitiveType::Constraint)),
             KclValue::Object {
@@ -1827,7 +1865,10 @@ impl KclValue {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::ModuleId;
     use crate::execution::ExecTestResults;
+    use crate::execution::kcl_value::EnumTypeDef;
+    use crate::execution::kcl_value::EnumValue;
     use crate::execution::parse_execute;
 
     async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
@@ -2342,6 +2383,224 @@ mod test {
         ]);
         count.coerce(&tyb, true, &mut exec_state).unwrap_err();
         count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
+    }
+
+    #[test]
+    fn union_subtyping_uses_member_subtyping() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let tagged_edge_or_string = RuntimeType::Union(vec![tagged_edge.clone(), string.clone()]);
+        let edge_or_string = RuntimeType::Union(vec![edge.clone(), string.clone()]);
+
+        // TaggedEdge | string <: Edge | string
+        assert!(tagged_edge_or_string.subtype(&edge_or_string));
+        // Edge | string is not a subtype of TaggedEdge | string.
+        assert!(!edge_or_string.subtype(&tagged_edge_or_string));
+
+        // TaggedEdge | Edge <: Edge
+        assert!(RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]).subtype(&edge));
+        // TaggedEdge | bool is not a subtype of Edge.
+        assert!(!RuntimeType::Union(vec![tagged_edge, boolean]).subtype(&edge));
+
+        // The empty union is a subtype of string.
+        assert!(RuntimeType::Union(vec![]).subtype(&string));
+    }
+
+    #[test]
+    fn nested_union_subtyping_is_associative_and_recursive() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let left_associative = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![string.clone(), boolean.clone()]),
+            edge.clone(),
+        ]);
+        let right_associative =
+            RuntimeType::Union(vec![string, RuntimeType::Union(vec![boolean.clone(), edge.clone()])]);
+
+        // (string | bool) | Edge <: string | (bool | Edge)
+        assert!(left_associative.subtype(&right_associative));
+        // string | (bool | Edge) <: (string | bool) | Edge
+        assert!(right_associative.subtype(&left_associative));
+
+        let nested_edges = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]),
+            tagged_edge.clone(),
+        ]);
+        // (TaggedEdge | Edge) | TaggedEdge <: Edge
+        assert!(nested_edges.subtype(&edge));
+
+        let nested_with_bool = RuntimeType::Union(vec![RuntimeType::Union(vec![tagged_edge, boolean]), edge.clone()]);
+        // (TaggedEdge | bool) | Edge is not a subtype of Edge.
+        assert!(!nested_with_bool.subtype(&edge));
+    }
+
+    fn enum_ty(module_id: u32, name: &str) -> RuntimeType {
+        RuntimeType::Enum(EnumTypeId::new(ModuleId::from_usize(module_id as usize), name))
+    }
+
+    #[test]
+    fn enum_subtyping_is_nominal() {
+        let color = enum_ty(0, "Color");
+        let shape = enum_ty(0, "Shape");
+
+        // An enum is a subtype of itself. Without a dedicated arm the catch-all
+        // in `subtype` would answer false here and break reflexivity.
+        assert!(color.subtype(&color));
+        // Distinct declarations are unrelated, in both directions.
+        assert!(!color.subtype(&shape));
+        assert!(!shape.subtype(&color));
+    }
+
+    #[test]
+    fn enum_identity_is_module_plus_declared_name() {
+        // Same declared name in two modules is two different types.
+        assert!(!enum_ty(0, "Color").subtype(&enum_ty(1, "Color")));
+        // Same declaration reached from anywhere is one type; an import alias
+        // renames the binding, never the identity recorded here.
+        assert!(enum_ty(1, "Color").subtype(&enum_ty(1, "Color")));
+    }
+
+    #[test]
+    fn enum_participates_in_the_general_type_rules() {
+        let color = enum_ty(0, "Color");
+
+        // `any` and `never` keep their universal behaviour.
+        assert!(color.subtype(&RuntimeType::any()));
+        assert!(RuntimeType::never().subtype(&color));
+        assert!(!color.subtype(&RuntimeType::never()));
+
+        // Unions and the singleton/array equivalences reach the enum arm by
+        // recursion, so they work without enum-specific code.
+        assert!(color.subtype(&RuntimeType::Union(vec![color.clone(), RuntimeType::string()])));
+        assert!(!color.subtype(&RuntimeType::Union(vec![RuntimeType::string(), enum_ty(0, "Shape")])));
+        assert!(color.subtype(&RuntimeType::Array(Box::new(color.clone()), ArrayLen::Known(1))));
+        assert!(RuntimeType::Array(Box::new(color.clone()), ArrayLen::Known(1)).subtype(&color));
+
+        // An enum is unrelated to the primitives it could later project to.
+        assert!(!color.subtype(&RuntimeType::string()));
+        assert!(!RuntimeType::string().subtype(&color));
+    }
+
+    #[test]
+    fn enum_values_report_their_own_type() {
+        let red = KclValue::Enum {
+            value: Box::new(EnumValue::new(
+                EnumTypeId::new(ModuleId::default(), "Color"),
+                "Red",
+                Vec::new(),
+            )),
+        };
+
+        assert_eq!(red.principal_type(), Some(enum_ty(0, "Color")));
+        assert!(red.has_type(&enum_ty(0, "Color")));
+        // Nominal identity, not the variant name, decides the type.
+        assert!(!red.has_type(&enum_ty(0, "Shape")));
+        assert!(!red.has_type(&RuntimeType::string()));
+    }
+
+    #[test]
+    fn enum_types_display_by_declared_name() {
+        let color = enum_ty(0, "Color");
+
+        assert_eq!(color.to_string(), "Color");
+        assert_eq!(color.human_friendly_type(), "Color");
+        assert_eq!(
+            RuntimeType::Array(Box::new(color), ArrayLen::Minimum(1)).human_friendly_type(),
+            "one or more `Color` values"
+        );
+    }
+
+    /// The seam Gate 4 will build on: a registered enum declaration resolves to
+    /// its nominal runtime type when named in a type position.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn from_alias_resolves_a_declared_enum_to_its_nominal_type() {
+        // Gate 4 registers enums during execution; until then, bind one by hand
+        // into a real environment to exercise the resolution path.
+        let mut exec_state = parse_execute("x = 1").await.unwrap().exec_state;
+        let id = EnumTypeId::new(ModuleId::default(), "Color");
+        let source_range = SourceRange::default();
+
+        // Execution has finished, so there is no current environment to bind into.
+        exec_state.mut_stack().push_new_root_env(true).unwrap();
+        exec_state
+            .mut_stack()
+            .add(
+                format!("{}Color", memory::TYPE_PREFIX),
+                KclValue::Type {
+                    value: TypeDef::Enum(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()])),
+                    experimental: false,
+                    meta: vec![],
+                },
+                source_range,
+            )
+            .unwrap();
+
+        assert_eq!(
+            RuntimeType::from_alias("Color", &mut exec_state, source_range, false).unwrap(),
+            RuntimeType::Enum(id)
+        );
+        // An unregistered name is still an unknown type, not a silent enum.
+        RuntimeType::from_alias("Shape", &mut exec_state, source_range, false).unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_coercion_requires_the_same_declaration() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let red = KclValue::Enum {
+            value: Box::new(EnumValue::new(
+                EnumTypeId::new(ModuleId::default(), "Color"),
+                "Red",
+                Vec::new(),
+            )),
+        };
+
+        // Coercing to its own type is identity-preserving.
+        assert_eq!(red.coerce(&enum_ty(0, "Color"), true, &mut exec_state).unwrap(), red);
+        // Everything else is rejected, including projection to string, which is
+        // explicit ascription rather than coercion.
+        red.coerce(&enum_ty(0, "Shape"), true, &mut exec_state).unwrap_err();
+        red.coerce(&enum_ty(1, "Color"), true, &mut exec_state).unwrap_err();
+        red.coerce(&RuntimeType::string(), true, &mut exec_state).unwrap_err();
+        // A non-enum value never satisfies an enum type.
+        let string = KclValue::String {
+            value: "Red".to_owned(),
+            meta: Vec::new(),
+        };
+        string.coerce(&enum_ty(0, "Color"), true, &mut exec_state).unwrap_err();
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_is_bottom_and_uninhabited() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let never = RuntimeType::never();
+        let string = RuntimeType::string();
+
+        for ty in [
+            RuntimeType::any(),
+            string.clone(),
+            RuntimeType::Array(Box::new(string.clone()), ArrayLen::None),
+            RuntimeType::Tuple(vec![string.clone()]),
+            RuntimeType::Object(vec![("value".to_owned(), string.clone())], false),
+            RuntimeType::Union(vec![string.clone(), RuntimeType::bool()]),
+        ] {
+            assert!(never.subtype(&ty), "`never` should be a subtype of {ty}");
+        }
+
+        assert!(!string.subtype(&never));
+        assert!(RuntimeType::Union(vec![never.clone(), string.clone()]).subtype(&string));
+
+        for value in values(&mut exec_state) {
+            value.coerce(&never, true, &mut exec_state).unwrap_err();
+        }
         ctx.close().await;
     }
 

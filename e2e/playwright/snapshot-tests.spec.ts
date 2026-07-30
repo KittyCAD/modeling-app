@@ -1,7 +1,6 @@
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   PLAYWRIGHT_LAYOUT_SETTINGS,
-  lowerRightMasks,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -14,22 +13,24 @@ function screenshotName(step: number, name: string, mode: Themes) {
   return `${String(step).padStart(2, '0')}-${name}-${mode}.png`
 }
 
+const screenshotMasks = (page: Page) => [
+  page.getByTestId(/network-toggle/),
+  page.getByTestId('user-sidebar-toggle').locator('.avatar'),
+]
+
 const screenshotOptions = (page: Page) => ({
   maxDiffPixelRatio: 0.001,
-  mask: lowerRightMasks(page),
+  mask: screenshotMasks(page),
 })
 
-test.beforeEach(async ({ page }) => {
-  // Make the user avatar image always 404
-  // so we see the fallback menu icon for all snapshot tests
-  await page.route('https://lh3.googleusercontent.com/**', async (route) => {
-    await route.fulfill({
-      status: 404,
-      contentType: 'text/plain',
-      body: 'Not Found!',
-    })
-  })
-})
+async function waitForThemeApplied(page: Page, mode: Themes) {
+  const expectDark = mode === Themes.Dark
+  await expect
+    .poll(async () =>
+      page.locator('body').evaluate((el) => el.classList.contains('dark'))
+    )
+    .toBe(expectDark)
+}
 
 test(
   'Create a sketch in a new project: light theme',
@@ -51,7 +52,6 @@ type SnapshotTestContext = Pick<
 function runTestForTheme(mode: Themes) {
   return async ({
     page,
-    cmdBar,
     scene,
     toolbar,
     editor,
@@ -90,12 +90,12 @@ function runTestForTheme(mode: Themes) {
       format: 'ratio',
     })
 
+    await page.setViewportSize(SCREENSHOT_SIZE)
+    await scene.settled()
+    await waitForThemeApplied(page, mode)
     let step = 1
 
     await test.step('Create a project', async () => {
-      await page.setViewportSize(SCREENSHOT_SIZE)
-      await scene.settled()
-
       await toolbar.openFeatureTreePane()
       await editor.openPane()
 

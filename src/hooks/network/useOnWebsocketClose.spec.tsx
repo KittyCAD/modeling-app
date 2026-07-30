@@ -1,5 +1,5 @@
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -53,10 +53,11 @@ describe('useOnWebsocketClose', () => {
         })
       )
       engineCommandManager.dispatchEvent(
-        new Event(EngineCommandManagerEvents.WebsocketClosed)
+        new Event(EngineConnectionManagerEvents.WebsocketClosed)
       )
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      expect(callback).toHaveBeenCalledWith(undefined)
     })
     test('should call infinite detection loop callback on close event', async () => {
       const callback = vi.fn(() => 1)
@@ -71,7 +72,7 @@ describe('useOnWebsocketClose', () => {
         })
       )
       const infiniteEvent = new CustomEvent(
-        EngineCommandManagerEvents.WebsocketClosed,
+        EngineConnectionManagerEvents.WebsocketClosed,
         {
           detail: {
             code: '1006',
@@ -82,6 +83,7 @@ describe('useOnWebsocketClose', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
+      expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
     })
   })
 })

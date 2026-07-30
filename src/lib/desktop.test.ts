@@ -1,5 +1,8 @@
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import { createNewProjectDirectory } from '@src/lib/desktop'
+import {
+  createNewProjectDirectory,
+  overwriteProjectTomlWithNewSettings,
+} from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -58,6 +61,69 @@ describe('createNewProjectDirectory', () => {
     expect(project.title).toBe('Human Project')
     expect(projectToml).toContain('default_file = "main.kcl"')
     expect(projectToml).toContain('title = "Human Project"')
+  })
+
+  it('can create project directories with separate project titles', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    const project = await createNewProjectDirectory(
+      'human-project',
+      wasmInstance,
+      undefined,
+      {
+        settings: {
+          project: {
+            directory: projectDirectoryPath,
+          },
+        },
+      },
+      undefined,
+      undefined,
+      'Human Project'
+    )
+
+    const projectToml = await fsZds.readFile(
+      fsZds.join(project.path, PROJECT_SETTINGS_FILE_NAME),
+      { encoding: 'utf-8' }
+    )
+
+    expect(project.name).toBe('human-project')
+    expect(project.title).toBe('Human Project')
+    expect(projectToml).toContain('title = "Human Project"')
+  })
+
+  it('uses the default directory library when creating new projects from settings', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const legacyProjectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+    createdProjectDirectoryPaths.push(legacyProjectDirectoryPath)
+
+    const project = await createNewProjectDirectory(
+      'library-project',
+      wasmInstance,
+      undefined,
+      {
+        settings: {
+          app: {
+            libraries: [
+              {
+                title: 'Projects',
+                path: projectDirectoryPath,
+                type: 'directory',
+              },
+            ],
+          },
+          project: {
+            directory: legacyProjectDirectoryPath,
+          },
+        },
+      }
+    )
+
+    expect(project.path).toBe(
+      fsZds.join(projectDirectoryPath, 'library-project')
+    )
   })
 
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {
@@ -152,5 +218,36 @@ describe('createNewProjectDirectory', () => {
     } finally {
       fsZds.readFile = originalReadFile
     }
+  })
+
+  it('preserves project metadata when writing project settings', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectPath = fsZds.join(projectDirectoryPath, 'test-1')
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+      new TextEncoder().encode(
+        'title = "Test-1"\ndefault_file = "main.kcl"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.meta]\nid = "old-settings-id"\n'
+      )
+    )
+
+    await overwriteProjectTomlWithNewSettings(
+      projectPath,
+      '[settings.meta]\nid = "new-settings-id"\n'
+    )
+
+    const projectToml = await fsZds.readFile(
+      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+      { encoding: 'utf-8' }
+    )
+
+    expect(projectToml).toContain('title = "Test-1"')
+    expect(projectToml).toContain('default_file = "main.kcl"')
+    expect(projectToml).toContain('[cloud."dev.zoo.dev"]')
+    expect(projectToml).toContain('project_id = "project-123"')
+    expect(projectToml).toContain('id = "new-settings-id"')
+    expect(projectToml).not.toContain('old-settings-id')
   })
 })

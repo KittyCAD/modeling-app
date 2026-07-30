@@ -1,12 +1,15 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export function useOnVitestEngineOnline({
   callback,
   engineCommandManager,
-}: { callback: () => void; engineCommandManager: ConnectionManager }) {
+}: {
+  callback: () => void
+  engineCommandManager: ConnectionManager
+}) {
   useEffect(() => {
     const onlineRequest = (event: CustomEvent) => {
       EngineDebugger.addLog({
@@ -17,13 +20,13 @@ export function useOnVitestEngineOnline({
     }
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.OnlineRequest,
+      EngineConnectionManagerEvents.OnlineRequest,
       onlineRequest as EventListener
     )
 
     return () => {
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.OnlineRequest,
+        EngineConnectionManagerEvents.OnlineRequest,
         onlineRequest as EventListener
       )
     }

@@ -32,7 +32,7 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
       return commandBarActor
     }
 
-    const machineManager = ctx.services.get(machineManagerService)
+    const machineManager = ctx.services.get(machineManagerService).manager
     const wasmPromise =
       ctx.valueSpecs.get(wasmPromiseValueSpec) ??
       Promise.reject(new Error('Missing WASM promise registry value.'))

@@ -33,8 +33,8 @@ jobs:
     name: kcl-python-bindings (linux-x86_64)
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
       - name: Build wheels
@@ -66,8 +66,8 @@ jobs:
           - x64
       fail-fast: false
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
           architecture: ${{ matrix.target }}
@@ -98,8 +98,8 @@ jobs:
           - aarch64
       fail-fast: false
     steps:
-      - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: 3.x
       - name: Build wheels
@@ -118,7 +118,7 @@ jobs:
     name: kcl-python-bindings (test)
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
       - name: Track setup
         run: .github/ci-cd-scripts/track-step.sh
         env:
@@ -129,8 +129,8 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
-      - uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: astral-sh/setup-uv@v8.3.2
+      - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
@@ -161,9 +161,9 @@ jobs:
     name: kcl-python-bindings (sdist)
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
       - name: Create venv
         run: |
           uv venv .venv
@@ -189,12 +189,12 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [linux-x86_64, windows, macos, sdist]
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
       - uses: actions/download-artifact@v8
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings

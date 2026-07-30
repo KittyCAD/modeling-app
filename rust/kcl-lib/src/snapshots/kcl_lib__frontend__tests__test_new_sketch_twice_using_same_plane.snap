@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch1 = sketch(on = XY) {
+}
+sketch001 = sketch(on = XY) {
+}
+

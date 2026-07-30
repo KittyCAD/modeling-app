@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_old(\"{\\\"\\u{78E}\\u{78E}\\0\\0\\0\\\"\\\".\")"
+---
+source: "{\"ގގ\0\0\0\"\"."
+lex:   Err [lexical] "unexpected EOF while parsing" @ [SourceRange([10, 10, 0])]
+parse: Err [lexical] "unexpected EOF while parsing" @ [SourceRange([10, 10, 0])]

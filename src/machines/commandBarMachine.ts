@@ -326,22 +326,27 @@ export const commandBarMachine = setup({
         if (
           event.type !== 'Select command' &&
           event.type !== 'Find and select command'
-        )
+        ) {
           return {}
+        }
         const command =
           'data' in event && 'command' in event.data
             ? event.data.command
             : context.selectedCommand
-        if (!command?.args) return {}
-        const args: { [x: string]: unknown } = {}
+        const args: { [x: string]: unknown } = {
+          ...(event.data.argDefaultValues ?? {}),
+        }
+        if (!command?.args) {
+          return args
+        }
         for (const [argName, arg] of Object.entries(command.args)) {
+          if (argName in args) {
+            continue
+          }
           args[argName] =
-            event.data.argDefaultValues &&
-            argName in event.data.argDefaultValues
-              ? event.data.argDefaultValues[argName]
-              : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
-                ? arg.defaultValue
-                : undefined
+            (arg.skip || arg.prepopulate) && 'defaultValue' in arg
+              ? arg.defaultValue
+              : undefined
         }
         return args
       },

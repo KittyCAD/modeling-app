@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 239
 description: Result of unparsing consumed_solid_original_issue.kcl
 ---
 numFlutes = 6

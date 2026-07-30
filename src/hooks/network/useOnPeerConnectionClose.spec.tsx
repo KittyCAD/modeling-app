@@ -1,5 +1,5 @@
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -50,12 +50,12 @@ describe('useOnPeerConnectionClose', () => {
       unmount()
       expect(spyAdd).toHaveBeenNthCalledWith(
         1,
-        EngineCommandManagerEvents.peerConnectionClosed,
+        EngineConnectionManagerEvents.peerConnectionClosed,
         expect.any(Function)
       )
       expect(spyRemove).toHaveBeenNthCalledWith(
         1,
-        EngineCommandManagerEvents.peerConnectionClosed,
+        EngineConnectionManagerEvents.peerConnectionClosed,
         expect.any(Function)
       )
     })
@@ -74,12 +74,12 @@ describe('useOnPeerConnectionClose', () => {
       unmount()
       expect(spyAdd).toHaveBeenNthCalledWith(
         2,
-        EngineCommandManagerEvents.peerConnectionDisconnected,
+        EngineConnectionManagerEvents.peerConnectionDisconnected,
         expect.any(Function)
       )
       expect(spyRemove).toHaveBeenNthCalledWith(
         2,
-        EngineCommandManagerEvents.peerConnectionDisconnected,
+        EngineConnectionManagerEvents.peerConnectionDisconnected,
         expect.any(Function)
       )
     })
@@ -98,12 +98,12 @@ describe('useOnPeerConnectionClose', () => {
       unmount()
       expect(spyAdd).toHaveBeenNthCalledWith(
         3,
-        EngineCommandManagerEvents.peerConnectionFailed,
+        EngineConnectionManagerEvents.peerConnectionFailed,
         expect.any(Function)
       )
       expect(spyRemove).toHaveBeenNthCalledWith(
         3,
-        EngineCommandManagerEvents.peerConnectionFailed,
+        EngineConnectionManagerEvents.peerConnectionFailed,
         expect.any(Function)
       )
     })
@@ -122,12 +122,12 @@ describe('useOnPeerConnectionClose', () => {
       unmount()
       expect(spyAdd).toHaveBeenNthCalledWith(
         4,
-        EngineCommandManagerEvents.dataChannelClose,
+        EngineConnectionManagerEvents.dataChannelClose,
         expect.any(Function)
       )
       expect(spyRemove).toHaveBeenNthCalledWith(
         4,
-        EngineCommandManagerEvents.dataChannelClose,
+        EngineConnectionManagerEvents.dataChannelClose,
         expect.any(Function)
       )
     })
@@ -143,7 +143,7 @@ describe('useOnPeerConnectionClose', () => {
           })
         )
         engineCommandManager.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.peerConnectionClosed)
+          new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed)
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
@@ -159,10 +159,15 @@ describe('useOnPeerConnectionClose', () => {
           })
         )
         engineCommandManager.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.peerConnectionDisconnected)
+          new CustomEvent(
+            EngineConnectionManagerEvents.peerConnectionDisconnected
+          )
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
+        expect(callback).toHaveBeenCalledWith(
+          EngineConnectionManagerEvents.peerConnectionDisconnected
+        )
       })
       test('dispatched peerConnectionFailed', async () => {
         const callback = vi.fn(() => 1)
@@ -175,7 +180,7 @@ describe('useOnPeerConnectionClose', () => {
           })
         )
         engineCommandManager.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.peerConnectionFailed)
+          new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed)
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
@@ -191,7 +196,7 @@ describe('useOnPeerConnectionClose', () => {
           })
         )
         engineCommandManager.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.dataChannelClose)
+          new CustomEvent(EngineConnectionManagerEvents.dataChannelClose)
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)

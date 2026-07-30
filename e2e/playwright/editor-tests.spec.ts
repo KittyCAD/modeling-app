@@ -959,8 +959,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1028,8 +1026,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-completionLabel')).toBeVisible()
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
-
-      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')

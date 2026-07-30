@@ -1,0 +1,39 @@
+@settings(
+  defaultLengthUnit = mm,
+  kclVersion = 2.0,
+  experimentalFeatures = allow,
+)
+
+startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+baseSolid = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+
+cutSketch = sketch(on = YZ) {
+  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.4])
+  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+cutSolid = extrude(cutRegion, length = 5)
+cutBaseSolid = subtract(baseSolid, tools = cutSolid)
+
+mirror3d(
+  cutBaseSolid,
+  across = {
+    sideFaces = [baseRegion.tags.hi, baseRegion.tags.yoyo],
+    endFaces = [startCap]
+  },
+)

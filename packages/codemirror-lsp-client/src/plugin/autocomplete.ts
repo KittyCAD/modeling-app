@@ -14,9 +14,9 @@ import {
 import type { CompletionContext } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
 import type { Extension } from '@codemirror/state'
-import { Prec } from '@codemirror/state'
-import type { EditorView, KeyBinding, ViewPlugin } from '@codemirror/view'
-import { keymap } from '@codemirror/view'
+import { Prec, Transaction } from '@codemirror/state'
+import type { KeyBinding, ViewPlugin } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import {
   CompletionItemKind,
   CompletionTriggerKind,
@@ -62,6 +62,31 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
 
 const lspAutocompleteKeymapExt = Prec.highest(keymap.of(lspAutocompleteKeymap))
 
+// When autocomplete has been active, spaces and equals signs can be inserted at
+// the wrong DOM position because CodeMirror selection state and the browser
+// selection can get out of sync. Route those inputs through CodeMirror state so
+// they are inserted at the editor's cursor.
+const lspAutocompleteBoundaryInputExt = Prec.highest(
+  EditorView.domEventHandlers({
+    beforeinput(event, view) {
+      const shouldRoute =
+        event.inputType === 'insertText' &&
+        (event.data === ' ' || event.data === '=')
+
+      if (!shouldRoute) {
+        return false
+      }
+
+      const transactionSpec = view.state.replaceSelection(event.data)
+      view.dispatch({
+        ...transactionSpec,
+        annotations: Transaction.userEvent.of('input.type'),
+      })
+      return true
+    },
+  })
+)
+
 export function moveCompletionSelectionOrExit(forward: boolean) {
   const moveSelection = moveCompletionSelection(forward)
 
@@ -87,6 +112,7 @@ export default function lspAutocompleteExt(
 ): Extension {
   return [
     lspAutocompleteKeymapExt,
+    lspAutocompleteBoundaryInputExt,
     autocompletion({
       defaultKeymap: false,
       override: [

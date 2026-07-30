@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
+}
+

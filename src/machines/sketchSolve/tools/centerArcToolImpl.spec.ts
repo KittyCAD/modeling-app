@@ -70,6 +70,7 @@ function createSceneGraphDelta(
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
+      refactorMetadata: [],
     },
   }
 }

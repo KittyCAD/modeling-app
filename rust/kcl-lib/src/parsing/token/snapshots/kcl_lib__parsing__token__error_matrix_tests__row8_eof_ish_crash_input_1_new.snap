@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_new(\"{\\\"\\u{78E}\\u{78E}\\0\\0\\0\\\"\\\".\")"
+---
+source: "{\"ގގ\0\0\0\"\"."
+tokens: 3
+issues: 1
+final:  Err [lexical] "unterminated string literal" @ [SourceRange([10, 12, 0])]

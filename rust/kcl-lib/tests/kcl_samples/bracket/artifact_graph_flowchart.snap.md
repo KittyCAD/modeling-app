@@ -33,104 +33,104 @@ flowchart LR
       %% [ProgramBodyItem { index: 28 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path42 [Path]
-    42["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    42["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    43["Segment<br>[18532, 18596, 14]"]
+    43["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    44["Segment<br>[18532, 18596, 14]"]
+    44["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    45["Segment<br>[18532, 18596, 14]"]
+    45["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    46["Segment<br>[18532, 18596, 14]"]
+    46["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    47["Segment<br>[18532, 18596, 14]"]
+    47["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    48["Segment<br>[18532, 18596, 14]"]
+    48["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     49[Solid2d]
   end
   subgraph path58 [Path]
-    58["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    58["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    59["Segment<br>[18532, 18596, 14]"]
+    59["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    60["Segment<br>[18532, 18596, 14]"]
+    60["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    61["Segment<br>[18532, 18596, 14]"]
+    61["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    62["Segment<br>[18532, 18596, 14]"]
+    62["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    63["Segment<br>[18532, 18596, 14]"]
+    63["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    64["Segment<br>[18532, 18596, 14]"]
+    64["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     65[Solid2d]
   end
   subgraph path74 [Path]
-    74["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    74["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    75["Segment<br>[18532, 18596, 14]"]
+    75["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    76["Segment<br>[18532, 18596, 14]"]
+    76["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    77["Segment<br>[18532, 18596, 14]"]
+    77["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    78["Segment<br>[18532, 18596, 14]"]
+    78["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    79["Segment<br>[18532, 18596, 14]"]
+    79["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    80["Segment<br>[18532, 18596, 14]"]
+    80["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     81[Solid2d]
   end
   subgraph path90 [Path]
-    90["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    90["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    91["Segment<br>[18532, 18596, 14]"]
+    91["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    92["Segment<br>[18532, 18596, 14]"]
+    92["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    93["Segment<br>[18532, 18596, 14]"]
+    93["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    94["Segment<br>[18532, 18596, 14]"]
+    94["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    95["Segment<br>[18532, 18596, 14]"]
+    95["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    96["Segment<br>[18532, 18596, 14]"]
+    96["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     97[Solid2d]
   end
   subgraph path107 [Path]
-    107["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    107["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    108["Segment<br>[18532, 18596, 14]"]
+    108["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    109["Segment<br>[18532, 18596, 14]"]
+    109["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    110["Segment<br>[18532, 18596, 14]"]
+    110["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    111["Segment<br>[18532, 18596, 14]"]
+    111["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    112["Segment<br>[18532, 18596, 14]"]
+    112["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    113["Segment<br>[18532, 18596, 14]"]
+    113["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     114[Solid2d]
   end
   subgraph path123 [Path]
-    123["Path<br>[18532, 18596, 14]<br>Consumed: true"]
+    123["Path<br>[18532, 18596, 15]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    124["Segment<br>[18532, 18596, 14]"]
+    124["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    125["Segment<br>[18532, 18596, 14]"]
+    125["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    126["Segment<br>[18532, 18596, 14]"]
+    126["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    127["Segment<br>[18532, 18596, 14]"]
+    127["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    128["Segment<br>[18532, 18596, 14]"]
+    128["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    129["Segment<br>[18532, 18596, 14]"]
+    129["Segment<br>[18532, 18596, 15]"]
       %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     130[Solid2d]
   end
@@ -172,11 +172,11 @@ flowchart LR
     %% [ProgramBodyItem { index: 32 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   39["EdgeCut Fillet<br>[4699, 5168, 0]"]
     %% [ProgramBodyItem { index: 33 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  40["PlaneOfFace<br>[18532, 18596, 14]"]
+  40["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  41["Plane<br>[18532, 18596, 14]"]
+  41["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  50["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  50["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   51[Wall]
     %% face_code_ref=Missing NodePath
@@ -186,11 +186,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   54["SweepEdge Adjacent"]
   55["SweepEdge Adjacent"]
-  56["PlaneOfFace<br>[18532, 18596, 14]"]
+  56["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  57["Plane<br>[18532, 18596, 14]"]
+  57["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  66["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  66["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   67[Wall]
     %% face_code_ref=Missing NodePath
@@ -200,11 +200,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   70["SweepEdge Adjacent"]
   71["SweepEdge Adjacent"]
-  72["PlaneOfFace<br>[18532, 18596, 14]"]
+  72["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  73["Plane<br>[18532, 18596, 14]"]
+  73["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  82["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  82["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   83[Wall]
     %% face_code_ref=Missing NodePath
@@ -214,11 +214,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   86["SweepEdge Adjacent"]
   87["SweepEdge Adjacent"]
-  88["PlaneOfFace<br>[18532, 18596, 14]"]
+  88["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  89["Plane<br>[18532, 18596, 14]"]
+  89["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  98["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  98["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   99[Wall]
     %% face_code_ref=Missing NodePath
@@ -230,11 +230,11 @@ flowchart LR
   103["SweepEdge Adjacent"]
   104["CompositeSolid Subtract<br>[5263, 5529, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 34 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  105["PlaneOfFace<br>[18532, 18596, 14]"]
+  105["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  106["Plane<br>[18532, 18596, 14]"]
+  106["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  115["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  115["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   116[Wall]
     %% face_code_ref=Missing NodePath
@@ -244,11 +244,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   119["SweepEdge Adjacent"]
   120["SweepEdge Adjacent"]
-  121["PlaneOfFace<br>[18532, 18596, 14]"]
+  121["PlaneOfFace<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  122["Plane<br>[18532, 18596, 14]"]
+  122["Plane<br>[18532, 18596, 15]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-  131["Sweep RevolveAboutEdge<br>[18532, 18596, 14]<br>Consumed: true"]
+  131["Sweep RevolveAboutEdge<br>[18532, 18596, 15]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 0 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
   132[Wall]
     %% face_code_ref=Missing NodePath
@@ -296,17 +296,17 @@ flowchart LR
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 21 }, ExpressionStatementExpr]
   155["SketchBlockConstraint VerticalDistance<br>[3706, 3765, 0]"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 22 }, ExpressionStatementExpr]
-  156["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  156["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  157["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  157["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  158["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  158["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  159["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  159["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  160["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  160["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  161["StartSketchOnPlane<br>[12171, 12274, 14]"]
+  161["StartSketchOnPlane<br>[12171, 12274, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 9
@@ -333,30 +333,30 @@ flowchart LR
   9 <--x 15
   9 ---- 16
   9 --- 104
-  10 --- 17
+  10 --- 19
   10 x--> 23
-  10 --- 25
-  10 --- 26
-  11 --- 18
+  10 --- 29
+  10 --- 30
+  11 --- 22
   11 x--> 23
-  11 --- 27
-  11 --- 28
-  12 --- 22
+  11 --- 35
+  11 --- 36
+  12 --- 18
   12 x--> 23
-  12 --- 35
-  12 --- 36
-  13 --- 21
+  12 --- 27
+  12 --- 28
+  13 --- 20
   13 x--> 23
-  13 --- 33
-  13 --- 34
-  14 --- 20
+  13 --- 31
+  13 --- 32
+  14 --- 17
   14 x--> 23
-  14 --- 31
-  14 --- 32
-  15 --- 19
+  14 --- 25
+  14 --- 26
+  15 --- 21
   15 x--> 23
-  15 --- 29
-  15 --- 30
+  15 --- 33
+  15 --- 34
   16 --- 17
   16 --- 18
   16 --- 19
@@ -421,14 +421,6 @@ flowchart LR
   42 --- 49
   42 ---- 50
   42 --- 104
-  50 <--x 45
-  45 --- 51
-  45 --- 54
-  50 <--x 46
-  46 --- 52
-  46 --- 55
-  50 <--x 47
-  47 --- 53
   50 --- 51
   50 --- 52
   50 --- 53
@@ -449,14 +441,6 @@ flowchart LR
   58 --- 65
   58 ---- 66
   58 --- 104
-  66 <--x 61
-  61 --- 67
-  61 --- 70
-  66 <--x 62
-  62 --- 68
-  62 --- 71
-  66 <--x 63
-  63 --- 69
   66 --- 67
   66 --- 68
   66 --- 69
@@ -477,14 +461,6 @@ flowchart LR
   74 --- 81
   74 ---- 82
   74 --- 104
-  82 <--x 77
-  77 --- 83
-  77 --- 86
-  82 <--x 78
-  78 --- 84
-  78 --- 87
-  82 <--x 79
-  79 --- 85
   82 --- 83
   82 --- 84
   82 --- 85
@@ -505,14 +481,24 @@ flowchart LR
   90 --- 97
   90 ---- 98
   90 --- 104
-  98 <--x 93
-  93 --- 99
-  93 --- 102
-  98 <--x 94
-  94 --- 100
-  94 --- 103
-  98 <--x 95
-  95 --- 101
+  98 <--x 91
+  91 --- 100
+  91 --- 103
+  115 <--x 92
+  92 --- 117
+  92 --- 120
+  131 <--x 93
+  93 --- 133
+  93 --- 136
+  50 <--x 94
+  94 --- 52
+  94 --- 55
+  66 <--x 95
+  95 --- 68
+  95 --- 71
+  82 <--x 96
+  96 --- 84
+  96 --- 87
   98 --- 99
   98 --- 100
   98 --- 101
@@ -534,14 +520,24 @@ flowchart LR
   107 --- 114
   107 ---- 115
   107 --- 137
-  115 <--x 110
-  110 --- 116
-  110 --- 119
-  115 <--x 111
-  111 --- 117
-  111 --- 120
-  115 <--x 112
-  112 --- 118
+  98 <--x 108
+  108 --- 99
+  108 --- 102
+  115 <--x 109
+  109 --- 116
+  109 --- 119
+  131 <--x 110
+  110 --- 132
+  110 --- 135
+  50 <--x 111
+  111 --- 51
+  111 --- 54
+  66 <--x 112
+  112 --- 67
+  112 --- 70
+  82 <--x 113
+  113 --- 83
+  113 --- 86
   115 --- 116
   115 --- 117
   115 --- 118
@@ -562,14 +558,18 @@ flowchart LR
   123 --- 130
   123 ---- 131
   123 --- 137
+  98 <--x 124
+  124 --- 101
+  115 <--x 125
+  125 --- 118
   131 <--x 126
-  126 --- 132
-  126 --- 135
-  131 <--x 127
-  127 --- 133
-  127 --- 136
-  131 <--x 128
-  128 --- 134
+  126 --- 134
+  50 <--x 127
+  127 --- 53
+  66 <--x 128
+  128 --- 69
+  82 <--x 129
+  129 --- 85
   131 --- 132
   131 --- 133
   131 --- 134

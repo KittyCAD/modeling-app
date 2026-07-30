@@ -7,7 +7,10 @@ import { useCallback, useEffect } from 'react'
 export const useOnWindowOnlineOffline = ({
   close,
   connect,
-}: { close: () => void; connect: () => void }) => {
+}: {
+  close: () => void
+  connect: () => void
+}) => {
   const handleOffline = useCallback(
     (event: Event) => {
       EngineDebugger.addLog({

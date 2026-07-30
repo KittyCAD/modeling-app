@@ -1,13 +1,19 @@
 import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 
-export function useAbsoluteFilePath() {
+const defaultOptions = {
+  warnIfNoExecutingPath: true,
+}
+
+export function useAbsoluteFilePath(options = defaultOptions) {
   const app = useApp()
 
   const executingPath = app.project?.executingPathSignal.value?.value
 
   if (!executingPath) {
-    console.warn('bug: executingPath undefined, not navigating')
+    if (options.warnIfNoExecutingPath) {
+      console.warn('executingPath undefined but expected')
+    }
     return
   }
 

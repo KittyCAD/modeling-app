@@ -132,7 +132,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::registry().with(json).with(plain).init();
 
     if let Err(err) = run_cmd(&opts).await {
-        bail!("running cmd `{:?}` failed: {:?}", &opts.subcmd, err);
+        bail!("running cmd `{:?}` failed: {:?}", opts.subcmd, err);
     }
 
     Ok(())

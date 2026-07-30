@@ -236,7 +236,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn consumed_solid_diagnostic_names_match_between_memory_backends() {
-        for backend in [MemoryBackendKind::Legacy, MemoryBackendKind::Arena] {
+        for &backend in MemoryBackendKind::all() {
             let ctx = crate::ExecutorContext::new_mock(None).await;
             let mut exec_state = ExecState::new_mock_with_memory_backend(&ctx, &MockConfig::default(), backend);
             let target = procedural_solid(Uuid::from_u128(1), Uuid::from_u128(2));

@@ -60,6 +60,8 @@ use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::CommentStyle;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::EnumDeclaration;
+use crate::parsing::ast::types::EnumVariant;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ExpressionStatement;
 use crate::parsing::ast::types::FunctionExpression;
@@ -95,6 +97,7 @@ use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
@@ -125,8 +128,6 @@ const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
 const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
 const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
     "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
-
-const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
@@ -1330,16 +1331,9 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     };
 
     // Now that we've verified that we can parse everything, ensure that the key
-    // is valid.  If not, we can cut.
-    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
-        ErrMode::Cut(ContextError {
-            context: Default::default(),
-            cause: Some(CompilationIssue::err(
-                comp_err.source_range,
-                KEYWORD_EXPECTING_IDENTIFIER,
-            )),
-        })
-    })?;
+    // is valid.  A non-identifier key (e.g. a reserved keyword) is a hard error;
+    // the conversion already reports what was found, so propagate it as a cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|e| ErrMode::Cut(e.into()))?;
 
     let start = key.start;
     let end = expr.end();
@@ -2857,8 +2851,8 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                                 "Define a function with `fn name()` instead of assigning the function to a variable",
                             )
                             .with_suggestion(
-                                format!("Use `fn {}`", &id.name),
-                                format!("fn {}", &id.name),
+                                format!("Use `fn {}`", id.name),
+                                format!("fn {}", id.name),
                                 Some(SourceRange::new(start, fn_end, id.module_id)),
                                 Tag::None,
                             ),
@@ -2943,20 +2937,23 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
     .parse_next(i)?;
     let mut end = name.end;
 
+    let mut args_range = None;
     let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
         ignore_whitespace(i);
-        open_paren(i)?;
+        let args_start = open_paren(i)?.start;
         ignore_whitespace(i);
         let args: Vec<_> = separated(0.., identifier, comma_sep).parse_next(i)?;
         ignore_trailing_comma(i);
         ignore_whitespace(i);
-        end = close_paren(i)?.end;
+        let close = close_paren(i)?;
+        end = close.end;
+        args_range = Some(SourceRange::new(args_start, close.end, close.module_id));
         Some(args)
     } else {
         None
     };
 
-    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+    let definition = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         equals(i)?;
         ignore_whitespace(i);
@@ -2964,9 +2961,19 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
         ParseContext::experimental("type aliases", ty.as_source_range());
 
-        Some(ty)
+        TypeDeclarationDefinition::Alias { ty: Box::new(ty) }
+    } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        if let Some(args_range) = args_range {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(args_range, "Generic enum declarations are not supported yet").into(),
+            ));
+        }
+        let (enum_def, close_end) = enum_definition(i)?;
+        end = close_end;
+        TypeDeclarationDefinition::Enum(Box::new(enum_def))
     } else {
-        None
+        TypeDeclarationDefinition::Bare
     };
 
     let module_id = name.module_id;
@@ -2977,15 +2984,285 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
         TypeDeclaration {
             name,
             args,
-            alias,
+            definition,
             visibility,
             digest: None,
         },
     );
 
-    ParseContext::experimental("type declarations", result.as_source_range());
+    if matches!(result.definition, TypeDeclarationDefinition::Enum(_)) {
+        ParseContext::experimental("enum declarations", result.as_source_range());
+    } else {
+        ParseContext::experimental("type declarations", result.as_source_range());
+    }
 
     Ok(result)
+}
+
+/// Parse the body of an enum type declaration, from `{` through `}`, e.g.
+/// `{ | Red | Green }`. An enum with no variants keeps the standalone arm
+/// marker which classifies the body as a nominal sum: `{ | }`.
+///
+/// Returns the declaration and the source offset just past the closing brace.
+/// The caller has already committed to the `{...}` definition form, so every
+/// syntax error in here is fatal rather than a backtrack, keeping diagnostics
+/// focused on the enum body.
+fn enum_definition(i: &mut TokenSlice) -> ModalResult<(EnumDeclaration, usize)> {
+    let open = open_brace(i)?;
+    let module_id = open.module_id;
+
+    let mut variants: NodeList<EnumVariant> = Vec::new();
+    let mut non_code_meta = NonCodeMeta::default();
+    // Comments and blank lines seen since the last variant (or the `{`), not
+    // yet attached to a variant's pre-comments or to `non_code_meta`.
+    let mut pending_non_code: Vec<Node<NonCodeNode>> = Vec::new();
+    // End of the most recently consumed token, for errors at end of file.
+    let mut last_pos = open.end;
+
+    macro_rules! peek_token {
+        () => {
+            match peek(any).parse_next(i) {
+                Ok(token) => token,
+                Err(ErrMode::Backtrack(_)) => {
+                    return Err(ErrMode::Cut(
+                        CompilationIssue::fatal(
+                            SourceRange::new(last_pos, last_pos, module_id),
+                            "This enum body is never closed; expected `}`",
+                        )
+                        .into(),
+                    ));
+                }
+                Err(e) => return Err(e),
+            }
+        };
+    }
+
+    // The first token of the body must be the `|` of the first variant arm,
+    // or the standalone marker of an enum with no variants.
+    enum_body_non_code(i, false, &mut pending_non_code, &mut last_pos)?;
+    let token = peek_token!();
+    let mut bar = match (&token.token_type, token.value.as_str()) {
+        (TokenType::Operator, "|") => any.parse_next(i)?,
+        (TokenType::Brace, "}") => {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(
+                    token.as_source_range(),
+                    "An enum without variants still needs its arm marker; write it as `{ | }`",
+                )
+                .into(),
+            ));
+        }
+        (TokenType::At, _) => return reject_variant_annotation(i),
+        _ => {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(token.as_source_range(), "Enum variants must each begin with `|`").into(),
+            ));
+        }
+    };
+    last_pos = bar.end;
+    // `}` may directly follow only the standalone first `|`.
+    let mut zero_variants_ok = true;
+
+    loop {
+        // Expect the variant name for the arm opened by `bar`.
+        enum_body_non_code(i, false, &mut pending_non_code, &mut last_pos)?;
+        let token = peek_token!();
+        match (&token.token_type, token.value.as_str()) {
+            (TokenType::Word, _) => {
+                let name = identifier(i)?;
+                last_pos = name.end;
+                let mut variant = Node::new(EnumVariant { name, digest: None }, bar.start, last_pos, bar.module_id);
+                attach_enum_non_code(
+                    &mut pending_non_code,
+                    Some(&mut variant),
+                    variants.len(),
+                    &mut non_code_meta,
+                );
+                variants.push(variant);
+            }
+            (TokenType::Brace, "}") if zero_variants_ok => break,
+            (TokenType::At, _) => return reject_variant_annotation(i),
+            _ => {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(token.as_source_range(), "Expected a variant name after `|`").into(),
+                ));
+            }
+        }
+
+        // After a variant: `|` opens the next arm, `}` ends the body.
+        enum_body_non_code(i, true, &mut pending_non_code, &mut last_pos)?;
+        let token = peek_token!();
+        match (&token.token_type, token.value.as_str()) {
+            (TokenType::Operator, "|") => {
+                bar = any.parse_next(i)?;
+                last_pos = bar.end;
+                zero_variants_ok = false;
+            }
+            (TokenType::Brace, "}") => break,
+            (TokenType::Comma, _) => {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(
+                        token.as_source_range(),
+                        "Commas are not used between enum variants; each variant begins with `|`",
+                    )
+                    .with_suggestion("Replace `,` with `|`", " |", None, Tag::None)
+                    .into(),
+                ));
+            }
+            (TokenType::Brace, "(") => {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(
+                        token.as_source_range(),
+                        "Enum variants with payloads are not supported yet",
+                    )
+                    .into(),
+                ));
+            }
+            (TokenType::Word, _) => {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(token.as_source_range(), "Enum variants must each begin with `|`").into(),
+                ));
+            }
+            (TokenType::At, _) => return reject_variant_annotation(i),
+            _ => {
+                return Err(ErrMode::Cut(
+                    CompilationIssue::fatal(token.as_source_range(), "Expected `|` or `}` in the enum body").into(),
+                ));
+            }
+        }
+    }
+
+    let close = close_brace(i)?;
+    attach_enum_non_code(&mut pending_non_code, None, variants.len(), &mut non_code_meta);
+
+    Ok((
+        EnumDeclaration {
+            variants,
+            non_code_meta,
+            digest: None,
+        },
+        close.end,
+    ))
+}
+
+/// Collect whitespace, comments, and blank lines inside an enum body into
+/// `pending`. A comment on the same line as a preceding variant is converted
+/// to an inline comment, like trailing comments on statements.
+fn enum_body_non_code(
+    i: &mut TokenSlice,
+    after_variant: bool,
+    pending: &mut Vec<Node<NonCodeNode>>,
+    last_pos: &mut usize,
+) -> ModalResult<()> {
+    let mut first = true;
+    loop {
+        let ws = opt(whitespace).parse_next(i)?;
+        let mut newline_count = 0;
+        if let Some(ws) = ws {
+            newline_count = ws.iter().map(|token| count_in('\n', &token.value)).sum::<usize>();
+            let (start, end) = (ws.first().unwrap().start, ws.last().unwrap().end);
+            *last_pos = end;
+            if newline_count >= 2 {
+                // A deliberate blank line, preserved like `Program` does.
+                pending.push(Node::new(
+                    NonCodeNode {
+                        value: NonCodeValue::NewLine,
+                        digest: None,
+                    },
+                    start,
+                    end,
+                    ws.first().unwrap().module_id,
+                ));
+            }
+        }
+        match non_code_node_no_leading_whitespace.parse_next(i) {
+            Ok(nc) => {
+                *last_pos = nc.end;
+                let value = match nc.inner.value {
+                    NonCodeValue::BlockComment { value, style } if after_variant && first && newline_count == 0 => {
+                        NonCodeValue::InlineComment { value, style }
+                    }
+                    x => x,
+                };
+                pending.push(Node::new(
+                    NonCodeNode { value, digest: None },
+                    nc.start,
+                    nc.end,
+                    nc.module_id,
+                ));
+                first = false;
+            }
+            Err(ErrMode::Backtrack(_)) => return Ok(()),
+            Err(e) => return Err(e),
+        }
+    }
+}
+
+/// Distribute pending non-code within an enum body: comments strongly
+/// associated with the upcoming variant become its pre-comments; everything
+/// else lands in the declaration's `non_code_meta`, keyed like `Program`'s
+/// comment model (`start_nodes` before the first variant, otherwise keyed by
+/// the previous variant's index).
+fn attach_enum_non_code(
+    pending: &mut Vec<Node<NonCodeNode>>,
+    variant: Option<&mut Node<EnumVariant>>,
+    variants_len: usize,
+    non_code_meta: &mut NonCodeMeta,
+) {
+    if pending.is_empty() {
+        return;
+    }
+    // A blank line between comments and the variant dissociates them from it.
+    let force_disoc = matches!(&pending.last().unwrap().inner.value, NonCodeValue::NewLine);
+    let can_attach = variant.is_some() && !force_disoc;
+    let mut comments = Vec::new();
+    let mut comment_start = None;
+    for nc in pending.drain(..) {
+        match nc.inner.value {
+            NonCodeValue::BlockComment { value, style } if can_attach => {
+                comment_start.get_or_insert(nc.start);
+                comments.push(style.render_comment(&value));
+            }
+            NonCodeValue::NewLine if can_attach && !comments.is_empty() => {
+                comments.push(String::new());
+                comments.push(String::new());
+            }
+            _ => {
+                if variants_len == 0 {
+                    non_code_meta.start_nodes.push(nc);
+                } else {
+                    non_code_meta.insert(variants_len - 1, nc);
+                }
+            }
+        }
+    }
+    if let Some(variant) = variant
+        && !comments.is_empty()
+    {
+        let start = comment_start.unwrap_or(variant.start);
+        variant.set_comments(comments, start);
+    }
+}
+
+/// Consume an `@` and produce the focused error for variant annotations,
+/// which are planned (`@repr(...)`) but not part of this round.
+fn reject_variant_annotation<T>(i: &mut TokenSlice) -> ModalResult<T> {
+    let at = at_sign(i)?;
+    let mut end = at.end;
+    let name: ModalResult<Token> = peek(any).parse_next(i);
+    if let Ok(token) = name
+        && token.token_type == TokenType::Word
+        && token.start == at.end
+    {
+        end = token.end;
+    }
+    Err(ErrMode::Cut(
+        CompilationIssue::fatal(
+            SourceRange::new(at.start, end, at.module_id),
+            "Annotations on enum variants, such as `@repr(...)`, are not supported yet",
+        )
+        .into(),
+    ))
 }
 
 impl TryFrom<Token> for Node<Identifier> {
@@ -2993,7 +3270,7 @@ impl TryFrom<Token> for Node<Identifier> {
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(Node::new(
+            return Ok(Node::new(
                 Identifier {
                     name: token.value,
                     digest: None,
@@ -3001,16 +3278,24 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.start,
                 token.end,
                 token.module_id,
-            ))
-        } else {
-            Err(CompilationIssue::fatal(
-                token.as_source_range(),
-                format!(
-                    "Cannot assign a variable to a reserved keyword: {}",
-                    token.value.as_str()
-                ),
-            ))
+            ));
         }
+
+        // Only `Keyword` tokens are reserved keywords; name what was actually found
+        // for anything else, so a comment or brace is not mislabelled as a keyword.
+        let message = match token.token_type {
+            TokenType::Keyword => {
+                format!(
+                    "Expected an identifier, but found the reserved keyword `{}`.",
+                    token.value
+                )
+            }
+            TokenType::LineComment | TokenType::BlockComment => {
+                "Expected an identifier, but found a comment.".to_owned()
+            }
+            _ => format!("Expected an identifier, but found `{}`.", token.value),
+        };
+        Err(CompilationIssue::fatal(token.as_source_range(), message))
     }
 }
 
@@ -3614,6 +3899,9 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             if *result == PrimitiveType::None {
                 ParseContext::experimental("none type", result.as_source_range());
             }
+            if *result == PrimitiveType::Never {
+                ParseContext::experimental("never type", result.as_source_range());
+            }
 
             result
         }),
@@ -3868,7 +4156,7 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     if !is_safe_binding_name(&ident.name) {
         ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            format!("`{}` is a reserved name and cannot be defined.", &ident.name),
+            format!("`{}` is a reserved name and cannot be defined.", ident.name),
         ));
     }
 
@@ -3923,7 +4211,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     callee: _,
                     unlabeled,
                     mut arguments,
-                    non_code_meta,
+                    mut non_code_meta,
                     digest: _,
                 },
         } = fn_call;
@@ -3936,6 +4224,14 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                         arg: unlabeled,
                     },
                 );
+                // The shorthand argument now occupies the first slot of the
+                // argument sequence, so shift the non-code nodes (e.g.
+                // comments) to keep them positioned after it.
+                non_code_meta.non_code_nodes = non_code_meta
+                    .non_code_nodes
+                    .into_iter()
+                    .map(|(index, nodes)| (index + 1, nodes))
+                    .collect();
             } else {
                 ParseContext::err(CompilationIssue::err(
                     unlabeled.into(),
@@ -4186,9 +4482,7 @@ mod tests {
         assert!(
             err.message.starts_with("Unexpected token: ")
                 || err.message.starts_with("= is not")
-                || err
-                    .message
-                    .starts_with("Cannot assign a variable to a reserved keyword: "),
+                || err.message.starts_with("Expected an identifier, but found "),
             "Error message is: `{}`",
             err.message,
         );
@@ -5107,7 +5401,10 @@ mySk1 = startSketchOn(XY)
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
-        assert_eq!(cause.message, "Cannot assign a variable to a reserved keyword: let");
+        assert_eq!(
+            cause.message,
+            "Expected an identifier, but found the reserved keyword `let`."
+        );
     }
 
     #[test]
@@ -5830,7 +6127,7 @@ e
     fn test_error_keyword_in_variable() {
         assert_err(
             r#"const let = "thing""#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [6, 9],
         );
     }
@@ -5839,7 +6136,7 @@ e
     fn test_error_keyword_in_fn_name() {
         assert_err(
             r#"fn let = () {}"#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [3, 6],
         );
     }
@@ -5850,7 +6147,7 @@ e
             r#"fn thing = (let) => {
     return 1
 }"#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [12, 15],
         )
     }
@@ -6328,6 +6625,325 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     }
 
     #[test]
+    fn never_type_is_experimental() {
+        let code = "fn stop(): never {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [11, 16],
+        );
+
+        let code = "fn accept(@stop: fn(): never) {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [23, 28],
+        );
+
+        let code = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {}"#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+fn stop(): never {}"#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(
+            errs[0].message,
+            "Use of never type is experimental and may change or be removed."
+        );
+    }
+
+    fn assert_enum(program: &Node<Program>, index: usize) -> (&Node<TypeDeclaration>, &EnumDeclaration) {
+        let BodyItem::TypeDeclaration(decl) = &program.body[index] else {
+            panic!("expected a type declaration, found {:?}", program.body[index]);
+        };
+        let TypeDeclarationDefinition::Enum(e) = &decl.definition else {
+            panic!("expected an enum definition, found {:?}", decl.definition);
+        };
+        (decl, e)
+    }
+
+    #[test]
+    fn parse_enum_basic() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green | Blue }
+"#;
+        let (program, _) = assert_no_err(code);
+        let (decl, e) = assert_enum(&program, 0);
+        assert_eq!(decl.name.name, "Color");
+        assert_eq!(decl.visibility, ItemVisibility::Default);
+        let names: Vec<_> = e.variants.iter().map(|v| v.name.name.as_str()).collect();
+        assert_eq!(names, ["Red", "Green", "Blue"]);
+        assert!(e.non_code_meta.is_empty());
+        // A variant's range covers its arm, from `|` through the name.
+        let red = &e.variants[0];
+        assert_eq!(&code[red.start..red.end], "| Red");
+        // The declaration's range covers the whole body.
+        assert_eq!(&code[decl.start..decl.end], "type Color { | Red | Green | Blue }");
+    }
+
+    #[test]
+    fn parse_enum_export() {
+        let code = r#"@settings(experimentalFeatures = allow)
+export type Color { | Red }
+"#;
+        let (program, _) = assert_no_err(code);
+        let (decl, e) = assert_enum(&program, 0);
+        assert_eq!(decl.visibility, ItemVisibility::Export);
+        assert_eq!(e.variants.len(), 1);
+    }
+
+    #[test]
+    fn parse_enum_no_variants() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Empty { | }
+"#;
+        let (program, _) = assert_no_err(code);
+        let (_, e) = assert_enum(&program, 0);
+        assert!(e.variants.is_empty());
+        assert!(e.non_code_meta.is_empty());
+    }
+
+    #[test]
+    fn parse_enum_no_variants_with_comments() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Empty { /* a */ | /* b */ }
+"#;
+        let (program, _) = assert_no_err(code);
+        let (_, e) = assert_enum(&program, 0);
+        assert!(e.variants.is_empty());
+        let comments: Vec<_> = e
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .map(|nc| match &nc.value {
+                NonCodeValue::BlockComment { value, .. } => value.as_str(),
+                other => panic!("expected a block comment, found {other:?}"),
+            })
+            .collect();
+        assert_eq!(comments, ["a", "b"]);
+    }
+
+    #[test]
+    fn parse_enum_brace_on_next_line() {
+        // Like a type alias' `=`, the enum body may start on a later line.
+        let code = "@settings(experimentalFeatures = allow)
+type Color
+{ | Red }
+";
+        let (program, _) = assert_no_err(code);
+        let (_, e) = assert_enum(&program, 0);
+        assert_eq!(e.variants.len(), 1);
+    }
+
+    #[test]
+    fn parse_enum_followed_by_code() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+x = 1
+"#;
+        let (program, _) = assert_no_err(code);
+        assert_enum(&program, 0);
+        assert_eq!(program.body.len(), 2);
+    }
+
+    #[test]
+    fn parse_enum_comments() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color {
+  // before red
+  | Red // after red
+  | /* inside green arm */ Green
+
+  | Blue
+  // trailing
+}
+"#;
+        let (program, _) = assert_no_err(code);
+        let (_, e) = assert_enum(&program, 0);
+        let names: Vec<_> = e.variants.iter().map(|v| v.name.name.as_str()).collect();
+        assert_eq!(names, ["Red", "Green", "Blue"]);
+
+        // Comments directly above an arm, or between its `|` and name, are
+        // strongly associated with the variant.
+        assert_eq!(e.variants[0].pre_comments, vec!["// before red".to_owned()]);
+        assert_eq!(e.variants[1].pre_comments, vec!["/* inside green arm */".to_owned()]);
+        assert!(e.variants[2].pre_comments.is_empty());
+
+        // A comment on the same line as a variant stays inline with it.
+        let after_red = &e.non_code_meta.non_code_nodes[&0];
+        assert!(
+            matches!(&after_red[0].value, NonCodeValue::InlineComment { value, .. } if value == "after red"),
+            "found {after_red:?}"
+        );
+        // The deliberate blank line between Green and Blue is preserved.
+        let after_green = &e.non_code_meta.non_code_nodes[&1];
+        assert!(
+            matches!(&after_green[0].value, NonCodeValue::NewLine),
+            "found {after_green:?}"
+        );
+        // A comment after the last variant belongs to the declaration.
+        let after_blue = &e.non_code_meta.non_code_nodes[&2];
+        assert!(
+            matches!(&after_blue[0].value, NonCodeValue::BlockComment { value, .. } if value == "trailing"),
+            "found {after_blue:?}"
+        );
+    }
+
+    #[test]
+    fn enum_declarations_are_experimental() {
+        let code = "type Color { | Red }";
+        assert_err(code, "Use of enum declarations is experimental", [0, 20]);
+
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+"#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+type Color { | Red }
+"#;
+        let (_, errs) = assert_no_err(code);
+        // Exactly one diagnostic: the enum one, without an additional generic
+        // type-declaration diagnostic at the same range.
+        assert_eq!(errs.len(), 1);
+        assert_eq!(
+            errs[0].message,
+            "Use of enum declarations is experimental and may change or be removed."
+        );
+    }
+
+    #[test]
+    fn enum_body_rejections() {
+        // An empty body still needs the arm marker which classifies the
+        // declaration as an enum.
+        assert_err(
+            "type Empty { }",
+            "An enum without variants still needs its arm marker; write it as `{ | }`",
+            [13, 14],
+        );
+
+        // The first variant must have its arm marker.
+        assert_err("type Color { Red }", "Enum variants must each begin with `|`", [13, 16]);
+
+        // Commas do not separate variants.
+        assert_err(
+            "type Color { | Red, Green }",
+            "Commas are not used between enum variants; each variant begins with `|`",
+            [18, 19],
+        );
+
+        // Every later variant must have its arm marker too.
+        assert_err(
+            "type Color { | Red Green }",
+            "Enum variants must each begin with `|`",
+            [19, 24],
+        );
+
+        // Payload variants are planned, but not part of enum V1.
+        assert_err(
+            "type Color { | Red(1) }",
+            "Enum variants with payloads are not supported yet",
+            [18, 19],
+        );
+
+        // Variant annotations (`@repr`) follow in a later round.
+        assert_err(
+            "type Color { | @repr(1) Red }",
+            "Annotations on enum variants, such as `@repr(...)`, are not supported yet",
+            [15, 20],
+        );
+
+        // Generic enum declarations follow with parametric polymorphism.
+        assert_err(
+            "type Option(T) { | None }",
+            "Generic enum declarations are not supported yet",
+            [11, 14],
+        );
+
+        // An arm marker must be followed by a variant name; only the
+        // standalone marker of an empty enum stands alone.
+        assert_err("type Color { | | }", "Expected a variant name after `|`", [15, 16]);
+        assert_err("type Color { | Red | }", "Expected a variant name after `|`", [21, 22]);
+
+        // An unclosed enum body.
+        assert_err(
+            "type Color { | Red",
+            "This enum body is never closed; expected `}`",
+            [18, 18],
+        );
+    }
+
+    #[test]
+    fn enum_outer_comment_rejections() {
+        // Comments between `type` and the name are rejected, exactly as for
+        // alias and bare type declarations.
+        assert_err(
+            "type /* c */ Color { | Red }",
+            "Expected an identifier, but found a comment.",
+            [5, 12],
+        );
+
+        // A comment between the name and the body stops definition detection
+        // (alias and enum alike), leaving a bare declaration followed by an
+        // unparsable `{...}` statement.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color /* c */ { | Red }
+"#;
+        assert_err(code, "Unexpected token: {", [59, 60]);
+    }
+
+    #[test]
+    fn identifier_from_keyword_token_names_the_keyword() {
+        // The keyword branch reports which reserved keyword was found.
+        let token = Token::from_range(0..3, ModuleId::from_usize(0), TokenType::Keyword, "let".to_owned());
+        let err = Node::<Identifier>::try_from(token).unwrap_err();
+        assert_eq!(
+            err.message,
+            "Expected an identifier, but found the reserved keyword `let`."
+        );
+    }
+
+    #[test]
+    fn identifier_from_comment_token_reports_a_comment() {
+        // A comment is never a keyword; the old fallback quoted the comment body
+        // as if it were the keyword's name. Regression test for `type /* c */ Color`.
+        for token_type in [TokenType::BlockComment, TokenType::LineComment] {
+            let token = Token::from_range(0..7, ModuleId::from_usize(0), token_type, "/* c */".to_owned());
+            let err = Node::<Identifier>::try_from(token).unwrap_err();
+            assert_eq!(err.message, "Expected an identifier, but found a comment.");
+        }
+    }
+
+    #[test]
+    fn identifier_from_other_token_names_what_was_found() {
+        // Any other non-word token names the offending value rather than claiming
+        // a reserved keyword.
+        for (token_type, value) in [
+            (TokenType::Number, "42"),
+            (TokenType::Brace, "{"),
+            (TokenType::Operator, "+"),
+        ] {
+            let token = Token::from_range(0..value.len(), ModuleId::from_usize(0), token_type, value.to_owned());
+            let err = Node::<Identifier>::try_from(token).unwrap_err();
+            assert_eq!(err.message, format!("Expected an identifier, but found `{value}`."));
+        }
+    }
+
+    #[test]
+    fn bare_type_decl_followed_by_object_literal_is_an_enum_error() {
+        // A `{` after a type declaration's name is committed to as an enum
+        // body (like `=` commits to an alias), even across a newline, so it
+        // cannot be a separate object-literal expression statement.
+        assert_err(
+            "type Foo\n{ a = 1 }",
+            "Enum variants must each begin with `|`",
+            [11, 12],
+        );
+    }
+
+    #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
@@ -6735,7 +7351,10 @@ bar = 1
         let expected_src_start = source.find("type").unwrap();
         let cause = must_fail_compilation(source);
         assert!(cause.was_fatal);
-        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
+        assert_eq!(
+            cause.err.message,
+            "Expected an identifier, but found the reserved keyword `type`."
+        );
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 

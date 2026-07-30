@@ -1,4 +1,4 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 import { test as playwrightTestFn } from '@playwright/test'
 
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
@@ -33,7 +33,7 @@ let isFirstRun = true
 // switch between web and electron if needed.
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
-  userFeatures: UserFeature[]
+  userFeatures: Feature[]
 }>({
   userFeatures: [[], { option: true }],
   tronApp: [

@@ -7,7 +7,10 @@ import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
-import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
+import {
+  type EngineDisconnectEvent,
+  useOnPeerConnectionClose,
+} from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -23,24 +26,43 @@ import {
 import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import type {
+  EngineSceneExtensionContext,
+  EngineSceneStreamLayer,
+} from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
 
-export const ConnectionStream = (props: {
+const stringHash = (value: string) => {
+  let hash = 0
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0
+  }
+  return hash.toString(36)
+}
+
+interface ConnectionStreamProps {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
-}) => {
+  streamClassName?: string
+  streamLayers: readonly EngineSceneStreamLayer[]
+  streamLayerProps: EngineSceneExtensionContext
+}
+
+export const ConnectionStream = (props: ConnectionStreamProps) => {
   const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
@@ -71,6 +93,45 @@ export const ConnectionStream = (props: {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
+  const reportEngineDisconnect = useCallback(
+    (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
+      const kclSource = kclManager.code
+      const connection = engineCommandManager.connection
+
+      void reportClientError({
+        code: ClientErrorCode.EngineDisconnect,
+        message: `Engine disconnected: ${eventType}`,
+        dedupeKey: `ConnectionStream:engine-disconnect:${eventType}:${kclManager.currentFileName ?? 'unknown'}:${stringHash(kclSource)}`,
+        extra: {
+          source: 'ConnectionStream',
+          eventType,
+          projectName: project?.name,
+          currentFileName: kclManager.currentFileName,
+          isSceneReady,
+          numberOfConnectionAttempts,
+          pendingCommandCount: Object.keys(engineCommandManager.pendingCommands)
+            .length,
+          hasConnection: Boolean(connection),
+          connectionId: connection?.id,
+          connectionConnected: connection?.connected,
+          peerConnectionState: connection?.peerConnection?.connectionState,
+          iceConnectionState: connection?.peerConnection?.iceConnectionState,
+          dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
+          ...extra,
+          kclSourceLength: kclSource.length,
+          kclSource,
+        },
+      })
+    },
+    [
+      engineCommandManager,
+      isSceneReady,
+      kclManager,
+      numberOfConnectionAttempts,
+      project?.name,
+    ]
+  )
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -259,14 +320,14 @@ export const ConnectionStream = (props: {
     ]
   )
 
-  const { resetGlobalEngineCommandManager } =
+  const { resetGlobalEngineConnectionManager } =
     useOnPageMounted(onPageMountedParams)
 
   // TODO: When exiting the page via the router teardown the engineCommandManager
   // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
   const onPageExitParams = useMemo(
     () => ({
-      callback: resetGlobalEngineCommandManager,
+      callback: resetGlobalEngineConnectionManager,
       engineCommandManager: engineCommandManager,
       sceneInfra: sceneInfra,
     }),
@@ -328,7 +389,10 @@ export const ConnectionStream = (props: {
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: () => {
+      callback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -347,13 +411,22 @@ export const ConnectionStream = (props: {
           setShowManualConnect(true)
         })
       },
-      infiniteDetectionLoopCallback: () => {
+      infiniteDetectionLoopCallback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(true)
       },
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
@@ -387,7 +460,8 @@ export const ConnectionStream = (props: {
 
   const onPeerConnectionCloseParams = useMemo(
     () => ({
-      callback: () => {
+      callback: (eventType: EngineDisconnectEvent) => {
+        reportEngineDisconnect(eventType)
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -409,7 +483,13 @@ export const ConnectionStream = (props: {
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 
@@ -485,7 +565,7 @@ export const ConnectionStream = (props: {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className={props.streamClassName ?? 'absolute inset-[-4px] z-0'}
       style={style}
       id="stream"
       data-testid="stream"
@@ -519,6 +599,17 @@ export const ConnectionStream = (props: {
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
+      {props.streamLayers.map((layer) => {
+        return (
+          <div
+            key={layer.id}
+            className={`absolute inset-0 ${layer.wrapperClassName ?? ''}`}
+            data-engine-scene-stream-layer-id={layer.id}
+          >
+            <layer.Component {...props.streamLayerProps} />
+          </div>
+        )
+      })}
       <ViewControlContextMenu
         event="mouseup"
         guard={viewControlContextMenuGuard}
@@ -554,7 +645,6 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      )
     </div>
   )
 }

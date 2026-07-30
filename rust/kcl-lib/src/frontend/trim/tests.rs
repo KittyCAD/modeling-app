@@ -4,20 +4,14 @@ use crate::frontend::trim::execute_trim_flow;
 
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
-/// - Compare result with expected code (normalized by trimming whitespace)
-async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expected_code: &str, sketch_id: ObjectId) {
+/// - Snapshot the result after normalizing leading and trailing whitespace
+async fn assert_trim_result(snapshot_name: &str, base_kcl_code: &str, trim_points: &[Coords2d], sketch_id: ObjectId) {
     let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
 
     match result {
         Ok(result) => {
             let result_normalized = result.kcl_code.trim();
-            let expected_normalized = expected_code.trim();
-
-            pretty_assertions::assert_eq!(
-                result_normalized,
-                expected_normalized,
-                "Trim result should match expected KCL code (left = actual, right = expected)"
-            );
+            insta::assert_snapshot!(snapshot_name, result_normalized);
         }
         Err(e) => {
             panic!("trim flow failed: {}", e);
@@ -26,8 +20,8 @@ async fn assert_trim_result(base_kcl_code: &str, trim_points: &[Coords2d], expec
 }
 
 /// Convenience wrapper that uses the default sketch_id (ObjectId(1))
-async fn assert_trim_result_default_sketch(base_kcl_code: &str, trim_points: &[Coords2d], expected_code: &str) {
-    assert_trim_result(base_kcl_code, trim_points, expected_code, ObjectId(1)).await;
+async fn assert_trim_result_default_sketch(snapshot_name: &str, base_kcl_code: &str, trim_points: &[Coords2d]) {
+    assert_trim_result(snapshot_name, base_kcl_code, trim_points, ObjectId(1)).await;
 }
 
 fn assert_no_zero_length_line_or_arc_constructors(kcl_code: &str) {
@@ -1383,14 +1377,7 @@ async fn test_trim_line2_left_side() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = line(start = [var 5mm, var 0mm], end = [var 0mm, var 0mm])
-  coincident([line2.end, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_line2_left_side", base_kcl_code, &trim_points).await;
 }
 #[tokio::test]
 async fn test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment() {
@@ -1409,17 +1396,12 @@ async fn test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment(
 
     let trim_points = vec![Coords2d { x: -2.18, y: 4.92 }, Coords2d { x: -4.23, y: -5.15 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -5.33mm, var 3.69mm], end = [var -5.93mm, var -2.59mm])
-  line2 = line(start = [var -0.9mm, var 0.63mm], end = [var 4.01mm, var 0.68mm])
-  line3 = line(start = [var 4.02mm, var -3.44mm], end = [var 4mm, var 3.61mm])
-  line4 = line(start = [var -0.9mm, var 0.63mm], end = [var -1.28mm, var -3.04mm])
-  coincident([line2.end, line3])
-  coincident([line2.start, line4.start])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_tail_cut_should_remove_constraints_on_that_end_of_trimmed_segment",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1433,14 +1415,7 @@ async fn test_trim_line2_right_side() {
 
     let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
-  line2 = line(start = [var 0mm, var 0mm], end = [var -5mm, var 0mm])
-  coincident([line2.start, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_line2_right_side", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1454,14 +1429,7 @@ async fn test_trim_line1_bottom() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm])
-  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
-  coincident([line1.start, line2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_line1_bottom", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1475,14 +1443,7 @@ async fn test_trim_line1_top() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
-  line2 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
-  coincident([line1.end, line2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_line1_top", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1496,14 +1457,7 @@ async fn test_trim_arc2_left_side() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
-  coincident([arc2.end, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_arc2_left_side", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1517,14 +1471,7 @@ async fn test_trim_arc2_right_side() {
 
     let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  coincident([arc2.start, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_arc2_right_side", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1538,14 +1485,7 @@ async fn test_trim_arc1_bottom() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  coincident([arc1.start, arc2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_arc1_bottom", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1559,14 +1499,7 @@ async fn test_trim_arc1_top() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
-  coincident([arc1.end, arc2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_arc1_top", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1580,11 +1513,7 @@ async fn test_trim_delete_both_segments() {
 
     let trim_points = vec![Coords2d { x: -5.0, y: 1.0 }, Coords2d { x: 5.0, y: 1.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_trim_delete_both_segments", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -1602,17 +1531,12 @@ async fn test_trim_remove_coincident_point_from_segment_end() {
 
     let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
-  line3 = line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
-  coincident([line2.end, line3.start])
-  arc1 = arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
-  coincident([line2.start, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_remove_coincident_point_from_segment_end",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1629,17 +1553,12 @@ async fn test_trim_remove_point_axis_constraint_from_segment_end() {
 
     let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
-  line3 = line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
-  horizontal([line2.end, line3.start])
-  arc1 = arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
-  coincident([line2.start, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_remove_point_axis_constraint_from_segment_end",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 /// Same logical trim line [[-15, 50], [-15, -50]] (vertical at -15mm) and equivalent sketches in cm vs mm.
@@ -1657,16 +1576,13 @@ sketch(on = YZ) {
     let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
 
     // Expected: trim line at -15mm trims line2 to the intersection with line1 at -10mm.
-    let expected_code = r#"@settings(defaultLengthUnit = mm)
 
-sketch(on = YZ) {
-  line1 = line(start = [var -10mm, var 50mm], end = [var -10mm, var -50mm])
-  line2 = line(start = [var -10mm, var 0mm], end = [var 50mm, var 0mm])
-  coincident([line2.start, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_should_work_with_different_units_1",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 
     let base_kcl_code = r#"@settings(defaultLengthUnit = cm)
 
@@ -1679,16 +1595,12 @@ sketch(on = YZ) {
     // Same physical trim line as mm case, still provided in mm.
     let trim_points = vec![Coords2d { x: -15.0, y: 50.0 }, Coords2d { x: -15.0, y: -50.0 }];
 
-    let expected_code = r#"@settings(defaultLengthUnit = cm)
-
-sketch(on = YZ) {
-  line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
-  line2 = line(start = [var -1cm, var 0cm], end = [var 5cm, var 0cm])
-  coincident([line2.start, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_should_work_with_different_units_2",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1708,16 +1620,12 @@ async fn test_split_trim_with_point_line_coincident_constraint() {
     // Trim line that intersects arc9 at two points to cause a split trim
     let trim_points = vec![Coords2d { x: -5.69, y: 4.67 }, Coords2d { x: -7.65, y: 4.83 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line5 = line(start = [var -7.81mm, var 3.77mm], end = [var -6.89mm, var 3.79mm])
-  line6 = line(start = [var -7.19mm, var 2.53mm], end = [var -6.14mm, var 4.02mm])
-  arc1 = arc(start = [var -6.89mm, var 3.79mm], end = [var -6.94mm, var 2.89mm], center = [var -0.29mm, var 3mm])
-  coincident([arc1.start, line5.end])
-  coincident([arc1.end, line6])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_with_point_line_coincident_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1732,14 +1640,12 @@ async fn test_arc_line_trim_replace_point_segment_coincident() {
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
-  coincident([arc1.start, line1.end])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_arc_line_trim_replace_point_segment_coincident",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1766,26 +1672,12 @@ async fn test_trim_line_with_midpoint_coincident_arc_endpoint() {
 
     let trim_points = vec![Coords2d { x: 0.19, y: 3.25 }, Coords2d { x: 0.41, y: 3.32 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line6 = line(start = [var 0.32mm, var 3.43mm], end = [var 1.87mm, var 3.43mm])
-  line7 = line(start = [var 1.87mm, var 3.43mm], end = [var 1.87mm, var 2.22mm])
-  line8 = line(start = [var 1.87mm, var 2.22mm], end = [var 0.33mm, var 2.22mm])
-  line9 = line(start = [var 0.33mm, var 2.22mm], end = [var 0.33mm, var 2.91mm])
-  coincident([line6.end, line7.start])
-  coincident([line7.end, line8.start])
-  coincident([line8.end, line9.start])
-  parallel([line7, line9])
-  parallel([line8, line6])
-  perpendicular([line6, line7])
-  horizontal(line8)
-  arc2 = arc(start = [var 0.88mm, var 3.43mm], end = [var 0.33mm, var 2.86mm], center = [var 0.87mm, var 2.89mm])
-  coincident([arc2.end, line9])
-  coincident([arc2.start, line6])
-  coincident([line9.end, arc2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_line_with_midpoint_coincident_arc_endpoint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1811,26 +1703,12 @@ async fn test_trim_arc_start_coincident_with_line_segment() {
 
     let trim_points = vec![Coords2d { x: 0.4, y: 3.32 }, Coords2d { x: 0.54, y: 3.53 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line6 = line(start = [var 0.88mm, var 3.43mm], end = [var 1.87mm, var 3.43mm])
-  line7 = line(start = [var 1.87mm, var 3.43mm], end = [var 1.87mm, var 2.22mm])
-  line8 = line(start = [var 1.87mm, var 2.22mm], end = [var 0.33mm, var 2.22mm])
-  line9 = line(start = [var 0.33mm, var 2.22mm], end = [var 0.33mm, var 2.91mm])
-  coincident([line6.end, line7.start])
-  coincident([line7.end, line8.start])
-  coincident([line8.end, line9.start])
-  parallel([line7, line9])
-  parallel([line8, line6])
-  perpendicular([line6, line7])
-  horizontal(line8)
-  arc2 = arc(start = [var 0.88mm, var 3.43mm], end = [var 0.33mm, var 2.87mm], center = [var 0.87mm, var 2.89mm])
-  coincident([arc2.end, line9])
-  coincident([line9.end, arc2])
-  coincident([line6.start, arc2.start])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_arc_start_coincident_with_line_segment",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1928,17 +1806,12 @@ async fn test_split_trim_line_trimmed_between_two_intersections() {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 2.0 }, Coords2d { x: 0.0, y: -2.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
-  line2 = line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
-  line3 = line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
-  coincident([line1.end, line2])
-  coincident([line3.start, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_line_trimmed_between_two_intersections",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1956,19 +1829,12 @@ async fn test_split_lines_with_point_segment_coincident_points() {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 6.0 }, Coords2d { x: -1.1, y: 1.6 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -3.86mm, var 5.53mm], end = [var -4.35mm, var 2.3mm])
-  line2 = line(start = [var -6.13mm, var 1.67mm], end = [var -3.01mm, var 2.78mm])
-  arc4 = arc(start = [var 3.09mm, var 4.94mm], end = [var 2.69mm, var 6.42mm], center = [var -7.39mm, var 2.91mm])
-  coincident([line1.end, line2])
-  arc3 = arc(start = [var -2.42mm, var 5.38mm], end = [var -0.69mm, var -0.66mm], center = [var 1.29mm, var 3.17mm])
-  line3 = line(start = [var 3.09mm, var 4.94mm], end = [var 4.25mm, var 5.35mm])
-  coincident([line2.end, arc3])
-  coincident([line3.start, arc4.start])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_lines_with_point_segment_coincident_points",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -1985,43 +1851,23 @@ async fn test_split_arc_with_point_segment_coincident_constraints() {
 
     let trim_cases = [
         (
+            "test_split_arc_with_point_segment_coincident_constraints_1",
             vec![Coords2d { x: -3.45, y: -1.3 }, Coords2d { x: -5.53, y: -1.3 }],
-            r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.08mm, var 6.08mm], end = [var -5.01mm, var 1mm], center = [var 1.84mm, var 1.3mm])
-  arc2 = arc(start = [var -4.82mm, var -0.72mm], end = [var -6.76mm, var -1.16mm], center = [var -4.12mm, var -8.15mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
-  coincident([arc1.end, line1.end])
-}
-"#,
         ),
         (
+            "test_split_arc_with_point_segment_coincident_constraints_2",
             vec![Coords2d { x: -3.93, y: 2.17 }, Coords2d { x: -6.24, y: 2.14 }],
-            r#"sketch(on = YZ) {
-  arc2 = arc(start = [var -4.82mm, var -0.72mm], end = [var -6.76mm, var -1.17mm], center = [var -4.12mm, var -8.15mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
-  arc3 = arc(start = [var -4.82mm, var -0.72mm], end = [var -1.77mm, var -4.66mm], center = [var 1.83mm, var 1.27mm])
-  coincident([arc3.start, arc2.start])
-}
-"#,
         ),
         (
+            "test_split_arc_with_point_segment_coincident_constraints_3",
             vec![Coords2d { x: -3.77, y: 0.5 }, Coords2d { x: -6.11, y: 0.37 }],
-            r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.08mm, var 6.08mm], end = [var -5.01mm, var 1mm], center = [var 1.84mm, var 1.3mm])
-  arc2 = arc(start = [var -4.82mm, var -0.72mm], end = [var -6.76mm, var -1.16mm], center = [var -4.12mm, var -8.15mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
-  arc3 = arc(start = [var -4.82mm, var -0.72mm], end = [var -1.77mm, var -4.66mm], center = [var 1.83mm, var 1.27mm])
-  coincident([arc1.end, line1.end])
-  coincident([arc3.start, arc2.start])
-}
-"#,
         ),
     ];
 
     let sketch_id = ObjectId(1);
 
-    for (trim_points, expected_code) in trim_cases.iter() {
-        assert_trim_result(base_kcl_code, trim_points, expected_code, sketch_id).await;
+    for (snapshot_name, trim_points) in trim_cases.iter() {
+        assert_trim_result(snapshot_name, base_kcl_code, trim_points, sketch_id).await;
     }
 }
 
@@ -2039,18 +1885,12 @@ async fn test_split_arc_with_point_segment_coincident_on_one_side_and_intersecti
 
     let trim_points = vec![Coords2d { x: -0.4, y: 4.4 }, Coords2d { x: 1.3, y: 2.4 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc2 = arc(start = [var 1.97mm, var -5.31mm], end = [var 1.27mm, var 6.32mm], center = [var -7.5mm, var -0.04mm])
-  arc1 = arc(start = [var 5.66mm, var 4.25mm], end = [var 2.6mm, var 3.89mm], center = [var 5.17mm, var -4.68mm])
-  line1 = line(start = [var -4.28mm, var 4.29mm], end = [var 1.34mm, var -4.76mm])
-  line4 = line(start = [var 0.02mm, var 2.88mm], end = [var -2.01mm, var -6.62mm])
-  arc3 = arc(start = [var 0.02mm, var 2.88mm], end = [var -3.91mm, var -3.06mm], center = [var 5.07mm, var -4.73mm])
-  coincident([arc1.end, arc2])
-  coincident([arc3.start, line4.start])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_arc_with_point_segment_coincident_on_one_side_and_intersection_on_other",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2085,43 +1925,12 @@ async fn test_split_straight_segments_migrate_constraints() {
 
     let trim_points = vec![Coords2d { x: 0.0, y: 4.0 }, Coords2d { x: 0.0, y: -4.0 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var -2mm, var 0mm])
-  startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
-  startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
-  startSideIntersectionTrimTermination = line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
-  endSideIntersectionTrimTermination = line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
-  endSideEndPointCoincidentWithTrimSeg = line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
-  endSideCoincidentWithTrimSegStart = line(start = [var 0.67mm, var 3mm], end = [var 0.67mm, var -3mm])
-  coincident([
-    segmentToBeTrimmedAndSplit.start,
-    startSideCoincidentWithTrimSegStart
-  ])
-  coincident([
-    startSideEndPointCoincidentWithTrimSeg.start,
-    segmentToBeTrimmedAndSplit
-  ])
-  line1 = line(start = [var 2mm, var 0mm], end = [var 0.67mm, var 0mm])
-  coincident([
-    segmentToBeTrimmedAndSplit.end,
-    startSideIntersectionTrimTermination
-  ])
-  coincident([
-    line1.start,
-    endSideIntersectionTrimTermination
-  ])
-  coincident([
-    line1.end,
-    endSideCoincidentWithTrimSegStart
-  ])
-  coincident([
-    endSideEndPointCoincidentWithTrimSeg.end,
-    line1
-  ])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_straight_segments_migrate_constraints",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2198,51 +2007,12 @@ async fn test_trim_with_distance_constraints_preserve_constraints() {
         Coords2d { x: 0.14, y: -4.8 },
     ];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
-  line4 = line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
-  endTrimmedShouldDeleteDisConstraint = line(start = [var -3.5mm, var 2mm], end = [var -2.33mm, var 2mm])
-  coincident([
-    line4.end,
-    endTrimmedShouldDeleteDisConstraint.start
-  ])
-  line6 = line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
-  startTrimmedAlsoDeleteDisConstraint = line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
-  line3 = line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
-  coincident([
-    startTrimmedAlsoDeleteDisConstraint.end,
-    line3.start
-  ])
-  line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
-  splitTrimLineDistanceConstraintMigrated = line(start = [var -3.7mm, var -3.56mm], end = [var -0.71mm, var -3.93mm])
-  line8 = line(start = [var 1.84mm, var -3.74mm], end = [var 5.42mm, var -1.72mm])
-  line9 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.28mm, var -5.69mm])
-  line10 = line(start = [var 1.98mm, var -3.74mm], end = [var 2.57mm, var -5.65mm])
-  line11 = line(start = [var -1.05mm, var -2.11mm], end = [var -0.45mm, var -5.31mm])
-  coincident([
-    endTrimmedShouldDeleteDisConstraint.end,
-    line6
-  ])
-  coincident([
-    startTrimmedAlsoDeleteDisConstraint.start,
-    line5
-  ])
-  line2 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.84mm, var -3.74mm])
-  coincident([
-    splitTrimLineDistanceConstraintMigrated.end,
-    line11
-  ])
-  coincident([line2.start, line9.start])
-  coincident([line2.end, line8.start])
-  coincident([line10.start, line2])
-  distance([
-  splitTrimLineDistanceConstraintMigrated.start,
-  line2.end
-]) == 5.54mm
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_with_distance_constraints_preserve_constraints",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2263,24 +2033,7 @@ async fn test_split_trim_migrate_angle_constraints() {
 
     let trim_points = vec![Coords2d { x: -1.75, y: -0.56 }, Coords2d { x: -1.75, y: -2.93 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -2mm, var 6.13mm], end = [var 0.22mm, var 4.54mm])
-  line2 = line(start = [var -4.15mm, var 0mm], end = [var -3.03mm, var -0.82mm])
-  parallel([line1, line2])
-  line3 = line(start = [var -3.1mm, var 1.3mm], end = [var -2.96mm, var -3.08mm])
-  line4 = line(start = [var -0.59mm, var -0.81mm], end = [var -1.13mm, var -4.94mm])
-  line5 = line(start = [var 0.09mm, var -3.02mm], end = [var -0.11mm, var -5.63mm])
-  line6 = line(start = [var -1.01mm, var -2.24mm], end = [var 3.5mm, var -1.84mm])
-  line7 = line(start = [var -0.8mm, var -2.39mm], end = [var -1.01mm, var -2.24mm])
-  coincident([line2.end, line3])
-  coincident([line7.start, line4])
-  coincident([line7.end, line6.start])
-  coincident([line5.start, line7])
-  parallel([line1, line7])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch("test_split_trim_migrate_angle_constraints", base_kcl_code, &trim_points).await;
 }
 
 #[tokio::test]
@@ -2296,19 +2049,12 @@ async fn test_split_trim_migrate_horizontal_constraint() {
 
     let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
-  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  horizontal(line1)
-  line4 = line(start = [var 2.12mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
-  coincident([line1.end, line2])
-  coincident([line4.start, line3])
-  horizontal(line4)
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_migrate_horizontal_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2324,19 +2070,12 @@ async fn test_split_trim_migrate_horizontal_points_constraint() {
 
     let trim_points = vec![Coords2d { x: 0.73, y: 1.85 }, Coords2d { x: -0.8, y: 0.25 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -3.64mm, var 1.26mm], end = [var -1.7mm, var 1.26mm])
-  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  point1 = point(at = [var 5mm, var 1.26mm])
-  line4 = line(start = [var 2.12mm, var 1.26mm], end = [var 3.8mm, var 1.26mm])
-  coincident([line1.end, line2])
-  coincident([line4.start, line3])
-  horizontal([line4.end, point1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_migrate_horizontal_points_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2352,19 +2091,12 @@ async fn test_split_trim_migrate_vertical_constraint() {
 
     let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
-  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  vertical(line1)
-  line4 = line(start = [var -0.36mm, var -0.87mm], end = [var -0.36mm, var -2.66mm])
-  coincident([line1.end, line2])
-  coincident([line4.start, line3])
-  vertical(line4)
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_migrate_vertical_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2380,19 +2112,12 @@ async fn test_split_trim_migrate_vertical_points_constraint() {
 
     let trim_points = vec![Coords2d { x: 0.47, y: 1.45 }, Coords2d { x: -1.72, y: 0.1 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line1 = line(start = [var -0.36mm, var 3.66mm], end = [var -0.36mm, var 2.34mm])
-  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  point1 = point(at = [var -0.36mm, var -4mm])
-  line4 = line(start = [var -0.36mm, var -0.87mm], end = [var -0.36mm, var -2.66mm])
-  coincident([line1.end, line2])
-  coincident([line4.start, line3])
-  vertical([line4.end, point1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_migrate_vertical_points_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2409,20 +2134,12 @@ async fn test_split_trim_migrate_perpendicular_constraint() {
 
     let trim_points = vec![Coords2d { x: 0.95, y: 1.67 }, Coords2d { x: -2.3, y: -0.08 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  line4 = line(start = [var -0.95mm, var 5.87mm], end = [var 1.9mm, var 7.14mm])
-  line1 = line(start = [var -1.97mm, var 3.24mm], end = [var -1.25mm, var 1.62mm])
-  line2 = line(start = [var 3.32mm, var 5.32mm], end = [var -4.67mm, var -1.14mm])
-  line3 = line(start = [var 4.34mm, var 3.17mm], end = [var -3.94mm, var -3.95mm])
-  perpendicular([line4, line1])
-  line5 = line(start = [var -0.15mm, var -0.69mm], end = [var 0.57mm, var -2.3mm])
-  coincident([line1.end, line2])
-  coincident([line5.start, line3])
-  perpendicular([line4, line5])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_trim_migrate_perpendicular_constraint",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2449,35 +2166,12 @@ async fn test_split_arc_duplicate_center_point_constraints() {
 
     let trim_points = vec![Coords2d { x: -1.66, y: 7.54 }, Coords2d { x: -1.81, y: 2.11 }];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arcToSplit = arc(start = [var 11.06mm, var 1.06mm], end = [var 3.54mm, var 5.28mm], center = [var 0.65mm, var -8.7mm])
-  line1 = line(start = [var -6mm, var 8mm], end = [var -5.5mm, var 0mm])
-  line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
-  lineCoincidentWithArcCen = line(start = [var 0.65mm, var -8.7mm], end = [var 11.5mm, var -7.5mm])
-  line4 = line(start = [var 11.06mm, var 1.06mm], end = [var 13.32mm, var 6.78mm])
-  line5 = line(start = [var 7.62mm, var 3.75mm], end = [var 10mm, var 8mm])
-  coincident([line5.start, arcToSplit])
-  coincident([line4.start, arcToSplit.start])
-  coincident([
-    lineCoincidentWithArcCen.start,
-    arcToSplit.center
-  ])
-  distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = line(start = [var -0.92mm, var -6.93mm], end = [var 2.89mm, var -11.21mm])
-  coincident([arcToSplit.center, line3])
-  arc1 = arc(start = [var -5.75mm, var 4.08mm], end = [var -10.37mm, var 0.39mm], center = [var 0.65mm, var -8.7mm])
-  coincident([arcToSplit.end, line2])
-  coincident([arc1.start, line1])
-  coincident([
-    lineCoincidentWithArcCen.start,
-    arc1.center
-  ])
-  distance([arc1.center, line4.end]) == 20mm
-  coincident([arc1.center, line3])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_split_arc_duplicate_center_point_constraints",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -2502,21 +2196,12 @@ async fn test_trimming_arcs_preserve_distance_constraints() {
         Coords2d { x: -1.57, y: 1.03 },
     ];
 
-    let expected_code = r#"sketch(on = YZ) {
-  arc1 = arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
-  line1 = line(start = [var -4.72mm, var 3.54mm], end = [var -2.24mm, var -1.48mm])
-  line2 = line(start = [var 2.27mm, var -4.04mm], end = [var 4.65mm, var -1.26mm])
-  distance([arc1.center, line2.start]) == 3.87mm
-  line3 = line(start = [var -5.61mm, var 5.38mm], end = [var -0.9mm, var 5.49mm])
-  line4 = line(start = [var 1.03mm, var 5.53mm], end = [var 6.15mm, var 3.11mm])
-  line5 = line(start = [var -1.05mm, var 6.42mm], end = [var -0.9mm, var 5.49mm])
-  distance([line4.end, line3.start]) == 11.98mm
-  coincident([line5.end, line3.end])
-  coincident([arc1.start, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trimming_arcs_preserve_distance_constraints",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3457,17 +3142,12 @@ async fn point_on_arc_coincident_should_not_effect_initial_guesses() {
 
     let trim_points = vec![Coords2d { x: -0.29, y: -1.91 }, Coords2d { x: -0.34, y: -4.42 }];
 
-    let expected_code = r#"sketch(on = XY) {
-  line3 = line(start = [var 4.32mm, var 3.72mm], end = [var 1.06mm, var -3.26mm])
-  line4 = line(start = [var -2.31mm, var -3.06mm], end = [var -6.71mm, var -2.8mm])
-  arc1 = arc(start = [var -1.44mm, var -0.99mm], end = [var 2.49mm, var -0.2mm], center = [var 1.06mm, var -3.26mm])
-  coincident([arc1.center, line3.end])
-  coincident([arc1.end, line3])
-  coincident([line4.start, arc1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "point_on_arc_coincident_should_not_effect_initial_guesses",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3483,15 +3163,12 @@ async fn test_trim_circle_case_1_1_circle_to_arc_trimmed_without_start_point_sid
 
     let trim_points = vec![Coords2d { x: 0.21, y: 2.24 }, Coords2d { x: -1.23, y: 1.12 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
-  arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
-  coincident([arc1.start, line1])
-  coincident([arc1.end, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_circle_case_1_1_circle_to_arc_trimmed_without_start_point_side",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3507,15 +3184,12 @@ async fn test_trim_circle_case_1_2_circle_to_arc_trimmed_with_start_point_side()
 
     let trim_points = vec![Coords2d { x: -2.0, y: 2.86 }, Coords2d { x: -2.53, y: 1.1 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -0.56mm, var 2.8mm], end = [var -3.58mm, var -0.78mm])
-  arc1 = arc(start = [var -2.88mm, var 0.05mm], end = [var -1.04mm, var 2.23mm], center = [var -1.53mm, var 0.78mm])
-  coincident([arc1.start, line1])
-  coincident([arc1.end, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_circle_case_1_2_circle_to_arc_trimmed_with_start_point_side",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3530,14 +3204,12 @@ async fn test_trim_circle_case_1_3_trim_line_to_be_coincident_with_circle() {
 
     let trim_points = vec![Coords2d { x: -1.24, y: 2.78 }, Coords2d { x: -0.5, y: 2.3 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
-  line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
-  coincident([line1.start, circle1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_circle_case_1_3_trim_line_to_be_coincident_with_circle",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3557,15 +3229,12 @@ async fn test_trim_circle_case_1_4_trim_line_and_circle_arc_with_coincident_endp
         Coords2d { x: -0.4, y: 0.57 },
     ];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -1.04mm, var 2.23mm], end = [var -3.58mm, var -0.78mm])
-  arc1 = arc(start = [var -1.04mm, var 2.23mm], end = [var -2.88mm, var 0.05mm], center = [var -1.53mm, var 0.78mm])
-  coincident([arc1.start, line1.start])
-  coincident([arc1.end, line1])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_circle_case_1_4_trim_line_and_circle_arc_with_coincident_endpoints",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3582,16 +3251,12 @@ async fn test_trim_circle_case_2_convert_circle_to_arc_between_two_segments() {
 
     let trim_points = vec![Coords2d { x: -0.44, y: 2.72 }, Coords2d { x: -0.99, y: 1.38 }];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -0.75mm, var 2.93mm], end = [var -2.97mm, var -1.17mm])
-  line2 = line(start = [var -0.1mm, var 2.46mm], end = [var -0.67mm, var 0.97mm])
-  arc1 = arc(start = [var -1.12mm, var 2.25mm], end = [var -0.36mm, var 1.77mm], center = [var -1.53mm, var 0.78mm])
-  coincident([arc1.start, line1])
-  coincident([arc1.end, line2])
-}
-"#;
-
-    assert_trim_result_default_sketch(base_kcl_code, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_circle_case_2_convert_circle_to_arc_between_two_segments",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3605,31 +3270,12 @@ async fn test_trim_rect_arc_corner_reconnects_arc_endpoints_to_trimmed_lines() {
         Coords2d { x: -4.47, y: 2.48 },
     ];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -0.85mm, var 0.72mm], end = [var -4.07mm, var 0.72mm])
-  line2 = line(start = [var -4.07mm, var 0.72mm], end = [var -4.07mm, var 1.54mm])
-  line3 = line(start = [var -2.69mm, var 2.92mm], end = [var -0.85mm, var 2.92mm])
-  line4 = line(start = [var -0.85mm, var 2.92mm], end = [var -0.85mm, var 0.72mm])
-  coincident([line1.end, line2.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-  parallel([line2, line4])
-  parallel([line3, line1])
-  perpendicular([line1, line2])
-  horizontal(line3)
-  arc1 = arc(start = [var -2.69mm, var 2.92mm], end = [var -4.07mm, var 1.54mm], center = [var -2.69mm, var 1.54mm])
-  line5 = line(start = [var -0.85mm, var 1.82mm], end = [var -1.9mm, var 0.72mm])
-  coincident([line5.start, line4])
-  midpoint(line4, point = line5.start)
-  coincident([line5.end, line1])
-  tangent([line3, arc1])
-  tangent([line2, arc1])
-  coincident([line3.start, arc1.start])
-  coincident([line2.end, arc1.end])
-}
-"#;
-
-    assert_trim_result_default_sketch(RECT_ARC_LINE5_TRIM_BASE_KCL, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_rect_arc_corner_reconnects_arc_endpoints_to_trimmed_lines",
+        RECT_ARC_LINE5_TRIM_BASE_KCL,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -3643,30 +3289,12 @@ async fn test_trim_rect_diagonal_corner_reconnects_line5_endpoints() {
         Coords2d { x: -1.38, y: 0.31 },
     ];
 
-    let expected_code = r#"sketch001 = sketch(on = YZ) {
-  line1 = line(start = [var -1.9mm, var 0.72mm], end = [var -4.07mm, var 0.72mm])
-  line2 = line(start = [var -4.07mm, var 0.72mm], end = [var -4.07mm, var 2.92mm])
-  line3 = line(start = [var -4.07mm, var 2.92mm], end = [var -0.85mm, var 2.92mm])
-  line4 = line(start = [var -0.85mm, var 2.92mm], end = [var -0.85mm, var 1.82mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  parallel([line2, line4])
-  parallel([line3, line1])
-  perpendicular([line1, line2])
-  horizontal(line3)
-  arc1 = arc(start = [var -2.69mm, var 2.92mm], end = [var -4.07mm, var 1.54mm], center = [var -2.69mm, var 1.54mm])
-  coincident([arc1.end, line2])
-  coincident([arc1.start, line3])
-  line5 = line(start = [var -0.85mm, var 1.82mm], end = [var -1.9mm, var 0.72mm])
-  tangent([line3, arc1])
-  tangent([line2, arc1])
-  coincident([line4.end, line5.start])
-  coincident([line1.start, line5.end])
-}
-"#;
-
-    assert_trim_result_default_sketch(RECT_ARC_LINE5_TRIM_BASE_KCL, &trim_points, expected_code).await;
+    assert_trim_result_default_sketch(
+        "test_trim_rect_diagonal_corner_reconnects_line5_endpoints",
+        RECT_ARC_LINE5_TRIM_BASE_KCL,
+        &trim_points,
+    )
+    .await;
 }
 
 #[tokio::test]

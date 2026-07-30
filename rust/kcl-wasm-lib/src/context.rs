@@ -47,7 +47,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 pub struct Context {
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
-    fs: Arc<FileManager>,
+    fs: kcl_lib::FileSystemHandle,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
@@ -77,7 +77,7 @@ impl Context {
                 engine_manager,
                 response_context.clone(),
             )),
-            fs: Arc::new(FileManager::new(fs_manager)),
+            fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
             mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
             execution_callbacks,
             response_context,

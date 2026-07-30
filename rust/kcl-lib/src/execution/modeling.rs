@@ -94,6 +94,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            omit_from_graph: false,
         });
         meta.ctx
             .engine
@@ -116,6 +117,7 @@ impl ExecState {
                 cmd_id: *cmd_req.cmd_id.as_ref(),
                 range: meta.source_range,
                 command: cmd_req.cmd.clone(),
+                omit_from_graph: false,
             });
         }
         meta.ctx
@@ -142,6 +144,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            omit_from_graph: false,
         });
         meta.ctx
             .engine
@@ -163,6 +166,30 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            omit_from_graph: false,
+        });
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
+    }
+
+    /// Send a query-only modeling command that is recorded in command snapshots
+    /// but omitted from the semantic artifact graph.
+    pub(crate) async fn send_untracked_modeling_cmd(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        let id = meta.id(self.id_generator());
+        self.push_command(ArtifactCommand {
+            cmd_id: id,
+            range: meta.source_range,
+            command: cmd.clone(),
+            omit_from_graph: true,
         });
         meta.ctx
             .engine
@@ -185,6 +212,7 @@ impl ExecState {
             cmd_id: id,
             range: meta.source_range,
             command: cmd.clone(),
+            omit_from_graph: false,
         });
         meta.ctx.engine.async_modeling_cmd(id, meta.source_range, cmd).await
     }

@@ -81,7 +81,9 @@ export function BodiesPane(props: AreaTypeComponentProps) {
 
 function BodiesList({
   bodies,
-}: { bodies: Map<string, PropsOf<typeof BodyItem>> }) {
+}: {
+  bodies: Map<string, PropsOf<typeof BodyItem>>
+}) {
   const { userFeatures } = useApp()
   const showExperimentalPointAndClick = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,

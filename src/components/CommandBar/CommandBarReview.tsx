@@ -139,6 +139,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <CommandBarDivider />
         </>
       )}
+      {selectedCommand?.status === 'deprecated' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is deprecated and may be removed in a future version
+              of Zoo Design Studio. Prefer the recommended replacement when one
+              is available.
+            </span>
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
           <div className="px-4 flex flex-wrap gap-2 items-center">
@@ -166,6 +179,20 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                           contentClassName="max-w-none flex items-center"
                         >
                           <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
+                    {arg.status === 'deprecated' && (
+                      <span className="inline-flex items-center text-warn-80 dark:text-warn-40">
+                        <CustomIcon
+                          name="triangleExclamation"
+                          className="w-3.5 h-3.5"
+                        />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>{arg.statusMessage ?? 'Deprecated'}</span>
                         </Tooltip>
                       </span>
                     )}
