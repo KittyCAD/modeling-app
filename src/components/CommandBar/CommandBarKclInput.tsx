@@ -1,39 +1,42 @@
 import type { Completion } from '@codemirror/autocomplete'
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
-import { Compartment, EditorState } from '@codemirror/state'
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { useSelector } from '@xstate/react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
   createCommandBarKclInputKeymap,
   createCommandBarKclInputPendingEnterExtension,
 } from '@src/components/CommandBar/commandBarKclInputKeymap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import { editorTheme } from '@src/editor/plugins/theme'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
-import type { KclManager } from '@src/lang/KclManager'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
-import {
-  noAutofillFormProps,
-  noAutofillInputProps,
-  setNoAutofillAttributes,
-} from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
-import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+
+import { Compartment, EditorState } from '@codemirror/state'
+import { editorTheme } from '@src/editor/plugins/theme'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import {
+  noAutofillFormProps,
+  noAutofillInputProps,
+  setNoAutofillAttributes,
+} from '@src/lib/autofill'
 import styles from './CommandBarKclInput.module.css'
 
 // TODO: remove the need for this selector once we decouple all actors from React

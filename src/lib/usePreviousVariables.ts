@@ -1,8 +1,9 @@
+import { useEffect, useState } from 'react'
+
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import type { Program, VariableMap } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { useEffect, useState } from 'react'
 
 export function usePreviousVariables({
   ast,
