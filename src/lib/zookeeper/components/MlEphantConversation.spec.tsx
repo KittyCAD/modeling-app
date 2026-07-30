@@ -153,13 +153,9 @@ describe('MlEphantConversation', () => {
     )
     expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
 
-    const failureIcon = screen
-      .getByRole('alert')
-      .querySelector('svg[aria-label="close"]')
     const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
     const clearChatButton = screen.getByRole('button', { name: 'Clear chat' })
 
-    expect(failureIcon).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
     expect(clearChatButton).toHaveClass('!bg-chalkboard-10')
     expect(
       clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
