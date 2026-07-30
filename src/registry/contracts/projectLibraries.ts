@@ -1,5 +1,6 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { Project } from '@src/lib/project'
+import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -14,10 +15,6 @@ import type {
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
 import type { ComponentType } from 'react'
-
-export type ProjectLibraryContribution =
-  | ProjectLibrary
-  | readonly ProjectLibrary[]
 
 export type ProjectLibrarySettingDefaultContribution =
   | ProjectLibrarySetting
@@ -61,6 +58,8 @@ export interface ProjectLibraryProjectInput {
 }
 
 export type ProjectLibraryOpenProjectInput = ProjectLibraryProjectInput
+
+export type ProjectLibraryDuplicateProjectInput = ProjectLibraryProjectInput
 
 export interface ProjectLibraryRenameProjectInput
   extends ProjectLibraryProjectInput {
@@ -118,6 +117,10 @@ export interface ProjectLibraryTypeOperations {
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined
   >
+  duplicateProject?: ProjectLibraryOperation<
+    ProjectLibraryDuplicateProjectInput,
+    DuplicateProjectResult | undefined
+  >
   renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
   deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
   moveProjectFrom?: ProjectLibraryMoveProjectFromOperation
@@ -154,27 +157,6 @@ export interface ProjectLibraryTypeContribution {
     library: ProjectLibrary
     signal: AbortSignal
   }) => Promise<HomeProjectEntryContribution[]>
-}
-
-export function combineProjectLibraries(
-  contributionGroups: readonly ProjectLibraryContribution[]
-) {
-  const libraries = contributionGroups.flatMap((contribution) =>
-    isArray(contribution) ? contribution : [contribution]
-  )
-  const librariesById = new Map<string, ProjectLibrary>()
-
-  for (const library of libraries) {
-    librariesById.set(library.id, {
-      ...librariesById.get(library.id),
-      ...library,
-    })
-  }
-
-  return Array.from(librariesById.values()).toSorted((a, b) => {
-    const orderDiff = (a.order ?? 0) - (b.order ?? 0)
-    return orderDiff === 0 ? a.title.localeCompare(b.title) : orderDiff
-  })
 }
 
 export function getHomeProjectEntriesForLibrary(
@@ -272,14 +254,6 @@ export function resolveProjectLibrarySettingDefaults(
 }
 
 export const projectLibrariesContract = defineContract({
-  projectLibrariesValueSpec: defineValueSpec<
-    ProjectLibraryContribution,
-    ProjectLibrary[]
-  >({
-    name: 'project-libraries',
-    defaultValue: [],
-    combine: combineProjectLibraries,
-  }),
   projectLibraryTypesValueSpec: defineValueSpec<
     ProjectLibraryTypeContribution,
     Map<ProjectLibraryType, ProjectLibraryTypeContribution>
@@ -307,7 +281,6 @@ export const projectLibrariesContract = defineContract({
 })
 
 export const {
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,

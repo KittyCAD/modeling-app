@@ -5,7 +5,7 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, effect, signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
@@ -17,15 +17,15 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
   NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
-  projectLibraryFromSetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import {
   readProjectsFromProjectDirectory,
@@ -56,7 +56,6 @@ import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contract
 import {
   getProjectLibraryOperation,
   type ProjectLibraryTypeOperations,
-  projectLibrariesValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -119,6 +118,7 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 }
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
 
@@ -143,7 +143,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     }
 
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    for (const library of ctx.valueSpecs.get(projectLibrariesValueSpec)) {
+    for (const library of getConfiguredProjectLibraries()) {
       if (!projectLibraryIds.has(library.id)) {
         continue
       }
@@ -172,9 +172,16 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return []
     }
 
-    return ctx.valueSpecs
-      .get(projectLibrariesValueSpec)
-      .filter((library) => projectLibraryIds.has(library.id))
+    return getConfiguredProjectLibraries().filter((library) =>
+      projectLibraryIds.has(library.id)
+    )
+  }
+
+  const getConfiguredProjectLibraries = () => {
+    const currentSettings = settings.value?.current.value
+    return currentSettings
+      ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+      : []
   }
 
   const getMoveToLibraryTargets = (
@@ -182,7 +189,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   ): HomeProjectMoveToLibraryTarget[] => {
     const projectLibraryIds = new Set(project.libraryIds ?? [])
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    const libraries = ctx.valueSpecs.get(projectLibrariesValueSpec)
+    const libraries = getConfiguredProjectLibraries()
     const targets: HomeProjectMoveToLibraryTarget[] = []
     const targetLibraryIds = new Set<string>()
 
@@ -250,6 +257,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           getProjectOperation(project, 'openProject')) ||
           project.remoteProjectId
       ),
+    canDuplicate: (project) =>
+      Boolean(
+        ((project.localProjectName && project.localProjectPath) ||
+          project.remoteProjectId) &&
+          getProjectOperation(project, 'duplicateProject')
+      ),
     // A local materialization is not required: cloud library operations can act
     // on a remote-only project directly. Each library type's operation guards
     // its own local-vs-remote handling, so the shared capability check only
@@ -292,6 +305,20 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
       return { defaultFile: projectInfo.default_file }
+    },
+    duplicate: async (project) => {
+      const duplicateProject = getProjectOperation(project, 'duplicateProject')
+      if (!serviceImpl.canDuplicate(project) || !duplicateProject) {
+        return
+      }
+
+      const result = await duplicateProject.operation.run({
+        library: duplicateProject.library,
+        project,
+      })
+      if (result) {
+        toast.success(result.message)
+      }
     },
     rename: async (project, requestedName) => {
       const renameProject = getProjectOperation(project, 'renameProject')
@@ -462,39 +489,6 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
-const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const libraries = computed<ProjectLibrary[]>(() => {
-    const currentSettings = settings.value?.current.value
-    if (!currentSettings) {
-      return []
-    }
-
-    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
-      currentSettings.app.libraries.current
-    )
-
-    return currentSettings.app.libraries.current.map((library, index) => ({
-      ...projectLibraryFromSetting(library, index, {
-        defaultProjectDirectory,
-      }),
-      icon: 'folder',
-      order: index,
-    }))
-  })
-
-  return {
-    item: defineRuntimeRegistryItem({
-      id: 'home-projects.configured-project-libraries',
-      provides: [
-        provide(projectLibrariesValueSpec, libraries, {
-          key: 'home-projects.configured-project-libraries',
-        }),
-      ],
-    }),
-  }
-}, 'home-projects.configured-project-libraries')
-
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
@@ -573,6 +567,30 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 }
 
                 return { defaultFile: project.defaultFile }
+              },
+            },
+            duplicateProject: {
+              run: async ({ library, project }) => {
+                if (!project.localProjectName || !project.localProjectPath) {
+                  return undefined
+                }
+
+                const result = await duplicateProjectInDirectory({
+                  source: {
+                    directoryName: project.localProjectName,
+                    displayName: getHomeProjectDisplayName(project),
+                    path: project.localProjectPath,
+                  },
+                  projectDirectoryPath: library.path,
+                  requestedProjectTitle: getHomeProjectDisplayName(project),
+                  wasmInstance: await getWasmPromise(),
+                })
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+                invalidateConfiguredProjectLibraryEntries()
+
+                return result
               },
             },
             renameProject: {
@@ -707,16 +725,9 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+      const configuredLibraries = projectLibrariesFromSettings(
         currentSettings.app.libraries.current
-      )
-      const configuredLibraries = currentSettings.app.libraries.current
-        .map((library, index) =>
-          projectLibraryFromSetting(library, index, {
-            defaultProjectDirectory,
-          })
-        )
-        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+      ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries
@@ -840,7 +851,6 @@ const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
-    configuredProjectLibraries,
     configuredProjectLibraryEntries,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,

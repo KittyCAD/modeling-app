@@ -8,7 +8,13 @@ import {
   projectLibraryTypeOptionsFromContributions,
 } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeAll, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
+
+const originalElectron = window.electron
+
+afterEach(() => {
+  window.electron = originalElectron
+})
 
 const defaultLibraries: ProjectLibrarySetting[] = [
   {
@@ -215,8 +221,15 @@ describe('ProjectLibrariesSettingInput', () => {
     expect(updateValue).not.toHaveBeenCalled()
   })
 
-  test('edits, adds, and removes project libraries', () => {
+  test('edits, adds, and removes project libraries', async () => {
     const updateValue = vi.fn()
+    const open = vi.fn().mockResolvedValue({
+      canceled: false,
+      filePaths: ['/client-projects'],
+    })
+    const getPath = vi.fn().mockResolvedValue('/documents')
+    window.electron = { getPath, open } as unknown as Window['electron']
+
     render(
       <ProjectLibrariesSettingInput
         value={defaultLibraries}
@@ -240,18 +253,26 @@ describe('ProjectLibrariesSettingInput', () => {
 
     fireEvent.click(screen.getByTestId('project-library-add'))
 
-    expect(updateValue).toHaveBeenLastCalledWith([
-      {
-        title: 'Client Projects',
-        path: '/projects',
-        type: 'directory',
-      },
-      {
-        title: 'Project Library',
-        path: 'projects',
-        type: 'directory',
-      },
-    ])
+    await waitFor(() =>
+      expect(updateValue).toHaveBeenLastCalledWith([
+        {
+          title: 'Client Projects',
+          path: '/projects',
+          type: 'directory',
+        },
+        {
+          title: 'Project Library',
+          path: '/client-projects',
+          type: 'directory',
+        },
+      ])
+    )
+    expect(open).toHaveBeenCalledWith({
+      properties: ['openDirectory', 'createDirectory'],
+      defaultPath: '/documents',
+      title: 'Choose a project library folder',
+    })
+    expect(getPath).toHaveBeenCalledWith('documents')
 
     fireEvent.click(screen.getAllByTestId('project-library-remove')[1])
 

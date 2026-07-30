@@ -6,6 +6,7 @@ import {
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
   setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
@@ -21,7 +22,10 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const projectDirectory = '/documents/Projects'
@@ -87,6 +91,22 @@ describe('disconnectCloudSyncProject', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('ignores mutations inside temporary duplicate roots', async () => {
+    const temporaryProjectPath = `${projectDirectory}/${DUPLICATE_PROJECT_TEMPORARY_PREFIX}temporary`
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(new Map(), { projectDirectory })
+    )
+
+    await notifyCloudSyncWriteLikeMutation(
+      `${temporaryProjectPath}/project.toml`
+    )
+
+    expect(
+      await getCloudSyncProjectMetadata(temporaryProjectPath)
+    ).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {

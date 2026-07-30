@@ -89,12 +89,14 @@ function createHomeProjectActions(
 ): HomeProjectActionsService {
   return {
     canOpen: vi.fn(() => true),
+    canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
     canMoveToLibrary: vi.fn(() => false),
     open: vi.fn(async (project) => ({
       defaultFile: project.defaultFile ?? '',
     })),
+    duplicate: vi.fn(async () => undefined),
     rename: vi.fn(async () => undefined),
     delete: vi.fn(async () => undefined),
     getMoveToLibraryTargets: vi.fn(() => []),

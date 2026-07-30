@@ -24,11 +24,11 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import {
-  type CloudSyncProjectMetadata,
   type CloudSyncProjectMetadataIndexEntry,
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  duplicateRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
@@ -41,14 +41,17 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectEntryFromProject,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
@@ -74,7 +77,6 @@ import {
 } from '@src/registry/contracts/projectExplorer'
 import {
   type ProjectLibraryTypeContribution,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -100,13 +102,18 @@ type CloudSyncStatusBarPresentation = {
   tooltip: string
 }
 
-type CloudConflictProjectMenuDialog = {
+type CloudConflictDialogRequest = {
   projectPath: string
-  projectName: string
+  projectName?: string
 }
 
-const cloudConflictProjectMenuDialog =
-  signal<CloudConflictProjectMenuDialog | null>(null)
+const cloudConflictDialogRequest = signal<CloudConflictDialogRequest | null>(
+  null
+)
+
+function openCloudConflictDialog(request: CloudConflictDialogRequest) {
+  cloudConflictDialogRequest.value = request
+}
 
 const preservedCloudProjectDefaultFiles = signal<Map<string, string>>(new Map())
 
@@ -240,12 +247,9 @@ function CloudSyncStatusBarItem({
   useSignals()
   const location = useLocation()
   const status = cloudSyncStatus.value
-  const conflictMetadata = useCloudSyncProjectConflict(status.activeProjectPath)
+  const activeProjectPath = status.activeProjectPath
+  const conflictMetadata = useCloudSyncProjectConflict(activeProjectPath)
   const conflictMetadataList = useCloudSyncProjectConflicts()
-  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
-  const [selectedConflict, setSelectedConflict] = useState<
-    CloudSyncProjectMetadata | undefined
-  >()
   if (!status.enabled) {
     return null
   }
@@ -256,9 +260,8 @@ function CloudSyncStatusBarItem({
   const canInspectConflict =
     status.state === 'conflict' &&
     isFileRoute &&
-    status.activeProjectPath &&
+    activeProjectPath &&
     conflictMetadata?.conflict
-  const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
   const statusBarButtonContent = (
@@ -313,7 +316,12 @@ function CloudSyncStatusBarItem({
                     key={metadata.localProjectPath}
                     type="button"
                     className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
-                    onClick={() => setSelectedConflict(metadata)}
+                    onClick={() =>
+                      openCloudConflictDialog({
+                        projectPath: metadata.localProjectPath,
+                        projectName: metadata.projectName,
+                      })
+                    }
                   >
                     {metadata.projectName}
                   </button>
@@ -332,8 +340,10 @@ function CloudSyncStatusBarItem({
           className={statusBarClassName}
           data-testid="cloud-sync-status"
           onClick={() => {
-            if (canInspectConflict) {
-              setIsInspectingConflict(true)
+            if (canInspectConflict && activeProjectPath) {
+              openCloudConflictDialog({
+                projectPath: activeProjectPath,
+              })
               return
             }
             retryCloudSync()
@@ -342,23 +352,7 @@ function CloudSyncStatusBarItem({
           {statusBarButtonContent}
         </button>
       )}
-      {isInspectingConflict && status.activeProjectPath && (
-        <CloudConflictDialog
-          projectPath={status.activeProjectPath}
-          resolvedTheme={resolvedTheme}
-          onDismiss={() => setIsInspectingConflict(false)}
-          onResolved={() => setIsInspectingConflict(false)}
-        />
-      )}
-      {selectedConflictProjectPath && (
-        <CloudConflictDialog
-          projectPath={selectedConflictProjectPath}
-          resolvedTheme={resolvedTheme}
-          onDismiss={() => setSelectedConflict(undefined)}
-          onResolved={() => setSelectedConflict(undefined)}
-        />
-      )}
-      <CloudConflictProjectMenuDialogHost resolvedTheme={resolvedTheme} />
+      <CloudConflictDialogHost resolvedTheme={resolvedTheme} />
     </>
   )
 }
@@ -432,10 +426,10 @@ function CloudConflictProjectMenuItem({
         }}
         className={`${className}bg-warn-10/50 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30`}
         onClick={() => {
-          cloudConflictProjectMenuDialog.value = {
+          openCloudConflictDialog({
             projectPath: context.projectPath,
             projectName: getProjectDisplayName(context.project),
-          }
+          })
           close()
         }}
       >
@@ -450,17 +444,17 @@ function CloudConflictProjectMenuItem({
   )
 }
 
-export function CloudConflictProjectMenuDialogHost({
+export function CloudConflictDialogHost({
   resolvedTheme,
 }: {
   resolvedTheme: ResolvedTheme
 }) {
   useSignals()
-  const dialog = cloudConflictProjectMenuDialog.value
+  const dialog = cloudConflictDialogRequest.value
 
   useEffect(() => {
     return () => {
-      cloudConflictProjectMenuDialog.value = null
+      cloudConflictDialogRequest.value = null
     }
   }, [])
 
@@ -474,10 +468,10 @@ export function CloudConflictProjectMenuDialogHost({
       projectName={dialog.projectName}
       resolvedTheme={resolvedTheme}
       onDismiss={() => {
-        cloudConflictProjectMenuDialog.value = null
+        cloudConflictDialogRequest.value = null
       }}
       onResolved={() => {
-        cloudConflictProjectMenuDialog.value = null
+        cloudConflictDialogRequest.value = null
       }}
     />
   )
@@ -781,47 +775,6 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
-const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const library = computed<ProjectLibrary[]>(() => {
-    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
-    const configuredLibraries =
-      settings.value?.current.value.app.libraries?.current
-    const configuredCloudLibraryIndex =
-      configuredLibraries?.findIndex(
-        (library) =>
-          library.type === defaultCloudLibrary.type &&
-          library.path === defaultCloudLibrary.path
-      ) ?? -1
-    const configuredCloudLibrary =
-      configuredCloudLibraryIndex === -1
-        ? undefined
-        : configuredLibraries?.[configuredCloudLibraryIndex]
-
-    return [
-      {
-        ...defaultCloudLibrary,
-        ...configuredCloudLibrary,
-        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        icon: 'network',
-        order:
-          configuredCloudLibraryIndex === -1 ? 10 : configuredCloudLibraryIndex,
-      },
-    ]
-  })
-
-  return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.project-library',
-      provides: [
-        provide(projectLibrariesValueSpec, library, {
-          key: 'cloud-sync.project-library',
-        }),
-      ],
-    }),
-  }
-}, 'cloud-sync.project-library')
-
 /**
  * The `cloud` project-library *type* handler (browse/create in the local
  * Personal Cloud folder). This is registered as an always-on extension rather
@@ -877,6 +830,44 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return project
+        },
+      },
+      duplicateProject: {
+        run: async ({ project }) => {
+          if (project.localProjectName && project.localProjectPath) {
+            const result = await duplicateProjectInDirectory({
+              source: {
+                directoryName: project.localProjectName,
+                displayName: getHomeProjectDisplayName(project),
+                path: project.localProjectPath,
+              },
+              projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+              requestedProjectTitle: getHomeProjectDisplayName(project),
+              wasmInstance: await getWasmPromise(),
+            })
+            refreshLocalCloudProjectEntries()
+
+            return result
+          }
+
+          if (!project.remoteProjectId) {
+            return undefined
+          }
+
+          const sourceTitle = getHomeProjectDisplayName(project)
+          const duplicatedProject = await duplicateRemoteCloudProject(
+            project.remoteProjectId,
+            sourceTitle
+          )
+          if (!duplicatedProject) {
+            return undefined
+          }
+
+          return {
+            message: `Successfully duplicated "${sourceTitle}" as "${duplicatedProject.title}"`,
+            name: duplicatedProject.id,
+            title: duplicatedProject.title,
+          }
         },
       },
       // Rename/delete act on the remote project directly when it has not been
@@ -1040,7 +1031,6 @@ export const cloudSyncPlugin = createZdsPlugin({
   description: 'Cloud-backed project sync controls and status.',
   items: [
     cloudConflictProjectMenuItem,
-    cloudSyncProjectLibraryContribution,
     cloudSyncStatusBarItemContribution,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],

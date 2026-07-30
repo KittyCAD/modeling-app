@@ -220,6 +220,18 @@ export function projectLibraryFromSetting(
   }
 }
 
+export function projectLibrariesFromSettings(
+  libraries: readonly ProjectLibrarySetting[]
+): ProjectLibrary[] {
+  const defaultProjectDirectory =
+    getDefaultDirectoryProjectLibraryPath(libraries)
+  return libraries.map((library, index) =>
+    projectLibraryFromSetting(library, index, {
+      defaultProjectDirectory,
+    })
+  )
+}
+
 export function updateDefaultDirectoryProjectLibrarySetting(
   libraries: readonly ProjectLibrarySetting[],
   updates: Partial<Pick<ProjectLibrarySetting, 'title' | 'path'>>

@@ -227,6 +227,29 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(projectToml).toContain('title = "Untitled"')
+    expect(projectToml).toContain('default_file = "main.kcl"')
+    expect(projectToml).toContain('project_id = "remote-project-123"')
+  })
+
+  it('adds project.toml default_file from remote entrypoint metadata', () => {
+    const files = withRemoteProjectMetadataInArchiveFiles(
+      [
+        projectFile('main.kcl'),
+        projectFile('nested/part.kcl'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
+      ],
+      'Bracket',
+      'remote-project-123',
+      'dev.zoo.dev',
+      'nested/part.kcl'
+    )
+    const projectToml = new TextDecoder().decode(
+      files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
+        ?.data
+    )
+
+    expect(projectToml).toContain('title = "Bracket"')
+    expect(projectToml).toContain('default_file = "nested/part.kcl"')
     expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
