@@ -166,6 +166,7 @@ mod sync {
                 x: make_expr_mm(center.x),
                 y: make_expr_mm(center.y),
             },
+            direction: None,
             construction: None,
         });
 
@@ -179,6 +180,7 @@ mod sync {
                     ctor,
                     ctor_applicable: false,
                     construction: false,
+                    direction: Default::default(),
                 }),
             },
         )

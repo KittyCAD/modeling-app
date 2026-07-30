@@ -35,6 +35,7 @@ use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Distance;
@@ -137,6 +138,9 @@ const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const ARC_DIRECTION_PARAM: &str = "direction";
+/// The name of the KCL std constant for a clockwise arc direction.
+const ARC_DIRECTION_CW_NAME: &str = "CW";
 const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
@@ -2223,6 +2227,14 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        // Add direction kwarg if it's clockwise, since counterclockwise is the
+        // default.
+        if ctor.direction == Some(ArcDirection::Cw) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+            });
+        }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
@@ -2839,6 +2851,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                direction: ctor.direction,
                 construction: ctor.construction,
             },
         )?;
@@ -5790,6 +5803,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        direction: Option<ArcDirection>,
         construction: Option<bool>,
     },
     EditCircle {
@@ -6152,6 +6166,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             start,
             end,
             center,
+            direction,
             construction,
         } => {
             if let NodeMut::CallExpressionKw(call) = node {
@@ -6168,6 +6183,35 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle direction kwarg
+                if let Some(direction_value) = direction {
+                    let direction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
+                    if direction_value.is_clockwise() {
+                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        if direction_exists {
+                            // Update existing direction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM) {
+                                    labeled_arg.arg = direction_ast.clone();
+                                }
+                            }
+                        } else {
+                            // Add new direction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                                arg: direction_ast,
+                            });
+                        }
+                    } else {
+                        // Remove direction kwarg if it exists since
+                        // counterclockwise is the default
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(ARC_DIRECTION_PARAM));
                     }
                 }
                 // Handle construction kwarg
@@ -8031,6 +8075,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -8082,6 +8127,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
@@ -10595,6 +10641,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let (_src_delta, scene_delta) = frontend
@@ -14708,6 +14755,7 @@ sketch001 = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);

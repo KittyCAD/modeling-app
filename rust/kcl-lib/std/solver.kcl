@@ -92,8 +92,9 @@ export fn line(
   construction?: bool,
 ): Segment {}
 
-/// Create a circular arc. The arc segment always sweeps counterclockwise from start to end.
-/// To change direction, swap the start and end points.
+/// Create a circular arc. By default, the arc segment sweeps counterclockwise
+/// from start to end. If the arc sweeps the wrong way, set `direction = CW` to
+/// make it sweep clockwise from start to end instead.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -111,6 +112,21 @@ export fn line(
 ///   arc1 = arc(start = [0, 0], end = [0, height], center = [0, height/2])
 /// }
 /// ```
+///
+/// Use `direction = CW` to sweep the other way around the circle without
+/// swapping the start and end points. This is the same shape as the first
+/// example, but the arc travels from the base line's start to its end.
+///
+/// ```kcl,sketchSolve
+/// profile = sketch(on = XY) {
+///   base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+///   top = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 5mm], direction = CW)
+///   coincident([base.start, top.start])
+///   coincident([base.end, top.end])
+/// }
+///
+/// solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
+/// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn arc(
   /// The point where the arc begins.
@@ -119,6 +135,9 @@ export fn arc(
   end: Point2d,
   /// The center of the circle the arc lies on.
   center: Point2d,
+  /// The direction that the arc sweeps from start to end: `CCW` for
+  /// counterclockwise or `CW` for clockwise. Defaults to `CCW`.
+  direction?: string,
   /// Whether this segment is construction geometry rather than part of the modeled profile.
   construction?: bool,
 ): Segment {}

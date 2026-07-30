@@ -42,6 +42,7 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::Coincident;
 use crate::front::Constraint;
@@ -863,6 +864,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add interior.
     let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let direction_opt: Option<ArcDirection> = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
+    let direction = direction_opt.unwrap_or_default();
     let construction_opt = args.get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?;
     let construction: bool = construction_opt.unwrap_or(false);
     let construction_ctor = construction_opt;
@@ -952,6 +955,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                 ))
             })?,
         },
+        direction: direction_opt,
         construction: construction_ctor,
     };
 
@@ -971,6 +975,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             start_object_id,
             end_object_id,
             center_object_id,
+            direction,
             construction,
         },
         tag: None,
@@ -1070,6 +1075,10 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
     // Build the implicit arc constraint.
     let range = args.source_range;
+    // The solver only understands counterclockwise arcs, so resolve which of
+    // the declared points is the start of the counterclockwise sweep.
+    let ((sweep_start_x, sweep_start_y), (sweep_end_x, sweep_end_y)) =
+        direction.ccw_order((start_x, start_y), (end_x, end_y));
     let mut required_constraints = Vec::with_capacity(7);
     required_constraints.extend(arc_fixed_constraints);
     required_constraints.push(ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
@@ -1078,12 +1087,12 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             center_y.to_constraint_id(range)?,
         ),
         start: ezpz::datatypes::inputs::DatumPoint::new_xy(
-            start_x.to_constraint_id(range)?,
-            start_y.to_constraint_id(range)?,
+            sweep_start_x.to_constraint_id(range)?,
+            sweep_start_y.to_constraint_id(range)?,
         ),
         end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-            end_x.to_constraint_id(range)?,
-            end_y.to_constraint_id(range)?,
+            sweep_end_x.to_constraint_id(range)?,
+            sweep_end_y.to_constraint_id(range)?,
         ),
     }));
     let drag_anchor = exec_state
@@ -1102,8 +1111,14 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         required_constraints.push(ezpz::Constraint::PointArcCoincident(
             DatumCircularArc {
                 center: DatumPoint::new_xy(center_x.to_constraint_id(range)?, center_y.to_constraint_id(range)?),
-                start: DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
-                end: DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+                start: DatumPoint::new_xy(
+                    sweep_start_x.to_constraint_id(range)?,
+                    sweep_start_y.to_constraint_id(range)?,
+                ),
+                end: DatumPoint::new_xy(
+                    sweep_end_x.to_constraint_id(range)?,
+                    sweep_end_y.to_constraint_id(range)?,
+                ),
             },
             anchor.point,
         ));
@@ -1751,6 +1766,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         start: arc_start,
                         end: arc_end,
                         center: arc_center,
+                        direction: arc_direction,
                         ..
                     },
                 )
@@ -1759,6 +1775,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         start: arc_start,
                         end: arc_end,
                         center: arc_center,
+                        direction: arc_direction,
                         ..
                     },
                     UnsolvedSegmentKind::Point {
@@ -1769,10 +1786,15 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                     let point_y = &point_pos[1];
                     match (point_x, point_y) {
                         (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
-                            // Extract arc center, start, and end coordinates
+                            // Extract arc center, start, and end coordinates.
+                            // The solver constrains the point to the portion of
+                            // the circle swept counterclockwise from the
+                            // datum's start to its end, so resolve the sweep
+                            // order from the arc's direction.
+                            let (arc_sweep_start, arc_sweep_end) = arc_direction.ccw_order(arc_start, arc_end);
                             let (center_x, center_y) = (&arc_center[0], &arc_center[1]);
-                            let (start_x, start_y) = (&arc_start[0], &arc_start[1]);
-                            let (end_x, end_y) = (&arc_end[0], &arc_end[1]);
+                            let (start_x, start_y) = (&arc_sweep_start[0], &arc_sweep_start[1]);
+                            let (end_x, end_y) = (&arc_sweep_end[0], &arc_sweep_end[1]);
 
                             match (center_x, center_y, start_x, start_y, end_x, end_y) {
                                 (
@@ -3336,7 +3358,13 @@ fn extract_midpoint_target(
                 object_id: unsolved.object_id,
             })
         }
-        UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+        UnsolvedSegmentKind::Arc {
+            center,
+            start,
+            end,
+            direction,
+            ..
+        } => {
             let (
                 UnsolvedExpr::Unknown(center_x),
                 UnsolvedExpr::Unknown(center_y),
@@ -3352,10 +3380,14 @@ fn extract_midpoint_target(
                 )));
             };
 
+            // The solver bisects the portion of the circle swept
+            // counterclockwise from start to end, so store the points in
+            // counterclockwise sweep order.
+            let (start, end) = direction.ccw_order([*start_x, *start_y], [*end_x, *end_y]);
             Ok(MidpointTargetVars::Arc {
                 center: [*center_x, *center_y],
-                start: [*start_x, *start_y],
-                end: [*end_x, *end_y],
+                start,
+                end,
                 object_id: unsolved.object_id,
             })
         }
