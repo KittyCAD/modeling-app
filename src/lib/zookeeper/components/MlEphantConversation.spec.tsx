@@ -511,7 +511,7 @@ describe('MlEphantConversation', () => {
 
   test.each([
     'Manual edits detected since the last Zookeeper state.',
-    'Transient model streaming error; retrying.',
+    'Temporary connection issue. Retrying automatically…',
   ])(
     'keeps reasoning expanded for non-terminal info notices: %s',
     async (infoText) => {
@@ -559,9 +559,18 @@ describe('MlEphantConversation', () => {
         />
       )
 
-      expect(
-        screen.getByTestId('ml-response-info-chat-bubble')
-      ).toHaveTextContent(infoText)
+      if (infoText === 'Temporary connection issue. Retrying automatically…') {
+        expect(
+          screen.getByTestId('ml-response-retry-status')
+        ).toHaveTextContent(infoText)
+        expect(
+          screen.queryByTestId('ml-response-info-chat-bubble')
+        ).not.toBeInTheDocument()
+      } else {
+        expect(
+          screen.getByTestId('ml-response-info-chat-bubble')
+        ).toHaveTextContent(infoText)
+      }
       expect(
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
