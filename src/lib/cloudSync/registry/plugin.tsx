@@ -35,7 +35,7 @@ import {
   scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
 import {
-  getDefaultCloudProjectDirectoryPath,
+  getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -77,6 +77,7 @@ import {
 } from '@src/registry/contracts/projectExplorer'
 import {
   type ProjectLibraryTypeContribution,
+  type ProjectLibrarySettingsDetailsProps,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -143,13 +144,15 @@ function getPreservedCloudProjectDefaultFile(
     : undefined
 }
 
-function CloudProjectLibrarySettingsDetails() {
+function CloudProjectLibrarySettingsDetails({
+  library,
+}: ProjectLibrarySettingsDetailsProps) {
   const [storagePath, setStoragePath] = useState<string>()
 
   useEffect(() => {
     let disposed = false
 
-    getDefaultCloudProjectDirectoryPath()
+    getCloudProjectLibraryMaterializationDirectoryPath(library)
       .then((projectDirectoryPath) => {
         if (!disposed) {
           setStoragePath(projectDirectoryPath)
@@ -164,7 +167,7 @@ function CloudProjectLibrarySettingsDetails() {
     return () => {
       disposed = true
     }
-  }, [])
+  }, [library])
 
   return (
     <div className="m-0 flex min-w-0 flex-1 items-center gap-2 text-sm">
@@ -785,9 +788,13 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+  const getWasmPromise = () => {
+    const wasmPromise = ctx.valueSpecs.get(wasmPromiseValueSpec)
+    if (!wasmPromise) {
+      throw new Error('Missing WASM promise registry value.')
+    }
+    return wasmPromise
+  }
 
   // A materialized cloud project can be listed either by System IO (when the
   // cloud folder is the app's project directory, e.g. on web) or by the
@@ -813,11 +820,15 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         // Creating a project only needs the local library folder, so it stays
         // available whether or not cloud sync is currently enabled. When sync
         // is on we also enroll the new project; otherwise it is picked up the
-        // next time sync is enabled (via syncExistingLocalProjects on web /
-        // startProjectSync on desktop).
-        run: async ({ requestedProjectName, requestedProjectTitle }) => {
+        // next time sync is enabled through cloud-library auto-enrollment.
+        run: async ({
+          library,
+          requestedProjectName,
+          requestedProjectTitle,
+        }) => {
           const project = await createProjectInLocalDirectory({
-            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            projectDirectoryPath:
+              await getCloudProjectLibraryMaterializationDirectoryPath(library),
             requestedProjectName,
             requestedProjectTitle,
             wasmInstancePromise: getWasmPromise(),
@@ -833,7 +844,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       duplicateProject: {
-        run: async ({ project }) => {
+        run: async ({ library, project }) => {
           if (project.localProjectName && project.localProjectPath) {
             const result = await duplicateProjectInDirectory({
               source: {
@@ -841,7 +852,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 displayName: getHomeProjectDisplayName(project),
                 path: project.localProjectPath,
               },
-              projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+              projectDirectoryPath:
+                await getCloudProjectLibraryMaterializationDirectoryPath(
+                  library
+                ),
               requestedProjectTitle: getHomeProjectDisplayName(project),
               wasmInstance: await getWasmPromise(),
             })
@@ -967,9 +981,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       moveProjectTo: {
-        run: async ({ source }) => {
+        run: async ({ library, source }) => {
           const result = await moveProjectIntoLocalDirectory({
-            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            projectDirectoryPath:
+              await getCloudProjectLibraryMaterializationDirectoryPath(library),
             sourceProjectPath: source.localProjectPath,
             sourceProjectName: source.localProjectName,
             defaultFile: source.defaultFile,
@@ -992,9 +1007,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
     },
-    readEntries: async ({ signal }) => {
+    readEntries: async ({ library, signal }) => {
       const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+        projectDirectoryPath:
+          await getCloudProjectLibraryMaterializationDirectoryPath(library),
         wasmInstancePromise: getWasmPromise(),
         signal,
       })
@@ -1008,7 +1024,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
 
       return projects.map((project) => ({
         ...homeProjectEntryFromProject(project),
-        libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        libraryId: library.id,
       }))
     },
   }

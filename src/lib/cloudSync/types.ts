@@ -90,7 +90,7 @@ export type CloudSyncConfig = {
   baseUrl?: string
   environmentName?: string
   projectDirectoryPath?: string
-  syncExistingLocalProjects?: boolean
+  autoEnrollCloudLibraryProjects?: boolean
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */

@@ -258,23 +258,25 @@ function isProjectSyncExcluded(metadata: ProjectMetadata | undefined) {
   return Boolean(metadata?.syncExcluded)
 }
 
-export function shouldCloudSyncAutoSyncLocalProject({
-  syncExistingLocalProjects,
+export function shouldAutoEnrollCloudLibraryProject({
+  autoEnrollCloudLibraryProjects,
   hasRemoteProjectId,
   hasBaseManifest,
 }: {
-  syncExistingLocalProjects: boolean | undefined
+  autoEnrollCloudLibraryProjects: boolean | undefined
   hasRemoteProjectId: boolean
   hasBaseManifest: boolean
 }) {
   return (
-    syncExistingLocalProjects !== false || hasRemoteProjectId || hasBaseManifest
+    autoEnrollCloudLibraryProjects !== false ||
+    hasRemoteProjectId ||
+    hasBaseManifest
   )
 }
 
-function shouldAutoSyncLocalProject(metadata: ProjectMetadata) {
-  return shouldCloudSyncAutoSyncLocalProject({
-    syncExistingLocalProjects: config.syncExistingLocalProjects,
+function shouldSyncCloudLibraryProject(metadata: ProjectMetadata) {
+  return shouldAutoEnrollCloudLibraryProject({
+    autoEnrollCloudLibraryProjects: config.autoEnrollCloudLibraryProjects,
     hasRemoteProjectId: Boolean(metadata.remoteProjectId),
     hasBaseManifest: Boolean(metadata.baseManifest),
   })
@@ -882,6 +884,14 @@ async function exists(targetPath: string) {
 
 function statIsDirectory(stat: IStat) {
   return Boolean(stat.mode & 0o040000)
+}
+
+async function isExistingDirectory(targetPath: string) {
+  try {
+    return statIsDirectory(await localFs.stat(targetPath))
+  } catch {
+    return false
+  }
 }
 
 async function collectLocalProjectFiles(projectRoot: string) {
@@ -2280,7 +2290,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
 
   try {
     metadata = await bindRemoteProjectIdFromToml(metadata)
-    if (!shouldAutoSyncLocalProject(metadata) && entries.length === 0) {
+    if (!shouldSyncCloudLibraryProject(metadata) && entries.length === 0) {
       return
     }
 
@@ -2752,12 +2762,12 @@ async function syncRemoteIndex() {
   lastRemoteIndexSyncAt = Date.now()
 }
 
-async function enqueueExistingLocalProjectsForInitialSync() {
+async function enqueueExistingCloudLibraryProjectsForInitialSync() {
   if (initialLocalScanComplete) {
     return
   }
 
-  if (config.syncExistingLocalProjects === false) {
+  if (config.autoEnrollCloudLibraryProjects === false) {
     initialLocalScanComplete = true
     return
   }
@@ -2774,8 +2784,7 @@ async function enqueueExistingLocalProjectsForInitialSync() {
       continue
     }
     const projectPath = localFs.join(projectDirectory, entry)
-    const stat = await localFs.stat(projectPath)
-    if (!statIsDirectory(stat)) {
+    if (!(await isExistingDirectory(projectPath))) {
       continue
     }
 
@@ -2817,7 +2826,7 @@ async function runCloudSync() {
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getCloudSyncScopePlan(entries, scopedProjectPath)
     if (syncScopePlan.shouldSyncRemoteIndex) {
-      await enqueueExistingLocalProjectsForInitialSync()
+      await enqueueExistingCloudLibraryProjectsForInitialSync()
       await syncRemoteIndex().catch((error) => {
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
@@ -3126,13 +3135,27 @@ async function registerProjectMutation(
   ) {
     return
   }
-  let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
+  const existingMetadata = await getProjectMetadata(normalizedProjectPath)
+  if (kind === 'delete') {
+    if (
+      !existingMetadata &&
+      !(await isExistingDirectory(normalizedProjectPath))
+    ) {
+      return
+    }
+  } else if (!(await isExistingDirectory(normalizedProjectPath))) {
+    return
+  }
+
+  let metadata =
+    existingMetadata ??
+    (await getOrCreateProjectMetadata(normalizedProjectPath))
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(normalizedProjectPath)
     return
   }
   metadata = await bindRemoteProjectIdFromToml(metadata)
-  if (!shouldAutoSyncLocalProject(metadata)) {
+  if (!shouldSyncCloudLibraryProject(metadata)) {
     await putProjectMetadata(metadata)
     return
   }
@@ -3257,10 +3280,14 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     previousConfig.environmentName !== config.environmentName
   const projectDirectoryChanged =
     previousConfig.projectDirectoryPath !== config.projectDirectoryPath
-  const syncPolicyChanged =
-    previousConfig.syncExistingLocalProjects !==
-    config.syncExistingLocalProjects
-  if (cloudIdentityChanged || projectDirectoryChanged || syncPolicyChanged) {
+  const autoEnrollPolicyChanged =
+    previousConfig.autoEnrollCloudLibraryProjects !==
+    config.autoEnrollCloudLibraryProjects
+  if (
+    cloudIdentityChanged ||
+    projectDirectoryChanged ||
+    autoEnrollPolicyChanged
+  ) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
     conflictCopyRepairComplete = false
@@ -3290,7 +3317,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     !previousConfig.enabled ||
     cloudIdentityChanged ||
     projectDirectoryChanged ||
-    syncPolicyChanged ||
+    autoEnrollPolicyChanged ||
     cloudSyncStatus.value.state === 'disabled'
 
   attachVisibilityChangeListener()

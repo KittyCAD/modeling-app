@@ -6,7 +6,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
+import {
+  getCloudProjectLibraryMaterializationDirectoryPath,
+  getDefaultCloudProjectDirectoryPath,
+} from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -121,9 +124,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
 
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+  const getWasmPromise = () => {
+    const wasmPromise = ctx.valueSpecs.get(wasmPromiseValueSpec)
+    if (!wasmPromise) {
+      throw new Error('Missing WASM promise registry value.')
+    }
+    return wasmPromise
+  }
 
   const getProjectOperation = <
     OperationName extends keyof ProjectLibraryTypeOperations,
@@ -288,9 +295,14 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      const targetProjectDirectoryPath = openProject
+        ? await getCloudProjectLibraryMaterializationDirectoryPath(
+            openProject.library
+          )
+        : await getDefaultCloudProjectDirectoryPath()
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
         project.remoteProjectId,
-        await getDefaultCloudProjectDirectoryPath()
+        targetProjectDirectoryPath
       )
       if (!syncedProject) {
         return undefined
@@ -510,9 +522,13 @@ function areProjectLibrariesEqual(
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
-  const getWasmPromise = () =>
-    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+  const getWasmPromise = () => {
+    const wasmPromise = ctx.valueSpecs.get(wasmPromiseValueSpec)
+    if (!wasmPromise) {
+      throw new Error('Missing WASM promise registry value.')
+    }
+    return wasmPromise
+  }
   const refreshLocalProjectEntries = () => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,

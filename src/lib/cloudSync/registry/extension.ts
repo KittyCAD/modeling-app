@@ -21,11 +21,12 @@ import {
   setCloudSyncProjectScope,
   startCloudSyncProject,
 } from '@src/lib/cloudSync'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   type CloudSyncRegistryService,
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'
-import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
@@ -36,22 +37,41 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   })
   const settings = ctx.services.signal(settingsService)
   let stopSettingsSync: (() => void) | undefined
+  let runtimePolicyVersion = 0
 
   const applyRuntimePolicy = () => {
+    const version = ++runtimePolicyVersion
     const currentSettings = settings.value?.current.value
     const cloudSyncPluginEnabled =
       currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
-    const nextConfig = {
+    const cloudProjectLibrary = currentSettings?.app.libraries.current.find(
+      (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+    )
+    const runtimePolicy = {
       ...runtimeConfig.value,
       enabled: runtimeConfig.value.enabled && cloudSyncPluginEnabled,
-      projectDirectoryPath: currentSettings
-        ? getDefaultDirectoryProjectLibraryPath(
-            currentSettings.app.libraries.current
-          )
-        : undefined,
     }
 
-    untracked(() => configureCloudSync(nextConfig))
+    if (!runtimePolicy.enabled) {
+      untracked(() => configureCloudSync(runtimePolicy))
+      return
+    }
+
+    void getCloudProjectLibraryMaterializationDirectoryPath(cloudProjectLibrary)
+      .catch(() => undefined)
+      .then((cloudProjectDirectoryPath) => {
+        if (version !== runtimePolicyVersion) {
+          return
+        }
+
+        untracked(() =>
+          configureCloudSync({
+            ...runtimePolicy,
+            projectDirectoryPath:
+              runtimePolicy.projectDirectoryPath ?? cloudProjectDirectoryPath,
+          })
+        )
+      })
   }
 
   const ensureSettingsSync = () => {
@@ -91,6 +111,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       id: 'cloud-sync-extension',
       providesServices: [provideService(cloudSyncService, serviceImpl)],
       dispose: () => {
+        runtimePolicyVersion += 1
         stopSettingsSync?.()
         configureCloudSync({ enabled: false })
       },

@@ -9,6 +9,7 @@ import Tooltip from '@src/components/Tooltip'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
   areProjectLibrarySettingsEqual,
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   moveProjectLibrarySetting,
   NEW_PROJECT_LIBRARY_TITLE,
@@ -405,15 +406,24 @@ export function ProjectLibrariesSettingInput({
       libraryTypeOptions
     )
     commit(
-      updateProjectLibrarySettingAt(draftLibraries, index, (library) => ({
-        title:
-          library.title === previousFallback.title
-            ? fallback.title
-            : library.title,
-        path:
-          library.path === previousFallback.path ? fallback.path : library.path,
-        type,
-      }))
+      updateProjectLibrarySettingAt(draftLibraries, index, (library) => {
+        const source =
+          (library.source ?? '') === (previousFallback.source ?? '')
+            ? fallback.source
+            : library.source
+        return {
+          title:
+            library.title === previousFallback.title
+              ? fallback.title
+              : library.title,
+          path:
+            library.path === previousFallback.path
+              ? fallback.path
+              : library.path,
+          type,
+          ...(type === CLOUD_PROJECT_LIBRARY_TYPE && source ? { source } : {}),
+        }
+      })
     )
   }
 

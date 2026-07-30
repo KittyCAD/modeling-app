@@ -11,15 +11,16 @@ import {
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
   isCloudSyncConflictCopyProjectName,
+  shouldAutoEnrollCloudLibraryProject,
   type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
-  shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
 import {
   DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
+  getCloudProjectLibraryMaterializationDirectoryPath,
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
 import {
@@ -54,6 +55,15 @@ describe('cloudSync sync helpers', () => {
     expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
       `/documents/${PROJECT_FOLDER}`
     )
+  })
+
+  it('uses a configured cloud library path as its materialization directory', async () => {
+    await expect(
+      getCloudProjectLibraryMaterializationDirectoryPath({
+        path: '/team-cloud/',
+        type: 'cloud',
+      })
+    ).resolves.toBe('/team-cloud')
   })
 
   it('identifies project roots beneath the personal Zoo cloud directory', () => {
@@ -672,26 +682,26 @@ describe('cloudSync sync helpers', () => {
     })
   })
 
-  it('does not auto-enroll unlinked local projects when existing local sync is disabled', () => {
+  it('does not auto-enroll unlinked cloud-library projects when cloud-library auto-enrollment is disabled', () => {
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: false,
       })
     ).toBe(false)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: true,
         hasBaseManifest: false,
       })
     ).toBe(true)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: true,
       })
