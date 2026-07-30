@@ -359,11 +359,9 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const hasTransientRetry =
-    props.items.some((response) => isTransientRetryInfoResponse(response)) ||
-    (props.isLastResponse &&
-      new URLSearchParams(window.location.search).get('debugZookeeperRetry') ===
-        'true')
+  const hasTransientRetry = props.items.some((response) =>
+    isTransientRetryInfoResponse(response)
+  )
 
   const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
