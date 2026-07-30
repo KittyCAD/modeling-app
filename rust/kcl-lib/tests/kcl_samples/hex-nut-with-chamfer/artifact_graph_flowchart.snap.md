@@ -92,59 +92,61 @@ flowchart LR
   48["SweepEdge Adjacent"]
   49["EdgeCut Chamfer<br>[3134, 3365, 0]"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  50["CompositeSolid Intersect<br>[3457, 3502, 0]<br>Consumed: false"]
+  50["EdgeCut Chamfer<br>[3134, 3365, 0]"]
+    %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  51["CompositeSolid Intersect<br>[3457, 3502, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  51["SketchBlock<br>[690, 2282, 0]"]
+  52["SketchBlock<br>[690, 2282, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  52["SketchBlockConstraint Coincident<br>[1435, 1471, 0]"]
+  53["SketchBlockConstraint Coincident<br>[1435, 1471, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 9 }, ExpressionStatementExpr]
-  53["SketchBlockConstraint Coincident<br>[1474, 1510, 0]"]
+  54["SketchBlockConstraint Coincident<br>[1474, 1510, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 10 }, ExpressionStatementExpr]
-  54["SketchBlockConstraint Coincident<br>[1513, 1549, 0]"]
+  55["SketchBlockConstraint Coincident<br>[1513, 1549, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 11 }, ExpressionStatementExpr]
-  55["SketchBlockConstraint Coincident<br>[1552, 1588, 0]"]
+  56["SketchBlockConstraint Coincident<br>[1552, 1588, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 12 }, ExpressionStatementExpr]
-  56["SketchBlockConstraint Coincident<br>[1591, 1627, 0]"]
+  57["SketchBlockConstraint Coincident<br>[1591, 1627, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 13 }, ExpressionStatementExpr]
-  57["SketchBlockConstraint Coincident<br>[1631, 1667, 0]"]
+  58["SketchBlockConstraint Coincident<br>[1631, 1667, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 14 }, ExpressionStatementExpr]
-  58["SketchBlockConstraint Coincident<br>[1670, 1714, 0]"]
+  59["SketchBlockConstraint Coincident<br>[1670, 1714, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 15 }, ExpressionStatementExpr]
-  59["SketchBlockConstraint Coincident<br>[1717, 1758, 0]"]
+  60["SketchBlockConstraint Coincident<br>[1717, 1758, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 16 }, ExpressionStatementExpr]
-  60["SketchBlockConstraint Coincident<br>[1762, 1800, 0]"]
+  61["SketchBlockConstraint Coincident<br>[1762, 1800, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 17 }, ExpressionStatementExpr]
-  61["SketchBlockConstraint Coincident<br>[1803, 1843, 0]"]
+  62["SketchBlockConstraint Coincident<br>[1803, 1843, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 18 }, ExpressionStatementExpr]
-  62["SketchBlockConstraint Coincident<br>[1846, 1884, 0]"]
+  63["SketchBlockConstraint Coincident<br>[1846, 1884, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 19 }, ExpressionStatementExpr]
-  63["SketchBlockConstraint Coincident<br>[1888, 1922, 0]"]
+  64["SketchBlockConstraint Coincident<br>[1888, 1922, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 20 }, ExpressionStatementExpr]
-  64["SketchBlockConstraint Coincident<br>[1925, 1959, 0]"]
+  65["SketchBlockConstraint Coincident<br>[1925, 1959, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 21 }, ExpressionStatementExpr]
-  65["SketchBlockConstraint Coincident<br>[1962, 1996, 0]"]
+  66["SketchBlockConstraint Coincident<br>[1962, 1996, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 22 }, ExpressionStatementExpr]
-  66["SketchBlockConstraint Coincident<br>[1999, 2033, 0]"]
+  67["SketchBlockConstraint Coincident<br>[1999, 2033, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 23 }, ExpressionStatementExpr]
-  67["SketchBlockConstraint Coincident<br>[2036, 2070, 0]"]
+  68["SketchBlockConstraint Coincident<br>[2036, 2070, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 24 }, ExpressionStatementExpr]
-  68["SketchBlockConstraint Horizontal<br>[2074, 2091, 0]"]
+  69["SketchBlockConstraint Horizontal<br>[2074, 2091, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 25 }, ExpressionStatementExpr]
-  69["SketchBlockConstraint HorizontalDistance<br>[2094, 2162, 0]"]
+  70["SketchBlockConstraint HorizontalDistance<br>[2094, 2162, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 26 }, ExpressionStatementExpr]
-  70["SketchBlockConstraint LinesEqualLength<br>[2165, 2248, 0]"]
+  71["SketchBlockConstraint LinesEqualLength<br>[2165, 2248, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 27 }, ExpressionStatementExpr]
-  71["SketchBlockConstraint Radius<br>[2251, 2280, 0]"]
+  72["SketchBlockConstraint Radius<br>[2251, 2280, 0]"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 28 }, ExpressionStatementExpr]
-  72["SketchBlock<br>[2529, 2770, 0]"]
+  73["SketchBlock<br>[2529, 2770, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  73["SketchBlockConstraint Coincident<br>[2631, 2667, 0]"]
+  74["SketchBlockConstraint Coincident<br>[2631, 2667, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  74["SketchBlockConstraint Radius<br>[2670, 2716, 0]"]
+  75["SketchBlockConstraint Radius<br>[2670, 2716, 0]"]
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 10
-  1 <--x 51
+  1 <--x 52
   2 --- 3
   2 --- 4
   2 --- 5
@@ -153,7 +155,7 @@ flowchart LR
   2 --- 8
   2 --- 9
   2 <--x 10
-  51 --- 2
+  52 --- 2
   3 <--x 11
   4 <--x 12
   5 <--x 13
@@ -167,7 +169,7 @@ flowchart LR
   10 <--x 15
   10 <--x 16
   10 ---- 17
-  10 --- 50
+  10 --- 51
   11 --- 18
   11 x--> 24
   11 --- 26
@@ -238,18 +240,19 @@ flowchart LR
   36 <--x 25
   38 --- 39
   38 <--x 41
-  38 <--x 72
+  38 <--x 73
   39 --- 40
   39 <--x 41
-  72 --- 39
+  73 --- 39
   40 <--x 42
   41 <--x 42
   41 ---- 43
-  41 --- 50
+  41 --- 51
   42 --- 44
   42 x--> 45
   42 --- 47
   42 --- 48
+  42 --- 50
   43 --- 44
   43 --- 45
   43 --- 46
