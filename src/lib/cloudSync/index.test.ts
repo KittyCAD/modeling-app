@@ -27,6 +27,7 @@ import {
   projectManifestFromFiles,
   withRemoteProjectMetadataInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
+import { createCloudSyncProjectSnapshot } from '@src/lib/cloudSync/projectSnapshot'
 import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -251,6 +252,97 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "Bracket"')
     expect(projectToml).toContain('default_file = "nested/part.kcl"')
     expect(projectToml).toContain('project_id = "remote-project-123"')
+  })
+
+  it('compares project.toml default_file against the effective cloud entrypoint', async () => {
+    const localSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile(
+          PROJECT_SETTINGS_FILE_NAME,
+          'title = "Bracket"\ndefault_file = "main.kcl"\n'
+        ),
+      ],
+      { source: 'test', projectPath: '/projects/bracket' }
+    )
+    const remoteSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
+      ],
+      {
+        source: 'test',
+        projectPath: '/projects/bracket',
+        entrypointPath: 'main.kcl',
+      }
+    )
+
+    expect(
+      projectManifestsEqual(localSnapshot.manifest, remoteSnapshot.manifest)
+    ).toBe(true)
+    expect(
+      readProjectFile(remoteSnapshot.syncFiles, PROJECT_SETTINGS_FILE_NAME)
+    ).toContain('default_file = "main.kcl"')
+  })
+
+  it('keeps real project.toml entrypoint changes meaningful', async () => {
+    const baseSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile('nested/part.kcl', 'part = 1'),
+        projectFile(
+          PROJECT_SETTINGS_FILE_NAME,
+          'title = "Bracket"\ndefault_file = "main.kcl"\n'
+        ),
+      ],
+      { source: 'test', projectPath: '/projects/bracket' }
+    )
+    const changedSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile('nested/part.kcl', 'part = 1'),
+        projectFile(
+          PROJECT_SETTINGS_FILE_NAME,
+          'title = "Bracket"\ndefault_file = "nested/part.kcl"\n'
+        ),
+      ],
+      { source: 'test', projectPath: '/projects/bracket' }
+    )
+
+    expect(
+      projectManifestsEqual(baseSnapshot.manifest, changedSnapshot.manifest)
+    ).toBe(false)
+  })
+
+  it('excludes generated thumbnails and exact generated .gitignore files', () => {
+    const files = filterCloudSyncProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile('.gitignore', `${PROJECT_IMAGE_NAME}\n`),
+      projectFile(PROJECT_IMAGE_NAME, 'generated image'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
+  })
+
+  it('neutralizes generated thumbnail .gitignore rules in snapshots', async () => {
+    const localSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile('.gitignore', `${PROJECT_IMAGE_NAME}\ndist/\n`),
+      ],
+      { source: 'test', projectPath: '/projects/bracket' }
+    )
+    const remoteSnapshot = await createCloudSyncProjectSnapshot(
+      [
+        projectFile('main.kcl', 'cube = 1'),
+        projectFile('.gitignore', 'dist/\n'),
+      ],
+      { source: 'test', projectPath: '/projects/bracket' }
+    )
+
+    expect(
+      projectManifestsEqual(localSnapshot.manifest, remoteSnapshot.manifest)
+    ).toBe(true)
   })
 
   it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {

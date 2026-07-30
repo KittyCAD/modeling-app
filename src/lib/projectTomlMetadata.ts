@@ -117,6 +117,14 @@ export function normalizeProjectTomlContents(contents: string) {
   return stringifyProjectToml(table)
 }
 
+export type CloudSyncProjectTomlNormalization = {
+  contents: string
+  defaultFile?: string
+  effectiveEntrypointPath?: string
+  defaultFileSynthesized: boolean
+  defaultFileMatchesEffectiveEntrypoint: boolean
+}
+
 export function getProjectDefaultFileFromProjectTomlContents(contents: string) {
   const table = parseProjectToml(contents)
   if (!table) {
@@ -125,6 +133,51 @@ export function getProjectDefaultFileFromProjectTomlContents(contents: string) {
 
   const defaultFile = getNonEmptyString(table.default_file)
   return defaultFile ? normalizeProjectTomlPath(defaultFile) : undefined
+}
+
+export function normalizeProjectTomlContentsForCloudSyncSnapshot(
+  contents: string,
+  options: { entrypointPath?: string } = {}
+): CloudSyncProjectTomlNormalization {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return {
+      contents,
+      defaultFile: undefined,
+      effectiveEntrypointPath: options.entrypointPath
+        ? normalizeProjectTomlPath(options.entrypointPath)
+        : undefined,
+      defaultFileSynthesized: false,
+      defaultFileMatchesEffectiveEntrypoint: false,
+    }
+  }
+
+  const defaultFile = getNonEmptyString(table.default_file)
+  const normalizedDefaultFile = defaultFile
+    ? normalizeProjectTomlPath(defaultFile)
+    : undefined
+  const entrypointPath = options.entrypointPath
+    ? normalizeProjectTomlPath(options.entrypointPath)
+    : undefined
+  const effectiveEntrypointPath = entrypointPath ?? normalizedDefaultFile
+
+  if (effectiveEntrypointPath) {
+    table.default_file = effectiveEntrypointPath
+  }
+
+  return {
+    contents: stringifyProjectToml(table),
+    defaultFile: normalizedDefaultFile,
+    effectiveEntrypointPath,
+    defaultFileSynthesized: Boolean(
+      effectiveEntrypointPath && !normalizedDefaultFile
+    ),
+    defaultFileMatchesEffectiveEntrypoint: Boolean(
+      normalizedDefaultFile &&
+        effectiveEntrypointPath &&
+        normalizedDefaultFile === effectiveEntrypointPath
+    ),
+  }
 }
 
 export function getProjectTitleFromProjectTomlContents(contents: string) {

@@ -7,10 +7,8 @@ import {
   getCloudSyncProjectMetadata,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
-import {
-  normalizeProjectArchiveFilesForCloudSync,
-  projectManifestFromFiles,
-} from '@src/lib/cloudSync/projectArchive'
+import { normalizeProjectArchiveFilesForCloudSync } from '@src/lib/cloudSync/projectArchive'
+import { createCloudSyncProjectSnapshot } from '@src/lib/cloudSync/projectSnapshot'
 import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import {
   getAllOutboxEntries,
@@ -137,7 +135,13 @@ function addCloudProjectFiles(
 }
 
 async function cleanCloudProjectManifest() {
-  return projectManifestFromFiles(cloudProjectArchiveFiles())
+  return (
+    await createCloudSyncProjectSnapshot(cloudProjectArchiveFiles(), {
+      source: 'test',
+      projectPath: titleProjectPath,
+      remoteProjectId,
+    })
+  ).manifest
 }
 
 async function seedIdBasedCloudProjectMetadata() {
