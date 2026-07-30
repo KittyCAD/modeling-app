@@ -4687,24 +4687,547 @@ s2 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_enum_declaration_execution_not_yet_supported() {
-        // Enums parse but do not execute until their runtime representation
-        // lands; until then execution reports a graceful error.
+    async fn enum_declaration_registers_type() {
+        // Plain and exported declarations both execute. Nothing references the
+        // enum yet, so this only asserts that declaring one is no longer an
+        // error; constructor use is exercised separately.
         let code = r#"@settings(experimentalFeatures = allow)
-type Color { | Red }
+type Color { | Red | Green }
+"#;
+        parse_execute(code).await.unwrap();
+
+        let code = r#"@settings(experimentalFeatures = allow)
+export type Color { | Red | Green }
+"#;
+        parse_execute(code).await.unwrap();
+
+        // A zero-variant enum is a valid declaration.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Empty { | }
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_nested_scope() {
+        // Identity is (module, declared name), so two same-named declarations in
+        // one file would collide. The parser and formatter accept this shape, so
+        // execution is the only thing that can reject it.
+        //
+        // The rule is about nesting, not about one kind of block, so both routes
+        // to `BodyType::Block` are covered here.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        for (case, code) in [
+            (
+                "function body",
+                format!("{allow}fn palette() {{\n  type Color {{ | Red }}\n  return 0\n}}\npalette()\n"),
+            ),
+            (
+                "sketch block",
+                format!(
+                    "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
+                ),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&code).await.unwrap_err().message(),
+                "Enum declarations are only supported at the top-level of a file. Move `type Color` to the top-level.",
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_alone_is_restricted_to_top_level() {
+        // Pins the asymmetry the rule above creates: a type alias may be declared
+        // in any block, an enum may not. The difference is required by enum
+        // identity rather than chosen -- two nested aliases shadow each other
+        // harmlessly, while two nested `type Color` declarations would be one type
+        // with two variant sets. Tightening aliases to match, or relaxing enums,
+        // has to break this test first.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        for (case, code) in [
+            (
+                "function body",
+                format!("{allow}fn f() {{\n  type Temperature = number(_)\n  return 0\n}}\nx = f()\n"),
+            ),
+            (
+                "sketch block",
+                format!(
+                    "{allow}sketch(on = XY) {{\n  type Temperature = number(_)\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
+                ),
+            ),
+        ] {
+            parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("a type alias should be allowed in a {case}: {}", err.message()));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_duplicate() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green | Red }
 "#;
         assert_eq!(
             parse_execute(code).await.unwrap_err().message(),
-            "Enum declarations are not yet supported."
+            "Duplicate variant `Red` in enum `Color`."
+        );
+    }
+
+    /// Runs `main` with `modules` written beside it, so import paths resolve.
+    async fn execute_with_modules(main: &str, modules: &[(&str, &str)]) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_enum_clash").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_name_clash_with_module() {
+        // One rule reached four ways: by declaring the enum second, by importing
+        // the module second, and by importing the enum itself either by name or
+        // through a glob, which arrive by different code paths because a glob
+        // copies exported keys with their namespace prefix intact.
+        let plain_module = ("Color.kcl", "export x = 1\n");
+        let enum_module = (
+            "enums.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
         );
 
-        // Exported enums take the same path.
+        for (case, main, modules) in [
+            (
+                "module then enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
+                vec![plain_module],
+            ),
+            (
+                "enum then module",
+                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
+                vec![plain_module],
+            ),
+            (
+                "named import of an enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
+                vec![plain_module, enum_module],
+            ),
+            (
+                "glob import of an enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
+                vec![plain_module, enum_module],
+            ),
+        ] {
+            let err = execute_with_modules(main, &modules).await.unwrap_err();
+            assert_eq!(
+                err.message(),
+                "An enum and a module cannot share the name `Color` in the same scope, because `Color::x` would be ambiguous. Rename one of them.",
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_constructs_variant() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+        );
+
+        for (case, main, modules) in [
+            (
+                "declared locally",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color::Red\n"),
+                vec![],
+            ),
+            (
+                // Also the regression test for the export check: a module's exports
+                // record the prefixed key `__ty_Color`, not the bare name.
+                "reached through a module path",
+                format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
+                vec![colors],
+            ),
+            (
+                "imported by name",
+                format!("{allow}import Color from 'colors.kcl'\nx = Color::Red\n"),
+                vec![colors],
+            ),
+            (
+                // An import alias renames the binding, not the type, so identity
+                // and therefore the reported name stay those of the declaration.
+                "imported under an alias",
+                format!("{allow}import Color as Shade from 'colors.kcl'\nx = Shade::Red\n"),
+                vec![colors],
+            ),
+        ] {
+            let result = execute_with_modules(&main, &modules)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold an enum value");
+            };
+            assert_eq!(value.qualified_name(), "Color::Red", "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_bad_variant_paths() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+
+        for (case, main, modules, message) in [
+            (
+                "unknown variant",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color::Blue\n"),
+                vec![],
+                "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
+            ),
+            (
+                "enum with no variants",
+                format!("{allow}type Empty {{ | }}\nx = Empty::Red\n"),
+                vec![],
+                "`Red` is not a variant of enum `Empty`. Enum `Empty` has no variants.",
+            ),
+            (
+                "path continues past the enum",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red::more\n"),
+                vec![],
+                "`Color` is an enum, so only a variant name can follow it. There is nothing to reach through `Color::Red`.",
+            ),
+            (
+                "variant name is case sensitive",
+                format!("{allow}type Color {{ | Red }}\nx = Color::red\n"),
+                vec![],
+                "`red` is not a variant of enum `Color`. Its variants are: Red.",
+            ),
+            (
+                "enum not exported from its module",
+                format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
+                vec![(
+                    "colors.kcl",
+                    "@settings(experimentalFeatures = allow)\ntype Color { | Red }\n",
+                )],
+                "Item Color not found in module's exported items",
+            ),
+            (
+                // The alias exemption seen from the use site: a type alias is not
+                // an enum, so the segment is resolved as a module and fails.
+                "a type alias cannot head a path",
+                format!("{allow}type T = number(_)\nx = T::foo\n"),
+                vec![],
+                "`T` is not defined",
+            ),
+            (
+                // The other half of allowing a value and an enum to share a name:
+                // a value on its own can never head a path.
+                "a value cannot head a path",
+                "Color = 5\nx = Color::Red\n".to_owned(),
+                vec![],
+                "`Color` is not defined",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_compares_by_variant() {
         let code = r#"@settings(experimentalFeatures = allow)
-export type Color { | Red }
+type Color { | Red | Green }
+sameEq = Color::Red == Color::Red
+sameNeq = Color::Red != Color::Red
+otherEq = Color::Red == Color::Green
+otherNeq = Color::Red != Color::Green
+"#;
+        let result = parse_execute(code).await.unwrap();
+
+        for (name, expected) in [
+            ("sameEq", true),
+            ("sameNeq", false),
+            ("otherEq", false),
+            ("otherNeq", true),
+        ] {
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name) else {
+                panic!("`{name}` should hold a bool");
+            };
+            assert_eq!(value, expected, "variable: {name}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_usable_inside_sketch_block() {
+        // Only enum declarations are restricted to the top level; uses are not
+        // restricted at all. A sketch block executes its body with sketch-mode
+        // skipping turned off, and memory lookups walk outward, so the enum
+        // declared above resolves inside the block.
+        //
+        // `assertIs` runs inside the block because block-local bindings live in a
+        // child scope that the root environment cannot read afterwards. A wrong
+        // comparison therefore fails this test instead of passing unnoticed.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+sketch(on = XY) {
+  c = Color::Red
+  assertIs(Color::Red != Color::Green)
+  assertIs(!(Color::Red != Color::Red))
+  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+"#;
+        parse_execute(code)
+            .await
+            .unwrap_or_else(|err| panic!("enum use inside a sketch block should work: {}", err.message()));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_eq_reserved_inside_sketch_block() {
+        // Inside a sketch block, `==` declares an equivalence constraint, so it is
+        // not available for ordinary comparison. Enums are not singled out: the
+        // interception happens before any value-comparison arm is reached, and
+        // strings and numbers are refused in the same words. The string and number
+        // rows are here to keep that visible -- if a later change makes enums
+        // report something different from the other types, this test says so.
+        //
+        // `!=` is deliberately absent: the interception tests `Eq` only, so `!=`
+        // still compares, which `enum_usable_inside_sketch_block` covers.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let tail = "  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}\n";
+        for (case, declaration, comparison, types) in [
+            (
+                "enums",
+                "type Color { | Red | Green }\n",
+                "Color::Red == Color::Green",
+                "a value of enum `Color` and a value of enum `Color`",
+            ),
+            ("strings", "", "\"a\" == \"b\"", "a string and a string"),
+            ("numbers", "", "1 == 2", "a number and a number"),
+        ] {
+            let code = format!("{allow}{declaration}sketch(on = XY) {{\n  x = {comparison}\n{tail}");
+            assert_eq!(
+                parse_execute(&code).await.unwrap_err().message(),
+                format!("Cannot create an equivalence constraint between values of these types: {types}"),
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_same_file_imported_twice_is_one_type() {
+        // Two names for one declaration, so they are the same type and compare
+        // equal. Identity is the declaration, not the binding, which is what makes
+        // this different from two files that each declare a `Color`.
+        let main = r#"@settings(experimentalFeatures = allow)
+import Color as A from 'colors.kcl'
+import Color as B from 'colors.kcl'
+x = A::Red == B::Red
+y = A::Red == B::Green
+"#;
+        let result = execute_with_modules(
+            main,
+            &[(
+                "colors.kcl",
+                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            )],
+        )
+        .await
+        .unwrap();
+
+        for (name, expected) in [("x", true), ("y", false)] {
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name) else {
+                panic!("`{name}` should hold a bool");
+            };
+            assert_eq!(value, expected, "variable: {name}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_comparison_across_types() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let color = (
+            "a.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+        );
+        let other_color = (
+            "b.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+        );
+
+        for (case, main, modules, message) in [
+            (
+                "two enums declared separately",
+                format!("{allow}type Color {{ | Red }}\ntype Shade {{ | Red }}\nx = Color::Red == Shade::Red\n"),
+                vec![],
+                "Cannot compare enum `Color` with enum `Shade`. They are different types.",
+            ),
+            (
+                // Identity is the declaration, not the name, so two enums that
+                // share a name are still different types. Pins that the message
+                // says so rather than naming `Color` twice.
+                "two enums sharing a name",
+                format!(
+                    "{allow}import Color as A from 'a.kcl'\nimport Color as B from 'b.kcl'\nx = A::Red == B::Red\n"
+                ),
+                vec![color, other_color],
+                "Cannot compare two different enums that are both named `Color`. They come from separate declarations.",
+            ),
+            (
+                "an enum and a number",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red == 5\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a number.",
+            ),
+            (
+                "a number and an enum, in that order",
+                format!("{allow}type Color {{ | Red }}\nx = 5 == Color::Red\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a number.",
+            ),
+            (
+                "an enum and a string",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red == \"Red\"\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a string.",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_bare_type_name_as_value() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+        );
+
+        for (case, main, modules, message) in [
+            (
+                "enum suggests a variant",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color\n"),
+                vec![],
+                "`Color` is a type, not a value. Use one of its variants, such as `Color::Red`.",
+            ),
+            (
+                // The suggestion has to be pasteable into the file that produced
+                // the error, so it uses the local name rather than the declared one.
+                "suggestion uses the import alias",
+                format!("{allow}import Color as Shade from 'colors.kcl'\nx = Shade\n"),
+                vec![colors],
+                "`Shade` is a type, not a value. Use one of its variants, such as `Shade::Red`.",
+            ),
+            (
+                "enum with no variants suggests nothing",
+                format!("{allow}type Empty {{ | }}\nx = Empty\n"),
+                vec![],
+                "`Empty` is a type, not a value.",
+            ),
+            (
+                "a type alias reports the same way",
+                format!("{allow}type T = number(_)\nx = T\n"),
+                vec![],
+                "`T` is a type, not a value.",
+            ),
+            (
+                // Unchanged behavior: with no type of that name, the old message
+                // is still the right one.
+                "an unknown name is still undefined",
+                "x = Nope\n".to_owned(),
+                vec![],
+                "`Nope` is not defined",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_gated_by_consuming_module() {
+        // The declaring module allows experimental features; the consuming one
+        // does not, so using the imported enum is what trips the gate. Pins that
+        // the gate follows the consumer's settings rather than the declaration's.
+        //
+        // Experimental use is reported as a compilation issue rather than by
+        // aborting the run, which is how `RuntimeType::from_alias` reports it too,
+        // so execution succeeds and the diagnostic is what carries the complaint.
+        let main = r#"import "colors.kcl"
+x = colors::Color::Red
+"#;
+        let result = execute_with_modules(
+            main,
+            &[(
+                "colors.kcl",
+                "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            )],
+        )
+        .await
+        .unwrap();
+
+        let issues = &result.exec_state.global.issues;
+        assert_eq!(issues.len(), 1, "issues: {issues:?}");
+        assert_eq!(
+            issues[0].message,
+            "Use of the enum `Color` is experimental and may change or be removed."
+        );
+        assert_eq!(issues[0].severity, Severity::Error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_not_gated_when_consumer_allows_it() {
+        // The other half of the gate: with the setting present, using an enum
+        // raises nothing at all.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+x = Color::Red
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert!(
+            result.exec_state.global.issues.is_empty(),
+            "issues: {:?}",
+            result.exec_state.global.issues
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_allows_name_sharing_outside_modules() {
+        // Pins two deliberate exemptions from the clash rule above, so that
+        // tightening it later has to be a decision rather than an accident.
+        //
+        // Only an enum or a module can head a `Color::Red` path, so only those two
+        // can be ambiguous. A type alias cannot head a `::` path, and an ordinary
+        // value is never looked up for a path head at all.
+        for (case, main, modules) in [
+            (
+                // The module arrives second, which is the path carrying the
+                // "only `TypeDef::Enum` conflicts" guard.
+                "an alias may share a name with a module",
+                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\n",
+                vec![("Temperature.kcl", "export x = 1\n")],
+            ),
+            (
+                "a value may share a name with an enum",
+                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
+                vec![],
+            ),
+        ] {
+            if let Err(err) = execute_with_modules(main, &modules).await {
+                panic!("case: {case}: {}", err.message());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_redefinition() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+type Color { | Green }
 "#;
         assert_eq!(
             parse_execute(code).await.unwrap_err().message(),
-            "Enum declarations are not yet supported."
+            "Redefinition of type Color."
         );
     }
 }

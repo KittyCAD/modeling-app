@@ -52,6 +52,9 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::fn_call::unexpected_kw_arg_message;
+use crate::execution::kcl_value::EnumTypeDef;
+use crate::execution::kcl_value::EnumTypeId;
+use crate::execution::kcl_value::EnumValue;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::KclObjectKind;
@@ -91,6 +94,7 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
@@ -840,6 +844,19 @@ impl ExecutorContext {
 
                                 if let Ok(ty) = ty {
                                     let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                                    if matches!(
+                                        &ty,
+                                        KclValue::Type {
+                                            value: TypeDef::Enum(_),
+                                            ..
+                                        }
+                                    ) {
+                                        reject_enum_clashing_with_module(
+                                            exec_state,
+                                            import_item.identifier(),
+                                            SourceRange::from(&import_item.name),
+                                        )?;
+                                    }
                                     exec_state.mut_stack().add(
                                         ty_name.clone(),
                                         ty,
@@ -853,6 +870,11 @@ impl ExecutorContext {
 
                                 if let Ok(mod_value) = mod_value {
                                     let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                                    reject_module_clashing_with_enum(
+                                        exec_state,
+                                        import_item.identifier(),
+                                        SourceRange::from(&import_item.name),
+                                    )?;
                                     exec_state.mut_stack().add(
                                         mod_name.clone(),
                                         mod_value,
@@ -879,6 +901,7 @@ impl ExecutorContext {
                                             source_range,
                                         )
                                     })?;
+                                reject_glob_import_clash(exec_state, name, &item, source_range)?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -888,6 +911,7 @@ impl ExecutorContext {
                         }
                         ImportSelector::None { .. } => {
                             let name = import_stmt.module_name().unwrap();
+                            reject_module_clashing_with_enum(exec_state, &name, source_range)?;
                             let item = KclValue::Module {
                                 value: module_id,
                                 meta: vec![source_range.into()],
@@ -1125,11 +1149,57 @@ impl ExecutorContext {
                                     vec![metadata.source_range],
                                 )));
                             }
-                            TypeDeclarationDefinition::Enum(_) => {
-                                return Err(KclError::new_semantic(KclErrorDetails::new(
-                                    "Enum declarations are not yet supported.".to_owned(),
-                                    vec![metadata.source_range],
-                                )));
+                            TypeDeclarationDefinition::Enum(decl) => {
+                                // Identity is module plus declared name, so `type Color` in
+                                // two function bodies of one file would be one type with two
+                                // variant sets. A V1 limitation, liftable in enum v2 by
+                                // giving `EnumTypeId` a declaration site.
+                                if !matches!(body_type, BodyType::Root) {
+                                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                                        format!(
+                                            "Enum declarations are only supported at the top-level of a file. Move `type {}` to the top-level.",
+                                            ty.name.name
+                                        ),
+                                        vec![metadata.source_range],
+                                    )));
+                                }
+
+                                reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+
+                                let variants = decl.variants.iter().map(|v| v.name.name.clone()).collect();
+                                let id = EnumTypeId::new(metadata.source_range.module_id(), ty.name.name.clone());
+                                // Constructing the definition is the validation step: nothing
+                                // below runs, so nothing reaches memory, unless every variant
+                                // name is distinct.
+                                let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
+                                    KclError::new_semantic(KclErrorDetails::new(
+                                        format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
+                                        vec![
+                                            decl.variants[duplicate.first_index].as_source_range(),
+                                            decl.variants[duplicate.duplicate_index].as_source_range(),
+                                        ],
+                                    ))
+                                })?;
+
+                                let value = KclValue::Type {
+                                    value: TypeDef::Enum(def),
+                                    meta: vec![metadata],
+                                    experimental: attrs.experimental,
+                                };
+                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                                exec_state
+                                    .mut_stack()
+                                    .add(name_in_mem.clone(), value, metadata.source_range)
+                                    .map_err(|_| {
+                                        KclError::new_semantic(KclErrorDetails::new(
+                                            format!("Redefinition of type {}.", ty.name.name),
+                                            vec![metadata.source_range],
+                                        ))
+                                    })?;
+
+                                if let ItemVisibility::Export = ty.visibility {
+                                    exec_state.mod_local.module_exports.push(name_in_mem);
+                                }
                             }
                         },
                     }
@@ -1562,6 +1632,216 @@ impl ExecutorContext {
         };
         Ok(item)
     }
+}
+
+/// The head of a `Color::Red` path is looked up both as a module and as an enum,
+/// so one scope must not bind a module and an enum under the same name. Reporting
+/// the clash where the second name is introduced keeps every `X::y` use site
+/// unambiguous, so no check is needed at the use site.
+///
+/// Type aliases and bare types are exempt, since neither can head a `::` path.
+/// They may continue to share a name with a module.
+fn module_enum_clash(name: &str, source_range: SourceRange) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "An enum and a module cannot share the name `{name}` in the same scope, because `{name}::x` would be ambiguous. Rename one of them."
+        ),
+        vec![source_range],
+    ))
+}
+
+/// Call before binding an enum under `name`.
+fn reject_enum_clashing_with_module(
+    exec_state: &ExecState,
+    name: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    if exec_state
+        .stack()
+        .get(&format!("{}{}", memory::MODULE_PREFIX, name), source_range)
+        .is_err()
+    {
+        return Ok(());
+    }
+
+    Err(module_enum_clash(name, source_range))
+}
+
+/// Call before binding a module under `name`. The mirror of
+/// [`reject_enum_clashing_with_module`].
+fn reject_module_clashing_with_enum(
+    exec_state: &ExecState,
+    name: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    let Ok(KclValue::Type {
+        value: TypeDef::Enum(_),
+        ..
+    }) = exec_state
+        .stack()
+        .get(&format!("{}{}", memory::TYPE_PREFIX, name), source_range)
+    else {
+        return Ok(());
+    };
+
+    Err(module_enum_clash(name, source_range))
+}
+
+/// Builds the error for comparing values of two different enum types.
+fn different_enums_err(left: &EnumValue, right: &EnumValue, source_range: SourceRange) -> KclError {
+    let left_name = left.enum_id().declared_name();
+    let right_name = right.enum_id().declared_name();
+
+    let message = if left_name == right_name {
+        // Identity is the declaration, so two enums can share a name and still be
+        // different types. Naming both would read as a mistake in the message.
+        format!(
+            "Cannot compare two different enums that are both named `{left_name}`. They come from separate declarations."
+        )
+    } else {
+        format!("Cannot compare enum `{left_name}` with enum `{right_name}`. They are different types.")
+    };
+
+    KclError::new_semantic(KclErrorDetails::new(message, vec![source_range]))
+}
+
+/// Builds the error for a name that resolves to a type where a value is needed,
+/// such as `x = Color`.
+///
+/// Returns `None` when no type of that name is in scope, which leaves the
+/// caller's "is not defined" error in place.
+fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option<KclError> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, name.name);
+    let KclValue::Type { value: def, .. } = exec_state.stack().get(&key, name.as_source_range()).ok()? else {
+        return None;
+    };
+
+    // The suggestion uses the name as written, which may be an import alias, so
+    // that it can be pasted into the file that produced the error.
+    let suggestion = match &def {
+        TypeDef::Enum(def) => def
+            .variants()
+            .first()
+            .map(|variant| format!(" Use one of its variants, such as `{}::{variant}`.", name.name))
+            .unwrap_or_default(),
+        _ => String::new(),
+    };
+
+    Some(KclError::new_semantic(KclErrorDetails::new(
+        format!("`{}` is a type, not a value.{suggestion}", name.name),
+        name.as_source_ranges(),
+    )))
+}
+
+/// Looks up the enum named by a `::` path segment: `Color` in both `Color::Red`
+/// and `colors::Color::Red`.
+///
+/// Returns `None` when the segment does not name an enum, including when it
+/// names a type alias, since only an enum can head a `::` path. The caller then
+/// resolves the segment as a module instead.
+///
+/// This is the only place that builds a `__ty_` memory key, so the deferred
+/// typed-key refactor has one site to change.
+fn enum_named_by_segment(
+    exec_state: &ExecState,
+    segment: &Node<Identifier>,
+    within: Option<&(EnvironmentRef, Vec<String>)>,
+) -> Option<EnumTypeDef> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
+    let value = match within {
+        // Inside another module the enum must be exported to be reachable, and
+        // exports record the prefixed key rather than the bare name.
+        Some((env, exports)) => {
+            if !exports.contains(&key) {
+                return None;
+            }
+
+            exec_state
+                .stack()
+                .memory
+                .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                .ok()?
+        }
+        None => exec_state.stack().get(&key, segment.as_source_range()).ok()?,
+    };
+
+    match value {
+        KclValue::Type {
+            value: TypeDef::Enum(def),
+            ..
+        } => Some(def),
+        _ => None,
+    }
+}
+
+/// `Red` in `Color::Red`.
+fn enum_variant_value(
+    def: &EnumTypeDef,
+    variant: &Node<Identifier>,
+    exec_state: &mut ExecState,
+) -> Result<KclValue, KclError> {
+    let enum_name = def.id().declared_name();
+
+    if !def.has_variant(&variant.name) {
+        let known = if def.variants().is_empty() {
+            format!("Enum `{enum_name}` has no variants")
+        } else {
+            format!("Its variants are: {}", def.variants().join(", "))
+        };
+
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("`{}` is not a variant of enum `{enum_name}`. {known}.", variant.name),
+            variant.as_source_ranges(),
+        )));
+    }
+
+    // Every V1 enum is experimental, not only those with an annotation, so this
+    // call is unconditional. `warn_experimental` reads the setting of the module
+    // being executed and does nothing when that setting is `allow`, so an enum
+    // imported from a permissive module is still reported in a consumer that has
+    // not opted in. Declarations are gated during parsing; type positions by
+    // `RuntimeType::from_alias`.
+    exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+
+    // The identity comes from the declaration and is never rebuilt from a name.
+    // A later enum v2 can then add a declaration site to `EnumTypeId` by changing
+    // this one construction, without revisiting every use.
+    Ok(KclValue::Enum {
+        value: Box::new(EnumValue::new(
+            def.id().clone(),
+            variant.name.clone(),
+            vec![Metadata {
+                source_range: variant.as_source_range(),
+            }],
+        )),
+    })
+}
+
+/// Glob imports copy exported keys verbatim, prefix included, so which namespace
+/// an incoming key lands in has to be read back off the key itself.
+fn reject_glob_import_clash(
+    exec_state: &ExecState,
+    key: &str,
+    item: &KclValue,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    if let Some(name) = key.strip_prefix(memory::MODULE_PREFIX) {
+        return reject_module_clashing_with_enum(exec_state, name, source_range);
+    }
+
+    if let Some(name) = key.strip_prefix(memory::TYPE_PREFIX)
+        && matches!(
+            item,
+            KclValue::Type {
+                value: TypeDef::Enum(_),
+                ..
+            }
+        )
+    {
+        return reject_enum_clashing_with_module(exec_state, name, source_range);
+    }
+
+    Ok(())
 }
 
 /// When executing in sketch mode, whether we should skip executing this
@@ -2426,11 +2706,35 @@ impl Node<Name> {
             if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
                 return Ok(item_value);
             }
-            return exec_state.stack().get(&mod_name, self.into());
+
+            let not_defined = match exec_state.stack().get(&mod_name, self.into()) {
+                Ok(module) => return Ok(module),
+                Err(err) => err,
+            };
+
+            // No value and no module of this name exists. If a type does, report
+            // that instead: "is not defined" would point away from the mistake.
+            return Err(type_used_as_value(exec_state, &self.name).unwrap_or(not_defined));
         }
 
         let mut mem_spec: Option<(EnvironmentRef, Vec<String>)> = None;
-        for p in &self.path {
+        for (index, p) in self.path.iter().enumerate() {
+            // Only the last segment can name an enum, because what follows an
+            // enum is a variant rather than something to traverse into.
+            if let Some(def) = enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
+                if let Some(next) = self.path.get(index + 1) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
+                            p.name, p.name, next.name
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
+
+                return enum_variant_value(&def, &self.name, exec_state);
+            }
+
             let value = match mem_spec {
                 Some((env, exports)) => {
                     if !exports.contains(&p.name) {
@@ -5222,6 +5526,38 @@ impl Node<BinaryExpression> {
                 !is_equal
             };
             return Ok(KclValue::Bool { value, meta });
+        }
+
+        // Enums compare by declaration and variant. This has to precede
+        // `number_as_f64` below, which would otherwise reject an enum with
+        // "expected a number" and describe the wrong problem.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq) {
+            match (&left_value, &right_value) {
+                (KclValue::Enum { value: left }, KclValue::Enum { value: right }) => {
+                    if left.enum_id() != right.enum_id() {
+                        return Err(different_enums_err(left, right, self.as_source_range()));
+                    }
+
+                    let is_equal = left.variant() == right.variant();
+                    let value = if self.operator == BinaryOperator::Eq {
+                        is_equal
+                    } else {
+                        !is_equal
+                    };
+                    return Ok(KclValue::Bool { value, meta });
+                }
+                (KclValue::Enum { value }, other) | (other, KclValue::Enum { value }) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot compare enum `{}` with {}.",
+                            value.qualified_name(),
+                            other.human_friendly_type()
+                        ),
+                        vec![self.as_source_range()],
+                    )));
+                }
+                _ => {}
+            }
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;
