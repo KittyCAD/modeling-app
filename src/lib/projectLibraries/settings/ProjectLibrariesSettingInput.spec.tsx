@@ -112,6 +112,48 @@ describe('ProjectLibrariesSettingInput', () => {
     }
   })
 
+  test('does not add a project folder as a new project library', async () => {
+    const projectPath = `/tmp/project-library-root-${crypto.randomUUID()}`
+    const updateValue = vi.fn()
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'project.toml'),
+      new TextEncoder().encode('title = "Not a library"')
+    )
+    window.electron = {
+      getPath: vi.fn().mockResolvedValue('/documents'),
+      open: vi.fn().mockResolvedValue({
+        canceled: false,
+        filePaths: [projectPath],
+      }),
+    } as unknown as Window['electron']
+
+    try {
+      render(
+        <ProjectLibrariesSettingInput
+          value={defaultLibraries}
+          updateValue={updateValue}
+          libraryTypeOptions={libraryTypeOptions}
+        />
+      )
+
+      fireEvent.click(screen.getByTestId('project-library-add'))
+
+      await waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith(
+          new Error(
+            `The project library "${projectPath}" is also a project because it contains project.toml. Choose a container folder that holds separate project folders.`
+          )
+        )
+      )
+      expect(updateValue).not.toHaveBeenCalled()
+    } finally {
+      errorSpy.mockRestore()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
 

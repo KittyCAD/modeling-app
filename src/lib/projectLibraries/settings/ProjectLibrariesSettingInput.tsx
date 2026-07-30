@@ -469,6 +469,11 @@ export function ProjectLibrariesSettingInput({
       return
     }
 
+    const validationError = await validateDirectoryProjectLibrary(selectedPath)
+    if (trap(validationError)) {
+      return
+    }
+
     commit([...draftLibraries, { ...newLibrary, path: selectedPath }])
   }
 
