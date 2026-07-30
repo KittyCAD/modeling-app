@@ -511,9 +511,17 @@ describe('MlEphantConversation', () => {
         />
       )
 
-      expect(
-        screen.getByTestId('ml-response-info-chat-bubble')
-      ).toHaveTextContent(infoText)
+      if (infoText === 'Transient model streaming error; retrying.') {
+        expect(
+          screen.getByTestId('ml-response-retry-status')
+        ).toHaveTextContent(
+          'Temporary connection issue. Retrying automatically…'
+        )
+      } else {
+        expect(
+          screen.getByTestId('ml-response-info-chat-bubble')
+        ).toHaveTextContent(infoText)
+      }
       expect(
         screen.getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
@@ -527,6 +535,50 @@ describe('MlEphantConversation', () => {
       expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
     }
   )
+
+  test('renders transient retry notices as inline status text', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: { type: 'user', content: 'Render a bracket' },
+          responses: [
+            {
+              info: {
+                text: 'Transient model streaming error; retrying.',
+              },
+            },
+          ],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByTestId('ml-response-retry-status')).toHaveTextContent(
+      'Temporary connection issue. Retrying automatically…'
+    )
+    expect(
+      screen.queryByTestId('ml-response-info-chat-bubble')
+    ).not.toBeInTheDocument()
+  })
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'

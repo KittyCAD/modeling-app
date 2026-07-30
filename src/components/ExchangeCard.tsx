@@ -34,9 +34,13 @@ type MlCopilotServerMessageEndOfStream = Extract<
   { end_of_stream: unknown }
 >
 
+const TRANSIENT_RETRY_INFO_TEXT = 'Transient model streaming error; retrying.'
+const TRANSIENT_RETRY_STATUS_TEXT =
+  'Temporary connection issue. Retrying automatically…'
+
 const NON_TERMINAL_INFO_TEXTS = [
   'Manual edits detected since the last Zookeeper state.',
-  'Transient model streaming error; retrying.',
+  TRANSIENT_RETRY_INFO_TEXT,
 ]
 
 const getEndOfStreamResponse = (
@@ -52,6 +56,11 @@ const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
   NON_TERMINAL_INFO_TEXTS.some((infoText) =>
     response.info.text.startsWith(infoText)
   )
+
+const isTransientRetryInfoResponse = (
+  response: MlCopilotServerMessage
+): boolean =>
+  'info' in response && response.info.text.startsWith(TRANSIENT_RETRY_INFO_TEXT)
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
@@ -350,6 +359,21 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
+  const transientRetryItems = props.items.flatMap((response, index) =>
+    isTransientRetryInfoResponse(response)
+      ? [
+          <Delta key={index}>
+            <p
+              className="text-xs text-chalkboard-70 dark:text-chalkboard-30"
+              data-testid="ml-response-retry-status"
+            >
+              {TRANSIENT_RETRY_STATUS_TEXT}
+            </p>
+          </Delta>,
+        ]
+      : []
+  )
+
   const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       // This is INTENTIONALLY left here for documentation.
@@ -359,7 +383,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       // if ('delta' in response) {
       //   return response.delta.delta
       // }
-      if ('info' in response) {
+      if ('info' in response && !isTransientRetryInfoResponse(response)) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
       return null
@@ -390,8 +414,11 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const shouldShowResponseBubble =
     hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
 
-  return infoItemsFilteredNulls.length > 0 || shouldShowResponseBubble ? (
+  return transientRetryItems.length > 0 ||
+    infoItemsFilteredNulls.length > 0 ||
+    shouldShowResponseBubble ? (
     <>
+      {transientRetryItems}
       {infoItemsFilteredNulls.length > 0 && (
         <ChatBubble
           side={'left'}
