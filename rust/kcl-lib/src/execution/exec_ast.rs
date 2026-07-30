@@ -1634,8 +1634,6 @@ impl ExecutorContext {
     }
 }
 
-/// When executing in sketch mode, whether we should skip executing this
-/// expression.
 /// The head of a `Color::Red` path is looked up both as a module and as an enum,
 /// so one scope must not bind a module and an enum under the same name. Reporting
 /// the clash where the second name is introduced keeps every `X::y` use site
@@ -1846,6 +1844,8 @@ fn reject_glob_import_clash(
     Ok(())
 }
 
+/// When executing in sketch mode, whether we should skip executing this
+/// expression.
 fn sketch_mode_should_skip(expr: &Expr) -> bool {
     match expr {
         Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
