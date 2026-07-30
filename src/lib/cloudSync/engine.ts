@@ -1819,7 +1819,6 @@ async function markProjectSynced(
   if (syncInProgress) {
     pendingStatusSyncedAt = syncedAt
     updateStatus({
-      lastSyncedAt: syncedAt,
       lastFailure: undefined,
       lastFailureAt: undefined,
     })
@@ -2834,6 +2833,9 @@ async function runCloudSync() {
 
     await refreshPendingCount()
     const syncedAt = pendingStatusSyncedAt
+    if (syncedAt && cloudSyncStatus.value.state === 'conflict') {
+      updateStatus({ lastSyncedAt: syncedAt })
+    }
     if (cloudSyncStatus.value.state !== 'conflict' && remoteIndexFailed) {
       updateStatus({
         state: 'failed',
