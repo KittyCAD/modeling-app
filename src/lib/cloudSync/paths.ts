@@ -27,7 +27,7 @@ export async function getDefaultCloudProjectDirectoryPath() {
         PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
       )
     } catch {
-      // Fall back to the cross-platform documents location below.
+      // Fall back to the shared desktop home location below.
     }
   }
 
@@ -41,7 +41,7 @@ export async function getDefaultCloudProjectDirectoryPath() {
 
   try {
     return fsZds.join(
-      await fsZds.getPath('documents'),
+      await fsZds.getPath('home'),
       CLOUD_PROJECT_LIBRARY_FOLDER,
       PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
     )

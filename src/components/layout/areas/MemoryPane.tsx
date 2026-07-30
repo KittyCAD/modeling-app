@@ -138,6 +138,9 @@ export const processMemory = (
       const sketchVar = val.value
       processedMemory[key] =
         `var ${humanDisplayNumber(sketchVar.initialValue, sketchVar.ty, wasmInstance)}`
+    } else if (val.type === 'Enum') {
+      // Enums are shown by nominal identity, the same way they are written.
+      processedMemory[key] = `${val.enum_name}::${val.variant}`
     } else {
       processedMemory[key] = val.value
     }
