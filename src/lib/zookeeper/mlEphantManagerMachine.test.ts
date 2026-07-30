@@ -13,6 +13,8 @@ import {
   mlEphantManagerMachine,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
+  ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
@@ -520,7 +522,7 @@ describe('mlEphantManagerMachine', () => {
       }
     })
 
-    it('allows a slow setup to finish while the websocket stays responsive', async () => {
+    it('recovers if a responsive websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(mlEphantManagerMachine, {
@@ -565,6 +567,28 @@ describe('mlEphantManagerMachine', () => {
 
         expect(ControllableSetupWebSocket.instances).toHaveLength(1)
         expect(actor.getSnapshot().context.setupAttempt).toBe(0)
+
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        vi.setSystemTime(Date.now() + ZOOKEEPER_HEARTBEAT_TIMEOUT_MS * 2)
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+
+        expect(
+          actor
+            .getSnapshot()
+            .matches(MlEphantManagerStates.WaitForContinueCheck)
+        ).toBe(true)
+
+        socket.receive({ pong: {} })
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS * 2
+        )
+
+        expect(actor.getSnapshot().matches(S.Await)).toBe(true)
+        expect(actor.getSnapshot().context).toMatchObject({
+          abruptlyClosed: true,
+          closeReason: 'Zookeeper connection timed out.',
+        })
+        expect(socket.close).toHaveBeenCalledOnce()
       } finally {
         actor.stop()
         vi.useRealTimers()

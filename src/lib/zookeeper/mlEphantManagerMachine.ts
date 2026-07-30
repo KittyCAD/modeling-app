@@ -192,6 +192,9 @@ export enum MlEphantManagerTransitions {
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
 export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 30_000
 export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
+export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
+export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
+const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
@@ -890,10 +893,36 @@ export const mlEphantManagerMachine = setup({
           let attemptCanceled = false
 
           // Any WS protocol messages will trigger the `api` heartbeat update.
+          let heartbeatSentAt: number | undefined
           const pingIntervalId = setInterval(() => {
-            if (ws.readyState !== WebSocket.OPEN) return
+            if (ws.readyState !== WebSocket.OPEN) {
+              return
+            }
+            const now = Date.now()
+            if (heartbeatSentAt !== undefined) {
+              const heartbeatElapsed = now - heartbeatSentAt
+              if (heartbeatElapsed >= ZOOKEEPER_HEARTBEAT_TIMEOUT_MS) {
+                if (
+                  heartbeatElapsed - ZOOKEEPER_HEARTBEAT_TIMEOUT_MS <=
+                  ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS
+                ) {
+                  clearInterval(pingIntervalId)
+                  logZookeeperDisconnect('websocket heartbeat timed out', {
+                    conversationId,
+                    readyState: getWebSocketReadyStateLabel(ws.readyState),
+                  })
+                  theRefParentSend({
+                    type: MlEphantManagerTransitions.AbruptClose,
+                    closeReason: 'Zookeeper connection timed out.',
+                  })
+                  return
+                }
+                heartbeatSentAt = undefined
+              }
+            }
             ws.send(JSON.stringify({ type: 'ping' }))
-          }, 4_000)
+            heartbeatSentAt ??= now
+          }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           const cancelSetupAttempt = () => {
             if (attemptCanceled) {
               return
@@ -927,6 +956,7 @@ export const mlEphantManagerMachine = setup({
             if (attemptCanceled) {
               return
             }
+            heartbeatSentAt = undefined
 
             let response: unknown
             if (!isString(event.data)) {
