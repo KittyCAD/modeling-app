@@ -9,6 +9,8 @@ import Tooltip from '@src/components/Tooltip'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
   areProjectLibrarySettingsEqual,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  getDefaultDirectoryProjectLibraryPath,
   moveProjectLibrarySetting,
   NEW_PROJECT_LIBRARY_TITLE,
   normalizeProjectLibrarySetting,
@@ -443,7 +445,19 @@ export function ProjectLibrariesSettingInput({
     }
 
     const newLibrary = libraryTypeOption.newLibrary
-    commit([...draftLibraries, newLibrary])
+    if (newLibrary.type !== DIRECTORY_PROJECT_LIBRARY_TYPE || !electron) {
+      commit([...draftLibraries, newLibrary])
+      return
+    }
+
+    const selectedPath = await chooseDirectory({
+      defaultPath: getDefaultDirectoryProjectLibraryPath(draftLibraries),
+    })
+    if (!selectedPath) {
+      return
+    }
+
+    commit([...draftLibraries, { ...newLibrary, path: selectedPath }])
   }
 
   function removeLibrary(index: number) {
