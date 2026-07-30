@@ -1,10 +1,83 @@
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
-import fsZds from '@src/lib/fs-zds'
-import { resolveCloudSyncProjectConflict } from '@src/lib/cloudSync'
-import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import {
+  loadCloudSyncProjectConflictInspection,
+  resolveCloudSyncProjectConflict,
+} from '@src/lib/cloudSync'
 import { Themes } from '@src/lib/theme'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
+
+const cloudConflictDialogSpecMocks = vi.hoisted(() => {
+  const encoder = new TextEncoder()
+  const localSavedAtMs = Date.parse('2026-07-17T11:00:00.000Z')
+  const cloudSavedAtMs = Date.parse('2026-07-17T12:00:00.000Z')
+
+  function inspectedFile(
+    relativePath: string,
+    contents: string,
+    modifiedAtMs: number
+  ) {
+    const data = encoder.encode(contents)
+    return {
+      absolutePath: relativePath,
+      data,
+      modifiedAtMs,
+      relativePath,
+      size: data.byteLength,
+    }
+  }
+
+  function inspectedBinaryFile(relativePath: string, modifiedAtMs: number) {
+    return {
+      absolutePath: relativePath,
+      data: new Uint8Array([0, 1, 2]),
+      modifiedAtMs,
+      relativePath,
+      size: 3,
+    }
+  }
+
+  return {
+    inspection: {
+      projectTitle: 'User-facing project title',
+      remoteProjectId: 'remote-123',
+      remoteRevision: 'remote-revision-2',
+      localSavedAtMs,
+      cloudSavedAtMs,
+      changedFiles: [
+        {
+          status: 'changed',
+          relativePath: 'main.kcl',
+          local: inspectedFile('main.kcl', 'x = 1\n', localSavedAtMs),
+          cloud: inspectedFile('main.kcl', 'x = 2\n', cloudSavedAtMs),
+          localText: 'x = 1\n',
+          cloudText: 'x = 2\n',
+        },
+        {
+          status: 'local-only',
+          relativePath: 'local-only.txt',
+          local: inspectedFile('local-only.txt', 'local\n', localSavedAtMs),
+          localText: 'local\n',
+          cloudText: '',
+        },
+        {
+          status: 'cloud-only',
+          relativePath: 'cloud-only.txt',
+          cloud: inspectedFile('cloud-only.txt', 'cloud\n', cloudSavedAtMs),
+          localText: '',
+          cloudText: 'cloud\n',
+        },
+        {
+          status: 'changed',
+          relativePath: 'thumbnail.png',
+          local: inspectedBinaryFile('thumbnail.png', localSavedAtMs),
+          cloud: inspectedBinaryFile('thumbnail.png', cloudSavedAtMs),
+          textUnavailableReason: 'Binary or non-UTF-8 file.',
+        },
+      ],
+    },
+  }
+})
 
 vi.mock('@codemirror/merge', () => ({
   MergeView: class MergeView {
@@ -37,29 +110,22 @@ vi.mock('@src/lib/cloudSync', async () => {
       projectName: 'Local project',
       remoteProjectId: 'remote-123',
       conflict: {
-        conflictProjectPath: '/projects/local (cloud conflict)',
         createdAt: '2026-07-17T12:00:00.000Z',
         remoteRevision: 'remote-revision-2',
       },
     }),
     getCloudSyncProjectMetadataIndex: vi.fn().mockResolvedValue(new Map()),
+    isCloudSyncConflictRevisionChangedError: vi.fn(
+      (error: unknown) =>
+        error instanceof Error &&
+        error.name === 'CloudSyncConflictRevisionChangedError'
+    ),
+    loadCloudSyncProjectConflictInspection: vi
+      .fn()
+      .mockResolvedValue(cloudConflictDialogSpecMocks.inspection),
     resolveCloudSyncProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
 })
-
-vi.mock('@src/lib/cloudSync/syncDb', () => ({
-  getCloudSyncProjectMetadata: vi.fn().mockResolvedValue({
-    schemaVersion: 1,
-    localProjectPath: '/projects/local',
-    projectName: 'Local project',
-    remoteProjectId: 'remote-123',
-    conflict: {
-      conflictProjectPath: '/projects/local (cloud conflict)',
-      createdAt: '2026-07-17T12:00:00.000Z',
-      remoteRevision: 'remote-revision-2',
-    },
-  }),
-}))
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -86,81 +152,8 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
-const encoder = new TextEncoder()
-
-function fileStat(mtimeMs: number) {
-  return {
-    mode: 0,
-    mtimeMs,
-  }
-}
-
-function directoryStat() {
-  return {
-    mode: 0x4000,
-    mtimeMs: 0,
-  }
-}
-
 describe('CloudConflictDialog', () => {
   test('shows changed files with expanded diffs and resolution actions', async () => {
-    vi.mocked(fsZds.readdir).mockImplementation(async (path) => {
-      if (path === '/projects/local') {
-        return [
-          'main.kcl',
-          'local-only.txt',
-          'thumbnail.png',
-          'project.toml',
-          '.git',
-        ]
-      }
-      if (path === '/projects/local (cloud conflict)') {
-        return [
-          'main.kcl',
-          'cloud-only.txt',
-          'thumbnail.png',
-          'project.toml',
-          '.git',
-        ]
-      }
-      return []
-    })
-    vi.mocked(fsZds.stat).mockImplementation(async (path) => {
-      if (
-        path === '/projects/local' ||
-        path === '/projects/local (cloud conflict)'
-      ) {
-        return directoryStat() as never
-      }
-      if (path.includes('cloud-only')) {
-        return fileStat(Date.parse('2026-07-17T12:00:00.000Z')) as never
-      }
-      return fileStat(Date.parse('2026-07-17T11:00:00.000Z')) as never
-    })
-    vi.mocked(fsZds.readFile).mockImplementation(async (path) => {
-      if (path === '/projects/local/main.kcl') {
-        return encoder.encode('x = 1\n')
-      }
-      if (path === '/projects/local (cloud conflict)/main.kcl') {
-        return encoder.encode('x = 2\n')
-      }
-      if (path === '/projects/local/local-only.txt') {
-        return encoder.encode('local\n')
-      }
-      if (path === '/projects/local/thumbnail.png') {
-        return new Uint8Array([0, 1, 2])
-      }
-      if (path === '/projects/local (cloud conflict)/thumbnail.png') {
-        return new Uint8Array([0, 3, 4])
-      }
-      if (
-        path === '/projects/local/project.toml' ||
-        path === '/projects/local (cloud conflict)/project.toml'
-      ) {
-        return encoder.encode('title = "User-facing project title"\n')
-      }
-      return encoder.encode('cloud\n')
-    })
     const onDismiss = vi.fn()
 
     render(
@@ -206,14 +199,13 @@ describe('CloudConflictDialog', () => {
     await waitFor(() =>
       expect(resolveCloudSyncProjectConflict).toHaveBeenCalledWith(
         '/projects/local',
-        'local'
+        'local',
+        'remote-revision-2'
       )
     )
 
-    expect(getCloudSyncProjectMetadata).toHaveBeenCalledWith('/projects/local')
-    expect(fsZds.stat).not.toHaveBeenCalledWith('/projects/local/.git')
-    expect(fsZds.stat).not.toHaveBeenCalledWith(
-      '/projects/local (cloud conflict)/.git'
+    expect(loadCloudSyncProjectConflictInspection).toHaveBeenCalledWith(
+      '/projects/local'
     )
   })
 })

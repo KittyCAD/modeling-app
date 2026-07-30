@@ -11,6 +11,10 @@ import {
   updateRemoteProject,
 } from '@src/lib/cloudSync/cloudApi'
 import {
+  buildConflictInspectionFromCloudFiles,
+  type ConflictInspection,
+} from '@src/lib/cloudSync/conflictInspection'
+import {
   getCloudSyncProjectRoot,
   isCloudSyncExcludedPath,
   isCloudSyncProjectDirectoryPath,
@@ -25,7 +29,6 @@ import {
   projectManifestFromFiles,
   projectManifestsEqual,
   toArrayBuffer,
-  withProjectTitleInArchiveFiles,
   withRemoteProjectMetadataInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
@@ -106,6 +109,23 @@ export type {
 
 export type CloudSyncConflictResolution = 'local' | 'cloud'
 
+export class CloudSyncConflictRevisionChangedError extends Error {
+  constructor() {
+    super(
+      'Cloud project changed since conflict details were loaded. Review the latest cloud version before resolving.'
+    )
+    this.name = 'CloudSyncConflictRevisionChangedError'
+  }
+}
+
+export function isCloudSyncConflictRevisionChangedError(error: unknown) {
+  return (
+    error instanceof CloudSyncConflictRevisionChangedError ||
+    (error instanceof Error &&
+      error.name === 'CloudSyncConflictRevisionChangedError')
+  )
+}
+
 const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
@@ -121,7 +141,6 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
-let conflictCopyRepairComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
 let syncScopeProjectPath: string | undefined
@@ -276,102 +295,6 @@ function shouldAutoSyncLocalProject(metadata: ProjectMetadata) {
   })
 }
 
-const CLOUD_CONFLICT_PROJECT_NAME_PATTERN = /\s+\(cloud conflict \d{8}T\d{6}\)/g
-
-export function isCloudSyncConflictCopyProjectName(projectName: string) {
-  return Boolean(projectName.match(CLOUD_CONFLICT_PROJECT_NAME_PATTERN))
-}
-
-function getCloudConflictMarkerCount(projectName: string) {
-  return projectName.match(CLOUD_CONFLICT_PROJECT_NAME_PATTERN)?.length ?? 0
-}
-
-function getCloudConflictSourceProjectName(projectName: string) {
-  return projectName.replace(CLOUD_CONFLICT_PROJECT_NAME_PATTERN, '').trim()
-}
-
-function getProjectManifestKey(manifest: ProjectManifest) {
-  return JSON.stringify(
-    Object.entries(manifest.files).toSorted(([left], [right]) =>
-      left.localeCompare(right)
-    )
-  )
-}
-
-export type CloudSyncConflictCopyCleanupCandidate = {
-  projectPath: string
-  projectName: string
-  remoteProjectId?: string
-  manifest?: ProjectManifest
-}
-
-export type CloudSyncConflictCopyCleanupPlan = {
-  excludeProjectPaths: string[]
-  deleteProjectPaths: string[]
-}
-
-export function getCloudSyncConflictCopyCleanupPlan(
-  candidates: CloudSyncConflictCopyCleanupCandidate[]
-): CloudSyncConflictCopyCleanupPlan {
-  const conflictCopies = candidates
-    .filter((candidate) =>
-      isCloudSyncConflictCopyProjectName(candidate.projectName)
-    )
-    .map((candidate) => ({
-      ...candidate,
-      projectPath: normalizePathForSync(candidate.projectPath),
-    }))
-  const excludeProjectPaths = conflictCopies.map(
-    (conflictCopy) => conflictCopy.projectPath
-  )
-  const deleteProjectPaths: string[] = []
-  const conflictCopiesByRemoteProjectId = new Map<
-    string,
-    CloudSyncConflictCopyCleanupCandidate[]
-  >()
-  for (const conflictCopy of conflictCopies) {
-    if (!conflictCopy.remoteProjectId || !conflictCopy.manifest) {
-      continue
-    }
-    conflictCopiesByRemoteProjectId.set(conflictCopy.remoteProjectId, [
-      ...(conflictCopiesByRemoteProjectId.get(conflictCopy.remoteProjectId) ??
-        []),
-      conflictCopy,
-    ])
-  }
-
-  for (const remoteProjectConflictCopies of conflictCopiesByRemoteProjectId.values()) {
-    const keptManifestKeys = new Set<string>()
-    for (const conflictCopy of remoteProjectConflictCopies.toSorted(
-      (left, right) => {
-        const markerCountDelta =
-          getCloudConflictMarkerCount(left.projectName) -
-          getCloudConflictMarkerCount(right.projectName)
-        return (
-          markerCountDelta || left.projectPath.localeCompare(right.projectPath)
-        )
-      }
-    )) {
-      const manifest = conflictCopy.manifest
-      if (!manifest) {
-        continue
-      }
-
-      const manifestKey = getProjectManifestKey(manifest)
-      if (keptManifestKeys.has(manifestKey)) {
-        deleteProjectPaths.push(conflictCopy.projectPath)
-        continue
-      }
-      keptManifestKeys.add(manifestKey)
-    }
-  }
-
-  return {
-    excludeProjectPaths,
-    deleteProjectPaths,
-  }
-}
-
 export function filterCloudSyncProjectFilesForSync(
   files: ProjectArchiveFile[]
 ) {
@@ -512,6 +435,67 @@ function remoteSyncMetadata(
     updatedAt:
       getRemoteUpdatedAt(project) ||
       (options.useNowAsUpdatedAtFallback ? nowIso() : undefined),
+  }
+}
+
+function assertReviewedRemoteRevision(
+  currentRemoteRevision: Revision | undefined,
+  reviewedRemoteRevision: Revision | undefined
+) {
+  if (
+    reviewedRemoteRevision !== undefined &&
+    currentRemoteRevision !== reviewedRemoteRevision
+  ) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new CloudSyncConflictRevisionChangedError()
+  }
+}
+
+async function downloadRemoteProjectSnapshot({
+  projectId,
+  remoteProject,
+  reviewedRemoteRevision,
+  verifyStableRevision = false,
+}: {
+  projectId: string
+  remoteProject?: RemoteProject
+  reviewedRemoteRevision?: Revision
+  verifyStableRevision?: boolean
+}) {
+  const project = remoteProject ?? (await getRemoteProject(config, projectId))
+  const revision = getRevision(project)
+  assertReviewedRemoteRevision(revision, reviewedRemoteRevision)
+
+  const parsedArchive = await parseProjectArchive(
+    await downloadRemoteProjectArchive(config, projectId)
+  )
+  const filesWithMetadata = withRemoteProjectMetadataInArchiveFiles(
+    parsedArchive,
+    project.title,
+    projectId,
+    getEnvironmentName(),
+    getRemoteProjectEntrypointPath(project)
+  )
+  const files = filterCloudSyncProjectFilesForSync(filesWithMetadata)
+
+  if (!verifyStableRevision) {
+    return {
+      project,
+      files,
+      revision,
+      updatedAt: getRemoteUpdatedAt(project),
+    }
+  }
+
+  const latestProject = await getRemoteProject(config, projectId)
+  const latestRevision = getRevision(latestProject)
+  assertReviewedRemoteRevision(latestRevision, revision)
+
+  return {
+    project: latestProject,
+    files,
+    revision: latestRevision,
+    updatedAt: getRemoteUpdatedAt(latestProject),
   }
 }
 
@@ -1624,95 +1608,6 @@ async function readProjectTomlCloudProjectId(projectPath: string) {
   return projectIdPattern.exec(projectToml)?.[1]
 }
 
-async function repairExistingConflictCopies() {
-  if (conflictCopyRepairComplete) {
-    return
-  }
-
-  const projectDirectory = getConfiguredProjectDirectoryPath()
-  if (!(await exists(projectDirectory))) {
-    conflictCopyRepairComplete = true
-    return
-  }
-
-  const entries = await localFs.readdir(projectDirectory)
-  const candidates: CloudSyncConflictCopyCleanupCandidate[] = []
-  for (const entry of entries) {
-    if (entry.startsWith('.') || !isCloudSyncConflictCopyProjectName(entry)) {
-      continue
-    }
-
-    const projectPath = localFs.join(projectDirectory, entry)
-    const stat = await localFs.stat(projectPath).catch(() => undefined)
-    if (!stat || !statIsDirectory(stat)) {
-      continue
-    }
-
-    const remoteProjectId = await readProjectTomlCloudProjectId(
-      projectPath
-    ).catch(() => undefined)
-    const manifest = await collectLocalProjectFiles(projectPath)
-      .then(projectManifestFromFiles)
-      .catch(() => undefined)
-
-    candidates.push({
-      projectPath,
-      projectName: entry,
-      remoteProjectId,
-      manifest,
-    })
-  }
-
-  const cleanupPlan = getCloudSyncConflictCopyCleanupPlan(candidates)
-  const candidatesByPath = new Map(
-    candidates.map((candidate) => [
-      normalizePathForSync(candidate.projectPath),
-      candidate,
-    ])
-  )
-  const deleteProjectPaths = new Set(cleanupPlan.deleteProjectPaths)
-  const createdAt = nowIso()
-
-  for (const projectPath of cleanupPlan.excludeProjectPaths) {
-    if (deleteProjectPaths.has(projectPath)) {
-      continue
-    }
-
-    const candidate = candidatesByPath.get(projectPath)
-    const metadata = await getOrCreateProjectMetadata(projectPath)
-    const remoteProjectId =
-      candidate?.remoteProjectId ?? metadata.remoteProjectId
-    const sourceProjectName = candidate
-      ? getCloudConflictSourceProjectName(candidate.projectName)
-      : undefined
-    await clearOutboxEntriesForProject(projectPath)
-    await putProjectMetadata({
-      ...metadata,
-      remoteProjectId,
-      tombstone: false,
-      syncExcluded: {
-        reason: 'conflict-copy',
-        sourceProjectPath:
-          sourceProjectName && candidate?.projectName !== sourceProjectName
-            ? localFs.join(projectDirectory, sourceProjectName)
-            : undefined,
-        remoteProjectId,
-        createdAt: metadata.syncExcluded?.createdAt ?? createdAt,
-      },
-    })
-  }
-
-  for (const projectPath of cleanupPlan.deleteProjectPaths) {
-    await clearOutboxEntriesForProject(projectPath)
-    if (await exists(projectPath)) {
-      await localFs.rm(projectPath, { recursive: true })
-    }
-    await deleteProjectMetadata(projectPath)
-  }
-
-  conflictCopyRepairComplete = true
-}
-
 function metadataForProject(projectPath: string): ProjectMetadata {
   const normalizedProjectPath = normalizePathForSync(projectPath)
   return {
@@ -1835,7 +1730,14 @@ async function markProjectSynced(
   })
 }
 
-async function deleteConflictCopy(conflictProjectPath: string) {
+async function deleteLegacyConflictCopy(
+  conflict: ProjectMetadata['conflict'] | undefined
+) {
+  const conflictProjectPath = conflict?.conflictProjectPath
+  if (!conflictProjectPath) {
+    return
+  }
+
   await clearOutboxEntriesForProject(conflictProjectPath)
   await deleteProjectMetadata(conflictProjectPath)
   if (await exists(conflictProjectPath)) {
@@ -1843,31 +1745,51 @@ async function deleteConflictCopy(conflictProjectPath: string) {
   }
 }
 
-async function applyCloudDataForConflict(metadata: ProjectMetadata) {
+async function applyCloudDataForConflict(
+  metadata: ProjectMetadata,
+  reviewedRemoteRevision?: Revision
+) {
   const conflict = metadata.conflict
-  if (!conflict) {
+  if (!metadata.remoteProjectId || !conflict) {
     return
   }
 
-  const remoteFiles = await collectLocalProjectFiles(
-    conflict.conflictProjectPath
+  const remoteSnapshot = await downloadRemoteProjectSnapshot({
+    projectId: metadata.remoteProjectId,
+    reviewedRemoteRevision:
+      reviewedRemoteRevision ??
+      conflict.remoteRevision ??
+      metadata.remoteRevision,
+    verifyStableRevision: true,
+  })
+  const remoteManifest = await projectManifestFromFiles(remoteSnapshot.files)
+  await replaceLocalProjectWithFiles(
+    metadata.localProjectPath,
+    remoteSnapshot.files
   )
-  const remoteManifest = await projectManifestFromFiles(remoteFiles)
-  await replaceLocalProjectWithFiles(metadata.localProjectPath, remoteFiles)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
-  await deleteConflictCopy(conflict.conflictProjectPath)
+  await deleteLegacyConflictCopy(conflict)
   await markProjectSynced(metadata, remoteManifest, {
-    revision: conflict.remoteRevision,
+    revision: remoteSnapshot.revision,
+    updatedAt: remoteSnapshot.updatedAt,
   })
 }
 
-async function applyLocalDataForConflict(metadata: ProjectMetadata) {
+async function applyLocalDataForConflict(
+  metadata: ProjectMetadata,
+  reviewedRemoteRevision?: Revision
+) {
   const conflict = metadata.conflict
   if (!metadata.remoteProjectId || !conflict) {
     return Promise.reject(
       new Error('Cloud conflict cannot be resolved without a remote project.')
     )
   }
+
+  const expectedRevision =
+    reviewedRemoteRevision ?? conflict.remoteRevision ?? metadata.remoteRevision
+  const remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
+  assertReviewedRemoteRevision(getRevision(remoteProject), expectedRevision)
 
   const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
   const localManifest = await projectManifestFromFiles(localFiles)
@@ -1876,10 +1798,10 @@ async function applyLocalDataForConflict(metadata: ProjectMetadata) {
     projectPath: metadata.localProjectPath,
     projectId: metadata.remoteProjectId,
     files: localFiles,
-    expectedRevision: conflict.remoteRevision ?? metadata.remoteRevision,
+    expectedRevision,
   }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
-  await deleteConflictCopy(conflict.conflictProjectPath)
+  await deleteLegacyConflictCopy(conflict)
   await markProjectSynced(
     metadata,
     localManifest,
@@ -1887,9 +1809,61 @@ async function applyLocalDataForConflict(metadata: ProjectMetadata) {
   )
 }
 
+export async function loadCloudSyncProjectConflictInspection(
+  projectPath: string
+): Promise<ConflictInspection | Error> {
+  if (!isConfiguredForCloud()) {
+    return new Error('Cloud sync is not enabled.')
+  }
+
+  const metadata = await getProjectMetadata(projectPath)
+  if (!metadata?.conflict) {
+    return new Error('Cloud conflict metadata was not found for this project.')
+  }
+  if (!metadata.remoteProjectId) {
+    return new Error(
+      'Cloud conflict cannot be inspected without a remote project.'
+    )
+  }
+
+  const remoteSnapshot = await downloadRemoteProjectSnapshot({
+    projectId: metadata.remoteProjectId,
+  })
+  const nextMetadata: ProjectMetadata = {
+    ...metadata,
+    conflict: {
+      ...metadata.conflict,
+      remoteRevision:
+        remoteSnapshot.revision ?? metadata.conflict.remoteRevision,
+      remoteUpdatedAt:
+        remoteSnapshot.updatedAt ?? metadata.conflict.remoteUpdatedAt,
+    },
+  }
+  if (
+    nextMetadata.conflict?.remoteRevision !==
+      metadata.conflict.remoteRevision ||
+    nextMetadata.conflict?.remoteUpdatedAt !== metadata.conflict.remoteUpdatedAt
+  ) {
+    await putProjectMetadata(nextMetadata)
+  }
+
+  const cloudSavedAtMs = nextMetadata.conflict.remoteUpdatedAt
+    ? Date.parse(nextMetadata.conflict.remoteUpdatedAt)
+    : undefined
+  return buildConflictInspectionFromCloudFiles({
+    projectPath,
+    metadata: nextMetadata,
+    cloudFiles: remoteSnapshot.files,
+    cloudSavedAtMs,
+    fileSystem: localFs,
+    remoteRevision: nextMetadata.conflict.remoteRevision,
+  })
+}
+
 export async function resolveCloudSyncProjectConflict(
   projectPath: string,
-  resolution: CloudSyncConflictResolution
+  resolution: CloudSyncConflictResolution,
+  reviewedRemoteRevision?: Revision
 ) {
   const metadata = await getProjectMetadata(projectPath)
   if (!metadata?.conflict) {
@@ -1898,14 +1872,16 @@ export async function resolveCloudSyncProjectConflict(
 
   try {
     if (resolution === 'cloud') {
-      await applyCloudDataForConflict(metadata)
+      await applyCloudDataForConflict(metadata, reviewedRemoteRevision)
     } else {
-      await applyLocalDataForConflict(metadata)
+      await applyLocalDataForConflict(metadata, reviewedRemoteRevision)
     }
     await refreshPendingCount()
     scheduleSync(0)
   } catch (error) {
-    await markProjectFailure(metadata, error)
+    if (!isCloudSyncConflictRevisionChangedError(error)) {
+      await markProjectFailure(metadata, error)
+    }
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw error
   }
@@ -1956,86 +1932,33 @@ async function hydrateCleanLocalProjectTitle(
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
-  remoteFiles: ProjectArchiveFile[],
-  remoteTitle?: string
+  remoteUpdatedAt: string | undefined
 ) {
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
-  const existingConflictProjectPath = existingConflict?.conflictProjectPath
-  if (
-    existingConflictProjectPath &&
-    (await exists(existingConflictProjectPath))
-  ) {
-    await putProjectMetadata({
-      ...metadata,
-      conflict: {
-        ...existingConflict,
-        remoteRevision,
-        conflictProjectPath: existingConflictProjectPath,
-        createdAt: existingConflict.createdAt,
-      },
-      lastFailure: {
-        message: 'Cloud sync conflict: local and remote both changed.',
-        at: createdAt,
-      },
-    })
-    if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
-      updateStatus({
-        state: 'conflict',
-        activeProjectPath: metadata.localProjectPath,
-        lastFailure: 'Cloud sync conflict: local and remote both changed.',
-        lastFailureAt: createdAt,
-      })
-    }
-    return
-  }
 
-  const parentDirectory = localFs.dirname(metadata.localProjectPath)
-  const stamp = createdAt.replace(/[-:]/g, '').slice(0, 15)
-  const conflictName = `${metadata.projectName} (cloud conflict ${stamp})`
-  const conflictProjectPath = await uniqueProjectPath(
-    parentDirectory,
-    conflictName
-  )
-
-  await replaceLocalProjectWithFiles(
-    conflictProjectPath,
-    withProjectTitleInArchiveFiles(
-      remoteFiles,
-      getRemoteProjectTitleForProjectToml(remoteTitle)
-    )
-  )
-
-  await putProjectMetadata({
-    ...metadataForProject(conflictProjectPath),
-    remoteProjectId: metadata.remoteProjectId,
-    remoteRevision,
-    syncExcluded: {
-      reason: 'conflict-copy',
-      sourceProjectPath: metadata.localProjectPath,
-      remoteProjectId: metadata.remoteProjectId,
-      createdAt,
-    },
-  })
   await putProjectMetadata({
     ...metadata,
+    remoteUpdatedAt: remoteUpdatedAt ?? metadata.remoteUpdatedAt,
     conflict: {
       remoteRevision,
-      conflictProjectPath,
-      createdAt,
+      remoteUpdatedAt,
+      createdAt: existingConflict?.createdAt ?? createdAt,
+      ...(existingConflict?.conflictProjectPath
+        ? { conflictProjectPath: existingConflict.conflictProjectPath }
+        : {}),
     },
     lastFailure: {
       message: 'Cloud sync conflict: local and remote both changed.',
       at: createdAt,
     },
   })
-
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',
       activeProjectPath: metadata.localProjectPath,
       lastFailure: 'Cloud sync conflict: local and remote both changed.',
-      lastFailureAt: nowIso(),
+      lastFailureAt: createdAt,
     })
   }
 }
@@ -2476,8 +2399,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     await markProjectConflict(
       metadata,
       remoteRevision,
-      remoteFiles,
-      remoteProject?.title
+      getRemoteUpdatedAt(remoteProject)
     )
   } catch (error) {
     await markProjectFailure(metadata, error)
@@ -2805,8 +2727,6 @@ async function runCloudSync() {
   let remoteIndexFailureMessage: string | undefined
 
   try {
-    await repairExistingConflictCopies()
-
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getCloudSyncScopePlan(entries, scopedProjectPath)
     if (syncScopePlan.shouldSyncRemoteIndex) {
@@ -3251,7 +3171,6 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   if (cloudIdentityChanged || projectDirectoryChanged || syncPolicyChanged) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
-    conflictCopyRepairComplete = false
   }
 
   if (!config.enabled) {
@@ -3261,7 +3180,6 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     }
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
-    conflictCopyRepairComplete = false
     lastRemoteIndexSyncAt = 0
     cloudSyncRemoteProjects.value = []
     updateStatus({
