@@ -74,10 +74,9 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 
 ## Tests
 
-- Unit tests use `*.test.ts` or `*.test.tsx` and run with `npm run test:unit`.
-- Never import `wasm-lib` in unit tests.
-- Integration tests use `*.spec.ts` or `*.spec.tsx` and run with `npm run test:integration`.
-- Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.spec.tsx`.
+- Vitest picks the suite from the filename: `*.test.ts(x)` is unit (`npm run test:unit`); `*.spec.ts(x)` is integration (`npm run test:integration`).
+- Unit tests must not import or need `wasm-lib`. To verify, remove `rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm` before `npm run test:unit`.
+- Prefer targeted Vitest runs while iterating, for example `npm run test:unit -- src/path/to/file.test.ts`.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
 
@@ -87,7 +86,7 @@ For a typical `src/` change, prefer the smallest useful checks first:
 
 ```sh
 make check
-npm run test:unit -- src/path/to/file.spec.tsx
+npm run test:unit -- src/path/to/file.test.ts
 ```
 
 Before a broad PR, run:
