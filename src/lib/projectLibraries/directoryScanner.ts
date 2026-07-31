@@ -264,14 +264,12 @@ export async function readProjectsFromProjectDirectory({
   previousProjects,
   signal,
   onProgress,
-  validateProjectLibraryRoot = true,
 }: {
   projectDirectoryPath: string
   wasmInstancePromise: Promise<ModuleType>
   previousProjects?: Project[]
   signal?: AbortSignal
   onProgress?: (projects: Project[]) => void
-  validateProjectLibraryRoot?: boolean
 }) {
   const projects: Project[] = []
   const canSendProgress = shouldSendProjectFolderReadProgress(previousProjects)
@@ -285,14 +283,12 @@ export async function readProjectsFromProjectDirectory({
 
   await mkdirOrNOOP(projectDirectoryPath)
   const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
-  if (validateProjectLibraryRoot) {
-    const validationError = getDirectoryProjectLibraryValidationError({
-      projectDirectoryPath,
-      entries: projectDirectoryEntries,
-    })
-    if (validationError) {
-      return Promise.reject(validationError)
-    }
+  const validationError = getDirectoryProjectLibraryValidationError({
+    projectDirectoryPath,
+    entries: projectDirectoryEntries,
+  })
+  if (validationError) {
+    return Promise.reject(validationError)
   }
 
   const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled

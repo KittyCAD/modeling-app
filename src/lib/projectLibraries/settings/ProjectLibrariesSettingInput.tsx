@@ -250,22 +250,26 @@ function ProjectLibraryTypeSelect({
 export function DirectoryProjectLibrarySettingsDetails({
   library,
   index,
-  updateLibrary,
   commitLibrary,
   readOnly = false,
   chooseDirectory,
 }: ProjectLibrarySettingsDetailsProps) {
-  async function commitLibraryPath(nextLibrary = library) {
+  const [draftPath, setDraftPath] = useState(library.path)
+
+  useEffect(() => {
+    setDraftPath(library.path)
+  }, [library.path])
+
+  async function commitLibraryPath(nextPath = draftPath) {
     if (chooseDirectory) {
-      const validationError = await validateDirectoryProjectLibrary(
-        nextLibrary.path
-      )
+      const validationError = await validateDirectoryProjectLibrary(nextPath)
       if (trap(validationError)) {
+        setDraftPath(library.path)
         return
       }
     }
 
-    commitLibrary(nextLibrary)
+    commitLibrary({ ...library, path: nextPath })
   }
 
   async function chooseLibraryPath() {
@@ -281,10 +285,7 @@ export function DirectoryProjectLibrarySettingsDetails({
       return
     }
 
-    await commitLibraryPath({
-      ...library,
-      path: selectedPath,
-    })
+    await commitLibraryPath(selectedPath)
   }
 
   return readOnly ? (
@@ -300,13 +301,8 @@ export function DirectoryProjectLibrarySettingsDetails({
   ) : (
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <input
-        value={library.path}
-        onChange={(event) =>
-          updateLibrary({
-            ...library,
-            path: event.target.value,
-          })
-        }
+        value={draftPath}
+        onChange={(event) => setDraftPath(event.target.value)}
         onBlur={toSync(() => commitLibraryPath(), reportRejection)}
         className="h-8 min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent px-1 text-sm dark:border-chalkboard-70"
         data-testid={

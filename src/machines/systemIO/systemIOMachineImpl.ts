@@ -416,10 +416,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           wasmInstancePromise: context.wasmInstancePromise,
           previousProjects: context.folders,
           signal,
-          // Reject an invalid configured root on the initial library load.
-          // Later reads refresh an already-open project and must not strand
-          // stale file-tree state if project.toml appears at the library root.
-          validateProjectLibraryRoot: !context.hasListedProjects,
           onProgress: (folders) => {
             context.app.systemIOActor.send({
               type: SystemIOMachineEvents.setFolders,

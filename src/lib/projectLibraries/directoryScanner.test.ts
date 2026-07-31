@@ -157,31 +157,6 @@ describe('directory project scanner', () => {
     expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalled()
   })
 
-  it('refreshes an already-validated library after root metadata appears', async () => {
-    const project = createProject({
-      name: 'nested-project',
-      path: '/projects/nested-project',
-    })
-    mocks.fsZds.readdir.mockResolvedValue(['project.toml', 'nested-project'])
-    mocks.fsZds.stat.mockImplementation(async (path: string) => ({
-      ...dirStat(path === '/projects/nested-project' ? 1 : 2),
-      mode: path === '/projects/nested-project' ? fsZdsConstants.S_IFDIR : 0,
-    }))
-    mocks.desktop.getProjectInfo.mockResolvedValue(project)
-
-    await expect(
-      readProjectsFromProjectDirectory({
-        projectDirectoryPath: '/projects',
-        wasmInstancePromise: Promise.resolve({} as ModuleType),
-        validateProjectLibraryRoot: false,
-      })
-    ).resolves.toEqual([project])
-    expect(mocks.desktop.getProjectInfo).toHaveBeenCalledWith(
-      '/projects/nested-project',
-      expect.anything()
-    )
-  })
-
   it('schedules stale project directory name syncs after the scan returns', async () => {
     const project = createProject()
     let finishRename: () => void = () => undefined
