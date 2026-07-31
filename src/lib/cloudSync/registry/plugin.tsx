@@ -167,8 +167,8 @@ function CloudProjectLibrarySettingsDetails() {
   }, [])
 
   return (
-    <div className="min-w-0 text-sm m-0 flex items-stretch gap-2">
-      <p className="min-w-0 px-2 py-1 flex-1 truncate text-2">
+    <div className="m-0 flex min-w-0 flex-1 items-center gap-2 text-sm">
+      <p className="flex h-8 min-w-0 flex-1 items-center truncate px-1 text-2">
         {storagePath
           ? `Stored locally at ${storagePath}`
           : 'Resolving local storage path...'}
@@ -178,7 +178,7 @@ function CloudProjectLibrarySettingsDetails() {
           Element="button"
           type="button"
           tabIndex={0}
-          className="!p-0"
+          className="h-8 w-8 shrink-0 justify-center !p-0"
           iconStart={{
             icon: 'folder',
             bgClassName: '!bg-transparent',
