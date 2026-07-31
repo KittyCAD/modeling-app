@@ -583,7 +583,12 @@ export async function constructZookeeperPromptToEditRequest({
     ranges.push(...selectionPrompts)
   }
 
-  if (selections.graphSelections.length === 0 && currentFilePrompt !== null) {
+  if (selectionReferencePrompt !== null) {
+    if (currentFilePrompt === null) {
+      return new Error(
+        'Could not send Zookeeper selection: no active KCL file found for generated selection references.'
+      )
+    }
     ranges.push({
       ...currentFilePrompt,
       prompt: appendSelectionReferencePrompt({
@@ -591,14 +596,16 @@ export async function constructZookeeperPromptToEditRequest({
         selectionReferencePrompt,
       }),
     })
+  } else if (
+    selections.graphSelections.length === 0 &&
+    currentFilePrompt !== null
+  ) {
+    ranges.push(currentFilePrompt)
   }
 
   return {
     body: {
-      prompt: appendSelectionReferencePrompt({
-        prompt,
-        selectionReferencePrompt,
-      }),
+      prompt,
       ...(conversationId ? { conversation_id: conversationId } : {}),
       source_ranges: ranges,
       project_name:

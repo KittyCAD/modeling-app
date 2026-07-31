@@ -383,12 +383,71 @@ cfdBoundingHollowCylinder = subtract(outerBody, tools = innerBody)
     })
     const userPayload = sentPayloads.find((payload) => payload.type === 'user')
 
-    expect(userPayload?.content).toContain(
-      'Face: `faceId(cfdBoundingHollowCylinder, index = 5)`'
-    )
+    expect(userPayload?.content).toBe('change the selected values')
     expect(userPayload?.source_ranges).toHaveLength(1)
     expect(userPayload?.source_ranges?.[0].prompt).toContain(
       'Face: `faceId(cfdBoundingHollowCylinder, index = 5)`'
+    )
+  })
+
+  it('includes cube side-wall face references without changing visible prompt text', async () => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profile001 = region(segments = [])
+extrude001 = extrude(profile001, length = 10mm)
+`
+    const ast = assertParse(code, world.instance)
+    const extrudeRange = sourceRangeForSnippet(
+      code,
+      'extrude001 = extrude(profile001, length = 10mm)'
+    )
+    const extrude001: Artifact = {
+      type: 'sweep',
+      id: 'extrude001-id',
+      subType: 'extrusion',
+      pathId: 'profile001-path',
+      surfaceIds: [],
+      edgeIds: [],
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+      codeRef: {
+        range: extrudeRange,
+        nodePath: defaultNodePath(),
+        pathToNode: getNodePathFromSourceRange(ast, extrudeRange),
+      },
+    }
+    const artifactGraph = new Map([[extrude001.id, extrude001]])
+
+    const faceSelection: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'selected-cube-wall',
+      parentEntityId: extrude001.id,
+      primitiveIndex: 4,
+      primitiveType: 'face',
+    }
+    const modelingSelections = setupModelingSelection({
+      code,
+      artifactGraph,
+      selection: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: faceSelection,
+      },
+    })
+
+    expect(modelingSelections.graphSelections).toStrictEqual([])
+    expect(modelingSelections.otherSelections).toStrictEqual([faceSelection])
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.content).toBe('change the selected values')
+    expect(userPayload?.source_ranges).toHaveLength(1)
+    expect(userPayload?.source_ranges?.[0].prompt).toContain(
+      'Face: `faceId(extrude001, index = 4)`'
     )
   })
 })
