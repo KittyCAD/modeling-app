@@ -1319,8 +1319,7 @@ async function cloneRemoteProjectToLocal(
       await parseProjectArchive(archive),
       remoteProject.title,
       remoteProject.id,
-      getEnvironmentName(),
-      getRemoteProjectEntrypointPath(remoteProject)
+      getEnvironmentName()
     )
   )
   const nextMetadata = {
@@ -1487,8 +1486,7 @@ export async function renameRemoteCloudProject(
     ),
     title,
     projectId,
-    getEnvironmentName(),
-    getRemoteProjectEntrypointPath(remoteProject)
+    getEnvironmentName()
   )
   const updated = await updateRemoteProject({
     config,
@@ -1496,6 +1494,7 @@ export async function renameRemoteCloudProject(
     projectId,
     files,
     expectedRevision: getRevision(remoteProject),
+    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
   }).catch(rejectRemoteUploadFailure)
 
   // Reflect the new title in the in-memory remote index immediately so Home
@@ -2427,8 +2426,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         await parseProjectArchive(remoteArchive),
         remoteProject.title,
         remoteProjectId,
-        getEnvironmentName(),
-        getRemoteProjectEntrypointPath(remoteProject)
+        getEnvironmentName()
       )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
