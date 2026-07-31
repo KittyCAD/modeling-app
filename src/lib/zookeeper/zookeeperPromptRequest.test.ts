@@ -1,9 +1,10 @@
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
-import { assertParse, defaultNodePath } from '@src/lang/wasm'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
+import { getSelectionReferences } from '@src/lib/selections'
+import type * as SelectionsModule from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -14,8 +15,14 @@ import {
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/selections', async (importOriginal) => {
+  const actual = await importOriginal<typeof SelectionsModule>()
+  return {
+    ...actual,
+    getSelectionReferences: vi.fn(),
+  }
+})
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -24,27 +31,9 @@ beforeAll(async () => {
   })
 })
 
-let world: Awaited<
-  ReturnType<typeof buildTheWorldAndNoEngineConnection>
-> | null = null
-
-afterAll(() => {
-  if (!world) return
-
-  world.engineCommandManager.tearDown()
-  world.commandBarActor.stop()
-  world.settingsActor.stop()
-})
-
-async function getWorld() {
-  if (!world) {
-    world = await buildTheWorldAndNoEngineConnection()
-  }
-  return world
-}
-
 describe('constructZookeeperPromptToEditRequest', () => {
   const userPrompt = 'change the selected thing'
+  const mockedGetSelectionReferences = vi.mocked(getSelectionReferences)
   type SelectionReferenceDependencies = {
     kclManager: KclManager
     engineCommandManager: ConnectionManager
@@ -95,69 +84,10 @@ describe('constructZookeeperPromptToEditRequest', () => {
       ...selectionReferenceDependencies,
     })
 
-  function sourceRangeForSnippet(
-    code: string,
-    snippet: string
-  ): [number, number, number] {
-    const start = code.indexOf(snippet)
-    expect(start).toBeGreaterThanOrEqual(0)
-    return [start, start + snippet.length, 0]
-  }
-
-  function createPrimitiveEngineConnectionManager({
-    parentEntityId,
-    primitiveIndex,
-    primitiveType,
-  }: {
-    parentEntityId: string
-    primitiveIndex: number
-    primitiveType: 'edge' | 'face'
-  }) {
-    return {
-      sendSceneCommand: vi.fn(async ({ cmd }: { cmd: { type: string } }) => {
-        if (cmd.type === 'entity_get_primitive_index') {
-          return {
-            success: true,
-            resp: {
-              type: 'modeling',
-              data: {
-                modeling_response: {
-                  type: 'entity_get_primitive_index',
-                  data: {
-                    entity_type: primitiveType,
-                    primitive_index: primitiveIndex,
-                  },
-                },
-              },
-            },
-          }
-        }
-
-        if (cmd.type === 'entity_get_parent_id') {
-          return {
-            success: true,
-            resp: {
-              type: 'modeling',
-              data: {
-                modeling_response: {
-                  type: 'entity_get_parent_id',
-                  data: {
-                    entity_id: parentEntityId,
-                  },
-                },
-              },
-            },
-          }
-        }
-
-        return Promise.reject(new Error(`Unexpected command ${cmd.type}`))
-      }),
-    } as unknown as ConnectionManager
-  }
-
-  function mockArtifact(value: Record<string, unknown>): Artifact {
-    return value as unknown as Artifact
-  }
+  beforeEach(() => {
+    mockedGetSelectionReferences.mockReset()
+    mockedGetSelectionReferences.mockResolvedValue([])
+  })
 
   it('omits source ranges when selection data is unavailable', async () => {
     const code = 'width = 5\n'
@@ -299,109 +229,63 @@ describe('constructZookeeperPromptToEditRequest', () => {
     }
   )
 
-  it('includes generated tag references for graph-only wall selections', async () => {
-    const { instance, kclManager } = await getWorld()
-    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
-
-cubeSketch = sketch(on = XY) {
-  right = line(end = [10, 0])
-}
-cubeRegion = region(segments = [cubeSketch.right])
-cube = extrude(cubeRegion, length = 10)
-`
-    expect(code).not.toContain('cubeRegion.tags.right')
-
-    const ast = assertParse(code, instance)
-    kclManager.updateCodeEditor(code, {
-      shouldWriteToDisk: false,
-      shouldAddToHistory: false,
-    })
-    kclManager.ast = ast
-
-    const codeRefForSnippet = (snippet: string) => {
-      const range = sourceRangeForSnippet(code, snippet)
-      return {
-        range,
-        nodePath: defaultNodePath(),
-        pathToNode: getNodePathFromSourceRange(ast, range),
-      }
-    }
-
-    const originalRightCodeRef = codeRefForSnippet(
-      'right = line(end = [10, 0])'
-    )
-    const regionCodeRef = codeRefForSnippet(
-      'cubeRegion = region(segments = [cubeSketch.right])'
-    )
-    const sweepCodeRef = codeRefForSnippet('extrude(cubeRegion, length = 10)')
-
-    const cubeSweepId = 'cube-sweep'
-    const cubeWallRightId = 'cube-wall-right'
-    const regionRightSegmentId = 'region-right-segment'
-    const originalRightSegment = mockArtifact({
-      type: 'segment',
-      id: 'original-right-segment',
-      codeRef: originalRightCodeRef,
-    })
-    const regionRightSegment = mockArtifact({
-      type: 'segment',
-      id: regionRightSegmentId,
-      originalSegId: originalRightSegment.id,
-      codeRef: regionCodeRef,
-    })
-    const cubeSweep = mockArtifact({
-      type: 'sweep',
-      id: cubeSweepId,
-      codeRef: sweepCodeRef,
-    })
-    const cubeWallRight = mockArtifact({
-      type: 'wall',
-      id: cubeWallRightId,
-      sweepId: cubeSweepId,
-      segId: regionRightSegment.id,
-    })
-
-    const artifactGraph = new Map<string, Artifact>([
-      [originalRightSegment.id, originalRightSegment],
-      [regionRightSegment.id, regionRightSegment],
-      [cubeSweep.id, cubeSweep],
-      [cubeWallRight.id, cubeWallRight],
+  it('adds generated graph selection references without changing visible prompt', async () => {
+    mockedGetSelectionReferences.mockResolvedValue([
+      {
+        id: 'face:cubeRegion.tags.right',
+        label: 'Face',
+        code: 'cubeRegion.tags.right',
+      },
     ])
 
+    const code = 'cube = extrude(profile, length = 10)\n'
+    const graphSelection = {
+      artifact: {
+        type: 'wall',
+        id: 'cube-wall-right',
+        sweepId: 'cube-sweep',
+      } as Artifact,
+      codeRef: {
+        range: [0, 4, 0] as [number, number, number],
+        pathToNode: [],
+      },
+    }
     const request = await makeRequest({
       code,
-      artifactGraph,
+      artifactGraph: new Map(),
       selections: {
         otherSelections: [],
-        graphSelections: [
-          {
-            artifact: cubeWallRight,
-            codeRef: regionCodeRef,
-          },
-        ],
-      },
-      selectionReferenceDependencies: {
-        kclManager,
-        wasmInstance: instance,
-        engineCommandManager: createPrimitiveEngineConnectionManager({
-          parentEntityId: cubeSweep.id,
-          primitiveIndex: 2,
-          primitiveType: 'face',
-        }),
+        graphSelections: [graphSelection],
       },
     })
 
     expect(isErr(request)).toBe(false)
     if (isErr(request)) return
 
+    expect(mockedGetSelectionReferences).toHaveBeenCalledWith(
+      expect.objectContaining({
+        graphSelections: [graphSelection],
+        enginePrimitives: [],
+      })
+    )
     expect(request.body.prompt).toBe(userPrompt)
     expect(request.body.source_ranges).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
+          file: 'main.kcl',
           prompt: expect.stringContaining('Face: `cubeRegion.tags.right`'),
+          range: {
+            start: { line: 1, column: 0 },
+            end: { line: 2, column: 0 },
+          },
         }),
       ])
     )
+    expect(
+      request.body.source_ranges?.some(({ prompt }) =>
+        prompt.includes(userPrompt)
+      )
+    ).toBe(false)
   })
 
   it('returns an error instead of sending empty source ranges for stale graph selections', async () => {

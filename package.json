@@ -112,7 +112,6 @@
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "lint-fix": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --fix src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "lint": "node --require ./scripts/register-typescript-eslint-typescript.cjs ./node_modules/eslint/bin/eslint.js --max-warnings 0 src e2e packages/registry/src packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
-    "lint:ci": "node ./scripts/run-eslint-in-chunks.cjs",
     "build:ui-components": "npm run build -w @kittycad/ui-components",
     "storybook:ui-components": "npm run storybook -w @kittycad/ui-components",
     "build-storybook:ui-components": "npm run build-storybook -w @kittycad/ui-components",
