@@ -65,8 +65,6 @@ jobs:
   npm-lint:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: build-wasm
-    env:
-      NODE_OPTIONS: --max-old-space-size=4096
 
     steps:
       - uses: actions/checkout@v7.0.1
