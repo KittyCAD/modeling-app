@@ -1,6 +1,10 @@
 import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
+  reportCloudSyncConflict,
+  reportCloudSyncFailure,
+} from '@src/lib/cloudSync/clientErrorReporting'
+import {
   CloudApiError,
   createRemoteProject,
   deleteRemoteProject,
@@ -1783,6 +1787,7 @@ function markCloudMetadataFailure(error: unknown) {
     return
   }
 
+  reportCloudSyncFailure('mutation', error)
   initialLocalScanComplete = false
   updateStatus({
     enabled: true,
@@ -1904,6 +1909,7 @@ export async function resolveCloudSyncProjectConflict(
     await refreshPendingCount()
     scheduleSync(0)
   } catch (error) {
+    reportCloudSyncFailure('conflict-resolution', error)
     await markProjectFailure(metadata, error)
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw error
@@ -2037,6 +2043,7 @@ async function markProjectConflict(
       lastFailureAt: nowIso(),
     })
   }
+  reportCloudSyncConflict()
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -2736,7 +2743,8 @@ async function syncRemoteIndex() {
       new Error(
         `Cloud sync failed for ${failures.length} remote project${
           failures.length === 1 ? '' : 's'
-        }: ${errorMessage(failures.at(-1))}`
+        }: ${errorMessage(failures.at(-1))}`,
+        { cause: failures.at(-1) }
       )
     )
   }
@@ -2813,6 +2821,7 @@ async function runCloudSync() {
       await syncRemoteIndex().catch((error) => {
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
+        reportCloudSyncFailure('remote-index', error)
         updateStatus({
           state: 'failed',
           lastFailure: remoteIndexFailureMessage,
@@ -2867,6 +2876,7 @@ async function runCloudSync() {
   } catch (error) {
     const syncedAt = pendingStatusSyncedAt
     const kind = projectFailureKind(error)
+    reportCloudSyncFailure('sync', error)
     updateStatus({
       state: 'failed',
       lastFailure: errorMessage(error),

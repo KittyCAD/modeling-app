@@ -20,6 +20,8 @@ export enum ClientErrorCode {
   AuthLogoutTokenReadError = 'auth_logout_token_read_error',
   AuthTokenRevokeError = 'auth_token_revoke_error',
   AuthTokenSyncError = 'auth_token_sync_error',
+  CloudSyncConflict = 'cloud_sync_conflict',
+  CloudSyncFailure = 'cloud_sync_failure',
   EngineDisconnect = 'engine_disconnect',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
