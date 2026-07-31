@@ -48,14 +48,14 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           },
           "ccw": true,
           "center": [
-            0.5292370187392232,
-            -0.7929933368220664
+            0.5292370192073315,
+            -0.7929933366808146
           ],
           "from": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
           ],
-          "radius": 5.703544636966494,
+          "radius": 5.7035446370324685,
           "tag": {
             "commentStart": 89,
             "end": 96,
@@ -65,8 +65,38 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "value": "circle1"
           },
           "to": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
+          ],
+          "type": "Circle",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.5292370192073315,
+            -0.7929933366808146
+          ],
+          "from": [
+            6.171590562837805,
+            0.04023407243536596
+          ],
+          "radius": 5.7035446370324685,
+          "tag": {
+            "commentStart": 89,
+            "end": 96,
+            "moduleId": 0,
+            "start": 89,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            6.171590562837805,
+            0.04023407243536596
           ],
           "type": "Circle",
           "units": "mm"
@@ -77,8 +107,32 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "sourceRange": []
           },
           "from": [
-            4.559130139063771,
-            -4.829127980838558
+            -3.588952606477915,
+            -4.738995824455021
+          ],
+          "tag": {
+            "commentStart": 179,
+            "end": 188,
+            "moduleId": 0,
+            "start": 179,
+            "type": "TagDeclarator",
+            "value": "chordLeft"
+          },
+          "to": [
+            -2.850810533113438,
+            3.801100694863619
+          ],
+          "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            4.559130139601422,
+            -4.829127980721099
           ],
           "tag": {
             "commentStart": 347,
@@ -113,8 +167,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             "value": "line1"
           },
           "to": [
-            4.329805418436576,
-            3.4597823761789326
+            4.329805418841413,
+            3.459782376465208
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -153,12 +207,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
       },
       "start": {
         "from": [
-          6.171590562285146,
-          0.04023407241506023
+          6.171590562837805,
+          0.04023407243536596
         ],
         "to": [
-          6.171590562285146,
-          0.04023407241506023
+          6.171590562837805,
+          0.04023407243536596
         ],
         "units": "mm",
         "tag": null,
@@ -221,6 +275,34 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 89,
+            "end": 96,
+            "moduleId": 0,
+            "start": 89,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 179,
+            "end": 188,
+            "moduleId": 0,
+            "start": 179,
+            "type": "TagDeclarator",
+            "value": "chordLeft"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 347,
             "end": 357,
             "moduleId": 0,
@@ -277,14 +359,14 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             },
             "ccw": true,
             "center": [
-              0.5292370187392232,
-              -0.7929933368220664
+              0.5292370192073315,
+              -0.7929933366808146
             ],
             "from": [
-              6.171590562285146,
-              0.04023407241506023
+              6.171590562837805,
+              0.04023407243536596
             ],
-            "radius": 5.703544636966494,
+            "radius": 5.7035446370324685,
             "tag": {
               "commentStart": 89,
               "end": 96,
@@ -294,8 +376,38 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "value": "circle1"
             },
             "to": [
-              6.171590562285146,
-              0.04023407241506023
+              6.171590562837805,
+              0.04023407243536596
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.5292370192073315,
+              -0.7929933366808146
+            ],
+            "from": [
+              6.171590562837805,
+              0.04023407243536596
+            ],
+            "radius": 5.7035446370324685,
+            "tag": {
+              "commentStart": 89,
+              "end": 96,
+              "moduleId": 0,
+              "start": 89,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              6.171590562837805,
+              0.04023407243536596
             ],
             "type": "Circle",
             "units": "mm"
@@ -306,8 +418,32 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "sourceRange": []
             },
             "from": [
-              4.559130139063771,
-              -4.829127980838558
+              -3.588952606477915,
+              -4.738995824455021
+            ],
+            "tag": {
+              "commentStart": 179,
+              "end": 188,
+              "moduleId": 0,
+              "start": 179,
+              "type": "TagDeclarator",
+              "value": "chordLeft"
+            },
+            "to": [
+              -2.850810533113438,
+              3.801100694863619
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              4.559130139601422,
+              -4.829127980721099
             ],
             "tag": {
               "commentStart": 347,
@@ -342,8 +478,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "value": "line1"
             },
             "to": [
-              4.329805418436576,
-              3.4597823761789326
+              4.329805418841413,
+              3.459782376465208
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -382,12 +518,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         "start": {
           "from": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
           ],
           "to": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
           ],
           "units": "mm",
           "tag": null,
@@ -454,7 +590,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   "line": {
                     "start": [
                       {
-                        "n": -3.5889526071921627,
+                        "n": -3.588952606477915,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -462,7 +598,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": -4.738995824244033,
+                        "n": -4.738995824455021,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -472,7 +608,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     ],
                     "end": [
                       {
-                        "n": -2.850810533043785,
+                        "n": -2.850810533113438,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -480,7 +616,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": 3.8011006950361117,
+                        "n": 3.801100694863619,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -574,7 +710,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   "line": {
                     "start": [
                       {
-                        "n": 4.559130139063771,
+                        "n": 4.559130139601422,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -582,7 +718,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": -4.829127980838558,
+                        "n": -4.829127980721099,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -694,7 +830,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   "circle": {
                     "start": [
                       {
-                        "n": 6.171590562285146,
+                        "n": 6.171590562837805,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -702,7 +838,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": 0.04023407241506023,
+                        "n": 0.04023407243536596,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -712,7 +848,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     ],
                     "center": [
                       {
-                        "n": 0.5292370187392232,
+                        "n": 0.5292370192073315,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -720,7 +856,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": -0.7929933368220664,
+                        "n": -0.7929933366808146,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -832,7 +968,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     ],
                     "end": [
                       {
-                        "n": 4.329805418436576,
+                        "n": 4.329805418841413,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -840,7 +976,7 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                         }
                       },
                       {
-                        "n": 3.4597823761789326,
+                        "n": 3.459782376465208,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -938,14 +1074,14 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                   },
                   "ccw": true,
                   "center": [
-                    0.5292370187392232,
-                    -0.7929933368220664
+                    0.5292370192073315,
+                    -0.7929933366808146
                   ],
                   "from": [
-                    6.171590562285146,
-                    0.04023407241506023
+                    6.171590562837805,
+                    0.04023407243536596
                   ],
-                  "radius": 5.703544636966494,
+                  "radius": 5.7035446370324685,
                   "tag": {
                     "commentStart": 89,
                     "end": 96,
@@ -955,8 +1091,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "value": "circle1"
                   },
                   "to": [
-                    6.171590562285146,
-                    0.04023407241506023
+                    6.171590562837805,
+                    0.04023407243536596
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -967,13 +1103,13 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "sourceRange": []
                   },
                   "from": [
-                    6.171590562285146,
-                    0.04023407241506023
+                    6.171590562837805,
+                    0.04023407243536596
                   ],
                   "tag": null,
                   "to": [
-                    -3.5889526071921627,
-                    -4.738995824244033
+                    -3.588952606477915,
+                    -4.738995824455021
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -984,8 +1120,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "sourceRange": []
                   },
                   "from": [
-                    -3.5889526071921627,
-                    -4.738995824244033
+                    -3.588952606477915,
+                    -4.738995824455021
                   ],
                   "tag": {
                     "commentStart": 179,
@@ -996,8 +1132,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "value": "chordLeft"
                   },
                   "to": [
-                    -2.850810533043785,
-                    3.8011006950361117
+                    -2.850810533113438,
+                    3.801100694863619
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1008,13 +1144,13 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "sourceRange": []
                   },
                   "from": [
-                    -2.850810533043785,
-                    3.8011006950361117
+                    -2.850810533113438,
+                    3.801100694863619
                   ],
                   "tag": null,
                   "to": [
-                    4.559130139063771,
-                    -4.829127980838558
+                    4.559130139601422,
+                    -4.829127980721099
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1025,8 +1161,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "sourceRange": []
                   },
                   "from": [
-                    4.559130139063771,
-                    -4.829127980838558
+                    4.559130139601422,
+                    -4.829127980721099
                   ],
                   "tag": {
                     "commentStart": 347,
@@ -1061,8 +1197,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
                     "value": "line1"
                   },
                   "to": [
-                    4.329805418436576,
-                    3.4597823761789326
+                    4.329805418841413,
+                    3.459782376465208
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1101,12 +1237,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               },
               "start": {
                 "from": [
-                  6.171590562285146,
-                  0.04023407241506023
+                  6.171590562837805,
+                  0.04023407243536596
                 ],
                 "to": [
-                  6.171590562285146,
-                  0.04023407241506023
+                  6.171590562837805,
+                  0.04023407243536596
                 ],
                 "units": "mm",
                 "tag": null,
@@ -1171,6 +1307,34 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 89,
+            "end": 96,
+            "moduleId": 0,
+            "start": 89,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 179,
+            "end": 188,
+            "moduleId": 0,
+            "start": 179,
+            "type": "TagDeclarator",
+            "value": "chordLeft"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 347,
             "end": 357,
             "moduleId": 0,
@@ -1227,14 +1391,14 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
             },
             "ccw": true,
             "center": [
-              0.5292370187392232,
-              -0.7929933368220664
+              0.5292370192073315,
+              -0.7929933366808146
             ],
             "from": [
-              6.171590562285146,
-              0.04023407241506023
+              6.171590562837805,
+              0.04023407243536596
             ],
-            "radius": 5.703544636966494,
+            "radius": 5.7035446370324685,
             "tag": {
               "commentStart": 89,
               "end": 96,
@@ -1244,8 +1408,38 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "value": "circle1"
             },
             "to": [
-              6.171590562285146,
-              0.04023407241506023
+              6.171590562837805,
+              0.04023407243536596
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.5292370192073315,
+              -0.7929933366808146
+            ],
+            "from": [
+              6.171590562837805,
+              0.04023407243536596
+            ],
+            "radius": 5.7035446370324685,
+            "tag": {
+              "commentStart": 89,
+              "end": 96,
+              "moduleId": 0,
+              "start": 89,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              6.171590562837805,
+              0.04023407243536596
             ],
             "type": "Circle",
             "units": "mm"
@@ -1256,8 +1450,32 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "sourceRange": []
             },
             "from": [
-              4.559130139063771,
-              -4.829127980838558
+              -3.588952606477915,
+              -4.738995824455021
+            ],
+            "tag": {
+              "commentStart": 179,
+              "end": 188,
+              "moduleId": 0,
+              "start": 179,
+              "type": "TagDeclarator",
+              "value": "chordLeft"
+            },
+            "to": [
+              -2.850810533113438,
+              3.801100694863619
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              4.559130139601422,
+              -4.829127980721099
             ],
             "tag": {
               "commentStart": 347,
@@ -1292,8 +1510,8 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
               "value": "line1"
             },
             "to": [
-              4.329805418436576,
-              3.4597823761789326
+              4.329805418841413,
+              3.459782376465208
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1332,12 +1550,12 @@ description: Variables in memory after executing fillet_ambiguous_region_edge_sp
         },
         "start": {
           "from": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
           ],
           "to": [
-            6.171590562285146,
-            0.04023407241506023
+            6.171590562837805,
+            0.04023407243536596
           ],
           "units": "mm",
           "tag": null,
