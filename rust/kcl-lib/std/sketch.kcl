@@ -3413,13 +3413,18 @@ export fn region(
   sketch?: any,
 ): Sketch {}
 
+/// Create a planar surface from a closed sketch, edge, segment or group of segments and edges.
+///
+/// If a group of edges, segments, or sketches is provided, 
+/// they must be provided in the order they connect in.
 /// ```kcl,sketchSolve
+/// // Any closed profile can be used to make a planar surface.
 /// sketch001 = sketch(on = XY) {
 ///   circle1 = circle(start = [var 0.87mm, var 0.63mm], center = [var -1.35mm, var 3mm])
 /// }
 /// hidden001 = hide(sketch001)
 /// region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
-/// extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+/// extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
 /// planarSurface(extrude001.sketch.tags.circle1)
 /// ```
 @(impl = std_rust, feature_tree = true)
