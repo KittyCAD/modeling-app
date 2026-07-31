@@ -9,6 +9,12 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -195,6 +201,54 @@ function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   })
 }
 
+function getCloudSyncPluginSetting(app: App) {
+  return (
+    app.settings.get().plugins as
+      | Record<
+          string,
+          {
+            current?: unknown
+            user?: unknown
+          }
+        >
+      | undefined
+  )?.['cloud-sync']
+}
+
+function getPluginToggle(app: App, pluginId: string) {
+  const plugin = app.registry
+    .get(pluginsValueSpec)
+    .find((plugin) => plugin.id === pluginId)
+  expect(plugin).toBeDefined()
+  if (!plugin) {
+    throw new Error(`Missing ${pluginId} plugin registry item`)
+  }
+
+  return app.registry.get(plugin.service)
+}
+
+function hasPersonalCloudLibrarySetting(app: App) {
+  const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === defaultCloudLibrary.type &&
+        library.path === defaultCloudLibrary.path
+    )
+}
+
+function hasDefaultDirectoryLibrarySetting(app: App) {
+  const projectDirectory = app.settings.get().app.projectDirectory.current
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
+        library.path === projectDirectory
+    )
+}
+
 describe('project system', () => {
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -206,6 +260,7 @@ describe('project system', () => {
         engineConnectionService
       )
       const registryBilling = app.registry.get(billingService)
+      const registryRustContext = app.registry.get(rustContextService)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
@@ -214,6 +269,7 @@ describe('project system', () => {
         registryEngineConnectionManager.manager
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
+      expect(app.rustContext).toBe(registryRustContext.context)
     } finally {
       app.dispose()
     }
@@ -356,6 +412,137 @@ describe('project system', () => {
           pluginId
         ]
       ).toBeUndefined()
+    } finally {
+      app.dispose()
+      window.electron = previousElectron
+    }
+  })
+
+  it('keeps cloud sync disabled by default without the cloud projects feature', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
+      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
+      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
+      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            library: expect.objectContaining({
+              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+            }),
+          }),
+        ])
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('auto-enables cloud sync for feature-flagged users and materializes Personal Cloud', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasDefaultDirectoryLibrarySetting:
+            hasDefaultDirectoryLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          current: true,
+          user: true,
+          hasPersonalCloudLibrarySetting: true,
+          hasDefaultDirectoryLibrarySetting: false,
+        })
+
+      // On web, cloud sync is the project storage layer, not an optional
+      // feature: a disable attempt is overridden, the plugin stays active, and
+      // a usable library plus a create target remain (the strand-repro fix).
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await expect
+        .poll(() => ({
+          current: getCloudSyncPluginSetting(app)?.current,
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          canCreateInPersonalCloud: app
+            .getCreateProjectLibraryTargets()
+            .some(
+              (target) =>
+                target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          current: true,
+          active: true,
+          hasPersonalCloudLibrarySetting: true,
+          canCreateInPersonalCloud: true,
+        })
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('respects an explicit cloud sync opt-out on desktop', async () => {
+    const previousElectron = window.electron
+    window.electron = {
+      os: { isMac: false },
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins: vi.fn().mockResolvedValue(undefined),
+      },
+    } as unknown as typeof window.electron
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      // Cloud sync auto-enables for the flag on desktop too.
+      await expect
+        .poll(() => getPluginToggle(app, 'cloud-sync').active.value)
+        .toBe(true)
+
+      // Unlike web (where the disable attempt is overridden), desktop keeps
+      // cloud sync optional and honors the opt-out.
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
     } finally {
       app.dispose()
       window.electron = previousElectron

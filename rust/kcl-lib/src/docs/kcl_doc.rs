@@ -25,6 +25,7 @@ use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::token::NumericSuffix;
 
@@ -1121,7 +1122,10 @@ impl TyData {
                 impl_kind: annotations::Impl::Kcl,
                 doc_category: None,
             },
-            alias: ty.alias.as_ref().map(|t| t.to_string()),
+            alias: match &ty.definition {
+                TypeDeclarationDefinition::Alias { ty } => Some(ty.to_string()),
+                TypeDeclarationDefinition::Bare | TypeDeclarationDefinition::Enum(_) => None,
+            },
             summary: None,
             description: None,
             examples: Vec::new(),
@@ -1711,14 +1715,19 @@ mod test {
                 &result.image,
                 0.99,
             );
-            for gltf_file in result.gltf {
-                let path = format!(
-                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
-                    qualname.replace("::", "-"),
-                    gltf_file.name,
-                );
-                let mut f = std::fs::File::create(path).expect("could not create file");
-                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            // Doc generation omits the model viewer for a `no3d` example, so
+            // writing its glTF would produce a file no page can ever link to.
+            // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
+            if !eg.1.no3d {
+                for gltf_file in result.gltf {
+                    let path = format!(
+                        "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                        qualname.replace("::", "-"),
+                        gltf_file.name,
+                    );
+                    let mut f = std::fs::File::create(path).expect("could not create file");
+                    std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+                }
             }
             return;
         }

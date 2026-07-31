@@ -13,6 +13,7 @@ import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
+import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
@@ -44,6 +45,11 @@ const pluginExtensionSettings = {
     }),
   },
 }
+
+const projectLibrariesExtensionSettings = projectLibrariesSettingsContribution
+
+const createSettingsWithProjectLibraries = () =>
+  createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
   it(`sets settings at the 'user' level`, () => {
@@ -106,7 +112,7 @@ describe('testing settings initialization', () => {
   })
 
   it('treats an empty project libraries setting as an explicit non-default value', () => {
-    const settings = createSettings()
+    const settings = createSettingsWithProjectLibraries()
     settings.app.libraries.default =
       getDefaultProjectLibrarySettings('/tmp/projects')
 
@@ -231,7 +237,7 @@ describe('testing hiddenOnPlatform', () => {
   })
 
   it('keeps libraries visible on desktop and feature-gated on web', () => {
-    const settings = createSettings()
+    const settings = createSettingsWithProjectLibraries()
     const libraries = settings.app.libraries as Setting
 
     expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
@@ -260,51 +266,54 @@ describe('project settings serialization regression', () => {
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
     const serializedToml = serializeConfiguration(
-      settingsPayloadToConfiguration({
-        app: {
-          onboardingStatus: 'dismissed',
-          allowOrbitInSketchMode: true,
-          machineApi: true,
-          showAllFiles: true,
-          projectDirectory: '/tmp/projects',
-          libraries: [
-            {
-              title: 'Default Projects Directory',
-              path: '/tmp/projects',
-              type: 'directory',
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            onboardingStatus: 'dismissed',
+            allowOrbitInSketchMode: true,
+            machineApi: true,
+            showAllFiles: true,
+            projectDirectory: '/tmp/projects',
+            libraries: [
+              {
+                title: 'Default Projects Directory',
+                path: '/tmp/projects',
+                type: 'directory',
+              },
+            ],
+          },
+          debug: {
+            showPanel: true,
+            showModelingMachineState: true,
+          },
+          projects: {
+            defaultProjectName: 'plugin-template',
+          },
+          modeling: {
+            mouseControls: 'OnShape',
+            gizmoType: 'axis',
+            enableTouchControls: false,
+            useSketchSolveMode: false,
+            snapToGrid: true,
+            majorGridSpacing: 2.5,
+            minorGridsPerMajor: 5,
+            snapsPerMinor: 3,
+          },
+          commandBar: {
+            includeSettings: false,
+          },
+          textEditor: {
+            textWrapping: false,
+            blinkingCursor: false,
+          },
+          layout: {
+            configs: {
+              default: createLayoutWithMetadata(defaultLayoutConfig),
             },
-          ],
-        },
-        debug: {
-          showPanel: true,
-          showModelingMachineState: true,
-        },
-        projects: {
-          defaultProjectName: 'plugin-template',
-        },
-        modeling: {
-          mouseControls: 'OnShape',
-          gizmoType: 'axis',
-          enableTouchControls: false,
-          useSketchSolveMode: false,
-          snapToGrid: true,
-          majorGridSpacing: 2.5,
-          minorGridsPerMajor: 5,
-          snapsPerMinor: 3,
-        },
-        commandBar: {
-          includeSettings: false,
-        },
-        textEditor: {
-          textWrapping: false,
-          blinkingCursor: false,
-        },
-        layout: {
-          configs: {
-            default: createLayoutWithMetadata(defaultLayoutConfig),
           },
         },
-      }),
+        projectLibrariesExtensionSettings
+      ),
       wasmInstance
     )
     if (serializedToml instanceof Error) {
@@ -344,7 +353,10 @@ describe('project settings serialization regression', () => {
       throw parsedConfiguration
     }
 
-    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      projectLibrariesExtensionSettings
+    )
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
@@ -378,22 +390,25 @@ describe('project settings serialization regression', () => {
   })
 
   it('uses the default directory library as the legacy project directory when parsing settings', () => {
-    const parsedPayload = configurationToSettingsPayload({
-      settings: {
-        app: {
-          libraries: [
-            {
-              title: 'Projects',
-              path: '/library-projects',
-              type: 'directory',
-            },
-          ],
-        },
-        project: {
-          directory: '/legacy-projects',
+    const parsedPayload = configurationToSettingsPayload(
+      {
+        settings: {
+          app: {
+            libraries: [
+              {
+                title: 'Projects',
+                path: '/library-projects',
+                type: 'directory',
+              },
+            ],
+          },
+          project: {
+            directory: '/legacy-projects',
+          },
         },
       },
-    })
+      projectLibrariesExtensionSettings
+    )
 
     expect(parsedPayload.app?.projectDirectory).toBe('/library-projects')
   })
@@ -403,18 +418,21 @@ describe('project settings serialization regression', () => {
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
     const serializedToml = serializeConfiguration(
-      settingsPayloadToConfiguration({
-        app: {
-          projectDirectory: '/legacy-projects',
-          libraries: [
-            {
-              title: 'Projects',
-              path: '/library-projects',
-              type: 'directory',
-            },
-          ],
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            projectDirectory: '/legacy-projects',
+            libraries: [
+              {
+                title: 'Projects',
+                path: '/library-projects',
+                type: 'directory',
+              },
+            ],
+          },
         },
-      }),
+        projectLibrariesExtensionSettings
+      ),
       wasmInstance
     )
     if (serializedToml instanceof Error) {

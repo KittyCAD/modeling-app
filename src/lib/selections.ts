@@ -40,6 +40,7 @@ import {
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1112,15 +1113,7 @@ export function removeReferenceFromSelections(
   }
 }
 
-export function isEnginePrimitiveSelection(
-  selection: Selections['otherSelections'][number]
-): selection is EnginePrimitiveSelection {
-  return (
-    typeof selection === 'object' &&
-    'type' in selection &&
-    selection.type === 'enginePrimitive'
-  )
-}
+export { isEnginePrimitiveSelection }
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]

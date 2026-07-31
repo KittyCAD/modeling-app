@@ -1,12 +1,16 @@
-import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
+import {
+  type ProjectCardClassNames,
+  ProjectCard as UiProjectCard,
+} from '@kittycad/ui-components'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
   HomeProjectActionsService,
@@ -17,13 +21,16 @@ import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
-import Tooltip from '@src/components/Tooltip'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
   projectActions: HomeProjectActionsService
   projectStatus?: ProjectStatus
+  density?: 'default' | 'compact'
   showCloudSyncUi?: boolean
+  showDetails?: boolean
+  showSourceStatusBadges?: boolean
+  onMoveToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -34,6 +41,13 @@ const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
     synced: 'Synced',
     conflicted: 'Conflicted',
   }
+
+const compactProjectCardClassNames: ProjectCardClassNames = {
+  thumbnailFrame:
+    'h-24 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
+  body: 'pb-2 flex flex-col flex-grow flex-auto gap-1 rounded-b-sm',
+  title: 'font-sans relative z-0 p-2 text-sm truncate',
+}
 
 function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
   return (
@@ -120,7 +134,11 @@ function AppProjectCard({
   project,
   projectActions,
   projectStatus,
+  density = 'default',
   showCloudSyncUi = true,
+  showDetails = true,
+  showSourceStatusBadges = true,
+  onMoveToLibrary,
   ...props
 }: AppProjectCardProps) {
   const navigate = useNavigate()
@@ -215,15 +233,19 @@ function AppProjectCard({
   }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
+  const canDuplicate = projectActions.canDuplicate(project)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
+  const canMoveToLibrary = Boolean(
+    onMoveToLibrary && projectActions.canMoveToLibrary(project)
+  )
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    !showCloudSyncUi || project.source === 'both'
+    !showCloudSyncUi || !showSourceStatusBadges || project.source === 'both'
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 
@@ -268,7 +290,7 @@ function AppProjectCard({
     </>
   )
 
-  const details = (
+  const details = showDetails ? (
     <>
       {project.kclFileCount !== undefined && (
         <span className="px-2 text-chalkboard-60 text-xs">
@@ -294,7 +316,7 @@ function AppProjectCard({
         </span>
       </span>
     </>
-  )
+  ) : undefined
 
   const dialogs = (
     <>
@@ -335,6 +357,17 @@ function AppProjectCard({
           menuTargetElement={menuTargetElement}
           items={[
             <ContextMenuItem
+              key="duplicate"
+              icon="clone"
+              disabled={!canDuplicate}
+              data-testid="project-card-context-duplicate"
+              onClick={() => {
+                void projectActions.duplicate(project).catch(trap)
+              }}
+            >
+              Duplicate project
+            </ContextMenuItem>,
+            <ContextMenuItem
               key="rename"
               icon="sketch"
               disabled={!canRename}
@@ -342,6 +375,15 @@ function AppProjectCard({
               onClick={() => setIsEditing(true)}
             >
               Rename project
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="move-to-library"
+              icon="folder"
+              disabled={!canMoveToLibrary}
+              data-testid="project-card-context-move-to-library"
+              onClick={() => onMoveToLibrary?.(project)}
+            >
+              Move to library
             </ContextMenuItem>,
             <ContextMenuItem
               key="delete"
@@ -355,6 +397,9 @@ function AppProjectCard({
           ]}
         />
       )}
+      classNames={
+        density === 'compact' ? compactProjectCardClassNames : undefined
+      }
       renameForm={
         <ProjectCardRenameForm
           onSubmit={handleSave}
