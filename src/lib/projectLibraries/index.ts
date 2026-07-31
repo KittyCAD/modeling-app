@@ -55,6 +55,20 @@ export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
   }
 }
 
+export function canRemoveProjectLibrary(
+  library: Pick<ProjectLibrarySetting, 'type'>,
+  options: { canManageLibraries: boolean }
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return false
+  }
+
+  return (
+    options.canManageLibraries ||
+    library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
+}
+
 export function getDefaultDirectoryProjectLibrarySetting(
   libraries: readonly ProjectLibrarySetting[] | undefined
 ) {
