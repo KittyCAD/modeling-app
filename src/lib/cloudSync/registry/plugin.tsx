@@ -788,13 +788,9 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
-  const getWasmPromise = () => {
-    const wasmPromise = ctx.valueSpecs.get(wasmPromiseValueSpec)
-    if (!wasmPromise) {
-      throw new Error('Missing WASM promise registry value.')
-    }
-    return wasmPromise
-  }
+  const getWasmPromise = () =>
+    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+    new Error('Missing WASM promise registry value.')
 
   // A materialized cloud project can be listed either by System IO (when the
   // cloud folder is the app's project directory, e.g. on web) or by the
@@ -826,12 +822,17 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectName,
           requestedProjectTitle,
         }) => {
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error) {
+            return Promise.reject(wasmInstancePromise)
+          }
+
           const project = await createProjectInLocalDirectory({
             projectDirectoryPath:
               await getCloudProjectLibraryMaterializationDirectoryPath(library),
             requestedProjectName,
             requestedProjectTitle,
-            wasmInstancePromise: getWasmPromise(),
+            wasmInstancePromise,
           })
 
           if (cloudSyncStatus.value.enabled) {
@@ -846,6 +847,11 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       duplicateProject: {
         run: async ({ library, project }) => {
           if (project.localProjectName && project.localProjectPath) {
+            const wasmInstancePromise = getWasmPromise()
+            if (wasmInstancePromise instanceof Error) {
+              return Promise.reject(wasmInstancePromise)
+            }
+
             const result = await duplicateProjectInDirectory({
               source: {
                 directoryName: project.localProjectName,
@@ -857,7 +863,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   library
                 ),
               requestedProjectTitle: getHomeProjectDisplayName(project),
-              wasmInstance: await getWasmPromise(),
+              wasmInstance: await wasmInstancePromise,
             })
             refreshLocalCloudProjectEntries()
 
@@ -1008,10 +1014,15 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
     },
     readEntries: async ({ library, signal }) => {
+      const wasmInstancePromise = getWasmPromise()
+      if (wasmInstancePromise instanceof Error) {
+        return Promise.reject(wasmInstancePromise)
+      }
+
       const projects = await readProjectsFromProjectDirectory({
         projectDirectoryPath:
           await getCloudProjectLibraryMaterializationDirectoryPath(library),
-        wasmInstancePromise: getWasmPromise(),
+        wasmInstancePromise,
         signal,
       })
       if (!signal.aborted) {

@@ -1,4 +1,3 @@
-import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
   isProjectLibrarySettings,
@@ -43,9 +42,7 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
           fromToml: projectLibrarySettingsFromSerialized,
           toToml: (value) =>
             isProjectLibrarySettings(value)
-              ? (projectLibrarySettingsToSerialized(
-                  value
-                ) as unknown as JsonValue)
+              ? projectLibrarySettingsToSerialized(value)
               : undefined,
         },
       },

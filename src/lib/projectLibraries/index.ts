@@ -259,9 +259,7 @@ export function projectLibrarySettingsFromSerialized(
     )
   })
 
-  return libraries.every(isProjectLibrarySetting)
-    ? (libraries as ProjectLibrarySetting[])
-    : undefined
+  return libraries.every(isProjectLibrarySetting) ? libraries : undefined
 }
 
 export function projectLibrarySettingsToSerialized(
