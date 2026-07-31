@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -10,8 +11,6 @@ import {
   ConnectionError,
 } from '@src/lib/engineConnection/utils'
 import type { IErrorType } from '@src/lib/engineConnection/utils'
-
-import { ActionButton } from '@src/components/ActionButton'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
@@ -151,12 +150,22 @@ const Loading = ({
     )
   }
 
+  if (showManualConnect) {
+    return (
+      <ConnectionRecovery
+        className={`body-bg ${className ?? ''}`}
+        dataTestId={dataTestId ? dataTestId : 'loading'}
+        onReconnect={() => callback?.()}
+      />
+    )
+  }
+
   return (
     <div
       className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
       data-testid={dataTestId ? dataTestId : 'loading'}
     >
-      {isUnrecoverableError || showManualConnect ? (
+      {isUnrecoverableError ? (
         <CustomIcon
           name="close"
           className="w-8 h-8 !text-chalkboard-10 bg-destroy-60 rounded-full"
@@ -166,46 +175,8 @@ const Loading = ({
       )}
 
       <p className={`text-base mt-4`}>
-        {isUnrecoverableError || showManualConnect ? '' : children || 'Loading'}
+        {isUnrecoverableError ? '' : children || 'Loading'}
       </p>
-
-      {showManualConnect && (
-        <>
-          <p className="text-destroy-60">Failed to connect.</p>
-          <div>
-            <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-2 text-chalkboard-80 dark:text-chalkboard-20">
-              Click below to try again. If it persists, please visit the
-              community support thread on{' '}
-              <a
-                className="contents text-chalkboard-80 dark:text-chalkboard-10"
-                href={diagnosingNetworkIssuesUrl}
-                onClick={openExternalBrowserIfDesktop(
-                  diagnosingNetworkIssuesUrl
-                )}
-              >
-                <span className="underline underline-offset-1">
-                  diagnosing network connection issues
-                </span>
-              </a>
-              .
-            </div>
-          </div>
-          <ActionButton
-            className="h-5"
-            Element="button"
-            iconStart={{
-              icon: 'refresh',
-            }}
-            onClick={() => {
-              if (callback) {
-                callback()
-              }
-            }}
-          >
-            reconnect
-          </ActionButton>
-        </>
-      )}
 
       <div
         className={
@@ -220,7 +191,7 @@ const Loading = ({
         )}
       </div>
 
-      {CONNECTION_ERROR_TEXT[error.error] && !showManualConnect && (
+      {CONNECTION_ERROR_TEXT[error.error] && (
         <div>
           <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-6 text-chalkboard-80 dark:text-chalkboard-20">
             {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]} If it persists,

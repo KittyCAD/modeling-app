@@ -120,6 +120,98 @@ describe('MlEphantConversation', () => {
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
+  test('shows recovery actions after conversation loading gives up', () => {
+    const onReconnect = vi.fn()
+    const onClickClearChat = vi.fn()
+    const recoveryProps = {
+      isLoading: true,
+      connectionError:
+        "Zookeeper couldn't load this conversation after 3 attempts.",
+      connectionFailed: true,
+      canClearChat: true,
+      onProcess: () => {},
+      onClickClearChat,
+      onReconnect,
+      onCancel: () => {},
+      needsReconnect: true,
+      contexts: [],
+      disabled: true,
+      hasPromptCompleted: true,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: () => {},
+      onSteer: () => {},
+    }
+    const { rerender } = render(<MlEphantConversation {...recoveryProps} />)
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      "Zookeeper couldn't load this conversation after 3 attempts."
+    )
+    expect(screen.getByRole('alert')).toHaveTextContent('a last resort')
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Previous conversation data will no longer be visible in this pane.'
+    )
+    expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+
+    const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
+    const clearChatButton = screen.getByRole('button', { name: 'Clear chat' })
+
+    expect(clearChatButton).toHaveClass('!bg-chalkboard-10')
+    expect(
+      clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
+    ).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
+
+    fireEvent.click(reconnectButton)
+    fireEvent.click(clearChatButton)
+
+    expect(onReconnect).toHaveBeenCalledTimes(1)
+    expect(onClickClearChat).toHaveBeenCalledTimes(1)
+
+    rerender(<MlEphantConversation {...recoveryProps} isClearingChat={true} />)
+
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
+
+    rerender(
+      <MlEphantConversation
+        {...recoveryProps}
+        connectionError="Zookeeper couldn't connect after 3 attempts."
+        canClearChat={false}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+    expect(
+      screen.queryByRole('button', { name: 'Clear chat' })
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
+  })
+
+  test('shows setup progress while loading a conversation', () => {
+    render(
+      <MlEphantConversation
+        isLoading={true}
+        conversation={undefined}
+        loadingMessage="Connecting to Zookeeper (attempt 2 of 3)..."
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText('Connecting to Zookeeper (attempt 2 of 3)...')
+    ).toHaveClass('text-chalkboard-100', 'dark:text-chalkboard-10')
+  })
+
   function rendersRequestBubbleThenDisplayResponse(
     mode: MlCopilotModeId = 'deep'
   ) {
