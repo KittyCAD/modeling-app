@@ -363,25 +363,52 @@ describe('constructZookeeperUserPromptRequest', () => {
     )
   })
 
-  it('returns an error instead of sending empty source ranges for stale graph selections', async () => {
-    const request = await makeRequest({
-      code: 'width = 5\n',
-      selections: {
-        otherSelections: [],
-        graphSelections: [
-          {
-            codeRef: {
-              range: [0, 5, 42],
-              pathToNode: [],
+  it('reports and omits graph selections when their source file cannot be mapped', async () => {
+    const code = 'width = 5\n'
+    const reportSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    try {
+      const request = await constructZookeeperUserPromptRequest({
+        prompt: userPrompt,
+        selections: {
+          otherSelections: [],
+          graphSelections: [
+            {
+              codeRef: {
+                range: [0, 5, 0],
+                pathToNode: [],
+              },
             },
+          ],
+        },
+        projectFiles: [
+          {
+            type: 'kcl',
+            relPath: 'main.kcl',
+            absPath: '/projects/zoo-project/main.kcl',
+            fileContents: code,
+            execStateFileNamesIndex: undefined as unknown as number,
           },
         ],
-      },
-    })
+        applicationProjectDirectory: '/projects',
+        artifactGraph: new Map(),
+        projectName: 'zoo-project',
+        currentFile: { entry: currentFileEntry, content: code },
+        kclVersion: '1.0.0',
+        ...unusedSelectionReferenceDependencies,
+      })
 
-    expect(isErr(request)).toBe(true)
-    if (!isErr(request)) return
+      expect(isErr(request)).toBe(false)
+      if (isErr(request)) return
 
-    expect(request.message).toMatch(/no KCL file found/)
+      expect(request.activeFile).toBe('main.kcl')
+      expect(request.body.prompt).toBe(userPrompt)
+      expect(request.body.source_ranges).toStrictEqual([])
+      expect(reportSpy).toHaveBeenCalledWith(
+        expect.stringContaining('no KCL file found')
+      )
+    } finally {
+      reportSpy.mockRestore()
+    }
   })
 })

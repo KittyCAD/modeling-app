@@ -15,7 +15,7 @@ import {
   type SelectionReference,
 } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
-import { isErr } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
@@ -369,7 +369,7 @@ export function buildZookeeperSourceRangePromptsForSelection({
   selection: Selection
   artifactGraph: ArtifactGraph
   kclFilesMap: KclFileMetaMap
-}): SourceRangePrompt[] | Error {
+}): SourceRangePrompt[] {
   const promptDrafts: SourceRangePromptDraft[] = selection.artifact
     ? zookeeperArtifactSelectionPromptHandlers[selection.artifact.type]({
         selection: selection as Selection & { artifact: Artifact },
@@ -391,18 +391,15 @@ export function buildZookeeperSourceRangePromptsForSelection({
       required: promptDraft.required ?? true,
     })
     if (prompt instanceof Error) {
-      return prompt
+      reportRejection(prompt.message)
+      continue
     }
     if (prompt !== null) {
       prompts.push(prompt)
     }
   }
 
-  return prompts.length > 0
-    ? prompts
-    : new Error(
-        'Could not send Zookeeper selection: no selected source ranges could be serialized.'
-      )
+  return prompts
 }
 
 function isReferenceableEnginePrimitiveSelection(
@@ -517,7 +514,9 @@ export async function constructZookeeperUserPromptRequest({
     if (file.type === 'other') {
       data = file.data
     } else {
-      kclFilesMap[file.execStateFileNamesIndex] = file
+      if (Number.isInteger(file.execStateFileNamesIndex)) {
+        kclFilesMap[file.execStateFileNamesIndex] = file
+      }
       data = new Blob([file.fileContents], { type: 'text/kcl' })
     }
     files.push({
@@ -577,9 +576,6 @@ export async function constructZookeeperUserPromptRequest({
       artifactGraph,
       kclFilesMap,
     })
-    if (selectionPrompts instanceof Error) {
-      return selectionPrompts
-    }
     ranges.push(...selectionPrompts)
   }
 
