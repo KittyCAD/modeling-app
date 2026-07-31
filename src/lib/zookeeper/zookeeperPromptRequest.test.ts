@@ -66,7 +66,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
       ...unusedSelectionReferenceDependencies,
     })
 
-  it('marks the currently open file as the default edit target when there is no selection', async () => {
+  it('omits source ranges when selection data is unavailable', async () => {
     const code = 'width = 5\n'
     const request = await makeRequest({ code, selections: null })
 
@@ -75,11 +75,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
 
     expect(request.activeFile).toBe('main.kcl')
     expect(request.body.prompt).toBe(userPrompt)
-    expect(request.body.source_ranges).toHaveLength(1)
-    expect(request.body.source_ranges?.[0]).toMatchObject({
-      file: 'main.kcl',
-      prompt: 'This is the active file',
-    })
+    expect(request.body).not.toHaveProperty('source_ranges')
   })
 
   it('returns a forward-slash active file for nested files', async () => {
@@ -117,7 +113,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
     expect(request.activeFile).not.toContain('\\')
   })
 
-  it('marks the active file as the default edit target when selection data has no graph selections', async () => {
+  it('sends an empty source range list for known-empty selection data', async () => {
     const code = 'width = 5\n'
     const request = await makeRequest({
       code,
@@ -132,11 +128,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
 
     expect(request.activeFile).toBe('main.kcl')
     expect(request.body.prompt).toBe(userPrompt)
-    expect(request.body.source_ranges).toHaveLength(1)
-    expect(request.body.source_ranges?.[0]).toMatchObject({
-      file: 'main.kcl',
-      prompt: 'This is the active file',
-    })
+    expect(request.body.source_ranges).toStrictEqual([])
   })
 
   it('has an explicit handler for every generated artifact type', () => {

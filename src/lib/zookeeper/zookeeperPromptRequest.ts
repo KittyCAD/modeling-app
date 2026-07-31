@@ -551,7 +551,6 @@ export async function constructZookeeperPromptToEditRequest({
     return {
       body: {
         prompt,
-        source_ranges: currentFilePrompt !== null ? [currentFilePrompt] : [],
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
@@ -600,11 +599,6 @@ export async function constructZookeeperPromptToEditRequest({
         selectionReferencePrompt,
       }),
     })
-  } else if (
-    selections.graphSelections.length === 0 &&
-    currentFilePrompt !== null
-  ) {
-    ranges.push(currentFilePrompt)
   }
 
   return {

@@ -262,7 +262,7 @@ export type MlEphantManagerEvents =
       applicationProjectDirectory: string
       fileSelectedDuringPrompting: { entry: FileEntry; content: string }
       projectFiles: FileMeta[]
-      selections: Selections
+      selections: Selections | null
       artifactGraph: ArtifactGraph
       kclManager: KclManager
       engineCommandManager: ConnectionManager
@@ -1283,7 +1283,9 @@ export const mlEphantManagerMachine = setup({
         type: 'user',
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
-        source_ranges: requestData.body.source_ranges,
+        ...(requestData.body.source_ranges !== undefined
+          ? { source_ranges: requestData.body.source_ranges }
+          : {}),
         current_files: filesAsByteArrays,
         ...(requestData.activeFile
           ? { active_file: requestData.activeFile }

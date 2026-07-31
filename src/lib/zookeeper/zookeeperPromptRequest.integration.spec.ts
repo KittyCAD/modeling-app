@@ -127,7 +127,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     selections,
   }: {
     code: string
-    selections: Selections
+    selections: Selections | null
   }) {
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const conversation: Conversation = { exchanges: [] }
@@ -208,6 +208,46 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   ): SourceRange {
     return sourceRangeForSnippet(code, identifier)
   }
+
+  it('omits source ranges when selection data is unavailable to ZDS', async () => {
+    const code = 'width = 5\n'
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: null,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.content).toBe('change the selected values')
+    expect(userPayload).not.toHaveProperty('source_ranges')
+  })
+
+  it('sends empty source ranges for a known-empty modelingMachine selection', async () => {
+    const code = 'width = 5\n'
+    const modelingSelections = setupModelingSelection({
+      code,
+      selection: {
+        selectionType: 'completeSelection',
+        selection: {
+          otherSelections: [],
+          graphSelections: [],
+        },
+      },
+    })
+
+    expect(modelingSelections).toStrictEqual({
+      otherSelections: [],
+      graphSelections: [],
+    })
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.content).toBe('change the selected values')
+    expect(userPayload?.source_ranges).toStrictEqual([])
+  })
 
   it('includes the single current graph selection in the Zookeeper user payload', async () => {
     const code = 'width = 5\nheight = 10\n'
