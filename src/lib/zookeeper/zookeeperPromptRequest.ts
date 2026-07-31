@@ -470,8 +470,16 @@ async function buildSelectionReferencePrompt({
   const referenceableEnginePrimitives = enginePrimitives.filter(
     isReferenceableEnginePrimitiveSelection
   )
+  const hasReferenceableGraphSelections = selections.graphSelections.some(
+    (selection) => selection.artifact?.id
+  )
 
-  if (referenceableEnginePrimitives.length === 0) return null
+  if (
+    !hasReferenceableGraphSelections &&
+    referenceableEnginePrimitives.length === 0
+  ) {
+    return null
+  }
 
   const references = await getSelectionReferences({
     graphSelections: selections.graphSelections,
