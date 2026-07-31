@@ -1,4 +1,6 @@
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import { assertParse, defaultNodePath } from '@src/lang/wasm'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
@@ -12,7 +14,8 @@ import {
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -21,8 +24,32 @@ beforeAll(async () => {
   })
 })
 
+let world: Awaited<
+  ReturnType<typeof buildTheWorldAndNoEngineConnection>
+> | null = null
+
+afterAll(() => {
+  if (!world) return
+
+  world.engineCommandManager.tearDown()
+  world.commandBarActor.stop()
+  world.settingsActor.stop()
+})
+
+async function getWorld() {
+  if (!world) {
+    world = await buildTheWorldAndNoEngineConnection()
+  }
+  return world
+}
+
 describe('constructZookeeperPromptToEditRequest', () => {
   const userPrompt = 'change the selected thing'
+  type SelectionReferenceDependencies = {
+    kclManager: KclManager
+    engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
+  }
   const unusedSelectionReferenceDependencies = {
     kclManager: {} as KclManager,
     engineCommandManager: {} as ConnectionManager,
@@ -49,10 +76,12 @@ describe('constructZookeeperPromptToEditRequest', () => {
     code,
     selections,
     artifactGraph = new Map(),
+    selectionReferenceDependencies = unusedSelectionReferenceDependencies,
   }: {
     code: string
     selections: Selections | null
     artifactGraph?: ArtifactGraph
+    selectionReferenceDependencies?: SelectionReferenceDependencies
   }) =>
     constructZookeeperPromptToEditRequest({
       prompt: userPrompt,
@@ -63,8 +92,72 @@ describe('constructZookeeperPromptToEditRequest', () => {
       projectName: 'zoo-project',
       currentFile: { entry: currentFileEntry, content: code },
       kclVersion: '1.0.0',
-      ...unusedSelectionReferenceDependencies,
+      ...selectionReferenceDependencies,
     })
+
+  function sourceRangeForSnippet(
+    code: string,
+    snippet: string
+  ): [number, number, number] {
+    const start = code.indexOf(snippet)
+    expect(start).toBeGreaterThanOrEqual(0)
+    return [start, start + snippet.length, 0]
+  }
+
+  function createPrimitiveEngineConnectionManager({
+    parentEntityId,
+    primitiveIndex,
+    primitiveType,
+  }: {
+    parentEntityId: string
+    primitiveIndex: number
+    primitiveType: 'edge' | 'face'
+  }) {
+    return {
+      sendSceneCommand: vi.fn(async ({ cmd }: { cmd: { type: string } }) => {
+        if (cmd.type === 'entity_get_primitive_index') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_primitive_index',
+                  data: {
+                    entity_type: primitiveType,
+                    primitive_index: primitiveIndex,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        if (cmd.type === 'entity_get_parent_id') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: {
+                    entity_id: parentEntityId,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        return Promise.reject(new Error(`Unexpected command ${cmd.type}`))
+      }),
+    } as unknown as ConnectionManager
+  }
+
+  function mockArtifact(value: Record<string, unknown>): Artifact {
+    return value as unknown as Artifact
+  }
 
   it('omits source ranges when selection data is unavailable', async () => {
     const code = 'width = 5\n'
@@ -205,6 +298,153 @@ describe('constructZookeeperPromptToEditRequest', () => {
       })
     }
   )
+
+  it('includes generated tag references for graph-only wall selections', async () => {
+    const { instance, kclManager } = await getWorld()
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+cubeSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+}
+cubeRegion = region(segments = [cubeSketch.right])
+cube = extrude(cubeRegion, length = 10)
+`
+    expect(code).not.toContain('cubeRegion.tags.right')
+
+    const ast = assertParse(code, instance)
+    kclManager.updateCodeEditor(code, {
+      shouldWriteToDisk: false,
+      shouldAddToHistory: false,
+    })
+    kclManager.ast = ast
+
+    const codeRefForSnippet = (snippet: string) => {
+      const range = sourceRangeForSnippet(code, snippet)
+      return {
+        range,
+        nodePath: defaultNodePath(),
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+
+    const sketchCodeRef = codeRefForSnippet(`cubeSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+}`)
+    const originalRightCodeRef = codeRefForSnippet(
+      'right = line(end = [10, 0])'
+    )
+    const regionCodeRef = codeRefForSnippet(
+      'cubeRegion = region(segments = [cubeSketch.right])'
+    )
+    const sweepCodeRef = codeRefForSnippet('extrude(cubeRegion, length = 10)')
+
+    const cubeSketchPath = mockArtifact({
+      type: 'path',
+      id: 'cube-sketch-path',
+      subType: 'sketch',
+      planeId: 'xy-plane',
+      segIds: ['original-right-segment'],
+      consumed: true,
+      trajectorySweepId: null,
+      codeRef: sketchCodeRef,
+    })
+    const originalRightSegment = mockArtifact({
+      type: 'segment',
+      id: 'original-right-segment',
+      pathId: cubeSketchPath.id,
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: originalRightCodeRef,
+    })
+    const cubeRegionPath = mockArtifact({
+      type: 'path',
+      id: 'cube-region-path',
+      subType: 'region',
+      planeId: 'xy-plane',
+      segIds: ['region-right-segment'],
+      consumed: true,
+      sweepId: 'cube-sweep',
+      trajectorySweepId: null,
+      originPathId: cubeSketchPath.id,
+      codeRef: regionCodeRef,
+    })
+    const regionRightSegment = mockArtifact({
+      type: 'segment',
+      id: 'region-right-segment',
+      originalSegId: originalRightSegment.id,
+      pathId: cubeRegionPath.id,
+      surfaceId: 'cube-wall-right',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: regionCodeRef,
+    })
+    const cubeSweep = mockArtifact({
+      type: 'sweep',
+      id: 'cube-sweep',
+      subType: 'extrusion',
+      pathId: cubeRegionPath.id,
+      surfaceIds: ['cube-wall-right'],
+      edgeIds: [],
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+      codeRef: sweepCodeRef,
+    })
+    const cubeWallRight = mockArtifact({
+      type: 'wall',
+      id: 'cube-wall-right',
+      sweepId: cubeSweep.id,
+      segId: regionRightSegment.id,
+      pathIds: [],
+      edgeCutEdgeIds: [],
+      faceCodeRef: regionCodeRef,
+      cmdId: 'cube-wall-right-command',
+    })
+
+    const artifactGraph = new Map<string, Artifact>([
+      [cubeSketchPath.id, cubeSketchPath],
+      [originalRightSegment.id, originalRightSegment],
+      [cubeRegionPath.id, cubeRegionPath],
+      [regionRightSegment.id, regionRightSegment],
+      [cubeSweep.id, cubeSweep],
+      [cubeWallRight.id, cubeWallRight],
+    ])
+
+    const request = await makeRequest({
+      code,
+      artifactGraph,
+      selections: {
+        otherSelections: [],
+        graphSelections: [
+          {
+            artifact: cubeWallRight,
+            codeRef: regionCodeRef,
+          },
+        ],
+      },
+      selectionReferenceDependencies: {
+        kclManager,
+        wasmInstance: instance,
+        engineCommandManager: createPrimitiveEngineConnectionManager({
+          parentEntityId: cubeSweep.id,
+          primitiveIndex: 2,
+          primitiveType: 'face',
+        }),
+      },
+    })
+
+    expect(isErr(request)).toBe(false)
+    if (isErr(request)) return
+
+    expect(request.body.prompt).toBe(userPrompt)
+    expect(request.body.source_ranges).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          prompt: expect.stringContaining('Face: `cubeRegion.tags.right`'),
+        }),
+      ])
+    )
+  })
 
   it('returns an error instead of sending empty source ranges for stale graph selections', async () => {
     const request = await makeRequest({

@@ -19,7 +19,6 @@ vi.mock('@src/lib/isPlaywright', () => ({
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse, defaultNodePath } from '@src/lang/wasm'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import {
@@ -126,11 +125,9 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   async function sendZookeeperMessage({
     code,
     selections,
-    engineCommandManager = world.engineCommandManager,
   }: {
     code: string
     selections: Selections | null
-    engineCommandManager?: ConnectionManager
   }) {
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const conversation: Conversation = { exchanges: [] }
@@ -188,7 +185,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
       selections,
       artifactGraph: world.kclManager.artifactGraph,
       kclManager: world.kclManager,
-      engineCommandManager,
+      engineCommandManager: world.engineCommandManager,
       wasmInstance: world.instance,
     })
 
@@ -210,57 +207,6 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     identifier: string
   ): SourceRange {
     return sourceRangeForSnippet(code, identifier)
-  }
-
-  function createPrimitiveEngineConnectionManager({
-    parentEntityId,
-    primitiveIndex,
-    primitiveType,
-  }: {
-    parentEntityId: string
-    primitiveIndex: number
-    primitiveType: 'edge' | 'face'
-  }) {
-    return {
-      sendSceneCommand: vi.fn(async ({ cmd }: any) => {
-        if (cmd.type === 'entity_get_primitive_index') {
-          return {
-            success: true,
-            resp: {
-              type: 'modeling',
-              data: {
-                modeling_response: {
-                  type: 'entity_get_primitive_index',
-                  data: {
-                    entity_type: primitiveType,
-                    primitive_index: primitiveIndex,
-                  },
-                },
-              },
-            },
-          }
-        }
-
-        if (cmd.type === 'entity_get_parent_id') {
-          return {
-            success: true,
-            resp: {
-              type: 'modeling',
-              data: {
-                modeling_response: {
-                  type: 'entity_get_parent_id',
-                  data: {
-                    entity_id: parentEntityId,
-                  },
-                },
-              },
-            },
-          }
-        }
-
-        return Promise.reject(new Error(`Unexpected command ${cmd.type}`))
-      }),
-    } as unknown as ConnectionManager
   }
 
   it('omits source ranges when selection data is unavailable to ZDS', async () => {
@@ -301,165 +247,6 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
 
     expect(userPayload?.content).toBe('change the selected values')
     expect(userPayload?.source_ranges).toStrictEqual([])
-  })
-
-  it('includes generated tag references for graph-only wall selections', async () => {
-    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
-
-cubeSketch = sketch(on = XY) {
-  right = line(end = [10, 0])
-}
-cubeRegion = region(segments = [cubeSketch.right])
-cube = extrude(cubeRegion, length = 10)
-`
-    expect(code).not.toContain('cubeRegion.tags.right')
-
-    const ast = assertParse(code, world.instance)
-    world.kclManager.updateCodeEditor(code, {
-      shouldWriteToDisk: false,
-      shouldAddToHistory: false,
-    })
-    world.kclManager.ast = ast
-
-    const sketchRange = sourceRangeForSnippet(
-      code,
-      `cubeSketch = sketch(on = XY) {
-  right = line(end = [10, 0])
-}`
-    )
-    const originalRightRange = sourceRangeForSnippet(
-      code,
-      'right = line(end = [10, 0])'
-    )
-    const cubeRegionRange = sourceRangeForSnippet(
-      code,
-      'cubeRegion = region(segments = [cubeSketch.right])'
-    )
-    const cubeRange = sourceRangeForSnippet(
-      code,
-      'extrude(cubeRegion, length = 10)'
-    )
-    const regionRightCodeRef = {
-      range: cubeRegionRange,
-      nodePath: defaultNodePath(),
-      pathToNode: getNodePathFromSourceRange(ast, cubeRegionRange),
-    }
-
-    const cubeSketchPath: Artifact = {
-      type: 'path',
-      id: 'cube-sketch-path',
-      subType: 'sketch',
-      planeId: 'xy-plane',
-      segIds: ['original-right-segment'],
-      consumed: true,
-      trajectorySweepId: null,
-      codeRef: {
-        range: sketchRange,
-        nodePath: defaultNodePath(),
-        pathToNode: getNodePathFromSourceRange(ast, sketchRange),
-      },
-    }
-    const originalRightSegment: Artifact = {
-      type: 'segment',
-      id: 'original-right-segment',
-      pathId: cubeSketchPath.id,
-      edgeIds: [],
-      commonSurfaceIds: [],
-      codeRef: {
-        range: originalRightRange,
-        nodePath: defaultNodePath(),
-        pathToNode: getNodePathFromSourceRange(ast, originalRightRange),
-      },
-    }
-    const cubeRegionPath: Artifact = {
-      type: 'path',
-      id: 'cube-region-path',
-      subType: 'region',
-      planeId: 'xy-plane',
-      segIds: ['region-right-segment'],
-      consumed: true,
-      sweepId: 'cube-sweep',
-      trajectorySweepId: null,
-      originPathId: cubeSketchPath.id,
-      codeRef: {
-        range: cubeRegionRange,
-        nodePath: defaultNodePath(),
-        pathToNode: getNodePathFromSourceRange(ast, cubeRegionRange),
-      },
-    }
-    const regionRightSegment: Artifact = {
-      type: 'segment',
-      id: 'region-right-segment',
-      originalSegId: originalRightSegment.id,
-      pathId: cubeRegionPath.id,
-      surfaceId: 'cube-wall-right',
-      edgeIds: [],
-      commonSurfaceIds: [],
-      codeRef: regionRightCodeRef,
-    }
-    const cubeSweep: Artifact = {
-      type: 'sweep',
-      id: 'cube-sweep',
-      subType: 'extrusion',
-      pathId: cubeRegionPath.id,
-      surfaceIds: ['cube-wall-right'],
-      edgeIds: [],
-      trajectoryId: null,
-      method: 'new',
-      consumed: false,
-      codeRef: {
-        range: cubeRange,
-        nodePath: defaultNodePath(),
-        pathToNode: getNodePathFromSourceRange(ast, cubeRange),
-      },
-    }
-    const cubeWallRight: Artifact = {
-      type: 'wall',
-      id: 'cube-wall-right',
-      sweepId: cubeSweep.id,
-      segId: regionRightSegment.id,
-      pathIds: [],
-      edgeCutEdgeIds: [],
-      faceCodeRef: regionRightCodeRef,
-      cmdId: 'cube-wall-right-command',
-    }
-
-    world.kclManager.artifactGraph = new Map<string, Artifact>([
-      [cubeSketchPath.id, cubeSketchPath],
-      [originalRightSegment.id, originalRightSegment],
-      [cubeRegionPath.id, cubeRegionPath],
-      [regionRightSegment.id, regionRightSegment],
-      [cubeSweep.id, cubeSweep],
-      [cubeWallRight.id, cubeWallRight],
-    ])
-
-    const sentPayloads = await sendZookeeperMessage({
-      code,
-      selections: {
-        otherSelections: [],
-        graphSelections: [
-          {
-            artifact: cubeWallRight,
-            codeRef: regionRightCodeRef,
-          },
-        ],
-      },
-      engineCommandManager: createPrimitiveEngineConnectionManager({
-        parentEntityId: cubeSweep.id,
-        primitiveIndex: 2,
-        primitiveType: 'face',
-      }),
-    })
-    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
-
-    expect(userPayload?.content).toBe('change the selected values')
-    expect(userPayload?.source_ranges).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          prompt: expect.stringContaining('Face: `cubeRegion.tags.right`'),
-        }),
-      ])
-    )
   })
 
   it('includes the single current graph selection in the Zookeeper user payload', async () => {
