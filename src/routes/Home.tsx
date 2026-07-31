@@ -39,6 +39,7 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
+  formatProjectLibraryPathForDisplay,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
@@ -738,9 +739,8 @@ function HomeHeader({
             to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
             className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
           >
-            {library.path}
+            {formatProjectLibraryPathForDisplay(library)}
           </Link>
-          .
         </p>
       ) : null}
       {!readWriteProjectDir.value && (
@@ -947,7 +947,7 @@ function ProjectLibraryPreviewRow({
             {library.title}
           </span>
           <span className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30">
-            {library.path}
+            {formatProjectLibraryPathForDisplay(library)}
           </span>
         </span>
         <span className="hidden flex-none text-xs text-chalkboard-70 dark:text-chalkboard-30 sm:block">
