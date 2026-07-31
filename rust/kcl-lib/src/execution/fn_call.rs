@@ -28,6 +28,7 @@ use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
 use crate::execution::memory;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
@@ -552,30 +553,42 @@ impl FunctionBody {
     }
 }
 
-fn originates_from_sketch_block(value: &KclValue) -> bool {
+/// Whether `value` may have come from a legacy (v1) sketch rather than a
+/// sketch block, which is what gates the legacy tag-memory updates in
+/// `update_memory_for_tags_of_geometry`.
+///
+/// Anything that is not a sketch or a solid answers `false`: a number or an
+/// enum variant is not a sketch of either generation, so it must not pull in
+/// legacy behavior. The match stays exhaustive so that adding a `KclValue`
+/// variant forces an explicit answer here instead of inheriting one.
+fn might_be_legacy_sketch(value: &KclValue) -> bool {
     match value {
         KclValue::Uuid { .. } => false,
         KclValue::Bool { .. } => false,
         KclValue::Number { .. } => false,
         KclValue::String { .. } => false,
-        KclValue::SketchVar { .. } => true,
-        KclValue::SketchConstraint { .. } => true,
-        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
-        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
-        // TODO: sketch block result should return true.
-        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::Enum { .. } => false,
+        KclValue::SketchVar { .. } => false,
+        KclValue::SketchConstraint { .. } => false,
+        KclValue::Tuple { value, .. } => value.iter().any(might_be_legacy_sketch),
+        KclValue::HomArray { value, .. } => value.iter().any(might_be_legacy_sketch),
+        // TODO: sketch block result should return false.
+        KclValue::Object { value, .. } => value.values().any(might_be_legacy_sketch),
         KclValue::TagIdentifier(_) => false,
         KclValue::TagDeclarator(_) => false,
         KclValue::GdtAnnotation { .. } => false,
         KclValue::Plane { .. } => false,
         KclValue::Face { .. } => false,
         KclValue::BoundedEdge { .. } => false,
-        KclValue::Segment { .. } => true,
-        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Segment { .. } => false,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_none(),
+        // A solid with no sketch has no tag container, so the caller returns
+        // early without consulting this answer; `true` keeps it the exact
+        // negation of the previous `originates_from_sketch_block`.
         KclValue::Solid { value: solid } => solid
             .sketch()
-            .map(|sketch| sketch.origin_sketch_id.is_some())
-            .unwrap_or(false),
+            .map(|sketch| sketch.origin_sketch_id.is_none())
+            .unwrap_or(true),
         KclValue::Helix { .. } => false,
         KclValue::ImportedGeometry(_) => false,
         KclValue::Function { .. } => false,
@@ -679,13 +692,13 @@ fn clear_tags_from_solid_copy(solid: &mut Solid) {
 }
 
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
-    let is_sketch_block = originates_from_sketch_block(&*result);
+    let might_be_legacy = might_be_legacy_sketch(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } if !is_sketch_block => {
+        KclValue::Sketch { value } if might_be_legacy => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name)? {
                     exec_state.mut_stack().update(name, |v, _| {
@@ -767,7 +780,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                 existing_tag.merge_info(&tag_id);
                             }
                         })?;
-                    } else if !is_sketch_block || !is_part_of_sketch {
+                    } else if might_be_legacy || !is_part_of_sketch {
                         // The above condition is saying that we add a tag to
                         // the stack in either of these cases:
                         //
@@ -953,18 +966,21 @@ fn type_check_params_kw(
                 // warned about once for the function definition.
                 let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
-                arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
-                    KclError::new_argument(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires {}",
-                            fn_name
-                                .map(|n| format!("`{n}`"))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            type_err_str(ty, &arg.value, &arg.source_range, exec_state),
-                        ),
-                        vec![arg.source_range],
-                    ))
-                })?;
+                arg.value = arg
+                    .value
+                    .coerce(&rty, CoercionMode::implicit(), exec_state)
+                    .map_err(|_| {
+                        KclError::new_argument(KclErrorDetails::new(
+                            format!(
+                                "The input argument of {} requires {}",
+                                fn_name
+                                    .map(|n| format!("`{n}`"))
+                                    .unwrap_or_else(|| "this function".to_owned()),
+                                type_err_str(ty, &arg.value, &arg.source_range, exec_state),
+                            ),
+                            vec![arg.source_range],
+                        ))
+                    })?;
             }
             result.unlabeled = vec![(None, arg)]
         } else {
@@ -1057,7 +1073,7 @@ fn type_check_params_kw(
                                 .value
                                 .coerce(
                                     &rty,
-                                    true,
+                                    CoercionMode::implicit(),
                                     exec_state,
                                 )
                                 .map_err(|e| {
@@ -1208,7 +1224,7 @@ fn coerce_result_type(
         return Ok(None);
     };
 
-    let val = val.coerce(&ty, true, exec_state).map_err(|_| {
+    let val = val.coerce(&ty, CoercionMode::implicit(), exec_state).map_err(|_| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "This function requires its result to be {}",
