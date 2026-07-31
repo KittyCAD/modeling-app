@@ -1,3 +1,21 @@
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/routes/utils', () => ({
+  APP_DOWNLOAD_PATH: 'design-studio/download/staging',
+  APP_VERSION: '0.0.0',
+  IS_STAGING: false,
+  IS_STAGING_OR_DEBUG: true,
+  PACKAGE_NAME: 'zoo-modeling-app',
+  generateSignInUrl: () => '/signin',
+  getAppVersion: () => '0.0.0',
+  getRefFromVersion: () => undefined,
+  getReleaseUrl: () => 'https://github.com/KittyCAD/modeling-app/commit/main',
+}))
+
+vi.mock('@src/lib/isPlaywright', () => ({
+  isPlaywright: () => false,
+}))
+
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse, defaultNodePath } from '@src/lang/wasm'
@@ -19,7 +37,6 @@ import type {
   SetSelections,
 } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
