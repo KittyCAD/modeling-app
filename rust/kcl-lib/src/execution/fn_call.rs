@@ -28,6 +28,7 @@ use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
 use crate::execution::memory;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
@@ -965,18 +966,21 @@ fn type_check_params_kw(
                 // warned about once for the function definition.
                 let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
-                arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
-                    KclError::new_argument(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires {}",
-                            fn_name
-                                .map(|n| format!("`{n}`"))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            type_err_str(ty, &arg.value, &arg.source_range, exec_state),
-                        ),
-                        vec![arg.source_range],
-                    ))
-                })?;
+                arg.value = arg
+                    .value
+                    .coerce(&rty, CoercionMode::implicit(), exec_state)
+                    .map_err(|_| {
+                        KclError::new_argument(KclErrorDetails::new(
+                            format!(
+                                "The input argument of {} requires {}",
+                                fn_name
+                                    .map(|n| format!("`{n}`"))
+                                    .unwrap_or_else(|| "this function".to_owned()),
+                                type_err_str(ty, &arg.value, &arg.source_range, exec_state),
+                            ),
+                            vec![arg.source_range],
+                        ))
+                    })?;
             }
             result.unlabeled = vec![(None, arg)]
         } else {
@@ -1069,7 +1073,7 @@ fn type_check_params_kw(
                                 .value
                                 .coerce(
                                     &rty,
-                                    true,
+                                    CoercionMode::implicit(),
                                     exec_state,
                                 )
                                 .map_err(|e| {
@@ -1220,7 +1224,7 @@ fn coerce_result_type(
         return Ok(None);
     };
 
-    let val = val.coerce(&ty, true, exec_state).map_err(|_| {
+    let val = val.coerce(&ty, CoercionMode::implicit(), exec_state).map_err(|_| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "This function requires its result to be {}",
