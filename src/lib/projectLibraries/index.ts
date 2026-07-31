@@ -9,6 +9,17 @@ export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
 export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
 export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
+export const CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX = 'zoo://'
+
+export function formatProjectLibraryPathForDisplay(
+  library: Pick<ProjectLibrarySetting, 'path' | 'type'>
+) {
+  if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
+    return library.path
+  }
+
+  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${library.path.replace(/^\/+/, '')}`
+}
 
 export type ProjectLibraryType = string
 
