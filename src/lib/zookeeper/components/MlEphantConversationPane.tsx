@@ -162,6 +162,9 @@ export const MlEphantConversationPane = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      kclManager: props.kclManager,
+      engineCommandManager: props.contextModeling.engineCommandManager,
+      wasmInstance: props.contextModeling.wasmInstance,
       mode,
       additionalFiles: attachments,
     })

@@ -1,5 +1,6 @@
-import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import { assertParse } from '@src/lang/wasm'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { assertParse, defaultNodePath } from '@src/lang/wasm'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import {
@@ -12,7 +13,11 @@ import {
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+  SetSelections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
@@ -66,17 +71,19 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
 
   function setupModelingSelection({
     code,
-    selections,
+    selection,
+    artifactGraph = new Map() as ArtifactGraph,
   }: {
     code: string
-    selections: Selections
+    selection: SetSelections
+    artifactGraph?: ArtifactGraph
   }): Selections {
     world.kclManager.updateCodeEditor(code, {
       shouldWriteToDisk: false,
       shouldAddToHistory: false,
     })
     world.kclManager.ast = assertParse(code, world.instance)
-    world.kclManager.artifactGraph = new Map() as ArtifactGraph
+    world.kclManager.artifactGraph = artifactGraph
 
     const context = generateModelingMachineDefaultContext({
       kclManager: world.kclManager,
@@ -90,10 +97,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     const actor = createActor(modelingMachine, { input: context }).start()
     actor.send({
       type: 'Set selection',
-      data: {
-        selectionType: 'completeSelection',
-        selection: selections,
-      },
+      data: selection,
     })
 
     const modelingSelections = actor.getSnapshot().context.selectionRanges
@@ -163,6 +167,9 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
       projectFiles,
       selections,
       artifactGraph: world.kclManager.artifactGraph,
+      kclManager: world.kclManager,
+      engineCommandManager: world.engineCommandManager,
+      wasmInstance: world.instance,
     })
 
     await waitFor(actor, (state) => state.context.awaitingResponse)
@@ -172,13 +179,17 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     return ws.sentPayloads.map((payload) => JSON.parse(payload))
   }
 
+  function sourceRangeForSnippet(code: string, snippet: string): SourceRange {
+    const start = code.indexOf(snippet)
+    expect(start).toBeGreaterThanOrEqual(0)
+    return [start, start + snippet.length, 0]
+  }
+
   function selectedIdentifierRange(
     code: string,
     identifier: string
   ): SourceRange {
-    const start = code.indexOf(identifier)
-    expect(start).toBeGreaterThanOrEqual(0)
-    return [start, start + identifier.length, 0]
+    return sourceRangeForSnippet(code, identifier)
   }
 
   it('includes the single current graph selection in the Zookeeper user payload', async () => {
@@ -186,16 +197,19 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     const widthRange = selectedIdentifierRange(code, 'width')
     const modelingSelections = setupModelingSelection({
       code,
-      selections: {
-        otherSelections: [],
-        graphSelections: [
-          {
-            codeRef: {
-              range: widthRange,
-              pathToNode: [],
+      selection: {
+        selectionType: 'completeSelection',
+        selection: {
+          otherSelections: [],
+          graphSelections: [
+            {
+              codeRef: {
+                range: widthRange,
+                pathToNode: [],
+              },
             },
-          },
-        ],
+          ],
+        },
       },
     })
 
@@ -227,22 +241,25 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     const heightRange = selectedIdentifierRange(code, 'height')
     const modelingSelections = setupModelingSelection({
       code,
-      selections: {
-        otherSelections: [],
-        graphSelections: [
-          {
-            codeRef: {
-              range: widthRange,
-              pathToNode: [],
+      selection: {
+        selectionType: 'completeSelection',
+        selection: {
+          otherSelections: [],
+          graphSelections: [
+            {
+              codeRef: {
+                range: widthRange,
+                pathToNode: [],
+              },
             },
-          },
-          {
-            codeRef: {
-              range: heightRange,
-              pathToNode: [],
+            {
+              codeRef: {
+                range: heightRange,
+                pathToNode: [],
+              },
             },
-          },
-        ],
+          ],
+        },
       },
     })
 
@@ -274,5 +291,87 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
         },
       },
     ])
+  })
+
+  it('includes primitive face selections as generated KCL references', async () => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+outerSketch = sketch(on = YZ) {
+  outerCircle = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  diameter(outerCircle) == 20mm
+}
+outerRegion = region(segments = [outerSketch.outerCircle])
+outerBody = extrude(outerRegion, length = 40mm, symmetric = true)
+
+innerSketch = sketch(on = YZ) {
+  innerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  diameter(innerCircle) == 4mm
+}
+innerRegion = region(segments = [innerSketch.innerCircle])
+innerBody = extrude(innerRegion, length = 40mm, symmetric = true)
+
+cfdBoundingHollowCylinder = subtract(outerBody, tools = innerBody)
+`
+    world.kclManager.updateCodeEditor(code, {
+      shouldWriteToDisk: false,
+      shouldAddToHistory: false,
+    })
+    const ast = assertParse(code, world.instance)
+    const cfdBoundingHollowCylinderRange = sourceRangeForSnippet(
+      code,
+      'cfdBoundingHollowCylinder = subtract(outerBody, tools = innerBody)'
+    )
+    const cfdBoundingHollowCylinder: Artifact = {
+      type: 'compositeSolid',
+      id: 'cfd-bounding-hollow-cylinder',
+      consumed: false,
+      subType: 'subtract',
+      solidIds: [],
+      toolIds: [],
+      codeRef: {
+        range: cfdBoundingHollowCylinderRange,
+        nodePath: defaultNodePath(),
+        pathToNode: getNodePathFromSourceRange(
+          ast,
+          cfdBoundingHollowCylinderRange
+        ),
+      },
+    }
+    const artifactGraph = new Map([
+      [cfdBoundingHollowCylinder.id, cfdBoundingHollowCylinder],
+    ])
+
+    const faceSelection: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'selected-cfd-face',
+      parentEntityId: cfdBoundingHollowCylinder.id,
+      primitiveIndex: 5,
+      primitiveType: 'face',
+    }
+    const modelingSelections = setupModelingSelection({
+      code,
+      artifactGraph,
+      selection: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: faceSelection,
+      },
+    })
+
+    expect(modelingSelections.graphSelections).toStrictEqual([])
+    expect(modelingSelections.otherSelections).toStrictEqual([faceSelection])
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.content).toContain(
+      'Face: `faceId(cfdBoundingHollowCylinder, index = 5)`'
+    )
+    expect(userPayload?.source_ranges).toHaveLength(1)
+    expect(userPayload?.source_ranges?.[0].prompt).toContain(
+      'Face: `faceId(cfdBoundingHollowCylinder, index = 5)`'
+    )
   })
 })

@@ -27,9 +27,12 @@ import { Socket, SocketConnectionError } from '@src/lib/socket'
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
 
+import type { KclManager } from '@src/lang/KclManager'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
@@ -261,6 +264,9 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
+      kclManager: KclManager
+      engineCommandManager: ConnectionManager
+      wasmInstance: ModuleType
       mode?: MlCopilotModeId
       additionalFiles?: File[]
     }
@@ -1244,7 +1250,7 @@ export const mlEphantManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
-      const requestData = constructZookeeperPromptToEditRequest({
+      const requestData = await constructZookeeperPromptToEditRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
@@ -1254,6 +1260,9 @@ export const mlEphantManagerMachine = setup({
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
         kclVersion: getKclVersion(),
+        kclManager: event.kclManager,
+        engineCommandManager: event.engineCommandManager,
+        wasmInstance: event.wasmInstance,
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 

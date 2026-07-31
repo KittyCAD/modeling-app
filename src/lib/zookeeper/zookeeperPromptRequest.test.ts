@@ -1,13 +1,16 @@
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isErr } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   constructZookeeperPromptToEditRequest,
   zookeeperArtifactSelectionPromptHandlers,
   zookeeperArtifactTypes,
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
+import type { KclManager } from '@src/lang/KclManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -19,6 +22,12 @@ beforeAll(async () => {
 })
 
 describe('constructZookeeperPromptToEditRequest', () => {
+  const unusedSelectionReferenceDependencies = {
+    kclManager: {} as KclManager,
+    engineCommandManager: {} as ConnectionManager,
+    wasmInstance: {} as ModuleType,
+  }
+
   const currentFileEntry: FileEntry = {
     path: '/projects/zoo-project/main.kcl',
     name: 'main.kcl',
@@ -53,11 +62,12 @@ describe('constructZookeeperPromptToEditRequest', () => {
       projectName: 'zoo-project',
       currentFile: { entry: currentFileEntry, content: code },
       kclVersion: '1.0.0',
+      ...unusedSelectionReferenceDependencies,
     })
 
-  it('marks the currently open file as the default edit target when there is no selection', () => {
+  it('marks the currently open file as the default edit target when there is no selection', async () => {
     const code = 'width = 5\n'
-    const request = makeRequest({ code, selections: null })
+    const request = await makeRequest({ code, selections: null })
 
     expect(isErr(request)).toBe(false)
     if (isErr(request)) return
@@ -70,8 +80,8 @@ describe('constructZookeeperPromptToEditRequest', () => {
     })
   })
 
-  it('returns a forward-slash active file for nested files', () => {
-    const request = constructZookeeperPromptToEditRequest({
+  it('returns a forward-slash active file for nested files', async () => {
+    const request = await constructZookeeperPromptToEditRequest({
       prompt: 'change the bracket',
       selections: null,
       projectFiles: [
@@ -95,6 +105,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
         content: 'bracket = 1\n',
       },
       kclVersion: '1.0.0',
+      ...unusedSelectionReferenceDependencies,
     })
 
     expect(isErr(request)).toBe(false)
@@ -104,9 +115,9 @@ describe('constructZookeeperPromptToEditRequest', () => {
     expect(request.activeFile).not.toContain('\\')
   })
 
-  it('marks the active file as the default edit target when selection data has no graph selections', () => {
+  it('marks the active file as the default edit target when selection data has no graph selections', async () => {
     const code = 'width = 5\n'
-    const request = makeRequest({
+    const request = await makeRequest({
       code,
       selections: {
         graphSelections: [],
@@ -133,9 +144,9 @@ describe('constructZookeeperPromptToEditRequest', () => {
 
   it.each(zookeeperArtifactTypes)(
     'serializes selected %s artifacts',
-    (artifactType) => {
+    async (artifactType) => {
       const code = 'selected = 5\n'
-      const request = makeRequest({
+      const request = await makeRequest({
         code,
         selections: {
           otherSelections: [],
@@ -165,8 +176,8 @@ describe('constructZookeeperPromptToEditRequest', () => {
     }
   )
 
-  it('returns an error instead of sending empty source ranges for stale graph selections', () => {
-    const request = makeRequest({
+  it('returns an error instead of sending empty source ranges for stale graph selections', async () => {
+    const request = await makeRequest({
       code: 'width = 5\n',
       selections: {
         otherSelections: [],

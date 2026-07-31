@@ -3,13 +3,25 @@ import type {
   SourceRangePrompt,
   TextToCadMultiFileIterationBody,
 } from '@kittycad/lib'
+import type { KclManager } from '@src/lang/KclManager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
+import {
+  getSelectionReferences,
+  isEnginePrimitiveSelection,
+  type SelectionReference,
+} from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 import { isErr } from '@src/lib/trap'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 export type KittyCadLibFile = { name: string; data: Blob }
 
@@ -33,6 +45,9 @@ export interface ConstructZookeeperPromptToEditRequestArgs {
   currentFile: { entry?: FileEntry; content: string }
   artifactGraph: ArtifactGraph
   kclVersion: string
+  kclManager: KclManager
+  engineCommandManager: ConnectionManager
+  wasmInstance: ModuleType
 }
 
 type SourceRangePromptDraft = {
@@ -399,7 +414,87 @@ export function buildZookeeperSourceRangePromptsForSelection({
       )
 }
 
-export function constructZookeeperPromptToEditRequest({
+function isReferenceableEnginePrimitiveSelection(
+  selection: EnginePrimitiveSelection
+): boolean {
+  return (
+    selection.primitiveType === 'face' || selection.primitiveType === 'edge'
+  )
+}
+
+function formatSelectionReferencePrompt(
+  references: SelectionReference[]
+): string | null {
+  if (references.length === 0) return null
+
+  return [
+    "The user's current selection includes these KCL references that may not exist verbatim in the source:",
+    ...references.map(
+      (reference) => `${reference.label}: \`${reference.code}\``
+    ),
+  ].join('\n')
+}
+
+function appendSelectionReferencePrompt({
+  prompt,
+  selectionReferencePrompt,
+}: {
+  prompt: string
+  selectionReferencePrompt: string | null
+}): string {
+  return selectionReferencePrompt
+    ? `${prompt}\n\n${selectionReferencePrompt}`
+    : prompt
+}
+
+async function buildSelectionReferencePrompt({
+  selections,
+  artifactGraph,
+  kclManager,
+  engineCommandManager,
+  wasmInstance,
+}: {
+  selections: Selections
+  artifactGraph: ArtifactGraph
+  kclManager: KclManager
+  engineCommandManager: ConnectionManager
+  wasmInstance: ModuleType
+}): Promise<string | Error | null> {
+  const enginePrimitives = selections.otherSelections.filter(
+    isEnginePrimitiveSelection
+  )
+  const referenceableEnginePrimitives = enginePrimitives.filter(
+    isReferenceableEnginePrimitiveSelection
+  )
+
+  if (referenceableEnginePrimitives.length === 0) return null
+
+  const references = await getSelectionReferences({
+    graphSelections: selections.graphSelections,
+    enginePrimitives,
+    artifactGraph,
+    engineCommandManager,
+    kclManager,
+    wasmInstance,
+  })
+
+  const unresolvedSelections = referenceableEnginePrimitives.filter(
+    (selection) =>
+      !references.some(
+        (reference) =>
+          reference.enginePrimitiveSelection?.entityId === selection.entityId
+      )
+  )
+  if (unresolvedSelections.length > 0) {
+    return new Error(
+      `Could not send Zookeeper selection: ${unresolvedSelections.length} selected engine primitive(s) could not be resolved to KCL references.`
+    )
+  }
+
+  return formatSelectionReferencePrompt(references)
+}
+
+export async function constructZookeeperPromptToEditRequest({
   conversationId,
   prompt,
   selections,
@@ -409,9 +504,12 @@ export function constructZookeeperPromptToEditRequest({
   projectName,
   currentFile,
   kclVersion,
-}: ConstructZookeeperPromptToEditRequestArgs):
-  | ZookeeperPromptToEditRequest
-  | Error {
+  kclManager,
+  engineCommandManager,
+  wasmInstance,
+}: ConstructZookeeperPromptToEditRequestArgs): Promise<
+  ZookeeperPromptToEditRequest | Error
+> {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
 
@@ -462,6 +560,17 @@ export function constructZookeeperPromptToEditRequest({
   }
 
   const ranges: SourceRangePrompt[] = []
+  const selectionReferencePrompt = await buildSelectionReferencePrompt({
+    selections,
+    artifactGraph,
+    kclManager,
+    engineCommandManager,
+    wasmInstance,
+  })
+  if (selectionReferencePrompt instanceof Error) {
+    return selectionReferencePrompt
+  }
+
   for (const selection of selections.graphSelections) {
     const selectionPrompts = buildZookeeperSourceRangePromptsForSelection({
       selection,
@@ -475,12 +584,21 @@ export function constructZookeeperPromptToEditRequest({
   }
 
   if (selections.graphSelections.length === 0 && currentFilePrompt !== null) {
-    ranges.push(currentFilePrompt)
+    ranges.push({
+      ...currentFilePrompt,
+      prompt: appendSelectionReferencePrompt({
+        prompt: currentFilePrompt.prompt,
+        selectionReferencePrompt,
+      }),
+    })
   }
 
   return {
     body: {
-      prompt,
+      prompt: appendSelectionReferencePrompt({
+        prompt,
+        selectionReferencePrompt,
+      }),
       ...(conversationId ? { conversation_id: conversationId } : {}),
       source_ranges: ranges,
       project_name:
