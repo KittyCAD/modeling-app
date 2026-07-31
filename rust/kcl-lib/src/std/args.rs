@@ -37,6 +37,7 @@ use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
@@ -189,7 +190,7 @@ impl Args {
             )));
         };
 
-        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()
@@ -311,7 +312,7 @@ impl Args {
                 vec![self.source_range],
             )))?;
 
-        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()

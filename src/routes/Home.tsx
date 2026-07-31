@@ -792,6 +792,15 @@ function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
 }
 
+function shouldShowLoadingMoreProjects(
+  state: ReturnType<typeof useSystemIOState>
+) {
+  return (
+    state.matches(SystemIOMachineStates.readingFolders) &&
+    !state.context.hasListedProjects
+  )
+}
+
 function ProjectLibraryOverview({
   libraries,
   searchResults,
@@ -806,7 +815,6 @@ function ProjectLibraryOverview({
   ...rest
 }: ProjectLibraryOverviewProps) {
   const state = useSystemIOState()
-  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const libraryRows = libraries
     .map((library) => ({
       library,
@@ -816,7 +824,7 @@ function ProjectLibraryOverview({
       ).toSorted(getSortFunction(sort)),
     }))
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = isReadingFolders ? (
+  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -1002,9 +1010,8 @@ function ProjectGrid({
   ...rest
 }: ProjectGridProps) {
   const state = useSystemIOState()
-  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = isReadingFolders ? (
+  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>

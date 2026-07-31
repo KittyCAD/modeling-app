@@ -105,6 +105,16 @@ export type StateMachineCommandSetConfig<
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>[]
 }>
 
+export type CommandReviewValidationDetails = {
+  type: 'codemod'
+  currentCode: string
+  proposedCode: string
+}
+
+export type CommandReviewValidationError = Error & {
+  reviewDetails?: CommandReviewValidationDetails
+}
+
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
@@ -121,7 +131,7 @@ export type Command<
   reviewValidation?: (
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
-  ) => Promise<undefined | Error>
+  ) => Promise<undefined | CommandReviewValidationError>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
