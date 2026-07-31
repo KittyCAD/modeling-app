@@ -119,7 +119,6 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
-  const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
 
   const getWasmPromise = () =>
@@ -301,9 +300,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         syncedProject.projectPath,
         await getWasmPromise()
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
       return { defaultFile: projectInfo.default_file }
     },
     duplicate: async (project) => {
@@ -446,10 +442,12 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         const snapshot = service.actor.getSnapshot()
         const context = snapshot.context
         const projects = context.folders
-        entries.value = localHomeProjectEntriesFromProjects(
-          projects,
-          DEFAULT_PROJECT_LIBRARY_ID
-        )
+        if (projects !== undefined) {
+          entries.value = localHomeProjectEntriesFromProjects(
+            projects,
+            DEFAULT_PROJECT_LIBRARY_ID
+          )
+        }
 
         if (
           projects &&
@@ -488,6 +486,26 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
     }),
   }
 }, 'home-projects.system-io-local-projects')
+
+function areProjectLibrariesEqual(
+  left: readonly ProjectLibrary[],
+  right: readonly ProjectLibrary[]
+) {
+  return (
+    left.length === right.length &&
+    left.every((library, index) => {
+      const otherLibrary = right[index]
+      return (
+        otherLibrary !== undefined &&
+        library.id === otherLibrary.id &&
+        library.title === otherLibrary.title &&
+        library.path === otherLibrary.path &&
+        library.type === otherLibrary.type &&
+        library.order === otherLibrary.order
+      )
+    })
+  )
+}
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
@@ -694,6 +712,9 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
   let loadId = 0
+  let lastScannedConfiguredLibraries: ProjectLibrary[] | undefined
+  let lastScannedLibraryTypes: typeof libraryTypes.value | undefined
+  let lastScannedInvalidation = -1
 
   const updateEntries = () => {
     entries.value = Array.from(entriesByLibraryId.values()).flat()
@@ -712,7 +733,30 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       // Directory library operations mutate the filesystem without changing
       // settings or library type registrations. Read this signal so known
       // mutations can invalidate and rescan configured library entries.
-      readConfiguredProjectLibraryEntriesInvalidation()
+      const invalidation = readConfiguredProjectLibraryEntriesInvalidation()
+
+      const configuredLibraries =
+        currentSettings !== undefined
+          ? projectLibrariesFromSettings(
+              currentSettings.app.libraries.current
+            ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+          : []
+
+      if (
+        lastScannedLibraryTypes === typeById &&
+        lastScannedInvalidation === invalidation &&
+        lastScannedConfiguredLibraries &&
+        areProjectLibrariesEqual(
+          lastScannedConfiguredLibraries,
+          configuredLibraries
+        )
+      ) {
+        return
+      }
+
+      lastScannedLibraryTypes = typeById
+      lastScannedInvalidation = invalidation
+      lastScannedConfiguredLibraries = configuredLibraries
       const nextLoadId = ++loadId
 
       abortController?.abort()
@@ -720,14 +764,6 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       abortController = loadController
       entriesByLibraryId.clear()
       entries.value = []
-
-      if (!currentSettings) {
-        return
-      }
-
-      const configuredLibraries = projectLibrariesFromSettings(
-        currentSettings.app.libraries.current
-      ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries

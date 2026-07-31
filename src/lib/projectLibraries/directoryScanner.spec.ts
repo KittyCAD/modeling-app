@@ -166,6 +166,7 @@ describe('directory project scanner', () => {
     })
     mocks.desktop.mkdirOrNOOP.mockResolvedValue(undefined)
     mocks.fsZds.rename.mockResolvedValue(undefined)
+    mocks.fsZds.rm.mockResolvedValue(undefined)
   })
 
   it('schedules stale project directory name syncs after the scan returns', async () => {

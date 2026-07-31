@@ -1,17 +1,11 @@
-import { markdown } from '@codemirror/lang-markdown'
-import { MergeView } from '@codemirror/merge'
-import { EditorState, type Extension } from '@codemirror/state'
-import { EditorView, lineNumbers } from '@codemirror/view'
 import { Dialog } from '@headlessui/react'
-import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
 import {
-  editorMarkdownHighlight,
-  editorTheme,
-  editorVisualTheme,
-} from '@src/editor/plugins/theme'
+  type CodeDiffLanguage,
+  CodeDiffView,
+} from '@src/components/CodeDiffView'
+import { CustomIcon } from '@src/components/CustomIcon'
 import {
   type CloudSyncConflictResolution,
   type CloudSyncProjectMetadata,
@@ -31,7 +25,7 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import type { ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 type CloudConflictDialogProps = {
@@ -79,121 +73,19 @@ function statusBadgeClassName(status: ConflictFileStatus) {
   return 'bg-warn-20 text-warn-90 dark:bg-warn-80/30 dark:text-warn-10'
 }
 
-function mergeLanguageExtensions(
-  relativePath: string,
-  resolvedTheme: ResolvedTheme
-) {
-  const extension = fsZds.extname(relativePath).toLowerCase()
-  if (extension === '.kcl') {
-    return [kcl(), ...editorTheme[resolvedTheme]]
-  }
-  if (extension === '.md' || extension === '.markdown') {
-    return [
-      markdown(),
-      editorVisualTheme[resolvedTheme],
-      editorMarkdownHighlight[resolvedTheme],
-    ]
-  }
-  return [editorVisualTheme[resolvedTheme]]
-}
-
-const mergeEditorTheme = EditorView.theme({
-  '&': {
-    maxWidth: '100%',
-    minHeight: '8rem',
-    minWidth: 0,
-  },
-  '.cm-scroller': {
-    fontFamily:
-      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    overflowX: 'auto',
-  },
-  '.cm-content': {
-    paddingBlock: '0.5rem',
-  },
-  '.cm-line': {
-    paddingInline: '0.5rem',
-  },
-  '&.cm-focused': {
-    outline: 'none',
-  },
-})
-
-function mergeEditorExtensions(
-  relativePath: string,
-  resolvedTheme: ResolvedTheme
-): Extension[] {
-  return [
-    ...mergeLanguageExtensions(relativePath, resolvedTheme),
-    mergeEditorTheme,
-    lineNumbers(),
-    EditorState.readOnly.of(true),
-    EditorView.editable.of(false),
-  ]
-}
-
-function ConflictMergeView({
-  comparison,
-  resolvedTheme,
-}: {
-  comparison: ConflictFileComparison
-  resolvedTheme: ResolvedTheme
-}) {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return
-    }
-
-    const mergeView = new MergeView({
-      a: {
-        doc: comparison.localText ?? '',
-        extensions: mergeEditorExtensions(
-          comparison.relativePath,
-          resolvedTheme
-        ),
-      },
-      b: {
-        doc: comparison.cloudText ?? '',
-        extensions: mergeEditorExtensions(
-          comparison.relativePath,
-          resolvedTheme
-        ),
-      },
-      parent: containerRef.current,
-      highlightChanges: true,
-      gutter: true,
-      revertControls: undefined,
-      collapseUnchanged: {
-        margin: 3,
-        minSize: 8,
-      },
-      diffConfig: {
-        timeout: 1000,
-      },
-    })
-
-    return () => {
-      mergeView.destroy()
-    }
-  }, [
-    comparison.cloudText,
-    comparison.localText,
-    comparison.relativePath,
-    resolvedTheme,
-  ])
-
-  return (
-    <div
-      ref={containerRef}
-      className="max-h-[18rem] min-h-32 w-full max-w-full min-w-0 overflow-auto rounded border border-chalkboard-20 dark:border-chalkboard-70 [&_.cm-editor]:max-w-full [&_.cm-editor]:min-w-0 [&_.cm-mergeView]:max-h-[18rem] [&_.cm-mergeView]:max-w-full [&_.cm-mergeView]:min-w-0 [&_.cm-mergeView]:overflow-auto [&_.cm-mergeView]:w-full [&_.cm-mergeViewEditor]:max-w-full [&_.cm-mergeViewEditor]:min-w-0 [&_.cm-mergeViewEditors]:max-w-full [&_.cm-mergeViewEditors]:min-w-0 [&_.cm-mergeViewEditors]:w-full [&_.cm-scroller]:overflow-auto"
-    />
-  )
-}
-
 function canShowDiff(file: ConflictFileComparison) {
   return !file.textUnavailableReason
+}
+
+function diffLanguage(relativePath: string): CodeDiffLanguage {
+  const extension = fsZds.extname(relativePath).toLowerCase()
+  if (extension === '.kcl') {
+    return 'kcl'
+  }
+  if (extension === '.md' || extension === '.markdown') {
+    return 'markdown'
+  }
+  return 'plain'
 }
 
 function ChangedFilesTable({
@@ -308,16 +200,14 @@ function ChangedFilesTable({
                   >
                     <td colSpan={5} className="max-w-0 p-3">
                       {showDiff ? (
-                        <>
-                          <div className="mb-2 grid grid-cols-2 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30">
-                            <span>Local</span>
-                            <span>Cloud</span>
-                          </div>
-                          <ConflictMergeView
-                            comparison={file}
-                            resolvedTheme={resolvedTheme}
-                          />
-                        </>
+                        <CodeDiffView
+                          beforeText={file.localText ?? ''}
+                          afterText={file.cloudText ?? ''}
+                          beforeLabel="Local"
+                          afterLabel="Cloud"
+                          language={diffLanguage(file.relativePath)}
+                          resolvedTheme={resolvedTheme}
+                        />
                       ) : (
                         <p className="rounded border border-chalkboard-20 bg-chalkboard-20/40 px-3 py-2 text-sm text-chalkboard-70 dark:border-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-30">
                           Diff unavailable: {file.textUnavailableReason}
