@@ -521,11 +521,11 @@ export function ProjectLibrariesSettingInput({
 
   return (
     <div
-      className="flex flex-col gap-3"
+      className="flex min-w-0 w-full flex-col gap-3"
       data-testid="project-libraries-setting"
     >
       {draftLibraries.length > 0 && (
-        <ul className="flex flex-col gap-2">
+        <ul className="flex min-w-0 flex-col gap-2">
           {draftLibraries.map((library, index) => {
             const SettingsDetails =
               libraryTypeOptionForType(library.type, libraryTypeOptions)
@@ -536,14 +536,8 @@ export function ProjectLibrariesSettingInput({
             return (
               <li
                 key={`${index}-${library.type}`}
-                className={`grid gap-2 rounded-sm border p-2 dark:border-chalkboard-80 ${
-                  canReorderLibraries && showRemoveColumn
-                    ? 'pl-1 md:grid-cols-[auto_auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)_auto]'
-                    : canReorderLibraries
-                      ? 'pl-1 md:grid-cols-[auto_auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)]'
-                      : showRemoveColumn
-                        ? 'md:grid-cols-[auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)_auto]'
-                        : 'md:grid-cols-[auto_minmax(10rem,1fr)_minmax(12rem,1.5fr)]'
+                className={`flex min-w-0 flex-col gap-2 rounded-sm border p-2 dark:border-chalkboard-80 ${
+                  canReorderLibraries ? 'pl-1' : ''
                 } ${
                   dragOverLibraryIndex === index
                     ? 'border-primary bg-primary/5 dark:border-primary'
@@ -561,40 +555,62 @@ export function ProjectLibrariesSettingInput({
                 }
                 data-testid="project-library-row"
               >
-                {canReorderLibraries && (
-                  <button
-                    type="button"
-                    draggable
-                    aria-label={`Reorder ${library.title || 'project library'}`}
-                    aria-grabbed={draggedLibraryIndex === index}
-                    className="flex p-0 cursor-grab items-center justify-center self-stretch rounded-sm border !border-transparent text-2 !bg-transparent active:cursor-grabbing"
-                    data-testid="project-library-drag-handle"
-                    onDragStart={(event) => handleDragStart(event, index)}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <CustomIcon name="sixDots" className="h-4 w-4" />
-                    <Tooltip position="top-right">Reorder library</Tooltip>
-                  </button>
-                )}
-                <ProjectLibraryTypeSelect
-                  value={library.type}
-                  options={
-                    canChangeLibraryType
-                      ? selectableLibraryTypeOptions
-                      : libraryTypeOptions
-                  }
-                  onChange={(type) => updateLibraryType(index, type)}
-                  readOnly={!canChangeLibraryType}
-                />
-                <input
-                  value={library.title}
-                  onChange={(event) =>
-                    updateDraftField(index, 'title', event.target.value)
-                  }
-                  onBlur={() => commitDraftLibrary(index)}
-                  className="min-w-0 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
-                  data-testid="project-library-title"
-                />
+                <div className="flex min-w-0 items-center gap-2">
+                  {canReorderLibraries && (
+                    <button
+                      type="button"
+                      draggable
+                      aria-label={`Reorder ${library.title || 'project library'}`}
+                      aria-grabbed={draggedLibraryIndex === index}
+                      className="flex shrink-0 p-0 cursor-grab items-center justify-center self-stretch rounded-sm border !border-transparent text-2 !bg-transparent active:cursor-grabbing"
+                      data-testid="project-library-drag-handle"
+                      onDragStart={(event) => handleDragStart(event, index)}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <CustomIcon name="sixDots" className="h-4 w-4" />
+                      <Tooltip position="top-right">Reorder library</Tooltip>
+                    </button>
+                  )}
+                  <ProjectLibraryTypeSelect
+                    value={library.type}
+                    options={
+                      canChangeLibraryType
+                        ? selectableLibraryTypeOptions
+                        : libraryTypeOptions
+                    }
+                    onChange={(type) => updateLibraryType(index, type)}
+                    readOnly={!canChangeLibraryType}
+                  />
+                  <input
+                    value={library.title}
+                    onChange={(event) =>
+                      updateDraftField(index, 'title', event.target.value)
+                    }
+                    onBlur={() => commitDraftLibrary(index)}
+                    className="min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent p-1 text-sm dark:border-chalkboard-70"
+                    data-testid="project-library-title"
+                  />
+                  {showRemoveColumn &&
+                    (canRemoveCurrentLibrary ? (
+                      <ActionButton
+                        Element="button"
+                        type="button"
+                        tabIndex={0}
+                        onClick={() => removeLibrary(index)}
+                        className="shrink-0 !p-0"
+                        iconStart={{
+                          icon: 'trash',
+                          bgClassName: '!bg-transparent',
+                          iconClassName: 'dark:!text-chalkboard-30',
+                        }}
+                        data-testid="project-library-remove"
+                      >
+                        <Tooltip position="top-right">Remove library</Tooltip>
+                      </ActionButton>
+                    ) : (
+                      <span aria-hidden="true" className="w-8 shrink-0" />
+                    ))}
+                </div>
                 <SettingsDetails
                   library={library}
                   index={index}
@@ -625,26 +641,6 @@ export function ProjectLibrariesSettingInput({
                       : undefined
                   }
                 />
-                {showRemoveColumn &&
-                  (canRemoveCurrentLibrary ? (
-                    <ActionButton
-                      Element="button"
-                      type="button"
-                      tabIndex={0}
-                      onClick={() => removeLibrary(index)}
-                      className="justify-self-start !p-0 md:justify-self-end"
-                      iconStart={{
-                        icon: 'trash',
-                        bgClassName: '!bg-transparent',
-                        iconClassName: 'dark:!text-chalkboard-30',
-                      }}
-                      data-testid="project-library-remove"
-                    >
-                      <Tooltip position="top-right">Remove library</Tooltip>
-                    </ActionButton>
-                  ) : (
-                    <span aria-hidden="true" />
-                  ))}
               </li>
             )
           })}
