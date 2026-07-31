@@ -2,6 +2,7 @@ import {
   areProjectLibrarySettingsEqual,
   DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
   DEFAULT_PROJECT_LIBRARY_ID,
+  formatProjectLibraryPathForDisplay,
   getContainingDirectoryProjectLibraryPath,
   getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
@@ -70,6 +71,21 @@ describe('project library settings', () => {
         type: 'cloud',
       })
     )
+  })
+
+  test('formats cloud library paths with a zoo:// display prefix', () => {
+    expect(
+      formatProjectLibraryPathForDisplay({
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+      })
+    ).toBe('zoo://personal')
+    expect(
+      formatProjectLibraryPathForDisplay({
+        path: '/projects',
+        type: 'directory',
+      })
+    ).toBe('/projects')
   })
 
   test('treats the first directory library as the default local project target', () => {
@@ -330,7 +346,7 @@ describe('project library default policies', () => {
       getDefaultLibraries: () => [
         {
           title: 'Personal Cloud',
-          path: '/personal',
+          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
           type: 'cloud',
         },
       ],
@@ -349,7 +365,7 @@ describe('project library default policies', () => {
     ).toEqual([
       {
         title: 'Personal Cloud',
-        path: '/personal',
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
         type: 'cloud',
       },
     ])

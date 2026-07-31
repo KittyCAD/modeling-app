@@ -316,7 +316,7 @@ export function DirectoryProjectLibrarySettingsDetails({
               : 'project-library-folder-button'
           }
         >
-          <Tooltip position="top-right">Choose folder</Tooltip>
+          <Tooltip position="top-right">Change location</Tooltip>
         </ActionButton>
       )}
     </div>

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use async_recursion::async_recursion;
 use ezpz::Constraint;
@@ -72,6 +73,7 @@ use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
 use crate::execution::state::ModuleState;
 use crate::execution::state::SketchBlockState;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
@@ -1182,7 +1184,7 @@ impl ExecutorContext {
                                 })?;
 
                                 let value = KclValue::Type {
-                                    value: TypeDef::Enum(def),
+                                    value: TypeDef::Enum(Arc::new(def)),
                                     meta: vec![metadata],
                                     experimental: attrs.experimental,
                                 };
@@ -1746,7 +1748,7 @@ fn enum_named_by_segment(
     exec_state: &ExecState,
     segment: &Node<Identifier>,
     within: Option<&(EnvironmentRef, Vec<String>)>,
-) -> Option<EnumTypeDef> {
+) -> Option<Arc<EnumTypeDef>> {
     let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
     let value = match within {
         // Inside another module the enum must be exported to be reachable, and
@@ -1776,7 +1778,7 @@ fn enum_named_by_segment(
 
 /// `Red` in `Color::Red`.
 fn enum_variant_value(
-    def: &EnumTypeDef,
+    def: Arc<EnumTypeDef>,
     variant: &Node<Identifier>,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
@@ -1803,12 +1805,12 @@ fn enum_variant_value(
     // `RuntimeType::from_alias`.
     exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
 
-    // The identity comes from the declaration and is never rebuilt from a name.
-    // A later enum v2 can then add a declaration site to `EnumTypeId` by changing
-    // this one construction, without revisiting every use.
+    // The value holds the declaration itself, so its identity is read off that
+    // declaration and can never be rebuilt from a name. A later enum v2 adding a
+    // declaration site to `EnumTypeId` therefore changes nothing here.
     Ok(KclValue::Enum {
         value: Box::new(EnumValue::new(
-            def.id().clone(),
+            def,
             variant.name.clone(),
             vec![Metadata {
                 source_range: variant.as_source_range(),
@@ -2633,7 +2635,13 @@ fn apply_ascription(
         exec_state.clear_units_warnings(&source_range);
     }
 
-    value.coerce(&ty, false, exec_state).map_err(|_| {
+    value.coerce(&ty, CoercionMode::explicit(), exec_state).map_err(|e| {
+        // A coercion that knows why it failed says so; the generic wording below
+        // would replace that with a worse description of the same failure.
+        if let Some(message) = e.message {
+            return KclError::new_semantic(KclErrorDetails::new(message, vec![source_range]));
+        }
+
         let suggestion = if ty == RuntimeType::length() {
             ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
@@ -2732,7 +2740,7 @@ impl Node<Name> {
                     )));
                 }
 
-                return enum_variant_value(&def, &self.name, exec_state);
+                return enum_variant_value(def, &self.name, exec_state);
             }
 
             let value = match mem_spec {

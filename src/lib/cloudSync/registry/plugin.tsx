@@ -180,7 +180,7 @@ function CloudProjectLibrarySettingsDetails() {
           tabIndex={0}
           className="h-8 w-8 shrink-0 justify-center !p-0"
           iconStart={{
-            icon: 'folder',
+            icon: 'folderOpen',
             bgClassName: '!bg-transparent',
           }}
           disabled={!storagePath}
