@@ -1,8 +1,6 @@
 import type { ClientErrorReport } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   type Conversation,
   type MlCopilotModeOption,
@@ -11,10 +9,17 @@ import {
   type MlEphantManagerEvents,
   MlEphantManagerStates,
   MlEphantManagerTransitions,
+  MlEphantSetupErrors,
   mlEphantManagerMachine,
+  NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
+  ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
+  ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
+  ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 function stubClientErrorFetch() {
@@ -47,6 +52,60 @@ class TestSocket extends EventTarget {
   close = vi.fn()
 }
 
+class ControllableSetupWebSocket extends EventTarget {
+  static CONNECTING = 0
+  static OPEN = 1
+  static CLOSING = 2
+  static CLOSED = 3
+  static instances: ControllableSetupWebSocket[] = []
+
+  readonly url: string
+  readonly sentPayloads: string[] = []
+  binaryType: BinaryType = 'blob'
+  readyState = ControllableSetupWebSocket.CONNECTING
+
+  constructor(url: string) {
+    super()
+    this.url = url
+    ControllableSetupWebSocket.instances.push(this)
+  }
+
+  send(payload: string) {
+    this.sentPayloads.push(payload)
+  }
+
+  open() {
+    this.readyState = ControllableSetupWebSocket.OPEN
+    this.dispatchEvent(new Event('open'))
+  }
+
+  receive(payload: unknown) {
+    this.dispatchEvent(
+      new MessageEvent('message', {
+        data: JSON.stringify(payload),
+      })
+    )
+  }
+
+  close = vi.fn(() => {
+    this.closeWithCode(1000)
+  })
+
+  closeWithCode(code: number, reason = '') {
+    if (this.readyState === ControllableSetupWebSocket.CLOSED) {
+      return
+    }
+    this.readyState = ControllableSetupWebSocket.CLOSED
+    const closeEvent = new Event('close')
+    Object.defineProperties(closeEvent, {
+      code: { value: code },
+      reason: { value: reason },
+      wasClean: { value: code === 1000 },
+    })
+    this.dispatchEvent(closeEvent)
+  }
+}
+
 type TestWebSocket = Pick<MlEphantManagerContext, 'ws'>['ws'] & TestSocket
 type SetupActorInput = {
   event: Extract<MlEphantManagerEvents, { type: MlEphantManagerStates.Setup }>
@@ -77,10 +136,12 @@ const completedConversation: Conversation = {
 describe('mlEphantManagerMachine', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    ControllableSetupWebSocket.instances = []
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   describe('parseMlCopilotModesResult', () => {
@@ -199,6 +260,342 @@ describe('mlEphantManagerMachine', () => {
     })
   })
 
+  describe('Setup', () => {
+    beforeEach(() => {
+      stubClientErrorFetch()
+    })
+
+    it('stops retrying and exposes a recoverable failure after repeated setup errors', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      let setupAttempts = 0
+      let shouldFail = true
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(() => {
+            setupAttempts += 1
+            return shouldFail
+              ? Promise.reject('setup failed')
+              : Promise.resolve({
+                  conversation: { exchanges: [] },
+                  conversationId: 'conversation-id',
+                })
+          }),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
+      expect(actor.getSnapshot().context).toMatchObject({
+        abruptlyClosed: true,
+        setupAttempt: NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+        setupFailed: true,
+        conversationId: 'conversation-id',
+      })
+      expect(actor.getSnapshot().context.closeReason).toContain(
+        `${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts`
+      )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        error_name: 'Error',
+        message: 'setup failed',
+      })
+      expect(JSON.parse(reports[0]?.stack ?? '{}')).toMatchObject({
+        terminal: true,
+        setupAttempt: NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+        conversationId: 'conversation-id',
+      })
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS * 2)
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+      expect(reports).toHaveLength(2)
+
+      shouldFail = false
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS * 2 + 1)
+      expect(actor.getSnapshot().context).toMatchObject({
+        abruptlyClosed: false,
+        setupAttempt: 0,
+        setupFailed: false,
+        conversationId: 'conversation-id',
+      })
+
+      actor.stop()
+    })
+
+    it('times out setup attempts instead of waiting forever', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      vi.useFakeTimers()
+      let setupAttempts = 0
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(() => {
+            setupAttempts += 1
+            return new Promise(() => {})
+          }),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+
+        for (
+          let attempt = 0;
+          attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
+          attempt += 1
+        ) {
+          await vi.advanceTimersByTimeAsync(
+            ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS
+          )
+        }
+
+        expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
+        expect(actor.getSnapshot().matches(S.Await)).toBe(true)
+        expect(actor.getSnapshot().context.setupFailed).toBe(true)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(reports).toHaveLength(1)
+        expect(reports[0]).toMatchObject({
+          code: 'zookeeper_setup_error',
+          error_name: 'Error',
+          message: `Zookeeper couldn't load this conversation after ${NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS} attempts.`,
+        })
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('keeps a saved conversation id until the user explicitly clears it', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(() => Promise.reject(MlEphantSetupErrors.ConversationNotFound)),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'saved-conversation-id',
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(actor.getSnapshot().context.conversationId).toBe(
+        'saved-conversation-id'
+      )
+      expect(actor.getSnapshot().context.closeReason).toContain(
+        'load this conversation'
+      )
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        error_name: 'Error',
+        message: MlEphantSetupErrors.ConversationNotFound,
+      })
+
+      actor.stop()
+    })
+
+    it('enforces the hard attempt deadline despite ongoing progress', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      vi.useFakeTimers()
+      let setupAttempts = 0
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(() => {
+            setupAttempts += 1
+            return new Promise(() => {})
+          }),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+
+        for (
+          let attempt = 0;
+          attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
+          attempt += 1
+        ) {
+          const progressInterval = ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS - 1
+          const progressEventsBeforeHardDeadline = Math.floor(
+            ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS / progressInterval
+          )
+          for (
+            let progressEvent = 0;
+            progressEvent < progressEventsBeforeHardDeadline;
+            progressEvent += 1
+          ) {
+            await vi.advanceTimersByTimeAsync(progressInterval)
+            actor.send({ type: MlEphantManagerTransitions.SetupProgress })
+          }
+          await vi.advanceTimersByTimeAsync(
+            ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS -
+              progressInterval * progressEventsBeforeHardDeadline
+          )
+        }
+
+        expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS)
+        expect(actor.getSnapshot().matches(S.Await)).toBe(true)
+        expect(actor.getSnapshot().context.setupFailed).toBe(true)
+        expect(fetchMock).toHaveBeenCalledTimes(1)
+        expect(reports).toHaveLength(1)
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('recovers if a responsive websocket later stops responding', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(mlEphantManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+
+        for (let heartbeat = 0; heartbeat < 3; heartbeat += 1) {
+          await vi.advanceTimersByTimeAsync(20_000)
+          socket.receive({ pong: {} })
+        }
+        await vi.advanceTimersByTimeAsync(20_000)
+        socket.receive({
+          conversation_id: {
+            conversation_id: 'conversation-id',
+          },
+        })
+
+        await vi.waitFor(() => {
+          expect(
+            actor
+              .getSnapshot()
+              .matches(MlEphantManagerStates.WaitForContinueCheck)
+          ).toBe(true)
+        })
+
+        expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+        expect(actor.getSnapshot().context.setupAttempt).toBe(0)
+
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        vi.setSystemTime(Date.now() + ZOOKEEPER_HEARTBEAT_TIMEOUT_MS * 2)
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+
+        expect(
+          actor
+            .getSnapshot()
+            .matches(MlEphantManagerStates.WaitForContinueCheck)
+        ).toBe(true)
+
+        socket.receive({ pong: {} })
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS * 2
+        )
+
+        expect(actor.getSnapshot().matches(S.Await)).toBe(true)
+        expect(actor.getSnapshot().context).toMatchObject({
+          abruptlyClosed: true,
+          closeReason: 'Zookeeper connection timed out.',
+        })
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+  })
+
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
@@ -297,6 +694,105 @@ describe('mlEphantManagerMachine', () => {
   })
 
   describe('ConversationClose', () => {
+    it('stops setup without retrying when the browser goes offline', async () => {
+      let setupAttempts = 0
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(() => {
+            setupAttempts += 1
+            return new Promise(() => {})
+          }),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Setup)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.NetworkOffline,
+      })
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(setupAttempts).toBe(1)
+      expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(actor.getSnapshot().context.setupFailed).toBe(false)
+      expect(actor.getSnapshot().context.closeReason).toBe(
+        'No internet connection.'
+      )
+
+      actor.stop()
+    })
+
+    it('closes a live socket and preserves the conversation when the browser goes offline', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      ws.readyState = WebSocket.OPEN
+      const machine = mlEphantManagerMachine.provide({
+        actors: {
+          [MlEphantManagerStates.Setup]: fromPromise<
+            Partial<MlEphantManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: completedConversation,
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: MlEphantManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.Ready)
+      )
+
+      actor.send({
+        type: MlEphantManagerTransitions.NetworkOffline,
+      })
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(ws.close).toHaveBeenCalledOnce()
+      expect(actor.getSnapshot().context.conversation).toBe(
+        completedConversation
+      )
+      expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
+      expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(actor.getSnapshot().context.closeReason).toBe(
+        'No internet connection.'
+      )
+
+      actor.stop()
+    })
+
     it('clears conversation state on an intentional close', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       ws.readyState = WebSocket.OPEN

@@ -29,6 +29,7 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
+  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -76,7 +77,6 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -512,7 +512,12 @@ export class App implements AppSubsystems {
 
   getCreateProjectLibraryTargets = () => {
     const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
-    const libraries = this.registry.get(projectLibrariesValueSpec)
+    const settings = getOnlySettingsFromContext(
+      this.settings.actor.getSnapshot().context
+    )
+    const libraries = projectLibrariesFromSettings(
+      settings.app.libraries.current
+    )
     const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
         libraryTypes.get(library.type),

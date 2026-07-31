@@ -1343,7 +1343,8 @@ const OperationItem = ({
                 data-testid="context-menu-set-translate"
                 disabled={
                   item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsTranslate
                 }
               >
                 Translate

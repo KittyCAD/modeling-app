@@ -1,28 +1,29 @@
 import {
-  combineProjectLibrarySettingDefaultPolicies,
-  combineProjectLibrarySettingDefaults,
-  combineProjectLibraryTypes,
-  combineProjectLibraries,
-  getHomeProjectEntriesForLibrary,
-  getProjectLibraryOperation,
-  resolveProjectLibrarySettingDefaults,
-} from '@src/registry/contracts/projectLibraries'
-import {
-  DEFAULT_PROJECT_LIBRARY_ID,
-  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  getDefaultCloudProjectLibrarySetting,
   areProjectLibrarySettingsEqual,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+  DEFAULT_PROJECT_LIBRARY_ID,
+  formatProjectLibraryPathForDisplay,
   getContainingDirectoryProjectLibraryPath,
-  getDefaultDirectoryProjectLibrarySetting,
+  getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
+  getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryIdFromSetting,
   moveProjectLibrarySetting,
   normalizeProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  projectLibrariesFromSettings,
   projectLibraryFromSetting,
   updateDefaultDirectoryProjectLibrarySetting,
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
+import {
+  combineProjectLibrarySettingDefaultPolicies,
+  combineProjectLibrarySettingDefaults,
+  combineProjectLibraryTypes,
+  getHomeProjectEntriesForLibrary,
+  getProjectLibraryOperation,
+  resolveProjectLibrarySettingDefaults,
+} from '@src/registry/contracts/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
 describe('project library settings', () => {
@@ -70,6 +71,21 @@ describe('project library settings', () => {
         type: 'cloud',
       })
     )
+  })
+
+  test('formats cloud library paths with a zoo:// display prefix', () => {
+    expect(
+      formatProjectLibraryPathForDisplay({
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+      })
+    ).toBe('zoo://personal')
+    expect(
+      formatProjectLibraryPathForDisplay({
+        path: '/projects',
+        type: 'directory',
+      })
+    ).toBe('/projects')
   })
 
   test('treats the first directory library as the default local project target', () => {
@@ -267,40 +283,45 @@ describe('project library settings', () => {
   })
 })
 
-describe('combineProjectLibraries', () => {
-  test('merges duplicate library contributions by id and sorts by order', () => {
+describe('projectLibrariesFromSettings', () => {
+  test('derives visible library instances from settings order', () => {
     expect(
-      combineProjectLibraries([
+      projectLibrariesFromSettings([
         {
-          id: 'external',
           title: 'External',
           path: 'external://projects',
           type: 'external',
-          order: 10,
         },
         {
-          id: 'default-project-directory',
           title: 'Default Projects Directory',
           path: '/projects',
           type: 'directory',
-          order: 0,
         },
         {
-          id: 'external',
-          title: 'External Projects',
-          path: 'external://projects',
-          type: 'external',
-          order: 10,
+          title: 'Personal Cloud',
+          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+          type: 'cloud',
         },
       ])
     ).toEqual([
       expect.objectContaining({
-        id: 'default-project-directory',
-        title: 'Default Projects Directory',
+        id: getProjectLibraryIdFromSetting({
+          title: 'External',
+          path: 'external://projects',
+          type: 'external',
+        }),
+        title: 'External',
+        order: 0,
       }),
       expect.objectContaining({
-        id: 'external',
-        title: 'External Projects',
+        id: DEFAULT_PROJECT_LIBRARY_ID,
+        title: 'Default Projects Directory',
+        order: 1,
+      }),
+      expect.objectContaining({
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        title: 'Personal Cloud',
+        order: 2,
       }),
     ])
   })
@@ -325,7 +346,7 @@ describe('project library default policies', () => {
       getDefaultLibraries: () => [
         {
           title: 'Personal Cloud',
-          path: '/personal',
+          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
           type: 'cloud',
         },
       ],
@@ -344,7 +365,7 @@ describe('project library default policies', () => {
     ).toEqual([
       {
         title: 'Personal Cloud',
-        path: '/personal',
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
         type: 'cloud',
       },
     ])
@@ -358,6 +379,9 @@ describe('combineProjectLibraryTypes', () => {
       run: async () => undefined,
     }
     const openProject = {
+      run: async () => undefined,
+    }
+    const duplicateProject = {
       run: async () => undefined,
     }
     const renameProject = {
@@ -376,6 +400,7 @@ describe('combineProjectLibraryTypes', () => {
           operations: {
             createProject,
             openProject,
+            duplicateProject,
           },
         },
         {
@@ -395,6 +420,7 @@ describe('combineProjectLibraryTypes', () => {
       operations: {
         createProject,
         openProject,
+        duplicateProject,
         renameProject,
         deleteProject,
       },
