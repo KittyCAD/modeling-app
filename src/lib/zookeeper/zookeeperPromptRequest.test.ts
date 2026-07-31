@@ -22,6 +22,7 @@ beforeAll(async () => {
 })
 
 describe('constructZookeeperPromptToEditRequest', () => {
+  const userPrompt = 'change the selected thing'
   const unusedSelectionReferenceDependencies = {
     kclManager: {} as KclManager,
     engineCommandManager: {} as ConnectionManager,
@@ -54,7 +55,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
     artifactGraph?: ArtifactGraph
   }) =>
     constructZookeeperPromptToEditRequest({
-      prompt: 'change the selected thing',
+      prompt: userPrompt,
       selections,
       projectFiles: makeProjectFiles(code),
       applicationProjectDirectory: '/projects',
@@ -73,6 +74,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
     if (isErr(request)) return
 
     expect(request.activeFile).toBe('main.kcl')
+    expect(request.body.prompt).toBe(userPrompt)
     expect(request.body.source_ranges).toHaveLength(1)
     expect(request.body.source_ranges?.[0]).toMatchObject({
       file: 'main.kcl',
@@ -129,6 +131,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
     if (isErr(request)) return
 
     expect(request.activeFile).toBe('main.kcl')
+    expect(request.body.prompt).toBe(userPrompt)
     expect(request.body.source_ranges).toHaveLength(1)
     expect(request.body.source_ranges?.[0]).toMatchObject({
       file: 'main.kcl',
@@ -142,8 +145,41 @@ describe('constructZookeeperPromptToEditRequest', () => {
     ).toEqual([...zookeeperArtifactTypes].sort())
   })
 
+  it('keeps manual selection prompts out of the visible user prompt', async () => {
+    const code = 'selected = 5\n'
+    const request = await makeRequest({
+      code,
+      selections: {
+        otherSelections: [],
+        graphSelections: [
+          {
+            codeRef: {
+              range: [0, code.length - 1, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+      },
+    })
+
+    expect(isErr(request)).toBe(false)
+    if (isErr(request)) return
+
+    expect(request.body.prompt).toBe(userPrompt)
+    expect(request.body.source_ranges).toStrictEqual([
+      {
+        file: 'main.kcl',
+        prompt: 'This is the source range selected by the user.',
+        range: {
+          start: { line: 1, column: 0 },
+          end: { line: 1, column: code.length - 1 },
+        },
+      },
+    ])
+  })
+
   it.each(zookeeperArtifactTypes)(
-    'serializes selected %s artifacts',
+    'serializes selected %s artifact prompts without changing visible prompt',
     async (artifactType) => {
       const code = 'selected = 5\n'
       const request = await makeRequest({
@@ -165,7 +201,9 @@ describe('constructZookeeperPromptToEditRequest', () => {
       expect(isErr(request)).toBe(false)
       if (isErr(request)) return
 
+      expect(request.body.prompt).toBe(userPrompt)
       expect(request.body.source_ranges).toHaveLength(1)
+      expect(request.body.source_ranges?.[0].prompt).not.toBe(userPrompt)
       expect(request.body.source_ranges?.[0]).toMatchObject({
         file: 'main.kcl',
         range: {

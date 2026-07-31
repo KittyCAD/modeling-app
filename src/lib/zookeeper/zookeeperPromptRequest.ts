@@ -50,6 +50,10 @@ export interface ConstructZookeeperPromptToEditRequestArgs {
   wasmInstance: ModuleType
 }
 
+/**
+ * Selection-derived guidance that should be sent as Zookeeper source-range
+ * context. These prompts must not be appended to the user's visible prompt.
+ */
 type SourceRangePromptDraft = {
   prompt: string
   range: SourceRange
@@ -435,7 +439,7 @@ function formatSelectionReferencePrompt(
   ].join('\n')
 }
 
-function appendSelectionReferencePrompt({
+function appendSelectionReferenceSourceRangePrompt({
   prompt,
   selectionReferencePrompt,
 }: {
@@ -591,7 +595,7 @@ export async function constructZookeeperPromptToEditRequest({
     }
     ranges.push({
       ...currentFilePrompt,
-      prompt: appendSelectionReferencePrompt({
+      prompt: appendSelectionReferenceSourceRangePrompt({
         prompt: currentFilePrompt.prompt,
         selectionReferencePrompt,
       }),
