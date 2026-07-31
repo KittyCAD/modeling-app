@@ -723,7 +723,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 />
               ) : props.needsReconnect && props.connectionFailed ? (
                 <div
-                  className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-90"
+                  className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-80/20"
                   role="alert"
                 >
                   <div className="flex items-start gap-2">
