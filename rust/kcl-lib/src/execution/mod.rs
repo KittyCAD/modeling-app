@@ -5230,4 +5230,287 @@ type Color { | Green }
             "Redefinition of type Color."
         );
     }
+
+    /// Projection yields the variant's declared representation, which in V1 is
+    /// always the variant name. Every row binds `x` so the rows differ only in the
+    /// shape being projected, and the alias row is here because the target is
+    /// resolved before projection decides anything, so an alias must behave
+    /// exactly like the type it names.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projects_to_string() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Label = string
+        "#;
+
+        for (case, body, expected) in [
+            ("a variant", "x = Color::Red: string", "Red"),
+            ("another variant of the same enum", "x = Color::Green: string", "Green"),
+            ("an alias of the target type", "x = Color::Red: Label", "Red"),
+            (
+                "an element of a projected array",
+                r#"
+                    pair = [Color::Red, Color::Green]: [string]
+                    x = pair[1]
+                "#,
+                "Green",
+            ),
+            (
+                "an element of a nested projected array",
+                r#"
+                    grid = [[Color::Green]]: [[string]]
+                    x = grid[0][0]
+                "#,
+                "Green",
+            ),
+            (
+                "a one-element array against a bare string",
+                "x = [Color::Red]: string",
+                "Red",
+            ),
+        ] {
+            let result = parse_execute(&format!("{header}{body}\n"))
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::String { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold a string");
+            };
+            assert_eq!(value, expected, "case: {case}");
+        }
+    }
+
+    /// Ascribing the enum's own type, directly or through an alias, is a check
+    /// rather than a conversion: the value stays an enum and still compares equal
+    /// to the variant it came from.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_ascription_keeps_the_enum() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Paint = Color
+        "#;
+
+        for (case, expression, expected) in [
+            ("its own type", "(Color::Red: Color) == Color::Red", true),
+            ("an alias of its own type", "(Color::Red: Paint) == Color::Red", true),
+            (
+                "the ascription does not change which variant it is",
+                "(Color::Red: Color) == Color::Green",
+                false,
+            ),
+        ] {
+            let result = parse_execute(&format!("{header}x = {expression}\n"))
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold a bool");
+            };
+            assert_eq!(value, expected, "case: {case}");
+        }
+    }
+
+    /// A boundary the user did not write must not project, or a nominal parameter
+    /// type would mean nothing. The rows are the separate coercion sites: the
+    /// unlabeled argument, a labeled argument, and the return.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projection_is_not_implicit() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+        "#;
+        let found = "but found a value of enum `Color` (with type `Color`).";
+
+        for (case, body, expected) in [
+            (
+                "unlabeled argument",
+                r#"
+                    fn label(@text: string) { return text }
+                    x = label(Color::Red)
+                "#,
+                format!("The input argument of `label` requires a value with type `string`, {found}"),
+            ),
+            (
+                "labeled argument",
+                r#"
+                    fn label(text: string) { return text }
+                    x = label(text = Color::Red)
+                "#,
+                format!("text requires a value with type `string`, {found}"),
+            ),
+            (
+                "return",
+                r#"
+                    fn label(): string { return Color::Red }
+                    x = label()
+                "#,
+                format!("This function requires its result to be a value with type `string`, {found}"),
+            ),
+            (
+                // The reported type is `[any; 1]` rather than `[Color; 1]` because
+                // an array literal does not infer a homogeneous element type. That
+                // is pre-existing and unrelated to enums; it is pinned here so the
+                // row is not read as an enum-specific quirk.
+                "inside an array at an argument boundary",
+                r#"
+                    fn labels(@text: [string]) { return text }
+                    x = labels([Color::Red])
+                "#,
+                "The input argument of `labels` requires an array of strings (`[string]`), but found an array of `Color` with 1 value (with type `[any; 1]`).".to_owned(),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&format!("{header}{body}\n")).await.unwrap_err().message(),
+                expected,
+                "case: {case}"
+            );
+        }
+    }
+
+    /// What an explicit ascription refuses, and what it says about it. The numeric
+    /// rows deliberately do not name the mechanism a later version would use.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_ascription_rejections() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red }
+            type Shade { | Red }
+        "#;
+        let no_number = "Cannot project enum `Color` to a number. An enum projects to `string`; projecting to a number is not supported yet.";
+
+        for (case, expression, expected) in [
+            ("a number target", "Color::Red: number(_)", no_number.to_owned()),
+            (
+                "a number target reached through an array, so the reason survives the walk",
+                "[Color::Red]: [number(_)]",
+                no_number.to_owned(),
+            ),
+            (
+                "a boolean target, which is not a projection at all",
+                "Color::Red: bool",
+                "could not coerce a value of enum `Color` (with type `Color`) to type `bool`".to_owned(),
+            ),
+            (
+                "another enum whose variants happen to match",
+                "Color::Red: Shade",
+                "could not coerce a value of enum `Color` (with type `Color`) to type `Shade`".to_owned(),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&format!("{header}x = {expression}\n"))
+                    .await
+                    .unwrap_err()
+                    .message(),
+                expected,
+                "case: {case}"
+            );
+        }
+    }
+
+    /// The mirror of `enum_projection_is_not_implicit`: where the declared type is
+    /// the enum itself, a value flows through every boundary unchanged. Each row
+    /// binds `x` to a comparison that must hold, so a value that arrived altered
+    /// would fail rather than pass unnoticed. `Some(message)` marks a row that must
+    /// be refused instead, which is what keeps the check nominal rather than
+    /// merely permissive.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_flows_through_declared_types() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Shade { | Red }
+        "#;
+
+        for (case, body, expected) in [
+            (
+                "an unlabeled parameter",
+                r#"
+                    fn paint(@c: Color) { return c }
+                    x = paint(Color::Red) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "a labeled parameter",
+                r#"
+                    fn paint(c: Color) { return c }
+                    x = paint(c = Color::Green) == Color::Green
+                "#,
+                None,
+            ),
+            (
+                "a declared return type",
+                r#"
+                    fn pick(): Color { return Color::Red }
+                    x = pick() == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "an array parameter",
+                r#"
+                    fn firstOf(@cs: [Color]) { return cs[0] }
+                    x = firstOf([Color::Red, Color::Green]) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                // The field check is `has_type`, which an enum satisfies, so an
+                // object passes here while the projection row of
+                // `enum_projects_by_target_shape` fails. Both behaviors come from
+                // the same unfinished object coercion.
+                "an object field",
+                r#"
+                    fn take(@o: { c: Color }) { return o.c }
+                    x = take({ c = Color::Green }) == Color::Green
+                "#,
+                None,
+            ),
+            (
+                "a union that names the enum",
+                r#"
+                    fn either(@v: Color | string) { return v }
+                    x = either(Color::Red) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "the same union given the other member",
+                r#"
+                    fn either(@v: Color | string) { return v }
+                    x = either("plain") == "plain"
+                "#,
+                None,
+            ),
+            (
+                "another declaration at the same boundary",
+                r#"
+                    fn paint(@c: Color) { return c }
+                    x = paint(Shade::Red) == Shade::Red
+                "#,
+                Some(
+                    "The input argument of `paint` requires a value with type `Color`, but found a value of enum `Shade` (with type `Shade`).",
+                ),
+            ),
+        ] {
+            let code = format!("{header}{body}\n");
+            match expected {
+                None => {
+                    let result = parse_execute(&code)
+                        .await
+                        .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+                    let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x")
+                    else {
+                        panic!("case: {case}: `x` should hold a bool");
+                    };
+                    assert!(value, "case: {case}: the value did not survive the boundary");
+                }
+                Some(message) => assert_eq!(
+                    parse_execute(&code).await.unwrap_err().message(),
+                    message,
+                    "case: {case}"
+                ),
+            }
+        }
+    }
 }
