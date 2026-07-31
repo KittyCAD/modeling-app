@@ -29,20 +29,20 @@ type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
 }
 
-export interface ZookeeperPromptToEditRequest {
+export interface ZookeeperUserPromptRequest {
   body: TextToCadMultiFileIterationBody
   files: KittyCadLibFile[]
   activeFile?: string
 }
 
-export interface ConstructZookeeperPromptToEditRequestArgs {
+export interface ConstructZookeeperUserPromptRequestArgs {
   conversationId?: string
   prompt: string
   applicationProjectDirectory: string
   selections: Selections | null
   projectFiles: FileMeta[]
   projectName: string
-  currentFile: { entry?: FileEntry; content: string }
+  currentFile: { entry: FileEntry; content: string }
   artifactGraph: ArtifactGraph
   kclVersion: string
   kclManager: KclManager
@@ -68,30 +68,6 @@ type ArtifactSelectionPromptHandlerArgs = {
 export type ArtifactSelectionPromptHandler = (
   args: ArtifactSelectionPromptHandlerArgs
 ) => SourceRangePromptDraft[]
-
-export const zookeeperArtifactTypes = [
-  'compositeSolid',
-  'plane',
-  'path',
-  'segment',
-  'solid2d',
-  'primitiveFace',
-  'primitiveEdge',
-  'planeOfFace',
-  'startSketchOnFace',
-  'startSketchOnPlane',
-  'sketchBlock',
-  'sketchBlockConstraint',
-  'sweep',
-  'wall',
-  'cap',
-  'sweepEdge',
-  'edgeCut',
-  'edgeCutEdge',
-  'helix',
-  'gdtAnnotation',
-  'pattern',
-] as const satisfies readonly Artifact['type'][]
 
 function sourceIndexToLineColumn(
   code: string,
@@ -183,14 +159,14 @@ function capSourceRangePrompt({
 
   const prompts: SourceRangePromptDraft[] = [
     {
-      prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
-If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
+      prompt: `The user's main selection is the end cap of a general sweep (that is an extrusion, revolve, sweep, or loft).
+The source range most likely refers to the sketch block or region that produced the swept profile.
+If you need to operate on this cap, for example sketching on the face, use the special string ${
         artifact.subType === 'end' ? 'END' : 'START'
-      } i.e. \`startSketchOn(someSweepVariable, face = ${
+      }, for example \`sketch(on = faceOf(someSweepVariable, face = ${
         artifact.subType === 'end' ? 'END' : 'START'
-      })\`
-When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
+      })) { ... }\`
+When they made this selection they may have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
       range: selection.codeRef.range,
     },
@@ -221,8 +197,8 @@ function wallSourceRangePrompt({
 
   const prompts: SourceRangePromptDraft[] = [
     {
-      prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
+      prompt: `The user's main selection is the wall of a general sweep (that is an extrusion, revolve, sweep, or loft).
+The source range though is for the original segment before it was swept. You can add a tag to that segment in order to refer to this wall, for example \`sketch(on = faceOf(someSweepVariable, face = someRegion.tags.segmentTag)) { ... }\`
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
       range: selection.codeRef.range,
     },
@@ -234,7 +210,7 @@ But it's also worth bearing in mind that the user may have intended to select th
   )
   if (!isErr(sweep)) {
     prompts.push({
-      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      prompt: `This is the sweep's source range from the user's main selection of the wall.`,
       range: sweep.codeRef.range,
       required: false,
     })
@@ -253,17 +229,16 @@ function sweepEdgeSourceRangePrompt({
 
   const prompts: SourceRangePromptDraft[] = [
     {
-      prompt: `The users main selection is the edge of a general-sweep (that is an extrusion, revolve, sweep or loft).
-it is an ${
+      prompt: `The user's main selection is the edge of a general sweep (that is an extrusion, revolve, sweep, or loft).
+It is an ${
         artifact.subType
-      } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
-and then use the function ${
+      } edge. To refer to this edge in current KCL, add a tag to the source segment and pass that tag to ${
         artifact.subType === 'opposite'
           ? 'getOppositeEdge'
           : artifact.subType === 'previousAdjacent'
             ? 'getPreviousAdjacentEdge'
             : 'getNextAdjacentEdge'
-      }
+      }, for example \`getOppositeEdge(someRegion.tags.segmentTag)\`.
 See later source ranges for more context. about the sweep`,
       range: selection.codeRef.range,
     },
@@ -275,7 +250,7 @@ See later source ranges for more context. about the sweep`,
   )
   if (!isErr(sweep)) {
     prompts.push({
-      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      prompt: `This is the sweep's source range from the user's main selection of the edge.`,
       range: sweep.codeRef.range,
       required: false,
     })
@@ -303,9 +278,9 @@ function segmentSourceRangePrompt({
 
   const prompts: SourceRangePromptDraft[] = [
     {
-      prompt: `This selection is for a segment (line, xLine, angledLine etc) that has been swept (a general-sweep, either an extrusion, revolve, sweep or loft).
-Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
-i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
+      prompt: `This selection is for a sketch segment that has been swept (a general sweep, either an extrusion, revolve, sweep, or loft).
+Because it now refers to an edge, the way to refer to this edge is to add a tag to the source segment, and then use that tag expression directly.
+i.e. \`fillet(someSweepVariable, radius = someInteger, tags = [someRegion.tags.newTag])\` will work in the case of filleting this edge
 See later source ranges for more context. about the sweep`,
       range: selection.codeRef.range,
     },
@@ -372,6 +347,18 @@ export function activeFileRelativeToProject({
     applicationProjectDirectory
   )
   return activeFile ? toWebSafePath(activeFile) : undefined
+}
+
+function kclFileForCurrentFile({
+  currentFile,
+  kclFilesMap,
+}: {
+  currentFile: { entry: FileEntry; content: string }
+  kclFilesMap: KclFileMetaMap
+}): Extract<FileMeta, { type: 'kcl' }> | undefined {
+  return Object.values(kclFilesMap).find(
+    (file) => file.absPath === currentFile.entry.path
+  )
 }
 
 export function buildZookeeperSourceRangePromptsForSelection({
@@ -506,7 +493,7 @@ async function buildSelectionReferencePrompt({
   return formatSelectionReferencePrompt(references)
 }
 
-export async function constructZookeeperPromptToEditRequest({
+export async function constructZookeeperUserPromptRequest({
   conversationId,
   prompt,
   selections,
@@ -519,8 +506,8 @@ export async function constructZookeeperPromptToEditRequest({
   kclManager,
   engineCommandManager,
   wasmInstance,
-}: ConstructZookeeperPromptToEditRequestArgs): Promise<
-  ZookeeperPromptToEditRequest | Error
+}: ConstructZookeeperUserPromptRequestArgs): Promise<
+  ZookeeperUserPromptRequest | Error
 > {
   const kclFilesMap: KclFileMetaMap = {}
   const files: KittyCadLibFile[] = []
@@ -539,21 +526,23 @@ export async function constructZookeeperPromptToEditRequest({
     })
   })
 
-  const activeFile = activeFileRelativeToProject({
-    currentFileEntry: currentFile.entry,
-    applicationProjectDirectory,
-  })
+  const currentKclFile = kclFileForCurrentFile({ currentFile, kclFilesMap })
+  const activeFile =
+    activeFileRelativeToProject({
+      currentFileEntry: currentFile.entry,
+      applicationProjectDirectory,
+    }) ||
+    currentKclFile?.relPath ||
+    toWebSafePath(currentFile.entry.name)
 
-  const currentFilePrompt: SourceRangePrompt | null = activeFile
-    ? {
-        prompt: 'This is the active file',
-        range: convertAppRangeToApiRange(
-          [0, currentFile.content.length, 0],
-          currentFile.content
-        ),
-        file: activeFile,
-      }
-    : null
+  const currentFilePrompt: SourceRangePrompt = {
+    prompt: 'This is the active file',
+    range: convertAppRangeToApiRange(
+      [0, currentFile.content.length, 0],
+      currentFile.content
+    ),
+    file: activeFile,
+  }
 
   if (selections === null) {
     return {
@@ -595,11 +584,6 @@ export async function constructZookeeperPromptToEditRequest({
   }
 
   if (selectionReferencePrompt !== null) {
-    if (currentFilePrompt === null) {
-      return new Error(
-        'Could not send Zookeeper selection: no active KCL file found for generated selection references.'
-      )
-    }
     ranges.push({
       ...currentFilePrompt,
       prompt: appendSelectionReferenceSourceRangePrompt({

@@ -37,7 +37,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
   type KittyCadLibFile,
-  constructZookeeperPromptToEditRequest,
+  constructZookeeperUserPromptRequest,
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
 
 import toast from 'react-hot-toast'
@@ -1250,7 +1250,7 @@ export const mlEphantManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
-      const requestData = await constructZookeeperPromptToEditRequest({
+      const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,

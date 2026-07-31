@@ -9,9 +9,9 @@ import type { FileMeta } from '@src/lib/types'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  constructZookeeperPromptToEditRequest,
+  type ArtifactSelectionPromptHandler,
+  constructZookeeperUserPromptRequest,
   zookeeperArtifactSelectionPromptHandlers,
-  zookeeperArtifactTypes,
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -31,9 +31,16 @@ beforeAll(async () => {
   })
 })
 
-describe('constructZookeeperPromptToEditRequest', () => {
+describe('constructZookeeperUserPromptRequest', () => {
   const userPrompt = 'change the selected thing'
   const mockedGetSelectionReferences = vi.mocked(getSelectionReferences)
+  const zookeeperArtifactPromptHandlersByType: Record<
+    Artifact['type'],
+    ArtifactSelectionPromptHandler
+  > = zookeeperArtifactSelectionPromptHandlers
+  const zookeeperArtifactTypes = Object.keys(
+    zookeeperArtifactPromptHandlersByType
+  ) as Artifact['type'][]
   type SelectionReferenceDependencies = {
     kclManager: KclManager
     engineCommandManager: ConnectionManager
@@ -72,7 +79,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
     artifactGraph?: ArtifactGraph
     selectionReferenceDependencies?: SelectionReferenceDependencies
   }) =>
-    constructZookeeperPromptToEditRequest({
+    constructZookeeperUserPromptRequest({
       prompt: userPrompt,
       selections,
       projectFiles: makeProjectFiles(code),
@@ -102,7 +109,7 @@ describe('constructZookeeperPromptToEditRequest', () => {
   })
 
   it('returns a forward-slash active file for nested files', async () => {
-    const request = await constructZookeeperPromptToEditRequest({
+    const request = await constructZookeeperUserPromptRequest({
       prompt: 'change the bracket',
       selections: null,
       projectFiles: [
@@ -155,9 +162,11 @@ describe('constructZookeeperPromptToEditRequest', () => {
   })
 
   it('has an explicit handler for every generated artifact type', () => {
-    expect(
-      Object.keys(zookeeperArtifactSelectionPromptHandlers).sort()
-    ).toEqual([...zookeeperArtifactTypes].sort())
+    // Assigning the handler map to this typed Record fails compilation when
+    // generated KCL artifact types are added without Zookeeper handlers.
+    expect(Object.keys(zookeeperArtifactPromptHandlersByType).length).toBe(
+      Object.keys(zookeeperArtifactSelectionPromptHandlers).length
+    )
   })
 
   it('keeps manual selection prompts out of the visible user prompt', async () => {
@@ -286,6 +295,72 @@ describe('constructZookeeperPromptToEditRequest', () => {
         prompt.includes(userPrompt)
       )
     ).toBe(false)
+  })
+
+  it('uses project file metadata as the generated reference prompt carrier', async () => {
+    mockedGetSelectionReferences.mockResolvedValue([
+      {
+        id: 'face:cubeRegion.tags.right',
+        label: 'Face',
+        code: 'cubeRegion.tags.right',
+      },
+    ])
+
+    const code = 'cube = extrude(profile, length = 10)\n'
+    const request = await constructZookeeperUserPromptRequest({
+      prompt: userPrompt,
+      selections: {
+        otherSelections: [],
+        graphSelections: [
+          {
+            artifact: {
+              type: 'wall',
+              id: 'cube-wall-right',
+              sweepId: 'cube-sweep',
+            } as Artifact,
+            codeRef: {
+              range: [0, 4, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+      },
+      projectFiles: [
+        {
+          type: 'kcl',
+          relPath: 'parts/main.kcl',
+          absPath: '/projects/zoo-project/parts/main.kcl',
+          fileContents: code,
+          execStateFileNamesIndex: 0,
+        },
+      ],
+      applicationProjectDirectory: '/not-the-project-root',
+      artifactGraph: new Map(),
+      projectName: 'zoo-project',
+      currentFile: {
+        entry: {
+          path: '/projects/zoo-project/parts/main.kcl',
+          name: 'main.kcl',
+          children: null,
+        },
+        content: code,
+      },
+      kclVersion: '1.0.0',
+      ...unusedSelectionReferenceDependencies,
+    })
+
+    expect(isErr(request)).toBe(false)
+    if (isErr(request)) return
+
+    expect(request.activeFile).toBe('parts/main.kcl')
+    expect(request.body.source_ranges).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          file: 'parts/main.kcl',
+          prompt: expect.stringContaining('Face: `cubeRegion.tags.right`'),
+        }),
+      ])
+    )
   })
 
   it('returns an error instead of sending empty source ranges for stale graph selections', async () => {
