@@ -327,9 +327,6 @@ cube = extrude(cubeRegion, length = 10)
       }
     }
 
-    const sketchCodeRef = codeRefForSnippet(`cubeSketch = sketch(on = XY) {
-  right = line(end = [10, 0])
-}`)
     const originalRightCodeRef = codeRefForSnippet(
       'right = line(end = [10, 0])'
     )
@@ -338,73 +335,34 @@ cube = extrude(cubeRegion, length = 10)
     )
     const sweepCodeRef = codeRefForSnippet('extrude(cubeRegion, length = 10)')
 
-    const cubeSketchPath = mockArtifact({
-      type: 'path',
-      id: 'cube-sketch-path',
-      subType: 'sketch',
-      planeId: 'xy-plane',
-      segIds: ['original-right-segment'],
-      consumed: true,
-      trajectorySweepId: null,
-      codeRef: sketchCodeRef,
-    })
+    const cubeSweepId = 'cube-sweep'
+    const cubeWallRightId = 'cube-wall-right'
+    const regionRightSegmentId = 'region-right-segment'
     const originalRightSegment = mockArtifact({
       type: 'segment',
       id: 'original-right-segment',
-      pathId: cubeSketchPath.id,
-      edgeIds: [],
-      commonSurfaceIds: [],
       codeRef: originalRightCodeRef,
-    })
-    const cubeRegionPath = mockArtifact({
-      type: 'path',
-      id: 'cube-region-path',
-      subType: 'region',
-      planeId: 'xy-plane',
-      segIds: ['region-right-segment'],
-      consumed: true,
-      sweepId: 'cube-sweep',
-      trajectorySweepId: null,
-      originPathId: cubeSketchPath.id,
-      codeRef: regionCodeRef,
     })
     const regionRightSegment = mockArtifact({
       type: 'segment',
-      id: 'region-right-segment',
+      id: regionRightSegmentId,
       originalSegId: originalRightSegment.id,
-      pathId: cubeRegionPath.id,
-      surfaceId: 'cube-wall-right',
-      edgeIds: [],
-      commonSurfaceIds: [],
       codeRef: regionCodeRef,
     })
     const cubeSweep = mockArtifact({
       type: 'sweep',
-      id: 'cube-sweep',
-      subType: 'extrusion',
-      pathId: cubeRegionPath.id,
-      surfaceIds: ['cube-wall-right'],
-      edgeIds: [],
-      trajectoryId: null,
-      method: 'new',
-      consumed: false,
+      id: cubeSweepId,
       codeRef: sweepCodeRef,
     })
     const cubeWallRight = mockArtifact({
       type: 'wall',
-      id: 'cube-wall-right',
-      sweepId: cubeSweep.id,
+      id: cubeWallRightId,
+      sweepId: cubeSweepId,
       segId: regionRightSegment.id,
-      pathIds: [],
-      edgeCutEdgeIds: [],
-      faceCodeRef: regionCodeRef,
-      cmdId: 'cube-wall-right-command',
     })
 
     const artifactGraph = new Map<string, Artifact>([
-      [cubeSketchPath.id, cubeSketchPath],
       [originalRightSegment.id, originalRightSegment],
-      [cubeRegionPath.id, cubeRegionPath],
       [regionRightSegment.id, regionRightSegment],
       [cubeSweep.id, cubeSweep],
       [cubeWallRight.id, cubeWallRight],
