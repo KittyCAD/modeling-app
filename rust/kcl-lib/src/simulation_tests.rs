@@ -6669,3 +6669,216 @@ mod translate_helix {
         super::execute(TEST_NAME, true).await
     }
 }
+mod region_liveness_engine_contract {
+    use std::path::Path;
+    use std::path::PathBuf;
+
+    use kittycad_modeling_cmds::ModelingCmd;
+    use uuid::Uuid;
+
+    use crate::ExecState;
+    use crate::ExecutorContext;
+    use crate::Program;
+    use crate::SourceRange;
+    use crate::errors::ExecError;
+    use crate::errors::IsRetryable;
+    use crate::util::RetryConfig;
+    use crate::util::execute_with_retries;
+
+    const TEST_DIR: &str = "tests/region_liveness_engine_contract";
+    const REGION_LIVENESS_UPDATE_REQUIRED: &str =
+        "THE KCL LOGIC FOR LIVENESS OF REGIONS NEEDS TO BE UPDATED BEFORE ACCEPTING THIS ENGINE CHANGE.";
+
+    #[derive(Debug, Clone, Copy)]
+    enum ConsumingCommand {
+        Extrude,
+        TwistExtrude,
+        ExtrudeToReference,
+        Revolve,
+        RevolveAboutEdge,
+        Sweep,
+    }
+
+    impl ConsumingCommand {
+        fn matches(self, command: &ModelingCmd) -> bool {
+            matches!(
+                (self, command),
+                (Self::Extrude, ModelingCmd::Extrude(_))
+                    | (Self::TwistExtrude, ModelingCmd::TwistExtrude(_))
+                    | (Self::ExtrudeToReference, ModelingCmd::ExtrudeToReference(_))
+                    | (Self::Revolve, ModelingCmd::Revolve(_))
+                    | (Self::RevolveAboutEdge, ModelingCmd::RevolveAboutEdge(_))
+                    | (Self::Sweep, ModelingCmd::Sweep(_))
+            )
+        }
+    }
+
+    fn input_path(file_name: &str) -> PathBuf {
+        Path::new(TEST_DIR).join(file_name)
+    }
+
+    fn region_liveness_changed(case_name: &str, expected: &str, actual: &str) -> ! {
+        panic!(
+            "{REGION_LIVENESS_UPDATE_REQUIRED}\n\
+             Case: `{case_name}`\n\
+             Expected: {expected}\n\
+             Actual: {actual}"
+        )
+    }
+
+    async fn execute_first_operation(file_name: &str) -> Result<(ExecutorContext, ExecState), ExecError> {
+        let path = input_path(file_name);
+        let input = std::fs::read_to_string(&path)
+            .unwrap_or_else(|error| panic!("failed to read region-liveness fixture {}: {error}", path.display()));
+        let program = Program::parse_no_errs(&input).map_err(crate::KclErrorWithOutputs::no_outputs)?;
+        let ctx = crate::test_server::new_context(true, Some(path)).await?;
+        let mut exec_state = ExecState::new(&ctx);
+
+        if let Err(error) = ctx.run(&program, &mut exec_state).await {
+            ctx.close().await;
+            return Err(error.into());
+        }
+
+        Ok((ctx, exec_state))
+    }
+
+    async fn assert_region_is_consumed(
+        case_name: &str,
+        file_name: &str,
+        command_kind: ConsumingCommand,
+        expected_engine_message: &str,
+    ) {
+        let prepared = execute_with_retries(&RetryConfig::default(), || execute_first_operation(file_name)).await;
+        let (ctx, exec_state) = prepared
+            .unwrap_or_else(|error| panic!("region-liveness engine contract setup failed for `{case_name}`: {error}"));
+        let artifact_command = exec_state
+            .root_module_artifact_state()
+            .commands
+            .iter()
+            .rev()
+            .find(|artifact_command| command_kind.matches(&artifact_command.command))
+            .unwrap_or_else(|| panic!("fixture `{case_name}` did not emit the expected {command_kind:?} command"));
+
+        // Resend the operation below the KCL stdlib so future KCL liveness checks
+        // cannot mask a change in the engine's ownership behavior.
+        let second_result = ctx
+            .engine
+            .send_modeling_cmd(
+                &ctx.engine_batch,
+                Uuid::new_v4(),
+                SourceRange::default(),
+                &artifact_command.command,
+            )
+            .await;
+        ctx.close().await;
+
+        match second_result {
+            Err(error) if error.message() == expected_engine_message => {}
+            Err(error) if error.is_retryable() => {
+                panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            }
+            Err(error) => region_liveness_changed(
+                case_name,
+                &format!("the repeated command to fail with `{expected_engine_message}`"),
+                &format!("engine error `{}`", error.message()),
+            ),
+            Ok(response) => region_liveness_changed(
+                case_name,
+                "the repeated command to consume its region",
+                &format!("the engine accepted it with response {response:?}"),
+            ),
+        }
+    }
+
+    async fn assert_region_is_reusable(case_name: &str, file_name: &str) {
+        let path = input_path(file_name);
+        let input = std::fs::read_to_string(&path)
+            .unwrap_or_else(|error| panic!("failed to read region-liveness fixture {}: {error}", path.display()));
+        let result = execute_with_retries(&RetryConfig::default(), || {
+            crate::test_server::execute(&input, Some(path.clone()))
+        })
+        .await;
+
+        match result {
+            Ok(()) => {}
+            Err(error) if error.is_retryable() => {
+                panic!("region-liveness engine contract transport failed for `{case_name}`: {error}")
+            }
+            Err(error) => region_liveness_changed(
+                case_name,
+                "the region to remain reusable",
+                &format!("execution failed with `{error}`"),
+            ),
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "THE KCL LOGIC FOR LIVENESS OF REGIONS NEEDS TO BE UPDATED")]
+    fn engine_contract_change_has_an_actionable_failure_message() {
+        region_liveness_changed(
+            "diagnostic contract",
+            "the pinned engine behavior",
+            "changed engine behavior",
+        )
+    }
+
+    macro_rules! consumed_region_test {
+        ($name:ident, $file_name:literal, $command:expr, $message:literal) => {
+            #[tokio::test(flavor = "multi_thread")]
+            async fn $name() {
+                assert_region_is_consumed(stringify!($name), $file_name, $command, $message).await;
+            }
+        };
+    }
+
+    macro_rules! reusable_region_test {
+        ($name:ident, $file_name:literal) => {
+            #[tokio::test(flavor = "multi_thread")]
+            async fn $name() {
+                assert_region_is_reusable(stringify!($name), $file_name).await;
+            }
+        };
+    }
+
+    consumed_region_test!(
+        extrude_target_is_consumed,
+        "input.kcl",
+        ConsumingCommand::Extrude,
+        "Unable to extract solid2D within this object to extrude from"
+    );
+    consumed_region_test!(
+        twist_extrude_target_is_consumed,
+        "twist_extrude.kcl",
+        ConsumingCommand::TwistExtrude,
+        "Unable to extract solid2D within this object to extrude from"
+    );
+    consumed_region_test!(
+        extrude_to_reference_target_is_consumed,
+        "extrude_to_reference.kcl",
+        ConsumingCommand::ExtrudeToReference,
+        "Unable to extract solid2D within this object to extrude from"
+    );
+    consumed_region_test!(
+        revolve_target_is_consumed,
+        "revolve.kcl",
+        ConsumingCommand::Revolve,
+        "Unable to extract solid2D within this object to revolve from"
+    );
+    consumed_region_test!(
+        revolve_about_edge_target_is_consumed,
+        "revolve_about_edge.kcl",
+        ConsumingCommand::RevolveAboutEdge,
+        "Unable to extract solid2D within this object to revolve from"
+    );
+    consumed_region_test!(
+        sweep_profile_is_consumed,
+        "sweep_profile.kcl",
+        ConsumingCommand::Sweep,
+        "Unable to extract solid2D within this object to sweep from"
+    );
+
+    reusable_region_test!(sweep_trajectory_is_reusable, "sweep_trajectory.kcl");
+    reusable_region_test!(loft_sections_are_reusable, "loft_sections.kcl");
+    reusable_region_test!(subtract2d_target_is_reusable, "subtract2d_target.kcl");
+    reusable_region_test!(subtract2d_tool_is_reusable, "subtract2d_tool.kcl");
+}
