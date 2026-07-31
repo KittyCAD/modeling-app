@@ -1,0 +1,495 @@
+import type {
+  SourceRange as ApiSourceRange,
+  SourceRangePrompt,
+  TextToCadMultiFileIterationBody,
+} from '@kittycad/lib'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import type { FileMeta } from '@src/lib/types'
+import { isErr } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+
+export type KittyCadLibFile = { name: string; data: Blob }
+
+type KclFileMetaMap = {
+  [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
+}
+
+export interface ZookeeperPromptToEditRequest {
+  body: TextToCadMultiFileIterationBody
+  files: KittyCadLibFile[]
+  activeFile?: string
+}
+
+export interface ConstructZookeeperPromptToEditRequestArgs {
+  conversationId?: string
+  prompt: string
+  applicationProjectDirectory: string
+  selections: Selections | null
+  projectFiles: FileMeta[]
+  projectName: string
+  currentFile: { entry?: FileEntry; content: string }
+  artifactGraph: ArtifactGraph
+  kclVersion: string
+}
+
+type SourceRangePromptDraft = {
+  prompt: string
+  range: SourceRange
+  required?: boolean
+}
+
+type ArtifactSelectionPromptHandlerArgs = {
+  selection: Selection & { artifact: Artifact }
+  artifactGraph: ArtifactGraph
+}
+
+export type ArtifactSelectionPromptHandler = (
+  args: ArtifactSelectionPromptHandlerArgs
+) => SourceRangePromptDraft[]
+
+export const zookeeperArtifactTypes = [
+  'compositeSolid',
+  'plane',
+  'path',
+  'segment',
+  'solid2d',
+  'primitiveFace',
+  'primitiveEdge',
+  'planeOfFace',
+  'startSketchOnFace',
+  'startSketchOnPlane',
+  'sketchBlock',
+  'sketchBlockConstraint',
+  'sweep',
+  'wall',
+  'cap',
+  'sweepEdge',
+  'edgeCut',
+  'edgeCutEdge',
+  'helix',
+  'gdtAnnotation',
+  'pattern',
+] as const satisfies readonly Artifact['type'][]
+
+function sourceIndexToLineColumn(
+  code: string,
+  index: number
+): { line: number; column: number } {
+  const codeStart = code.slice(0, index)
+  const lines = codeStart.split('\n')
+  const line = lines.length
+  const column = lines[lines.length - 1].length
+  return { line, column }
+}
+
+function convertAppRangeToApiRange(
+  range: SourceRange,
+  code: string
+): ApiSourceRange {
+  return {
+    start: sourceIndexToLineColumn(code, range[0]),
+    end: sourceIndexToLineColumn(code, range[1]),
+  }
+}
+
+function isValidRangeForCode(range: SourceRange, code: string): boolean {
+  const [start, end] = range
+  return (
+    Number.isInteger(start) &&
+    Number.isInteger(end) &&
+    start >= 0 &&
+    end >= start &&
+    end <= code.length
+  )
+}
+
+function sourceRangePromptFromRange({
+  range,
+  prompt,
+  kclFilesMap,
+  required,
+}: {
+  range: SourceRange
+  prompt: string
+  kclFilesMap: KclFileMetaMap
+  required: boolean
+}): SourceRangePrompt | Error | null {
+  const execStateFileNamesIndex = range[2]
+  const file = kclFilesMap[execStateFileNamesIndex]
+
+  if (!file) {
+    return required
+      ? new Error(
+          `Could not send Zookeeper selection: no KCL file found for source range file index ${execStateFileNamesIndex}.`
+        )
+      : null
+  }
+
+  if (!isValidRangeForCode(range, file.fileContents)) {
+    return required
+      ? new Error(
+          `Could not send Zookeeper selection: invalid source range ${range[0]}-${range[1]} for ${file.relPath}.`
+        )
+      : null
+  }
+
+  return {
+    prompt,
+    range: convertAppRangeToApiRange(range, file.fileContents),
+    file: file.relPath,
+  }
+}
+
+function selectedArtifactSourceRangePrompt({
+  selection,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  return [
+    {
+      prompt: `This is the source range for the user's selected ${selection.artifact.type} artifact.`,
+      range: selection.codeRef.range,
+    },
+  ]
+}
+
+function capSourceRangePrompt({
+  selection,
+  artifactGraph,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  const artifact = selection.artifact
+  if (artifact.type !== 'cap')
+    return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
+
+  const prompts: SourceRangePromptDraft[] = [
+    {
+      prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
+The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
+If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
+        artifact.subType === 'end' ? 'END' : 'START'
+      } i.e. \`startSketchOn(someSweepVariable, face = ${
+        artifact.subType === 'end' ? 'END' : 'START'
+      })\`
+When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
+See later source ranges for more context.`,
+      range: selection.codeRef.range,
+    },
+  ]
+
+  const sweep = getArtifactOfTypes(
+    { key: artifact.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  if (!isErr(sweep)) {
+    prompts.push({
+      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      range: sweep.codeRef.range,
+      required: false,
+    })
+  }
+
+  return prompts
+}
+
+function wallSourceRangePrompt({
+  selection,
+  artifactGraph,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  const artifact = selection.artifact
+  if (artifact.type !== 'wall')
+    return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
+
+  const prompts: SourceRangePromptDraft[] = [
+    {
+      prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
+But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
+      range: selection.codeRef.range,
+    },
+  ]
+
+  const sweep = getArtifactOfTypes(
+    { key: artifact.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  if (!isErr(sweep)) {
+    prompts.push({
+      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      range: sweep.codeRef.range,
+      required: false,
+    })
+  }
+
+  return prompts
+}
+
+function sweepEdgeSourceRangePrompt({
+  selection,
+  artifactGraph,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  const artifact = selection.artifact
+  if (artifact.type !== 'sweepEdge')
+    return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
+
+  const prompts: SourceRangePromptDraft[] = [
+    {
+      prompt: `The users main selection is the edge of a general-sweep (that is an extrusion, revolve, sweep or loft).
+it is an ${
+        artifact.subType
+      } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
+and then use the function ${
+        artifact.subType === 'opposite'
+          ? 'getOppositeEdge'
+          : artifact.subType === 'previousAdjacent'
+            ? 'getPreviousAdjacentEdge'
+            : 'getNextAdjacentEdge'
+      }
+See later source ranges for more context. about the sweep`,
+      range: selection.codeRef.range,
+    },
+  ]
+
+  const sweep = getArtifactOfTypes(
+    { key: artifact.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  if (!isErr(sweep)) {
+    prompts.push({
+      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      range: sweep.codeRef.range,
+      required: false,
+    })
+  }
+
+  return prompts
+}
+
+function segmentSourceRangePrompt({
+  selection,
+  artifactGraph,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  const artifact = selection.artifact
+  if (artifact.type !== 'segment')
+    return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
+
+  if (!artifact.surfaceId) {
+    return [
+      {
+        prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
+        range: selection.codeRef.range,
+      },
+    ]
+  }
+
+  const prompts: SourceRangePromptDraft[] = [
+    {
+      prompt: `This selection is for a segment (line, xLine, angledLine etc) that has been swept (a general-sweep, either an extrusion, revolve, sweep or loft).
+Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
+i.e. \`fillet( radius = someInteger, tags = [newTag])\` will work in the case of filleting this edge
+See later source ranges for more context. about the sweep`,
+      range: selection.codeRef.range,
+    },
+  ]
+
+  const path = getArtifactOfTypes(
+    { key: artifact.pathId, types: ['path'] },
+    artifactGraph
+  )
+  if (!isErr(path) && path.sweepId) {
+    const sweep = getArtifactOfTypes(
+      { key: path.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (!isErr(sweep)) {
+      prompts.push({
+        prompt: `This is the sweep's source range from the user's main selection of the edge.`,
+        range: sweep.codeRef.range,
+        required: false,
+      })
+    }
+  }
+
+  return prompts
+}
+
+export const zookeeperArtifactSelectionPromptHandlers = {
+  compositeSolid: selectedArtifactSourceRangePrompt,
+  plane: selectedArtifactSourceRangePrompt,
+  path: selectedArtifactSourceRangePrompt,
+  segment: segmentSourceRangePrompt,
+  solid2d: selectedArtifactSourceRangePrompt,
+  primitiveFace: selectedArtifactSourceRangePrompt,
+  primitiveEdge: selectedArtifactSourceRangePrompt,
+  planeOfFace: selectedArtifactSourceRangePrompt,
+  startSketchOnFace: selectedArtifactSourceRangePrompt,
+  startSketchOnPlane: selectedArtifactSourceRangePrompt,
+  sketchBlock: selectedArtifactSourceRangePrompt,
+  sketchBlockConstraint: selectedArtifactSourceRangePrompt,
+  sweep: selectedArtifactSourceRangePrompt,
+  wall: wallSourceRangePrompt,
+  cap: capSourceRangePrompt,
+  sweepEdge: sweepEdgeSourceRangePrompt,
+  edgeCut: selectedArtifactSourceRangePrompt,
+  edgeCutEdge: selectedArtifactSourceRangePrompt,
+  helix: selectedArtifactSourceRangePrompt,
+  gdtAnnotation: selectedArtifactSourceRangePrompt,
+  pattern: selectedArtifactSourceRangePrompt,
+} satisfies Record<Artifact['type'], ArtifactSelectionPromptHandler>
+
+export function activeFileRelativeToProject({
+  currentFileEntry,
+  applicationProjectDirectory,
+}: {
+  currentFileEntry?: FileEntry
+  applicationProjectDirectory: string
+}): string | undefined {
+  if (!currentFileEntry) {
+    return undefined
+  }
+
+  const activeFile = parentPathRelativeToProject(
+    currentFileEntry.path,
+    applicationProjectDirectory
+  )
+  return activeFile ? toWebSafePath(activeFile) : undefined
+}
+
+export function buildZookeeperSourceRangePromptsForSelection({
+  selection,
+  artifactGraph,
+  kclFilesMap,
+}: {
+  selection: Selection
+  artifactGraph: ArtifactGraph
+  kclFilesMap: KclFileMetaMap
+}): SourceRangePrompt[] | Error {
+  const promptDrafts: SourceRangePromptDraft[] = selection.artifact
+    ? zookeeperArtifactSelectionPromptHandlers[selection.artifact.type]({
+        selection: selection as Selection & { artifact: Artifact },
+        artifactGraph,
+      })
+    : [
+        {
+          prompt: 'This is the source range selected by the user.',
+          range: selection.codeRef.range,
+        },
+      ]
+
+  const prompts: SourceRangePrompt[] = []
+  for (const promptDraft of promptDrafts) {
+    const prompt = sourceRangePromptFromRange({
+      range: promptDraft.range,
+      prompt: promptDraft.prompt,
+      kclFilesMap,
+      required: promptDraft.required ?? true,
+    })
+    if (prompt instanceof Error) {
+      return prompt
+    }
+    if (prompt !== null) {
+      prompts.push(prompt)
+    }
+  }
+
+  return prompts.length > 0
+    ? prompts
+    : new Error(
+        'Could not send Zookeeper selection: no selected source ranges could be serialized.'
+      )
+}
+
+export function constructZookeeperPromptToEditRequest({
+  conversationId,
+  prompt,
+  selections,
+  projectFiles,
+  applicationProjectDirectory,
+  artifactGraph,
+  projectName,
+  currentFile,
+  kclVersion,
+}: ConstructZookeeperPromptToEditRequestArgs):
+  | ZookeeperPromptToEditRequest
+  | Error {
+  const kclFilesMap: KclFileMetaMap = {}
+  const files: KittyCadLibFile[] = []
+
+  projectFiles.forEach((file) => {
+    let data: Blob
+    if (file.type === 'other') {
+      data = file.data
+    } else {
+      kclFilesMap[file.execStateFileNamesIndex] = file
+      data = new Blob([file.fileContents], { type: 'text/kcl' })
+    }
+    files.push({
+      name: file.relPath,
+      data,
+    })
+  })
+
+  const activeFile = activeFileRelativeToProject({
+    currentFileEntry: currentFile.entry,
+    applicationProjectDirectory,
+  })
+
+  const currentFilePrompt: SourceRangePrompt | null = activeFile
+    ? {
+        prompt: 'This is the active file',
+        range: convertAppRangeToApiRange(
+          [0, currentFile.content.length, 0],
+          currentFile.content
+        ),
+        file: activeFile,
+      }
+    : null
+
+  if (selections === null) {
+    return {
+      body: {
+        prompt,
+        source_ranges: currentFilePrompt !== null ? [currentFilePrompt] : [],
+        project_name:
+          projectName !== '' && projectName !== 'browser'
+            ? projectName
+            : undefined,
+        kcl_version: kclVersion,
+      },
+      files,
+      activeFile,
+    }
+  }
+
+  const ranges: SourceRangePrompt[] = []
+  for (const selection of selections.graphSelections) {
+    const selectionPrompts = buildZookeeperSourceRangePromptsForSelection({
+      selection,
+      artifactGraph,
+      kclFilesMap,
+    })
+    if (selectionPrompts instanceof Error) {
+      return selectionPrompts
+    }
+    ranges.push(...selectionPrompts)
+  }
+
+  if (selections.graphSelections.length === 0 && currentFilePrompt !== null) {
+    ranges.push(currentFilePrompt)
+  }
+
+  return {
+    body: {
+      prompt,
+      ...(conversationId ? { conversation_id: conversationId } : {}),
+      source_ranges: ranges,
+      project_name:
+        projectName !== '' && projectName !== 'browser'
+          ? projectName
+          : undefined,
+      kcl_version: kclVersion,
+    },
+    files,
+    activeFile,
+  }
+}

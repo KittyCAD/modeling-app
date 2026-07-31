@@ -4,7 +4,6 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
-import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import { createActorContext } from '@xstate/react'
 import ms from 'ms'
@@ -33,7 +32,10 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
+import {
+  type KittyCadLibFile,
+  constructZookeeperPromptToEditRequest,
+} from '@src/lib/zookeeper/zookeeperPromptRequest'
 
 import toast from 'react-hot-toast'
 
@@ -1242,7 +1244,7 @@ export const mlEphantManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
-      const requestData = constructMultiFileIterationRequestWithPromptHelpers({
+      const requestData = constructZookeeperPromptToEditRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
@@ -1253,6 +1255,7 @@ export const mlEphantManagerMachine = setup({
         currentFile: event.fileSelectedDuringPrompting,
         kclVersion: getKclVersion(),
       })
+      if (isErr(requestData)) return Promise.reject(requestData)
 
       const filesAsByteArrays: Record<string, number[]> = {}
 
