@@ -4,7 +4,6 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
-import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import { createActorContext } from '@xstate/react'
 import ms from 'ms'
@@ -28,12 +27,18 @@ import { Socket, SocketConnectionError } from '@src/lib/socket'
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
 
+import type { KclManager } from '@src/lang/KclManager'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
+import {
+  type KittyCadLibFile,
+  constructZookeeperUserPromptRequest,
+} from '@src/lib/zookeeper/zookeeperPromptRequest'
 
 import toast from 'react-hot-toast'
 
@@ -257,8 +262,11 @@ export type MlEphantManagerEvents =
       applicationProjectDirectory: string
       fileSelectedDuringPrompting: { entry: FileEntry; content: string }
       projectFiles: FileMeta[]
-      selections: Selections
+      selections: Selections | null
       artifactGraph: ArtifactGraph
+      kclManager: KclManager
+      engineCommandManager: ConnectionManager
+      wasmInstance: ModuleType
       mode?: MlCopilotModeId
       additionalFiles?: File[]
     }
@@ -1242,7 +1250,7 @@ export const mlEphantManagerMachine = setup({
       if (!isPresent<Conversation>(context.conversation))
         return Promise.reject(new Error('Conversation not present'))
 
-      const requestData = constructMultiFileIterationRequestWithPromptHelpers({
+      const requestData = await constructZookeeperUserPromptRequest({
         conversationId: context.conversationId ?? '',
         prompt: event.prompt,
         selections: event.selections,
@@ -1252,7 +1260,11 @@ export const mlEphantManagerMachine = setup({
         projectName: event.projectForPromptOutput.name,
         currentFile: event.fileSelectedDuringPrompting,
         kclVersion: getKclVersion(),
+        kclManager: event.kclManager,
+        engineCommandManager: event.engineCommandManager,
+        wasmInstance: event.wasmInstance,
       })
+      if (isErr(requestData)) return Promise.reject(requestData)
 
       const filesAsByteArrays: Record<string, number[]> = {}
 
@@ -1271,7 +1283,9 @@ export const mlEphantManagerMachine = setup({
         type: 'user',
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
-        source_ranges: requestData.body.source_ranges,
+        ...(requestData.body.source_ranges !== undefined
+          ? { source_ranges: requestData.body.source_ranges }
+          : {}),
         current_files: filesAsByteArrays,
         ...(requestData.activeFile
           ? { active_file: requestData.activeFile }
