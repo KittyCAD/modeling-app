@@ -547,7 +547,7 @@ impl<'a> StatementKind<'a> {
 
 impl ExecutorContext {
     /// Returns true if importing the prelude should be skipped.
-    async fn handle_annotations(
+    pub(super) async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = &Node<Annotation>>,
         body_type: BodyType,
