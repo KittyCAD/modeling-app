@@ -91,6 +91,8 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - run: npm run lint
+        env:
+          NODE_OPTIONS: --max-old-space-size=2560
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
