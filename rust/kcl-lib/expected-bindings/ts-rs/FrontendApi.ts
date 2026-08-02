@@ -39,7 +39,7 @@ export type ApiObjectId = number;
 
 export type ApiObjectKind = { "type": "Nil" } | { "type": "Plane" } & ApiPlane | { "type": "Face" } & ApiFace | { "type": "Wall" } & ApiWall | { "type": "Cap" } & ApiCap | { "type": "Sketch" } & ApiSketch | { "type": "Segment", segment: ApiSegment, } | { "type": "Constraint", constraint: ApiConstraint, };
 
-export type ApiPlane = { "object": ApiObjectId } | { "default": PlaneName };
+export type ApiPlane = { "object": ApiObjectId } | { "default": PlaneName } | { "primitiveFace": PrimitiveFacePlane };
 
 export type ApiPoint = { position: ApiPoint2d<Number>, ctor: PointCtor | null, owner: ApiObjectId | null, freedom: Freedom, constraints: Array<ApiObjectId>, };
 
@@ -68,6 +68,8 @@ export type ArcCtor = { start: ApiPoint2d<Expr>, end: ApiPoint2d<Expr>, center: 
 export type CircleCtor = { start: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, construction?: boolean, };
 
 export type Coincident = { segments: Array<ConstraintSegment>, };
+
+export type ConstraintLabelPositionEdit = { constraintId: ApiObjectId, labelPosition: ApiPoint2d<Number>, };
 
 export type ConstraintSegment = ApiObjectId | OriginLiteral;
 
@@ -123,6 +125,16 @@ export type Parallel = { lines: Array<ApiObjectId>, };
 export type Perpendicular = { lines: Array<ApiObjectId>, };
 
 export type PointCtor = { position: ApiPoint2d<Expr>, };
+
+/**
+ * An indexed face on a solid which has not yet been materialized as a KCL
+ * `Face` value.
+ */
+export type PrimitiveFacePlane = { 
+/**
+ * Engine ID of the solid which owns the face.
+ */
+solidId: string, index: number, };
 
 export type Radius = { arc: ApiObjectId, radius: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 

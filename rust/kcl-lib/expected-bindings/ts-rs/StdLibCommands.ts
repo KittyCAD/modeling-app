@@ -1557,8 +1557,8 @@ export default {
     "args": [
       {
         "name": "sketches",
-        "ty": "[Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment; 1+]",
-        "docs": "Which sketch or sketches should be extruded.",
+        "ty": "[Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment | any; 1+]",
+        "docs": "Which sketch or sketches should be extruded. Experimental face API: edge specifier objects (`{ sideFaces = [faceTag1, faceTag2], endFaces? = [...], index? }`) are not ready for generated or user-facing KCL yet; prefer existing sketch, face, tagged face, tagged edge, edge, or segment forms until point-and-click and migration support ships.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -1597,7 +1597,7 @@ export default {
       },
       {
         "name": "direction",
-        "ty": "Point3d | Edge | TaggedEdge | Segment",
+        "ty": "Point3d | Edge | TaggedEdge | Segment | any",
         "docs": "If specified, will extrude in this direction instead of the sketch plane normal. If an edge is being extruded, this defaults to halfway between the faces on either side of the edge.",
         "required": false,
         "special": false,
@@ -1767,6 +1767,29 @@ export default {
         "docs": "Which face of the solid.",
         "required": true,
         "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "fail": {
+    "name": "fail",
+    "preferredName": "fail",
+    "qualName": "std::fail",
+    "moduleName": "std",
+    "returnType": "never",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "msg",
+        "ty": "string",
+        "docs": "Message reported to the caller.",
+        "required": true,
+        "special": true,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
@@ -5502,8 +5525,8 @@ export default {
       },
       {
         "name": "across",
-        "ty": "Edge | Plane | Axis3d | Segment",
-        "docs": "The axis (or other geometry) to reflect across.",
+        "ty": "Edge | Plane | Axis3d | Segment | any",
+        "docs": "The axis (or other geometry) to reflect across. An edge specifier object such as `{ sideFaces = [faceTag1, faceTag2] }` can identify a solid edge without using its UUID.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -6466,7 +6489,7 @@ export default {
       {
         "name": "point",
         "ty": "Point2d | Segment",
-        "docs": "A point that is within the region's boundary.",
+        "docs": "A fallback point that is within the region's boundary.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6476,7 +6499,7 @@ export default {
       {
         "name": "segments",
         "ty": "[Segment; 1+]",
-        "docs": "The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region. This parameter is currently only supported when there is only one region in the sketch. If the sketch may have multiple regions, use the `point` parameter instead.",
+        "docs": "The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region. This is the preferred way to create a region.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -7137,7 +7160,7 @@ export default {
       {
         "name": "input",
         "ty": "[Segment; 2]",
-        "docs": "The two line segments whose relative angle should match the value set with `==`.",
+        "docs": "The two line segments whose relative angle should match the value set with `==`, measured counterclockwise from the first line to the second, modulo 180 degrees. The order of the lines matters.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7345,7 +7368,7 @@ export default {
       {
         "name": "points",
         "ty": "[Segment | Point2d; 2]",
-        "docs": "Two sketch points, or one sketch point and `ORIGIN`, whose separation should match the value set with `==`.",
+        "docs": "Two sketch entities, or one sketch entity and `ORIGIN`, whose separation should match the value set with `==`. The order of the entities does not matter.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7447,7 +7470,7 @@ export default {
       {
         "name": "points",
         "ty": "[Segment | Point2d; 2]",
-        "docs": "Two sketch points, or one sketch point and `ORIGIN`, whose X-axis separation should match the value set with `==`.",
+        "docs": "Two sketch points, or one sketch point and `ORIGIN`. The value set with `==` equals the second point's X coordinate minus the first point's X coordinate, so the order of the points determines the sign.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7737,7 +7760,7 @@ export default {
       {
         "name": "points",
         "ty": "[Segment | Point2d; 2]",
-        "docs": "Two sketch points, or one sketch point and `ORIGIN`, whose Y-axis separation should match the value set with `==`.",
+        "docs": "Two sketch points, or one sketch point and `ORIGIN`. The value set with `==` equals the second point's Y coordinate minus the first point's Y coordinate, so the order of the points determines the sign.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8006,6 +8029,29 @@ export default {
         "name": "text",
         "ty": "string",
         "docs": "The string to convert.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "string::toString": {
+    "name": "toString",
+    "preferredName": "string::toString",
+    "qualName": "std::string::toString",
+    "moduleName": "string",
+    "returnType": "string",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "num",
+        "ty": "number",
+        "docs": "The number to convert.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8449,7 +8495,7 @@ export default {
     "preferredName": "translate",
     "qualName": "std::transform::translate",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -8457,8 +8503,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to move.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to move.",
         "required": true,
         "special": true,
         "experimental": false,

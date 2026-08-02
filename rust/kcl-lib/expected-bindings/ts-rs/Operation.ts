@@ -52,7 +52,7 @@ export type OpHelix = { artifactId: ArtifactId, };
  * A KCL value used in Operations.  `ArtifactId`s are used to refer to the
  * actual scene objects.  Any data not needed in the UI may be omitted.
  */
-export type OpKclValue = { "type": "Uuid", value: string, } | { "type": "Bool", value: boolean, } | { "type": "Number", value: number, ty: NumericType, } | { "type": "String", value: string, } | { "type": "SketchVar", value: number, ty: NumericType, } | { "type": "Array", value: Array<OpKclValue>, } | { "type": "Object", value: { [key in string]: OpKclValue }, } | { "type": "TagIdentifier", 
+export type OpKclValue = { "type": "Uuid", value: string, } | { "type": "Bool", value: boolean, } | { "type": "Number", value: number, ty: NumericType, } | { "type": "String", value: string, } | { "type": "Enum", enum_name: string, variant: string, } | { "type": "SketchVar", value: number, ty: NumericType, } | { "type": "Array", value: Array<OpKclValue>, } | { "type": "Object", value: { [key in string]: OpKclValue }, } | { "type": "TagIdentifier", 
 /**
  * The name of the tag identifier.
  */

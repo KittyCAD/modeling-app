@@ -2,6 +2,6 @@
 import type { Identifier } from "./Identifier";
 import type { ItemVisibility } from "./ItemVisibility";
 import type { Node } from "./Node";
-import type { Type } from "./Type";
+import type { TypeDeclarationDefinition } from "./TypeDeclarationDefinition";
 
-export type TypeDeclaration = { "type": "TypeDeclaration", name: Node<Identifier>, args: Array<Node<Identifier>> | null, visibility?: ItemVisibility, alias: Node<Type> | null, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };
+export type TypeDeclaration = { "type": "TypeDeclaration", name: Node<Identifier>, args: Array<Node<Identifier>> | null, visibility?: ItemVisibility, definition: TypeDeclarationDefinition, digest?: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number], };
