@@ -10,21 +10,14 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 ts_rs_src=rust/kcl-lib/bindings
-wasm_bindgen_src=rust/kcl-wasm-lib/pkg
 dest=rust/kcl-lib/expected-bindings
 
 if [ ! -d "$ts_rs_src" ]; then
   echo "error: $ts_rs_src does not exist; run 'npm run build:wasm' first" >&2
   exit 1
 fi
-if ! ls "$wasm_bindgen_src"/*.d.ts > /dev/null 2>&1; then
-  echo "error: $wasm_bindgen_src contains no .d.ts files; run 'npm run build:wasm' first" >&2
-  exit 1
-fi
 
-rm -rf "$dest/ts-rs" "$dest/wasm-bindgen"
-mkdir -p "$dest/wasm-bindgen"
+rm -rf "$dest/ts-rs"
 # ts-rs nests bindings for foreign-crate types in subdirectories (e.g.
 # serde_json/JsonValue.ts), so copy the whole tree.
 cp -R "$ts_rs_src" "$dest/ts-rs"
-cp "$wasm_bindgen_src"/*.d.ts "$dest/wasm-bindgen/"
