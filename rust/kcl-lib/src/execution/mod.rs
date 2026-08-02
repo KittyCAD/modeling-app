@@ -2188,15 +2188,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_test_env()).await
 }
 
+/// A mock-engine executor context for tests that need to inspect the context
+/// (e.g. the engine's batch queue) even when execution fails.
 #[cfg(test)]
-pub(crate) async fn parse_execute_with_executor_kind(
-    code: &str,
+pub(crate) fn new_mock_executor_context(
     project_directory: Option<TypedPath>,
     executor_kind: machine::ExecutorKind,
-) -> Result<ExecTestResults, KclError> {
-    let program = crate::Program::parse_no_errs(code)?;
-
-    let exec_ctxt = ExecutorContext {
+) -> ExecutorContext {
+    ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
@@ -2208,7 +2207,18 @@ pub(crate) async fn parse_execute_with_executor_kind(
         execution_callbacks: Default::default(),
         executor_kind,
         machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
-    };
+    }
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_executor_kind(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> Result<ExecTestResults, KclError> {
+    let program = crate::Program::parse_no_errs(code)?;
+
+    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 

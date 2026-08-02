@@ -529,13 +529,15 @@ impl ExecutorContext {
 /// block's `last_expr` (which the module wrapper, call protocol, and sketch
 /// handling consume exactly as they do for the recursive executor). An
 /// `exit()` unwinds to this root and is returned as an `Exit`-flavored
-/// control-flow value.
+/// control-flow value. A root block flushes the engine's batched commands on
+/// both completion and exit -- never on error -- matching `exec_block`.
 pub(super) async fn run_block(
     ctx: &ExecutorContext,
     block: BlockRef,
     exec_state: &mut ExecState,
     body_type: BodyType,
 ) -> Result<Option<KclValueControlFlow>, KclError> {
+    let block_range = block.to_source_range();
     let mut konts: Vec<Kont> = Vec::new();
     // Kick the root block sequence off: stepping a block with no statement in
     // flight advances to its first statement.
@@ -550,7 +552,24 @@ pub(super) async fn run_block(
         Ok(c) => c,
         Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
     };
-    match run_loop(ctx, control, konts, exec_state).await? {
+    let result = run_loop(ctx, control, konts, exec_state).await?;
+    if matches!(body_type, BodyType::Root) {
+        // Flush the batch queue for the root, whether it completed or was
+        // terminated by an exit(): the recursive executor's flush sits after
+        // its statement loop, which its exit `break` still reaches. Errors
+        // skip the flush (the `?` above), also matching. This must run after
+        // unwinding, so that any sketch-block state has been restored, and it
+        // cannot live in step_block, which an exit never re-enters.
+        exec_state
+            .flush_batch(
+                ModelingCmdMeta::new(exec_state, ctx, block_range),
+                // True here tells the engine to flush all the end commands as well like fillets
+                // and chamfers where the engine would otherwise eat the ID of the segments.
+                true,
+            )
+            .await?;
+    }
+    match result {
         RootResult::Done(applied) => applied.expect_block(),
         RootResult::Exited(cf) => Ok(Some(cf)),
     }
@@ -1318,18 +1337,8 @@ async fn step_block(
     // Run statements until one needs an Eval.
     loop {
         let Some(statement) = block.body().get(index) else {
-            // Block complete.
-            if matches!(body_type, BodyType::Root) {
-                // Flush the batch queue.
-                exec_state
-                    .flush_batch(
-                        ModelingCmdMeta::new(exec_state, ctx, block.to_source_range()),
-                        // True here tells the engine to flush all the end commands as well like fillets
-                        // and chamfers where the engine would otherwise eat the ID of the segments.
-                        true,
-                    )
-                    .await?;
-            }
+            // Block complete. (The root's batch flush lives in run_block so
+            // that exited roots flush too.)
             return Ok(Control::Apply(Applied::Block(last)));
         };
 
@@ -2318,6 +2327,134 @@ mod tests {
 
     async fn run_machine(code: &str) -> Result<crate::execution::ExecTestResults, KclError> {
         parse_execute_with_executor_kind(code, None, ExecutorKind::Machine).await
+    }
+
+    /// A program whose trailing modeling commands are still sitting in the
+    /// engine's batch queue when the terminal statement runs. (No close() or
+    /// similar: operations that send immediately would drain the queue
+    /// themselves.)
+    const QUEUED_TAIL: &str = r#"startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+"#;
+
+    /// Execute a program's root block directly through exec_block -- the
+    /// boundary whose flush behavior the two executors must agree on. This
+    /// deliberately bypasses run(): its end-of-run sweep
+    /// (ensure_async_commands_completed) flushes whatever the root left
+    /// queued and clear_queues() then empties the rest, masking exactly the
+    /// difference under test. Returns the block result, whether the batch
+    /// queue is empty afterwards, and how many batches were sent. Counts and
+    /// emptiness rather than command sequences: imported modules execute
+    /// concurrently, so command order is nondeterministic in general.
+    async fn exec_root_block(
+        kind: ExecutorKind,
+        code: &str,
+    ) -> (Result<Option<KclValueControlFlow>, KclError>, bool, usize) {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::execution::new_mock_executor_context(None, kind);
+        let mut exec_state = crate::execution::ExecState::new(&ctx);
+        ctx.eval_prelude(&mut exec_state, SourceRange::synthetic())
+            .await
+            .unwrap();
+        let no_prelude = ctx
+            .handle_annotations(program.ast.inner_attrs.iter(), BodyType::Root, &mut exec_state)
+            .await
+            .unwrap();
+        exec_state.mut_stack().push_new_root_env(!no_prelude).unwrap();
+        let result = ctx.exec_block(&program.ast, &mut exec_state, BodyType::Root).await;
+        let queue_empty = ctx.engine_batch.is_empty().await;
+        let batches_sent = ctx
+            .engine
+            .stats()
+            .batches_sent
+            .load(std::sync::atomic::Ordering::Relaxed);
+        (result, queue_empty, batches_sent)
+    }
+
+    /// exit() terminating the program must flush queued modeling commands to
+    /// the engine exactly like running to completion does. (The recursive
+    /// executor's root flush sits after its statement loop, which the exit's
+    /// `break` still reaches; the machine must match.)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_at_root_flushes_queued_commands() {
+        let completed = format!("@settings(experimentalFeatures = allow)\n{QUEUED_TAIL}");
+        let exited = format!("@settings(experimentalFeatures = allow)\n{QUEUED_TAIL}exit()\n");
+        let mut counts = Vec::new();
+        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
+            let (result, queue_empty, n_completed) = exec_root_block(kind, &completed).await;
+            assert!(result.is_ok(), "{kind:?}: {result:?}");
+            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
+            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+
+            let (result, queue_empty, n_exited) = exec_root_block(kind, &exited).await;
+            let cf = result.unwrap().unwrap();
+            assert!(cf.is_some_return(), "{kind:?}: expected an exit control-flow value");
+            assert!(queue_empty, "{kind:?}: exit() must flush the batch queue");
+            assert_eq!(
+                n_exited, n_completed,
+                "{kind:?}: exit() must flush exactly like completion"
+            );
+            counts.push((n_completed, n_exited));
+        }
+        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
+    }
+
+    /// exit() from inside a function unwinds every call boundary and must
+    /// still flush at the root.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_in_function_flushes_queued_commands() {
+        let fn_def = "@settings(experimentalFeatures = allow)\nfn quit() {\n  exit()\n  return 0\n}\n";
+        let completed = format!("{fn_def}{QUEUED_TAIL}");
+        let exited = format!("{fn_def}{QUEUED_TAIL}quit()\n");
+        let mut counts = Vec::new();
+        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
+            let (result, queue_empty, n_completed) = exec_root_block(kind, &completed).await;
+            assert!(result.is_ok(), "{kind:?}: {result:?}");
+            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
+            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+
+            let (result, queue_empty, n_exited) = exec_root_block(kind, &exited).await;
+            let cf = result.unwrap().unwrap();
+            assert!(cf.is_some_return(), "{kind:?}: expected an exit control-flow value");
+            assert!(
+                queue_empty,
+                "{kind:?}: exit() from a function must flush the batch queue"
+            );
+            assert_eq!(
+                n_exited, n_completed,
+                "{kind:?}: exit() from a function must flush exactly like completion"
+            );
+            counts.push((n_completed, n_exited));
+        }
+        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
+    }
+
+    /// A fatal error must NOT flush the root: queued commands are left in
+    /// the batch queue (run()'s end-of-run machinery then sweeps or drops
+    /// them). This asymmetry with exit() is deliberate.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_does_not_flush_queued_commands() {
+        let errored = format!("{QUEUED_TAIL}assert(1, isEqualTo = 2)\n");
+        let mut counts = Vec::new();
+        for kind in [ExecutorKind::Recursive, ExecutorKind::Machine] {
+            let (result, queue_empty, n_completed) = exec_root_block(kind, QUEUED_TAIL).await;
+            assert!(result.is_ok(), "{kind:?}: {result:?}");
+            assert!(queue_empty, "{kind:?}: completing the root must flush the batch queue");
+            assert!(n_completed >= 1, "{kind:?}: expected at least one batch sent");
+
+            let (result, queue_empty, n_errored) = exec_root_block(kind, &errored).await;
+            assert!(result.is_err(), "{kind:?}: expected an error");
+            assert!(!queue_empty, "{kind:?}: an error must leave queued commands unflushed");
+            assert_eq!(
+                n_errored,
+                n_completed - 1,
+                "{kind:?}: an error must skip exactly the final flush"
+            );
+            counts.push((n_completed, n_errored));
+        }
+        assert_eq!(counts[0], counts[1], "executors disagree on batches sent");
     }
 
     /// The machine's whole point: recursion depth well past the recursive
