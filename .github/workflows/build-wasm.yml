@@ -106,7 +106,8 @@ jobs:
         shell: bash
         run: |
           ./scripts/update-expected-bindings.sh
-          git diff --exit-code -- rust/kcl-lib/expected-bindings/ \
+          git add -A -- rust/kcl-lib/expected-bindings/
+          git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
             || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
                      'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
 
