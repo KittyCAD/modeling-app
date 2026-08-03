@@ -21,7 +21,10 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  PROJECT_IMAGE_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorsMock = vi.hoisted(() => ({
@@ -71,6 +74,7 @@ function remoteArchivePayload(contents = 'remote = 2\n') {
         relativePath: PROJECT_SETTINGS_FILE_NAME,
         contents: 'title = "Demo"\n',
       },
+      { relativePath: PROJECT_IMAGE_NAME, contents: 'remote thumbnail' },
     ],
   }
 }
@@ -138,6 +142,7 @@ describe('cloud sync live conflicts', () => {
     const files = new Map([
       [`${projectPath}/main.kcl`, 'local = 2\n'],
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, 'title = "Demo"\n'],
+      [`${projectPath}/${PROJECT_IMAGE_NAME}`, 'local thumbnail'],
     ])
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(files, { projectDirectory })
@@ -232,6 +237,11 @@ describe('cloud sync live conflicts', () => {
           localText: 'local = 2\n',
           cloudText: 'remote = 3\n',
         }),
+      ])
+    )
+    expect(inspection.changedFiles).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ relativePath: PROJECT_IMAGE_NAME }),
       ])
     )
   })

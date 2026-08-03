@@ -27,16 +27,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
     }
   }
 
-  function inspectedBinaryFile(relativePath: string, modifiedAtMs: number) {
-    return {
-      absolutePath: relativePath,
-      data: new Uint8Array([0, 1, 2]),
-      modifiedAtMs,
-      relativePath,
-      size: 3,
-    }
-  }
-
   return {
     inspection: {
       projectTitle: 'User-facing project title',
@@ -66,13 +56,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
           cloud: inspectedFile('cloud-only.txt', 'cloud\n', cloudSavedAtMs),
           localText: '',
           cloudText: 'cloud\n',
-        },
-        {
-          status: 'changed',
-          relativePath: 'thumbnail.png',
-          local: inspectedBinaryFile('thumbnail.png', localSavedAtMs),
-          cloud: inspectedBinaryFile('thumbnail.png', cloudSavedAtMs),
-          textUnavailableReason: 'Binary or non-UTF-8 file.',
         },
       ],
     },
@@ -173,7 +156,7 @@ describe('CloudConflictDialog', () => {
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
-    expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
+    expect(screen.queryByText('thumbnail.png')).not.toBeInTheDocument()
     expect(screen.queryByText('.git')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
     expect(
@@ -184,13 +167,6 @@ describe('CloudConflictDialog', () => {
 
     fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
-
-    fireEvent.click(
-      screen.getByTestId('cloud-conflict-file-toggle-thumbnail.png')
-    )
-    expect(
-      screen.getByText('Diff unavailable: Binary or non-UTF-8 file.')
-    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-close-button'))
     expect(onDismiss).toHaveBeenCalledTimes(1)

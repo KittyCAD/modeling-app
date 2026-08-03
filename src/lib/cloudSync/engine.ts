@@ -63,6 +63,7 @@ import type {
 import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_FOLDER,
+  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -318,6 +319,7 @@ export function filterCloudSyncProjectFilesForSync(
   return normalizedFiles.filter(
     (file) =>
       !isCloudSyncExcludedPath(file.relativePath) &&
+      !isCloudSyncGeneratedArtifactPath(file.relativePath) &&
       !isPathIgnoredByGitignore(gitignoreStack, file.relativePath, false)
   )
 }
@@ -519,8 +521,7 @@ async function downloadRemoteProjectSnapshot({
     parsedArchive,
     project.title,
     projectId,
-    getEnvironmentName(),
-    getRemoteProjectEntrypointPath(project)
+    getEnvironmentName()
   )
   const files = filterCloudSyncProjectFilesForSync(filesWithMetadata)
 
@@ -1317,8 +1318,7 @@ async function cloneRemoteProjectToLocal(
       await parseProjectArchive(archive),
       remoteProject.title,
       remoteProject.id,
-      getEnvironmentName(),
-      getRemoteProjectEntrypointPath(remoteProject)
+      getEnvironmentName()
     )
   )
   const nextMetadata = {
@@ -1485,8 +1485,7 @@ export async function renameRemoteCloudProject(
     ),
     title,
     projectId,
-    getEnvironmentName(),
-    getRemoteProjectEntrypointPath(remoteProject)
+    getEnvironmentName()
   )
   const updated = await updateRemoteProject({
     config,
@@ -1494,6 +1493,7 @@ export async function renameRemoteCloudProject(
     projectId,
     files,
     expectedRevision: getRevision(remoteProject),
+    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
   }).catch(rejectRemoteUploadFailure)
 
   // Reflect the new title in the in-memory remote index immediately so Home
@@ -1859,6 +1859,7 @@ async function applyLocalDataForConflict(
     projectId: metadata.remoteProjectId,
     files: localFiles,
     expectedRevision,
+    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
   }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteLegacyConflictCopy(conflict)
@@ -2406,6 +2407,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         projectId: remoteProjectId,
         files: localFiles,
         expectedRevision: metadata.remoteRevision,
+        entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
       }).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
@@ -2425,8 +2427,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         await parseProjectArchive(remoteArchive),
         remoteProject.title,
         remoteProjectId,
-        getEnvironmentName(),
-        getRemoteProjectEntrypointPath(remoteProject)
+        getEnvironmentName()
       )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
@@ -3104,6 +3105,62 @@ function attachVisibilityChangeListener() {
   }
 }
 
+function isCloudSyncGeneratedArtifactPath(relativePath: string) {
+  return normalizeRelativePath(relativePath) === PROJECT_IMAGE_NAME
+}
+
+async function createGitignoreStackForMutationTarget(
+  projectRoot: string,
+  relativeTargetPath: string
+) {
+  let gitignoreStack = await createInitialGitignoreStackWithFs(
+    localFs,
+    projectRoot
+  )
+  const parentParts = webSafePathSplit(relativeTargetPath)
+    .filter(Boolean)
+    .slice(0, -1)
+  let currentDirectory = projectRoot
+
+  for (const part of parentParts) {
+    currentDirectory = localFs.join(currentDirectory, part)
+    gitignoreStack = await appendGitignoreForDirectoryWithFs(
+      localFs,
+      gitignoreStack,
+      currentDirectory,
+      projectRoot
+    )
+  }
+
+  return gitignoreStack
+}
+
+async function isCloudSyncIgnoredMutationTarget(
+  projectRoot: string,
+  targetPath: string
+) {
+  const relativeTargetPath = normalizeRelativePath(
+    localFs.relative(projectRoot, targetPath)
+  )
+  if (!relativeTargetPath) {
+    return false
+  }
+  if (isCloudSyncGeneratedArtifactPath(relativeTargetPath)) {
+    return true
+  }
+
+  const gitignoreStack = await createGitignoreStackForMutationTarget(
+    projectRoot,
+    relativeTargetPath
+  )
+  const stat = await localFs.stat(targetPath).catch(() => undefined)
+  return isPathIgnoredByGitignore(
+    gitignoreStack,
+    relativeTargetPath,
+    stat ? statIsDirectory(stat) : false
+  )
+}
+
 async function registerProjectMutation(
   projectPath: string,
   kind: OutboxEntry['kind'],
@@ -3122,6 +3179,7 @@ async function registerProjectMutation(
   ) {
     return
   }
+  const normalizedTargetPath = normalizePathForSync(targetPath)
   const existingMetadata = await getProjectMetadata(normalizedProjectPath)
   if (kind === 'delete') {
     if (
@@ -3134,6 +3192,14 @@ async function registerProjectMutation(
     return
   }
 
+  if (
+    await isCloudSyncIgnoredMutationTarget(
+      normalizedProjectPath,
+      normalizedTargetPath
+    )
+  ) {
+    return
+  }
   let metadata =
     existingMetadata ??
     (await getOrCreateProjectMetadata(normalizedProjectPath))
@@ -3167,7 +3233,7 @@ async function registerProjectMutation(
   await appendOutboxEntry({
     projectPath: normalizedProjectPath,
     kind,
-    targetPath: normalizePathForSync(targetPath),
+    targetPath: normalizedTargetPath,
     sourcePath: sourcePath ? normalizePathForSync(sourcePath) : undefined,
     createdAt: nowIso(),
   })
