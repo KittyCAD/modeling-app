@@ -184,8 +184,10 @@ describe('cloud sync live conflicts', () => {
           code: 'cloud_sync_conflict_copy_detected',
           errorName: 'CloudSyncConflictCopyDetected',
           message: 'Cloud sync "conflict copy" folder detected',
+          route: '/cloud-sync',
           extra: {
-            source: 'cloudSync',
+            source: 'CloudSyncEngine',
+            operation: 'reconcile-project',
           },
         })
       )

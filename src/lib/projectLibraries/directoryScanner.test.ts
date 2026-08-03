@@ -72,6 +72,8 @@ const mocks = vi.hoisted(() => {
   }
 })
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock('@src/lib/cloudSync', () => ({
   cloudSyncStatus: { value: { enabled: true } },
   getCloudSyncProjectMetadataIndex: vi.fn(async () => new Map()),

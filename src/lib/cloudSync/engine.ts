@@ -1,6 +1,10 @@
 import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
-import { reportClientError } from '@src/lib/clientErrors'
+import {
+  reportCloudSyncConflict,
+  reportCloudSyncConflictCopyDetected,
+  reportCloudSyncFailure,
+} from '@src/lib/cloudSync/clientErrorReporting'
 import {
   CloudApiError,
   createRemoteProject,
@@ -125,17 +129,6 @@ export function isCloudSyncConflictRevisionChangedError(error: unknown) {
     (error instanceof Error &&
       error.name === 'CloudSyncConflictRevisionChangedError')
   )
-}
-
-function reportCloudSyncConflictCopyDetected() {
-  void reportClientError({
-    code: 'cloud_sync_conflict_copy_detected',
-    errorName: 'CloudSyncConflictCopyDetected',
-    message: 'Cloud sync "conflict copy" folder detected',
-    extra: {
-      source: 'cloudSync',
-    },
-  })
 }
 
 const SYNC_DEBOUNCE_MS = 2500
@@ -1690,6 +1683,7 @@ function markCloudMetadataFailure(error: unknown) {
     return
   }
 
+  reportCloudSyncFailure('mutation', error)
   initialLocalScanComplete = false
   updateStatus({
     enabled: true,
@@ -1890,6 +1884,7 @@ export async function resolveCloudSyncProjectConflict(
     scheduleSync(0)
   } catch (error) {
     if (!isCloudSyncConflictRevisionChangedError(error)) {
+      reportCloudSyncFailure('conflict-resolution', error)
       await markProjectFailure(metadata, error)
     }
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -1972,6 +1967,7 @@ async function markProjectConflict(
       lastFailureAt: createdAt,
     })
   }
+  reportCloudSyncConflict()
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -2670,7 +2666,8 @@ async function syncRemoteIndex() {
       new Error(
         `Cloud sync failed for ${failures.length} remote project${
           failures.length === 1 ? '' : 's'
-        }: ${errorMessage(failures.at(-1))}`
+        }: ${errorMessage(failures.at(-1))}`,
+        { cause: failures.at(-1) }
       )
     )
   }
@@ -2745,6 +2742,7 @@ async function runCloudSync() {
       await syncRemoteIndex().catch((error) => {
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
+        reportCloudSyncFailure('remote-index', error)
         updateStatus({
           state: 'failed',
           lastFailure: remoteIndexFailureMessage,
@@ -2799,6 +2797,7 @@ async function runCloudSync() {
   } catch (error) {
     const syncedAt = pendingStatusSyncedAt
     const kind = projectFailureKind(error)
+    reportCloudSyncFailure('sync', error)
     updateStatus({
       state: 'failed',
       lastFailure: errorMessage(error),
