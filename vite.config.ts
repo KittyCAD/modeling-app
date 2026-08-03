@@ -12,7 +12,12 @@ export default defineConfig(({ command, mode }) => {
   return {
     customLogger: createCustomLogger(),
     define: {
-      'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
+      'import.meta.env.VERCEL_GIT_COMMIT_REF': JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_REF
+      ),
+      'import.meta.env.VERCEL_GIT_COMMIT_SHA': JSON.stringify(
+        process.env.VERCEL_GIT_COMMIT_SHA
+      ),
     },
     server: {
       open: true,

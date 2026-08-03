@@ -28,85 +28,43 @@ describe('Routes utility functions', () => {
   })
 
   describe('getAppVersion', () => {
-    it('should return 0.0.0 for web testing', () => {
-      const expected = '0.0.0'
+    it('returns the Electron package version', () => {
       const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return 0.0.0 for desktop testing', () => {
-      const expected = '0.0.0'
-      const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
         isDesktop: true,
+        vercelGitCommitRef: undefined,
+        vercelGitCommitSha: undefined,
       })
-      expect(actual).toBe(expected)
+      expect(actual).toBe('mocked-version')
     })
-    it('should return another mocked packageJson version', () => {
-      const expected = 'mocked-version'
+
+    it('returns the release version from a Vercel tag', () => {
       const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
-        isDesktop: true,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return another mocked packageJson version', () => {
-      const expected = 'mocked-version'
-      const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'not-development',
-        VERCEL_ENV: undefined,
-        isDesktop: true,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return dev for local development', () => {
-      const expected = 'dev'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
         isDesktop: false,
+        vercelGitCommitRef: 'v1.2.3',
+        vercelGitCommitSha: 'abcdef1234567890',
       })
-      expect(actual).toBe(expected)
+      expect(actual).toBe('1.2.3')
     })
-    it('should return dev for Vercel previews', () => {
-      const expected = 'dev'
+
+    it('returns the short commit SHA for Vercel deployments', () => {
       const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'production',
-        VERCEL_ENV: 'preview',
         isDesktop: false,
+        vercelGitCommitRef: 'staging',
+        vercelGitCommitSha: 'fe581ff1234567890',
       })
-      expect(actual).toBe(expected)
+      expect(actual).toBe('fe581ff')
     })
-    it('should return main', () => {
-      const expected = 'main'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'not-development',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return main because NODE_ENV is production', () => {
-      const expected = 'main'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'production',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
+
+    it.each([undefined, '', 'short'])(
+      'returns 0.0.0 when Vercel metadata is unavailable (%s)',
+      (vercelGitCommitSha) => {
+        const actual = getAppVersion({
+          isDesktop: false,
+          vercelGitCommitRef: undefined,
+          vercelGitCommitSha,
+        })
+        expect(actual).toBe('0.0.0')
+      }
+    )
   })
 })
