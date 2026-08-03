@@ -1,8 +1,10 @@
 use std::f64::consts::TAU;
 
+use indexmap::IndexMap;
 use indexmap::IndexSet;
 use kcl_api::UnitLength;
 
+use crate::execution::ArtifactId;
 use crate::execution::types::adjust_length;
 use crate::front::Horizontal;
 use crate::front::Vertical;
@@ -2316,9 +2318,20 @@ pub fn get_next_trim_spawn(
     objects: &[Object],
     default_unit: UnitLength,
 ) -> TrimItem {
+    get_next_trim_spawn_filtered(points, start_index, objects, default_unit, None)
+}
+
+fn get_next_trim_spawn_filtered(
+    points: &[Coords2d],
+    start_index: usize,
+    objects: &[Object],
+    default_unit: UnitLength,
+    eligible_segment_ids: Option<&IndexSet<ObjectId>>,
+) -> TrimItem {
     let scene_curves: Vec<CurveHandle> = objects
         .iter()
         .filter_map(|obj| load_curve_handle(obj, objects, default_unit).ok())
+        .filter(|curve| eligible_segment_ids.is_none_or(|ids| ids.contains(&curve.segment_id)))
         .collect();
 
     // Loop through polyline segments starting from startIndex
@@ -2343,6 +2356,32 @@ pub fn get_next_trim_spawn(
     TrimItem::None {
         next_index: points.len().saturating_sub(1),
     }
+}
+
+/// Snapshot the scene entities selected by the trim stroke before any edit is
+/// executed. Solving an underconstrained sketch after an edit can move unrelated
+/// geometry across the fixed stroke; that geometry was not part of the user's
+/// original selection and must not become a new trim spawn.
+fn trim_stroke_intersection_counts(
+    points: &[Coords2d],
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> IndexMap<ArtifactId, usize> {
+    objects
+        .iter()
+        .filter_map(|object| load_curve_handle(object, objects, default_unit).ok())
+        .filter_map(|curve| {
+            let intersection_count = curve_polyline_intersections(&curve, points, EPSILON_POINT_ON_SEGMENT).len();
+            (intersection_count > 0).then(|| {
+                let artifact_id = objects
+                    .iter()
+                    .find(|object| object.id == curve.segment_id)
+                    .map(|object| object.artifact_id)
+                    .unwrap_or_else(ArtifactId::placeholder);
+                (artifact_id, intersection_count)
+            })
+        })
+        .collect()
 }
 
 /**
@@ -2921,6 +2960,10 @@ where
     ));
     let mut invalidates_ids = false;
     let mut current_scene_graph_delta = initial_scene_graph_delta;
+    let selected_intersection_counts =
+        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    let initial_intersection_count: usize = selected_intersection_counts.values().sum();
+    let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
     let circle_delete_fallback_strategy =
         |error: &str, segment_id: ObjectId, scene_objects: &[Object]| -> Option<Vec<TrimOperation>> {
             if !error.contains("No trim termination candidate found for circle") {
@@ -2950,11 +2993,29 @@ where
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_spawn = get_next_trim_spawn(
+        let eligible_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+            .new_graph
+            .objects
+            .iter()
+            .filter(|object| {
+                initial_intersection_count > 1
+                    || selected_intersection_counts
+                        .get(&object.artifact_id)
+                        .copied()
+                        .unwrap_or(0)
+                        > processed_intersection_counts
+                            .get(&object.artifact_id)
+                            .copied()
+                            .unwrap_or(0)
+            })
+            .map(|object| object.id)
+            .collect();
+        let next_trim_spawn = get_next_trim_spawn_filtered(
             points,
             start_index,
             &current_scene_graph_delta.new_graph.objects,
             default_unit,
+            Some(&eligible_segment_ids),
         );
 
         match &next_trim_spawn {
@@ -3032,6 +3093,7 @@ where
                     .iter()
                     .find(|obj| obj.id == *trim_spawn_seg_id)
                     .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id.0))?;
+                let trim_spawn_artifact_id = trim_spawn_segment.artifact_id;
 
                 let plan = match build_trim_plan(
                     *trim_spawn_seg_id,
@@ -3066,6 +3128,7 @@ where
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         current_scene_graph_delta = scene_graph_delta;
                         geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                        *processed_intersection_counts.entry(trim_spawn_artifact_id).or_default() += 1;
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -3274,16 +3337,38 @@ pub async fn execute_trim_loop_with_context(
         };
 
     let points = normalized_points.as_slice();
+    let selected_intersection_counts =
+        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    let initial_intersection_count: usize = selected_intersection_counts.values().sum();
+    let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
 
     while start_index < points.len().saturating_sub(1) && iteration_count < max_iterations {
         iteration_count += 1;
 
         // Get next trim result
-        let next_trim_spawn = get_next_trim_spawn(
+        let eligible_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+            .new_graph
+            .objects
+            .iter()
+            .filter(|object| {
+                initial_intersection_count > 1
+                    || selected_intersection_counts
+                        .get(&object.artifact_id)
+                        .copied()
+                        .unwrap_or(0)
+                        > processed_intersection_counts
+                            .get(&object.artifact_id)
+                            .copied()
+                            .unwrap_or(0)
+            })
+            .map(|object| object.id)
+            .collect();
+        let next_trim_spawn = get_next_trim_spawn_filtered(
             points,
             start_index,
             &current_scene_graph_delta.new_graph.objects,
             default_unit,
+            Some(&eligible_segment_ids),
         );
 
         match &next_trim_spawn {
@@ -3334,6 +3419,14 @@ pub async fn execute_trim_loop_with_context(
                                     invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                                     last_result = Some((source_delta, scene_graph_delta.clone()));
                                     current_scene_graph_delta = scene_graph_delta;
+                                    if let Some(object) = current_scene_graph_delta
+                                        .new_graph
+                                        .objects
+                                        .iter()
+                                        .find(|object| object.id == *trim_spawn_seg_id)
+                                    {
+                                        *processed_intersection_counts.entry(object.artifact_id).or_default() += 1;
+                                    }
                                 }
                                 Err(exec_err) => {
                                     crate::logln!(
@@ -3367,6 +3460,7 @@ pub async fn execute_trim_loop_with_context(
                     .iter()
                     .find(|obj| obj.id == *trim_spawn_seg_id)
                     .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id.0))?;
+                let trim_spawn_artifact_id = trim_spawn_segment.artifact_id;
 
                 let plan = match build_trim_plan(
                     *trim_spawn_seg_id,
@@ -3389,7 +3483,6 @@ pub async fn execute_trim_loop_with_context(
                     }
                 };
                 let strategy = lower_trim_plan(&plan);
-
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
                 let mut geometry_was_modified = false;
@@ -3411,6 +3504,7 @@ pub async fn execute_trim_loop_with_context(
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         current_scene_graph_delta = scene_graph_delta;
                         geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                        *processed_intersection_counts.entry(trim_spawn_artifact_id).or_default() += 1;
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -5973,41 +6067,15 @@ pub(crate) async fn execute_trim_operations_simple(
                     }
                 };
 
-                let (_edit_source_delta, edit_scene_graph_delta) = frontend
-                    .edit_segments(
-                        ctx,
-                        version,
-                        sketch_id,
-                        vec![ExistingSegmentCtor {
-                            id: *segment_id,
-                            ctor: edited_ctor,
-                        }],
-                    )
-                    .await
-                    .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))?;
-                // Track invalidates_ids from edit_segments call
-                invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
-
-                // Get left endpoint ID from edited segment
-                let edited_segment = edit_scene_graph_delta
-                    .new_graph
-                    .objects
-                    .iter()
-                    .find(|obj| obj.id == *segment_id)
-                    .ok_or_else(|| format!("Failed to find edited segment {}", segment_id.0))?;
-
-                let left_side_endpoint_point_id = match &edited_segment.kind {
-                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
-                        crate::frontend::sketch::Segment::Line(line) => line.end,
-                        crate::frontend::sketch::Segment::Arc(arc) => arc.end,
-                        _ => {
-                            return Err("Edited segment is not a Line or Arc".to_string());
-                        }
-                    },
-                    _ => {
-                        return Err("Edited segment is not a segment".to_string());
-                    }
-                };
+                // Do not execute the edit yet. The original endpoint still has
+                // constraints that are deleted below; solving the shortened
+                // segment before deleting them drags underconstrained geometry
+                // toward the old endpoint. The endpoint object ID is retained by
+                // an endpoint edit, so constraints can be prepared from the graph
+                // produced by add_segment and everything can be applied together.
+                let edit_scene_graph_delta = add_scene_graph_delta;
+                let left_side_endpoint_point_id =
+                    original_segment_end_point_id.ok_or_else(|| "Original segment has no end point".to_string())?;
 
                 // Step 5: Prepare constraints for batch
                 let mut batch_constraints = Vec::new();
@@ -6321,7 +6389,10 @@ pub(crate) async fn execute_trim_operations_simple(
                         ctx,
                         version,
                         sketch_id,
-                        Vec::new(), // edit_segments already done
+                        vec![ExistingSegmentCtor {
+                            id: *segment_id,
+                            ctor: edited_ctor,
+                        }],
                         batch_constraints,
                         constraint_object_ids,
                         crate::frontend::sketch::NewSegmentInfo {
