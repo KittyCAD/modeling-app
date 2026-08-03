@@ -30,6 +30,12 @@ async function expectProjectFileRoute(page: Page) {
   })
 }
 
+async function expectCloudSyncHomeReady(page: Page) {
+  await expect(
+    page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
+  ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
+}
+
 test(
   'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
@@ -85,8 +91,10 @@ test(
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
-    await expect(page.getByTestId('projects-none')).toBeVisible()
+    await expectCloudSyncHomeReady(page)
+    await expect(
+      page.getByTestId('project-library-empty').first()
+    ).toBeVisible()
 
     remoteListGate.release()
 
@@ -136,7 +144,7 @@ test(
     remoteListGate.hold()
 
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(expect.arrayContaining(['Remote empty one']))
@@ -222,7 +230,7 @@ test(
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
 
     const localOnlyFiles = {
       'main.kcl': 'localOnly = 1\n',
@@ -287,7 +295,7 @@ test(
     })
 
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
@@ -428,7 +436,7 @@ test(
     // project should now behave like a normal local OPFS project, so Home should
     // show it from local state without needing another remote list response.
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
@@ -465,7 +473,7 @@ test(
     // restores the Home card without restoring OPFS files until the card opens.
     remoteListGate.hold()
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     remoteListGate.release()
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })

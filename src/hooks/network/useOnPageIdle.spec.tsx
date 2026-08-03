@@ -42,6 +42,7 @@ vi.mock('@src/hooks/useModelingContext', () => ({
 }))
 
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 
 async function advance(ms: number) {
   await act(async () => {
@@ -54,6 +55,7 @@ describe('useOnPageIdle', () => {
     vi.useFakeTimers()
     hookMocks.state.streamIdleMode = 5_000
     hookMocks.state.modelingValue = 'idle'
+    zookeeperPromptRunningSignal.value = false
     hookMocks.state.kclManager = {
       isExecuting: false,
       sceneInfra: {
@@ -70,6 +72,7 @@ describe('useOnPageIdle', () => {
   })
 
   afterEach(() => {
+    zookeeperPromptRunningSignal.value = false
     vi.runOnlyPendingTimers()
     vi.useRealTimers()
   })
@@ -137,6 +140,79 @@ describe('useOnPageIdle', () => {
       hookMocks.state.kclManager.engineCommandManager.tearDown
     ).toHaveBeenCalledTimes(1)
     expect(idleCallback).toHaveBeenCalledTimes(1)
+
+    unmount()
+  })
+
+  test('does not disconnect while a Zookeeper prompt is running', async () => {
+    zookeeperPromptRunningSignal.value = true
+
+    const idleCallback = vi.fn()
+    const { unmount } = renderHook(() =>
+      useOnPageIdle({
+        startCallback: vi.fn(),
+        idleCallback,
+      })
+    )
+
+    await advance(30_000)
+
+    expect(
+      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+    ).not.toHaveBeenCalled()
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
+
+    zookeeperPromptRunningSignal.value = false
+    await advance(5_000)
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+
+    await advance(1_000)
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).toHaveBeenCalledTimes(1)
+    expect(idleCallback).toHaveBeenCalledTimes(1)
+
+    unmount()
+  })
+
+  test('does not disconnect when a Zookeeper prompt starts during idle teardown', async () => {
+    let finishSavingCameraState: () => void = () => undefined
+    hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState =
+      vi.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            finishSavingCameraState = resolve
+          })
+      )
+
+    const idleCallback = vi.fn()
+    const { unmount } = renderHook(() =>
+      useOnPageIdle({
+        startCallback: vi.fn(),
+        idleCallback,
+      })
+    )
+
+    await advance(5_000)
+    expect(
+      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+    ).toHaveBeenCalledTimes(1)
+
+    zookeeperPromptRunningSignal.value = true
+    await act(async () => {
+      finishSavingCameraState()
+      await Promise.resolve()
+    })
+
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
 
     unmount()
   })

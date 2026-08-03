@@ -5,6 +5,21 @@ export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
 export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
 export const NEW_PROJECT_LIBRARY_TITLE = 'Project Library'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
+export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
+export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
+export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
+export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
+export const CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX = 'zoo://'
+
+export function formatProjectLibraryPathForDisplay(
+  library: Pick<ProjectLibrarySetting, 'path' | 'type'>
+) {
+  if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
+    return library.path
+  }
+
+  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${library.path.replace(/^\/+/, '')}`
+}
 
 export type ProjectLibraryType = string
 
@@ -30,6 +45,28 @@ export function getDefaultProjectLibrarySettings(
       type: DIRECTORY_PROJECT_LIBRARY_TYPE,
     },
   ]
+}
+
+export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
+  return {
+    title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
+    path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+    type: CLOUD_PROJECT_LIBRARY_TYPE,
+  }
+}
+
+export function canRemoveProjectLibrary(
+  library: Pick<ProjectLibrarySetting, 'type'>,
+  options: { canManageLibraries: boolean }
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return false
+  }
+
+  return (
+    options.canManageLibraries ||
+    library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
 }
 
 export function getDefaultDirectoryProjectLibrarySetting(
@@ -200,9 +237,24 @@ export function projectLibraryFromSetting(
       library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
       library.path === options.defaultProjectDirectory
         ? DEFAULT_PROJECT_LIBRARY_ID
-        : getProjectLibraryIdFromSetting(library),
+        : library.type === CLOUD_PROJECT_LIBRARY_TYPE &&
+            library.path === DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH
+          ? PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+          : getProjectLibraryIdFromSetting(library),
     order: index,
   }
+}
+
+export function projectLibrariesFromSettings(
+  libraries: readonly ProjectLibrarySetting[]
+): ProjectLibrary[] {
+  const defaultProjectDirectory =
+    getDefaultDirectoryProjectLibraryPath(libraries)
+  return libraries.map((library, index) =>
+    projectLibraryFromSetting(library, index, {
+      defaultProjectDirectory,
+    })
+  )
 }
 
 export function updateDefaultDirectoryProjectLibrarySetting(

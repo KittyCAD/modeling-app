@@ -1,6 +1,7 @@
 import {
   getProjectDirectoryNameFromTitle,
   getProjectTitleFromUniqueDirectoryName,
+  getUniqueDuplicateProjectName,
 } from '@src/lib/projectName'
 import { describe, expect, it } from 'vitest'
 
@@ -36,5 +37,16 @@ describe('projectName', () => {
         uniqueProjectDirectoryName: 'my-cool-project',
       })
     ).toBe('My Cool Project')
+  })
+
+  it('uses copy suffixes for duplicated project names', () => {
+    expect(getUniqueDuplicateProjectName('bla-1', ['bla-1'])).toBe('bla-1-copy')
+    expect(
+      getUniqueDuplicateProjectName('bla-1', [
+        'bla-1',
+        'BLA-1-COPY',
+        'bla-1-copy-1',
+      ])
+    ).toBe('bla-1-copy-2')
   })
 })

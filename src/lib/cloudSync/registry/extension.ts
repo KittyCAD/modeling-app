@@ -7,6 +7,8 @@ import { effect, signal, untracked } from '@preact/signals-core'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  deleteCloudSyncLocalProjectRealizations,
+  deleteRemoteCloudProject,
   disconnectCloudSyncProject,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
@@ -38,7 +40,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   const applyRuntimePolicy = () => {
     const currentSettings = settings.value?.current.value
     const cloudSyncPluginEnabled =
-      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current !== false
+      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
     const nextConfig = {
       ...runtimeConfig.value,
       enabled: runtimeConfig.value.enabled && cloudSyncPluginEnabled,
@@ -74,6 +76,8 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     setProjectScope: setCloudSyncProjectScope,
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
+    deleteRemoteProject: deleteRemoteCloudProject,
+    deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

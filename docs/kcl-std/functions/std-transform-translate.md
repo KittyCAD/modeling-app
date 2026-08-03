@@ -1,21 +1,21 @@
 ---
 title: "translate"
 subtitle: "Function in std::transform"
-excerpt: "Move a solid or a sketch."
+excerpt: "Move a solid, a sketch, or a helix."
 layout: manual
 ---
 
-Move a solid or a sketch.
+Move a solid, a sketch, or a helix.
 
 ```kcl
 translate(
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   x?: number(Length),
   y?: number(Length),
   z?: number(Length),
   global?: bool,
   xyz?: [number(Length); 3],
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
 ```
 
 This is really useful for assembling parts together. You can create a part
@@ -31,7 +31,7 @@ and then rotate it using the `rotate` function to create a loft.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to move. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, helix, or set of solids, sketches, or helices to move. | Yes |
 | `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the x axis. | No |
 | `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the y axis. | No |
 | `z` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the z axis. | No |
@@ -40,7 +40,7 @@ and then rotate it using the `rotate` function to create a loft.
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples
