@@ -133,7 +133,20 @@ pub(super) async fn fix_tags_and_references(
     let old_geometry_id = old_geometry.id(&args.ctx).await?;
     let source_topology_id = match old_geometry {
         GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
-        GeometryWithImportedGeometry::Solid(solid) => solid.original_id(),
+        GeometryWithImportedGeometry::Solid(solid) => {
+            let original_id = solid.original_id();
+
+            // Pattern copies keep the source body's topology in their KCL
+            // value. CSG outputs do too, but their original body has been
+            // consumed, so follow the existing replacement chain to the live
+            // body whose topology was patterned or cloned.
+            exec_state
+                .check_solid_id_consumed(&original_id)
+                .and_then(|info| info.suggested_replacement_key())
+                .and_then(|key| exec_state.latest_consumed_output(Some(key)))
+                .map(|key| key.engine_id())
+                .unwrap_or(original_id)
+        }
         GeometryWithImportedGeometry::ImportedGeometry(_) => old_geometry_id,
     };
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
