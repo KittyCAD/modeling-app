@@ -1146,11 +1146,32 @@ fn entity_clone_resolves_pattern_copy_lazily() {
     let copy_cap_id = Uuid::new_v4();
     let copy_edge_id = Uuid::new_v4();
     let clone_id = Uuid::new_v4();
+    let cloned_sweep_id = ArtifactId::new(Uuid::new_v4());
     let cloned_face_id = ArtifactId::new(Uuid::new_v4());
     let cloned_cap_id = ArtifactId::new(Uuid::new_v4());
     let cloned_edge_id = ArtifactId::new(Uuid::new_v4());
     let code_ref = CodeRef::placeholder(SourceRange::synthetic());
     let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_path_id,
+        Artifact::Path(Path {
+            id: source_path_id,
+            sub_type: PathSubType::Region,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
     artifacts.insert(
         source_sweep_id,
         Artifact::Sweep(Sweep {
@@ -1229,7 +1250,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(copy_id).build()),
         entity_clone_info: Some(EntityCloneInfo {
             source_artifact_id: ArtifactId::new(copy_id),
-            result_artifact_id: ArtifactId::new(clone_id),
+            result_artifact_id: cloned_sweep_id,
             source_topology_id: source_path_id,
         }),
         omit_from_graph: false,
@@ -1257,22 +1278,28 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         &AHashMap::default(),
     )
     .unwrap();
-    let Some(Artifact::Sweep(cloned_sweep)) = updated
-        .iter()
-        .find(|artifact| artifact.id() == ArtifactId::new(clone_id))
-    else {
+    let Some(Artifact::Sweep(cloned_sweep)) = updated.iter().find(|artifact| artifact.id() == cloned_sweep_id) else {
         panic!("Expected clone() to create a Sweep from the pattern copy");
     };
     assert_eq!(cloned_sweep.surface_ids, vec![cloned_face_id, cloned_cap_id]);
     assert_eq!(cloned_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(cloned_sweep.source_sweep_id, Some(source_sweep_id));
+    assert_eq!(cloned_sweep.path_id, ArtifactId::new(clone_id));
     assert!(!cloned_sweep.consumed);
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::Path(path)
+                if path.id == ArtifactId::new(clone_id)
+                    && path.sweep_id == Some(cloned_sweep_id)
+        )
+    }));
     assert!(updated.iter().any(|artifact| {
         matches!(
             artifact,
             Artifact::Wall(wall)
                 if wall.id == cloned_face_id
-                    && wall.sweep_id == ArtifactId::new(clone_id)
+                    && wall.sweep_id == cloned_sweep_id
         )
     }));
     assert!(updated.iter().any(|artifact| {
@@ -1280,7 +1307,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
             artifact,
             Artifact::Cap(cap)
                 if cap.id == cloned_cap_id
-                    && cap.sweep_id == ArtifactId::new(clone_id)
+                    && cap.sweep_id == cloned_sweep_id
         )
     }));
     assert!(updated.iter().any(|artifact| {
@@ -1288,7 +1315,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
             artifact,
             Artifact::SweepEdge(edge)
                 if edge.id == cloned_edge_id
-                    && edge.sweep_id == ArtifactId::new(clone_id)
+                    && edge.sweep_id == cloned_sweep_id
         )
     }));
 }

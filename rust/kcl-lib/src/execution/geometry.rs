@@ -88,13 +88,12 @@ impl Geometry {
         }
     }
 
-    /// If this geometry is the result of a pattern, then return the ID of
-    /// the original sketch which was patterned.
-    /// Equivalent to the `id()` method if this isn't a pattern.
-    pub fn original_id(&self) -> uuid::Uuid {
+    /// Return the topology root to target when a pattern requests its
+    /// original geometry.
+    pub fn pattern_source_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.original_id(),
+            Geometry::Solid(e) => e.topology_id(),
         }
     }
 }
@@ -1292,6 +1291,12 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) topology_id: uuid::Uuid,
+    /// The semantic body artifact from which a pattern copy was created.
+    /// Pattern commands replace `artifact_id` with the copy's engine entity
+    /// ID, so retain this to distinguish Sweep-backed bodies from composites.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.

@@ -1637,6 +1637,9 @@ fn artifacts_to_update(
 
             let mut entity_id_map = entity_clone_id_maps.get(&uuid).cloned().unwrap_or_default();
             entity_id_map.insert(source_entity_id, id);
+            if let Some(info) = entity_clone_info {
+                entity_id_map.insert(info.source_topology_id, id);
+            }
             entity_id_map.insert(source_id, result_id);
             entity_id_map.insert(source_artifact_id, result_id);
             if matches!(source_artifact, Artifact::CompositeSolid(_)) {

@@ -507,6 +507,7 @@ impl GeometryTrait for Solid {
     }
 
     fn set_artifact_id(&mut self, id: Uuid) {
+        self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
         self.artifact_id = ArtifactId::new(id);
     }
 
@@ -1029,7 +1030,7 @@ async fn pattern_circular(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
                     .entity_id(if data.use_original() {
-                        geometry.original_id()
+                        geometry.pattern_source_id()
                     } else {
                         geometry.id()
                     })
@@ -1083,6 +1084,9 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
+                new_solid
+                    .pattern_source_artifact_id
+                    .get_or_insert(new_solid.artifact_id);
                 new_solid.artifact_id = ArtifactId::new(id);
                 geometries.push(new_solid);
             }
