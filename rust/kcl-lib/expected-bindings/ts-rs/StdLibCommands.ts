@@ -6808,7 +6808,7 @@ export default {
     "preferredName": "scale",
     "qualName": "std::transform::scale",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6816,8 +6816,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to scale.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to scale.",
         "required": true,
         "special": true,
         "experimental": false,
