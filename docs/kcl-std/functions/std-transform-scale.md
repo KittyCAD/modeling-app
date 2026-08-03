@@ -1,21 +1,21 @@
 ---
 title: "scale"
 subtitle: "Function in std::transform"
-excerpt: "Scale a solid or a sketch."
+excerpt: "Scale a solid, a sketch, or a helix."
 layout: manual
 ---
 
-Scale a solid or a sketch.
+Scale a solid, a sketch, or a helix.
 
 ```kcl
 scale(
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   x?: number(_),
   y?: number(_),
   z?: number(_),
   global?: bool,
   factor?: number(_),
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
 ```
 
 This is really useful for resizing parts. You can create a part and then scale it to the
@@ -35,7 +35,7 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, helix, or set of solids, sketches, or helices to scale. | Yes |
 | `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. | No |
 | `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
 | `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
@@ -44,7 +44,7 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples
