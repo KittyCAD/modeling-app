@@ -476,6 +476,45 @@ function getEnvironmentName() {
   return getEnvironmentNameFromEnv(env())
 }
 
+type ProjectTomlCloudEnvironmentBinding =
+  | {
+      kind: 'current-environment'
+      projectId: string
+    }
+  | {
+      kind: 'other-environment'
+      projectId: string
+    }
+  | {
+      kind: 'unbound'
+    }
+
+function getProjectTomlCloudEnvironmentBinding(
+  projectToml: string
+): ProjectTomlCloudEnvironmentBinding {
+  const environmentName = getEnvironmentName()
+  const currentEnvironmentProjectId = environmentName
+    ? getCloudProjectIdFromProjectTomlContents(projectToml, environmentName)
+    : undefined
+  if (currentEnvironmentProjectId) {
+    return {
+      kind: 'current-environment',
+      projectId: currentEnvironmentProjectId,
+    }
+  }
+
+  const anyEnvironmentProjectId =
+    getCloudProjectIdFromProjectTomlContents(projectToml)
+  if (anyEnvironmentProjectId) {
+    return {
+      kind: 'other-environment',
+      projectId: anyEnvironmentProjectId,
+    }
+  }
+
+  return { kind: 'unbound' }
+}
+
 function getRevision(project: RemoteProject | undefined): Revision | undefined {
   if (!project) {
     return undefined
@@ -1606,36 +1645,33 @@ export async function getCloudSyncRemoteProjectThumbnailUrl(
   return getRemoteProjectThumbnailUrl(config, remoteProject)
 }
 
-async function readProjectTomlCloudProjectId(projectPath: string) {
-  const environmentName = getEnvironmentName()
+async function readProjectTomlCloudEnvironmentBinding(
+  projectPath: string
+): Promise<ProjectTomlCloudEnvironmentBinding> {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   if (!(await exists(projectTomlPath))) {
-    return undefined
+    return { kind: 'unbound' }
   }
 
   const projectToml = await localFs.readFile(projectTomlPath, {
     encoding: 'utf-8',
   })
-  const projectIdPattern = /project_id\s*=\s*"([^"]+)"/
 
-  if (environmentName) {
-    const escapedEnvironmentName = environmentName.replace(
-      /[.*+?^${}()|[\]\\]/g,
-      '\\$&'
-    )
-    const sectionPattern = new RegExp(
-      `\\[cloud\\."${escapedEnvironmentName}"\\]([\\s\\S]*?)(?=\\n\\[|$)`
-    )
-    const sectionMatch = sectionPattern.exec(projectToml)
-    const projectIdMatch = sectionMatch
-      ? projectIdPattern.exec(sectionMatch[1])
-      : undefined
-    if (projectIdMatch?.[1]) {
-      return projectIdMatch[1]
-    }
-  }
+  return getProjectTomlCloudEnvironmentBinding(projectToml)
+}
 
-  return projectIdPattern.exec(projectToml)?.[1]
+async function readProjectTomlCloudProjectId(projectPath: string) {
+  const binding = await readProjectTomlCloudEnvironmentBinding(projectPath)
+  return binding.kind === 'current-environment' ? binding.projectId : undefined
+}
+
+async function isLocalProjectEligibleForCurrentCloudEnvironment(
+  projectPath: string
+) {
+  const binding = await readProjectTomlCloudEnvironmentBinding(
+    projectPath
+  ).catch(() => ({ kind: 'unbound' }) as const)
+  return binding.kind !== 'other-environment'
 }
 
 async function repairExistingConflictCopies() {
@@ -1746,21 +1782,30 @@ async function getOrCreateProjectMetadata(projectPath: string) {
   return metadataForProject(normalizedProjectPath)
 }
 
-async function bindRemoteProjectIdFromToml(metadata: ProjectMetadata) {
-  if (metadata.remoteProjectId || isProjectSyncExcluded(metadata)) {
+async function bindRemoteProjectIdFromToml(
+  metadata: ProjectMetadata,
+  binding?: ProjectTomlCloudEnvironmentBinding
+) {
+  if (isProjectSyncExcluded(metadata)) {
     return metadata
   }
 
-  const projectId = await readProjectTomlCloudProjectId(
-    metadata.localProjectPath
-  ).catch(() => undefined)
-  if (!projectId) {
+  const cloudBinding =
+    binding ??
+    (await readProjectTomlCloudEnvironmentBinding(
+      metadata.localProjectPath
+    ).catch(() => ({ kind: 'unbound' }) as const))
+  if (cloudBinding.kind !== 'current-environment') {
+    return metadata
+  }
+
+  if (metadata.remoteProjectId === cloudBinding.projectId) {
     return metadata
   }
 
   const next = {
     ...metadata,
-    remoteProjectId: projectId,
+    remoteProjectId: cloudBinding.projectId,
   }
   await putProjectMetadata(next)
   return next
@@ -2281,6 +2326,13 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
     return
   }
+  const cloudBinding = await readProjectTomlCloudEnvironmentBinding(
+    metadata.localProjectPath
+  ).catch(() => ({ kind: 'unbound' }) as const)
+  if (cloudBinding.kind === 'other-environment') {
+    await clearOutboxEntriesForProject(metadata.localProjectPath)
+    return
+  }
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'syncing',
@@ -2289,7 +2341,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   }
 
   try {
-    metadata = await bindRemoteProjectIdFromToml(metadata)
+    metadata = await bindRemoteProjectIdFromToml(metadata, cloudBinding)
     if (!shouldSyncCloudLibraryProject(metadata) && entries.length === 0) {
       return
     }
@@ -2516,9 +2568,18 @@ async function syncRemoteIndex() {
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
-  let metadata = (await getAllProjectMetadata()).filter(
-    (entry) => !isProjectSyncExcluded(entry)
-  )
+  let metadata: ProjectMetadata[] = []
+  for (const entry of await getAllProjectMetadata()) {
+    if (
+      isProjectSyncExcluded(entry) ||
+      !(await isLocalProjectEligibleForCurrentCloudEnvironment(
+        entry.localProjectPath
+      ))
+    ) {
+      continue
+    }
+    metadata.push(entry)
+  }
   const pendingProjectPaths = new Set(
     (await getAllOutboxEntries()).map((entry) =>
       normalizePathForSync(entry.projectPath)
@@ -2795,6 +2856,11 @@ async function enqueueExistingCloudLibraryProjectsForInitialSync() {
       syncExcluded: isProjectSyncExcluded(metadata),
     })
     if (initialSyncAction === 'skip') {
+      continue
+    }
+    if (
+      !(await isLocalProjectEligibleForCurrentCloudEnvironment(projectPath))
+    ) {
       continue
     }
 
@@ -3154,7 +3220,14 @@ async function registerProjectMutation(
     await clearOutboxEntriesForProject(normalizedProjectPath)
     return
   }
-  metadata = await bindRemoteProjectIdFromToml(metadata)
+  const cloudBinding = await readProjectTomlCloudEnvironmentBinding(
+    normalizedProjectPath
+  ).catch(() => ({ kind: 'unbound' }) as const)
+  if (cloudBinding.kind === 'other-environment') {
+    await clearOutboxEntriesForProject(normalizedProjectPath)
+    return
+  }
+  metadata = await bindRemoteProjectIdFromToml(metadata, cloudBinding)
   if (!shouldSyncCloudLibraryProject(metadata)) {
     await putProjectMetadata(metadata)
     return

@@ -27,6 +27,7 @@ import {
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
@@ -36,12 +37,14 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     enabled: false,
   })
   const settings = ctx.services.signal(settingsService)
+  const runtime = ctx.services.signal(runtimeService)
   let stopSettingsSync: (() => void) | undefined
   let runtimePolicyVersion = 0
 
   const applyRuntimePolicy = () => {
     const version = ++runtimePolicyVersion
     const currentSettings = settings.value?.current.value
+    const currentRuntime = runtime.value?.current.value
     const cloudSyncPluginEnabled =
       currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
     const cloudProjectLibrary = currentSettings?.app.libraries.current.find(
@@ -50,6 +53,9 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     const runtimePolicy = {
       ...runtimeConfig.value,
       enabled: runtimeConfig.value.enabled && cloudSyncPluginEnabled,
+      baseUrl: currentRuntime?.apiBaseUrl ?? runtimeConfig.value.baseUrl,
+      environmentName:
+        currentRuntime?.environmentName ?? runtimeConfig.value.environmentName,
     }
 
     if (!runtimePolicy.enabled) {
