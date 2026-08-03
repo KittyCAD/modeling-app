@@ -604,6 +604,7 @@ describe('Zookeeper history patch replay', () => {
     vi.spyOn(fsZds, 'writeFile').mockImplementation(async (path, data) => {
       if (path === modifiedPath && shouldFailModifiedWrite) {
         shouldFailModifiedWrite = false
+        await originalWriteFile(path, data)
         throw writeError
       }
       return originalWriteFile(path, data)
@@ -649,7 +650,7 @@ describe('Zookeeper history patch replay', () => {
           phase: 'write',
           totalCount: 2,
           completedCount: 1,
-          rollbackAttemptedCount: 1,
+          rollbackAttemptedCount: 2,
           rollbackFailureCount: 0,
           partialMutationPossible: true,
           dataLossPossible: true,

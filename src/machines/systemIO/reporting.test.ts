@@ -71,11 +71,12 @@ describe('SystemIO client error reporting', () => {
       expect(mocks.reportClientError).toHaveBeenCalledWith(
         expect.objectContaining({
           code: 'system_io_error',
-          error,
+          errorName: 'Error',
           extra: expect.objectContaining({
             source: 'SystemIOMachine',
             operation,
             risk,
+            errorType: 'Error',
             partialMutationPossible,
             ...(dataLossPossible === undefined ? {} : { dataLossPossible }),
             hasProjectDirectory: true,
@@ -86,6 +87,36 @@ describe('SystemIO client error reporting', () => {
       )
     }
   )
+
+  it('does not send filesystem paths from the original error', () => {
+    const sensitivePath = '/Users/alice/Secret Project/main.kcl'
+    const error = Object.assign(
+      new Error(`EACCES: permission denied, open '${sensitivePath}'`),
+      { code: 'EACCES' }
+    )
+
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.createBlankFile}`,
+        error,
+      },
+    })
+
+    const report = mocks.reportClientError.mock.calls[0]?.[0]
+    expect(report).toMatchObject({
+      code: 'system_io_error',
+      errorName: 'Error',
+      message: 'SystemIO write operation failed during create blank file.',
+      extra: {
+        errorCode: 'EACCES',
+        errorType: 'Error',
+      },
+    })
+    expect(report).not.toHaveProperty('error')
+    expect(JSON.stringify(report)).not.toContain(sensitivePath)
+    expect(JSON.stringify(report)).not.toContain(error.message)
+  })
 
   it('does not report expected user naming conflicts', () => {
     reportSystemIOMachineError({

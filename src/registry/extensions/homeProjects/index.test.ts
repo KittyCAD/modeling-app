@@ -374,11 +374,13 @@ describe('home project actions', () => {
     expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
       expect.objectContaining({
         code: 'system_io_error',
-        error: deleteError,
+        errorName: 'Error',
+        message: 'SystemIO destructive operation failed during delete project.',
         extra: expect.objectContaining({
           source: 'DirectoryProjectLibrary',
           operation: 'delete project',
           risk: 'destructive',
+          errorType: 'Error',
           partialMutationPossible: true,
           dataLossPossible: true,
         }),
