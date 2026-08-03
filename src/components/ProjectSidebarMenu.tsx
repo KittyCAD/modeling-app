@@ -263,58 +263,6 @@ function ProjectMenuPopover({
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
-      const getContributedProjectMenuItems = (
-        placement: NonNullable<ProjectExplorerProjectMenuItem['placement']>
-      ) =>
-        contributedProjectMenuItems
-          .filter((item) => (item.placement ?? 'project-actions') === placement)
-          .flatMap<ProjectMenuItem>((item) => {
-            if (!projectPath || !project) {
-              return []
-            }
-
-            const context = { projectPath, project }
-            if (item.isVisible && !item.isVisible(context)) {
-              return []
-            }
-
-            if (item.Component) {
-              return [{ kind: 'contributed' as const, item, context }]
-            }
-
-            const disabled =
-              typeof item.disabled === 'function'
-                ? item.disabled(context)
-                : item.disabled
-            const label =
-              typeof item.label === 'function'
-                ? item.label(context)
-                : item.label
-            const dataTestId =
-              typeof item.dataTestId === 'function'
-                ? item.dataTestId(context)
-                : item.dataTestId
-            const className =
-              typeof item.className === 'function'
-                ? item.className(context)
-                : item.className
-
-            return [
-              {
-                id: item.id,
-                Element: 'button' as const,
-                className,
-                children: (
-                  <span className="flex-1" data-testid={dataTestId}>
-                    {label}
-                  </span>
-                ),
-                disabled,
-                onClick: () => item.onSelect?.(context),
-              },
-            ]
-          })
-
       const items: ProjectMenuItem[] = [
         {
           id: 'settings',
@@ -362,7 +310,50 @@ function ProjectMenuPopover({
               },
             }
           : null,
-        ...getContributedProjectMenuItems('project-actions'),
+        ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
+          if (!projectPath || !project) {
+            return []
+          }
+
+          const context = { projectPath, project }
+          if (item.isVisible && !item.isVisible(context)) {
+            return []
+          }
+
+          if (item.Component) {
+            return [{ kind: 'contributed' as const, item, context }]
+          }
+
+          const disabled =
+            typeof item.disabled === 'function'
+              ? item.disabled(context)
+              : item.disabled
+          const label =
+            typeof item.label === 'function' ? item.label(context) : item.label
+          const dataTestId =
+            typeof item.dataTestId === 'function'
+              ? item.dataTestId(context)
+              : item.dataTestId
+          const className =
+            typeof item.className === 'function'
+              ? item.className(context)
+              : item.className
+
+          return [
+            {
+              id: item.id,
+              Element: 'button' as const,
+              className,
+              children: (
+                <span className="flex-1" data-testid={dataTestId}>
+                  {label}
+                </span>
+              ),
+              disabled,
+              onClick: () => item.onSelect?.(context),
+            },
+          ]
+        }),
         {
           id: 'importFile',
           Element: 'button' as const,
@@ -456,7 +447,6 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'before-go-home' },
-        ...getContributedProjectMenuItems('footer'),
         {
           id: 'go-home',
           Element: 'button' as const,
@@ -468,18 +458,34 @@ function ProjectMenuPopover({
           },
         },
       ]
-      return items.filter((props): props is Exclude<ProjectMenuItem, null> => {
-        if (!props) {
-          return false
+      const visibleItems = items.filter(
+        (props): props is Exclude<ProjectMenuItem, null> => {
+          if (!props) {
+            return false
+          }
+          if (isProjectMenuBreak(props)) {
+            return true
+          }
+          if (isContributedProjectMenuItem(props)) {
+            return true
+          }
+          return !props.className?.includes('hidden')
         }
-        if (isProjectMenuBreak(props)) {
-          return true
-        }
-        if (isContributedProjectMenuItem(props)) {
-          return true
-        }
-        return !props.className?.includes('hidden')
-      })
+      )
+      const footerItems = visibleItems.filter(
+        (props) =>
+          isContributedProjectMenuItem(props) &&
+          props.item.placement === 'footer'
+      )
+
+      return visibleItems
+        .filter((props) => !footerItems.includes(props))
+        .flatMap((props) => {
+          if (isProjectMenuBreak(props) && props.id === 'before-go-home') {
+            return [props, ...footerItems]
+          }
+          return [props]
+        })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [

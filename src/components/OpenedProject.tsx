@@ -69,16 +69,9 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const {
-    auth,
-    billing,
-    settings,
-    layout,
-    project,
-    systemIOActor,
-    registry,
-    userFeatures,
-  } = useApp()
+  const app = useApp()
+  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+    app
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -95,7 +88,7 @@ export function OpenedProject() {
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
-  const hasCloudSyncFeature = userFeatures.useHas(
+  const hasCloudSyncFeature = app.userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )

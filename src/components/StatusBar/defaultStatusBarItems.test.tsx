@@ -58,6 +58,7 @@ describe('defaultGlobalStatusBarItems', () => {
       defaultGlobalStatusBarItems({ hasCloudSyncFeature: false })[0]
     ).toEqual({
       id: 'download-desktop-app',
+      'data-testid': 'download-desktop-app',
       component: DownloadDesktopApp,
     })
   })

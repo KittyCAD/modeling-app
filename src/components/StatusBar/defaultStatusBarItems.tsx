@@ -1,13 +1,13 @@
 import { Popover } from '@headlessui/react'
-import {
-  EnvironmentChip,
-  EnvironmentDescription,
-} from '@src/components/environment/Environment'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import {
+  EnvironmentChip,
+  EnvironmentDescription,
+} from '@src/components/environment/Environment'
 import type {
   AutoUpdateDownloadProgress,
   AutoUpdateReady,
@@ -38,6 +38,7 @@ export const defaultGlobalStatusBarItems = ({
       }
     : {
         id: 'download-desktop-app',
+        'data-testid': 'download-desktop-app',
         component: DownloadDesktopApp,
       },
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady

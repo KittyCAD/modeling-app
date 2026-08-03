@@ -1,10 +1,13 @@
 import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { HomeSidebarItemProps } from '@src/registry/contracts/homeSidebar'
 import type { ProjectExplorerProjectMenuItemComponentProps } from '@src/registry/contracts/projectExplorer'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import type { MouseEventHandler } from 'react'
+
+const downloadIcon = {
+  icon: 'download' as const,
+  bgClassName: '!bg-transparent rounded-sm',
+}
 
 function GetDesktopAppLink({
   className,
@@ -14,7 +17,7 @@ function GetDesktopAppLink({
 }: {
   className: string
   testId: string
-  onMouseUp?: MouseEventHandler<HTMLAnchorElement>
+  onMouseUp?: () => void
   showIcon?: boolean
 }) {
   return (
@@ -22,13 +25,11 @@ function GetDesktopAppLink({
       Element="externalLink"
       to={withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)}
       className={className}
+      iconStart={showIcon ? downloadIcon : undefined}
       aria-label="Get desktop app"
       data-testid={testId}
       onMouseUp={onMouseUp}
     >
-      {showIcon ? (
-        <CustomIcon name="download" className="h-5 w-5 flex-none" />
-      ) : null}
       <span className="flex-1">Get desktop app</span>
     </ActionButton>
   )
