@@ -42,7 +42,7 @@ describe('defaultGlobalStatusBarItems', () => {
       expect(defaultGlobalStatusBarItems({ hasCloudSyncFeature })[0]).toEqual({
         id: 'version',
         element: 'externalLink',
-        label: `v${APP_VERSION}`,
+        label: APP_VERSION,
         href: getReleaseUrl(),
         toolTip: {
           children: 'View the release notes on GitHub',

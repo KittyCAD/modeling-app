@@ -30,7 +30,7 @@ export const defaultGlobalStatusBarItems = ({
     ? {
         id: 'version',
         element: 'externalLink',
-        label: `v${APP_VERSION}`,
+        label: APP_VERSION,
         href: getReleaseUrl(),
         toolTip: {
           children: 'View the release notes on GitHub',
