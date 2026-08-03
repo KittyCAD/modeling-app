@@ -129,8 +129,6 @@ const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit whil
 const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
     "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
-const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
-
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
@@ -1333,16 +1331,9 @@ fn object_property(i: &mut TokenSlice) -> ModalResult<Node<ObjectProperty>> {
     };
 
     // Now that we've verified that we can parse everything, ensure that the key
-    // is valid.  If not, we can cut.
-    let key = Node::<Identifier>::try_from(key_token).map_err(|comp_err| {
-        ErrMode::Cut(ContextError {
-            context: Default::default(),
-            cause: Some(CompilationIssue::err(
-                comp_err.source_range,
-                KEYWORD_EXPECTING_IDENTIFIER,
-            )),
-        })
-    })?;
+    // is valid.  A non-identifier key (e.g. a reserved keyword) is a hard error;
+    // the conversion already reports what was found, so propagate it as a cut.
+    let key = Node::<Identifier>::try_from(key_token).map_err(|e| ErrMode::Cut(e.into()))?;
 
     let start = key.start;
     let end = expr.end();
@@ -1975,6 +1966,23 @@ impl WithinFunction {
 }
 
 fn body_items_within_function(i: &mut TokenSlice) -> ModalResult<WithinFunction> {
+    // A reserved keyword followed by `=` cannot begin a valid statement. Commit to
+    // this error before trying other statement forms so the parser keeps the useful
+    // keyword location instead of reporting a later token.
+    if let Ok(keyword) = peek(terminated(any_keyword, (opt(whitespace), equals))).parse_next(i) {
+        let alternative = format!("{}Value", keyword.value);
+        return Err(ErrMode::Cut(
+            CompilationIssue::fatal(
+                keyword.as_source_range(),
+                format!(
+                    "`{}` is a reserved keyword and cannot be used as a variable name. Use a different name, such as `{alternative}`.",
+                    keyword.value
+                ),
+            )
+            .into(),
+        ));
+    }
+
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
@@ -3279,7 +3287,7 @@ impl TryFrom<Token> for Node<Identifier> {
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
-            Ok(Node::new(
+            return Ok(Node::new(
                 Identifier {
                     name: token.value,
                     digest: None,
@@ -3287,16 +3295,24 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.start,
                 token.end,
                 token.module_id,
-            ))
-        } else {
-            Err(CompilationIssue::fatal(
-                token.as_source_range(),
-                format!(
-                    "Cannot assign a variable to a reserved keyword: {}",
-                    token.value.as_str()
-                ),
-            ))
+            ));
         }
+
+        // Only `Keyword` tokens are reserved keywords; name what was actually found
+        // for anything else, so a comment or brace is not mislabelled as a keyword.
+        let message = match token.token_type {
+            TokenType::Keyword => {
+                format!(
+                    "Expected an identifier, but found the reserved keyword `{}`.",
+                    token.value
+                )
+            }
+            TokenType::LineComment | TokenType::BlockComment => {
+                "Expected an identifier, but found a comment.".to_owned()
+            }
+            _ => format!("Expected an identifier, but found `{}`.", token.value),
+        };
+        Err(CompilationIssue::fatal(token.as_source_range(), message))
     }
 }
 
@@ -4474,21 +4490,31 @@ mod tests {
     }
 
     fn assert_reserved(word: &str) {
-        // Try to use it as a variable name.
-        let code = format!(r#"{word} = 0"#);
-        let result = crate::parsing::top_level_parse(code.as_str());
-        let err = &result.unwrap_errs().next().unwrap();
-        // Which token causes the error may change.  In "return = 0", for
-        // example, "return" is the problem.
-        assert!(
-            err.message.starts_with("Unexpected token: ")
-                || err.message.starts_with("= is not")
-                || err
-                    .message
-                    .starts_with("Cannot assign a variable to a reserved keyword: "),
-            "Error message is: `{}`",
-            err.message,
+        let alternative = format!("{word}Value");
+        let expected_message = format!(
+            "`{word}` is a reserved keyword and cannot be used as a variable name. Use a different name, such as `{alternative}`."
         );
+
+        for code in [format!("{word} = 0"), format!("sketch() {{\n  {word} = 0\n}}")] {
+            let expected_start = code.find(word).unwrap();
+            let expected_end = expected_start + word.len();
+            let result = crate::parsing::top_level_parse(&code);
+            let errors: Vec<_> = result.unwrap_errs().collect();
+
+            assert_eq!(errors.len(), 1, "Unexpected errors for `{code}`: {errors:#?}");
+            assert_eq!(errors[0].message, expected_message, "Incorrect error for `{code}`");
+            assert_eq!(
+                errors[0].source_range,
+                SourceRange::new(expected_start, expected_end, ModuleId::default()),
+                "Incorrect error range for `{code}`",
+            );
+
+            let corrected = format!("{}{}{}", &code[..expected_start], alternative, &code[expected_end..]);
+            assert!(
+                crate::parsing::top_level_parse(&corrected).is_ok(),
+                "Suggested alternative should parse: `{corrected}`",
+            );
+        }
     }
 
     #[test]
@@ -4543,7 +4569,6 @@ e
         for word in crate::parsing::token::RESERVED_WORDS.keys().sorted() {
             assert_reserved(word);
         }
-        assert_reserved("import");
     }
 
     #[test]
@@ -5404,7 +5429,10 @@ mySk1 = startSketchOn(XY)
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
-        assert_eq!(cause.message, "Cannot assign a variable to a reserved keyword: let");
+        assert_eq!(
+            cause.message,
+            "Expected an identifier, but found the reserved keyword `let`."
+        );
     }
 
     #[test]
@@ -6127,7 +6155,7 @@ e
     fn test_error_keyword_in_variable() {
         assert_err(
             r#"const let = "thing""#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [6, 9],
         );
     }
@@ -6136,7 +6164,7 @@ e
     fn test_error_keyword_in_fn_name() {
         assert_err(
             r#"fn let = () {}"#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [3, 6],
         );
     }
@@ -6147,7 +6175,7 @@ e
             r#"fn thing = (let) => {
     return 1
 }"#,
-            "Cannot assign a variable to a reserved keyword: let",
+            "Expected an identifier, but found the reserved keyword `let`.",
             [12, 15],
         )
     }
@@ -6881,7 +6909,7 @@ type Color { | Red }
         // alias and bare type declarations.
         assert_err(
             "type /* c */ Color { | Red }",
-            "Cannot assign a variable to a reserved keyword: /* c */",
+            "Expected an identifier, but found a comment.",
             [5, 12],
         );
 
@@ -6892,6 +6920,43 @@ type Color { | Red }
 type Color /* c */ { | Red }
 "#;
         assert_err(code, "Unexpected token: {", [59, 60]);
+    }
+
+    #[test]
+    fn identifier_from_keyword_token_names_the_keyword() {
+        // The keyword branch reports which reserved keyword was found.
+        let token = Token::from_range(0..3, ModuleId::from_usize(0), TokenType::Keyword, "let".to_owned());
+        let err = Node::<Identifier>::try_from(token).unwrap_err();
+        assert_eq!(
+            err.message,
+            "Expected an identifier, but found the reserved keyword `let`."
+        );
+    }
+
+    #[test]
+    fn identifier_from_comment_token_reports_a_comment() {
+        // A comment is never a keyword; the old fallback quoted the comment body
+        // as if it were the keyword's name. Regression test for `type /* c */ Color`.
+        for token_type in [TokenType::BlockComment, TokenType::LineComment] {
+            let token = Token::from_range(0..7, ModuleId::from_usize(0), token_type, "/* c */".to_owned());
+            let err = Node::<Identifier>::try_from(token).unwrap_err();
+            assert_eq!(err.message, "Expected an identifier, but found a comment.");
+        }
+    }
+
+    #[test]
+    fn identifier_from_other_token_names_what_was_found() {
+        // Any other non-word token names the offending value rather than claiming
+        // a reserved keyword.
+        for (token_type, value) in [
+            (TokenType::Number, "42"),
+            (TokenType::Brace, "{"),
+            (TokenType::Operator, "+"),
+        ] {
+            let token = Token::from_range(0..value.len(), ModuleId::from_usize(0), token_type, value.to_owned());
+            let err = Node::<Identifier>::try_from(token).unwrap_err();
+            assert_eq!(err.message, format!("Expected an identifier, but found `{value}`."));
+        }
     }
 
     #[test]
@@ -7314,7 +7379,10 @@ bar = 1
         let expected_src_start = source.find("type").unwrap();
         let cause = must_fail_compilation(source);
         assert!(cause.was_fatal);
-        assert_eq!(cause.err.message, KEYWORD_EXPECTING_IDENTIFIER);
+        assert_eq!(
+            cause.err.message,
+            "Expected an identifier, but found the reserved keyword `type`."
+        );
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
 

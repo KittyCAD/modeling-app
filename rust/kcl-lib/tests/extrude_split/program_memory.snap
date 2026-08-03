@@ -155,6 +155,28 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "arc1": {
+          "type": "TagIdentifier",
+          "value": "arc1"
+        },
+        "arc2": {
+          "type": "TagIdentifier",
+          "value": "arc2"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -502,6 +524,28 @@ description: Variables in memory after executing extrude_split.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "arc1": {
+          "type": "TagIdentifier",
+          "value": "arc1"
+        },
+        "arc2": {
+          "type": "TagIdentifier",
+          "value": "arc2"
+        },
+        "line1": {
+          "type": "TagIdentifier",
+          "value": "line1"
+        },
+        "line2": {
+          "type": "TagIdentifier",
+          "value": "line2"
+        },
+        "line3": {
+          "type": "TagIdentifier",
+          "value": "line3"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -7457,6 +7501,28 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "arc1": {
+              "type": "TagIdentifier",
+              "value": "arc1"
+            },
+            "arc2": {
+              "type": "TagIdentifier",
+              "value": "arc2"
+            },
+            "line1": {
+              "type": "TagIdentifier",
+              "value": "line1"
+            },
+            "line2": {
+              "type": "TagIdentifier",
+              "value": "line2"
+            },
+            "line3": {
+              "type": "TagIdentifier",
+              "value": "line3"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
@@ -7804,6 +7870,28 @@ description: Variables in memory after executing extrude_split.kcl
               "type": "extrudePlane"
             }
           ],
+          "faces": {
+            "arc1": {
+              "type": "TagIdentifier",
+              "value": "arc1"
+            },
+            "arc2": {
+              "type": "TagIdentifier",
+              "value": "arc2"
+            },
+            "line1": {
+              "type": "TagIdentifier",
+              "value": "line1"
+            },
+            "line2": {
+              "type": "TagIdentifier",
+              "value": "line2"
+            },
+            "line3": {
+              "type": "TagIdentifier",
+              "value": "line3"
+            }
+          },
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",

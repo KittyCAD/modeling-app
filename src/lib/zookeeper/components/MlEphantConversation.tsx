@@ -1,4 +1,6 @@
 import { Popover } from '@headlessui/react'
+import { ActionButton } from '@src/components/ActionButton'
+import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -27,6 +29,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 
+const terminalRecoveryButtonClassName =
+  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 enabled:hover:!border-chalkboard-40 enabled:hover:!bg-chalkboard-20 disabled:!border-chalkboard-20 disabled:!bg-chalkboard-20/50 disabled:!text-chalkboard-60 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:enabled:hover:!border-chalkboard-60 dark:enabled:hover:!bg-chalkboard-80 dark:disabled:!border-chalkboard-70 dark:disabled:!bg-chalkboard-90 dark:disabled:!text-chalkboard-40'
+
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
 export interface QueuedMessage {
@@ -51,6 +56,12 @@ export interface MlEphantConversationProps {
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
+  connectionError?: string
+  connectionFailed?: boolean
+  showManualConnect?: boolean
+  canClearChat?: boolean
+  isClearingChat?: boolean
+  loadingMessage?: string
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
@@ -61,6 +72,7 @@ export interface MlEphantConversationProps {
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
+  isLoadingAttachments?: boolean
   queue: QueuedMessage[]
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
@@ -74,7 +86,15 @@ const getModeOption = (
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => option.id === mode)
 
-const getFirstEnabledModeOption = (
+const getSelectableModeOption = (
+  mode: MlCopilotModeId | undefined,
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined => {
+  const option = getModeOption(mode, modeOptions)
+  return option && !option.disabled ? option : undefined
+}
+
+const getFirstSelectableMode = (
   modeOptions?: MlCopilotModeOption[]
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => !option.disabled)
@@ -107,14 +127,20 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
               {props.modeOptions.map((mode) => (
                 <button
                   type="button"
-                  disabled={mode.disabled}
                   key={mode.id}
+                  disabled={mode.disabled}
                   onClick={() => {
                     if (mode.disabled) return
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 text-left cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border disabled:cursor-not-allowed disabled:opacity-70 ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex w-full flex-row items-start gap-2 p-2 pr-4 rounded-md border text-left ${
+                    props.current === mode.id ? 'border-primary' : ''
+                  } ${
+                    mode.disabled
+                      ? 'cursor-not-allowed opacity-60'
+                      : 'cursor-pointer hover:bg-2'
+                  }`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -127,8 +153,8 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                       {mode.description}
                     </span>
                     {mode.disabled && (
-                      <span className="text-chalkboard-70 text-[11px] leading-tight">
-                        Upgrade your plan to use this mode
+                      <span className="text-primary text-[11px] leading-tight">
+                        Upgrade your plan to use this mode.
                       </span>
                     )}
                   </div>
@@ -143,7 +169,6 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface MlEphantExtraInputsProps {
-  // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
@@ -156,7 +181,7 @@ export interface MlEphantExtraInputsProps {
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const currentMode = getModeOption(props.mode, props.modeOptions)
+  const currentMode = getSelectableModeOption(props.mode, props.modeOptions)
   const modeOptions = props.modeOptions ?? []
 
   return (
@@ -165,7 +190,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       data-testid="ml-ephant-extra-inputs"
     >
       <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
-        {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
@@ -264,7 +288,6 @@ const MlCopilotSelectionsContext = (props: {
 interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
-  onReconnect: MlEphantConversationProps['onReconnect']
   onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
@@ -333,20 +356,16 @@ export const MlEphantConversationInput = (
   const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
     if (!modeOptions || modeOptions.length === 0) return
-    const currentMode = getModeOption(mode, modeOptions)
-    if (currentMode?.disabled) {
-      const fallbackMode = getFirstEnabledModeOption(modeOptions)?.id
+    const selectedMode = getSelectableModeOption(mode, modeOptions)
+    if (mode !== undefined && selectedMode === undefined) {
+      const fallbackMode =
+        getSelectableModeOption(props.initialMlCopilotMode, modeOptions) ??
+        getFirstSelectableMode(modeOptions)
       userHasPickedMode.current = false
-      setMode(fallbackMode)
-      onMlCopilotModeChange?.(fallbackMode)
-      return
+      setMode(fallbackMode?.id)
+      onMlCopilotModeChange?.(fallbackMode?.id)
     }
-    if (mode !== undefined && currentMode === undefined) {
-      userHasPickedMode.current = false
-      setMode(undefined)
-      onMlCopilotModeChange?.(undefined)
-    }
-  }, [modeOptions, mode, onMlCopilotModeChange])
+  }, [modeOptions, mode, onMlCopilotModeChange, props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -354,7 +373,11 @@ export const MlEphantConversationInput = (
     if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, getModeOption(mode, modeOptions)?.id, attachments)
+    props.onProcess(
+      value,
+      getSelectableModeOption(mode, modeOptions)?.id,
+      attachments
+    )
     setValue('')
     setAttachments([])
   }
@@ -396,18 +419,17 @@ export const MlEphantConversationInput = (
     })
   }
 
-  const onAttachFiles = () => {
-    if (props.disabled) return
-    fileInputRef.current?.click()
-  }
-
   const appendDataUrlAttachment = (dataUrl: string, fileName: string) => {
     const file = dataUrlToFile(dataUrl, fileName)
     if (err(file)) {
-      console.error('Failed to create screenshot attachment', file)
       return
     }
     appendAttachments([file])
+  }
+
+  const onAttachFiles = () => {
+    if (props.disabled) return
+    fileInputRef.current?.click()
   }
 
   const onCaptureScreenshot = () => {
@@ -511,9 +533,14 @@ export const MlEphantConversationInput = (
     appendAttachments(files)
   }
 
-  const selectionsContext:
-    | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-    | undefined = props.contexts.filter((m) => m.type === 'selections')[0]
+  const selectionsContext = props.contexts.find(
+    (
+      context
+    ): context is Extract<
+      MlEphantManagerPromptContext,
+      { type: 'selections' }
+    > => context.type === 'selections'
+  )
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -540,9 +567,6 @@ export const MlEphantConversationInput = (
         />
         <textarea
           {...noAutofillInputProps}
-          autoCapitalize="off"
-          autoCorrect="off"
-          spellCheck="false"
           data-testid="ml-ephant-conversation-input"
           onChange={(e) => setValue(e.target.value)}
           value={value}
@@ -608,15 +632,6 @@ export const MlEphantConversationInput = (
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">
-            {!props.disabled && props.needsReconnect && (
-              <div className="flex flex-col w-fit items-end">
-                <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
-                  <CustomIcon name="close" className="w-7 h-7" />{' '}
-                  <span>Disconnected</span>
-                </div>
-                <button onClick={props.onReconnect}>Reconnect</button>
-              </div>
-            )}
             {props.isProcessing && (
               <button
                 data-testid="ml-ephant-conversation-cancel-button"
@@ -644,7 +659,8 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
+        Zookeeper can make mistakes. We send selection context to help. Always
+        verify information.
       </div>
     </div>
   )
@@ -722,11 +738,79 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
-            <div className="overflow-auto" ref={refScroll}>
-              {props.blockedReason ? (
+            <div
+              className={
+                props.showManualConnect
+                  ? 'h-full min-h-0 overflow-auto'
+                  : 'overflow-auto'
+              }
+              ref={refScroll}
+            >
+              {props.showManualConnect ? (
+                <ConnectionRecovery
+                  className="h-full min-h-[12rem] w-full"
+                  title={props.connectionError ?? 'No internet connection.'}
+                  description="Check your network connection, then click below to try again."
+                  onReconnect={props.onReconnect}
+                  reconnectDisabled={props.isClearingChat}
+                />
+              ) : props.needsReconnect && props.connectionFailed ? (
+                <div
+                  className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-80/20"
+                  role="alert"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="flex flex-col gap-1">
+                      <p className="font-semibold">
+                        {props.connectionError ??
+                          'Zookeeper disconnected unexpectedly.'}
+                      </p>
+                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                        {props.canClearChat
+                          ? 'Reconnect to try loading this conversation again.'
+                          : 'Reconnect to try connecting again.'}
+                      </p>
+                    </div>
+                  </div>
+                  <ActionButton
+                    Element="button"
+                    aria-label="Reconnect"
+                    type="button"
+                    className={terminalRecoveryButtonClassName}
+                    iconStart={{ icon: 'refresh' }}
+                    onClick={props.onReconnect}
+                    disabled={props.isClearingChat}
+                    tabIndex={0}
+                  >
+                    Reconnect
+                  </ActionButton>
+                  {props.canClearChat && (
+                    <div className="flex flex-col gap-2 border-t border-destroy-30 pt-3 dark:border-destroy-70">
+                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                        If reconnecting still does not work, clearing the chat
+                        is a last resort. Previous conversation data will no
+                        longer be visible in this pane.
+                      </p>
+                      <ActionButton
+                        Element="button"
+                        aria-label={
+                          props.isClearingChat ? 'Clearing...' : 'Clear chat'
+                        }
+                        type="button"
+                        className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
+                        iconStart={{ icon: 'trash' }}
+                        onClick={props.onClickClearChat}
+                        disabled={props.isClearingChat}
+                        tabIndex={0}
+                      >
+                        {props.isClearingChat ? 'Clearing...' : 'Clear chat'}
+                      </ActionButton>
+                    </div>
+                  )}
+                </div>
+              ) : props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false &&
-                props.needsReconnect === false ? (
+              ) : props.isLoading === false ? (
                 <>
                   {shouldShowWelcomeMessage && (
                     <div
@@ -751,7 +835,13 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 </>
               ) : (
                 <div className="text-center p-4">
-                  <Loading isDummy={true} className="!text-ml-green"></Loading>
+                  <Loading isDummy={true} className="!text-ml-green">
+                    {props.loadingMessage && (
+                      <span className="text-chalkboard-100 dark:text-chalkboard-10">
+                        {props.loadingMessage}
+                      </span>
+                    )}
+                  </Loading>
                 </div>
               )}
             </div>
@@ -801,6 +891,11 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               ))}
             </div>
           )}
+          {props.isLoadingAttachments ? (
+            <div className="border-t b-4 px-4 py-2 bg-chalkboard-10 dark:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+              Progressively loading attachments into context...
+            </div>
+          ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
@@ -814,7 +909,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               onProcess={props.onProcess}
               initialMlCopilotMode={props.initialMlCopilotMode}
               onMlCopilotModeChange={props.onMlCopilotModeChange}
-              onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={hasMessages}

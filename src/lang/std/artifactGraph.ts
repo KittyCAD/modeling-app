@@ -36,7 +36,6 @@ type SweepEdgeLike = { segId: string; sweepId?: string }
  */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
 import { err } from '@src/lib/trap'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -660,6 +659,9 @@ export function isFaceFromLegacySketch(
   if (err(body)) {
     return false
   }
+  if (!body.pathId) {
+    return false
+  }
 
   const path = getArtifactOfTypes(
     {
@@ -719,6 +721,7 @@ function getPlaneFromCap(
     graph
   )
   if (err(sweep)) return sweep
+  if (!sweep.pathId) return new Error('sweep has no pathId')
   const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
@@ -732,6 +735,7 @@ function getPlaneFromWall(
     graph
   )
   if (err(sweep)) return sweep
+  if (!sweep.pathId) return new Error('sweep has no pathId')
   const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
@@ -1088,100 +1092,6 @@ export function getSketchBlockForArtifact(
   }
 
   return undefined
-}
-
-/**
- * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
- * This is useful for commands that only work with bodies, but users may have faces or edges selected.
- *
- * @param selections - The selections to coerce
- * @param artifactGraph - The artifact graph to use for lookups
- * @returns A new Selections object with only body artifacts, or an Error if coercion fails
- */
-export function coerceSelectionsToBody(
-  selections: Selections,
-  artifactGraph: ArtifactGraph
-): Selections | Error {
-  const bodySelections: Selection[] = []
-  const seenBodyIds = new Set<string>()
-
-  for (const selection of selections.graphSelections) {
-    if (!selection.artifact) {
-      // Handle selections without artifacts (e.g., imported modules)
-      // TODO: coerce to body when we have ranges for imports
-      // TODO: coerce edges and faces of imported bodies
-      if (
-        selection.codeRef &&
-        selection.codeRef.range[1] - selection.codeRef.range[0] !== 0
-      ) {
-        bodySelections.push(selection)
-      }
-      continue
-    }
-
-    // If it's already a body type, use it directly
-    if (
-      selection.artifact.type === 'sweep' ||
-      selection.artifact.type === 'compositeSolid' ||
-      selection.artifact.type === 'pattern' ||
-      selection.artifact.type === 'path'
-    ) {
-      if (!seenBodyIds.has(selection.artifact.id)) {
-        seenBodyIds.add(selection.artifact.id)
-        bodySelections.push({
-          artifact: selection.artifact,
-          codeRef: selection.codeRef,
-        })
-      }
-    } else {
-      if (!selection.codeRef) continue
-      // Get the parent body (sweep) from faces, edges, or edgeCuts
-      const maybeSweep = getSweepArtifactFromSelection(
-        selection as ResolvedGraphSelection,
-        artifactGraph
-      )
-
-      if (err(maybeSweep)) {
-        return new Error(
-          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
-        )
-      }
-
-      // Prefer the path over the sweep for the final selection
-      const maybePath = getArtifactOfTypes(
-        { key: maybeSweep.pathId, types: ['path'] },
-        artifactGraph
-      )
-      if (!err(maybePath)) {
-        // Successfully got the path from the sweep
-        if (!seenBodyIds.has(maybePath.id)) {
-          seenBodyIds.add(maybePath.id)
-          bodySelections.push({
-            artifact: maybePath,
-            codeRef: maybePath.codeRef,
-          })
-        }
-      } else {
-        // Couldn't get path, use the sweep itself
-        const sweepWithType = getArtifactOfTypes(
-          { key: maybeSweep.id, types: ['sweep'] },
-          artifactGraph
-        )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
-          bodySelections.push({
-            artifact: sweepWithType,
-            codeRef: maybeSweep.codeRef,
-          })
-        }
-      }
-    }
-  }
-
-  return {
-    graphSelections: bodySelections,
-    otherSelections: selections.otherSelections,
-  }
 }
 
 /**

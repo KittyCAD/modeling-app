@@ -1,4 +1,6 @@
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import { settingsToToml } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
@@ -343,5 +345,92 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     // Final sanity check: assert no errors in code pane
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+  })
+
+  test('Can use an edge-extruded surface boundary as a Helix axis', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+    tronApp,
+  }) => {
+    const code = `@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [20, 0])
+  line2 = line(start = [20, 0], end = [20, 12])
+}
+surface001 = extrude(
+  sketch001.line1,
+  length = 10,
+  bodyType = SURFACE,
+  method = NEW,
+)
+hide(sketch001)`
+
+    const settings = {
+      ...TEST_SETTINGS,
+      modeling: {
+        ...TEST_SETTINGS.modeling,
+        use_sketch_solve_mode: true,
+      },
+    }
+    if (tronApp) {
+      await tronApp.cleanProjectDir({
+        modeling: {
+          use_sketch_solve_mode: true,
+        },
+      })
+    }
+    await context.addInitScript(
+      ({ initialCode, settingsKey, settingsToml }) => {
+        localStorage.setItem('persistCode', initialCode)
+        localStorage.setItem(settingsKey, settingsToml)
+      },
+      {
+        initialCode: code,
+        settingsKey: TEST_SETTINGS_KEY,
+        settingsToml: settingsToToml({ settings }),
+      }
+    )
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await editor.expectEditor.toContain('surface001 = extrude')
+    await editor.closePane()
+
+    const [clickSurfaceEdge] = scene.makeMouseHelpers(0.7513, 0.3071, {
+      format: 'ratio',
+    })
+    await clickSurfaceEdge()
+    await expect(toolbar.selectionStatus).toContainText('1 edge')
+
+    const [clearSelection] = scene.makeMouseHelpers(0.3, 0.5, {
+      format: 'ratio',
+    })
+    await clearSelection()
+    await expect(toolbar.selectionStatus).not.toContainText('edge')
+    await toolbar.helixButton.click()
+    await cmdBar.selectOption({ name: 'Edge' }).click()
+    await clickSurfaceEdge()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Helix',
+      currentArgKey: 'revolutions',
+      currentArgValue: '1',
+      headerArguments: {
+        Mode: 'Edge',
+        Edge: '1 edge',
+        AngleStart: '',
+        Revolutions: '',
+        Radius: '',
+      },
+      highlightedHeaderArg: 'revolutions',
+      stage: 'arguments',
+    })
   })
 })

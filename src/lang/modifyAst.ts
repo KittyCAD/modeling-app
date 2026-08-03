@@ -363,7 +363,22 @@ export function sketchOnExtrudedFace(
     _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
+    const capCall = getNodeFromPath<CallExpressionKw>(
+      _node,
+      extrudePathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    const capTagLabel = info.subType === 'end' ? 'tagEnd' : 'tagStart'
+    const existingCapTag = err(capCall)
+      ? undefined
+      : capCall.node.arguments.find(
+          (argument) => argument.label?.name === capTagLabel
+        )?.arg
+    _tag =
+      existingCapTag?.type === 'TagDeclarator'
+        ? createLocalName(existingCapTag.value)
+        : createLiteral(info.subType.toUpperCase(), wasmInstance)
   }
   const newSketch = createVariableDeclaration(
     newSketchName,

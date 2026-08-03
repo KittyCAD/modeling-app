@@ -3,14 +3,15 @@ import {
   type QueuedMessage,
 } from '@src/lib/zookeeper/components/MlEphantConversation'
 import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
+import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
+import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
@@ -22,7 +23,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
@@ -55,15 +56,20 @@ export const MlEphantConversationPane = (props: {
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
+  const [isClearingChatPending, setIsClearingChatPending] = useState(false)
+  const [showManualConnect, setShowManualConnect] = useState(
+    typeof navigator !== 'undefined' && navigator.onLine === false
+  )
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
+  const savedProjectConversationLookupPath = useRef(props.theProject?.path)
+  const actorConversationProjectPath = useRef(props.theProject?.path)
+  const reconnectAfterSavedConversationLookup = useRef(false)
+  const clearChatOperationGeneration = useRef(0)
   const loaderFileRef = useRef(props.loaderFile)
   useEffect(() => {
     loaderFileRef.current = props.loaderFile
@@ -76,6 +82,21 @@ export const MlEphantConversationPane = (props: {
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
+  const setupFailed = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.setupFailed
+  })
+  const closeReason = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.closeReason
+  })
+  const conversationId = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.conversationId
+  })
+  const isSettingUp = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.matches(MlEphantManagerStates.Setup)
+  })
+  const isReady = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.matches(MlEphantManagerStates.Ready)
+  })
 
   const isPromptRunning = useSelector(
     props.mlEphantManagerActor,
@@ -84,6 +105,10 @@ export const MlEphantConversationPane = (props: {
   const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.modeOptions
   })
+  const attachmentsLoadedForCurrentPrompt = useSelector(
+    props.mlEphantManagerActor,
+    (actor) => actor.context.attachmentsLoadedForCurrentPrompt
+  )
   const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.defaultMode
   })
@@ -137,21 +162,102 @@ export const MlEphantConversationPane = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      kclManager: props.kclManager,
+      engineCommandManager: props.contextModeling.engineCommandManager,
+      wasmInstance: props.contextModeling.wasmInstance,
       mode,
       additionalFiles: attachments,
     })
   }
 
-  const needsReconnect = abruptlyClosed
+  const needsReconnect = abruptlyClosed || showManualConnect
 
-  const onReconnect = () => {
+  const reconnect = useCallback(() => {
+    if (isClearingChat.current) {
+      return
+    }
+
+    const currentProjectPath = props.theProject?.path
+    const actorConversationId =
+      props.mlEphantManagerActor.getSnapshot().context.conversationId
+    const actorConversationMatchesCurrentProject =
+      actorConversationProjectPath.current === currentProjectPath
+    const savedProjectConversationLookupIsCurrent =
+      savedProjectConversationLookupPath.current === currentProjectPath &&
+      savedProjectConversationLookupLoaded.current
+
+    if (
+      (!actorConversationMatchesCurrentProject ||
+        actorConversationId === undefined) &&
+      !savedProjectConversationLookupIsCurrent
+    ) {
+      reconnectAfterSavedConversationLookup.current = true
+      return
+    }
+
+    reconnectAfterSavedConversationLookup.current = false
+    actorConversationProjectPath.current = currentProjectPath
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
       conversationId:
-        props.mlEphantManagerActor.getSnapshot().context.conversationId,
+        actorConversationMatchesCurrentProject &&
+        actorConversationId !== undefined
+          ? actorConversationId
+          : savedProjectConversationId.current,
     })
-  }
+  }, [props.mlEphantManagerActor, props.theProject?.path])
+
+  const onReconnect = useCallback(() => {
+    setShowManualConnect(false)
+    reconnect()
+  }, [reconnect])
+
+  const onWindowOnlineOfflineParams = useMemo(
+    () => ({
+      close: () => {
+        reconnectAfterSavedConversationLookup.current = false
+        setShowManualConnect(true)
+        props.mlEphantManagerActor.send({
+          type: MlEphantManagerTransitions.NetworkOffline,
+        })
+      },
+      connect: onReconnect,
+    }),
+    [onReconnect, props.mlEphantManagerActor]
+  )
+  useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || navigator.onLine) {
+      return
+    }
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.NetworkOffline,
+    })
+  }, [props.mlEphantManagerActor])
+
+  useEffect(() => {
+    if (
+      !needsReconnect ||
+      setupFailed ||
+      showManualConnect ||
+      isClearingChatPending
+    ) {
+      return
+    }
+
+    const timeoutReconnect = setTimeout(reconnect, 3000)
+    return () => {
+      clearTimeout(timeoutReconnect)
+    }
+  }, [
+    isClearingChatPending,
+    needsReconnect,
+    reconnect,
+    setupFailed,
+    showManualConnect,
+  ])
 
   const onCancel = () => {
     props.mlEphantManagerActor.send({
@@ -164,6 +270,9 @@ export const MlEphantConversationPane = (props: {
     mode: MlCopilotModeId | undefined,
     attachments: File[]
   ) => {
+    if (isClearingChat.current) {
+      return
+    }
     if (isPromptRunning || isSubmittingFromQueue.current) {
       setQueue((prev) => [
         ...prev,
@@ -211,6 +320,9 @@ export const MlEphantConversationPane = (props: {
   // If a message was steered, it takes priority over the default FIFO order.
   // biome-ignore lint/correctness/useExhaustiveDependencies: queue processing intentionally uses the queued prompt state captured by this effect.
   useEffect(() => {
+    if (!isReady || isClearingChatPending || isClearingChat.current) {
+      return
+    }
     if (
       !isPromptRunning &&
       queue.length > 0 &&
@@ -241,79 +353,75 @@ export const MlEphantConversationPane = (props: {
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPromptRunning, queue])
+  }, [isClearingChatPending, isPromptRunning, isReady, queue])
 
-  if (needsReconnect && timeoutReconnect.current === undefined) {
-    timeoutReconnect.current = setTimeout(() => {
-      onReconnect()
-      timeoutReconnect.current = undefined
-    }, 3000)
-  }
-
-  const onClickClearChat = () => {
-    let closedConversation = props.mlEphantManagerActor
-      .getSnapshot()
-      .matches(S.Await)
-    let clearedConversationMapping = true
-    let startedFreshConversation = false
-    // biome-ignore lint/style/useConst: cleanup can run through actor callbacks before subscription assignment completes.
-    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
-
-    const cleanupSubscriptions = () => {
-      sub?.unsubscribe()
+  const onClickClearChat = async () => {
+    if (isClearingChat.current) {
+      return
     }
 
-    const startFreshConversation = () => {
-      if (startedFreshConversation) {
+    isClearingChat.current = true
+    reconnectAfterSavedConversationLookup.current = false
+    setIsClearingChatPending(true)
+    const clearOperationGeneration = clearChatOperationGeneration.current + 1
+    clearChatOperationGeneration.current = clearOperationGeneration
+    const isCurrentClearOperation = () =>
+      clearChatOperationGeneration.current === clearOperationGeneration
+
+    const projectId = props.settings.meta.id.current
+    try {
+      if (projectId !== undefined && projectId !== uuidNIL) {
+        await props.conversationStore.deleteProjectConversationId(projectId)
+      }
+    } catch (error: unknown) {
+      if (!isCurrentClearOperation()) {
         return
       }
-      startedFreshConversation = true
+      isClearingChat.current = false
+      setIsClearingChatPending(false)
+      trap(error instanceof Error ? error : new Error(String(error)), {
+        altErr: new Error('Could not clear chat. Please try again.'),
+      })
+      return
+    }
+
+    if (!isCurrentClearOperation()) {
+      return
+    }
+
+    steeredId.current = null
+    setQueue([])
+    savedProjectConversationLookupLoaded.current = true
+    savedProjectConversationId.current = undefined
+
+    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    const startFreshConversation = () => {
+      sub?.unsubscribe()
+      if (!isCurrentClearOperation() || !isClearingChat.current) {
+        return
+      }
+
+      actorConversationProjectPath.current = props.theProject?.path
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
-      cleanupSubscriptions()
+      isClearingChat.current = false
+      setIsClearingChatPending(false)
     }
 
-    const maybeStartFreshConversation = () => {
-      if (!closedConversation || !clearedConversationMapping) {
-        return
-      }
-      startFreshConversation()
-    }
-
-    isClearingChat.current = true
-    steeredId.current = null
-    setQueue([])
-    const projectId = props.settings.meta.id.current
-    if (projectId !== undefined && projectId !== uuidNIL) {
-      clearedConversationMapping = false
-      void props.conversationStore
-        .deleteProjectConversationId(projectId)
-        .catch(reportRejection)
-        .finally(() => {
-          savedProjectConversationLookupLoaded.current = true
-          savedProjectConversationId.current = undefined
-          clearedConversationMapping = true
-          maybeStartFreshConversation()
-        })
-    }
     sub = props.mlEphantManagerActor.subscribe((next) => {
-      if (!next.matches(S.Await)) {
-        return
+      if (next.matches(S.Await)) {
+        startFreshConversation()
       }
-
-      closedConversation = true
-      maybeStartFreshConversation()
     })
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
     })
 
     if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
-      closedConversation = true
-      maybeStartFreshConversation()
+      startFreshConversation()
     }
   }
 
@@ -341,6 +449,7 @@ export const MlEphantConversationPane = (props: {
       props.theProject !== undefined &&
       props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
     ) {
+      actorConversationProjectPath.current = props.theProject.path
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
@@ -351,6 +460,10 @@ export const MlEphantConversationPane = (props: {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: this actor coordination effect intentionally tracks project identity, matching the existing eslint suppression below.
   useEffect(() => {
+    clearChatOperationGeneration.current += 1
+    isClearingChat.current = false
+    setIsClearingChatPending(false)
+
     const subscriptionMlEphantManagerActor =
       props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
         const isProcessing =
@@ -368,6 +481,7 @@ export const MlEphantConversationPane = (props: {
           context.conversation !== undefined
         ) {
           isClearingChat.current = false
+          setIsClearingChatPending(false)
         }
 
         if (
@@ -413,39 +527,54 @@ export const MlEphantConversationPane = (props: {
         tryToGetExchanges()
       })
 
+    savedProjectConversationLookupPath.current = props.theProject?.path
     savedProjectConversationLookupLoaded.current = false
     savedProjectConversationId.current = undefined
     const projectId = props.settings.meta.id.current
     let canceled = false
+    const continueAfterSavedConversationLookup = () => {
+      if (reconnectAfterSavedConversationLookup.current) {
+        reconnect()
+        return
+      }
+      tryToGetExchanges()
+    }
+
     if (projectId === undefined) {
       savedProjectConversationLookupLoaded.current = true
-      tryToGetExchanges()
+      continueAfterSavedConversationLookup()
     } else if (projectId !== uuidNIL) {
       void props.conversationStore
         .getProjectConversationId(projectId)
         .then((conversationId) => {
-          if (canceled) {
+          if (canceled || savedProjectConversationLookupLoaded.current) {
             return
           }
           savedProjectConversationLookupLoaded.current = true
           savedProjectConversationId.current = conversationId
-          tryToGetExchanges()
+          continueAfterSavedConversationLookup()
         })
         .catch((error: unknown) => {
-          if (canceled) {
+          if (canceled || savedProjectConversationLookupLoaded.current) {
             return
           }
           savedProjectConversationLookupLoaded.current = true
           savedProjectConversationId.current = undefined
           reportRejection(error)
-          tryToGetExchanges()
+          continueAfterSavedConversationLookup()
         })
+    } else {
+      savedProjectConversationLookupLoaded.current = true
+      continueAfterSavedConversationLookup()
     }
 
     tryToGetExchanges()
 
     return () => {
       canceled = true
+      clearChatOperationGeneration.current += 1
+      isClearingChat.current = false
+      reconnectAfterSavedConversationLookup.current = false
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -466,6 +595,8 @@ export const MlEphantConversationPane = (props: {
   }, [searchParams, setSearchParams])
 
   const userBlockedOnPaymentReason = props.user?.block_message
+  const isLoadingAttachments =
+    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const wasPromptRunningRef = useRef(false)
 
   useEffect(() => {
@@ -492,6 +623,7 @@ export const MlEphantConversationPane = (props: {
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}
+      isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
@@ -508,10 +640,26 @@ export const MlEphantConversationPane = (props: {
       ) => {
         onProcessOrQueue(request, mode, attachments)
       }}
-      onClickClearChat={onClickClearChat}
+      onClickClearChat={() => {
+        void onClickClearChat()
+      }}
       onReconnect={onReconnect}
+      connectionError={
+        showManualConnect ? 'No internet connection.' : closeReason
+      }
+      connectionFailed={setupFailed}
+      showManualConnect={showManualConnect}
+      canClearChat={setupFailed && conversationId !== undefined}
+      isClearingChat={isClearingChatPending}
+      loadingMessage={
+        isSettingUp
+          ? 'Connecting to Zookeeper...'
+          : needsReconnect
+            ? 'Reconnecting...'
+            : undefined
+      }
       onCancel={onCancel}
-      disabled={needsReconnect}
+      disabled={needsReconnect || isClearingChatPending}
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isPromptRunning}
       isProcessing={isPromptRunning}

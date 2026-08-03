@@ -2152,6 +2152,13 @@ extrude001 = extrude(region001, length = -12)`
 
     // Test 2: Command bar flow without preselected edges
     await test.step(`Open chamfer UI without selecting edges`, async () => {
+      // The preceding edit leaves its edge selected; clear it so this exercises
+      // opening Chamfer without a preselection.
+      const [clearSelection] = scene.makeMouseHelpers(0.5, 0.5, {
+        format: 'ratio',
+      })
+      await clearSelection()
+      await expect(toolbar.selectionStatus).not.toContainText('edge')
       await page.waitForTimeout(100)
       await toolbar.chamferButton.click()
       await expect
@@ -2700,7 +2707,7 @@ extrude001 = extrude(region001, length = 30)`
     })
   })
 
-  test(`Delete face on an unmapped face-API chamfer`, async ({
+  test(`Delete face on a face-API chamfer using its edge-cut tag`, async ({
     page,
     homePage,
     scene,
@@ -2749,9 +2756,9 @@ chamfer001 = chamfer(
     await cmdBar.submit()
     await scene.settled(cmdBar)
 
-    await editor.expectEditor.toContain('face001 = faceId(chamfer001, index = ')
+    await editor.expectEditor.toContain('tag = $seg01')
     await editor.expectEditor.toContain(
-      'surface001 = deleteFace(chamfer001, faces = face001)'
+      'surface001 = deleteFace(chamfer001, faces = seg01)'
     )
   })
 
@@ -3194,6 +3201,58 @@ box = extrude(region001, length = 30)`
       })
     }
   )
+
+  test(`Translate helix point-and-click`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+    )`
+    const expectedTranslateCode = `translate(helix001, x = 20)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+
+    const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+    await operationButton.click({ button: 'right' })
+    await page.getByTestId('context-menu-set-translate').click()
+
+    await cmdBar.expectState({
+      commandName: 'Translate',
+      currentArgKey: 'objects',
+      currentArgValue: '',
+      headerArguments: {
+        Objects: '',
+      },
+      highlightedHeaderArg: 'objects',
+      stage: 'arguments',
+    })
+    await expect(page.getByText('1 helix selected')).toBeVisible()
+    await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('x')
+    await page.keyboard.insertText('20')
+    await cmdBar.progressCmdBar()
+    await cmdBar.submit()
+    await scene.settled()
+
+    await editor.expectEditor.toContain(expectedTranslateCode)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedTranslateCode],
+      highlightedCode: '',
+    })
+  })
 
   test('Blend point-and-click', async ({
     context,

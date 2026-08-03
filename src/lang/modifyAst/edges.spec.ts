@@ -1077,7 +1077,6 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
 chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
 

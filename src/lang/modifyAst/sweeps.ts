@@ -49,7 +49,6 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
-  getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
@@ -135,7 +134,29 @@ export function addExtrude({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
+  const edgeSelections = normalizedSketches.graphSelections.filter(
+    (selection) => selection.entityRef?.type === 'edge'
+  )
+  for (const edgeSel of edgeSelections) {
+    if (edgeSel.entityRef?.type !== 'edge') continue
+    const payload = entityReferenceToEdgeRefPayload(edgeSel.entityRef)
+    const originalEdgeSelection = resolveToCodeRef(edgeSel, artifactGraph)
+    const edgeRefResult = createEdgeRefObjectExpression(
+      payload,
+      wasmInstance,
+      modifiedAst,
+      artifactGraph,
+      originalEdgeSelection ?? undefined
+    )
+    if (err(edgeRefResult)) {
+      return edgeRefResult
+    }
+    modifiedAst = edgeRefResult.modifiedAst
+    vars.exprs.push(edgeRefResult.expr)
+  }
+
   const faceSelections = normalizedSketches.graphSelections.filter((s) => {
+    if (s.entityRef?.type === 'edge') return false
     const r = resolveToCodeRef(s, artifactGraph)
     return r?.artifact != null && isFaceArtifact(r.artifact)
   })
@@ -158,6 +179,7 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: normalizedSketches.graphSelections.filter((s) => {
+      if (s.entityRef?.type === 'edge') return false
       const r = resolveToCodeRef(s, artifactGraph)
       return !r?.artifact || !isFaceArtifact(r.artifact)
     }),
@@ -1326,28 +1348,6 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return edgeSelection
     }
     edge = edgeSelection
-  } else if (axisValue.type === 'Uuid') {
-    axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
-    }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) {
-      return new Error("Couldn't find related edge code ref")
-    }
-
-    edge = {
-      graphSelections: [{ artifact, codeRef }],
-      otherSelections: [],
-    }
   } else {
     return new Error('The type of the axis argument is unsupported')
   }

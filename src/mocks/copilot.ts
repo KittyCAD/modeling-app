@@ -1,6 +1,9 @@
-import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
+import type {
+  MlCopilotServerMessage,
+  MlToolResult,
+  ReasoningMessage,
+} from '@kittycad/lib'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
-import type { AppReasoningMessage } from '@src/lib/mlReasoningTypes'
 
 const ALPHA = 'abcdefghijklmnopqrstuvwyz     '.split('')
 const EMOJI = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '🥹', '☺']
@@ -63,7 +66,7 @@ const info = (): MlCopilotServerMessage & { info: any } => {
 }
 
 const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
-  const outputs: AppReasoningMessage[] = [
+  const outputs: ReasoningMessage[] = [
     ...new Array(18).fill(undefined).map(() => ({
       content: stringRand(EMOJI, 1) + ' ' + stringRand(ALPHA, 40),
       type: 'text' as const,

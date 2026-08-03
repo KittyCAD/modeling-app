@@ -622,6 +622,7 @@ export function addMirror3D({
 
   const isEdgeSelection = across.graphSelections.some(
     (selection) =>
+      selection.entityRef?.type === 'edge' ||
       selection.artifact?.type === 'segment' ||
       selection.artifact?.type === 'edgeCut'
   )

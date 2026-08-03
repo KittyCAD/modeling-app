@@ -325,6 +325,47 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
+    it('should add a standalone translate call on helix selection', async () => {
+      const code = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)`
+      const ast = assertParse(code, instanceInThisFile)
+      const sourceRange: [number, number, number] = [0, code.length, 0]
+      const helix: Artifact = {
+        type: 'helix',
+        id: 'helix-id',
+        axisId: null,
+        codeRef: {
+          range: sourceRange,
+          pathToNode: getNodePathFromSourceRange(ast, sourceRange),
+          nodePath: { steps: [] },
+        },
+        trajectorySweepId: null,
+        consumed: false,
+      }
+      const artifactGraph: ArtifactGraph = new Map([[helix.id, helix]])
+      const result = addTranslate({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([helix], artifactGraph),
+        x: await getKclCommandValue(
+          '20',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\ntranslate(helix001, x = 20)`
+      )
+    })
+
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
@@ -1529,6 +1570,71 @@ extrude001 = extrude(region001, length = 1)`
       })
 
       expect(newCode).toContain(`${code}\n${expectedNewLine}`)
+    })
+
+    it('should support an entity-reference edge as the mirror reference', async () => {
+      const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 10mm, tagEnd = $capEnd001)`
+      const { ast, artifactGraph, variables } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const bodyArtifact = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      const wallArtifact = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'wall'
+      )
+      const endCapArtifact = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+      )
+      if (!bodyArtifact || !wallArtifact || !endCapArtifact) {
+        throw new Error('Expected sweep, wall, and end-cap artifacts')
+      }
+
+      const result = addMirror3D({
+        ast,
+        artifactGraph,
+        variables,
+        bodies: {
+          graphSelections: [
+            {
+              artifact: bodyArtifact,
+              codeRef: bodyArtifact.codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        across: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: [wallArtifact.id, endCapArtifact.id],
+              },
+              codeRef: wallArtifact.faceCodeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('solid001 = mirror3d(')
+      expect(newCode).toContain('across = {')
+      expect(newCode).toContain('sideFaces = [region001.tags.')
+      expect(newCode).toContain('capEnd001')
     })
   })
 })

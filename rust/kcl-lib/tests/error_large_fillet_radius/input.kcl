@@ -18,4 +18,4 @@ sketch001 = sketch(on = XY) {
 hidden001 = hide(sketch001)
 region001 = region(point = [0mm, 0.0025mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 50)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 13)

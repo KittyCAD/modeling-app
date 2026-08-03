@@ -1,3 +1,4 @@
+pub use artifact::*;
 pub use artifact_id::ArtifactId;
 pub use ast::node_path::NodePath;
 pub use ast::node_path::Step;
@@ -9,6 +10,7 @@ pub use numeric_type::*;
 use serde::Serialize;
 pub use units::*;
 
+pub mod artifact;
 mod artifact_id;
 pub mod ast;
 mod cad_op;

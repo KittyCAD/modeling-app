@@ -127,10 +127,12 @@ export function coerceSelectionsToBody(
         continue
       }
 
-      const maybePath = getArtifactOfTypes(
-        { key: maybeSweep.pathId, types: ['path'] },
-        artifactGraph
-      )
+      const maybePath = maybeSweep.pathId
+        ? getArtifactOfTypes(
+            { key: maybeSweep.pathId, types: ['path'] },
+            artifactGraph
+          )
+        : new Error('sweep has no pathId')
       if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
         const pathEntityRef = artifactToEntityRef('path', maybePath.id)
         if (pathEntityRef) {

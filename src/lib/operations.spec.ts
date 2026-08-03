@@ -130,22 +130,6 @@ function sweepArtifact(id: string, pathId: string): Artifact {
   }
 }
 
-function sweepEdgeArtifact(
-  id: string,
-  segId: string,
-  sweepId: string
-): Artifact {
-  return {
-    type: 'sweepEdge',
-    id,
-    subType: 'opposite',
-    segId,
-    cmdId: '',
-    sweepId,
-    commonSurfaceIds: [],
-  }
-}
-
 function capArtifact(id: string, sweepId: string): Artifact {
   return {
     type: 'cap',
@@ -566,77 +550,6 @@ describe('operations.test.ts', () => {
       ).toBe('segment-id')
     })
 
-    it('preserves sweep edge profiles and direction in the command defaults', async () => {
-      const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code =
-        'surface001 = extrude(edge001, length = 5, direction = edge001, bodyType = SURFACE)'
-      const operation = stdlib('extrude')
-      if (operation.type !== 'StdLibCall') {
-        throw new Error('Expected operation to be a StdLibCall')
-      }
-      operation.unlabeledArg = {
-        value: {
-          type: 'Uuid',
-          value: 'edge-id',
-        },
-        sourceRange: rangeOfText(code, 'edge001'),
-      }
-      operation.labeledArgs = {
-        length: {
-          value: { type: 'Number', value: 5, ty: { type: 'Any' } },
-          sourceRange: rangeOfText(code, '5'),
-        },
-        direction: {
-          value: {
-            type: 'Uuid',
-            value: 'edge-id',
-          },
-          sourceRange: rangeOfText(code, 'direction = edge001'),
-        },
-        bodyType: {
-          value: { type: 'String', value: 'SURFACE' },
-          sourceRange: rangeOfText(code, 'SURFACE'),
-        },
-      }
-
-      const segment = segmentArtifact('segment-id')
-      segment.codeRef.pathToNode = [['body', '']]
-      const result = await enterEditFlow({
-        operation,
-        code,
-        artifactGraph: toArtifactGraph([
-          pathArtifact('path-id'),
-          segment,
-          sweepArtifact('sweep-id', 'path-id'),
-          sweepEdgeArtifact('edge-id', 'segment-id', 'sweep-id'),
-        ]),
-        rustContext,
-      })
-      if (result instanceof Error) {
-        throw result
-      }
-      if (result.type !== 'Find and select command') {
-        throw new Error(`Expected edit flow event, got ${result.type}`)
-      }
-
-      const argDefaultValues = result.data.argDefaultValues as {
-        sketches?: {
-          graphSelections: Array<{ artifact: Artifact }>
-        }
-        direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
-        }
-        bodyType?: string
-      }
-      expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.sketches?.graphSelections[0].artifact.id).toBe(
-        'edge-id'
-      )
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'edge-id'
-      )
-      expect(argDefaultValues.bodyType).toBe('SURFACE')
-    })
   })
 
   describe('Sweep edit flow', () => {

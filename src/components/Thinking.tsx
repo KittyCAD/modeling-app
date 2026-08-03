@@ -1,9 +1,10 @@
-import type { MlCopilotFile, PlanStep } from '@kittycad/lib'
+import ms from 'ms'
+
+import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
+import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import type { AppMlCopilotServerMessage } from '@src/lib/mlReasoningTypes'
-import ms from 'ms'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 interface IRowCollapse {
@@ -513,7 +514,7 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: AppMlCopilotServerMessage,
+  thought: MlCopilotServerMessage,
   options: {
     key?: string | number
     setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
@@ -701,7 +702,7 @@ const fromDataToComponent = (
 }
 
 export const Thinking = (props: {
-  thoughts?: AppMlCopilotServerMessage[]
+  thoughts?: MlCopilotServerMessage[]
   isDone: boolean
   onlyShowImmediateThought: boolean
 }) => {
@@ -718,7 +719,7 @@ export const Thinking = (props: {
   }, [anyRowCollapse])
 
   const reasoningThoughts =
-    props.thoughts?.filter((x: AppMlCopilotServerMessage) => {
+    props.thoughts?.filter((x: MlCopilotServerMessage) => {
       return 'reasoning' in x || 'files' in x
     }) ?? []
 

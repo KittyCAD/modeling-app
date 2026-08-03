@@ -14,6 +14,7 @@ import {
 } from '@src/machines/modelingSharedContext'
 import type {
   DefaultPlane,
+  EnginePrimitiveSelection,
   ExtrudeFacePlane,
   ModelingMachineContext,
   ModelingMachineInput,
@@ -228,6 +229,7 @@ import {
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
   selectionBodyFace,
@@ -3184,6 +3186,7 @@ export const modelingMachine = setup({
         input:
           | {
               artifactOrPlaneId: ArtifactId | undefined
+              primitiveFaceSelection?: EnginePrimitiveSelection
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
@@ -3202,6 +3205,7 @@ export const modelingMachine = setup({
         }
         const {
           artifactOrPlaneId,
+          primitiveFaceSelection,
           kclManager,
           rustContext,
           engineCommandManager,
@@ -3215,13 +3219,53 @@ export const modelingMachine = setup({
           )
         }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
+        const primitiveFace =
+          primitiveFaceSelection?.parentEntityId === undefined
+            ? null
+            : {
+                solidId: primitiveFaceSelection.parentEntityId,
+                index: primitiveFaceSelection.primitiveIndex,
+              }
 
-        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-          sceneInfra: kclManager.sceneInfra,
-          rustContext,
-        })
-        if (!err(defaultResult) && defaultResult) {
-          result = defaultResult
+        if (primitiveFaceSelection && !primitiveFace) {
+          return reject(
+            new Error('Could not resolve the selected primitive face in KCL.')
+          )
+        }
+
+        if (primitiveFaceSelection) {
+          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
+            primitiveFaceSelection.entityId
+          )
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+            return reject(
+              new Error(
+                'Could not get details for the selected primitive face.'
+              )
+            )
+          }
+          const { origin, z_axis, y_axis } = faceInfo
+          result = {
+            type: 'extrudeFace',
+            faceId: primitiveFaceSelection.entityId,
+            faceInfo: { type: 'primitiveFace' },
+            position: [origin.x, origin.y, origin.z].map(
+              (coordinate) =>
+                coordinate / kclManager.sceneInfra.baseUnitMultiplier
+            ) as [number, number, number],
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            sketchPathToNode: [],
+            extrudePathToNode: [],
+          }
+        } else {
+          const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+            sceneInfra: kclManager.sceneInfra,
+            rustContext,
+          })
+          if (!err(defaultResult) && defaultResult) {
+            result = defaultResult
+          }
         }
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
@@ -3256,19 +3300,23 @@ export const modelingMachine = setup({
           return reject(new Error('Please select a valid sketch plane.'))
         }
 
-        const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
+        const selectedFaceArtifact =
+          result.type === 'extrudeFace'
+            ? kclManager.artifactGraph.get(result.faceId)
+            : undefined
+        const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
-          result.faceInfo.type === 'wall' &&
-          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+          (selectedFaceArtifact?.type === 'edgeCut' ||
+            (result.faceInfo.type === 'wall' &&
+              isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
             ? result
             : null
 
-        if (legacyExtrudeFaceTemporaryCompat) {
-          // Temporary compatibility branch for legacy sketch V1.
-          // Remove this once sketch-on-face always originates from sketch
-          // blocks and no longer needs a JS-side code mod before sketch solve.
+        if (faceRequiringSourceMaterialization) {
+          // Edge-cut faces and legacy sketch V1 walls need a concrete Face
+          // expression before the Rust frontend can create a sketch on them.
           const legacyFaceArtifact = kclManager.artifactGraph.get(
-            legacyExtrudeFaceTemporaryCompat.faceId
+            faceRequiringSourceMaterialization.faceId
           )
           const legacyFaceCodeRef = legacyFaceArtifact
             ? getFaceCodeRef(legacyFaceArtifact)
@@ -3284,8 +3332,8 @@ export const modelingMachine = setup({
             {
               codeRef: legacyFaceCodeRef,
             },
-            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
-            legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
+            faceRequiringSourceMaterialization.sketchPathToNode,
+            faceRequiringSourceMaterialization.extrudePathToNode,
             kclManager.artifactGraph,
             wasmInstance
           )
@@ -3338,6 +3386,16 @@ export const modelingMachine = setup({
         if (result.type === 'defaultPlane') {
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
+          }
+        } else if (primitiveFace) {
+          if (setProgramOutcome.type !== 'Success') {
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
+            )
+          }
+
+          sketchArgs = {
+            on: { primitiveFace },
           }
         } else {
           if (setProgramOutcome.type !== 'Success') {
@@ -9413,8 +9471,40 @@ export const modelingMachine = setup({
         },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
+          const graphFaceSelection =
+            context.selectionRanges.graphSelections.find(
+              (candidate) =>
+                candidate.entityRef?.type === 'face' &&
+                candidate.entityRef.face_id === event.data
+            )
+          const graphFaceTopology = graphFaceSelection
+            ? getEngineTopologyFallbackNormalized(graphFaceSelection)
+            : null
+          let primitiveFaceReference: EnginePrimitiveSelection | undefined
+          if (
+            graphFaceSelection?.entityRef?.type === 'face' &&
+            graphFaceTopology
+          ) {
+            primitiveFaceReference = {
+              type: 'enginePrimitive',
+              entityId: graphFaceSelection.entityRef.face_id,
+              parentEntityId: graphFaceTopology.parentId,
+              primitiveIndex: graphFaceTopology.primitiveIndex,
+              primitiveType: 'face',
+            }
+          } else {
+            // Legacy selections store untagged generated faces separately.
+            primitiveFaceReference =
+              context.selectionRanges.otherSelections.find(
+                (selection): selection is EnginePrimitiveSelection =>
+                  isEnginePrimitiveSelection(selection) &&
+                  selection.entityId === event.data &&
+                  selection.primitiveType === 'face'
+              )
+          }
           return {
             artifactOrPlaneId: event.data,
+            primitiveFaceSelection: primitiveFaceReference,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
