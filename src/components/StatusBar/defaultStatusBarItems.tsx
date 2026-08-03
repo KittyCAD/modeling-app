@@ -1,13 +1,12 @@
 import { Popover } from '@headlessui/react'
-import { HelpMenu } from '@src/components/HelpMenu'
-import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
-import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
-import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
+import { HelpMenu } from '@src/components/HelpMenu'
+import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
+import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type {
   AutoUpdateDownloadProgress,
   AutoUpdateReady,
@@ -24,21 +23,15 @@ export const defaultGlobalStatusBarItems = ({
   autoUpdateReady?: AutoUpdateReady | null
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  isDesktop()
-    ? {
-        id: 'version',
-        element: 'externalLink',
-        label: `v${APP_VERSION}`,
-        href: getReleaseUrl(),
-        toolTip: {
-          children: 'View the release notes on GitHub',
-        },
-      }
-    : {
-        id: 'download-desktop-app',
-        'data-testid': 'download-desktop-app',
-        component: DownloadDesktopApp,
-      },
+  {
+    id: 'version',
+    element: 'externalLink',
+    label: `v${APP_VERSION}`,
+    href: getReleaseUrl(),
+    toolTip: {
+      children: 'View the release notes on GitHub',
+    },
+  },
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {
