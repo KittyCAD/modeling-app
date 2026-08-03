@@ -179,6 +179,9 @@ export type ExtrudeFacePlane = {
     | {
         type: 'wall'
       }
+    | {
+        type: 'primitiveFace'
+      }
     | CapInfo
     | EdgeCutInfo
   faceId: string

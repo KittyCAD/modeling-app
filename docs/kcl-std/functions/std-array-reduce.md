@@ -64,18 +64,6 @@ assert(
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the reduce function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-reduce0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 // This example works just like the previous example above, but it uses
@@ -102,18 +90,6 @@ assert(
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the reduce function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-reduce1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 // Declare a function that sketches a decagon.
@@ -164,17 +140,6 @@ decagon(5.0)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the reduce function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-array-reduce2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of reduce 2](/kcl-test-outputs/serial_test_example_fn_std-array-reduce2.png)
 
 

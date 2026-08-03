@@ -28,7 +28,10 @@ import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
+  isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
+  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -76,7 +79,6 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -482,7 +484,7 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      syncExistingLocalProjects: !window.electron,
+      autoEnrollCloudLibraryProjects: true,
     })
   }
 
@@ -512,7 +514,12 @@ export class App implements AppSubsystems {
 
   getCreateProjectLibraryTargets = () => {
     const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
-    const libraries = this.registry.get(projectLibrariesValueSpec)
+    const settings = getOnlySettingsFromContext(
+      this.settings.actor.getSnapshot().context
+    )
+    const libraries = projectLibrariesFromSettings(
+      settings.app.libraries.current
+    )
     const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
         libraryTypes.get(library.type),
@@ -665,7 +672,7 @@ export class App implements AppSubsystems {
    * libraries side by side; web treats Personal Cloud as the canonical project
    * library and replaces only the recognized default directory row.
    */
-  private materializePersonalCloudLibraryOnEnable = (
+  private materializePersonalCloudLibraryOnEnable = async (
     snapshot: SnapshotFrom<typeof this.settings.actor>
   ) => {
     if (!snapshot.matches('idle')) {
@@ -686,8 +693,7 @@ export class App implements AppSubsystems {
     )
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
-      library.type === defaultCloudLibrary.type &&
-      library.path === defaultCloudLibrary.path
+      isPersonalCloudProjectLibrarySetting(library)
     const shouldReplaceDirectoryLibraryOnWeb = (
       library: ProjectLibrarySetting
     ) =>
@@ -703,7 +709,17 @@ export class App implements AppSubsystems {
       currentLibraries.flatMap((library) => {
         if (isDefaultCloudLibrary(library)) {
           hasPersonalCloudLibrary = true
-          return [library]
+          return [
+            isLegacyPersonalCloudProjectLibraryPathSetting(library)
+              ? {
+                  ...library,
+                  path: defaultCloudLibrary.path,
+                  ...(defaultCloudLibrary.source
+                    ? { source: defaultCloudLibrary.source }
+                    : {}),
+                }
+              : library,
+          ]
         }
 
         if (shouldReplaceDirectoryLibraryOnWeb(library)) {
@@ -817,7 +833,9 @@ export class App implements AppSubsystems {
     }
 
     if (shouldMaterializePersonalCloudLibrary) {
-      this.materializePersonalCloudLibraryOnEnable(snapshot)
+      void this.materializePersonalCloudLibraryOnEnable(snapshot).catch(
+        reportRejection
+      )
     }
   }
 

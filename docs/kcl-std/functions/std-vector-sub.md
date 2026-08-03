@@ -1,11 +1,11 @@
 ---
 title: "vector::sub"
 subtitle: "Function in std::vector"
-excerpt: "Subtracts from every element of u its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction."
+excerpt: "Subtracts from every element of u its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise subtraction."
 layout: manual
 ---
 
-Subtracts from every element of u its corresponding element in v. Both vectors must have the same length. Returns a new vector of the same length. In other words, component-wise subtraction.
+Subtracts from every element of u its corresponding element in v. Both vectors must have the same number of elements. Returns a new vector with the same number of elements. In other words, component-wise subtraction.
 
 ```kcl
 vector::sub(
@@ -41,17 +41,5 @@ assert(v2[2], isEqualTo = 7)
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the vector::sub function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-vector-sub0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-vector-sub0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 
