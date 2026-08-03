@@ -36,6 +36,12 @@ export type AuthRegistryService = {
 
 export const authContract = defineContract({
   authService: defineService<AuthRegistryService>('auth.service'),
+  /**
+   * Ordered hooks called by the auth extension after a session-expired notice is
+   * detected. The default listener moves auth into the session-expired state;
+   * other subsystems can contribute listeners for local cleanup or more specific
+   * user warnings while keeping detection centralized.
+   */
   authSessionExpiredListenersValueSpec:
     appendValueSpec<AuthSessionExpiredListener>(
       'auth.session-expired-listeners'
