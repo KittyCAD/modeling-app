@@ -135,7 +135,29 @@ export function addExtrude({
     exprs: Expr[]
     pathIfPipe?: PathToNode
   } = { exprs: [] }
+  const edgeSelections = normalizedSketches.graphSelections.filter(
+    (selection) => selection.entityRef?.type === 'edge'
+  )
+  for (const edgeSel of edgeSelections) {
+    if (edgeSel.entityRef?.type !== 'edge') continue
+    const payload = entityReferenceToEdgeRefPayload(edgeSel.entityRef)
+    const originalEdgeSelection = resolveToCodeRef(edgeSel, artifactGraph)
+    const edgeRefResult = createEdgeRefObjectExpression(
+      payload,
+      wasmInstance,
+      modifiedAst,
+      artifactGraph,
+      originalEdgeSelection ?? undefined
+    )
+    if (err(edgeRefResult)) {
+      return edgeRefResult
+    }
+    modifiedAst = edgeRefResult.modifiedAst
+    vars.exprs.push(edgeRefResult.expr)
+  }
+
   const faceSelections = normalizedSketches.graphSelections.filter((s) => {
+    if (s.entityRef?.type === 'edge') return false
     const r = resolveToCodeRef(s, artifactGraph)
     return r?.artifact != null && isFaceArtifact(r.artifact)
   })
@@ -158,6 +180,7 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: normalizedSketches.graphSelections.filter((s) => {
+      if (s.entityRef?.type === 'edge') return false
       const r = resolveToCodeRef(s, artifactGraph)
       return !r?.artifact || !isFaceArtifact(r.artifact)
     }),

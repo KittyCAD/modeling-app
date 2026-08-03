@@ -232,6 +232,26 @@ describe('Extrude surface arguments', () => {
       extrudeSelectionRequiresMethod({
         argumentsToSubmit: {
           sketches: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: ['face-1', 'face-2'],
+                },
+                codeRef: { range: [0, 1, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: {
             graphSelections: [],
             otherSelections: [
               {
