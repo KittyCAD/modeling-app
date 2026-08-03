@@ -1335,7 +1335,7 @@ export function normalizeEntityReference(
   return null
 }
 
-/** Parse engine reference.topology_fallback (snake or camelCase) into the frontend topology shape for edge picks. */
+/** Parse engine reference.topology_fallback (snake or camelCase) into the frontend topology shape. */
 export function engineTopologyFallbackFromReference(
   reference: unknown
 ): EngineTopologyFallback | undefined {
@@ -1687,11 +1687,19 @@ export async function getEventForQueryEntityTypeWithPoint(
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
   if (engineTopologyFallbackEarly && engineCommandManager) {
-    const resolvedParentId = await resolveSweepParentEntityIdForEdge(
-      engineTopologyFallbackEarly.parentId,
-      engineCommandManager,
-      artifactGraph
-    )
+    // Faces need their direct engine parent so primitive-index KCL can resolve
+    // the owning solid. Edge references instead walk to an artifact-graph body.
+    const resolvedParentId =
+      entityRef.type === 'face'
+        ? await getParentEntityIdForEntity(
+            entityRef.face_id,
+            engineCommandManager
+          )
+        : await resolveSweepParentEntityIdForEdge(
+            engineTopologyFallbackEarly.parentId,
+            engineCommandManager,
+            artifactGraph
+          )
     if (resolvedParentId) {
       if (resolvedParentId !== engineTopologyFallbackEarly.parentId) {
         engineTopologyFallbackResolved = {

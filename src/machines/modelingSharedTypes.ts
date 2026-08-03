@@ -71,7 +71,7 @@ export type EdgeRefFromOpArgs = {
   index?: unknown
 }
 
-/** Engine-provided topology data for edge picks; codegen can use edgeId(solid, index) when tag-based graph resolution is unavailable (e.g. shell inner edges). */
+/** Engine-provided primitive topology used when an entity cannot be referenced through tagged artifact lineage. */
 export type EngineTopologyFallback = {
   parentId: string
   primitiveIndex: number

@@ -229,6 +229,7 @@ import {
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
   selectionBodyFace,
@@ -9470,16 +9471,40 @@ export const modelingMachine = setup({
         },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
-          const primitiveFaceSelection =
-            context.selectionRanges.otherSelections.find(
-              (selection): selection is EnginePrimitiveSelection =>
-                isEnginePrimitiveSelection(selection) &&
-                selection.entityId === event.data &&
-                selection.primitiveType === 'face'
+          const graphFaceSelection =
+            context.selectionRanges.graphSelections.find(
+              (candidate) =>
+                candidate.entityRef?.type === 'face' &&
+                candidate.entityRef.face_id === event.data
             )
+          const graphFaceTopology = graphFaceSelection
+            ? getEngineTopologyFallbackNormalized(graphFaceSelection)
+            : null
+          let primitiveFaceReference: EnginePrimitiveSelection | undefined
+          if (
+            graphFaceSelection?.entityRef?.type === 'face' &&
+            graphFaceTopology
+          ) {
+            primitiveFaceReference = {
+              type: 'enginePrimitive',
+              entityId: graphFaceSelection.entityRef.face_id,
+              parentEntityId: graphFaceTopology.parentId,
+              primitiveIndex: graphFaceTopology.primitiveIndex,
+              primitiveType: 'face',
+            }
+          } else {
+            // Legacy selections store untagged generated faces separately.
+            primitiveFaceReference =
+              context.selectionRanges.otherSelections.find(
+                (selection): selection is EnginePrimitiveSelection =>
+                  isEnginePrimitiveSelection(selection) &&
+                  selection.entityId === event.data &&
+                  selection.primitiveType === 'face'
+              )
+          }
           return {
             artifactOrPlaneId: event.data,
-            primitiveFaceSelection,
+            primitiveFaceSelection: primitiveFaceReference,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
