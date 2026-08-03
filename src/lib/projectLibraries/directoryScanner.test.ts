@@ -199,7 +199,7 @@ describe('directory project scanner', () => {
     expect(projects).toEqual([project])
     expect(mocks.fsZds.rename).not.toHaveBeenCalled()
 
-    scheduleProjectDirectoryNameSyncFromTitles({
+    const sync = scheduleProjectDirectoryNameSyncFromTitles({
       projects,
       onProjectDirectoriesRenamed,
     })
@@ -213,10 +213,8 @@ describe('directory project scanner', () => {
     expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
 
     finishRename()
-
-    await vi.waitFor(() =>
-      expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
-    )
+    await sync
+    expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
   })
 
   it('deletes legacy cloud conflict-copy projects marked as sync-excluded', async () => {

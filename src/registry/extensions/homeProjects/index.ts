@@ -68,6 +68,7 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
+let defaultProjectDirectoryNameSync: Promise<void> | undefined
 
 export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
@@ -467,7 +468,7 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
           snapshot.matches(SystemIOMachineStates.idle) &&
           context.requestedProjectName.name === NO_PROJECT_DIRECTORY
         ) {
-          scheduleProjectDirectoryNameSyncFromTitles({
+          const sync = scheduleProjectDirectoryNameSyncFromTitles({
             projects,
             onProjectDirectoriesRenamed: () => {
               service.actor.send({
@@ -475,6 +476,9 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
               })
             },
           })
+          if (sync) {
+            defaultProjectDirectoryNameSync = sync
+          }
         }
       }
 
@@ -585,6 +589,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 const wasmInstancePromise = getWasmPromise()
                 if (wasmInstancePromise instanceof Error) {
                   return Promise.reject(wasmInstancePromise)
+                }
+
+                if (library.id === DEFAULT_PROJECT_LIBRARY_ID) {
+                  await defaultProjectDirectoryNameSync
                 }
 
                 const project = await createProjectInLocalDirectory({
