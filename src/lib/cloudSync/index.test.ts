@@ -1,5 +1,6 @@
 import {
   filterCloudSyncProjectFilesForSync,
+  getCloudSyncAutoReconciledProjectFiles,
   getCloudSyncInitialLocalProjectSyncAction,
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
@@ -124,6 +125,56 @@ describe('cloudSync sync helpers', () => {
     expect(projectManifestsEqual(left, right)).toBe(true)
     expect(projectManifestsEqual(left, changed)).toBe(false)
     expect(projectManifestsEqual(left, undefined)).toBe(false)
+  })
+
+  it('auto-reconciles independent local and remote file changes from the sync base', async () => {
+    const baseFiles = [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile('obsolete.kcl', 'delete me\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Demo"\n'),
+    ]
+    const localFiles = [
+      projectFile('main.kcl', 'local = 2\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Demo"\n'),
+    ]
+    const remoteFiles = [
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile('obsolete.kcl', 'delete me\n'),
+      projectFile('remote.kcl', 'cloud = 2\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Demo"\n'),
+    ]
+
+    const mergedFiles = getCloudSyncAutoReconciledProjectFiles({
+      baseManifest: await projectManifestFromFiles(baseFiles),
+      localFiles,
+      localManifest: await projectManifestFromFiles(localFiles),
+      remoteFiles,
+      remoteManifest: await projectManifestFromFiles(remoteFiles),
+    })
+
+    expect(mergedFiles?.map((file) => file.relativePath)).toEqual([
+      'main.kcl',
+      'project.toml',
+      'remote.kcl',
+    ])
+    expect(readProjectFile(mergedFiles ?? [], 'main.kcl')).toBe('local = 2\n')
+    expect(readProjectFile(mergedFiles ?? [], 'remote.kcl')).toBe('cloud = 2\n')
+  })
+
+  it('keeps same-path divergent local and remote changes in the conflict flow', async () => {
+    const baseFiles = [projectFile('main.kcl', 'base = 1\n')]
+    const localFiles = [projectFile('main.kcl', 'local = 2\n')]
+    const remoteFiles = [projectFile('main.kcl', 'cloud = 2\n')]
+
+    expect(
+      getCloudSyncAutoReconciledProjectFiles({
+        baseManifest: await projectManifestFromFiles(baseFiles),
+        localFiles,
+        localManifest: await projectManifestFromFiles(localFiles),
+        remoteFiles,
+        remoteManifest: await projectManifestFromFiles(remoteFiles),
+      })
+    ).toBeUndefined()
   })
 
   it('includes API-required entrypoint and project.toml paths in project upload metadata', () => {
@@ -545,6 +596,17 @@ describe('cloudSync sync helpers', () => {
         localClean: false,
       })
     ).toBe('mark-conflict')
+  })
+
+  it('auto-reconciles when local and remote archive changes are independent', () => {
+    expect(
+      getCloudSyncRemoteArchiveReconciliationAction({
+        hasBaseManifest: true,
+        localMatchesRemote: false,
+        localClean: false,
+        canAutoReconcile: true,
+      })
+    ).toBe('auto-reconcile')
   })
 
   it('uses remote updated_at for clean cloud projects and local mtime for pending edits', () => {
