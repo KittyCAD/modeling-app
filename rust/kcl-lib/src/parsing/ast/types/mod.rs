@@ -879,23 +879,23 @@ impl Program {
                 }
             }
 
-            if let Some(value) = &mut value {
-                if let Some(old_name) = value.rename_symbol(new_name, pos) {
-                    let sketch_name = match item {
-                        BodyItem::VariableDeclaration(variable_declaration)
-                            if matches!(variable_declaration.declaration.init, Expr::SketchBlock(_)) =>
-                        {
-                            Some(variable_declaration.declaration.id.name.clone())
-                        }
-                        _ => None,
-                    };
-                    if let Some(sketch_name) = sketch_name {
-                        self.rename_member_references(&sketch_name, &old_name, new_name);
-                    } else {
-                        self.rename_identifiers_order_aware(&old_name, new_name, &[]);
+            if let Some(value) = &mut value
+                && let Some(old_name) = value.rename_symbol(new_name, pos)
+            {
+                let sketch_name = match item {
+                    BodyItem::VariableDeclaration(variable_declaration)
+                        if matches!(variable_declaration.declaration.init, Expr::SketchBlock(_)) =>
+                    {
+                        Some(variable_declaration.declaration.id.name.clone())
                     }
-                    return;
+                    _ => None,
+                };
+                if let Some(sketch_name) = sketch_name {
+                    self.rename_member_references(&sketch_name, &old_name, new_name);
+                } else {
+                    self.rename_identifiers_order_aware(&old_name, new_name, &[]);
                 }
+                return;
             }
 
             let rename_target = value.as_ref().and_then(|value| value.rename_target_at(pos));
