@@ -1,11 +1,16 @@
 import {
-  INTERNAL_OPFS_META_FILE,
+  isCloudSyncExcludedPath,
   normalizeRelativePath,
 } from '@src/lib/cloudSync/paths'
-import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import type {
+  ProjectArchiveFile,
+  ProjectMetadata,
+  Revision,
+} from '@src/lib/cloudSync/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 
 export type ScannedProjectFile = {
@@ -31,6 +36,7 @@ export type ConflictFileComparison = {
 export type ConflictInspection = {
   projectTitle?: string
   remoteProjectId?: string
+  remoteRevision?: Revision
   localSavedAtMs?: number
   cloudSavedAtMs?: number
   changedFiles: ConflictFileComparison[]
@@ -132,28 +138,31 @@ function getProjectTitleFromScannedFiles(
     : undefined
 }
 
-async function scanProjectFiles(projectRoot: string) {
+async function scanProjectFiles(
+  projectRoot: string,
+  fileSystem: IZooDesignStudioFS = fsZds
+) {
   const files = new Map<string, ScannedProjectFile>()
 
   async function walk(currentPath: string) {
-    const entries = (await fsZds.readdir(currentPath)).toSorted()
+    const entries = (await fileSystem.readdir(currentPath)).toSorted()
 
     for (const entry of entries) {
-      if (entry === INTERNAL_OPFS_META_FILE) {
+      if (isCloudSyncExcludedPath(entry)) {
         continue
       }
 
-      const absolutePath = fsZds.join(currentPath, entry)
-      const stat = await fsZds.stat(absolutePath)
+      const absolutePath = fileSystem.join(currentPath, entry)
+      const stat = await fileSystem.stat(absolutePath)
       if (statIsDirectory(stat.mode)) {
         await walk(absolutePath)
         continue
       }
 
       const relativePath = normalizeRelativePath(
-        fsZds.relative(projectRoot, absolutePath) ?? ''
+        fileSystem.relative(projectRoot, absolutePath) ?? ''
       )
-      const data = Uint8Array.from(await fsZds.readFile(absolutePath))
+      const data = Uint8Array.from(await fileSystem.readFile(absolutePath))
       files.set(relativePath, {
         absolutePath,
         data,
@@ -166,6 +175,26 @@ async function scanProjectFiles(projectRoot: string) {
 
   await walk(projectRoot)
   return files
+}
+
+function projectArchiveFilesToScannedFiles(
+  files: ProjectArchiveFile[],
+  modifiedAtMs: number
+) {
+  const scannedFiles = new Map<string, ScannedProjectFile>()
+
+  for (const file of files) {
+    const relativePath = normalizeRelativePath(file.relativePath)
+    scannedFiles.set(relativePath, {
+      absolutePath: relativePath,
+      data: file.data,
+      modifiedAtMs,
+      relativePath,
+      size: file.data.byteLength,
+    })
+  }
+
+  return scannedFiles
 }
 
 function buildChangedFileComparison({
@@ -200,27 +229,44 @@ function buildChangedFileComparison({
   }
 }
 
-export async function loadConflictInspection(
+export async function buildConflictInspectionFromCloudFiles({
+  projectPath,
+  metadata,
+  cloudFiles,
+  cloudSavedAtMs,
+  fileSystem,
+  remoteRevision,
+}: {
   projectPath: string
-): Promise<ConflictInspection | Error> {
-  const metadata = await getCloudSyncProjectMetadata(projectPath)
+  metadata: ProjectMetadata
+  cloudFiles: ProjectArchiveFile[]
+  cloudSavedAtMs?: number
+  fileSystem?: IZooDesignStudioFS
+  remoteRevision?: Revision
+}): Promise<ConflictInspection | Error> {
   if (!metadata?.conflict) {
     return new Error('Cloud conflict metadata was not found for this project.')
   }
 
-  const conflictProjectPath = metadata.conflict.conflictProjectPath
-  const [localFiles, cloudFiles] = await Promise.all([
-    scanProjectFiles(projectPath),
-    scanProjectFiles(conflictProjectPath),
+  const cloudModifiedAtMs =
+    cloudSavedAtMs ?? Date.parse(metadata.conflict.remoteUpdatedAt ?? '')
+  const [localFiles, cloudScannedFiles] = await Promise.all([
+    scanProjectFiles(projectPath, fileSystem),
+    Promise.resolve(
+      projectArchiveFilesToScannedFiles(cloudFiles, cloudModifiedAtMs)
+    ),
   ])
-  const relativePaths = new Set([...localFiles.keys(), ...cloudFiles.keys()])
+  const relativePaths = new Set([
+    ...localFiles.keys(),
+    ...cloudScannedFiles.keys(),
+  ])
   const changedFiles: ConflictFileComparison[] = []
 
   for (const relativePath of Array.from(relativePaths).toSorted()) {
     const comparison = buildChangedFileComparison({
       relativePath,
       local: localFiles.get(relativePath),
-      cloud: cloudFiles.get(relativePath),
+      cloud: cloudScannedFiles.get(relativePath),
     })
 
     if (comparison) {
@@ -231,10 +277,11 @@ export async function loadConflictInspection(
   return {
     projectTitle:
       getProjectTitleFromScannedFiles(localFiles) ??
-      getProjectTitleFromScannedFiles(cloudFiles),
+      getProjectTitleFromScannedFiles(cloudScannedFiles),
     remoteProjectId: metadata.remoteProjectId,
+    remoteRevision,
     localSavedAtMs: latestModifiedAt(localFiles.values()),
-    cloudSavedAtMs: Date.parse(metadata.conflict.createdAt),
+    cloudSavedAtMs: cloudModifiedAtMs,
     changedFiles,
   }
 }

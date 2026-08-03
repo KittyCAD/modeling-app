@@ -12,6 +12,35 @@ The cloud sync subsystem has both always-on infrastructure and toggleable runtim
 
 The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloudSync`, and `src/registry/contracts/cloudSync.ts` are intentionally thin shims for registry discovery and compatibility with existing import paths.
 
+## Libraries and disk persistence
+
+The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. At present, we only support a "personal" cloud library in our API (see [our docs](https://zoo.dev/docs/developer-tools/api/projects)), and the location on the disk where this library's contents are synced locally is not editable by users. The chosen locations are:
+- On web: `<opfs-root>/documents/zoo-design-studio-projects`
+- Linux: `~/Zoo/personal`
+- Windows: `%USERPROFILE%\Zoo\personal`
+- macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
+
+## Product Policies
+
+Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-facing model is library membership. A project is normally made cloud-backed by moving it into a cloud-type project library, and made local-only by moving it out of a cloud-type project library.
+
+### Moving projects between libraries
+
+- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. If the project already has a valid cloud project ID, the engine may bind to that remote project; otherwise the next sync creates one.
+- Cloud -> Directory: treat this as "make local-only." Before the filesystem move, run the user-initiated disconnect flow: remove the local `project.toml` cloud project ID, clear pending cloud sync work, mark the local project `syncExcluded` with `reason: "user-disconnected"`, delete the remote cloud project, and update the remote project index. If remote deletion fails, the disconnect restores the local cloud link and the move should fail rather than leaving a half-detached project.
+- Cloud -> Cloud: if we add multiple cloud-type libraries, moving between them should preserve the cloud binding. Do not disconnect unless the target library type is not cloud.
+- Directory -> Directory: leave cloud sync state alone. This preserves support for individually synced projects outside cloud-type libraries.
+- Library move availability is a declared library-type capability. Libraries whose type does not implement `moveProjectFrom` or `moveProjectTo` must not appear as move sources or targets. Future read-only/virtual types such as "recents" should omit both capabilities.
+
+### Deleting projects
+
+Deleting a cloud-backed project means deleting the project everywhere. This applies both to projects in cloud-type libraries and to individually synced projects shown in directory-type libraries.
+
+- Local materialized cloud project: remove the local project directory and delete the linked remote cloud project before reporting success. The filesystem observer may enqueue a tombstone as part of the local delete, but product actions must not rely on background sync as the only remote deletion path.
+- Remote-only cloud project: delete the remote cloud project. There is no local materialization to remove.
+- Local-only directory project: remove only the local project directory.
+- If the remote delete fails for a cloud-backed project, the delete action should fail rather than show success while the cloud project can still reappear from the remote index.
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
@@ -61,7 +90,7 @@ flowchart TD
   CompareBase -->|"Local changed, remote unchanged"| PushGuarded["Upload with expected_revision"]
   CompareBase -->|"Local clean, remote changed"| PullRemote["Hydrate OPFS from remote archive"]
   CompareBase -->|"Both unchanged or manifests equal"| MarkSynced["Clear outbox and update base"]
-  CompareBase -->|"Both changed differently"| Conflict["Keep local primary and write conflict copy"]
+  CompareBase -->|"Both changed differently"| Conflict["Keep local primary and record conflict"]
   DeleteRemote --> Done["Done"]
   ForgetLocal --> Done
   CreateRemote --> MarkSynced
@@ -82,7 +111,7 @@ flowchart TD
   KnownMetadata -->|"Yes"| SyncKnown["Sync known local project"]
   KnownMetadata -->|"No"| MatchingToml{"Existing OPFS project.toml has id?"}
   MatchingToml -->|"Yes"| Adopt["Adopt local project metadata"]
-  MatchingToml -->|"No"| Clone["Clone remote archive into OPFS"]
+  MatchingToml -->|"No"| IndexRemote["Keep remote-only until materialized"]
 ```
 
 ## Invariants
@@ -92,12 +121,14 @@ flowchart TD
 - Every local mutation that affects a project persists durable metadata and an outbox entry before cloud work runs.
 - Returning to a visible browser tab schedules an immediate remote-index check, bypassing the normal remote-index throttle.
 - Remote updates must send `expected_revision`; creates and deletes are the only unguarded remote writes.
-- A remote-only project discovered from the cloud index must be cloned into OPFS so later loads can hit local storage first.
+- A remote-only project discovered from the cloud index may remain remote-only; local materialization happens when a caller explicitly opens or moves it into a local library.
 - A remotely deleted project may remove the local OPFS mirror only when that local mirror still matches the last synced base.
 - Remote hydration may replace OPFS only when local is clean relative to the last synced base.
-- If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
+- If local and remote both changed differently, local remains primary and the conflict stores the remote revision/update metadata. The cloud archive is fetched on demand for inspection or resolution.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
+- Home rename of a cloud project acts on the local materialization when one exists and acts directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
+- Home delete of a cloud-backed project must remove both the local materialization, when present, and the linked remote project before reporting success.
 
 ## Persistent State
 
@@ -108,8 +139,8 @@ Cloud sync state is stored outside React state so it can survive page reloads an
 - `ProjectMetadata.remoteUpdatedAt` stores the cloud project's last updated timestamp for Home sorting while the local cache is clean.
 - `ProjectMetadata.baseManifest` stores the last cloud-acknowledged local file manifest.
 - `ProjectMetadata.tombstone` records an explicit local project delete.
-- `ProjectMetadata.conflict` records a blocked sync and the local path of the remote conflict copy.
-- `ProjectMetadata.lastFailure` records the latest sync error without clearing dirty state.
+- `ProjectMetadata.conflict` records a blocked sync plus the cloud revision/update metadata reviewed during conflict resolution. Legacy `conflictProjectPath` values are used only to clean up old conflict-copy folders after resolution.
+- `ProjectMetadata.lastFailure` records the latest sync error without clearing dirty state. `lastFailure.kind = 'remote-upload-forbidden'` identifies a readable cloud project that the current account cannot update.
 - The outbox records durable `upsert` and `delete` work by project path.
 
 ## Versioning Considerations
@@ -128,7 +159,7 @@ Remote deletes are intentionally not revision-guarded. A project-root `rm` recor
 
 If a remote project disappears from the cloud index, the local mirror is removed only when its manifest still matches `ProjectMetadata.baseManifest` and it has no pending local outbox work. Dirty or unverifiable local projects are detached from the missing remote id and queued as local-first projects so user data is preserved and the stale id does not keep retrying a 404.
 
-Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when an unknown remote project is being cloned into a new local path. If both local and remote changed since the base, the local project remains primary and the remote archive is written to a conflict project.
+Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when the caller explicitly materializes a remote-only project into a local library. If both local and remote changed since the base, the local project remains primary and the remote archive is fetched live when the user inspects or resolves the conflict.
 
 This implementation is whole-project archive based. It does not attempt file-level merging because the cloud API does not expose file-level revisions. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
 

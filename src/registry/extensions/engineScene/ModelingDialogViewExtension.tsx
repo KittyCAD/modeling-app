@@ -1,6 +1,6 @@
 import { useApp } from '@src/lib/boot'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
-import { Suspense, lazy } from 'react'
+import { lazy, Suspense } from 'react'
 
 const ModelingDialog = lazy(
   () => import('@src/components/ModelingDialog/ModelingDialog')

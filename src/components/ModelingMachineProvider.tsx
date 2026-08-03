@@ -29,7 +29,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import { keymapService } from '@src/registry/contracts/keymap'
 
 export const ModelingMachineContext = createContext(

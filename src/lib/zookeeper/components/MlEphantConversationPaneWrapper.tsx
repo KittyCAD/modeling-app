@@ -3,6 +3,15 @@ import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { BillingTransition } from '@src/lib/billing'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { isCodeTheSame } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
 import {
   useProjectIdToConversationId,
@@ -12,31 +21,23 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { browserSaveFile } from '@src/lib/browserSaveFile'
-import { isCodeTheSame } from '@src/lib/codeEditor'
-import { isPathNotFoundError } from '@src/lib/desktop'
-import fsZds from '@src/lib/fs-zds'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import {
-  type ZookeeperEditPatch,
-  type ZookeeperEditPatchFile,
-  mergeZookeeperEditPatches,
-  normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeper/zookeeperEditPatch'
-import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
-  SystemIOMachineEvents,
+  mergeZookeeperEditPatches,
+  normalizeZookeeperPatchPath,
+  type ZookeeperEditPatch,
+  type ZookeeperEditPatchFile,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
+import {
   normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
+  SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
@@ -119,6 +120,22 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    const updatePromptRunning = (
+      snapshot: ReturnType<typeof mlEphantManagerActor.getSnapshot>
+    ) => {
+      zookeeperPromptRunningSignal.value = snapshot.context.awaitingResponse
+    }
+
+    updatePromptRunning(mlEphantManagerActor.getSnapshot())
+    const subscription = mlEphantManagerActor.subscribe(updatePromptRunning)
+
+    return () => {
+      subscription.unsubscribe()
+      zookeeperPromptRunningSignal.value = false
+    }
+  }, [mlEphantManagerActor])
 
   useEffect(() => {
     if (!IS_STAGING_OR_DEBUG) return
@@ -947,7 +964,7 @@ function useFlushZookeeperHistoryOnResponseEnd(
   tryFlushPendingZookeeperHistory: (exchangeId: number) => void
 ) {
   useEffect(() => {
-    let lastId: number | undefined = undefined
+    let lastId: number | undefined
     const subscription = mlEphantManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId

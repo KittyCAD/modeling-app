@@ -1,4 +1,4 @@
-import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
+import { defineContract, defineValueSpec, Slot } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { twMerge } from 'tailwind-merge'

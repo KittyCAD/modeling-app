@@ -7,6 +7,7 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
@@ -15,6 +16,7 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -48,16 +50,13 @@ import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
+  Selections,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
-
-import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -80,7 +79,9 @@ function isExportOptionalArgSupported(
   exportType: unknown,
   arg: ExportOptionalArg
 ): boolean {
-  if (typeof exportType !== 'string') return true
+  if (typeof exportType !== 'string') {
+    return true
+  }
   const supportByArg =
     exportOptionalArgSupportByType[exportType as OutputTypeKey]
   return supportByArg?.[arg] ?? true
@@ -145,7 +146,9 @@ export function profileSelectionRequiresBodyType({
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
+  if (!isSelections(sketches)) {
+    return false
+  }
 
   const hasOpenGraphSelection = sketches.graphSelections.some(
     (selection) =>
@@ -185,7 +188,9 @@ export function extrudeSelectionRequiresMethod({
   }
 
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
+  if (!isSelections(sketches)) {
+    return false
+  }
 
   return (
     sketches.graphSelections.some(
@@ -592,13 +597,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               machine.hardware_configuration.config.filaments[0]
                 ? ` - ${
                     machine.hardware_configuration.config.filaments[0].name
-                  } #${
-                    machine.hardware_configuration.config &&
-                    machine.hardware_configuration.config.filaments[0].color?.slice(
-                      0,
-                      6
-                    )
-                  }`
+                  } #${machine.hardware_configuration.config?.filaments[0].color?.slice(
+                    0,
+                    6
+                  )}`
                 : ''),
             isCurrent: false,
             disabled: machine.state.state !== 'idle',
@@ -1499,14 +1501,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'byDefault',
         defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (!selectionRanges || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
             kclManager: machineContext.kclManager,
             wasmInstance,
           })
-          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (err(angleLength) || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { transforms } = angleLength
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
@@ -1518,7 +1524,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             referenceSegName: '',
             wasmInstance,
           })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          if (err(sketched)) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { valueUsedInTransform } = sketched
           return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
         },
@@ -1613,7 +1621,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: 'Set translation on solid or sketch.',
+    description: 'Set translation on a solid, sketch, or helix.',
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1625,6 +1633,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectsTypesAndFilters,
+            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
             inputType: 'selectionMixed',
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1752,7 +1761,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             // Be conservative and error out if there is an item or module with the same name.
             const variableExists =
               modelingContext.kclManager.variables[data] ||
-              modelingContext.kclManager.variables['__mod_' + data]
+              modelingContext.kclManager.variables[`__mod_${data}`]
             if (variableExists) {
               return 'This variable name is already in use.'
             }

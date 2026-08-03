@@ -1,16 +1,3 @@
-import { useSignals } from '@preact/signals-react/runtime'
-import { useSelector } from '@xstate/react'
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import toast from 'react-hot-toast'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
-
 import {
   AdvancedSection,
   ArgumentField,
@@ -20,12 +7,13 @@ import {
   type SelectionListItem,
   SubmitButton,
 } from '@kittycad/ui-components'
+import { useSignals } from '@preact/signals-react/runtime'
 import { MarkdownText } from '@src/components/MarkdownText'
 import {
-  ModelingDialogKclInput,
-  type ModelingDialogKclValidationState,
   getKclInputValue,
   getKclSubmitValue,
+  ModelingDialogKclInput,
+  type ModelingDialogKclValidationState,
 } from '@src/components/ModelingDialog/ModelingDialogKclInput'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -49,6 +37,17 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { useSelector } from '@xstate/react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import toast from 'react-hot-toast'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 type ModelingDialogField = {
   argName: string
@@ -274,7 +273,7 @@ function getDraftOrSubmittedValue(
   submittedValues: Record<string, unknown>,
   argName: string
 ): unknown {
-  return Object.prototype.hasOwnProperty.call(draftValues, argName)
+  return Object.hasOwn(draftValues, argName)
     ? draftValues[argName]
     : submittedValues[argName]
 }

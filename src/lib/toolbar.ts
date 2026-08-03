@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
-import type { EventFrom, StateFrom } from 'xstate'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import {
+  getSelectedPlaneId,
+  getSelectedSketchTarget as getSelectedSketchTargetId,
+} from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -26,11 +27,13 @@ import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import {
   MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
+import { useMemo } from 'react'
+import type { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName =
   | 'modeling'
@@ -1204,7 +1207,7 @@ export function buildToolbarConfig(
               icon: 'move',
               status: 'available',
               title: 'Translate',
-              description: 'Apply a translation to a solid or sketch.',
+              description: 'Apply a translation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -2647,31 +2650,18 @@ function getSelectedSketchTarget(selectionRanges: Selections): {
     }
   }
 
-  const planeSelection = getSelectedSketchTargetPlane(selectionRanges)
-  const artifact = planeSelection?.artifact
-  if (!artifact?.id) {
+  const id = getSelectedSketchTargetId(selectionRanges)
+  if (!id) {
     return null
   }
 
   return {
-    id: artifact.id,
+    id,
     title:
-      artifact.type === 'plane'
+      getSelectedPlaneId(selectionRanges) === id
         ? 'Start Sketch on plane'
         : 'Start Sketch on face',
   }
-}
-
-function getSelectedSketchTargetPlane(selectionRanges: Selections) {
-  return selectionRanges.graphSelections.find((selection) => {
-    const artifact = selection.artifact
-    return (
-      artifact?.type === 'plane' ||
-      artifact?.type === 'wall' ||
-      artifact?.type === 'cap' ||
-      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
-    )
-  })
 }
 
 function getSelectedSketchIconColor(
@@ -2689,7 +2679,7 @@ function getSelectedSketchIconColor(
     }
   }
 
-  return getSelectedSketchTargetPlane(selectionRanges)
+  return getSelectedSketchTargetId(selectionRanges)
     ? `rgb(${SKETCH_SELECTION_RGB_STR})`
     : undefined
 }
@@ -2727,7 +2717,9 @@ function collectItems(
 ) {
   for (const item of items) {
     // Skip 'break' strings
-    if (typeof item === 'string') continue
+    if (typeof item === 'string') {
+      continue
+    }
 
     // dropdowns, eg. rectangles
     if ('array' in item) {
@@ -2749,7 +2741,7 @@ function collectItems(
       const toolNameMatch = isActiveStr.match(
         /sketchSolveToolName\s*===\s*['"]([^'"]+)['"]/
       )
-      if (toolNameMatch && toolNameMatch[1]) {
+      if (toolNameMatch?.[1]) {
         map[toolNameMatch[1]] = item.icon
       }
     }

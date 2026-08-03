@@ -1,9 +1,9 @@
 import { isArray } from '@src/lib/utils'
 import {
-  type TomlTable,
-  type TomlValue,
   parse as parseToml,
   stringify as stringifyToml,
+  type TomlTable,
+  type TomlValue,
 } from 'smol-toml'
 
 function parseProjectToml(contents: string): TomlTable | undefined {
@@ -35,6 +35,13 @@ const ROOT_SCALAR_KEY_ORDER = ['title', 'default_file']
 const ROOT_TABLE_KEY_ORDER = ['settings', 'cloud']
 const SETTINGS_TABLE_KEY_ORDER = ['app', 'meta', 'modeling']
 const CLOUD_ENVIRONMENT_SCALAR_KEY_ORDER = ['project_id']
+
+function normalizeProjectTomlPath(path: string) {
+  return path
+    .replaceAll('\\', '/')
+    .replace(/^\/+/g, '')
+    .replace(/^(?:\.\/)+/g, '')
+}
 
 function orderedKeys(keys: string[], preferredKeys: string[]) {
   return [
@@ -110,6 +117,16 @@ export function normalizeProjectTomlContents(contents: string) {
   return stringifyProjectToml(table)
 }
 
+export function getProjectDefaultFileFromProjectTomlContents(contents: string) {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return undefined
+  }
+
+  const defaultFile = getNonEmptyString(table.default_file)
+  return defaultFile ? normalizeProjectTomlPath(defaultFile) : undefined
+}
+
 export function getProjectTitleFromProjectTomlContents(contents: string) {
   const table = parseProjectToml(contents)
   if (!table) {
@@ -125,6 +142,40 @@ export function setProjectTitleInProjectTomlContents(
 ) {
   const table = parseProjectToml(contents) ?? {}
   table.title = title
+  return stringifyProjectToml(table)
+}
+
+export function prepareProjectTomlForDuplication(
+  contents: string,
+  title: string,
+  projectId: string
+) {
+  const table = parseProjectToml(contents)
+  if (!table) {
+    return new Error('Unable to parse project.toml while duplicating project')
+  }
+
+  table.title = title
+  delete table.cloud
+
+  if (!isTomlTable(table.settings)) {
+    table.settings = {}
+  }
+  const settings = table.settings
+  if (!isTomlTable(settings.meta)) {
+    settings.meta = {}
+  }
+  settings.meta.id = projectId
+
+  return stringifyProjectToml(table)
+}
+
+export function setProjectDefaultFileInProjectTomlContents(
+  contents: string,
+  defaultFile: string
+) {
+  const table = parseProjectToml(contents) ?? {}
+  table.default_file = normalizeProjectTomlPath(defaultFile)
   return stringifyProjectToml(table)
 }
 

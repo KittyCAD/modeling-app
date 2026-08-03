@@ -2,6 +2,7 @@ import nodeFsSync from 'fs'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
+import type { Page } from '@playwright/test'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
@@ -15,6 +16,26 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+type ProjectCardContextMenuAction = 'rename' | 'delete'
+
+async function clickProjectCardContextMenuItem(
+  page: Page,
+  projectTitle: string,
+  action: ProjectCardContextMenuAction
+) {
+  const projectLink = page
+    .getByTestId('project-link')
+    .filter({ hasText: projectTitle })
+    .first()
+
+  await expect(projectLink).toBeVisible()
+  await projectLink.click({ button: 'right' })
+
+  const menuItem = page.getByTestId(`project-card-context-${action}`)
+  await expect(menuItem).toBeVisible()
+  await menuItem.click()
+}
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
@@ -425,17 +446,8 @@ test(
 
     page.on('console', console.log)
 
-    async function projectCardForTitle(projectTitle: string) {
-      const projectTitleElement = page.getByText(projectTitle)
-      await projectTitleElement.hover()
-      await projectTitleElement.focus()
-      return projectTitleElement.locator('xpath=ancestor::li[1]')
-    }
-
     async function openProjectRenameForm(projectTitle: string) {
-      const projectCard = await projectCardForTitle(projectTitle)
-      await expect(projectCard.getByLabel('sketch')).toBeVisible()
-      await projectCard.getByLabel('sketch').click()
+      await clickProjectCardContextMenuItem(page, projectTitle, 'rename')
     }
 
     await test.step('rename a project clicking buttons checking left and right arrow does not impact the text', async () => {
@@ -527,9 +539,11 @@ test(
     })
 
     await test.step('delete a project by clicking the trash button', async () => {
-      const projectCard = await projectCardForTitle('updated name again')
-      await expect(projectCard.getByLabel('trash')).toBeVisible()
-      await projectCard.getByLabel('trash').click()
+      await clickProjectCardContextMenuItem(
+        page,
+        'updated name again',
+        'delete'
+      )
 
       await expect(page.getByText('This will permanently delete')).toBeVisible()
 
@@ -1124,15 +1138,7 @@ test(
     page.on('console', console.log)
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
-      const project = page.getByTestId('project-link').getByText('bracket')
-
-      await project.hover()
-      await project.focus()
-
-      await page
-        .locator('[data-edit-buttons-for="bracket"]')
-        .getByLabel('trash')
-        .click()
+      await clickProjectCardContextMenuItem(page, 'bracket', 'delete')
 
       await expect(page.getByText('This will permanently delete')).toBeVisible()
 
@@ -1150,16 +1156,14 @@ test(
     })
 
     await test.step('delete other two projects', async () => {
-      await page
-        .locator('[data-edit-buttons-for="router-template-slate"]')
-        .getByLabel('trash')
-        .click()
+      await clickProjectCardContextMenuItem(
+        page,
+        'router-template-slate',
+        'delete'
+      )
       await page.getByTestId('delete-confirmation').click()
 
-      await page
-        .locator('[data-edit-buttons-for="lego"]')
-        .getByLabel('trash')
-        .click()
+      await clickProjectCardContextMenuItem(page, 'lego', 'delete')
       await page.getByTestId('delete-confirmation').click()
     })
 

@@ -8,9 +8,6 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-
-test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
 
 async function expectNewWindowMenuItem(
   nativeMenu: NativeMenuFixture,
@@ -257,7 +254,8 @@ test.describe(
         throwTronAppMissing()
         return
       }
-      await homePage.goToModelingScene()
+      const sourceProjectName = `native-menu-duplicate-source-${Date.now()}`
+      await homePage.goToModelingScene(sourceProjectName)
       await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
@@ -270,6 +268,13 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Create project')
         await cmdBar.expectCommandName('Create project')
+      })
+      await test.step('Modeling.File.Duplicate project', async () => {
+        await page.waitForTimeout(250)
+        await nativeMenu.click('File.Duplicate project')
+        await expect(page.getByTestId('app-header-project-name')).toHaveText(
+          `${sourceProjectName}-copy`
+        )
       })
       await test.step('Modeling.File.Open project', async () => {
         await page.waitForTimeout(250)

@@ -1,0 +1,96 @@
+# bare
+
+type Sketch
+
+==>
+
+Program(TypeDeclaration(type))
+
+# alias
+
+type Temperature = number
+
+==>
+
+Program(TypeDeclaration(type, PrimitiveType))
+
+# enum single line
+
+type Color { | Red | Green | Blue }
+
+==>
+
+Program(TypeDeclaration(type, EnumBody(EnumVariant, EnumVariant, EnumVariant)))
+
+# enum multi line
+
+type Color {
+  | Red
+  | Green
+}
+
+==>
+
+Program(TypeDeclaration(type, EnumBody(EnumVariant, EnumVariant)))
+
+# enum empty
+
+type Empty { | }
+
+==>
+
+Program(TypeDeclaration(type, EnumBody))
+
+# enum exported
+
+export type Color { | Red }
+
+==>
+
+Program(TypeDeclaration(export, type, EnumBody(EnumVariant)))
+
+# enum body on next line
+
+type Color
+{ | Red }
+
+==>
+
+Program(TypeDeclaration(type, EnumBody(EnumVariant)))
+
+# enum with comments
+
+type Color {
+  // before red
+  | Red // after red
+  | /* between */ Green
+}
+
+==>
+
+Program(TypeDeclaration(type,
+                        EnumBody(LineComment,
+                                 EnumVariant,
+                                 LineComment,
+                                 BlockComment,
+                                 EnumVariant)))
+
+# enum followed by statement
+
+type Color { | Red }
+x = 1
+
+==>
+
+Program(TypeDeclaration(type, EnumBody(EnumVariant)),
+        VariableDeclaration(VariableDefinition, Equals, Number))
+
+# logical or is not an enum arm
+
+x = 1 | 2
+
+==>
+
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            BinaryExpression(Number, LogicOp, Number)))

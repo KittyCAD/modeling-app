@@ -6,7 +6,7 @@ import {
   ConnectingTypeGroup,
   EngineConnectionStateType,
   initialConnectingTypeGroupState,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 
 export const NetworkContext = createContext<NetworkStatus>({
   immediateState: {

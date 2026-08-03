@@ -7,9 +7,9 @@ import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { provideCommand } from '@src/registry/contracts/commands'
 import {
-  type EngineSceneExtensionContext,
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
+  type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
@@ -24,7 +24,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'

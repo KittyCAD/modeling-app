@@ -1,15 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import type { ReactNode } from 'react'
-import type {
-  Actor,
-  ActorRefFrom,
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-} from 'xstate'
-
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
@@ -19,6 +9,14 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { ReactNode } from 'react'
+import type {
+  Actor,
+  ActorRefFrom,
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+} from 'xstate'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -122,6 +120,16 @@ export type StateMachineCommandSetConfig<
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>[]
 }>
 
+export type CommandReviewValidationDetails = {
+  type: 'codemod'
+  currentCode: string
+  proposedCode: string
+}
+
+export type CommandReviewValidationError = Error & {
+  reviewDetails?: CommandReviewValidationDetails
+}
+
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
@@ -138,7 +146,7 @@ export type Command<
   reviewValidation?: (
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
-  ) => Promise<undefined | Error>
+  ) => Promise<undefined | CommandReviewValidationError>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void
@@ -204,17 +212,17 @@ export type CommandArgumentConfig<
   | {
       inputType: 'options'
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
               machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       optionsFromContext?: (
         context: C
-      ) => ReadonlyArray<CommandArgumentOption<OutputType>>
+      ) => readonly CommandArgumentOption<OutputType>[]
       defaultValue?:
         | OutputType
         | ((
@@ -400,13 +408,13 @@ export type CommandArgument<
   | {
       inputType: Extract<CommandInputType, 'options'>
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       defaultValue?:
         | OutputType
         | ((

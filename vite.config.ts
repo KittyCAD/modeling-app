@@ -1,6 +1,5 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
-import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
@@ -74,18 +73,36 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     resolve: {
-      alias: {
-        '@kittycad/registry': '/packages/registry/src',
-        '@kittycad/codemirror-lsp-client':
-          '/packages/codemirror-lsp-client/src',
-        '@kittycad/codemirror-lang-kcl': '/packages/codemirror-lang-kcl/src',
-        '@kittycad/ui-components': '/packages/ui-components/src',
-        '@rust': '/rust',
-        '@e2e': '/e2e',
-        '@src': '/src',
-        '@public': '/public',
-        '@root': '/',
-      },
+      alias: [
+        // Force browser-safe LSP protocol/RPC entrypoints; the node entries touch
+        // worker_threads, which Vite externalizes in client bundles.
+        {
+          find: /^vscode-jsonrpc$/,
+          replacement: 'vscode-jsonrpc/browser',
+        },
+        {
+          find: /^vscode-languageserver-protocol$/,
+          replacement: 'vscode-languageserver-protocol/browser',
+        },
+        { find: '@kittycad/registry', replacement: '/packages/registry/src' },
+        {
+          find: '@kittycad/codemirror-lsp-client',
+          replacement: '/packages/codemirror-lsp-client/src',
+        },
+        {
+          find: '@kittycad/codemirror-lang-kcl',
+          replacement: '/packages/codemirror-lang-kcl/src',
+        },
+        {
+          find: '@kittycad/ui-components',
+          replacement: '/packages/ui-components/src',
+        },
+        { find: '@rust', replacement: '/rust' },
+        { find: '@e2e', replacement: '/e2e' },
+        { find: '@src', replacement: '/src' },
+        { find: '@public', replacement: '/public' },
+        { find: '@root', replacement: '/' },
+      ],
     },
     plugins: [
       nodePolyfills({
@@ -98,7 +115,6 @@ export default defineConfig(({ command, mode }) => {
       }),
       indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
       viteTsconfigPaths(),
-      eslint(),
       version(),
       lezer(),
       topLevelAwait({

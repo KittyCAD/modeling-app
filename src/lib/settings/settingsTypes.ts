@@ -1,4 +1,5 @@
 import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
+import type { Registry } from '@kittycad/registry'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -82,6 +83,16 @@ export type DynamicBooleanSetEvent = {
 /** Platform values for hiding settings */
 export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
 
+export interface SettingComponentProps<T = unknown> {
+  value: T
+  updateValue: (newValue: T) => void
+  category: string
+  settingName: string
+  settingsLevel: SettingsLevel
+  settingsContext: SettingsType
+  registry: Registry
+}
+
 export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
@@ -150,10 +161,7 @@ export interface SettingProps<T = unknown> {
    * If this is not provided and there is no commandConfig, the
    * setting will not be able to be edited directly by the user.
    */
-  Component?: React.ComponentType<{
-    value: T
-    updateValue: (newValue: T) => void
-  }>
+  Component?: React.ComponentType<SettingComponentProps<T>>
 }
 
 /** The levels available to set settings at.

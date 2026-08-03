@@ -26,8 +26,9 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -50,7 +51,7 @@ import { fromPromise } from 'xstate'
 export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
-} from '@src/lib/projectDirectoryScanner'
+} from '@src/lib/projectLibraries/directoryScanner'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -410,7 +411,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return []
         }
 
-        return readProjectsFromProjectDirectory({
+        const projects = await readProjectsFromProjectDirectory({
           projectDirectoryPath,
           wasmInstancePromise: context.wasmInstancePromise,
           previousProjects: context.folders,
@@ -422,6 +423,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             })
           },
         })
+
+        return projects
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -464,6 +467,34 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         return {
           message: `Successfully created "${uniqueProjectTitle}"`,
           name: uniqueName,
+        }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          projectPath: string
+          requestedProjectName: string
+        }
+      }) => {
+        const projectDirectoryPath = fsZds.dirname(input.projectPath)
+        const result = await duplicateProjectInDirectory({
+          source: {
+            directoryName: input.projectName,
+            displayName: input.requestedProjectName,
+            path: input.projectPath,
+          },
+          projectDirectoryPath,
+          requestedProjectTitle: input.requestedProjectName,
+          wasmInstance: await input.context.wasmInstancePromise,
+        })
+        return {
+          ...result,
+          projectPath: fsZds.join(projectDirectoryPath, result.name),
         }
       }
     ),

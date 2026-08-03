@@ -5,6 +5,7 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -48,14 +49,19 @@ function createProjectActions({
   rename?: HomeProjectActionsService['rename']
 } = {}): HomeProjectActionsService {
   return {
+    canDuplicate: () => true,
     canOpen,
     canRename: () => true,
     canDelete: () => true,
+    canMoveToLibrary: () => true,
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
+    duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
+    getMoveToLibraryTargets: vi.fn(() => []),
+    moveToLibrary: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -82,13 +88,8 @@ function renderProjectCard({
 }
 
 function clickRenameProject() {
-  const renameButton = screen.getByText('Rename project').closest('button')
-  expect(renameButton).not.toBeNull()
-  if (!renameButton) {
-    return
-  }
-
-  fireEvent.click(renameButton)
+  fireEvent.contextMenu(screen.getByTestId('project-link'))
+  fireEvent.click(screen.getByTestId('project-card-context-rename'))
 }
 
 function submitRenameProject() {
@@ -112,6 +113,39 @@ describe('ProjectCard', () => {
       createObjectURL: createObjectURLMock,
       revokeObjectURL: revokeObjectURLMock,
     })
+  })
+
+  test('duplicates a local project from its card action', async () => {
+    const { projectActions } = renderProjectCard()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
+
+    await waitFor(() =>
+      expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
+    )
+  })
+
+  test('shows duplicate failures to the user', async () => {
+    const error = new Error('Unable to duplicate project')
+    const duplicate = vi.fn().mockRejectedValue(error)
+    const projectActions = {
+      ...createProjectActions(),
+      duplicate,
+    }
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const toastError = vi.spyOn(toast, 'error').mockImplementation(() => '')
+    renderProjectCard({ projectActions })
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
+
+    await waitFor(() => expect(toastError).toHaveBeenCalled())
+    expect(toastError.mock.calls[0]?.[0]).toContain(
+      'Unable to duplicate project'
+    )
+    consoleError.mockRestore()
+    toastError.mockRestore()
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {
@@ -243,6 +277,95 @@ describe('ProjectCard', () => {
 
     expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
     expect(screen.queryByTestId('cloud-conflict-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows project actions in the card context menu', () => {
+    renderProjectCard()
+
+    expect(screen.queryByText('Rename project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Delete project')).not.toBeInTheDocument()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+
+    expect(screen.getByTestId('project-card-context-rename')).toHaveTextContent(
+      'Rename project'
+    )
+    expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
+      'Delete project'
+    )
+  })
+
+  test('opens move to library from the card context menu', () => {
+    const onMoveToLibrary = vi.fn()
+    render(
+      <BrowserRouter>
+        <AppProjectCard
+          project={cloudProject}
+          projectActions={createProjectActions()}
+          onMoveToLibrary={onMoveToLibrary}
+        />
+      </BrowserRouter>
+    )
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
+
+    expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
+  })
+
+  test('selects the project title when opening rename from the context menu', async () => {
+    renderProjectCard()
+
+    clickRenameProject()
+
+    const input = screen.getByTestId('project-rename-input')
+    if (!(input instanceof HTMLInputElement)) {
+      expect(input).toBeInstanceOf(HTMLInputElement)
+      return
+    }
+
+    await waitFor(() => expect(input).toHaveFocus())
+
+    expect(input.selectionStart).toBe(0)
+    expect(input.selectionEnd).toBe(input.value.length)
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('shows cloud sync blocked badge for upload permission failures', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'both',
+        syncFailure: {
+          kind: 'remote-upload-forbidden',
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      },
+    })
+
+    expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
+      'Cloud sync blocked'
+    )
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {

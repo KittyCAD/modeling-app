@@ -32,7 +32,7 @@ import type {
   NonCodeSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -323,6 +323,47 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should add a standalone translate call on helix selection', async () => {
+      const code = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)`
+      const ast = assertParse(code, instanceInThisFile)
+      const sourceRange: [number, number, number] = [0, code.length, 0]
+      const helix: Artifact = {
+        type: 'helix',
+        id: 'helix-id',
+        axisId: null,
+        codeRef: {
+          range: sourceRange,
+          pathToNode: getNodePathFromSourceRange(ast, sourceRange),
+          nodePath: { steps: [] },
+        },
+        trajectorySweepId: null,
+        consumed: false,
+      }
+      const artifactGraph: ArtifactGraph = new Map([[helix.id, helix]])
+      const result = addTranslate({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([helix], artifactGraph),
+        x: await getKclCommandValue(
+          '20',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\ntranslate(helix001, x = 20)`
+      )
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {

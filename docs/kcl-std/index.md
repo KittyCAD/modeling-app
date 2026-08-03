@@ -14,6 +14,7 @@ layout: manual
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std/functions/std-faceId)
+  * [`fail`](/docs/kcl-std/functions/std-fail) Experimental
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
@@ -189,6 +190,7 @@ layout: manual
 * [**std::string**](/docs/kcl-std/modules/std-string)
   * [`string::isEqual`](/docs/kcl-std/functions/std-string-isEqual)
   * [`string::lowercase`](/docs/kcl-std/functions/std-string-lowercase)
+  * [`string::toString`](/docs/kcl-std/functions/std-string-toString)
   * [`string::trim`](/docs/kcl-std/functions/std-string-trim)
   * [`string::trimEnd`](/docs/kcl-std/functions/std-string-trimEnd)
   * [`string::trimStart`](/docs/kcl-std/functions/std-string-trimStart)

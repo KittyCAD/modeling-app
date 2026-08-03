@@ -13,6 +13,7 @@ import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
+import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
@@ -22,7 +23,6 @@ import {
   engineSceneViewExtensionsValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 

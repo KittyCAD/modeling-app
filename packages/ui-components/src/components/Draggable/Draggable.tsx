@@ -141,7 +141,9 @@ export function Draggable({
   }, [containerRef, onContainerResize])
 
   useEffect(() => {
-    if (!startInContainer) return
+    if (!startInContainer) {
+      return
+    }
 
     if (containerRef?.current) {
       pinIntoContainer()
@@ -253,6 +255,7 @@ export function Draggable({
 
   return Handle ? (
     <div {...props} style={style} ref={targetRef}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: the supplied handle owns its semantics while this wrapper tracks pointer dragging. */}
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
         onMouseDown={dragMouseDown}
         style={{ cursor: 'move', display: 'contents' }}
@@ -262,13 +265,15 @@ export function Draggable({
       {children}
     </div>
   ) : (
+    // biome-ignore lint/a11y/noStaticElementInteractions: this generic container preserves the caller's semantics while adding pointer dragging.
     <div // eslint-disable-line jsx-a11y/no-static-element-interactions
       ref={targetRef}
-      children={children}
       {...props}
       onMouseDown={dragMouseDown}
       style={style}
-    />
+    >
+      {children}
+    </div>
   )
 }
 

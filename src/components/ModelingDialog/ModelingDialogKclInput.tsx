@@ -9,11 +9,6 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap, tooltips } from '@codemirror/view'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { useSelector } from '@xstate/react'
-import type { ReactNode } from 'react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
-
 import { Spinner } from '@src/components/Spinner'
 import { editorTheme } from '@src/editor/plugins/theme'
 import {
@@ -34,6 +29,10 @@ import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { useSelector } from '@xstate/react'
+import type { ReactNode } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import styles from './ModelingDialog.module.css'
 
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>

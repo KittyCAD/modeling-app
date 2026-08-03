@@ -30,11 +30,12 @@ import {
 } from '@src/lib/layout/utils'
 import {
   getDefaultDirectoryProjectLibraryPath,
-  getDefaultProjectLibrarySettings,
   isProjectLibrarySettings,
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   Setting,
@@ -469,18 +470,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'app', field: 'showAllFiles' },
       'show_all_files'
-    ),
-    defineMappedAppOnlyField(
-      { category: 'app', field: 'libraries' },
-      'libraries',
-      {
-        fromToml: (value) =>
-          isProjectLibrarySettings(value) ? value : undefined,
-        toToml: (value) =>
-          isProjectLibrarySettings(value)
-            ? (value as unknown as JsonValue)
-            : undefined,
-      }
     ),
   ]),
   defineAppOnlySection('debug', [
@@ -970,6 +959,7 @@ export async function loadAndValidateSettings(
     | string
     | {
         defaultProjectLibraries?: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies?: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
       }
@@ -981,6 +971,7 @@ export async function loadAndValidateSettings(
       : projectPathOrOptions
   const {
     defaultProjectLibraries = [],
+    projectLibrarySettingDefaultPolicies = [],
     extensionSettings = {},
     projectPath,
   } = options
@@ -1003,15 +994,24 @@ export async function loadAndValidateSettings(
     typeof appSettings.app?.projectDirectory === 'string'
       ? appSettings.app.projectDirectory
       : undefined
-  const defaultDirectoryLibraryPath =
-    legacyProjectDirectory ?? initialDefaultDir
+
+  const policyDefaultProjectLibraries = resolveProjectLibrarySettingDefaults(
+    projectLibrarySettingDefaultPolicies,
+    {
+      initialDefaultDir,
+      legacyProjectDirectory,
+      isDesktop: isDesktop(),
+    }
+  )
 
   let settingsNext = createSettings(extensionSettings)
   settingsNext.app.projectDirectory.default = initialDefaultDir
-  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
-    getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
-    defaultProjectLibraries
-  )
+  if (settingsNext.app.libraries) {
+    settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+      policyDefaultProjectLibraries,
+      defaultProjectLibraries
+    )
+  }
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
@@ -1128,9 +1128,9 @@ export async function saveSettings(
 
   // Get the user settings.
   const userSettingsChanges = getChangedSettingsAtLevel(allSettings, 'user')
-  const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
-    allSettings.app.libraries.current
-  )
+  const defaultDirectoryLibraryPath = allSettings.app.libraries
+    ? getDefaultDirectoryProjectLibraryPath(allSettings.app.libraries.current)
+    : undefined
   const jsAppSettings = defaultDirectoryLibraryPath
     ? mergeSettingsPayloads(userSettingsChanges, {
         app: {

@@ -322,6 +322,7 @@ pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
+    HelixSet(Vec<Helix>),
 }
 
 impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
@@ -358,6 +359,21 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            SolidOrSketchOrImportedGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
         }
     }
 }
@@ -372,6 +388,7 @@ impl SolidOrSketchOrImportedGeometry {
             }
             SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrSketchOrImportedGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
 }
@@ -1069,6 +1086,8 @@ pub enum Extrudable {
     EdgeTag(Box<TagIdentifier>),
     /// Edge.
     Edge(Uuid),
+    /// Edge specifier payload.
+    EdgeSpecifier(UnresolvedEdgeSpecifier),
 }
 
 impl Extrudable {
@@ -1091,6 +1110,10 @@ impl Extrudable {
                 ))),
             },
             Extrudable::Edge(edge) => Ok(*edge),
+            Extrudable::EdgeSpecifier(_) => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find a legacy id for edge specifier".to_owned(),
+                vec![args.source_range],
+            ))),
         }
     }
 
@@ -1109,6 +1132,7 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Edge(_) => None,
+            Extrudable::EdgeSpecifier(_) => None,
         }
     }
 
@@ -1136,6 +1160,7 @@ impl Extrudable {
                 _ => ProfileClosed::Maybe,
             },
             Extrudable::Edge(_) => ProfileClosed::Maybe,
+            Extrudable::EdgeSpecifier(_) => ProfileClosed::Maybe,
         }
     }
 }

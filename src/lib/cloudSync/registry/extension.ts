@@ -7,6 +7,8 @@ import { effect, signal, untracked } from '@preact/signals-core'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  deleteCloudSyncLocalProjectRealizations,
+  deleteRemoteCloudProject,
   disconnectCloudSyncProject,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
@@ -24,6 +26,7 @@ import {
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'
 import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
@@ -33,15 +36,20 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     enabled: false,
   })
   const settings = ctx.services.signal(settingsService)
+  const runtime = ctx.services.signal(runtimeService)
   let stopSettingsSync: (() => void) | undefined
 
   const applyRuntimePolicy = () => {
     const currentSettings = settings.value?.current.value
+    const currentRuntime = runtime.value?.current.value
     const cloudSyncPluginEnabled =
-      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current !== false
+      currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
     const nextConfig = {
       ...runtimeConfig.value,
       enabled: runtimeConfig.value.enabled && cloudSyncPluginEnabled,
+      baseUrl: currentRuntime?.apiBaseUrl ?? runtimeConfig.value.baseUrl,
+      environmentName:
+        currentRuntime?.environmentName ?? runtimeConfig.value.environmentName,
       projectDirectoryPath: currentSettings
         ? getDefaultDirectoryProjectLibraryPath(
             currentSettings.app.libraries.current
@@ -74,6 +82,8 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     setProjectScope: setCloudSyncProjectScope,
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
+    deleteRemoteProject: deleteRemoteCloudProject,
+    deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

@@ -265,7 +265,7 @@ description: Artifact commands error_large_fillet_radius.kcl
         ],
         "cut_type": {
           "fillet": {
-            "radius": 5.0,
+            "radius": 13.0,
             "second_length": null
           }
         },

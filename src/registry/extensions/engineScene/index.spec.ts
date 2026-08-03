@@ -1,8 +1,8 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -18,8 +18,8 @@ import {
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
-  MODE_MODELING_KEYMAP_SCOPE,
   keymapValueSpec,
+  MODE_MODELING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {

@@ -290,6 +290,7 @@ async fn inner_sweep(
             },
             Extrudable::EdgeTag(_) => BeingExtruded::Edge,
             Extrudable::Edge(_) => BeingExtruded::Edge,
+            Extrudable::EdgeSpecifier(_) => BeingExtruded::Edge,
         };
 
         if let Some(post_extr_sketch) = sketch.as_sketch() {
