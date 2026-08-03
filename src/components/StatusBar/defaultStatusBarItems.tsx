@@ -6,6 +6,7 @@ import {
 import { HelpMenu } from '@src/components/HelpMenu'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
+import { DownloadDesktopAppStatusBarItem } from '@src/components/StatusBar/DownloadDesktopAppStatusBarItem'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type {
   AutoUpdateDownloadProgress,
@@ -17,21 +18,28 @@ import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 export const defaultGlobalStatusBarItems = ({
   autoUpdateDownloadProgress,
   autoUpdateReady,
+  hasCloudSyncFeature,
   onRestartToUpdate,
 }: {
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
   autoUpdateReady?: AutoUpdateReady | null
+  hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  {
-    id: 'version',
-    element: 'externalLink',
-    label: `v${APP_VERSION}`,
-    href: getReleaseUrl(),
-    toolTip: {
-      children: 'View the release notes on GitHub',
-    },
-  },
+  isDesktop() || hasCloudSyncFeature
+    ? {
+        id: 'version',
+        element: 'externalLink',
+        label: `v${APP_VERSION}`,
+        href: getReleaseUrl(),
+        toolTip: {
+          children: 'View the release notes on GitHub',
+        },
+      }
+    : {
+        id: 'download-desktop-app',
+        component: DownloadDesktopAppStatusBarItem,
+      },
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {

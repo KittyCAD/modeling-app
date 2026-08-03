@@ -5,6 +5,7 @@ import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { DownloadDesktopApp } from '@src/components/DownloadDesktopApp'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -513,6 +514,14 @@ const Home = () => {
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
+            {!isDesktop() && (
+              <li className="contents">
+                <DownloadDesktopApp
+                  className={sidebarButtonClasses}
+                  testId="home-download-desktop-app"
+                />
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -584,6 +593,7 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
+            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
