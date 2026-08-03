@@ -1,0 +1,13 @@
+// Make a cylinder.
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var -3.9mm, var -1.49mm], center = [var -3.48mm, var -1.78mm])
+}
+region001 = region(segments = [sketch001.circle1])
+mySolid = extrude(region001, length = 0.5)
+
+
+// Pattern it.
+mySolids = patternLinear3d(mySolid, instances = 4, distance = 1.5, axis = [1, 0, 0])
+
+// Clone the pattern.
+clone(mySolids) |> translate(y = 4)
