@@ -9,30 +9,24 @@ helix001 = helix(
   angleStart = 0,
 )
 
-// Lines to create helices around, spread apart so that the scaling is easy to
-// see.
-helper001 = startSketchOn(XZ)
-  |> startProfile(at = [25, 0])
-  |> line(end = [0, 10], tag = $edge001)
-
-helper002 = startSketchOn(XZ)
-  |> startProfile(at = [-25, 0])
-  |> line(end = [0, 15], tag = $edge002)
-
 helix002 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
   angleStart = 0,
   ccw = true,
-  revolutions = 5,
-  radius = 5,
-  axis = edge001,
 )
+  |> translate(x = 20)
 
 helix003 = helix(
-  angleStart = 0,
-  revolutions = 8,
+  axis = Z,
   radius = 3,
-  axis = edge002,
+  length = 15,
+  revolutions = 8,
+  angleStart = 0,
 )
+  |> translate(x = -20)
 
 // Scale an array of helices.
 scaledHelices = scale([helix002, helix003], factor = 2)
