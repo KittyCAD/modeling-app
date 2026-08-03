@@ -267,7 +267,7 @@ describe('ProjectLibrariesSettingInput', () => {
     const updateValue = vi.fn()
     const cloudLibrary: ProjectLibrarySetting = {
       title: 'Personal Cloud',
-      path: '/personal',
+      path: '/cloud/personal',
       type: 'cloud',
     }
 

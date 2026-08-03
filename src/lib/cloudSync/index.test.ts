@@ -1,6 +1,5 @@
 import {
   filterCloudSyncProjectFilesForSync,
-  getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
@@ -10,16 +9,16 @@ import {
   getCloudSyncRemoteArchiveReconciliationAction,
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
-  isCloudSyncConflictCopyProjectName,
+  shouldAutoEnrollCloudLibraryProject,
   type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
-  shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
 import {
   DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
+  getCloudProjectLibraryMaterializationDirectoryPath,
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
 import {
@@ -54,6 +53,15 @@ describe('cloudSync sync helpers', () => {
     expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
       `/documents/${PROJECT_FOLDER}`
     )
+  })
+
+  it('uses a configured cloud library path as its materialization directory', async () => {
+    await expect(
+      getCloudProjectLibraryMaterializationDirectoryPath({
+        path: '/team-cloud/',
+        type: 'cloud',
+      })
+    ).resolves.toBe('/team-cloud')
   })
 
   it('identifies project roots beneath the personal Zoo cloud directory', () => {
@@ -467,70 +475,6 @@ describe('cloudSync sync helpers', () => {
     ).toBe('forget-missing-local')
   })
 
-  it('detects conflict copy project folder names', () => {
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401)'
-      )
-    ).toBe(true)
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
-      )
-    ).toBe(true)
-    expect(isCloudSyncConflictCopyProjectName('demo-project')).toBe(false)
-  })
-
-  it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
-    const originalManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 10, sha256: 'a' },
-      },
-    }
-    const changedManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 11, sha256: 'b' },
-      },
-    }
-    const cleanupPlan = getCloudSyncConflictCopyCleanupPlan([
-      {
-        projectPath: '/projects/demo-project',
-        projectName: 'demo-project',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T001401)',
-        projectName: 'demo-project (cloud conflict 20260612T001401)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath:
-          '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        projectName:
-          'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T151955)',
-        projectName: 'demo-project (cloud conflict 20260612T151955)',
-        remoteProjectId: 'project-123',
-        manifest: changedManifest,
-      },
-    ])
-
-    expect(cleanupPlan.excludeProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401)',
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-      '/projects/demo-project (cloud conflict 20260612T151955)',
-    ])
-    expect(cleanupPlan.deleteProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-    ])
-  })
-
   it('pushes local edits only when the remote revision is still the synced base', () => {
     expect(
       getCloudSyncProjectSyncPreflightAction({
@@ -672,26 +616,26 @@ describe('cloudSync sync helpers', () => {
     })
   })
 
-  it('does not auto-enroll unlinked local projects when existing local sync is disabled', () => {
+  it('does not auto-enroll unlinked cloud-library projects when cloud-library auto-enrollment is disabled', () => {
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: false,
       })
     ).toBe(false)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: true,
         hasBaseManifest: false,
       })
     ).toBe(true)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: true,
       })

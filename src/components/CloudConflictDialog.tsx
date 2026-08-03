@@ -1,12 +1,9 @@
 import { Dialog } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { Fragment, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-
 import { ActionButton } from '@src/components/ActionButton'
 import {
-  CodeDiffView,
   type CodeDiffLanguage,
+  CodeDiffView,
 } from '@src/components/CodeDiffView'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
@@ -15,6 +12,8 @@ import {
   cloudSyncStatus,
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
+  isCloudSyncConflictRevisionChangedError,
+  loadCloudSyncProjectConflictInspection,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
 import {
@@ -22,11 +21,12 @@ import {
   type ConflictFileStatus,
   type ConflictInspection,
   formatFileSize,
-  loadConflictInspection,
 } from '@src/lib/cloudSync/conflictInspection'
 import fsZds from '@src/lib/fs-zds'
 import type { ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { Fragment, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 type CloudConflictDialogProps = {
   projectPath: string
@@ -232,6 +232,7 @@ export function useCloudSyncProjectConflict(projectPath?: string) {
     CloudSyncProjectMetadata | undefined
   >()
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cloud sync status changes intentionally refresh conflict metadata.
   useEffect(() => {
     let cancelled = false
 
@@ -275,6 +276,7 @@ export function useCloudSyncProjectConflicts() {
     CloudSyncProjectMetadata[] | undefined
   >()
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: cloud sync status changes intentionally refresh the conflict list.
   useEffect(() => {
     let cancelled = false
 
@@ -330,6 +332,7 @@ export function CloudConflictDialog({
     useState<CloudSyncConflictResolution | null>(null)
   const [inspectionState, setInspectionState] =
     useState<ConflictInspectionState>({ status: 'loading' })
+  const [inspectionReloadKey, setInspectionReloadKey] = useState(0)
   const inspection =
     inspectionState.status === 'ready' ? inspectionState.inspection : undefined
   const displayProjectName = inspection
@@ -342,11 +345,12 @@ export function CloudConflictDialog({
     ? ` (cloud ID: ${inspection.remoteProjectId})`
     : ''
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: inspectionReloadKey intentionally forces a fresh cloud snapshot after stale resolution attempts.
   useEffect(() => {
     let cancelled = false
     setInspectionState({ status: 'loading' })
 
-    loadConflictInspection(projectPath)
+    loadCloudSyncProjectConflictInspection(projectPath)
       .then((inspection) => {
         if (cancelled) {
           return
@@ -375,16 +379,27 @@ export function CloudConflictDialog({
     return () => {
       cancelled = true
     }
-  }, [projectPath])
+  }, [projectPath, inspectionReloadKey])
 
   async function resolveConflict(resolution: CloudSyncConflictResolution) {
     setResolving(resolution)
     try {
-      await resolveCloudSyncProjectConflict(projectPath, resolution)
+      await resolveCloudSyncProjectConflict(
+        projectPath,
+        resolution,
+        inspection?.remoteRevision
+      )
       toast.success('Cloud conflict resolved.')
       onResolved?.()
       onDismiss()
     } catch (error) {
+      if (isCloudSyncConflictRevisionChangedError(error)) {
+        toast.error(
+          'Cloud project changed. Review the latest cloud version before resolving.'
+        )
+        setInspectionReloadKey((key) => key + 1)
+        return
+      }
       toast.error(messageFromError(error))
       reportRejection(error)
     } finally {
@@ -434,7 +449,7 @@ export function CloudConflictDialog({
               <p>
                 Using local data uploads your current local project to the
                 cloud. Using cloud data replaces the local project with the
-                conflicted cloud version that was saved locally.
+                cloud version shown here.
               </p>
             </Dialog.Description>
 
@@ -467,7 +482,7 @@ export function CloudConflictDialog({
               <ActionButton
                 Element="button"
                 data-testid="use-local-data"
-                disabled={resolving !== null}
+                disabled={resolving !== null || !inspection}
                 tabIndex={0}
                 onClick={() => void resolveConflict('local')}
                 className="border-warn-70 bg-warn-10/30 py-1 dark:bg-warn-80/20"
@@ -479,7 +494,7 @@ export function CloudConflictDialog({
               <ActionButton
                 Element="button"
                 data-testid="use-cloud-data"
-                disabled={resolving !== null}
+                disabled={resolving !== null || !inspection}
                 tabIndex={0}
                 onClick={() => void resolveConflict('cloud')}
                 className="py-1"
