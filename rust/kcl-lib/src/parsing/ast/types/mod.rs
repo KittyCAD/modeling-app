@@ -879,8 +879,8 @@ impl Program {
                 }
             }
 
-            if let Some(value) = &mut value {
-                if let Some(old_name) = value.rename_symbol(new_name, pos) {
+            if let Some(value) = &mut value
+                && let Some(old_name) = value.rename_symbol(new_name, pos) {
                     let sketch_name = match item {
                         BodyItem::VariableDeclaration(variable_declaration)
                             if matches!(variable_declaration.declaration.init, Expr::SketchBlock(_)) =>
@@ -896,7 +896,6 @@ impl Program {
                     }
                     return;
                 }
-            }
 
             let rename_target = value.as_ref().and_then(|value| value.rename_target_at(pos));
             match rename_target {
