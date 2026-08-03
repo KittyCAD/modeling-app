@@ -1,4 +1,6 @@
 import type * as ClientErrors from '@src/lib/clientErrors'
+import { ExpectedSystemIOError } from '@src/lib/systemIOErrorReporting'
+import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -6,8 +8,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({
   reportClientError: vi.fn(),
 }))
-
-vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   const original = await importOriginal<typeof ClientErrors>()
@@ -17,214 +17,85 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   }
 })
 
-import {
-  ExpectedSystemIOError,
-  reportSystemIOError,
-  withSystemIOErrorMetadata,
-} from '@src/lib/systemIOErrorReporting'
-import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
-
 const context = {
   projectDirectoryPath: '/projects',
   hasListedProjects: true,
   folders: [{}, {}],
 } as SystemIOContext
 
+const operationCases = [
+  {
+    operation: SystemIOMachineActors.deleteProject,
+    risk: 'destructive',
+    partialMutationPossible: true,
+    dataLossPossible: true,
+  },
+  {
+    operation: SystemIOMachineActors.duplicateProject,
+    risk: 'write',
+    partialMutationPossible: true,
+    dataLossPossible: undefined,
+  },
+  {
+    operation: SystemIOMachineActors.createBlankFolder,
+    risk: 'write',
+    partialMutationPossible: true,
+    dataLossPossible: undefined,
+  },
+  {
+    operation: SystemIOMachineActors.renameFile,
+    risk: 'destructive',
+    partialMutationPossible: true,
+    dataLossPossible: true,
+  },
+] as const
+
 describe('SystemIO client error reporting', () => {
   beforeEach(() => {
     mocks.reportClientError.mockClear()
   })
 
-  it('marks recursive deletion failures as destructive and data-loss-adjacent', () => {
-    const error = new Error('delete failed')
-    const event = {
-      type: `xstate.error.actor.${SystemIOMachineActors.deleteProject}`,
-      error,
+  it.each(operationCases)(
+    'classifies $operation failures',
+    ({ operation, risk, partialMutationPossible, dataLossPossible }) => {
+      const error = new Error('operation failed')
+
+      reportSystemIOMachineError({
+        context,
+        event: {
+          type: `xstate.error.actor.${operation}`,
+          error,
+        },
+      })
+
+      expect(mocks.reportClientError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          code: 'system_io_error',
+          error,
+          extra: expect.objectContaining({
+            source: 'SystemIOMachine',
+            operation,
+            risk,
+            partialMutationPossible,
+            ...(dataLossPossible === undefined ? {} : { dataLossPossible }),
+            hasProjectDirectory: true,
+            hasListedProjects: true,
+            projectCount: 2,
+          }),
+        })
+      )
     }
+  )
 
-    reportSystemIOMachineError({ context, event })
-
-    expect(mocks.reportClientError).toHaveBeenCalledWith({
-      code: 'system_io_error',
-      message: 'delete failed',
-      error,
-      dedupeKey: expect.any(String),
-      extra: expect.objectContaining({
-        source: 'SystemIOMachine',
-        operation: SystemIOMachineActors.deleteProject,
-        risk: 'destructive',
-        partialMutationPossible: true,
-        dataLossPossible: true,
-        hasProjectDirectory: true,
-        hasListedProjects: true,
-        projectCount: 2,
-      }),
-    })
-  })
-
-  it('marks project duplication failures as potentially partial writes', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.duplicateProject}`,
-        error: new Error('copy failed'),
-      },
-    })
-
-    expect(mocks.reportClientError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        extra: expect.objectContaining({
-          operation: SystemIOMachineActors.duplicateProject,
-          risk: 'write',
-          partialMutationPossible: true,
-        }),
-      })
-    )
-  })
-
-  it('marks recursive folder creation failures as potentially partial writes', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.createBlankFolder}`,
-        error: new Error('mkdir failed'),
-      },
-    })
-
-    expect(mocks.reportClientError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        extra: expect.objectContaining({
-          operation: SystemIOMachineActors.createBlankFolder,
-          risk: 'write',
-          partialMutationPossible: true,
-        }),
-      })
-    )
-  })
-
-  it('includes partial bulk-mutation progress from the actor error', () => {
-    const originalError = new Error('third write failed')
-    const error = withSystemIOErrorMetadata(originalError, {
-      phase: 'write_file',
-      attemptedCount: 3,
-      completedCount: 2,
-      totalCount: 4,
-      overwriteRequested: true,
-      partialMutationPossible: true,
-      dataLossPossible: true,
-    })
-    const event = {
-      type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
-      error,
-    }
-
-    reportSystemIOMachineError({ context, event })
-
-    expect(mocks.reportClientError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: originalError,
-        extra: expect.objectContaining({
-          phase: 'write_file',
-          attemptedCount: 3,
-          completedCount: 2,
-          totalCount: 4,
-          overwriteRequested: true,
-        }),
-      })
-    )
-  })
-
-  it('preserves prior mutations when a later sub-step fails before mutating', () => {
-    const originalError = new Error('delete preflight failed')
-    const deleteError = withSystemIOErrorMetadata(originalError, {
-      phase: 'collect_project_files',
-      partialMutationPossible: false,
-      dataLossPossible: false,
-    })
-    const workflowError = withSystemIOErrorMetadata(deleteError, {
-      workflowPhase: 'delete_files',
-      writeStageCompleted: true,
-      partialMutationPossible: true,
-      dataLossPossible: true,
-    })
-
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
-        error: workflowError,
-      },
-    })
-
-    expect(mocks.reportClientError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: originalError,
-        extra: expect.objectContaining({
-          phase: 'collect_project_files',
-          workflowPhase: 'delete_files',
-          writeStageCompleted: true,
-          partialMutationPossible: true,
-          dataLossPossible: true,
-        }),
-      })
-    )
-  })
-
-  it('treats recursive OPFS-style renames as destructive', () => {
+  it('does not report expected user naming conflicts', () => {
     reportSystemIOMachineError({
       context,
       event: {
         type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new Error('rename failed'),
+        error: new ExpectedSystemIOError('Filename already exists.'),
       },
     })
 
-    expect(mocks.reportClientError).toHaveBeenCalledWith(
-      expect.objectContaining({
-        extra: expect.objectContaining({
-          risk: 'destructive',
-          partialMutationPossible: true,
-          dataLossPossible: true,
-        }),
-      })
-    )
-  })
-
-  it('does not report expected user naming conflicts', () => {
-    const event = {
-      type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-      error: new ExpectedSystemIOError('Filename already exists.'),
-    }
-
-    reportSystemIOMachineError({ context, event })
-
     expect(mocks.reportClientError).not.toHaveBeenCalled()
-  })
-
-  it('deduplicates direct reports by their explicit phase', () => {
-    const error = new Error('operation failed')
-
-    reportSystemIOError({
-      error,
-      operation: 'write KCL file',
-      risk: 'write',
-      source: 'SystemIO',
-      extra: { phase: 'write_file' },
-    })
-    reportSystemIOError({
-      error,
-      operation: 'write KCL file',
-      risk: 'write',
-      source: 'SystemIO',
-      extra: { phase: 'rollback_file' },
-    })
-
-    expect(mocks.reportClientError).toHaveBeenCalledTimes(2)
-    expect(mocks.reportClientError.mock.calls[0]?.[0].dedupeKey).toContain(
-      ':write_file:'
-    )
-    expect(mocks.reportClientError.mock.calls[1]?.[0].dedupeKey).toContain(
-      ':rollback_file:'
-    )
   })
 })

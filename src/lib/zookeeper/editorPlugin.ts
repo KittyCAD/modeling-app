@@ -724,12 +724,10 @@ function countLines(lines: string[]) {
 async function writeZookeeperPatchReplay(
   replayFiles: PreparedZookeeperPatchFileReplay[]
 ) {
-  const attemptedFiles: PreparedZookeeperPatchFileReplay[] = []
   const writtenFiles: PreparedZookeeperPatchFileReplay[] = []
 
   try {
     for (const replayFile of replayFiles) {
-      attemptedFiles.push(replayFile)
       await writeZookeeperReplayFile(
         replayFile.absolutePath,
         replayFile.nextContent
@@ -738,62 +736,42 @@ async function writeZookeeperPatchReplay(
     }
   } catch (error: unknown) {
     const rollbackErrors: unknown[] = []
-    for (const replayFile of [...attemptedFiles].reverse()) {
+    for (const replayFile of writtenFiles.reverse()) {
       try {
-        await restoreZookeeperReplayFile(replayFile)
+        await writeZookeeperReplayFile(
+          replayFile.absolutePath,
+          replayFile.previousContent
+        )
       } catch (rollbackError: unknown) {
         rollbackErrors.push(rollbackError)
       }
     }
 
-    const reportError =
-      rollbackErrors.length > 0
-        ? new AggregateError(
-            [error, ...rollbackErrors],
-            'Zookeeper edit replay failed and could not be fully rolled back.'
-          )
-        : error
     reportSystemIOError({
-      error: reportError,
+      error,
       operation: 'zookeeper_history_replay',
-      risk: rollbackErrors.length > 0 ? 'destructive' : 'write',
+      risk: 'destructive',
       source: 'ZookeeperEditor',
       extra: {
         phase: rollbackErrors.length > 0 ? 'rollback' : 'write',
         totalCount: replayFiles.length,
         completedCount: writtenFiles.length,
-        rollbackAttempted: attemptedFiles.length > 0,
-        rollbackAttemptedCount: attemptedFiles.length,
+        rollbackAttemptedCount: writtenFiles.length,
         rollbackFailureCount: rollbackErrors.length,
-        partialMutationPossible: rollbackErrors.length > 0,
-        dataLossPossible: rollbackErrors.length > 0,
+        partialMutationPossible: true,
+        dataLossPossible: true,
       },
     })
 
     if (rollbackErrors.length > 0) {
-      return Promise.reject(reportError)
+      return Promise.reject(
+        new AggregateError(
+          [error, ...rollbackErrors],
+          'Zookeeper edit replay failed and could not be fully rolled back.'
+        )
+      )
     }
     return Promise.reject(error)
-  }
-}
-
-async function restoreZookeeperReplayFile(
-  replayFile: PreparedZookeeperPatchFileReplay
-) {
-  if (replayFile.previousContent !== null) {
-    await writeZookeeperReplayFile(
-      replayFile.absolutePath,
-      replayFile.previousContent
-    )
-    return
-  }
-
-  try {
-    await fsZds.rm(replayFile.absolutePath)
-  } catch (error: unknown) {
-    if (!isPathNotFoundError(error)) {
-      return Promise.reject(error)
-    }
   }
 }
 

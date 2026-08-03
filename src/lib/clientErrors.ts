@@ -96,29 +96,14 @@ const getErrorName = (params: ReportClientErrorParams) => {
   return undefined
 }
 
-const serializeNestedError = (error: unknown) => ({
-  message: errorToMessage(error),
-  ...(error instanceof Error
-    ? {
-        errorName: error.name,
-        ...(error.stack ? { runtimeStack: error.stack } : {}),
-      }
-    : { errorType: typeof error }),
-})
-
 const buildStack = (params: ReportClientErrorParams) => {
   const userAgent =
     typeof navigator === 'undefined' ? undefined : navigator.userAgent
-  const aggregateErrors =
-    params.error instanceof AggregateError
-      ? Array.from(params.error.errors, serializeNestedError)
-      : undefined
 
   return JSON.stringify({
     ...(params.error instanceof Error && params.error.stack
       ? { runtimeStack: params.error.stack }
       : {}),
-    ...(aggregateErrors ? { aggregateErrors } : {}),
     ...params.extra,
     userAgent,
   })

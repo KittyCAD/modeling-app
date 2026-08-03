@@ -225,8 +225,6 @@ export async function ensureProjectDirectoryExists(
   } catch (e) {
     if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
-    } else {
-      return Promise.reject(e)
     }
   }
 
@@ -237,10 +235,8 @@ export async function mkdirOrNOOP(directoryPath: string) {
   try {
     await fsZds.stat(directoryPath)
   } catch (e) {
-    if (isPathNotFoundError(e)) {
+    if (e === 'ENOENT') {
       await fsZds.mkdir(directoryPath, { recursive: true })
-    } else {
-      return Promise.reject(e)
     }
   }
 
@@ -281,8 +277,6 @@ export async function createNewProjectDirectory(
   } catch (e) {
     if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
-    } else {
-      return Promise.reject(e)
     }
   }
 

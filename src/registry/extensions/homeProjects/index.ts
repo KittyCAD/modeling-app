@@ -64,6 +64,7 @@ import {
 import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import {
   getProjectLibraryOperation,
+  type ProjectLibraryOperation,
   type ProjectLibraryTypeOperations,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
@@ -75,15 +76,16 @@ import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
 
-async function runReportedDirectoryProjectOperation<T>({
-  operation,
-  risk,
-  extra,
-  run,
-}: {
+type DirectoryProjectOperationReport = {
   operation: string
   risk: SystemIOErrorRisk
   extra?: Record<string, unknown>
+}
+
+async function runReportedDirectoryProjectOperation<T>({
+  run,
+  ...report
+}: DirectoryProjectOperationReport & {
   run: () => Promise<T> | T
 }): Promise<T> {
   try {
@@ -91,12 +93,68 @@ async function runReportedDirectoryProjectOperation<T>({
   } catch (error) {
     reportSystemIOError({
       error,
-      operation,
-      risk,
       source: 'DirectoryProjectLibrary',
-      extra,
+      ...report,
     })
     return Promise.reject(error)
+  }
+}
+
+function withReportedDirectoryProjectOperation<
+  Input extends { library: ProjectLibrary },
+  Result,
+>(
+  operation: ProjectLibraryOperation<Input, Result>,
+  report: DirectoryProjectOperationReport
+): ProjectLibraryOperation<Input, Result> {
+  return {
+    ...operation,
+    run: (input) =>
+      runReportedDirectoryProjectOperation({
+        ...report,
+        run: () => operation.run(input),
+      }),
+  }
+}
+
+function withReportedDirectoryProjectOperations(
+  operations: ProjectLibraryTypeOperations
+): ProjectLibraryTypeOperations {
+  const report = <Input extends { library: ProjectLibrary }, Result>(
+    operation: ProjectLibraryOperation<Input, Result> | undefined,
+    metadata: DirectoryProjectOperationReport
+  ) =>
+    operation
+      ? withReportedDirectoryProjectOperation(operation, metadata)
+      : undefined
+
+  return {
+    ...operations,
+    createProject: report(operations.createProject, {
+      operation: SystemIOMachineActors.createProject,
+      risk: 'write',
+      extra: { partialMutationPossible: true, dataLossPossible: false },
+    }),
+    duplicateProject: report(operations.duplicateProject, {
+      operation: SystemIOMachineActors.duplicateProject,
+      risk: 'write',
+      extra: { partialMutationPossible: true, dataLossPossible: false },
+    }),
+    renameProject: report(operations.renameProject, {
+      operation: SystemIOMachineActors.renameProject,
+      risk: 'write',
+      extra: { partialMutationPossible: true, dataLossPossible: true },
+    }),
+    deleteProject: report(operations.deleteProject, {
+      operation: SystemIOMachineActors.deleteProject,
+      risk: 'destructive',
+      extra: { partialMutationPossible: true, dataLossPossible: true },
+    }),
+    moveProjectTo: report(operations.moveProjectTo, {
+      operation: SystemIOMachineActors.moveRecursive,
+      risk: 'destructive',
+      extra: { partialMutationPossible: true, dataLossPossible: true },
+    }),
   }
 }
 
@@ -595,7 +653,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new Error('Missing WASM promise registry value.')
+    new ExpectedSystemIOError('Missing WASM promise registry value.')
   const refreshLocalProjectEntries = () => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -654,7 +712,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               },
             })
           },
-          operations: {
+          operations: withReportedDirectoryProjectOperations({
             createProject: {
               run: async ({
                 library,
@@ -666,28 +724,18 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   return Promise.reject(wasmInstancePromise)
                 }
 
-                return runReportedDirectoryProjectOperation({
-                  operation: SystemIOMachineActors.createProject,
-                  risk: 'write',
-                  extra: {
-                    partialMutationPossible: true,
-                    dataLossPossible: false,
-                  },
-                  run: async () => {
-                    const project = await createProjectInLocalDirectory({
-                      projectDirectoryPath: library.path,
-                      requestedProjectName,
-                      requestedProjectTitle,
-                      wasmInstancePromise,
-                    })
-                    systemIO.value?.actor.send({
-                      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                    })
-                    invalidateConfiguredProjectLibraryEntries()
-
-                    return project
-                  },
+                const project = await createProjectInLocalDirectory({
+                  projectDirectoryPath: library.path,
+                  requestedProjectName,
+                  requestedProjectTitle,
+                  wasmInstancePromise,
                 })
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+                invalidateConfiguredProjectLibraryEntries()
+
+                return project
               },
             },
             openProject: {
@@ -701,9 +749,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             },
             duplicateProject: {
               run: async ({ library, project }) => {
-                const localProjectName = project.localProjectName
-                const localProjectPath = project.localProjectPath
-                if (!localProjectName || !localProjectPath) {
+                if (!project.localProjectName || !project.localProjectPath) {
                   return undefined
                 }
                 const wasmInstancePromise = getWasmPromise()
@@ -711,98 +757,66 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   return Promise.reject(wasmInstancePromise)
                 }
 
-                return runReportedDirectoryProjectOperation({
-                  operation: SystemIOMachineActors.duplicateProject,
-                  risk: 'write',
-                  extra: {
-                    partialMutationPossible: true,
-                    dataLossPossible: false,
+                const result = await duplicateProjectInDirectory({
+                  source: {
+                    directoryName: project.localProjectName,
+                    displayName: getHomeProjectDisplayName(project),
+                    path: project.localProjectPath,
                   },
-                  run: async () => {
-                    const result = await duplicateProjectInDirectory({
-                      source: {
-                        directoryName: localProjectName,
-                        displayName: getHomeProjectDisplayName(project),
-                        path: localProjectPath,
-                      },
-                      projectDirectoryPath: library.path,
-                      requestedProjectTitle: getHomeProjectDisplayName(project),
-                      wasmInstance: await wasmInstancePromise,
-                    })
-                    systemIO.value?.actor.send({
-                      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-                    })
-                    invalidateConfiguredProjectLibraryEntries()
-
-                    return result
-                  },
+                  projectDirectoryPath: library.path,
+                  requestedProjectTitle: getHomeProjectDisplayName(project),
+                  wasmInstance: await wasmInstancePromise,
                 })
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+                invalidateConfiguredProjectLibraryEntries()
+
+                return result
               },
             },
             renameProject: {
               run: async ({ project, requestedName }) => {
-                const localProjectPath = project.localProjectPath
-                if (!localProjectPath || !project.readWriteAccess) {
+                if (!project.localProjectPath || !project.readWriteAccess) {
                   return
                 }
 
-                return runReportedDirectoryProjectOperation({
-                  operation: SystemIOMachineActors.renameProject,
-                  risk: 'write',
-                  extra: {
-                    partialMutationPossible: true,
-                    dataLossPossible: true,
-                  },
-                  run: async () => {
-                    await writeProjectTitleToProjectToml(
-                      localProjectPath,
-                      requestedName
-                    )
-                    refreshLocalProjectEntries()
-                  },
-                })
+                await writeProjectTitleToProjectToml(
+                  project.localProjectPath,
+                  requestedName
+                )
+                refreshLocalProjectEntries()
               },
             },
             deleteProject: {
               run: async ({ project }) => {
-                const localProjectPath = project.localProjectPath
-                if (!localProjectPath || !project.readWriteAccess) {
+                if (!project.localProjectPath || !project.readWriteAccess) {
                   return
                 }
 
-                return runReportedDirectoryProjectOperation({
-                  operation: SystemIOMachineActors.deleteProject,
-                  risk: 'destructive',
-                  extra: {
-                    partialMutationPossible: true,
-                    dataLossPossible: true,
-                  },
-                  run: async () => {
-                    const cloudSyncActions = project.remoteProjectId
-                      ? cloudSync.value
-                      : undefined
-                    if (
-                      project.remoteProjectId &&
-                      cloudSyncActions?.status.value.enabled !== true
-                    ) {
-                      return Promise.reject(
-                        new ExpectedSystemIOError('Cloud sync is not enabled.')
-                      )
-                    }
+                const cloudSyncActions = project.remoteProjectId
+                  ? cloudSync.value
+                  : undefined
+                if (
+                  project.remoteProjectId &&
+                  cloudSyncActions?.status.value.enabled !== true
+                ) {
+                  return Promise.reject(
+                    new ExpectedSystemIOError('Cloud sync is not enabled.')
+                  )
+                }
 
-                    await fsZds.rm(localProjectPath, {
-                      recursive: true,
-                    })
-                    // Individually synced directory projects follow the same
-                    // delete-everywhere policy as cloud-library projects.
-                    if (project.remoteProjectId) {
-                      await cloudSyncActions?.deleteRemoteProject(
-                        project.remoteProjectId
-                      )
-                    }
-                    refreshLocalProjectEntries()
-                  },
+                await fsZds.rm(project.localProjectPath, {
+                  recursive: true,
                 })
+                // Individually synced directory projects follow the same
+                // delete-everywhere policy as cloud-library projects.
+                if (project.remoteProjectId) {
+                  await cloudSyncActions?.deleteRemoteProject(
+                    project.remoteProjectId
+                  )
+                }
+                refreshLocalProjectEntries()
               },
             },
             moveProjectFrom: {
@@ -812,28 +826,18 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             },
             moveProjectTo: {
               run: async ({ library, source }) => {
-                return runReportedDirectoryProjectOperation({
-                  operation: SystemIOMachineActors.moveRecursive,
-                  risk: 'destructive',
-                  extra: {
-                    partialMutationPossible: true,
-                    dataLossPossible: true,
-                  },
-                  run: async () => {
-                    const result = await moveProjectIntoLocalDirectory({
-                      projectDirectoryPath: library.path,
-                      sourceProjectPath: source.localProjectPath,
-                      sourceProjectName: source.localProjectName,
-                      defaultFile: source.defaultFile,
-                    })
-                    refreshLocalProjectEntries()
-
-                    return result
-                  },
+                const result = await moveProjectIntoLocalDirectory({
+                  projectDirectoryPath: library.path,
+                  sourceProjectPath: source.localProjectPath,
+                  sourceProjectName: source.localProjectName,
+                  defaultFile: source.defaultFile,
                 })
+                refreshLocalProjectEntries()
+
+                return result
               },
             },
-          },
+          }),
         }),
       ],
     }),

@@ -106,42 +106,6 @@ describe('reportClientError', () => {
     })
   })
 
-  it('serializes the errors contained in an AggregateError', async () => {
-    const writeError = new Error('write failed')
-    writeError.name = 'WriteError'
-    const rollbackError = new Error('rollback failed')
-    rollbackError.name = 'RollbackError'
-
-    await reportClientError({
-      code: 'system_io_error',
-      error: new AggregateError(
-        [writeError, rollbackError],
-        'write and rollback failed'
-      ),
-    })
-
-    const firstArg = mockState.reportUserClientError.mock.calls
-      .flatMap((call) => call)
-      .at(0) as { body: { stack: string } } | undefined
-    if (!firstArg) {
-      throw new Error('Expected report_user_client_error args to be present')
-    }
-    expect(JSON.parse(firstArg.body.stack)).toMatchObject({
-      aggregateErrors: [
-        {
-          message: 'write failed',
-          errorName: 'WriteError',
-          runtimeStack: expect.any(String),
-        },
-        {
-          message: 'rollback failed',
-          errorName: 'RollbackError',
-          runtimeStack: expect.any(String),
-        },
-      ],
-    })
-  })
-
   it('deduplicates reports when given a dedupe key', async () => {
     await reportClientError({
       code: 'opfs_missing_create_writable',

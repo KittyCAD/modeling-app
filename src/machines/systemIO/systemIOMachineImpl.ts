@@ -8,7 +8,6 @@ import {
   canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
-  isPathNotFoundError,
   readAppSettingsFile,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -34,7 +33,6 @@ import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-  withSystemIOErrorMetadata,
 } from '@src/lib/systemIOErrorReporting'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -67,11 +65,21 @@ async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   try {
     return await fsZds.readdir(projectDirectoryPath)
   } catch (error) {
-    if (isPathNotFoundError(error)) {
+    if (error === 'ENOENT') {
       return []
     }
     return Promise.reject(error)
   }
+}
+
+function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ENOENT')
+  )
 }
 
 async function pathExists(targetPath: string) {
@@ -93,59 +101,27 @@ async function moveRecursivePath({
   src: string
   target: string
 }) {
-  let phase = 'stat_source'
-  let targetAlreadyExists = false
-  let renameFallbackUsed = false
+  const statRes = await fsZds.stat(src)
+  const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
+  const targetAlreadyExists = await pathExists(target)
 
-  try {
-    const statRes = await fsZds.stat(src)
-    const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
-    phase = 'check_target'
-    targetAlreadyExists = await pathExists(target)
-
-    if (!targetAlreadyExists) {
-      phase = 'create_target_parent'
-      await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
-      phase = 'rename'
-      try {
-        await fsZds.rename(src, target)
-        return
-      } catch {
-        renameFallbackUsed = true
-        // Fall back to copy/remove for cases like cross-device moves.
-      }
+  if (!targetAlreadyExists) {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+    try {
+      await fsZds.rename(src, target)
+      return
+    } catch {
+      // Fall back to copy/remove for cases like cross-device moves.
     }
-
-    phase = 'create_copy_target'
-    if (isDirectory) {
-      await fsZds.mkdir(target, { recursive: true })
-    } else {
-      await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
-    }
-    phase = 'copy'
-    await fsZds.cp(src, target, { recursive: true })
-    phase = 'remove_source_after_copy'
-    await fsZds.rm(src, { recursive: true })
-  } catch (error) {
-    return Promise.reject(
-      withSystemIOErrorMetadata(error, {
-        phase,
-        targetAlreadyExists,
-        renameFallbackUsed,
-        renameMayHavePartiallyMutated: renameFallbackUsed,
-        copyCompleted: phase === 'remove_source_after_copy',
-        targetMayBePartial: phase === 'copy',
-        sourceMayBePartiallyRemoved: phase === 'remove_source_after_copy',
-        partialMutationPossible: !['stat_source', 'check_target'].includes(
-          phase
-        ),
-        dataLossPossible:
-          renameFallbackUsed ||
-          phase === 'remove_source_after_copy' ||
-          (targetAlreadyExists && phase === 'copy'),
-      })
-    )
   }
+
+  if (isDirectory) {
+    await fsZds.mkdir(target, { recursive: true })
+  } else {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+  }
+  await fsZds.cp(src, target, { recursive: true })
+  await fsZds.rm(src, { recursive: true })
 }
 
 async function getUniqueProjectNameForCreate({
@@ -238,73 +214,53 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  let phase = 'prepare'
-  let attemptedCount = 0
-  let completedCount = 0
+  const {
+    configuration,
+    projectDirectoryPath,
+    projectName: newProjectName,
+    projectRoot,
+  } = await prepareBulkProjectWrite({
+    context: input.context,
+    requestedProjectName: input.files[0]?.requestedProjectName,
+    wasmInstance: input.wasmInstance,
+  })
 
-  try {
-    const {
+  for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
+    const file = input.files[fileIndex]
+    const requestedFileName = file.requestedFileName
+    const requestedCode = file.requestedCode
+
+    // If override is true, use the requested filename directly
+    const fileName = input.override
+      ? requestedFileName
+      : (
+          await getNextFileName({
+            entryName: requestedFileName,
+            baseDir: projectRoot,
+            wasmInstance: input.wasmInstance,
+          })
+        ).name
+
+    // Create the project around the file if newProject
+    await createNewProjectDirectory(
+      newProjectName,
+      input.wasmInstance,
+      requestedCode,
       configuration,
-      projectDirectoryPath,
-      projectName: newProjectName,
-      projectRoot,
-    } = await prepareBulkProjectWrite({
-      context: input.context,
-      requestedProjectName: input.files[0]?.requestedProjectName,
-      wasmInstance: input.wasmInstance,
-    })
-
-    for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
-      const file = input.files[fileIndex]
-      const requestedFileName = file.requestedFileName
-      const requestedCode = file.requestedCode
-
-      phase = 'resolve_file_name'
-      const fileName = input.override
-        ? requestedFileName
-        : (
-            await getNextFileName({
-              entryName: requestedFileName,
-              baseDir: projectRoot,
-              wasmInstance: input.wasmInstance,
-            })
-          ).name
-
-      phase = 'write_file'
-      attemptedCount += 1
-      await createNewProjectDirectory(
-        newProjectName,
-        input.wasmInstance,
-        requestedCode,
-        configuration,
-        fileName,
-        projectDirectoryPath
-      )
-      completedCount += 1
-    }
-    const numberOfFiles = input.files.length
-    const fileText = numberOfFiles > 1 ? 'files' : 'file'
-    const message = input.override
-      ? `Successfully overwrote ${numberOfFiles} ${fileText}`
-      : `Successfully created ${numberOfFiles} ${fileText}`
-    return {
-      message,
-      fileName: '',
-      projectName: newProjectName,
-      subRoute: 'subRoute' in input ? input.subRoute : '',
-    }
-  } catch (error) {
-    return Promise.reject(
-      withSystemIOErrorMetadata(error, {
-        phase,
-        attemptedCount,
-        completedCount,
-        totalCount: input.files.length,
-        overwriteRequested: input.override === true,
-        partialMutationPossible: attemptedCount > 0,
-        dataLossPossible: input.override === true && attemptedCount > 0,
-      })
+      fileName,
+      projectDirectoryPath
     )
+  }
+  const numberOfFiles = input.files.length
+  const fileText = numberOfFiles > 1 ? 'files' : 'file'
+  const message = input.override
+    ? `Successfully overwrote ${numberOfFiles} ${fileText}`
+    : `Successfully created ${numberOfFiles} ${fileText}`
+  return {
+    message,
+    fileName: '',
+    projectName: newProjectName,
+    subRoute: 'subRoute' in input ? input.subRoute : '',
   }
 }
 
@@ -318,25 +274,11 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     requestedFileNameWithExtension?: string
   }
 }) => {
-  let phase = 'validate'
-  let attemptedCount = 0
-  let completedCount = 0
-
   try {
     if (input.files.length === 0) {
       return Promise.reject(
-        withSystemIOErrorMetadata(
-          new Error(
-            'The shared project import did not include any files to write.'
-          ),
-          {
-            phase,
-            attemptedCount,
-            completedCount,
-            totalCount: input.files.length,
-            partialMutationPossible: false,
-            dataLossPossible: false,
-          }
+        new Error(
+          'The shared project import did not include any files to write.'
         )
       )
     }
@@ -359,36 +301,20 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       ) === false
     ) {
       return Promise.reject(
-        withSystemIOErrorMetadata(
-          new Error(
-            `The shared project entry file "${requestedFileNameWithExtension}" was not present in the imported files.`
-          ),
-          {
-            phase,
-            attemptedCount,
-            completedCount,
-            totalCount: input.files.length,
-            partialMutationPossible: false,
-            dataLossPossible: false,
-          }
+        new Error(
+          `The shared project entry file "${requestedFileNameWithExtension}" was not present in the imported files.`
         )
       )
     }
 
-    phase = 'create_project_directory'
     await fsZds.mkdir(projectRoot, { recursive: true })
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
-      phase = 'create_file_parent'
       await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-      phase = 'write_file'
-      attemptedCount += 1
       await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
-      completedCount += 1
     }
 
     if (requestedFileNameWithExtension) {
-      phase = 'verify_entrypoint'
       const entrypointPath = fsZds.join(
         projectRoot,
         requestedFileNameWithExtension
@@ -397,19 +323,9 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
         await fsZds.stat(entrypointPath)
       } catch (error) {
         return Promise.reject(
-          withSystemIOErrorMetadata(
-            new Error(
-              `The shared project entry file "${requestedFileNameWithExtension}" was not written successfully.`,
-              { cause: error }
-            ),
-            {
-              phase,
-              attemptedCount,
-              completedCount,
-              totalCount: input.files.length,
-              partialMutationPossible: attemptedCount > 0,
-              dataLossPossible: attemptedCount > 0,
-            }
+          new Error(
+            `The shared project entry file "${requestedFileNameWithExtension}" was not written successfully.`,
+            { cause: error }
           )
         )
       }
@@ -423,20 +339,9 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     }
   } catch (error) {
     return Promise.reject(
-      withSystemIOErrorMetadata(
-        isErr(error)
-          ? error
-          : new Error('Failed while writing the imported shared project.'),
-        {
-          phase,
-          attemptedCount,
-          completedCount,
-          totalCount: input.files.length,
-          partialMutationPossible:
-            phase === 'create_project_directory' || attemptedCount > 0,
-          dataLossPossible: attemptedCount > 0,
-        }
-      )
+      isErr(error)
+        ? error
+        : new Error('Failed while writing the imported shared project.')
     )
   }
 }
@@ -452,95 +357,53 @@ const sharedBulkDeleteWorkflow = async ({
     wasmInstance: ModuleType
   }
 }) => {
-  let phase = 'validate_context'
+  if (!input.context.folders) {
+    console.warn('no folders')
+    return
+  }
+
+  const project = input.context.folders.find(
+    (f) => f.name === input.requestedProjectName
+  )
+
+  if (!project) {
+    return Promise.reject(new Error("Couldn't find project"))
+  }
+
+  const filesInProject = await collectProjectFiles({
+    selectedFileContents: '',
+    fileNames: [],
+    projectContext: project,
+  })
+
+  const requestedFilesToDelete = new Set(
+    (input.filesToDelete ?? []).map((file) =>
+      normalizeKCLFileDeletePath(file.requestedFileName)
+    )
+  )
+
+  // requestedFileName is the relative path too.
+  const filesToDelete = filesInProject.filter(
+    (file) =>
+      requestedFilesToDelete.has(normalizeKCLFileDeletePath(file.relPath)) ===
+      true
+  )
+
   let totalDeleted = 0
-  let totalCount = input.filesToDelete?.length ?? 0
-
-  if (totalCount === 0) {
-    return 0
+  for (const file of filesToDelete) {
+    // 'kcl' files carry an absolute path; 'other' files (e.g. Markdown) only
+    // carry a project-relative path, so reconstruct the absolute path from the
+    // project root. Both kinds are deletable when explicitly requested.
+    const absPath =
+      file.type === 'kcl'
+        ? file.absPath
+        : fsZds.join(project.path, file.relPath)
+    await fsZds.rm(absPath)
+    totalDeleted += 1
   }
 
-  try {
-    if (!input.context.folders) {
-      return Promise.reject(
-        withSystemIOErrorMetadata(
-          new Error('Cannot delete files before projects load'),
-          {
-            phase,
-            completedCount: 0,
-            totalCount,
-            partialMutationPossible: false,
-            dataLossPossible: false,
-          }
-        )
-      )
-    }
-
-    phase = 'find_project'
-    const project = input.context.folders.find(
-      (f) => f.name === input.requestedProjectName
-    )
-
-    if (!project) {
-      return Promise.reject(
-        withSystemIOErrorMetadata(new Error("Couldn't find project"), {
-          phase,
-          completedCount: 0,
-          totalCount,
-          partialMutationPossible: false,
-          dataLossPossible: false,
-        })
-      )
-    }
-
-    phase = 'collect_project_files'
-    const filesInProject = await collectProjectFiles({
-      selectedFileContents: '',
-      fileNames: [],
-      projectContext: project,
-      skipUnreadableFiles: false,
-    })
-
-    const requestedFilesToDelete = new Set(
-      (input.filesToDelete ?? []).map((file) =>
-        normalizeKCLFileDeletePath(file.requestedFileName)
-      )
-    )
-
-    const filesToDelete = filesInProject.filter(
-      (file) =>
-        requestedFilesToDelete.has(normalizeKCLFileDeletePath(file.relPath)) ===
-        true
-    )
-    totalCount = filesToDelete.length
-
-    phase = 'delete_file'
-    for (const file of filesToDelete) {
-      // 'kcl' files carry an absolute path; 'other' files (e.g. Markdown) only
-      // carry a project-relative path, so reconstruct the absolute path from the
-      // project root. Both kinds are deletable when explicitly requested.
-      const absPath =
-        file.type === 'kcl'
-          ? file.absPath
-          : fsZds.join(project.path, file.relPath)
-      await fsZds.rm(absPath)
-      totalDeleted += 1
-    }
-
-    return totalDeleted
-  } catch (error) {
-    return Promise.reject(
-      withSystemIOErrorMetadata(error, {
-        phase,
-        attemptedCount:
-          phase === 'delete_file' ? totalDeleted + 1 : totalDeleted,
-        completedCount: totalDeleted,
-        totalCount,
-        partialMutationPossible: totalDeleted > 0 || phase === 'delete_file',
-        dataLossPossible: totalDeleted > 0 || phase === 'delete_file',
-      })
-    )
-  }
+  // How many files we deleted successfully
+  return totalDeleted
 }
 
 export const systemIOMachineImpl = systemIOMachine.provide({
@@ -578,6 +441,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             })
           },
         })
+
         return projects
       }
     ),
@@ -719,25 +583,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        try {
-          await fsZds.rm(
-            fsZds.join(
-              input.context.projectDirectoryPath,
-              input.requestedProjectName
-            ),
-            {
-              recursive: true,
-            }
-          )
-        } catch (error) {
-          return Promise.reject(
-            withSystemIOErrorMetadata(error, {
-              phase: 'delete_project',
-              partialMutationPossible: true,
-              dataLossPossible: true,
-            })
-          )
-        }
+        await fsZds.rm(
+          fsZds.join(
+            input.context.projectDirectoryPath,
+            input.requestedProjectName
+          ),
+          {
+            recursive: true,
+          }
+        )
 
         return {
           message: `Successfully deleted "${input.requestedProjectName}"`,
@@ -837,16 +691,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedProjectName,
           input.requestedFileName
         )
-        try {
-          await fsZds.rm(path)
-        } catch (error) {
-          return Promise.reject(
-            withSystemIOErrorMetadata(error, {
-              phase: 'delete_file',
-              dataLossPossible: true,
-            })
-          )
-        }
+        await fsZds.rm(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -947,7 +792,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             onSuccess?: () => void
           }
         }) => {
-          let writeStageCompleted = false
           try {
             const wasmInstance = await input.context.wasmInstancePromise
             const message = await sharedBulkCreateWorkflow({
@@ -957,7 +801,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                 override: input.override,
               },
             })
-            writeStageCompleted = true
             // We won't delete until everything's created / updated first.
             const totalDeleted = await sharedBulkDeleteWorkflow({
               input: {
@@ -1007,21 +850,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             }
           } catch (error: unknown) {
             input.onFileSystemError?.()
-            return Promise.reject(
-              withSystemIOErrorMetadata(error, {
-                workflowPhase: writeStageCompleted
-                  ? 'delete_files'
-                  : 'write_files',
-                writeStageCompleted,
-                writeTotalCount: input.files.length,
-                partialMutationPossible:
-                  writeStageCompleted && input.files.length > 0,
-                dataLossPossible:
-                  writeStageCompleted &&
-                  input.files.length > 0 &&
-                  input.override === true,
-              })
-            )
+            return Promise.reject(error)
           }
         }
       ),
@@ -1188,17 +1017,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        try {
-          await fsZds.rm(input.requestedPath, { recursive: true })
-        } catch (error) {
-          return Promise.reject(
-            withSystemIOErrorMetadata(error, {
-              phase: 'delete_file_or_folder',
-              partialMutationPossible: true,
-              dataLossPossible: true,
-            })
-          )
-        }
+        await fsZds.rm(input.requestedPath, { recursive: true })
         const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1229,15 +1048,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             )
           }
         } catch (e) {
-          if (!isPathNotFoundError(e)) {
-            return Promise.reject(
-              withSystemIOErrorMetadata(e, {
-                phase: 'check_file_destination',
-                partialMutationPossible: false,
-                dataLossPossible: false,
-              })
-            )
-          }
+          console.error(e)
         }
         let fileContents = new Uint8Array()
         if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
@@ -1284,13 +1095,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             )
           }
         } catch (e) {
-          if (!isPathNotFoundError(e)) {
-            return Promise.reject(
-              withSystemIOErrorMetadata(e, {
-                phase: 'check_folder_destination',
-                partialMutationPossible: false,
-              })
+          if (e === 'ENOENT') {
+            console.warn(
+              `checking if folder is created, ${input.requestedAbsolutePath}`
             )
+            console.warn(e)
+          } else {
+            console.error(e)
           }
         }
         await fsZds.mkdir(input.requestedAbsolutePath, {
