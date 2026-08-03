@@ -1,6 +1,5 @@
 import {
   filterCloudSyncProjectFilesForSync,
-  getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
@@ -10,7 +9,6 @@ import {
   getCloudSyncRemoteArchiveReconciliationAction,
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
-  isCloudSyncConflictCopyProjectName,
   shouldAutoEnrollCloudLibraryProject,
   type OutboxEntry,
   type ProjectArchiveFile,
@@ -475,70 +473,6 @@ describe('cloudSync sync helpers', () => {
         localMatchesBase: false,
       })
     ).toBe('forget-missing-local')
-  })
-
-  it('detects conflict copy project folder names', () => {
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401)'
-      )
-    ).toBe(true)
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
-      )
-    ).toBe(true)
-    expect(isCloudSyncConflictCopyProjectName('demo-project')).toBe(false)
-  })
-
-  it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
-    const originalManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 10, sha256: 'a' },
-      },
-    }
-    const changedManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 11, sha256: 'b' },
-      },
-    }
-    const cleanupPlan = getCloudSyncConflictCopyCleanupPlan([
-      {
-        projectPath: '/projects/demo-project',
-        projectName: 'demo-project',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T001401)',
-        projectName: 'demo-project (cloud conflict 20260612T001401)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath:
-          '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        projectName:
-          'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T151955)',
-        projectName: 'demo-project (cloud conflict 20260612T151955)',
-        remoteProjectId: 'project-123',
-        manifest: changedManifest,
-      },
-    ])
-
-    expect(cleanupPlan.excludeProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401)',
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-      '/projects/demo-project (cloud conflict 20260612T151955)',
-    ])
-    expect(cleanupPlan.deleteProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-    ])
   })
 
   it('pushes local edits only when the remote revision is still the synced base', () => {

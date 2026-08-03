@@ -30,8 +30,14 @@ export type ProjectMetadata = {
   tombstone?: boolean
   conflict?: {
     remoteRevision?: Revision
-    conflictProjectPath: string
+    remoteUpdatedAt?: string
     createdAt: string
+    /**
+     * Legacy conflict copies were persisted as sibling project folders. New
+     * conflicts fetch the cloud version on demand instead; this path is retained
+     * only so resolving old conflicts can clean up the stale folder.
+     */
+    conflictProjectPath?: string
   }
   syncExcluded?: {
     reason: 'conflict-copy' | 'user-disconnected'
