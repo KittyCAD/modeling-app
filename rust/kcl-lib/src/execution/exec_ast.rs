@@ -6411,7 +6411,7 @@ mod test {
 
         assert_eq!(
             details.message,
-            "KCL's 2D solver returned invalid numbers for circle.center.x"
+            "KCL's 2D solver returned an invalid number for circle.center.x"
         );
         assert_eq!(details.source_ranges, vec![circle_range]);
     }
