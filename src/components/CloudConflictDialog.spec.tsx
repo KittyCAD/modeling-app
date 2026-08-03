@@ -168,7 +168,7 @@ describe('CloudConflictDialog', () => {
     expect(await screen.findByText('main.kcl')).toBeInTheDocument()
     const intro = screen.getByText(/Local and cloud data both changed for/)
     expect(intro).toHaveTextContent('"User-facing project title"')
-    expect(intro).toHaveTextContent('(cloud ID: remote-123)')
+    expect(screen.getByText('cloud ID: remote-123')).toBeInTheDocument()
     expect(intro).not.toHaveTextContent('local-folder')
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
