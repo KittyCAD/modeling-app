@@ -1,4 +1,4 @@
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
@@ -239,6 +239,76 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       await expect(toolbar.fileName).toHaveText('main.kcl')
     }
   )
+
+  test('opening a nested file keeps the project directory rooted at the project list', async ({
+    fs,
+    folderSetupFn,
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = 'nested-file-navigation'
+    const folderName = 'parts'
+    const nestedFileName = 'bolt.kcl'
+    let nestedDir = ''
+
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectDir = await fs.join(dir, projectName)
+      nestedDir = await fs.join(projectDir, folderName)
+      await fs.mkdir(nestedDir, { recursive: true })
+
+      const mainFileData = await nodeFsP.readFile(executorInputPath('cube.kcl'))
+      const nestedFileData = await nodeFsP.readFile(
+        executorInputPath('cylinder.kcl')
+      )
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new Uint8Array(mainFileData)
+      )
+      await fs.writeFile(
+        await fs.join(nestedDir, nestedFileName),
+        new Uint8Array(nestedFileData)
+      )
+    })
+
+    const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+    const treeItem = (name: string) =>
+      filePaneScroll.getByRole('treeitem', { name, exact: true })
+    const projectDirectoryPath = () =>
+      page.evaluate(
+        () =>
+          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
+      )
+    const nestedProjectSettingsFile = async () =>
+      fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
+
+    await test.step('Open project and reveal nested file', async () => {
+      await homePage.openProject(projectName)
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+
+      await toolbar.ensureFolderOpen(treeItem(folderName), true)
+      await expect(treeItem(nestedFileName)).toBeVisible()
+      await expect.poll(projectDirectoryPath).toBe(dir)
+      expect(await exists(fs, await nestedProjectSettingsFile())).toBeFalsy()
+    })
+
+    await test.step('Open nested file without changing project directory', async () => {
+      await treeItem(nestedFileName).click()
+      await scene.settled()
+
+      await expect(toolbar.fileName).toContainText(nestedFileName)
+      await expect.poll(projectDirectoryPath).toBe(dir)
+      await toolbar.expectFileTreeState([
+        folderName,
+        nestedFileName,
+        'main.kcl',
+      ])
+      expect(await exists(fs, await nestedProjectSettingsFile())).toBeFalsy()
+    })
+  })
 
   test('deleting all files recreates a default main.kcl with no code', async ({
     page,
