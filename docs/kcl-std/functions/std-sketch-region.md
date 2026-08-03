@@ -17,31 +17,26 @@ region(
 ): Sketch
 ```
 
-Form the region from sketch block segments that have a given point within a
-closed boundary. When using a 2D point, not a point from the sketch, the
-`sketch` parameter is required to specify which sketch the region is from.
+Prefer the `segments` parameter. It forms a region by tracing the first
+segment from its start point to the intersection with the second segment,
+then turning at each intersection using `direction` until returning to the
+first segment.
 
-Alternatively, form the region by tracing the first segment from its start
-point to the intersection with the second segment, and turn at each
-intersection using the `direction` until returning back to the first
-segment.
+As a fallback, use the `point` parameter to select the closed boundary that
+contains a given point. When using a 2D point rather than a point from the
+sketch, provide the `sketch` parameter to specify which sketch the region is
+from.
 
-Important: Creating a region using the `segments` parameter is currently
-only supported when there is a single closed region in the sketch. If the
-sketch may have multiple regions, use the `point` parameter instead. Until
-this limitation is lifted, using a point to select a region is preferred.
-
-To help allow the region's point to move with the sketch, which may be
-created parametrically, consider creating a construction point in the sketch
-and constraining it into place. Then you can refer to the point to create
-the region.
+To make a fallback point move with a parametric sketch, consider creating a
+construction point in the sketch and constraining it into place. You can then
+refer to that point to create the region.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `point` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | A point that is within the region's boundary. | No |
-| `segments` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region. This parameter is currently only supported when there is only one region in the sketch. If the sketch may have multiple regions, use the `point` parameter instead. | No |
+| `point` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | A fallback point that is within the region's boundary. | No |
+| `segments` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region. This is the preferred way to create a region. | No |
 | `intersectionIndex` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is only used when the `segments` argument is provided. | No |
 | `direction` | [`string`](/docs/kcl-std/types/std-types-string) | `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is only used when the `segments` argument is provided. | No |
 | `sketch` | [`any`](/docs/kcl-std/types/std-types-any) | The sketch that the region is from. This is required when point is a [`Point2d`](/docs/kcl-std/types/std-types-Point2d). | No |
@@ -54,6 +49,9 @@ the region.
 ### Examples
 
 ```kcl
+@settings(kclVersion = 2.0)
+
+// `region` traces counterclockwise by default.
 triangle = sketch(on = XY) {
   line1 = line(start = [var -0.05mm, var -0.01mm], end = [var 3.88mm, var 0.81mm])
   line2 = line(start = [var 3.88mm, var 0.81mm], end = [var 0.92mm, var 4.67mm])
@@ -65,7 +63,7 @@ triangle = sketch(on = XY) {
   equalLength([line2, line3])
 }
 
-r = region(point = [0.5mm, 0.5mm], sketch = triangle)
+r = region(segments = [triangle.line1, triangle.line2])
 extrude(r, length = 5)
 
 ```
@@ -85,21 +83,24 @@ extrude(r, length = 5)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 2.0)
+
+// Set `direction = CW` when the segments trace the boundary clockwise.
 trapezoid = sketch(on = XY) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
-  line3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
-  line4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
+  line2 = line(start = [var 0mm, var 3mm], end = [var 4mm, var 3mm])
+  line3 = line(start = [var 4mm, var 3mm], end = [var 4mm, var 0mm])
+  line4 = line(start = [var 4mm, var 0mm], end = [var 0mm, var 0mm])
   coincident([line1.end, line2.start])
   coincident([line2.end, line3.start])
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
-  vertical(line2)
-  horizontal(line3)
-  parallel([line1, line3])
+  vertical(line1)
+  horizontal(line2)
+  parallel([line2, line4])
 }
 
-r = region(point = [1mm, 1mm], sketch = trapezoid)
+r = region(segments = [trapezoid.line1, trapezoid.line2], direction = CW)
 extrude(r, length = 3)
 
 ```

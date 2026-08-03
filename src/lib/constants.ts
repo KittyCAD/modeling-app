@@ -166,6 +166,7 @@ export const KCL_DEFAULT_FONT_SIZE = `10mm`
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const DUPLICATE_PROJECT_TEMPORARY_PREFIX = '.zds-duplicate-'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'

@@ -9,6 +9,17 @@ export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE = 'Personal Cloud'
 export const CLOUD_PROJECT_LIBRARY_TYPE = 'cloud'
 export const DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH = '/personal'
+export const CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX = 'zoo://'
+
+export function formatProjectLibraryPathForDisplay(
+  library: Pick<ProjectLibrarySetting, 'path' | 'type'>
+) {
+  if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
+    return library.path
+  }
+
+  return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${library.path.replace(/^\/+/, '')}`
+}
 
 export type ProjectLibraryType = string
 
@@ -42,6 +53,20 @@ export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
     path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
     type: CLOUD_PROJECT_LIBRARY_TYPE,
   }
+}
+
+export function canRemoveProjectLibrary(
+  library: Pick<ProjectLibrarySetting, 'type'>,
+  options: { canManageLibraries: boolean }
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return false
+  }
+
+  return (
+    options.canManageLibraries ||
+    library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
 }
 
 export function getDefaultDirectoryProjectLibrarySetting(
@@ -218,6 +243,18 @@ export function projectLibraryFromSetting(
           : getProjectLibraryIdFromSetting(library),
     order: index,
   }
+}
+
+export function projectLibrariesFromSettings(
+  libraries: readonly ProjectLibrarySetting[]
+): ProjectLibrary[] {
+  const defaultProjectDirectory =
+    getDefaultDirectoryProjectLibraryPath(libraries)
+  return libraries.map((library, index) =>
+    projectLibraryFromSetting(library, index, {
+      defaultProjectDirectory,
+    })
+  )
 }
 
 export function updateDefaultDirectoryProjectLibrarySetting(

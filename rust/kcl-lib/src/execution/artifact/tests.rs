@@ -46,7 +46,7 @@ fn entity_clone_remaps_sweep_ids() {
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: Some(source_trajectory_id),
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -94,7 +94,7 @@ fn entity_clone_remaps_sweep_ids() {
     assert_eq!(clone_sweep.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_sweep.sub_type, SweepSubType::Revolve);
     assert_eq!(clone_sweep.path_id, cloned_path_id);
-    assert_eq!(clone_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(clone_sweep.method, ArtifactSweepMethod::New);
     assert_eq!(clone_sweep.surface_ids, vec![cloned_surface_id]);
     assert_eq!(clone_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(clone_sweep.trajectory_id, Some(cloned_trajectory_id));
@@ -401,7 +401,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -538,7 +538,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -790,7 +790,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             code_ref: source_code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -806,7 +806,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
             code_ref: source_code_ref,
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -871,7 +871,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.sub_type, SweepSubType::Blend);
     assert_eq!(blend_sweep.path_id, path_one_id);
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
-    assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(blend_sweep.method, ArtifactSweepMethod::New);
     assert!(!blend_sweep.consumed);
 }
 
@@ -1004,7 +1004,7 @@ fn pattern_artifact_links_to_source_geometry() {
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -1162,7 +1162,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -1401,7 +1401,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             code_ref,
             source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),

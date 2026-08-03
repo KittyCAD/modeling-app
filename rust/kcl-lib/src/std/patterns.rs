@@ -37,6 +37,7 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
@@ -415,7 +416,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), true, exec_state)
+    val.coerce(&RuntimeType::point3d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -435,7 +436,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), true, exec_state)
+    val.coerce(&RuntimeType::point2d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
