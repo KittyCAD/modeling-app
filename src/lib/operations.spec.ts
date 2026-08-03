@@ -549,7 +549,6 @@ describe('operations.test.ts', () => {
         argDefaultValues.direction?.graphSelections[0].entityRef?.segment_id
       ).toBe('segment-id')
     })
-
   })
 
   describe('Sweep edit flow', () => {
