@@ -1,6 +1,5 @@
 import {
   filterCloudSyncProjectFilesForSync,
-  getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
@@ -10,19 +9,20 @@ import {
   getCloudSyncRemoteArchiveReconciliationAction,
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
-  isCloudSyncConflictCopyProjectName,
+  shouldAutoEnrollCloudLibraryProject,
   type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
-  shouldCloudSyncAutoSyncLocalProject,
 } from '@src/lib/cloudSync'
 import {
   DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
+  getCloudProjectLibraryMaterializationDirectoryPath,
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
 import {
+  getProjectArchiveEntrypointPath,
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
   withRemoteProjectMetadataInArchiveFiles,
@@ -54,6 +54,15 @@ describe('cloudSync sync helpers', () => {
     expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
       `/documents/${PROJECT_FOLDER}`
     )
+  })
+
+  it('uses a configured cloud library path as its materialization directory', async () => {
+    await expect(
+      getCloudProjectLibraryMaterializationDirectoryPath({
+        path: '/team-cloud/',
+        type: 'cloud',
+      })
+    ).resolves.toBe('/team-cloud')
   })
 
   it('identifies project roots beneath the personal Zoo cloud directory', () => {
@@ -137,10 +146,15 @@ describe('cloudSync sync helpers', () => {
     ])
   })
 
-  it('adds a project.toml upload file when local project settings are missing', () => {
+  it('adds a project.toml upload file without default_file when local project settings are missing', () => {
     const payload = prepareProjectFilesForCloudUpload('/projects/bracket', [
       projectFile('main.kcl'),
     ])
+    const projectToml = new TextDecoder().decode(
+      payload.files.find(
+        (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+      )?.data
+    )
 
     expect(payload.body.entrypoint_path).toBe('main.kcl')
     expect(payload.body.project_toml_path).toBe(PROJECT_SETTINGS_FILE_NAME)
@@ -148,20 +162,8 @@ describe('cloudSync sync helpers', () => {
       'main.kcl',
       PROJECT_SETTINGS_FILE_NAME,
     ])
-    expect(
-      new TextDecoder().decode(
-        payload.files.find(
-          (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-        )?.data
-      )
-    ).toContain('default_file = "main.kcl"')
-    expect(
-      new TextDecoder().decode(
-        payload.files.find(
-          (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-        )?.data
-      )
-    ).toContain('title = "bracket"')
+    expect(projectToml).toContain('title = "bracket"')
+    expect(projectToml).not.toContain('default_file')
   })
 
   it('adds the upload title to project.toml when local project settings have no title', () => {
@@ -180,20 +182,39 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "bracket"')
   })
 
-  it('normalizes project.toml table order before cloud sync upload and manifest hashing', async () => {
+  it('uses API entrypoint metadata for uploads without writing default_file into project.toml', () => {
+    const payload = prepareProjectFilesForCloudUpload(
+      '/projects/bracket',
+      [
+        projectFile('main.kcl'),
+        projectFile('nested/part.kcl'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, 'title = "Bracket"\n'),
+      ],
+      { entrypointPath: 'nested/part.kcl' }
+    )
+    const projectToml = new TextDecoder().decode(
+      payload.files.find(
+        (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+      )?.data
+    )
+
+    expect(payload.body.entrypoint_path).toBe('nested/part.kcl')
+    expect(projectToml).toContain('title = "Bracket"')
+    expect(projectToml).not.toContain('default_file')
+  })
+
+  it('preserves project.toml bytes before cloud sync upload and manifest hashing', async () => {
+    const localProjectToml =
+      'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
+    const cloudProjectToml =
+      'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
     const localOrderFiles = normalizeProjectArchiveFilesForCloudSync([
       projectFile('main.kcl', 'cube = 1'),
-      projectFile(
-        PROJECT_SETTINGS_FILE_NAME,
-        'title = "demo-project"\ndefault_file = "main.kcl"\n\n[settings.meta]\nid = "settings-id"\n\n[settings.app]\n[settings.modeling]\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
-      ),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, localProjectToml),
     ])
     const cloudOrderFiles = normalizeProjectArchiveFilesForCloudSync([
       projectFile('main.kcl', 'cube = 1'),
-      projectFile(
-        PROJECT_SETTINGS_FILE_NAME,
-        'default_file = "main.kcl"\ntitle = "demo-project"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.app]\n[settings.meta]\nid = "settings-id"\n\n[settings.modeling]\n'
-      ),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, cloudProjectToml),
     ])
     const uploadPayload = prepareProjectFilesForCloudUpload(
       '/projects/demo-project',
@@ -201,17 +222,17 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME)).toBe(
-      readProjectFile(cloudOrderFiles, PROJECT_SETTINGS_FILE_NAME)
+      localProjectToml
     )
     expect(
       readProjectFile(uploadPayload.files, PROJECT_SETTINGS_FILE_NAME)
-    ).toBe(readProjectFile(localOrderFiles, PROJECT_SETTINGS_FILE_NAME))
+    ).toBe(cloudProjectToml)
     expect(
       projectManifestsEqual(
         await projectManifestFromFiles(localOrderFiles),
         await projectManifestFromFiles(cloudOrderFiles)
       )
-    ).toBe(true)
+    ).toBe(false)
   })
 
   it('adds an Untitled project.toml title when remote project metadata has no title', () => {
@@ -227,11 +248,11 @@ describe('cloudSync sync helpers', () => {
     )
 
     expect(projectToml).toContain('title = "Untitled"')
-    expect(projectToml).toContain('default_file = "main.kcl"')
+    expect(projectToml).not.toContain('default_file')
     expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
-  it('adds project.toml default_file from remote entrypoint metadata', () => {
+  it('does not write project.toml default_file from remote entrypoint metadata', () => {
     const files = withRemoteProjectMetadataInArchiveFiles(
       [
         projectFile('main.kcl'),
@@ -240,16 +261,18 @@ describe('cloudSync sync helpers', () => {
       ],
       'Bracket',
       'remote-project-123',
-      'dev.zoo.dev',
-      'nested/part.kcl'
+      'dev.zoo.dev'
     )
     const projectToml = new TextDecoder().decode(
       files.find((file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME)
         ?.data
     )
 
+    expect(getProjectArchiveEntrypointPath(files, 'nested/part.kcl')).toBe(
+      'nested/part.kcl'
+    )
     expect(projectToml).toContain('title = "Bracket"')
-    expect(projectToml).toContain('default_file = "nested/part.kcl"')
+    expect(projectToml).not.toContain('default_file')
     expect(projectToml).toContain('project_id = "remote-project-123"')
   })
 
@@ -270,6 +293,15 @@ describe('cloudSync sync helpers', () => {
       'nested/.gitignore',
       'nested/part.kcl',
     ])
+  })
+
+  it('excludes generated thumbnails from cloud sync manifests and uploads', () => {
+    const files = filterCloudSyncProjectFilesForSync([
+      projectFile('main.kcl', 'cube = 1'),
+      projectFile(PROJECT_IMAGE_NAME, 'generated image'),
+    ])
+
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
   })
 
   it('excludes VCS metadata from cloud sync manifests without .gitignore entries', () => {
@@ -467,70 +499,6 @@ describe('cloudSync sync helpers', () => {
     ).toBe('forget-missing-local')
   })
 
-  it('detects conflict copy project folder names', () => {
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401)'
-      )
-    ).toBe(true)
-    expect(
-      isCloudSyncConflictCopyProjectName(
-        'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
-      )
-    ).toBe(true)
-    expect(isCloudSyncConflictCopyProjectName('demo-project')).toBe(false)
-  })
-
-  it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
-    const originalManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 10, sha256: 'a' },
-      },
-    }
-    const changedManifest: ProjectManifest = {
-      files: {
-        'main.kcl': { byteSize: 11, sha256: 'b' },
-      },
-    }
-    const cleanupPlan = getCloudSyncConflictCopyCleanupPlan([
-      {
-        projectPath: '/projects/demo-project',
-        projectName: 'demo-project',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T001401)',
-        projectName: 'demo-project (cloud conflict 20260612T001401)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath:
-          '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        projectName:
-          'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-        remoteProjectId: 'project-123',
-        manifest: originalManifest,
-      },
-      {
-        projectPath: '/projects/demo-project (cloud conflict 20260612T151955)',
-        projectName: 'demo-project (cloud conflict 20260612T151955)',
-        remoteProjectId: 'project-123',
-        manifest: changedManifest,
-      },
-    ])
-
-    expect(cleanupPlan.excludeProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401)',
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-      '/projects/demo-project (cloud conflict 20260612T151955)',
-    ])
-    expect(cleanupPlan.deleteProjectPaths).toEqual([
-      '/projects/demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)',
-    ])
-  })
-
   it('pushes local edits only when the remote revision is still the synced base', () => {
     expect(
       getCloudSyncProjectSyncPreflightAction({
@@ -672,26 +640,26 @@ describe('cloudSync sync helpers', () => {
     })
   })
 
-  it('does not auto-enroll unlinked local projects when existing local sync is disabled', () => {
+  it('does not auto-enroll unlinked cloud-library projects when cloud-library auto-enrollment is disabled', () => {
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: false,
       })
     ).toBe(false)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: true,
         hasBaseManifest: false,
       })
     ).toBe(true)
 
     expect(
-      shouldCloudSyncAutoSyncLocalProject({
-        syncExistingLocalProjects: false,
+      shouldAutoEnrollCloudLibraryProject({
+        autoEnrollCloudLibraryProjects: false,
         hasRemoteProjectId: false,
         hasBaseManifest: true,
       })

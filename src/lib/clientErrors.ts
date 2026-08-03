@@ -21,6 +21,7 @@ export enum ClientErrorCode {
   AuthTokenRevokeError = 'auth_token_revoke_error',
   AuthTokenSyncError = 'auth_token_sync_error',
   CloudSyncConflict = 'cloud_sync_conflict',
+  CloudSyncConflictCopyDetected = 'cloud_sync_conflict_copy_detected',
   CloudSyncFailure = 'cloud_sync_failure',
   EngineDisconnect = 'engine_disconnect',
   UserFeaturesFetchError = 'user_features_fetch_error',
@@ -37,13 +38,17 @@ const getAppRelease = () => {
 }
 
 const getCurrentRoute = () => {
-  if (typeof window === 'undefined') return undefined
+  if (typeof window === 'undefined') {
+    return undefined
+  }
   const { pathname, search, hash } = window.location
   return `${pathname}${search}${hash}` || undefined
 }
 
 const getAuthToken = () => {
-  if (typeof window === 'undefined') return undefined
+  if (typeof window === 'undefined') {
+    return undefined
+  }
 
   try {
     return window.app?.auth.actor.getSnapshot().context.token
@@ -56,9 +61,15 @@ export const errorToMessage = (
   error: unknown,
   fallback = 'Unknown client error'
 ) => {
-  if (error instanceof Error) return error.message
-  if (typeof error === 'string') return error
-  if (error === undefined) return fallback
+  if (error instanceof Error) {
+    return error.message
+  }
+  if (typeof error === 'string') {
+    return error
+  }
+  if (error === undefined) {
+    return fallback
+  }
 
   try {
     return JSON.stringify(error)
@@ -68,13 +79,19 @@ export const errorToMessage = (
 }
 
 const getErrorMessage = (params: ReportClientErrorParams) => {
-  if (params.message) return params.message
+  if (params.message) {
+    return params.message
+  }
   return errorToMessage(params.error)
 }
 
 const getErrorName = (params: ReportClientErrorParams) => {
-  if (params.errorName) return params.errorName
-  if (params.error instanceof Error) return params.error.name
+  if (params.errorName) {
+    return params.errorName
+  }
+  if (params.error instanceof Error) {
+    return params.error.name
+  }
   return undefined
 }
 
@@ -107,8 +124,12 @@ const buildClientErrorReport = (
 
 export const reportClientError = async (params: ReportClientErrorParams) => {
   const dedupeKey = params.dedupeKey
-  if (dedupeKey && reportedClientErrors.has(dedupeKey)) return
-  if (dedupeKey) reportedClientErrors.add(dedupeKey)
+  if (dedupeKey && reportedClientErrors.has(dedupeKey)) {
+    return
+  }
+  if (dedupeKey) {
+    reportedClientErrors.add(dedupeKey)
+  }
 
   const client = createKCClient(getAuthToken())
   const result = await kcCall(() =>
