@@ -28,6 +28,21 @@ export type CloudSyncRegistryService = {
    */
   disconnectProjectSync: (projectPath: string) => Promise<void>
   /**
+   * Delete the remote cloud project identified by `remoteProjectId`.
+   * Library delete operations with local materializations must remove their
+   * local project directory as well before reporting success.
+   */
+  deleteRemoteProject: (remoteProjectId: string) => Promise<void>
+  /**
+   * Remove the selected local materialization of a cloud project plus exact
+   * duplicate local copies. Divergent local copies are detached from the cloud
+   * project instead of being silently deleted.
+   */
+  deleteLocalProjectRealizations: (
+    remoteProjectId: string,
+    selectedProjectPath: string
+  ) => Promise<void>
+  /**
    * Materialize a remote cloud project into the local library directory the
    * caller is opening it from. `targetProjectDirectoryPath` is the resolved
    * local path of that library; when omitted the engine falls back to the

@@ -42,10 +42,12 @@ import {
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getOwningSweepForEdgeCut,
   getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
@@ -114,7 +116,6 @@ import type {
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
-  NonCodeSelection,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import type {
@@ -1240,16 +1241,7 @@ export function removeReferenceFromSelections(
   }
 }
 
-export function isEnginePrimitiveSelection(
-  s: NonCodeSelection
-): s is EnginePrimitiveSelection {
-  return (
-    typeof s === 'object' &&
-    s !== null &&
-    'type' in s &&
-    (s as { type: string }).type === 'enginePrimitive'
-  )
-}
+export { isEnginePrimitiveSelection }
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
@@ -1343,7 +1335,7 @@ export function normalizeEntityReference(
   return null
 }
 
-/** Parse engine reference.topology_fallback (snake or camelCase) into the frontend topology shape for edge picks. */
+/** Parse engine reference.topology_fallback (snake or camelCase) into the frontend topology shape. */
 export function engineTopologyFallbackFromReference(
   reference: unknown
 ): EngineTopologyFallback | undefined {
@@ -1567,17 +1559,6 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (
-    entityRef.type === 'edge' &&
-    entityRef.side_faces.length === 0 &&
-    (!entityRef.end_faces || entityRef.end_faces.length === 0)
-  ) {
-    return {
-      type: 'Set selection',
-      data: { selectionType: 'singleCodeCursor', selection: {} },
-    }
-  }
-
   // Only convert face to solid2d when face_id directly references a solid2d (un-extruded profile).
   // Do not convert wall/cap (extruded) faces to solid2d so the engine can highlight the face and we send face_id to select_entity.
   if (entityRef.type === 'face' && entityRef.face_id) {
@@ -1608,6 +1589,17 @@ export async function getEventForQueryEntityTypeWithPoint(
           selection: primitiveSel,
         },
       }
+    }
+  }
+
+  if (
+    entityRef.type === 'edge' &&
+    entityRef.side_faces.length === 0 &&
+    (!entityRef.end_faces || entityRef.end_faces.length === 0)
+  ) {
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor', selection: {} },
     }
   }
 
@@ -1695,11 +1687,19 @@ export async function getEventForQueryEntityTypeWithPoint(
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
   if (engineTopologyFallbackEarly && engineCommandManager) {
-    const resolvedParentId = await resolveSweepParentEntityIdForEdge(
-      engineTopologyFallbackEarly.parentId,
-      engineCommandManager,
-      artifactGraph
-    )
+    // Faces need their direct engine parent so primitive-index KCL can resolve
+    // the owning solid. Edge references instead walk to an artifact-graph body.
+    const resolvedParentId =
+      entityRef.type === 'face'
+        ? await getParentEntityIdForEntity(
+            entityRef.face_id,
+            engineCommandManager
+          )
+        : await resolveSweepParentEntityIdForEdge(
+            engineTopologyFallbackEarly.parentId,
+            engineCommandManager,
+            artifactGraph
+          )
     if (resolvedParentId) {
       if (resolvedParentId !== engineTopologyFallbackEarly.parentId) {
         engineTopologyFallbackResolved = {
@@ -3343,7 +3343,15 @@ export async function selectionBodyFace(
 
   // Artifact is likely an sweep face
   const faceId = planeOrFaceId
-  const extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  let extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  if (err(extrusion) && artifact?.type === 'edgeCut') {
+    extrusion = getOwningSweepForEdgeCut(
+      artifact,
+      artifactGraph,
+      ast,
+      systemDeps.wasmInstance
+    )
+  }
   if (!err(extrusion)) {
     const maybeImportNode = getNodeFromPath<ImportStatement>(
       ast,

@@ -19,7 +19,7 @@ jobs:
   npm-fmt-check:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
@@ -37,7 +37,7 @@ jobs:
     needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
@@ -63,11 +63,13 @@ jobs:
       - run: npm run tsc
 
   npm-lint:
-    runs-on: namespace-profile-ubuntu-2-cores
+    # 8 cores for the extra memory: the type-aware lint needs more heap
+    # (--max-old-space-size=4096) than the 2-core profile's RAM can hold.
+    runs-on: namespace-profile-ubuntu-8-cores
     needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
@@ -90,14 +92,18 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
+      # Type-aware linting holds the whole tsconfig program in memory, and its
+      # peak heap sits right at Node's default ~2GB limit, causing flaky OOMs.
       - run: npm run lint
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: build-wasm
 
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
@@ -126,6 +132,6 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
       - name: Run typos
         uses: crate-ci/typos@v1.48.0

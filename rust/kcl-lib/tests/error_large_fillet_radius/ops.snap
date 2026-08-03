@@ -962,7 +962,7 @@ description: Operations executed error_large_fillet_radius.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 50.0,
+            "value": 13.0,
             "ty": {
               "type": "Default",
               "len": "mm",

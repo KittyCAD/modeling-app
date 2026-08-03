@@ -1,4 +1,6 @@
 import { Popover } from '@headlessui/react'
+import { ActionButton } from '@src/components/ActionButton'
+import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
@@ -27,6 +29,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 
+const terminalRecoveryButtonClassName =
+  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 enabled:hover:!border-chalkboard-40 enabled:hover:!bg-chalkboard-20 disabled:!border-chalkboard-20 disabled:!bg-chalkboard-20/50 disabled:!text-chalkboard-60 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:enabled:hover:!border-chalkboard-60 dark:enabled:hover:!bg-chalkboard-80 dark:disabled:!border-chalkboard-70 dark:disabled:!bg-chalkboard-90 dark:disabled:!text-chalkboard-40'
+
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
 export interface QueuedMessage {
@@ -51,6 +56,12 @@ export interface MlEphantConversationProps {
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
+  connectionError?: string
+  connectionFailed?: boolean
+  showManualConnect?: boolean
+  canClearChat?: boolean
+  isClearingChat?: boolean
+  loadingMessage?: string
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
@@ -277,7 +288,6 @@ const MlCopilotSelectionsContext = (props: {
 interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
-  onReconnect: MlEphantConversationProps['onReconnect']
   onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
@@ -622,15 +632,6 @@ export const MlEphantConversationInput = (
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">
-            {!props.disabled && props.needsReconnect && (
-              <div className="flex flex-col w-fit items-end">
-                <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
-                  <CustomIcon name="close" className="w-7 h-7" />{' '}
-                  <span>Disconnected</span>
-                </div>
-                <button onClick={props.onReconnect}>Reconnect</button>
-              </div>
-            )}
             {props.isProcessing && (
               <button
                 data-testid="ml-ephant-conversation-cancel-button"
@@ -737,11 +738,79 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
-            <div className="overflow-auto" ref={refScroll}>
-              {props.blockedReason ? (
+            <div
+              className={
+                props.showManualConnect
+                  ? 'h-full min-h-0 overflow-auto'
+                  : 'overflow-auto'
+              }
+              ref={refScroll}
+            >
+              {props.showManualConnect ? (
+                <ConnectionRecovery
+                  className="h-full min-h-[12rem] w-full"
+                  title={props.connectionError ?? 'No internet connection.'}
+                  description="Check your network connection, then click below to try again."
+                  onReconnect={props.onReconnect}
+                  reconnectDisabled={props.isClearingChat}
+                />
+              ) : props.needsReconnect && props.connectionFailed ? (
+                <div
+                  className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-80/20"
+                  role="alert"
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="flex flex-col gap-1">
+                      <p className="font-semibold">
+                        {props.connectionError ??
+                          'Zookeeper disconnected unexpectedly.'}
+                      </p>
+                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                        {props.canClearChat
+                          ? 'Reconnect to try loading this conversation again.'
+                          : 'Reconnect to try connecting again.'}
+                      </p>
+                    </div>
+                  </div>
+                  <ActionButton
+                    Element="button"
+                    aria-label="Reconnect"
+                    type="button"
+                    className={terminalRecoveryButtonClassName}
+                    iconStart={{ icon: 'refresh' }}
+                    onClick={props.onReconnect}
+                    disabled={props.isClearingChat}
+                    tabIndex={0}
+                  >
+                    Reconnect
+                  </ActionButton>
+                  {props.canClearChat && (
+                    <div className="flex flex-col gap-2 border-t border-destroy-30 pt-3 dark:border-destroy-70">
+                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                        If reconnecting still does not work, clearing the chat
+                        is a last resort. Previous conversation data will no
+                        longer be visible in this pane.
+                      </p>
+                      <ActionButton
+                        Element="button"
+                        aria-label={
+                          props.isClearingChat ? 'Clearing...' : 'Clear chat'
+                        }
+                        type="button"
+                        className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
+                        iconStart={{ icon: 'trash' }}
+                        onClick={props.onClickClearChat}
+                        disabled={props.isClearingChat}
+                        tabIndex={0}
+                      >
+                        {props.isClearingChat ? 'Clearing...' : 'Clear chat'}
+                      </ActionButton>
+                    </div>
+                  )}
+                </div>
+              ) : props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
-              ) : props.isLoading === false &&
-                props.needsReconnect === false ? (
+              ) : props.isLoading === false ? (
                 <>
                   {shouldShowWelcomeMessage && (
                     <div
@@ -766,7 +835,13 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
                 </>
               ) : (
                 <div className="text-center p-4">
-                  <Loading isDummy={true} className="!text-ml-green"></Loading>
+                  <Loading isDummy={true} className="!text-ml-green">
+                    {props.loadingMessage && (
+                      <span className="text-chalkboard-100 dark:text-chalkboard-10">
+                        {props.loadingMessage}
+                      </span>
+                    )}
+                  </Loading>
                 </div>
               )}
             </div>
@@ -834,7 +909,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               onProcess={props.onProcess}
               initialMlCopilotMode={props.initialMlCopilotMode}
               onMlCopilotModeChange={props.onMlCopilotModeChange}
-              onReconnect={props.onReconnect}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={hasMessages}

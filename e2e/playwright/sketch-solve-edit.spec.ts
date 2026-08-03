@@ -2304,7 +2304,9 @@ extrude001 = extrude(region001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        sketch002 = startSketchOn(extrude001, face = END)`,
+        face001 = faceOf(extrude001, face = END)
+        sketch002 = sketch(on = face001) {
+        }`,
         { shouldNormalise: true }
       )
     })
@@ -2355,9 +2357,125 @@ extrude001 = extrude(profile001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        sketch002 = startSketchOn(extrude001, face = line3)`,
+        sketch002 = sketch(on = faceOf(extrude001, face = line1)) {
+        }`,
         { shouldNormalise: true }
       )
     })
+  })
+
+  test('starts a sketch block on an extruded sketch-block wall', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+    tronApp,
+  }) => {
+    const code = `@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+body001 = extrude(region001, length = 12, tagEnd = $endCap)
+hide(sketch001)`
+
+    if (tronApp) {
+      await tronApp.cleanProjectDir()
+    }
+    await context.addInitScript(
+      ({ initialCode }) => {
+        localStorage.setItem('persistCode', initialCode)
+      },
+      {
+        initialCode: code,
+      }
+    )
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await editor.expectEditor.toContain('body001 = extrude')
+
+    const [clickEndCap] = scene.makeMouseHelpers(0.548, 0.3913, {
+      format: 'ratio',
+    })
+    await toolbar.startSketchPlaneSelection()
+    await expect(
+      page.getByText('Select a plane or face to start sketching.')
+    ).toBeVisible()
+    await clickEndCap()
+
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await editor.expectEditor.toContain(
+      'face001 = faceOf(body001, face = region001.tags.bottom)'
+    )
+    await editor.expectEditor.toContain('sketch002 = sketch(on = face001)')
+  })
+
+  test('starts and re-edits a sketch on a chamfer face', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    toolbar,
+    tronApp,
+  }) => {
+    const code = `@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+body001 = extrude(region001, length = 12, tagEnd = $endCap)
+chamfer001 = chamfer(
+  body001,
+  edges = [{ sideFaces = [region001.tags.bottom, endCap] }],
+  length = 3,
+)
+hide(sketch001)`
+
+    if (tronApp) {
+      await tronApp.cleanProjectDir()
+    }
+    await context.addInitScript(
+      ({ initialCode }) => {
+        localStorage.setItem('persistCode', initialCode)
+      },
+      { initialCode: code }
+    )
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await editor.closePane()
+
+    await toolbar.startSketchPlaneSelection()
+    await expect(
+      page.getByText('Select a plane or face to start sketching.')
+    ).toBeVisible()
+    const [clickChamferFace] = scene.makeMouseHelpers(0.9297, 0.4022, {
+      format: 'ratio',
+    })
+    await clickChamferFace()
+
+    await expect(toolbar.exitSketchBtn).toBeEnabled()
+    await editor.expectEditor.toContain('tag = $')
+    await editor.expectEditor.toContain(
+      'sketch002 = sketch(on = faceOf(chamfer001, face = seg01))'
+    )
+    await toolbar.exitSketch()
+    await toolbar.editSketch(1)
   })
 })

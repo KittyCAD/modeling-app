@@ -45,7 +45,6 @@ import {
   getFaceCodeRef,
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
-  getSweepFromSuspectedSweepSurface,
   type ResolvedGraphSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
@@ -832,6 +831,70 @@ export function createEdgeRefObjectExpression(
     )
   }
 
+  const getSegmentExtrudeFaceExpr = (faceArtifact: Artifact): Expr | null => {
+    if (faceArtifact.type !== 'wall') return null
+
+    const segment = getArtifactOfTypes(
+      { key: faceArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (err(segment)) return null
+
+    const faceCodeRef = getFaceCodeRef(faceArtifact)
+    if (!faceCodeRef) return null
+    const sweep = getSweepArtifactFromSelection(
+      { artifact: faceArtifact, codeRef: faceCodeRef },
+      artifactGraph
+    )
+    if (err(sweep)) return null
+
+    const sweepCall = getNodeFromPath<CallExpressionKw>(
+      currentAst,
+      sweep.codeRef.pathToNode,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (
+      err(sweepCall) ||
+      sweepCall.node.callee.name.name !== 'extrude' ||
+      sweepCall.node.unlabeled?.type !== 'MemberExpression'
+    ) {
+      return null
+    }
+
+    const segmentName =
+      sweepCall.node.unlabeled.property.type === 'Name'
+        ? sweepCall.node.unlabeled.property.name.name
+        : getSketchSegmentName(
+            currentAst,
+            segment.originalSegId ?? segment.id,
+            artifactGraph,
+            wasmInstance
+          )
+    if (!segmentName) return null
+
+    const surfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            entityRef: artifactToEntityRef('sweep', sweep.id),
+            codeRef: sweep.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      currentAst,
+      wasmInstance
+    )
+    if (err(surfaceVars) || surfaceVars.exprs.length !== 1) return null
+
+    return createMemberExpression(
+      createMemberExpression(surfaceVars.exprs[0], 'faces'),
+      segmentName
+    )
+  }
+
   for (const faceId of payload.side_faces) {
     const faceArtifact = artifactGraph.get(faceId)
     if (!faceArtifact) {
@@ -852,6 +915,12 @@ export function createEdgeRefObjectExpression(
     const existingSketchTagExpr = getExistingSketchTagExprForFace(faceArtifact)
     if (existingSketchTagExpr) {
       sideFaceExprs.push(existingSketchTagExpr)
+      continue
+    }
+
+    const segmentExtrudeFaceExpr = getSegmentExtrudeFaceExpr(faceArtifact)
+    if (segmentExtrudeFaceExpr) {
+      sideFaceExprs.push(segmentExtrudeFaceExpr)
       continue
     }
 
@@ -2617,50 +2686,29 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
             })()
 
       if (!edgeEntityRef) continue
+      if (edgeEntityRef.side_faces.length < 2) continue
 
-      // Find a face artifact that ties this edge to a sweep (wall/cap/edgeCut/primitiveFace).
-      // Shell and inner edges may not use only wall/cap in the graph; fall back via sweep surface resolution.
-      let faceArtifact: Artifact | undefined
+      // Find an adjacent face that can identify the owning body. A generated
+      // edgeCut can be tagged, but it intentionally has no consumed-edge
+      // lineage, so another adjacent wall/cap may be needed for body lookup.
+      let sweepArtifact: SweepArtifact | null = null
       for (const faceId of edgeEntityRef.side_faces) {
-        const a = artifactGraph.get(faceId)
-        if (
-          a &&
-          (a.type === 'wall' ||
-            a.type === 'cap' ||
-            a.type === 'edgeCut' ||
-            a.type === 'primitiveFace')
-        ) {
-          faceArtifact = a
+        const faceArtifact = artifactGraph.get(faceId)
+        if (!faceArtifact) continue
+        const faceCodeRef =
+          getFaceCodeRef(faceArtifact) ??
+          getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
+        if (!faceCodeRef) continue
+        const sweepTry = getSweepArtifactFromSelection(
+          { artifact: faceArtifact, codeRef: faceCodeRef },
+          artifactGraph
+        )
+        if (!err(sweepTry)) {
+          sweepArtifact = sweepTry
           break
         }
       }
-      if (!faceArtifact) {
-        for (const faceId of edgeEntityRef.side_faces) {
-          const sweepTry = getSweepFromSuspectedSweepSurface(
-            faceId,
-            artifactGraph
-          )
-          if (!err(sweepTry)) {
-            const a = artifactGraph.get(faceId)
-            if (a) {
-              faceArtifact = a
-              break
-            }
-          }
-        }
-      }
-      if (!faceArtifact) continue
-
-      const faceCodeRef =
-        getFaceCodeRef(faceArtifact) ??
-        getCodeRefsByArtifactId(faceArtifact.id, artifactGraph)?.[0]
-      if (!faceCodeRef) continue
-
-      const sweepArtifact = getSweepArtifactFromSelection(
-        { artifact: faceArtifact, codeRef: faceCodeRef },
-        artifactGraph
-      )
-      if (err(sweepArtifact)) continue
+      if (!sweepArtifact) continue
 
       const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
       if (!bodyToV2Selections.has(bodyKey)) {
@@ -3033,10 +3081,26 @@ export function groupSelectionsByBodyAndAddTags(
   const bodies = new Map<string, BodySelectionData>()
 
   for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
+    const graphSelectionsForTags = bodySelections.graphSelections.filter(
+      (selection) => {
+        if (
+          selection.entityRef?.type !== 'edge' ||
+          !getEngineTopologyFallbackNormalized(selection)
+        ) {
+          return true
+        }
+        return selection.entityRef.side_faces.every((id) =>
+          artifactGraph.has(id)
+        )
+      }
+    )
     // Add tags for graph selections in this body
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
-      bodySelections,
+      {
+        graphSelections: graphSelectionsForTags,
+        otherSelections: bodySelections.otherSelections,
+      },
       artifactGraph,
       wasmInstance
     )

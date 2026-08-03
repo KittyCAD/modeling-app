@@ -1829,9 +1829,6 @@ surface001 = extrude(
         )
         expect(sweeps).toHaveLength(2)
         expect(sweeps.filter((sweep) => sweep.pathId)).toHaveLength(1)
-        expect(
-          sweeps.filter((sweep) => sweep.sourceEdgeReference)
-        ).toHaveLength(1)
       }
     )
 

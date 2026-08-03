@@ -54,17 +54,5 @@ profile = sketch(on = XY) {
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the solver::controlPointSpline function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-controlPointSpline0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-controlPointSpline0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 

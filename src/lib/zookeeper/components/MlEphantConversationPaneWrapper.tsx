@@ -33,6 +33,7 @@ import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
   prepareMlEphantNewFileRequest,
@@ -119,6 +120,22 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  useEffect(() => {
+    const updatePromptRunning = (
+      snapshot: ReturnType<typeof mlEphantManagerActor.getSnapshot>
+    ) => {
+      zookeeperPromptRunningSignal.value = snapshot.context.awaitingResponse
+    }
+
+    updatePromptRunning(mlEphantManagerActor.getSnapshot())
+    const subscription = mlEphantManagerActor.subscribe(updatePromptRunning)
+
+    return () => {
+      subscription.unsubscribe()
+      zookeeperPromptRunningSignal.value = false
+    }
+  }, [mlEphantManagerActor])
 
   useEffect(() => {
     if (!IS_STAGING_OR_DEBUG) return

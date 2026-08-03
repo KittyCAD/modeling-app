@@ -11,6 +11,11 @@ import { updateEnvironment } from '@src/env'
 import env from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import {
+  ClientErrorCode,
+  errorToMessage,
+  reportClientError,
+} from '@src/lib/clientErrors'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -47,6 +52,42 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
+  const reportSignInClientError = ({
+    code,
+    error,
+    message,
+    dedupeKeyPrefix,
+    extra,
+    suppressWhenOffline,
+  }: {
+    code: ClientErrorCode
+    error?: unknown
+    message?: string
+    dedupeKeyPrefix: string
+    extra?: Record<string, unknown>
+    suppressWhenOffline?: boolean
+  }) => {
+    const online =
+      typeof navigator === 'undefined' ? undefined : navigator.onLine
+    if (suppressWhenOffline && online === false) return
+
+    const reportMessage = message ?? errorToMessage(error, 'Unknown auth error')
+
+    void reportClientError({
+      code,
+      message: reportMessage,
+      error,
+      dedupeKey: `${dedupeKeyPrefix}:${selectedEnvironment}:${reportMessage}`,
+      extra: {
+        source: 'SignIn',
+        selectedEnvironment,
+        isDesktop: isDesktop(),
+        ...extra,
+        online,
+      },
+    })
   }
 
   const commitEnvironmentChange = (requestedEnvironment: string) => {
@@ -145,6 +186,15 @@ const SignIn = () => {
       .catch((error) => {
         if (signInAttemptRef.current === signInAttempt) {
           reportError(error)
+          reportSignInClientError({
+            code: ClientErrorCode.AuthDeviceFlowStartError,
+            error,
+            dedupeKeyPrefix: 'SignIn:device-flow-start',
+            suppressWhenOffline: true,
+            extra: {
+              requestedEnvironment,
+            },
+          })
         }
       })
     if (signInAttemptRef.current !== signInAttempt) return
@@ -152,6 +202,15 @@ const SignIn = () => {
       console.error(
         'No device flow authorization received while trying to log in'
       )
+      reportSignInClientError({
+        code: ClientErrorCode.AuthDeviceFlowStartError,
+        message: 'No device flow authorization received while trying to log in',
+        dedupeKeyPrefix: 'SignIn:device-flow-start-empty',
+        suppressWhenOffline: true,
+        extra: {
+          requestedEnvironment,
+        },
+      })
       toast.error('Error while trying to log in.')
       return
     }
@@ -162,11 +221,35 @@ const SignIn = () => {
     const token = await electron.loginWithDeviceFlow().catch((error) => {
       if (signInAttemptRef.current === signInAttempt) {
         reportError(error)
+        reportSignInClientError({
+          code: ClientErrorCode.AuthDeviceFlowLoginError,
+          error,
+          dedupeKeyPrefix: 'SignIn:device-flow-login',
+          suppressWhenOffline: true,
+          extra: {
+            requestedEnvironment,
+            hasUserCode: Boolean(deviceFlowAuthorization.userCode),
+            hasVerificationUri: Boolean(
+              deviceFlowAuthorization.verificationUri
+            ),
+          },
+        })
       }
     })
     if (signInAttemptRef.current !== signInAttempt) return
     if (!token) {
       console.error('No token received while trying to log in')
+      reportSignInClientError({
+        code: ClientErrorCode.AuthDeviceFlowLoginError,
+        message: 'No token received while trying to log in',
+        dedupeKeyPrefix: 'SignIn:device-flow-login-empty',
+        suppressWhenOffline: true,
+        extra: {
+          requestedEnvironment,
+          hasUserCode: Boolean(deviceFlowAuthorization.userCode),
+          hasVerificationUri: Boolean(deviceFlowAuthorization.verificationUri),
+        },
+      })
       toast.error('Error while trying to log in.')
       return
     }

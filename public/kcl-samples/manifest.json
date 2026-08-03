@@ -1110,8 +1110,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker",
-      "Automotive"
+      "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
     "multipleFiles": false,
@@ -1124,7 +1123,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
@@ -1138,7 +1136,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
@@ -1152,7 +1149,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
@@ -1166,7 +1162,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
@@ -1180,7 +1175,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",

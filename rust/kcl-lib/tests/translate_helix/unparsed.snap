@@ -1,0 +1,44 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing translate_helix.kcl
+---
+// Translate helices.
+
+// A reference helix that is not moved.
+helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+
+helix002 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+  ccw = true,
+)
+
+helix003 = helix(
+  axis = Z,
+  radius = 3,
+  length = 15,
+  revolutions = 8,
+  angleStart = 0,
+)
+
+// Move an array of helices.
+movedHelices = translate([helix002, helix003], x = 20, z = 5)
+
+// Move a single helix.
+helix004 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+  |> translate(x = -20)

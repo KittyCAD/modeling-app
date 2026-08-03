@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: new_source
+---
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+extrude001 = extrude(region(point = [0mm, 0mm], sketch = sketch001), length = 5, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = 1)
+face001 = faceOf(shell001, face = faceId(shell001, index = 6))
+sketch002 = sketch(on = face001) {
+}
