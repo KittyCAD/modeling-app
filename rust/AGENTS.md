@@ -39,6 +39,12 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 - Run/update the sim test: `just overwrite-sim-test foo_bar`
 - Inspect generated outputs and check for `execution_error.snap` before committing.
 
+## Trim tool smoke tests
+
+- Rust trim regression tests live in `kcl-lib/src/frontend/trim/tests.rs`. When a snapshot change needs visual validation in the app, copy the test's `base_kcl_code` and add a named point inside the sketch for every entry in `trim_points`, preserving their order. For example, `Coords2d { x: -1.5, y: 2.0 }` becomes `trimPoint1 = point(at = [var -1.5mm, var 2mm])`.
+- Run `npm run build:wasm`, load the marked-up KCL in the app, then draw the trim stroke through `trimPoint1`, `trimPoint2`, and any later points in numeric order. The markers make the Rust test's exact sketch-local trim path reproducible without guessing from the snapshot.
+- Check the resulting geometry and constraints, not only whether the trim operation completes. In particular, look for unexpected sketch movement, missing retained segments, incorrect split endpoints, and constraints attached to the wrong split segment. Remove or ignore the marker points when comparing the result with the Rust snapshot.
+
 ## Python bindings
 
 - Uses `maturin` (install via `pipx install maturin` or `pip install maturin`).

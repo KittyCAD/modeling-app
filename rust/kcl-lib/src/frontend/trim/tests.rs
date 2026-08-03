@@ -5,6 +5,8 @@ use crate::frontend::trim::execute_trim_flow;
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
 /// - Snapshot the result after normalizing leading and trailing whitespace
+///
+/// For app smoke testing, see "Trim tool smoke tests" in `rust/AGENTS.md`.
 async fn assert_trim_result(snapshot_name: &str, base_kcl_code: &str, trim_points: &[Coords2d], sketch_id: ObjectId) {
     let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
 
