@@ -56,11 +56,13 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
     useUser: () => useSelector(authActor, (state) => state.context.user),
   }
   installSessionExpiredFetchMonitor()
+  let lastHandledSessionExpiredNotice = sessionExpiredNotice.peek()
   const sessionExpiredSubscription = sessionExpiredNotice.subscribe(
     (notice) => {
-      if (!notice) {
+      if (!notice || notice === lastHandledSessionExpiredNotice) {
         return
       }
+      lastHandledSessionExpiredNotice = notice
 
       const listeners = ctx.valueSpecs.get(authSessionExpiredListenersValueSpec)
       for (const listener of listeners) {
