@@ -17,7 +17,8 @@ import {
   type ProjectLibraryType,
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
-import { reportRejection } from '@src/lib/trap'
+import { validateDirectoryProjectLibrary } from '@src/lib/projectLibraries/directoryScanner'
+import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
   ProjectLibrarySettingsDetailsProps,
@@ -249,11 +250,28 @@ function ProjectLibraryTypeSelect({
 export function DirectoryProjectLibrarySettingsDetails({
   library,
   index,
-  updateLibrary,
   commitLibrary,
   readOnly = false,
   chooseDirectory,
 }: ProjectLibrarySettingsDetailsProps) {
+  const [draftPath, setDraftPath] = useState(library.path)
+
+  useEffect(() => {
+    setDraftPath(library.path)
+  }, [library.path])
+
+  async function commitLibraryPath(nextPath = draftPath) {
+    if (chooseDirectory) {
+      const validationError = await validateDirectoryProjectLibrary(nextPath)
+      if (trap(validationError)) {
+        setDraftPath(library.path)
+        return
+      }
+    }
+
+    commitLibrary({ ...library, path: nextPath })
+  }
+
   async function chooseLibraryPath() {
     if (!chooseDirectory) {
       return
@@ -267,10 +285,7 @@ export function DirectoryProjectLibrarySettingsDetails({
       return
     }
 
-    commitLibrary({
-      ...library,
-      path: selectedPath,
-    })
+    await commitLibraryPath(selectedPath)
   }
 
   return readOnly ? (
@@ -286,14 +301,9 @@ export function DirectoryProjectLibrarySettingsDetails({
   ) : (
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <input
-        value={library.path}
-        onChange={(event) =>
-          updateLibrary({
-            ...library,
-            path: event.target.value,
-          })
-        }
-        onBlur={() => commitLibrary()}
+        value={draftPath}
+        onChange={(event) => setDraftPath(event.target.value)}
+        onBlur={toSync(() => commitLibraryPath(), reportRejection)}
         className="h-8 min-w-0 flex-1 rounded-sm border border-chalkboard-30 bg-transparent px-1 text-sm dark:border-chalkboard-70"
         data-testid={
           index === 0 ? 'project-directory-input' : 'project-library-path'
@@ -452,6 +462,11 @@ export function ProjectLibrariesSettingInput({
     const documentsPath = await electron.getPath('documents')
     const selectedPath = await chooseDirectory({ defaultPath: documentsPath })
     if (!selectedPath) {
+      return
+    }
+
+    const validationError = await validateDirectoryProjectLibrary(selectedPath)
+    if (trap(validationError)) {
       return
     }
 

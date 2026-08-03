@@ -1,3 +1,4 @@
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import {
   DirectoryProjectLibrarySettingsDetails,
@@ -7,12 +8,19 @@ import {
   projectLibraryTypeOptionsFromContributions,
 } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
 
 const originalElectron = window.electron
+const projectFoldersToRemove: string[] = []
 
-afterEach(() => {
+afterEach(async () => {
   window.electron = originalElectron
+  vi.restoreAllMocks()
+  await Promise.all(
+    projectFoldersToRemove
+      .splice(0)
+      .map((path) => fsZds.rm(path, { recursive: true, force: true }))
+  )
 })
 
 const defaultLibraries: ProjectLibrarySetting[] = [
@@ -62,7 +70,128 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
   },
 ]
 
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
+async function createProjectFolder() {
+  const projectPath = `/tmp/project-library-root-${crypto.randomUUID()}`
+  projectFoldersToRemove.push(projectPath)
+  await fsZds.mkdir(projectPath, { recursive: true })
+  await fsZds.writeFile(
+    fsZds.join(projectPath, 'project.toml'),
+    new TextEncoder().encode('title = "Not a library"')
+  )
+  return projectPath
+}
+
 describe('ProjectLibrariesSettingInput', () => {
+  test('does not commit a project folder as a project library', async () => {
+    const projectPath = await createProjectFolder()
+    const commitLibrary = vi.fn()
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    render(
+      <DirectoryProjectLibrarySettingsDetails
+        library={{
+          title: 'Default Projects Directory',
+          path: '/projects',
+          type: 'directory',
+        }}
+        index={0}
+        updateLibrary={vi.fn()}
+        commitLibrary={commitLibrary}
+        chooseDirectory={vi.fn(async () => projectPath)}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('project-directory-button'))
+
+    await waitFor(() =>
+      expect(errorSpy).toHaveBeenCalledWith(
+        new Error(
+          `The project library "${projectPath}" is also a project because it contains project.toml. Choose a container folder that holds separate project folders.`
+        )
+      )
+    )
+    expect(commitLibrary).not.toHaveBeenCalled()
+  })
+
+  test('reverts a manually entered project folder before another field commits', async () => {
+    const projectPath = await createProjectFolder()
+    const updateValue = vi.fn()
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    window.electron = { open: vi.fn() } as unknown as Window['electron']
+
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={libraryTypeOptions}
+      />
+    )
+
+    const pathInput = screen.getByTestId('project-directory-input')
+    fireEvent.change(pathInput, { target: { value: projectPath } })
+    fireEvent.blur(pathInput)
+
+    await waitFor(() => expect(pathInput).toHaveValue('/projects'))
+    expect(errorSpy).toHaveBeenCalledWith(
+      new Error(
+        `The project library "${projectPath}" is also a project because it contains project.toml. Choose a container folder that holds separate project folders.`
+      )
+    )
+    expect(updateValue).not.toHaveBeenCalled()
+
+    fireEvent.change(screen.getByTestId('project-library-title'), {
+      target: { value: 'Renamed library' },
+    })
+    fireEvent.blur(screen.getByTestId('project-library-title'))
+
+    expect(updateValue).toHaveBeenLastCalledWith([
+      {
+        title: 'Renamed library',
+        path: '/projects',
+        type: 'directory',
+      },
+    ])
+  })
+
+  test('does not add a project folder as a new project library', async () => {
+    const projectPath = await createProjectFolder()
+    const updateValue = vi.fn()
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    window.electron = {
+      getPath: vi.fn().mockResolvedValue('/documents'),
+      open: vi.fn().mockResolvedValue({
+        canceled: false,
+        filePaths: [projectPath],
+      }),
+    } as unknown as Window['electron']
+
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={libraryTypeOptions}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('project-library-add'))
+
+    await waitFor(() =>
+      expect(errorSpy).toHaveBeenCalledWith(
+        new Error(
+          `The project library "${projectPath}" is also a project because it contains project.toml. Choose a container folder that holds separate project folders.`
+        )
+      )
+    )
+    expect(updateValue).not.toHaveBeenCalled()
+  })
+
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
 

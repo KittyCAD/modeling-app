@@ -20,6 +20,7 @@ import {
   buildTheWorldAndNoEngineConnection,
   createTestWasmRegistryItem,
 } from '@src/unitTestUtils'
+import toast from 'react-hot-toast'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -781,7 +782,10 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
-      it('should leave a terminal folders value when reading folders fails', async () => {
+      it('should report folder read failures and leave a terminal folders value', async () => {
+        const toastErrorSpy = vi
+          .spyOn(toast, 'error')
+          .mockImplementation(() => '')
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
@@ -813,7 +817,9 @@ describe('systemIOMachine - XState', () => {
 
           expect(actor.getSnapshot().context.folders).toStrictEqual([])
           expect(actor.getSnapshot().context.hasListedProjects).toBe(true)
+          expect(toastErrorSpy).toHaveBeenCalledWith('Failed to read projects')
         } finally {
+          toastErrorSpy.mockRestore()
           actor.stop()
         }
       })

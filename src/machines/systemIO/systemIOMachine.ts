@@ -1120,6 +1120,7 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [
+            SystemIOMachineActions.toastError,
             assign({
               folders: ({ context }) => context.folders ?? [],
               hasListedProjects: true,
