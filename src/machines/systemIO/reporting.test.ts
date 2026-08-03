@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   reportClientError: vi.fn(),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   const original = await importOriginal<typeof ClientErrors>()
   return {
@@ -73,6 +75,26 @@ describe('SystemIO client error reporting', () => {
       expect.objectContaining({
         extra: expect.objectContaining({
           operation: SystemIOMachineActors.duplicateProject,
+          risk: 'write',
+          partialMutationPossible: true,
+        }),
+      })
+    )
+  })
+
+  it('marks recursive folder creation failures as potentially partial writes', () => {
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.createBlankFolder}`,
+        error: new Error('mkdir failed'),
+      },
+    })
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        extra: expect.objectContaining({
+          operation: SystemIOMachineActors.createBlankFolder,
           risk: 'write',
           partialMutationPossible: true,
         }),

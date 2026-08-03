@@ -108,7 +108,10 @@ const operationReportMetadata: Partial<
     risk: 'write',
     partialMutationPossible: true,
   },
-  [SystemIOMachineActors.createBlankFolder]: { risk: 'write' },
+  [SystemIOMachineActors.createBlankFolder]: {
+    risk: 'write',
+    partialMutationPossible: true,
+  },
   [SystemIOMachineActors.copyRecursive]: {
     risk: 'write',
     partialMutationPossible: true,
