@@ -439,15 +439,15 @@ async fn inner_join(
 pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let curve_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "curves",
-        &RuntimeType::Array(
-            Box::new(RuntimeType::Union(vec![
-                RuntimeType::sketch(),
-                RuntimeType::tagged_edge(),
-                RuntimeType::Primitive(PrimitiveType::Edge),
-                RuntimeType::segment(),
-            ])),
-            ArrayLen::Minimum(1),
-        ),
+        &RuntimeType::Union(vec![
+            RuntimeType::sketch(),
+            RuntimeType::Array(Box::new(RuntimeType::tagged_edge()), ArrayLen::Minimum(1)),
+            RuntimeType::Array(
+                Box::new(RuntimeType::Primitive(PrimitiveType::Edge)),
+                ArrayLen::Minimum(1),
+            ),
+            RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
+        ]),
         exec_state,
     )?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
@@ -496,7 +496,7 @@ async fn inner_planar_surface(
     tolerance: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Solid>, KclError> {
+) -> Result<Solid, KclError> {
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
@@ -506,6 +506,8 @@ async fn inner_planar_surface(
         let id = curve.operation_id(&args).await?;
         curve_ids.push(id);
     }
+
+    // TODO: Handle mock execution.
 
     // Surface-extrude an edge.
     let response = exec_state

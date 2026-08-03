@@ -3439,6 +3439,8 @@ export fn region(
 ///   sketch001.line3,
 ///   sketch001.line4
 /// ])
+/// // This should be a surface, not a solid.
+/// assertIs(isSurface(mySurface))
 /// ```
 /// ```kcl,sketchSolve
 /// // If the sketch only has 1 region, and it's closed, then you can just pass
@@ -3475,6 +3477,8 @@ export fn region(
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = true)
 export fn planarSurface(
-    /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch | TaggedEdge | Edge | Segment; 1+],
-): [Solid; 1+] {}
+    /// Which closed 2D region of space should be filled in to make a planar surface.
+  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+],
+  /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
+  tolerance?: number(Length),
+): Solid {}
