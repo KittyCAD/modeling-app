@@ -63,7 +63,9 @@ jobs:
       - run: npm run tsc
 
   npm-lint:
-    runs-on: namespace-profile-ubuntu-2-cores
+    # 8 cores for the extra memory: the type-aware lint needs more heap
+    # (--max-old-space-size=4096) than the 2-core profile's RAM can hold.
+    runs-on: namespace-profile-ubuntu-8-cores
     needs: build-wasm
 
     steps:
@@ -90,7 +92,11 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
+      # Type-aware linting holds the whole tsconfig program in memory, and its
+      # peak heap sits right at Node's default ~2GB limit, causing flaky OOMs.
       - run: npm run lint
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
   npm-circular-dependencies:
     runs-on: namespace-profile-ubuntu-2-cores
