@@ -130,7 +130,7 @@ describe('cloud sync file policy', () => {
       baseUrl,
       environmentName: 'dev.zoo.dev',
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      autoEnrollCloudLibraryProjects: false,
     })
 
     await notifyCloudSyncWriteLikeMutation(`${projectPath}/scratch.txt`)
@@ -174,7 +174,7 @@ describe('cloud sync file policy', () => {
       baseUrl,
       environmentName: 'dev.zoo.dev',
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      autoEnrollCloudLibraryProjects: false,
     })
     retryCloudSync()
 
