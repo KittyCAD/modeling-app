@@ -867,6 +867,47 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
+    it('should add a standalone rotate call on helix selection', async () => {
+      const code = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)`
+      const ast = assertParse(code, instanceInThisFile)
+      const sourceRange: [number, number, number] = [0, code.length, 0]
+      const helix: Artifact = {
+        type: 'helix',
+        id: 'helix-id',
+        axisId: null,
+        codeRef: {
+          range: sourceRange,
+          pathToNode: getNodePathFromSourceRange(ast, sourceRange),
+          nodePath: { steps: [] },
+        },
+        trajectorySweepId: null,
+        consumed: false,
+      }
+      const artifactGraph: ArtifactGraph = new Map([[helix.id, helix]])
+      const result = addRotate({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([helix], artifactGraph),
+        yaw: await getKclCommandValue(
+          '90deg',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\nrotate(helix001, yaw = 90deg)`
+      )
+    })
+
     it('should add a named axis as a bare identifier', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

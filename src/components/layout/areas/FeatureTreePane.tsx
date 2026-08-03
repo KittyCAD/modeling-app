@@ -1354,7 +1354,8 @@ const OperationItem = ({
                 data-testid="context-menu-set-rotate"
                 disabled={
                   item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsRotate
                 }
               >
                 Rotate
