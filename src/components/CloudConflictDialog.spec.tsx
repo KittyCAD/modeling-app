@@ -151,7 +151,7 @@ describe('CloudConflictDialog', () => {
     expect(await screen.findByText('main.kcl')).toBeInTheDocument()
     const intro = screen.getByText(/Local and cloud data both changed for/)
     expect(intro).toHaveTextContent('"User-facing project title"')
-    expect(intro).toHaveTextContent('(cloud ID: remote-123)')
+    expect(screen.getByText('cloud ID: remote-123')).toBeInTheDocument()
     expect(intro).not.toHaveTextContent('local-folder')
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
@@ -162,8 +162,18 @@ describe('CloudConflictDialog', () => {
     expect(
       screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Local version')).toBeInTheDocument()
-    expect(screen.getByText('Cloud version')).toBeInTheDocument()
+    expect(screen.getByText(/Upload local project/)).toBeInTheDocument()
+    expect(screen.getByText(/Replace local project/)).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-local-data')
+        .querySelector('svg[aria-label="folder"]')
+    ).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-cloud-data')
+        .querySelector('svg[aria-label="cloud"]')
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
