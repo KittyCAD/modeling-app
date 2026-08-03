@@ -3,8 +3,10 @@ source: kcl-lib/src/frontend/trim/tests.rs
 expression: result_normalized
 ---
 sketch(on = YZ) {
-  arc1 = arc(start = [var -3.08mm, var 6.08mm], end = [var -5.01mm, var 1mm], center = [var 1.86mm, var 1.3mm])
-  arc2 = arc(start = [var -4.82mm, var -0.71mm], end = [var -6.76mm, var -1.16mm], center = [var -4.12mm, var -8.16mm])
-  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.01mm, var 1mm])
+  arc1 = arc(start = [var -3.19mm, var 6.19mm], end = [var -5.12mm, var 2.3mm], center = [var 1.8mm, var 1.3mm])
+  arc2 = arc(start = [var -4.59mm, var -1.62mm], end = [var -6.51mm, var -1.97mm], center = [var -4.39mm, var -8.2mm])
+  line1 = line(start = [var -7.5mm, var 2.5mm], end = [var -5.12mm, var 2.3mm])
+  arc3 = arc(start = [var -4.59mm, var -1.62mm], end = [var -1.81mm, var -4.72mm], center = [var 1.8mm, var 1.3mm])
   coincident([arc1.end, line1.end])
+  coincident([arc3.start, arc2.start])
 }

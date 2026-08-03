@@ -9,9 +9,9 @@ import type { KclManager } from '@src/lang/KclManager'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
+import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
@@ -162,6 +162,9 @@ export const MlEphantConversationPane = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      kclManager: props.kclManager,
+      engineCommandManager: props.contextModeling.engineCommandManager,
+      wasmInstance: props.contextModeling.wasmInstance,
       mode,
       additionalFiles: attachments,
     })
