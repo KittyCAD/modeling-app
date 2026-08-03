@@ -7,7 +7,10 @@ import type {
   ProjectMetadata,
   Revision,
 } from '@src/lib/cloudSync/types'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  PROJECT_IMAGE_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
@@ -162,6 +165,9 @@ async function scanProjectFiles(
       const relativePath = normalizeRelativePath(
         fileSystem.relative(projectRoot, absolutePath) ?? ''
       )
+      if (relativePath === PROJECT_IMAGE_NAME) {
+        continue
+      }
       const data = Uint8Array.from(await fileSystem.readFile(absolutePath))
       files.set(relativePath, {
         absolutePath,
@@ -185,6 +191,9 @@ function projectArchiveFilesToScannedFiles(
 
   for (const file of files) {
     const relativePath = normalizeRelativePath(file.relativePath)
+    if (relativePath === PROJECT_IMAGE_NAME) {
+      continue
+    }
     scannedFiles.set(relativePath, {
       absolutePath: relativePath,
       data: file.data,

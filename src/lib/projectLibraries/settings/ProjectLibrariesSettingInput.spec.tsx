@@ -46,7 +46,7 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
   ...libraryTypeOptions,
   {
     label: 'Cloud',
-    icon: 'network',
+    icon: 'cloud',
     value: 'cloud',
     defaultLibrary: {
       title: 'Cloud',
