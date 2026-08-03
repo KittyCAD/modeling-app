@@ -2136,9 +2136,9 @@ impl Node<SketchBlock> {
                     .iter()
                     .any(|number| number.is_infinite() || number.is_nan())
                 {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        "KCL's 2D constraint solver returned an invalid number".to_owned(),
-                        vec![SourceRange::from(self)],
+                    return Err(KclError::new_internal(error_for_invalid_number(
+                        solved.final_values().iter(),
+                        SourceRange::from(self),
                     )));
                 }
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
@@ -2575,6 +2575,13 @@ impl Node<SketchBlock> {
 
         properties
     }
+}
+
+fn error_for_invalid_number(solved_values: std::slice::Iter<'_, f64>, source_range: SourceRange) -> KclErrorDetails {
+    KclErrorDetails::new(
+        "KCL's 2D constraint solver returned an invalid number".to_owned(),
+        vec![source_range],
+    )
 }
 
 impl SketchBlock {
