@@ -8,7 +8,16 @@ import {
   SubmitButton,
 } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
+import { CodemodReviewDiff } from '@src/components/CommandBar/CodemodReviewDiff'
 import { MarkdownText } from '@src/components/MarkdownText'
+import {
+  getActiveSelectionFieldName,
+  invalidReviewValidationState,
+  isBodyOnlySelectionArgument,
+  isSelectionArgument,
+  type ReviewValidationState,
+  type SelectionCommandArgument,
+} from '@src/components/ModelingDialog/ModelingDialog.logic'
 import {
   getKclInputValue,
   getKclSubmitValue,
@@ -17,6 +26,7 @@ import {
 } from '@src/components/ModelingDialog/ModelingDialogKclInput'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type {
@@ -67,10 +77,6 @@ type CapturedSelectionListItem = SelectionListItem & {
   index: number
 }
 
-type SelectionCommandArgument = Extract<
-  CommandArgument<unknown>,
-  { inputType: 'selection' | 'selectionMixed' }
->
 type MachineContext = SnapshotFrom<AnyStateMachine>['context']
 
 type DialogArgumentResolution =
@@ -84,10 +90,6 @@ type DialogArgumentResolution =
         | 'invalidSelection'
       message?: string
     }
-
-type ReviewValidationState =
-  | { status: 'idle' | 'checking' | 'valid'; error?: undefined }
-  | { status: 'invalid'; error: string }
 
 const MODELING_DIALOG_TOOLBAR_GAP_PX = 8
 const REVIEW_VALIDATION_DEBOUNCE_MS = 350
@@ -143,27 +145,12 @@ function isSelectionValueEmpty(value: unknown): boolean {
   return graphSelections.length === 0 && otherSelections.length === 0
 }
 
-function isSelectionArgument(
-  arg: CommandArgument<unknown>
-): arg is SelectionCommandArgument {
-  return arg.inputType === 'selection' || arg.inputType === 'selectionMixed'
-}
-
 function hasNonZeroGraphSelection(selection: Selections | undefined): boolean {
   return (
     selection?.graphSelections.some(
       (graphSelection) =>
         graphSelection.codeRef.range[1] - graphSelection.codeRef.range[0] !== 0
     ) ?? false
-  )
-}
-
-function isBodyOnlySelectionArgument(arg: SelectionCommandArgument): boolean {
-  return (
-    arg.inputType === 'selectionMixed' &&
-    arg.selectionTypes.every(
-      (type) => type === 'path' || type === 'sweep' || type === 'compositeSolid'
-    )
   )
 }
 
@@ -489,6 +476,7 @@ function getSelectionListItems(
 export function ModelingDialog() {
   useSignals()
   const { commands, wasmPromise } = useApp()
+  const resolvedTheme = useResolvedTheme()
   const { kclManager } = useSingletons()
   const {
     context: { selectionRanges },
@@ -496,7 +484,11 @@ export function ModelingDialog() {
   } = useModelingContext()
   const commandBarState = commands.useState()
   const {
-    context: { selectedCommand, reviewValidationError },
+    context: {
+      selectedCommand,
+      reviewValidationError,
+      reviewValidationDetails,
+    },
   } = commandBarState
   const selectedCommandKey = selectedCommand
     ? `${selectedCommand.groupId}:${selectedCommand.name}`
@@ -616,6 +608,10 @@ export function ModelingDialog() {
       }
     })
   }, [selectedCommand?.args, dialogContext, selectedMachineContext])
+  const activeSelectionFieldName = getActiveSelectionFieldName(
+    fields,
+    activeSelectionArgName
+  )
 
   useEffect(() => {
     let isCancelled = false
@@ -944,6 +940,29 @@ export function ModelingDialog() {
   )
 
   useLayoutEffect(() => {
+    if (!activeSelectionArgName || activeSelectionFieldName) {
+      return
+    }
+
+    const activeField = fields.find(
+      (field) => field.argName === activeSelectionArgName
+    )
+    if (activeField && isSelectionArgument(activeField.arg)) {
+      setDraftValues((prev) => ({
+        ...prev,
+        [activeSelectionArgName]: cloneSelectionValue(selectionRanges),
+      }))
+    }
+    setActiveSelectionArgName(null)
+    setDidAutoEnableSelection(false)
+  }, [
+    activeSelectionArgName,
+    activeSelectionFieldName,
+    fields,
+    selectionRanges,
+  ])
+
+  useLayoutEffect(() => {
     if (didAutoEnableSelection || activeSelectionArgName !== null) {
       return
     }
@@ -993,16 +1012,6 @@ export function ModelingDialog() {
     selectedCommand?.dialogLayout?.groups,
     dialogArgumentsToSubmit
   )
-  const activeSelectionFieldName =
-    visibleFields.find(
-      (field) =>
-        field.argName === activeSelectionArgName &&
-        !field.isDisabled &&
-        isSelectionArgument(field.arg)
-    )?.argName ??
-    visibleFields.find(
-      (field) => !field.isDisabled && isSelectionArgument(field.arg)
-    )?.argName
   const invalidSelectionState = visibleFields
     .filter(
       (
@@ -1297,16 +1306,17 @@ export function ModelingDialog() {
 
           setReviewValidationState(
             result instanceof Error
-              ? { status: 'invalid', error: result.message }
+              ? invalidReviewValidationState(result)
               : { status: 'valid' }
           )
         } catch (error) {
           console.error('Error running dialog review validation', error)
           if (!isCancelled) {
-            setReviewValidationState({
-              status: 'invalid',
-              error: getErrorMessage(error, 'Unable to validate command.'),
-            })
+            setReviewValidationState(
+              invalidReviewValidationState(
+                getErrorMessage(error, 'Unable to validate command.')
+              )
+            )
           }
         }
       })()
@@ -1327,12 +1337,14 @@ export function ModelingDialog() {
 
   useEffect(() => {
     if (reviewValidationError) {
-      setReviewValidationState({
-        status: 'invalid',
-        error: reviewValidationError,
-      })
+      setReviewValidationState(
+        invalidReviewValidationState(
+          reviewValidationError,
+          reviewValidationDetails
+        )
+      )
     }
-  }, [reviewValidationError])
+  }, [reviewValidationDetails, reviewValidationError])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -1582,6 +1594,13 @@ export function ModelingDialog() {
                   )
                 )
               : visibleFields.map(renderField)}
+            {reviewValidationState.status === 'invalid' &&
+              reviewValidationState.details?.type === 'codemod' && (
+                <CodemodReviewDiff
+                  details={reviewValidationState.details}
+                  resolvedTheme={resolvedTheme}
+                />
+              )}
           </div>
 
           <div className="sticky bottom-0 -mx-3 mt-3 flex shrink-0 items-center justify-between gap-3 border-chalkboard-20 border-t bg-chalkboard-10 px-3 py-3 dark:border-chalkboard-80 dark:bg-chalkboard-100">
