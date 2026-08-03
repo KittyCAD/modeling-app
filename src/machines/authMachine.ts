@@ -91,6 +91,12 @@ export type Events =
       type: 'Log out all'
     }
   | {
+      type: 'Session expired'
+    }
+  | {
+      type: 'Acknowledge session expired'
+    }
+  | {
       type: 'Log in'
       token?: string
     }
@@ -172,6 +178,33 @@ export const authMachine = setup({
         'Log out all': {
           target: 'loggingOutAllEnvironments',
         },
+        'Session expired': {
+          target: 'sessionExpired',
+          actions: assign({
+            user: () => undefined,
+            token: () => '',
+          }),
+        },
+      },
+    },
+    sessionExpired: {
+      on: {
+        'Acknowledge session expired': {
+          target: 'loggedOut',
+          actions: assign({
+            user: () => undefined,
+            token: () => '',
+          }),
+        },
+        'Log in': {
+          target: 'checkIfLoggedIn',
+          actions: assign({
+            token: ({ event }) => {
+              const token = event.token || ''
+              return token
+            },
+          }),
+        },
       },
     },
     loggingOut: {
@@ -242,7 +275,7 @@ export const authMachine = setup({
       },
     },
   },
-  schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
+  schema: { events: {} as Events },
 })
 
 async function getUser(input: { token?: string }) {

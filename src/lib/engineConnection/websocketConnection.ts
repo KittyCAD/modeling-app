@@ -6,6 +6,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
 import { mark } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
@@ -147,6 +148,7 @@ export const createOnWebSocketMessage = ({
 
       const firstError = message.errors[0]
       if (firstError.error_code === 'auth_token_invalid') {
+        notifySessionExpired('engine-websocket')
         disconnectAll()
       }
 
