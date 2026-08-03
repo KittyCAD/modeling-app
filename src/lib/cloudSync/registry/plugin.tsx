@@ -803,7 +803,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudLibraryType: ProjectLibraryTypeContribution = {
     type: CLOUD_PROJECT_LIBRARY_TYPE,
     title: 'Cloud',
-    icon: 'network',
+    icon: 'cloud',
     order: 10,
     defaultSetting: getDefaultCloudProjectLibrarySetting(),
     newLibrarySetting: getDefaultCloudProjectLibrarySetting(),

@@ -179,8 +179,18 @@ describe('CloudConflictDialog', () => {
     expect(
       screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Local version')).toBeInTheDocument()
-    expect(screen.getByText('Cloud version')).toBeInTheDocument()
+    expect(screen.getByText(/Upload local project/)).toBeInTheDocument()
+    expect(screen.getByText(/Replace local project/)).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-local-data')
+        .querySelector('svg[aria-label="folder"]')
+    ).toBeInTheDocument()
+    expect(
+      screen
+        .getByTestId('use-cloud-data')
+        .querySelector('svg[aria-label="cloud"]')
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
