@@ -175,7 +175,7 @@ export function useEngineConnectionSubscriptions() {
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'query_entity_type_with_point',
       callback: (engineEvent) => {
-        const isSketchNoFace = stateRef.current.matches('Sketch no face')
+        const selectingSketchPlane = stateRef.current.matches('Sketch no face')
         const isSketchSolveMode = stateRef.current.matches('sketchSolveMode')
 
         if (isSketchSolveMode) {
@@ -183,7 +183,7 @@ export function useEngineConnectionSubscriptions() {
         }
 
         // Handle sketch plane selection directly when in 'Sketch no face' state
-        if (isSketchNoFace) {
+        if (selectingSketchPlane) {
           if (!engineEvent || !('data' in engineEvent)) return
           const data = engineEvent.data as { reference?: any } | undefined
           if (!data?.reference) return
@@ -230,15 +230,29 @@ export function useEngineConnectionSubscriptions() {
             wasmInstance,
             useSegmentsBasedRegions,
           })
-          // Check state again, in case we went into sketch mode before the query returned.
-          // This is probably rare, but we do go into sketch mode on double click.
+          // Check state again, in case it changed before
+          // getEventForQueryEntityTypeWithPoint returned.
           if (
-            stateRef.current.matches('Sketch no face') ||
-            stateRef.current.matches('sketchSolveMode')
+            stateRef.current.matches('sketchSolveMode') ||
+            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
           ) {
             return
           }
           if (event) send(event)
+          if (selectingSketchPlane) {
+            const entityId = (
+              engineEvent.data as typeof engineEvent.data & {
+                entity_id?: string
+              }
+            ).entity_id
+            if (entityId) {
+              await selectSketchPlane(
+                entityId,
+                context.store.useSketchSolveMode?.current,
+                kclManager
+              )
+            }
+          }
         })().catch(reportRejection)
       },
     })
@@ -256,30 +270,6 @@ export function useEngineConnectionSubscriptions() {
     rustContext,
     wasmInstance,
     useSegmentsBasedRegions,
-  ])
-
-  useEffect(() => {
-    if (!engineCommandManager) return
-
-    const unSub = engineCommandManager.subscribeTo({
-      event: 'select_with_point',
-      callback: state.matches('Sketch no face')
-        ? ({ data }) => {
-            void selectSketchPlane(
-              data.entity_id,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
-          }
-        : () => {},
-    })
-    return unSub
-  }, [
-    context.store.useSketchSolveMode,
-    state,
-    kclManager,
-    rustContext,
-    engineCommandManager,
   ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side

@@ -1,5 +1,4 @@
 import { BillingDialog } from '@kittycad/ui-components'
-import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -31,14 +30,18 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import {
+  formatProjectLibraryPathForDisplay,
+  type ProjectLibrary,
+  projectLibrariesFromSettings,
+} from '@src/lib/projectLibraries'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -52,10 +55,7 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   type HomeProjectActionsService,
@@ -72,7 +72,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
-  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
   filterStatusBarItemsForScopes,
@@ -95,7 +95,6 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -149,7 +148,16 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectLibraries = registry.signal(projectLibrariesValueSpec).value
+  const settingsValues = settings.useSettings()
+  const projectLibraryTypes = registry.signal(
+    projectLibraryTypesValueSpec
+  ).value
+  const projectLibraries = projectLibrariesFromSettings(
+    settingsValues.app.libraries.current
+  ).map((library) => ({
+    ...library,
+    icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
+  }))
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -267,40 +275,8 @@ const Home = () => {
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
-
-  useEffect(() => {
-    let disposed = false
-    let lastHandledSyncedAt: string | undefined
-
-    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
-      const syncedAt = cloudSyncStatus.value.lastSyncedAt
-      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
-        return
-      }
-
-      lastHandledSyncedAt = syncedAt
-      void waitFor(systemIOActor, (state) =>
-        state.matches(SystemIOMachineStates.idle)
-      )
-        .then(() => {
-          if (disposed || lastHandledSyncedAt !== syncedAt) {
-            return
-          }
-          systemIOActor.send({
-            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-          })
-        })
-        .catch(reportRejection)
-    })
-
-    return () => {
-      disposed = true
-      disposeCloudSyncRefreshEffect()
-    }
-  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -727,9 +703,8 @@ function HomeHeader({
             to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
             className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
           >
-            {library.path}
+            {formatProjectLibraryPathForDisplay(library)}
           </Link>
-          .
         </p>
       ) : null}
       {!readWriteProjectDir.value && (
@@ -781,6 +756,15 @@ function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
 }
 
+function shouldShowLoadingMoreProjects(
+  state: ReturnType<typeof useSystemIOState>
+) {
+  return (
+    state.matches(SystemIOMachineStates.readingFolders) &&
+    !state.context.hasListedProjects
+  )
+}
+
 function ProjectLibraryOverview({
   libraries,
   searchResults,
@@ -795,7 +779,6 @@ function ProjectLibraryOverview({
   ...rest
 }: ProjectLibraryOverviewProps) {
   const state = useSystemIOState()
-  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const libraryRows = libraries
     .map((library) => ({
       library,
@@ -805,7 +788,7 @@ function ProjectLibraryOverview({
       ).toSorted(getSortFunction(sort)),
     }))
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
-  const loadingMore = isReadingFolders ? (
+  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>
@@ -928,7 +911,7 @@ function ProjectLibraryPreviewRow({
             {library.title}
           </span>
           <span className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30">
-            {library.path}
+            {formatProjectLibraryPathForDisplay(library)}
           </span>
         </span>
         <span className="hidden flex-none text-xs text-chalkboard-70 dark:text-chalkboard-30 sm:block">
@@ -991,9 +974,8 @@ function ProjectGrid({
   ...rest
 }: ProjectGridProps) {
   const state = useSystemIOState()
-  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
-  const loadingMore = isReadingFolders ? (
+  const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
     </div>

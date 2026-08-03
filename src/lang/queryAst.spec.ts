@@ -23,6 +23,7 @@ import {
   getOwningSweepForEdgeCut,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
+  getSelectedSketchTarget,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -1188,6 +1189,25 @@ chamfer001 = chamfer(body001, tags = edge001, length = 1)`
     expect(
       getOwningSweepForEdgeCut(edgeCut, artifactGraph, ast, instanceInThisFile)
     ).toBeInstanceOf(Error)
+  })
+})
+
+describe('Testing getSelectedSketchTarget', () => {
+  it('returns an engine primitive face entity', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'primitive-face-entity',
+          parentEntityId: 'solid-entity',
+          primitiveIndex: 6,
+          primitiveType: 'face',
+        },
+      ],
+    }
+
+    expect(getSelectedSketchTarget(selections)).toBe('primitive-face-entity')
   })
 })
 

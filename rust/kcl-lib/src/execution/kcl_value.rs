@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitLength;
 use serde::Serialize;
+use serde::Serializer;
 
 use crate::CompilationIssue;
 use crate::KclError;
@@ -107,6 +109,9 @@ pub enum KclValue {
         value: String,
         #[serde(skip)]
         meta: Vec<Metadata>,
+    },
+    Enum {
+        value: Box<EnumValue>,
     },
     SketchVar {
         value: Box<SketchVar>,
@@ -318,6 +323,174 @@ pub enum FunctionBody {
 pub enum TypeDef {
     RustRepr(PrimitiveType, StdFnProps),
     Alias(RuntimeType),
+    /// Shared rather than owned so that every value of the enum points at the
+    /// one declaration object, and so that reading the type out of memory,
+    /// which clones the `KclValue`, does not copy the variant list.
+    Enum(Arc<EnumTypeDef>),
+}
+
+/// The nominal identity of an enum.
+///
+/// Two enums are the same type only if they come from the same `type`
+/// declaration, so identity is the declaring module plus the name written at
+/// the declaration site. Importing under an alias renames the binding, not the
+/// type, so it leaves identity untouched. Two enums declaring identical variant
+/// names are still distinct types.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+pub struct EnumTypeId {
+    module_id: ModuleId,
+    declared_name: String,
+}
+
+impl EnumTypeId {
+    pub fn new(module_id: ModuleId, declared_name: impl Into<String>) -> Self {
+        Self {
+            module_id,
+            declared_name: declared_name.into(),
+        }
+    }
+
+    pub fn module_id(&self) -> ModuleId {
+        self.module_id
+    }
+
+    /// The name at the declaration site, which is what users see in
+    /// diagnostics even when the enum was imported under another name.
+    pub fn declared_name(&self) -> &str {
+        &self.declared_name
+    }
+}
+
+/// A declared enum: its identity plus its variants in declaration order.
+#[derive(Debug, Clone, PartialEq)]
+pub struct EnumTypeDef {
+    id: EnumTypeId,
+    variants: Vec<String>,
+}
+
+/// Two variants of one enum declared under the same name, e.g.
+/// `type Color { | Red | Red }`.
+///
+/// Carries indices into the variant list rather than source ranges so that
+/// `EnumTypeDef` stays independent of the AST and of diagnostic types. The
+/// caller holds the declaration, so it can turn an index back into the range it
+/// needs for the error it reports.
+#[derive(Debug, Clone, PartialEq)]
+pub struct DuplicateVariant {
+    /// The name declared twice.
+    pub name: String,
+    /// Where the name was first declared.
+    pub first_index: usize,
+    /// Where it was declared again. Always greater than `first_index`.
+    pub duplicate_index: usize,
+}
+
+impl EnumTypeDef {
+    /// Variant names must be unique, so this is the only way to build an
+    /// `EnumTypeDef` and it rejects a repeat rather than dropping it. Silently
+    /// collapsing duplicates would deny the user a diagnostic naming the variant
+    /// they typed twice.
+    ///
+    /// Reports the earliest repeat when a declaration contains several.
+    pub fn new(id: EnumTypeId, variants: Vec<String>) -> Result<Self, DuplicateVariant> {
+        for (duplicate_index, variant) in variants.iter().enumerate() {
+            if let Some(first_index) = variants[..duplicate_index].iter().position(|v| v == variant) {
+                return Err(DuplicateVariant {
+                    name: variant.clone(),
+                    first_index,
+                    duplicate_index,
+                });
+            }
+        }
+
+        Ok(Self { id, variants })
+    }
+
+    pub fn id(&self) -> &EnumTypeId {
+        &self.id
+    }
+
+    pub fn variants(&self) -> &[String] {
+        &self.variants
+    }
+
+    pub fn has_variant(&self, name: &str) -> bool {
+        self.variants.iter().any(|v| v == name)
+    }
+}
+
+/// A value of an enum type, i.e. one of its variants.
+///
+/// V1 variants are nullary, so the variant name is the entire value. The value
+/// holds its declaration rather than only the declaration's identity, which is
+/// what lets a variant be projected to its declared representation: that
+/// representation is per-variant declaration data, and a value cannot find its
+/// declaration by name, because an import alias renames the binding and a value
+/// can reach a module that never imported the type at all. The declaration is
+/// reachable, not part of the value: identity and equality read the declaration's
+/// id and the variant name, never a representation.
+#[derive(Debug, Clone, Serialize)]
+pub struct EnumValue {
+    /// Serialized as `enum_id` so that the exposed shape stays the nominal
+    /// identity plus the variant, and no declaration data leaks into snapshots
+    /// or the memory pane.
+    #[serde(rename = "enum_id", serialize_with = "serialize_enum_def_id")]
+    def: Arc<EnumTypeDef>,
+    variant: String,
+    #[serde(skip)]
+    meta: Vec<Metadata>,
+}
+
+fn serialize_enum_def_id<S: Serializer>(def: &Arc<EnumTypeDef>, serializer: S) -> Result<S::Ok, S::Error> {
+    def.id().serialize(serializer)
+}
+
+/// Two values are equal when they name the same variant of the same declaration.
+/// Written out rather than derived because the declaration handle is a route to
+/// the declaration and not part of the value: comparing it would, once variants
+/// carry representations, let a representation decide equality.
+impl PartialEq for EnumValue {
+    fn eq(&self, other: &Self) -> bool {
+        self.def.id() == other.def.id() && self.variant == other.variant
+    }
+}
+
+impl EnumValue {
+    pub fn new(def: Arc<EnumTypeDef>, variant: impl Into<String>, meta: Vec<Metadata>) -> Self {
+        Self {
+            def,
+            variant: variant.into(),
+            meta,
+        }
+    }
+
+    pub fn enum_id(&self) -> &EnumTypeId {
+        self.def.id()
+    }
+
+    pub fn variant(&self) -> &str {
+        &self.variant
+    }
+
+    pub fn meta(&self) -> &[Metadata] {
+        &self.meta
+    }
+
+    /// The string this variant projects to under `enumValue: string`.
+    ///
+    /// The declared representation of the variant, which in V1 is always the
+    /// variant name because no variant can declare a `@repr` yet. This is the
+    /// single place that answers the question, so when `@repr` lands it reads the
+    /// declaration here rather than adding a second notion of representation at
+    /// the projection site.
+    pub fn declared_string_repr(&self) -> String {
+        self.variant.clone()
+    }
+
+    /// How the value is written in KCL and shown to users, e.g. `Color::Red`.
+    pub fn qualified_name(&self) -> String {
+        format!("{}::{}", self.def.id().declared_name(), self.variant)
+    }
 }
 
 impl From<Vec<GdtAnnotation>> for KclValue {
@@ -387,6 +560,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
+            KclValue::Enum { value } => to_vec_sr(value.meta()),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
@@ -422,6 +596,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::Enum { value } => to_vec_sr(value.meta()),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
@@ -450,6 +625,7 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
+            KclValue::Enum { value } => value.meta().to_vec(),
             KclValue::SketchVar { value, .. } => value.meta.clone(),
             KclValue::SketchConstraint { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
@@ -487,7 +663,7 @@ impl KclValue {
     pub(crate) fn show_variable_in_feature_tree(&self) -> bool {
         match self {
             KclValue::Uuid { .. } => false,
-            KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
+            KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } | KclValue::Enum { .. } => true,
             KclValue::SketchVar { .. }
             | KclValue::SketchConstraint { .. }
             | KclValue::Tuple { .. }
@@ -538,6 +714,7 @@ impl KclValue {
             } => format!("a number ({units})"),
             KclValue::Number { .. } => "a number".to_owned(),
             KclValue::String { .. } => "a string".to_owned(),
+            KclValue::Enum { value } => format!("a value of enum `{}`", value.enum_id().declared_name()),
             KclValue::SketchVar { .. } => "a sketch variable".to_owned(),
             KclValue::SketchConstraint { .. } => "a sketch constraint".to_owned(),
             KclValue::Object { .. } => "an object".to_owned(),
@@ -1022,6 +1199,7 @@ impl KclValue {
             // TODO: Show units.
             KclValue::Number { value, .. } => Some(format!("{value}")),
             KclValue::String { value, .. } => Some(format!("'{value}'")),
+            KclValue::Enum { value } => Some(value.qualified_name()),
             // TODO: Show units.
             KclValue::SketchVar { value, .. } => Some(format!("var {}", value.initial_value)),
             KclValue::Uuid { value, .. } => Some(format!("{value}")),
@@ -1170,5 +1348,136 @@ mod tests {
             array_nested.human_friendly_type(),
             "an array of `[any; 2]` with 1 value".to_string()
         );
+    }
+
+    fn color_def() -> Arc<EnumTypeDef> {
+        Arc::new(
+            EnumTypeDef::new(
+                EnumTypeId::new(ModuleId::default(), "Color"),
+                vec!["Red".to_owned(), "Green".to_owned()],
+            )
+            .unwrap(),
+        )
+    }
+
+    fn color_red() -> KclValue {
+        KclValue::Enum {
+            value: Box::new(EnumValue::new(color_def(), "Red", vec![])),
+        }
+    }
+
+    #[test]
+    fn enum_values_describe_themselves_by_name_and_variant() {
+        let red = color_red();
+
+        assert_eq!(red.human_friendly_type(), "a value of enum `Color`");
+        // Feature-tree and variable display use the qualified form.
+        assert_eq!(red.value_str(), Some("Color::Red".to_owned()));
+        assert!(red.show_variable_in_feature_tree());
+    }
+
+    /// The externally visible form of an enum value is its nominal identity,
+    /// never a representation of the variant. Pinning both view types keeps a
+    /// future `@repr` from leaking out of these surfaces by accident.
+    #[test]
+    fn enum_values_are_exposed_by_nominal_identity() {
+        let view = crate::execution::KclValueView::from(color_red());
+        assert_eq!(
+            view,
+            crate::execution::KclValueView::Enum {
+                enum_name: "Color".to_owned(),
+                variant: "Red".to_owned(),
+            }
+        );
+
+        let op = crate::execution::cad_op::op_from_kcl_value(&color_red());
+        assert_eq!(
+            op,
+            kcl_api::OpKclValue::Enum {
+                enum_name: "Color".to_owned(),
+                variant: "Red".to_owned(),
+            }
+        );
+    }
+
+    /// Serialization is the third such surface, and the one that reaches
+    /// `program_memory.snap`. A value holds its whole declaration, so this pins
+    /// that only the identity and the variant are written out: the declaration
+    /// will carry `@repr` values, and those must not appear here.
+    #[test]
+    fn enum_values_serialize_as_identity_and_variant() {
+        assert_eq!(
+            serde_json::to_value(color_red()).unwrap(),
+            serde_json::json!({
+                "type": "Enum",
+                "value": {
+                    "enum_id": { "module_id": 0, "declared_name": "Color" },
+                    "variant": "Red",
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn enum_declarations_carry_their_variants() {
+        let def = EnumTypeDef::new(
+            EnumTypeId::new(ModuleId::default(), "Color"),
+            vec!["Red".to_owned(), "Green".to_owned()],
+        )
+        .unwrap();
+
+        assert_eq!(def.variants(), ["Red", "Green"]);
+        assert!(def.has_variant("Red"));
+        assert!(!def.has_variant("Blue"));
+        // Identity is the declaration, not the variant set: an enum declaring
+        // the same variants elsewhere is a different type.
+        assert_ne!(
+            def.id(),
+            EnumTypeDef::new(
+                EnumTypeId::new(ModuleId::from_usize(1), "Color"),
+                vec!["Red".to_owned(), "Green".to_owned()],
+            )
+            .unwrap()
+            .id()
+        );
+    }
+
+    #[test]
+    fn enum_rejects_duplicate_variant() {
+        let err = EnumTypeDef::new(
+            EnumTypeId::new(ModuleId::default(), "Color"),
+            vec!["Red".to_owned(), "Green".to_owned(), "Red".to_owned()],
+        )
+        .unwrap_err();
+
+        assert_eq!(
+            err,
+            DuplicateVariant {
+                name: "Red".to_owned(),
+                first_index: 0,
+                duplicate_index: 2,
+            }
+        );
+    }
+
+    #[test]
+    fn enum_reports_earliest_duplicate() {
+        // `Green` repeats at index 3 and `Red` at index 4. The caller reports one
+        // duplicate, so it must be the one the user reads first.
+        let err = EnumTypeDef::new(
+            EnumTypeId::new(ModuleId::default(), "Color"),
+            vec![
+                "Red".to_owned(),
+                "Green".to_owned(),
+                "Blue".to_owned(),
+                "Green".to_owned(),
+                "Red".to_owned(),
+            ],
+        )
+        .unwrap_err();
+
+        assert_eq!(err.name, "Green");
+        assert_eq!(err.first_index, 1);
+        assert_eq!(err.duplicate_index, 3);
     }
 }

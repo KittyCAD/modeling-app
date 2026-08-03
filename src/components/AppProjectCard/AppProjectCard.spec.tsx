@@ -5,6 +5,7 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
@@ -48,6 +49,7 @@ function createProjectActions({
   rename?: HomeProjectActionsService['rename']
 } = {}): HomeProjectActionsService {
   return {
+    canDuplicate: () => true,
     canOpen,
     canRename: () => true,
     canDelete: () => true,
@@ -55,6 +57,7 @@ function createProjectActions({
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
+    duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
@@ -110,6 +113,39 @@ describe('ProjectCard', () => {
       createObjectURL: createObjectURLMock,
       revokeObjectURL: revokeObjectURLMock,
     })
+  })
+
+  test('duplicates a local project from its card action', async () => {
+    const { projectActions } = renderProjectCard()
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
+
+    await waitFor(() =>
+      expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
+    )
+  })
+
+  test('shows duplicate failures to the user', async () => {
+    const error = new Error('Unable to duplicate project')
+    const duplicate = vi.fn().mockRejectedValue(error)
+    const projectActions = {
+      ...createProjectActions(),
+      duplicate,
+    }
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const toastError = vi.spyOn(toast, 'error').mockImplementation(() => '')
+    renderProjectCard({ projectActions })
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-duplicate'))
+
+    await waitFor(() => expect(toastError).toHaveBeenCalled())
+    expect(toastError.mock.calls[0]?.[0]).toContain(
+      'Unable to duplicate project'
+    )
+    consoleError.mockRestore()
+    toastError.mockRestore()
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {

@@ -3202,6 +3202,58 @@ box = extrude(region001, length = 30)`
     }
   )
 
+  test(`Translate helix point-and-click`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+    )`
+    const expectedTranslateCode = `translate(helix001, x = 20)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+
+    const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+    await operationButton.click({ button: 'right' })
+    await page.getByTestId('context-menu-set-translate').click()
+
+    await cmdBar.expectState({
+      commandName: 'Translate',
+      currentArgKey: 'objects',
+      currentArgValue: '',
+      headerArguments: {
+        Objects: '',
+      },
+      highlightedHeaderArg: 'objects',
+      stage: 'arguments',
+    })
+    await expect(page.getByText('1 helix selected')).toBeVisible()
+    await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('x')
+    await page.keyboard.insertText('20')
+    await cmdBar.progressCmdBar()
+    await cmdBar.submit()
+    await scene.settled()
+
+    await editor.expectEditor.toContain(expectedTranslateCode)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedTranslateCode],
+      highlightedCode: '',
+    })
+  })
+
   test('Blend point-and-click', async ({
     context,
     page,

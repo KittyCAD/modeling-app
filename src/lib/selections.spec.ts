@@ -1485,6 +1485,89 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     expect(references[0].code).toBe('seg01')
   })
 
+  test('resolves graph-only region wall selections to generated tag references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+cubeSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+}
+cubeRegion = region(segments = [cubeSketch.right])
+cube = extrude(cubeRegion, length = 10)
+`
+    const ast = assertParse(code, instance)
+    const sourceRangeForSnippet = (snippet: string): SourceRange => {
+      const start = code.indexOf(snippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      return [start, start + snippet.length, 0]
+    }
+    const codeRefForSnippet = (snippet: string) => {
+      const range = sourceRangeForSnippet(snippet)
+      return {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+
+    const originalRightSegment = {
+      type: 'segment',
+      id: 'original-right-segment',
+      codeRef: codeRefForSnippet('right = line(end = [10, 0])'),
+    } as Artifact
+    const regionRightCodeRef = codeRefForSnippet(
+      'cubeRegion = region(segments = [cubeSketch.right])'
+    )
+    const regionRightSegment = {
+      type: 'segment',
+      id: 'region-right-segment',
+      originalSegId: originalRightSegment.id,
+      codeRef: regionRightCodeRef,
+    } as Artifact
+    const cubeSweep = {
+      type: 'sweep',
+      id: 'cube-sweep',
+      codeRef: codeRefForSnippet('extrude(cubeRegion, length = 10)'),
+    } as Artifact
+    const cubeWallRight = {
+      type: 'wall',
+      id: 'cube-wall-right',
+      sweepId: cubeSweep.id,
+      segId: regionRightSegment.id,
+    } as Artifact
+    const artifactGraph = new Map<string, Artifact>([
+      [originalRightSegment.id, originalRightSegment],
+      [regionRightSegment.id, regionRightSegment],
+      [cubeSweep.id, cubeSweep],
+      [cubeWallRight.id, cubeWallRight],
+    ])
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: cubeWallRight,
+          codeRef: regionRightCodeRef,
+        },
+      ],
+      enginePrimitives: [],
+      artifactGraph,
+      engineCommandManager: createPrimitiveEngineConnectionManager({
+        parentEntityId: cubeSweep.id,
+        primitiveIndex: 2,
+        primitiveType: 'face',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0]).toMatchObject({
+      label: 'Face',
+      code: 'cubeRegion.tags.right',
+    })
+  })
+
   test('prefers directly tagged edge references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)

@@ -76,6 +76,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
+  EnginePrimitiveSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -2266,10 +2267,26 @@ export function getSelectedSketchTarget(
     return defaultPlane.id
   }
 
-  // Try to find an offset plane or face (wall/cap); entityRef has plane_id or face_id
-  const planeSelection = selectionRanges.graphSelections.find((s) => {
-    const t = s.entityRef?.type
-    return t === 'plane' || t === 'face'
+  const primitiveFace = selectionRanges.otherSelections.find(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
+  if (primitiveFace) {
+    return primitiveFace.entityId
+  }
+
+  // Prefer the face API reference, while retaining artifact fallback selections.
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const entityType = selection.entityRef?.type
+    const artifactType = selection.artifact?.type || ''
+    return (
+      entityType === 'plane' ||
+      entityType === 'face' ||
+      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      (selection.artifact?.type === 'edgeCut' &&
+        selection.artifact?.subType === 'chamfer')
+    )
   })
   if (planeSelection?.entityRef) {
     if (planeSelection.entityRef.type === 'plane')
@@ -2277,8 +2294,19 @@ export function getSelectedSketchTarget(
     if (planeSelection.entityRef.type === 'face')
       return planeSelection.entityRef.face_id
   }
+  if (planeSelection?.artifact) return planeSelection.artifact.id
 
   return null
+}
+
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
 }
 
 export function getSelectedPlaneAsNode(

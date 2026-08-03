@@ -1356,11 +1356,12 @@ const OperationItem = ({
               <ContextMenuItem
                 onClick={enterTranslateFlow}
                 data-testid="context-menu-set-translate"
-                disabled={
-                  item.type !== 'GroupBegin' &&
-                  item.type !== 'ModuleInstance' &&
-                  !stdLibMap[item.name]?.supportsTransform
-                }
+                  disabled={
+                    item.type !== 'GroupBegin' &&
+                    item.type !== 'ModuleInstance' &&
+                    !stdLibMap[item.name]?.supportsTransform &&
+                    !stdLibMap[item.name]?.supportsTranslate
+                  }
               >
                 Translate
               </ContextMenuItem>,

@@ -47,6 +47,7 @@ import {
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
@@ -115,7 +116,6 @@ import type {
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
-  NonCodeSelection,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import type {
@@ -1241,16 +1241,7 @@ export function removeReferenceFromSelections(
   }
 }
 
-export function isEnginePrimitiveSelection(
-  s: NonCodeSelection
-): s is EnginePrimitiveSelection {
-  return (
-    typeof s === 'object' &&
-    s !== null &&
-    'type' in s &&
-    (s as { type: string }).type === 'enginePrimitive'
-  )
-}
+export { isEnginePrimitiveSelection }
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]
