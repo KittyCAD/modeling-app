@@ -1,0 +1,45 @@
+@settings(defaultLengthUnit = in, experimentalFeatures=allow, kclVersion = 2)
+
+// Define parameters for the shaft
+shaftDiameter = 3 / 4
+shaftLength = 12
+keywayWidth = 0.188
+keywayDepth = 3 / 32
+chamferLength = 1 / 16
+
+// Create a sketch for the shaft profile on the XY plane
+shaftSketch = startSketchOn(XY)
+
+// Draw the circular profile for the shaft
+shaftProfile = circle(
+  shaftSketch,
+  center = [0, 0],
+  diameter = shaftDiameter,
+  tag = $shaftEdge,
+)
+
+// Extrude the shaft profile to create the 3D shaft body
+shaftBody = extrude(
+  shaftProfile,
+  length = shaftLength / 2,
+  bidirectionalLength = shaftLength / 2,
+  tagEnd = $shaftEnd,
+)
+
+// Create a sketch for the keyway on the shaft
+keywaySketch = startSketchOn(shaftBody, face = shaftEnd)
+  |> startProfile(at = [-keywayWidth / 2, 0])
+  |> line(end = [keywayWidth, 0])
+  |> line(end = [0, -keywayDepth])
+  |> line(end = [-keywayWidth, 0])
+  |> close()
+
+// Extrude the keyway along the length of the shaft
+keyway = extrude(keywaySketch, length = -shaftLength, method = NEW)
+
+// Subtract the keyway from the shaft
+shaftWithKeyway = subtract(shaftBody, tools = [keyway])
+
+edge001 = edgeId(shaftWithKeyway, index = 2)
+edge002 = edgeId(shaftWithKeyway, index = 4)
+chamfer001 = chamfer(shaftWithKeyway, tags = [edge001, edge002], length = chamferLength, version = 2)

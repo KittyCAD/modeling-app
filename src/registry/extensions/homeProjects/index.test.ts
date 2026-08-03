@@ -389,6 +389,52 @@ describe('home project actions', () => {
     ).not.toContain('/projects/at-risk')
   })
 
+  it('does not report missing WASM registry configuration as a SystemIO failure', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const library = {
+      id: 'directory:/projects',
+      title: 'Projects',
+      path: '/projects',
+      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+    } satisfies ProjectLibrary
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(settingsService, createSettingsService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const createProject = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(DIRECTORY_PROJECT_LIBRARY_TYPE)?.operations?.createProject
+    if (!createProject) {
+      throw new Error('Expected directory create project operation')
+    }
+
+    await expect(
+      createProject.run({
+        library,
+        requestedProjectName: 'new-project',
+        requestedProjectTitle: 'New Project',
+      })
+    ).rejects.toThrow('Missing WASM promise registry value.')
+    expect(clientErrorMocks.reportClientError).not.toHaveBeenCalled()
+  })
+
   it('does not clear configured library entries for unrelated settings updates', async () => {
     const settings = createMutableSettingsService({
       libraries: [

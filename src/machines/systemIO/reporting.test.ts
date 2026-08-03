@@ -17,6 +17,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 
 import {
   ExpectedSystemIOError,
+  reportSystemIOError,
   withSystemIOErrorMetadata,
 } from '@src/lib/systemIOErrorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
@@ -176,5 +177,32 @@ describe('SystemIO client error reporting', () => {
     reportSystemIOMachineError({ context, event })
 
     expect(mocks.reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('deduplicates direct reports by their explicit phase', () => {
+    const error = new Error('operation failed')
+
+    reportSystemIOError({
+      error,
+      operation: 'write KCL file',
+      risk: 'write',
+      source: 'SystemIO',
+      extra: { phase: 'write_file' },
+    })
+    reportSystemIOError({
+      error,
+      operation: 'write KCL file',
+      risk: 'write',
+      source: 'SystemIO',
+      extra: { phase: 'rollback_file' },
+    })
+
+    expect(mocks.reportClientError).toHaveBeenCalledTimes(2)
+    expect(mocks.reportClientError.mock.calls[0]?.[0].dedupeKey).toContain(
+      ':write_file:'
+    )
+    expect(mocks.reportClientError.mock.calls[1]?.[0].dedupeKey).toContain(
+      ':rollback_file:'
+    )
   })
 })

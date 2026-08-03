@@ -84,7 +84,9 @@ export function reportSystemIOError(args: {
   }
 
   const message = errorToMessage(args.error, 'Unknown SystemIO error')
-  const phase = operationError?.metadata.phase
+  const phase =
+    operationError?.metadata.phase ??
+    (typeof args.extra?.phase === 'string' ? args.extra.phase : undefined)
   const filesystem = isDesktop() ? 'electron' : 'opfs'
 
   void reportClientError({

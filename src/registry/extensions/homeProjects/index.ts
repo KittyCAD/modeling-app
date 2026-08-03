@@ -6,7 +6,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
+import {
+  getCloudProjectLibraryMaterializationDirectoryPath,
+  getDefaultCloudProjectDirectoryPath,
+} from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -191,7 +194,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+    new Error('Missing WASM promise registry value.')
 
   const getProjectOperation = <
     OperationName extends keyof ProjectLibraryTypeOperations,
@@ -356,17 +359,27 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      const targetProjectDirectoryPath = openProject
+        ? await getCloudProjectLibraryMaterializationDirectoryPath(
+            openProject.library
+          )
+        : await getDefaultCloudProjectDirectoryPath()
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
         project.remoteProjectId,
-        await getDefaultCloudProjectDirectoryPath()
+        targetProjectDirectoryPath
       )
       if (!syncedProject) {
         return undefined
       }
 
+      const wasmInstancePromise = getWasmPromise()
+      if (wasmInstancePromise instanceof Error) {
+        return Promise.reject(wasmInstancePromise)
+      }
+
       const projectInfo = await getProjectInfo(
         syncedProject.projectPath,
-        await getWasmPromise()
+        await wasmInstancePromise
       )
       return { defaultFile: projectInfo.default_file }
     },
@@ -582,7 +595,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+    new Error('Missing WASM promise registry value.')
   const refreshLocalProjectEntries = () => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -612,13 +625,18 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
           hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
+            const wasmInstancePromise = getWasmPromise()
+            if (wasmInstancePromise instanceof Error) {
+              return Promise.reject(wasmInstancePromise)
+            }
+
             return runReportedDirectoryProjectOperation({
               operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
               risk: 'read',
               run: async () => {
                 const projects = await readProjectsFromProjectDirectory({
                   projectDirectoryPath: library.path,
-                  wasmInstancePromise: getWasmPromise(),
+                  wasmInstancePromise,
                   signal,
                   onProjectStatFailures: reportDirectoryProjectStatFailures,
                 })
@@ -643,6 +661,11 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 requestedProjectName,
                 requestedProjectTitle,
               }) => {
+                const wasmInstancePromise = getWasmPromise()
+                if (wasmInstancePromise instanceof Error) {
+                  return Promise.reject(wasmInstancePromise)
+                }
+
                 return runReportedDirectoryProjectOperation({
                   operation: SystemIOMachineActors.createProject,
                   risk: 'write',
@@ -655,7 +678,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                       projectDirectoryPath: library.path,
                       requestedProjectName,
                       requestedProjectTitle,
-                      wasmInstancePromise: getWasmPromise(),
+                      wasmInstancePromise,
                     })
                     systemIO.value?.actor.send({
                       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -683,6 +706,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 if (!localProjectName || !localProjectPath) {
                   return undefined
                 }
+                const wasmInstancePromise = getWasmPromise()
+                if (wasmInstancePromise instanceof Error) {
+                  return Promise.reject(wasmInstancePromise)
+                }
 
                 return runReportedDirectoryProjectOperation({
                   operation: SystemIOMachineActors.duplicateProject,
@@ -700,7 +727,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                       },
                       projectDirectoryPath: library.path,
                       requestedProjectTitle: getHomeProjectDisplayName(project),
-                      wasmInstance: await getWasmPromise(),
+                      wasmInstance: await wasmInstancePromise,
                     })
                     systemIO.value?.actor.send({
                       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,

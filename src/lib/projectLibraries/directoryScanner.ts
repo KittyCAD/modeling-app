@@ -3,6 +3,10 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
+import {
+  clearOutboxEntriesForProject,
+  deleteProjectMetadata,
+} from '@src/lib/cloudSync/syncDb'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
@@ -15,6 +19,7 @@ import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -160,9 +165,16 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
     void (async () => {
       let renamed = false
       for (const [projectDirectoryPath, directoryProjects] of syncGroups) {
-        const currentProjectDirectoryEntryNames = new Set(
-          await fsZds.readdir(projectDirectoryPath)
-        )
+        let currentProjectDirectoryEntryNames: Set<string>
+        try {
+          currentProjectDirectoryEntryNames = new Set(
+            await fsZds.readdir(projectDirectoryPath)
+          )
+        } catch (error) {
+          onProjectDirectoryRenameFailure?.(error)
+          reportRejection(error)
+          continue
+        }
 
         for (const project of directoryProjects) {
           let targetProjectDirectoryName: string | undefined
@@ -209,6 +221,51 @@ export function sortProjectDirectoryEntriesByModifiedDesc(
 
 function normalizeProjectPathForCloudMetadata(projectPath: string) {
   return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+/**
+ * Deletes conflict-copy project folders created by older cloud sync builds.
+ *
+ * TODO: Delete this cleanup after cloud_sync_conflict_copy_detected client error
+ * reports drop to zero, confirming generated conflict-copy projects have aged
+ * out of active clients.
+ */
+async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
+  let phase = 'delete_project_directory'
+  let projectDirectoryRemoved = false
+  const rejectWithReport = (error: unknown): Promise<never> => {
+    reportSystemIOError({
+      error,
+      operation: 'delete legacy cloud conflict copy project',
+      risk: 'destructive',
+      source: 'ProjectDirectoryScanner',
+      extra: {
+        phase,
+        projectDirectoryRemoved,
+        partialMutationPossible: true,
+        dataLossPossible: true,
+      },
+    })
+    return Promise.reject(error)
+  }
+
+  try {
+    try {
+      await fsZds.rm(projectPath, { recursive: true })
+      projectDirectoryRemoved = true
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return rejectWithReport(error)
+      }
+    }
+
+    phase = 'clear_project_outbox'
+    await clearOutboxEntriesForProject(projectPath)
+    phase = 'delete_project_metadata'
+    await deleteProjectMetadata(projectPath)
+  } catch (error) {
+    return rejectWithReport(error)
+  }
 }
 
 export function shouldSendProjectFolderReadProgress(
@@ -306,11 +363,17 @@ export async function readProjectsFromProjectDirectory({
       return projects
     }
 
-    const project = await getProjectInfo(entry.path, wasmInstance)
     const cloudMetadata = cloudProjectMetadataByPath.get(
       normalizeProjectPathForCloudMetadata(entry.path)
     )
+    if (cloudMetadata?.syncExcluded?.reason === 'conflict-copy') {
+      await deleteLegacyCloudConflictCopyProject(entry.path).catch(
+        reportRejection
+      )
+      continue
+    }
 
+    const project = await getProjectInfo(entry.path, wasmInstance)
     project.cloudProjectId ??= cloudMetadata?.remoteProjectId
     project.cloudConflict = cloudMetadata?.conflict
     if (project.metadata) {
