@@ -2540,6 +2540,58 @@ box = extrude(region001, length = 30)`
     })
   })
 
+  test(`Scale helix point-and-click`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+    )`
+    const expectedScaleCode = `scale(helix001, factor = 2)`
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await scene.settled()
+
+    const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+    await operationButton.click({ button: 'right' })
+    await page.getByTestId('context-menu-set-scale').click()
+
+    await cmdBar.expectState({
+      commandName: 'Scale',
+      currentArgKey: 'objects',
+      currentArgValue: '',
+      headerArguments: {
+        Objects: '',
+      },
+      highlightedHeaderArg: 'objects',
+      stage: 'arguments',
+    })
+    await expect(page.getByText('1 helix selected')).toBeVisible()
+    await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('factor')
+    await page.keyboard.insertText('2')
+    await cmdBar.progressCmdBar()
+    await cmdBar.submit()
+    await scene.settled()
+
+    await editor.expectEditor.toContain(expectedScaleCode)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedScaleCode],
+      highlightedCode: '',
+    })
+  })
+
   test('Blend point-and-click', async ({
     context,
     page,
