@@ -45,11 +45,7 @@ export function installSessionExpiredFetchMonitor() {
   originalFetch = globalThis.fetch
   const fetchToMonitor = originalFetch
   const monitoredFetch: typeof fetch = async (...args) => {
-    const response = (await Reflect.apply(
-      fetchToMonitor,
-      globalThis,
-      args
-    )) as Response
+    const response = await Reflect.apply(fetchToMonitor, globalThis, args)
     if (response.status === 401) {
       notifySessionExpired('fetch')
     }

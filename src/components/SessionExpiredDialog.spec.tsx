@@ -20,8 +20,16 @@ import { useMemo, useState } from 'react'
 import { createMemoryRouter, Outlet, RouterProvider } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-const sessionExpiredDialogSpecMocks = vi.hoisted(() => ({
-  app: undefined as unknown,
+const sessionExpiredDialogSpecMocks = vi.hoisted<{
+  app: unknown
+  readEnvironmentFile: ReturnType<typeof vi.fn>
+  writeEnvironmentFile: ReturnType<typeof vi.fn>
+  toast: {
+    error: ReturnType<typeof vi.fn>
+    success: ReturnType<typeof vi.fn>
+  }
+}>(() => ({
+  app: undefined,
   readEnvironmentFile: vi.fn().mockResolvedValue(''),
   writeEnvironmentFile: vi.fn().mockResolvedValue(undefined),
   toast: {
