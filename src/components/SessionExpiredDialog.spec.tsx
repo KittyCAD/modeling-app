@@ -4,8 +4,8 @@ import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import {
   clearSessionExpiredNotice,
+  fetchWithSessionExpiration,
   sessionExpiredNotice,
-  uninstallSessionExpiredFetchMonitor,
 } from '@src/lib/sessionExpired'
 import { Themes } from '@src/lib/theme'
 import {
@@ -138,7 +138,6 @@ afterEach(() => {
   registry?.[Symbol.dispose]()
   registry = undefined
   clearSessionExpiredNotice()
-  uninstallSessionExpiredFetchMonitor()
   expireFakeAuthSession = undefined
   sentAuthEvents.length = 0
   sessionExpiredDialogSpecMocks.app = undefined
@@ -214,7 +213,7 @@ describe('SessionExpiredDialog', () => {
     render(<RouterProvider router={router} />)
 
     await act(async () => {
-      await fetch('/user/projects')
+      await fetchWithSessionExpiration('/user/projects')
     })
 
     expect(

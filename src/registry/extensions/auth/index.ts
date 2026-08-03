@@ -8,9 +8,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import {
   clearSessionExpiredNotice,
-  installSessionExpiredFetchMonitor,
   sessionExpiredNotice,
-  uninstallSessionExpiredFetchMonitor,
 } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
@@ -55,7 +53,6 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
     useToken: () => useSelector(authActor, (state) => state.context.token),
     useUser: () => useSelector(authActor, (state) => state.context.user),
   }
-  installSessionExpiredFetchMonitor()
   let lastHandledSessionExpiredNotice = sessionExpiredNotice.peek()
   const sessionExpiredSubscription = sessionExpiredNotice.subscribe(
     (notice) => {
@@ -86,7 +83,6 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
       providesServices: [provideService(authService, serviceImpl)],
       dispose: () => {
         sessionExpiredSubscription()
-        uninstallSessionExpiredFetchMonitor()
         authSubscription.unsubscribe()
         authActor.stop()
       },
