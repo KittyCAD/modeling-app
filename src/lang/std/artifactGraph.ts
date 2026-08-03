@@ -137,6 +137,41 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   return artifact as Extract<Artifact, { type: T[number] }>
 }
 
+function getMappedRegionSegments(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }>[] {
+  return [...artifactGraph.values()].filter(
+    (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+      artifact.type === 'segment' && artifact.originalSegId === segment.id
+  )
+}
+
+function getSweepFromMappedRegionSegment(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): SweepArtifact | Error {
+  let mappedSweep: SweepArtifact | null = null
+
+  for (const mappedSegment of getMappedRegionSegments(segment, artifactGraph)) {
+    const path = artifactGraph.get(mappedSegment.pathId)
+    if (path?.type !== 'path' || !path.sweepId) {
+      continue
+    }
+
+    const sweep = artifactGraph.get(path.sweepId)
+    if (sweep?.type !== 'sweep') {
+      continue
+    }
+    if (mappedSweep && mappedSweep.id !== sweep.id) {
+      return new Error('Segment maps to more than one swept region')
+    }
+    mappedSweep = sweep
+  }
+
+  return mappedSweep ?? new Error('No swept region segment found')
+}
+
 export function getPatternArtifactForCopyId(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
@@ -349,13 +384,38 @@ export function getCommonFacesForEdge(
   artifact: SweepEdge | SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const faces = getArtifactsOfTypes(
-    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  if (err(faces)) return faces
-  if (faces.size === 0) return new Error('No common face found')
-  return [...faces.values()]
+  const candidates =
+    'pathId' in artifact
+      ? [artifact, ...getMappedRegionSegments(artifact, artifactGraph)]
+      : [artifact]
+
+  let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
+
+  for (const candidate of candidates) {
+    const faces = getArtifactsOfTypes(
+      { keys: candidate.commonSurfaceIds, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    if (err(faces)) {
+      return faces
+    }
+    if (faces.size === 0) {
+      continue
+    }
+
+    const candidateFaces = [...faces.values()]
+    const commonFaceIds = new Set(commonFaces?.map(({ id }) => id))
+    if (
+      commonFaces &&
+      (commonFaces.length !== candidateFaces.length ||
+        candidateFaces.some(({ id }) => !commonFaceIds.has(id)))
+    ) {
+      return new Error('Segment maps to more than one set of common faces')
+    }
+    commonFaces = candidateFaces
+  }
+
+  return commonFaces ?? new Error('No common face found')
 }
 
 export function getSweepArtifactFromSelection(
@@ -376,7 +436,9 @@ export function getSweepArtifactFromSelection(
       artifactGraph
     )
     if (err(_pathArtifact)) return _pathArtifact
-    if (!_pathArtifact.sweepId) return new Error('Path does not have a sweepId')
+    if (!_pathArtifact.sweepId) {
+      return getSweepFromMappedRegionSegment(selection.artifact, artifactGraph)
+    }
     const _artifact = getArtifactOfTypes(
       { key: _pathArtifact.sweepId, types: ['sweep'] },
       artifactGraph
