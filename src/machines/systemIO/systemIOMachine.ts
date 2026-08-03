@@ -89,6 +89,14 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: {
+            projectName: string
+            projectPath: string
+            requestedProjectName: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.renameProject
           data: {
             /** New human-facing project title to write to project.toml. */
@@ -505,6 +513,20 @@ export const systemIOMachine = setup({
         return { message: '', name: '' }
       }
     ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName, projectPath, requestedProjectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          projectPath: string
+          requestedProjectName: string
+        }
+      }) => {
+        return { message: '', name: '', title: '', projectPath: '' }
+      }
+    ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
       async ({
         input: { context, requestedProjectName },
@@ -885,6 +907,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -993,6 +1018,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1128,6 +1156,45 @@ export const systemIOMachine = setup({
               requestedProjectName: ({ event }) => {
                 return {
                   name: (event as { output: { name: string } }).output.name,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+            projectPath: event.data.projectPath,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
+              requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { name: string; projectPath: string }
+                  }
+                ).output
+                return {
+                  name: output.name,
+                  path: output.projectPath,
                 }
               },
             }),
@@ -1327,6 +1394,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,

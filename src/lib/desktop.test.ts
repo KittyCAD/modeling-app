@@ -3,7 +3,7 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
-import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -123,6 +123,39 @@ describe('createNewProjectDirectory', () => {
       })
     ).rejects.toBe(statError)
     expect(writeSpy).not.toHaveBeenCalled()
+  })
+
+  it('uses the default directory library when creating new projects from settings', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const legacyProjectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+    createdProjectDirectoryPaths.push(legacyProjectDirectoryPath)
+
+    const project = await createNewProjectDirectory(
+      'library-project',
+      wasmInstance,
+      undefined,
+      {
+        settings: {
+          app: {
+            libraries: [
+              {
+                title: 'Projects',
+                path: projectDirectoryPath,
+                type: 'directory',
+              },
+            ],
+          },
+          project: {
+            directory: legacyProjectDirectoryPath,
+          },
+        },
+      }
+    )
+
+    expect(project.path).toBe(
+      fsZds.join(projectDirectoryPath, 'library-project')
+    )
   })
 
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {

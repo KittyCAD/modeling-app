@@ -59,6 +59,26 @@ describe('SystemIO client error reporting', () => {
     })
   })
 
+  it('marks project duplication failures as potentially partial writes', () => {
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.duplicateProject}`,
+        error: new Error('copy failed'),
+      },
+    })
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        extra: expect.objectContaining({
+          operation: SystemIOMachineActors.duplicateProject,
+          risk: 'write',
+          partialMutationPossible: true,
+        }),
+      })
+    )
+  })
+
   it('includes partial bulk-mutation progress from the actor error', () => {
     const originalError = new Error('third write failed')
     const error = withSystemIOErrorMetadata(originalError, {

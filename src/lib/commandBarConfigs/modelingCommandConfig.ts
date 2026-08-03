@@ -1522,7 +1522,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: 'Set translation on solid or sketch.',
+    description: 'Set translation on a solid, sketch, or helix.',
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1534,6 +1534,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectsTypesAndFilters,
+            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
             inputType: 'selectionMixed',
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -2259,6 +2260,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: [
               'cap',
               'wall',
+              'edgeCut',
               'primitiveFace',
               'enginePrimitiveFace',
             ],

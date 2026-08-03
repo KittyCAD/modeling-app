@@ -41,7 +41,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 

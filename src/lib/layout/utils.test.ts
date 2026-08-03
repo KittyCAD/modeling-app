@@ -2,22 +2,20 @@ import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
 } from '@src/lib/layout/configs/default'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type {
   Layout,
   LayoutMigrationMap,
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
-  setBodiesPaneLayoutEnabled,
+  parseLayoutWithMigrations,
   setOpenPanes,
 } from '@src/lib/layout/utils'
-import { expect } from 'vitest'
-import { it } from 'vitest'
-import { describe } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 const basicSplitLayout: Layout = {
   id: 'root',
@@ -307,31 +305,29 @@ describe('Layout utils', () => {
     })
   })
 
-  describe('feature-gated layouts', () => {
-    it('adds and removes the bodies list split around the feature tree pane', () => {
-      const layout: Layout = {
-        id: DefaultLayoutPaneID.FeatureTree,
-        label: 'Feature Tree',
-        type: LayoutType.Simple,
-        areaType: AreaType.FeatureTree,
-      }
+  describe('persisted layout migrations', () => {
+    it('adds the bodies list split around a v2 feature tree pane', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v2',
+        layout: {
+          id: DefaultLayoutPaneID.FeatureTree,
+          label: 'Feature Tree',
+          type: LayoutType.Simple,
+          areaType: AreaType.FeatureTree,
+        },
+      })
 
-      const enabled = setBodiesPaneLayoutEnabled(layout, true)
-      expect(enabled).toHaveProperty('type', LayoutType.Splits)
-      expect(enabled).toHaveProperty(
-        'children[0].areaType',
+      expect(migrated).not.toBeInstanceOf(Error)
+      expect(migrated).toHaveProperty('version', 'v3')
+      expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
+      expect(migrated).toHaveProperty(
+        'layout.children[0].areaType',
         AreaType.FeatureTree
       )
-      expect(enabled).toHaveProperty('children[1].areaType', AreaType.Bodies)
-
-      const disabled = setBodiesPaneLayoutEnabled(enabled, false)
-      expect(disabled).toStrictEqual({
-        id: DefaultLayoutPaneID.FeatureTree,
-        label: 'Feature Tree',
-        type: LayoutType.Simple,
-        icon: 'model',
-        areaType: AreaType.FeatureTree,
-      })
+      expect(migrated).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.Bodies
+      )
     })
   })
 

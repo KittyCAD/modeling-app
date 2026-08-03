@@ -13,6 +13,15 @@ type ReportClientErrorParams = {
 }
 
 export enum ClientErrorCode {
+  AuthDeviceFlowLoginError = 'auth_device_flow_login_error',
+  AuthDeviceFlowStartError = 'auth_device_flow_start_error',
+  AuthGetUserError = 'auth_get_user_error',
+  AuthLogoutError = 'auth_logout_error',
+  AuthLogoutTokenReadError = 'auth_logout_token_read_error',
+  AuthTokenRevokeError = 'auth_token_revoke_error',
+  AuthTokenSyncError = 'auth_token_sync_error',
+  CloudSyncConflict = 'cloud_sync_conflict',
+  CloudSyncFailure = 'cloud_sync_failure',
   EngineDisconnect = 'engine_disconnect',
   SystemIOError = 'system_io_error',
   UserFeaturesFetchError = 'user_features_fetch_error',

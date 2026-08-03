@@ -162,6 +162,17 @@ async fn inner_delete_face(
         return Ok(body);
     }
 
+    // Chamfers and fillets are batched until the end of the file so they do not
+    // invalidate source edge IDs too early. If deleteFace targets one of those
+    // generated faces, the edge cut must be flushed before the delete command
+    // references it.
+    exec_state
+        .flush_batch_for_solids(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            std::slice::from_ref(&body),
+        )
+        .await?;
+
     // Combine the list of faces, both tagged and indexed.
     let tagged_faces = tagged_faces.unwrap_or_default();
     let face_indices = face_indices.unwrap_or_default();

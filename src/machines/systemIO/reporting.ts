@@ -25,6 +25,10 @@ const operationReportMetadata: Partial<
     risk: 'write',
     partialMutationPossible: true,
   },
+  [SystemIOMachineActors.duplicateProject]: {
+    risk: 'write',
+    partialMutationPossible: true,
+  },
   [SystemIOMachineActors.renameProject]: {
     risk: 'write',
     partialMutationPossible: true,

@@ -13,11 +13,27 @@ import { setup } from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
+const CLOUD_SYNC_E2E_TIMEOUT = 20_000
+
 async function openHomeProject(page: Page, projectTitle: string) {
-  await page
-    .getByTestId('project-link')
-    .filter({ hasText: projectTitle })
-    .click()
+  const projectLink = page.getByTestId('project-link').filter({
+    has: page.getByTestId('project-title').filter({ hasText: projectTitle }),
+  })
+
+  await expect(projectLink).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
+  await projectLink.click()
+}
+
+async function expectProjectFileRoute(page: Page) {
+  await expect(page).toHaveURL(/\/file\/.*main\.kcl/, {
+    timeout: CLOUD_SYNC_E2E_TIMEOUT,
+  })
+}
+
+async function expectCloudSyncHomeReady(page: Page) {
+  await expect(
+    page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
+  ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
 }
 
 test(
@@ -75,13 +91,15 @@ test(
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
-    await expect(page.getByTestId('projects-none')).toBeVisible()
+    await expectCloudSyncHomeReady(page)
+    await expect(
+      page.getByTestId('project-library-empty').first()
+    ).toBeVisible()
 
     remoteListGate.release()
 
     await expect
-      .poll(() => projectTitles(page), { timeout: 20_000 })
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
         expect.arrayContaining([
           'Remote empty one',
@@ -107,8 +125,10 @@ test(
       .toBe(false)
 
     await openHomeProject(page, 'Remote empty one')
-    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
-    await expect.poll(() => apiCalls.downloads).toEqual(['remote-empty-one'])
+    await expect
+      .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+      .toEqual(['remote-empty-one'])
+    await expectProjectFileRoute(page)
 
     const localFiles = await readOpfsTextFiles(page, {
       remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
@@ -124,9 +144,9 @@ test(
     remoteListGate.hold()
 
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
-      .poll(() => projectTitles(page))
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(expect.arrayContaining(['Remote empty one']))
     await expect
       .poll(async () => (await projectTitles(page))[0])
@@ -210,7 +230,7 @@ test(
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
 
     const localOnlyFiles = {
       'main.kcl': 'localOnly = 1\n',
@@ -275,9 +295,9 @@ test(
     })
 
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
-      .poll(() => projectTitles(page))
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
         expect.arrayContaining([
           'Local only project',
@@ -323,7 +343,7 @@ test(
     remoteListGate.release()
 
     await expect
-      .poll(() => projectTitles(page), { timeout: 20_000 })
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
         expect.arrayContaining([
           'Local only project',
@@ -392,10 +412,10 @@ test(
     expect(staleUpdateCalls()[0]?.url).toContain('expected_revision')
 
     await openHomeProject(page, 'Remote only project')
-    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
     await expect
-      .poll(() => apiCalls.downloads)
+      .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(expect.arrayContaining(['remote-only-project']))
+    await expectProjectFileRoute(page)
 
     const remoteOnlyFiles = await readOpfsTextFiles(page, {
       remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
@@ -416,9 +436,9 @@ test(
     // project should now behave like a normal local OPFS project, so Home should
     // show it from local state without needing another remote list response.
     await page.goto('/')
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     await expect
-      .poll(() => projectTitles(page))
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(
         expect.arrayContaining([
           'Local only project',
@@ -453,10 +473,10 @@ test(
     // restores the Home card without restoring OPFS files until the card opens.
     remoteListGate.hold()
     await page.reload()
-    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+    await expectCloudSyncHomeReady(page)
     remoteListGate.release()
     await expect
-      .poll(() => projectTitles(page), { timeout: 20_000 })
+      .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       .toEqual(expect.arrayContaining(['Remote only project']))
     await expect
       .poll(() =>
@@ -470,15 +490,16 @@ test(
     ).toBe(remoteOnlyDownloadsAfterFirstOpen)
 
     await openHomeProject(page, 'Remote only project')
-    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
     await expect
       .poll(
         () =>
           apiCalls.downloads.filter(
             (projectId) => projectId === 'remote-only-project'
-          ).length
+          ).length,
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
       )
       .toBeGreaterThan(remoteOnlyDownloadsAfterFirstOpen)
+    await expectProjectFileRoute(page)
     await expect
       .poll(() =>
         page.evaluate(

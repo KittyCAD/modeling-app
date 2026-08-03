@@ -70,6 +70,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
+  EnginePrimitiveSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -1326,6 +1327,48 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    if (s.artifact?.type === 'edgeCut') {
+      const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'VariableDeclaration',
+        false,
+        true
+      )
+      if (
+        !err(edgeCutVariable) &&
+        edgeCutVariable.node.type === 'VariableDeclaration'
+      ) {
+        const name = edgeCutVariable.node.declaration.id.name
+        if (pushedNames[name]) {
+          continue
+        }
+        exprs.push(createLocalName(name))
+        pushedNames[name] = true
+        continue
+      }
+
+      const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'CallExpressionKw',
+        false,
+        true
+      )
+      if (!err(edgeCutCall) && edgeCutCall.node.unlabeled) {
+        const input = structuredClone(edgeCutCall.node.unlabeled)
+        const key = outputExprKey(input)
+        if (pushedNames[key]) {
+          continue
+        }
+        exprs.push(input)
+        pushedNames[key] = true
+        continue
+      }
+    }
+
     if (s.artifact?.type === 'segment') {
       const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
       const sketchName = getSketchVariableNameForSegment(
@@ -1659,7 +1702,7 @@ function hasLaterMatchingArtifact(
   return false
 }
 
-function getSketchVariableNameForSegment(
+export function getSketchVariableNameForSegment(
   ast: Node<Program>,
   segmentId: string,
   artifactGraph: ArtifactGraph,
@@ -1899,6 +1942,15 @@ export function getSelectedSketchTarget(
     return defaultPlane.id
   }
 
+  const primitiveFace = selectionRanges.otherSelections.find(
+    (selection): selection is EnginePrimitiveSelection =>
+      isEnginePrimitiveSelection(selection) &&
+      selection.primitiveType === 'face'
+  )
+  if (primitiveFace) {
+    return primitiveFace.entityId
+  }
+
   // Try to find an offset plane or wall or cap or chamfer edgeCut
   const planeSelection = selectionRanges.graphSelections.find((selection) => {
     const artifactType = selection.artifact?.type || ''
@@ -1913,6 +1965,16 @@ export function getSelectedSketchTarget(
   }
 
   return null
+}
+
+export function isEnginePrimitiveSelection(
+  selection: Selections['otherSelections'][number]
+): selection is EnginePrimitiveSelection {
+  return (
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive'
+  )
 }
 
 export function getSelectedPlaneAsNode(

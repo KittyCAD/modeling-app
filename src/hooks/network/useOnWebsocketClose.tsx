@@ -1,6 +1,6 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export interface IUseOnWebsocketClose {
@@ -40,13 +40,13 @@ export function useOnWebsocketClose({
     }
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.WebsocketClosed,
+      EngineConnectionManagerEvents.WebsocketClosed,
       onWebsocketClose as EventListener
     )
 
     return () => {
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.WebsocketClosed,
+        EngineConnectionManagerEvents.WebsocketClosed,
         onWebsocketClose as EventListener
       )
     }

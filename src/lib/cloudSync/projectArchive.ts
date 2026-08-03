@@ -12,8 +12,11 @@ import {
 import opfs from '@src/lib/fs-zds/opfs'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
+  getProjectDefaultFileFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  normalizeProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
+  setProjectDefaultFileInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { isArray } from '@src/lib/utils'
@@ -31,7 +34,7 @@ export function prepareProjectFilesForCloudUpload(
   files: ProjectArchiveFile[],
   expectedRevision?: Revision
 ) {
-  const normalizedFiles = normalizeProjectArchiveFiles(files)
+  const normalizedFiles = normalizeProjectArchiveFilesForCloudSync(files)
   const entrypointPath = getUploadEntrypointPath(normalizedFiles)
   const projectTomlPath = ensureProjectTomlUploadFile(
     normalizedFiles,
@@ -58,11 +61,22 @@ export function prepareProjectFilesForCloudUpload(
   }
 }
 
-function normalizeProjectArchiveFiles(files: ProjectArchiveFile[]) {
-  return files.map((file) => ({
-    ...file,
-    relativePath: normalizeRelativePath(file.relativePath),
-  }))
+export function normalizeProjectArchiveFilesForCloudSync(
+  files: ProjectArchiveFile[]
+) {
+  return files.map((file) => {
+    const relativePath = normalizeRelativePath(file.relativePath)
+    return {
+      ...file,
+      relativePath,
+      data:
+        relativePath === PROJECT_SETTINGS_FILE_NAME
+          ? new TextEncoder().encode(
+              normalizeProjectTomlContents(new TextDecoder().decode(file.data))
+            )
+          : file.data,
+    }
+  })
 }
 
 function ensureProjectTomlUploadFile(
@@ -119,7 +133,17 @@ function getProjectTomlTitle(files: ProjectArchiveFile[]) {
   )
 }
 
-function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
+export function getProjectArchiveEntrypointPath(
+  files: ProjectArchiveFile[],
+  preferredEntrypointPath?: string
+) {
+  const normalizedPreferredEntrypointPath = preferredEntrypointPath
+    ? normalizeRelativePath(preferredEntrypointPath)
+    : undefined
+  if (normalizedPreferredEntrypointPath) {
+    return normalizedPreferredEntrypointPath
+  }
+
   const filePaths = new Set(files.map((file) => file.relativePath))
   const projectTomlDefaultFile = getProjectTomlDefaultFile(files)
   if (projectTomlDefaultFile && filePaths.has(projectTomlDefaultFile)) {
@@ -139,6 +163,15 @@ function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
     return fallbackKclFile
   }
 
+  return undefined
+}
+
+function getUploadEntrypointPath(files: ProjectArchiveFile[]) {
+  const entrypointPath = getProjectArchiveEntrypointPath(files)
+  if (entrypointPath) {
+    return entrypointPath
+  }
+
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   throw new Error('Cloud sync needs at least one KCL file to upload a project.')
 }
@@ -151,11 +184,9 @@ function getProjectTomlDefaultFile(files: ProjectArchiveFile[]) {
     return undefined
   }
 
-  const projectToml = new TextDecoder().decode(projectTomlFile.data)
-  const defaultFile = projectToml.match(
-    /^\s*default_file\s*=\s*["']([^"']+)["']/m
-  )?.[1]
-  return defaultFile ? normalizeRelativePath(defaultFile) : undefined
+  return getProjectDefaultFileFromProjectTomlContents(
+    new TextDecoder().decode(projectTomlFile.data)
+  )
 }
 
 export function getMimeType(fileName: string) {
@@ -183,7 +214,7 @@ export function withProjectTitleInArchiveFiles(
     return files
   }
 
-  return withProjectTomlArchiveFile(files, (contents) =>
+  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
     setProjectTitleInProjectTomlContents(contents, title)
   )
 }
@@ -197,14 +228,35 @@ export function withProjectCloudProjectIdInArchiveFiles(
     return files
   }
 
-  return withProjectTomlArchiveFile(files, (contents) =>
+  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
     setCloudProjectIdInProjectTomlContents(contents, environmentName, projectId)
   )
 }
 
-function withProjectTomlArchiveFile(
+export function withProjectDefaultFileInArchiveFiles(
+  files: ProjectArchiveFile[],
+  defaultFile?: string
+) {
+  if (!defaultFile) {
+    return files
+  }
+
+  return withUpdatedProjectTomlInArchiveFiles(files, (contents) =>
+    setProjectDefaultFileInProjectTomlContents(contents, defaultFile)
+  )
+}
+
+export function withUpdatedProjectTomlInArchiveFiles(
   files: ProjectArchiveFile[],
   update: (contents: string) => string
+): ProjectArchiveFile[]
+export function withUpdatedProjectTomlInArchiveFiles(
+  files: ProjectArchiveFile[],
+  update: (contents: string) => string | Error
+): ProjectArchiveFile[] | Error
+export function withUpdatedProjectTomlInArchiveFiles(
+  files: ProjectArchiveFile[],
+  update: (contents: string) => string | Error
 ) {
   const nextFiles = [...files]
   const projectTomlFileIndex = nextFiles.findIndex(
@@ -214,9 +266,13 @@ function withProjectTomlArchiveFile(
     projectTomlFileIndex === -1
       ? ''
       : new TextDecoder().decode(nextFiles[projectTomlFileIndex].data)
+  const nextProjectToml = update(existingProjectToml)
+  if (nextProjectToml instanceof Error) {
+    return nextProjectToml
+  }
   const nextProjectTomlFile = {
     relativePath: PROJECT_SETTINGS_FILE_NAME,
-    data: new TextEncoder().encode(update(existingProjectToml)),
+    data: new TextEncoder().encode(nextProjectToml),
   }
 
   if (projectTomlFileIndex === -1) {
@@ -232,15 +288,20 @@ export function withRemoteProjectMetadataInArchiveFiles(
   files: ProjectArchiveFile[],
   title: string | undefined,
   projectId: string,
-  environmentName?: string
+  environmentName?: string,
+  entrypointPath?: string
 ) {
-  return withProjectCloudProjectIdInArchiveFiles(
+  const filesWithMetadata = withProjectCloudProjectIdInArchiveFiles(
     withProjectTitleInArchiveFiles(
       files,
       getRemoteProjectTitleForProjectToml(title)
     ),
     projectId,
     environmentName
+  )
+  return withProjectDefaultFileInArchiveFiles(
+    filesWithMetadata,
+    getProjectArchiveEntrypointPath(filesWithMetadata, entrypointPath)
   )
 }
 

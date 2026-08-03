@@ -211,10 +211,7 @@ async fn load_and_parse(input: KclInput) -> PyResult<KclProgram> {
     })
 }
 
-async fn new_context_state(
-    current_file: Option<std::path::PathBuf>,
-    mock: bool,
-) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
+fn executor_settings(current_file: Option<PathBuf>, highlight_edges: Option<bool>) -> kcl_lib::ExecutorSettings {
     let mut settings: kcl_lib::ExecutorSettings = kcl_lib::ExecutorSettings {
         heartbeats: Some(HEARTBEAT_INTERVAL_SECONDS),
         ..Default::default()
@@ -222,8 +219,20 @@ async fn new_context_state(
     if let Some(current_file) = current_file {
         settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
+    if let Some(highlight_edges) = highlight_edges {
+        settings.highlight_edges = highlight_edges;
+    }
     // Must turn on SSAO, without it, transparent images will look opaque.
     settings.enable_ssao = true;
+    settings
+}
+
+async fn new_context_state(
+    current_file: Option<PathBuf>,
+    mock: bool,
+    highlight_edges: Option<bool>,
+) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
+    let settings = executor_settings(current_file, highlight_edges);
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
@@ -295,7 +304,7 @@ struct ExecutedKcl {
     issues: Vec<kcl_lib::CompilationIssue>,
 }
 
-async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
+async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
     let KclProgram {
         code,
         program,
@@ -303,7 +312,9 @@ async fn run_kcl(input: KclInput, mock: bool) -> PyResult<ExecutedKcl> {
         filename,
     } = load_and_parse(input).await?;
 
-    let (ctx, mut state) = new_context_state(path, mock).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
+        .await
+        .map_err(to_py_exception)?;
     if let Err(err) = ctx.run(&program, &mut state).await {
         ctx.close().await;
         return Err(into_miette(err, &code));
@@ -327,7 +338,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
         code,
         filename,
         ..
-    } = run_kcl(input, mock).await?;
+    } = run_kcl(input, mock, None).await?;
     ctx.close().await;
     Ok(ExecOutcome {
         issues: issues.into_iter().map(CompilationIssue::from).collect(),
@@ -354,7 +365,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, false, None).await.map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -383,8 +394,9 @@ async fn execute_and_snapshot_views_impl(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
+    highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges).await?;
     let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
@@ -394,7 +406,7 @@ async fn execute_and_measure_impl(
     input: KclInput,
     request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
     let result = measure_model_properties(&ctx, request).await;
     ctx.close().await;
     result
@@ -414,7 +426,7 @@ async fn execute_and_bounding_box_impl(
     output_unit: Option<UnitLength>,
 ) -> PyResult<BoundingBoxResponse> {
     let entity_ids = parse_entity_ids(entity_ids)?;
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false).await?;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
     let result = get_bounding_box(&ctx, entity_ids, output_unit).await;
     ctx.close().await;
     result
@@ -427,7 +439,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         code,
         filename,
         issues: _,
-    } = run_kcl(input, false).await?;
+    } = run_kcl(input, false, None).await?;
 
     let settings = match program.meta_settings() {
         Ok(x) => x.unwrap_or_default(),
@@ -572,15 +584,16 @@ async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConst
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None))]
+#[pyfunction(signature = (filepaths, format, image_format, *, zoom=None, highlight_edges=None))]
 async fn import_and_snapshot(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     zoom: Option<bool>,
+    highlight_edges: Option<bool>,
 ) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom))
+    let img = import_and_snapshot_views(filepaths, format, image_format, Vec::new(), Some(zoom), highlight_edges)
         .await?
         .pop();
     Ok(img.unwrap())
@@ -601,17 +614,20 @@ fn relevant_file_extensions() -> PyResult<Vec<String>> {
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (filepaths, format, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
 async fn import_and_snapshot_views(
     filepaths: Vec<String>,
     format: InputFormat3d,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
+        let (ctx, _state) = new_context_state(None, false, highlight_edges)
+            .await
+            .map_err(to_py_exception)?;
         if let Err(e) = import(&ctx, filepaths, format).await {
             ctx.close().await;
             return Err(e);
@@ -669,36 +685,55 @@ async fn import(ctx: &ExecutorContext, filepaths: Vec<String>, format: InputForm
 
 /// Execute a kcl file and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, *, zoom=None))]
-async fn execute_and_snapshot(path: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+#[pyfunction(signature = (path, image_format, *, zoom=None, highlight_edges=None))]
+async fn execute_and_snapshot(
+    path: String,
+    image_format: ImageFormat,
+    zoom: Option<bool>,
+    highlight_edges: Option<bool>,
+) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom))
+    let img = execute_and_snapshot_views(path, image_format, Vec::new(), Some(zoom), highlight_edges)
         .await?
         .pop();
     Ok(img.unwrap())
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (path, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
 async fn execute_and_snapshot_views(
     path: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        execute_and_snapshot_views_impl(KclInput::Path(path), image_format, snapshot_options, zoom).await
+        execute_and_snapshot_views_impl(
+            KclInput::Path(path),
+            image_format,
+            snapshot_options,
+            zoom,
+            highlight_edges,
+        )
+        .await
     })
     .await
 }
 
 /// Execute the kcl code and snapshot it in a specific format.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, *, zoom=None))]
-async fn execute_code_and_snapshot(code: String, image_format: ImageFormat, zoom: Option<bool>) -> PyResult<Vec<u8>> {
+#[pyfunction(signature = (code, image_format, *, zoom=None, highlight_edges=None))]
+async fn execute_code_and_snapshot(
+    code: String,
+    image_format: ImageFormat,
+    zoom: Option<bool>,
+    highlight_edges: Option<bool>,
+) -> PyResult<Vec<u8>> {
     let zoom = zoom.unwrap_or(true);
-    let mut snaps = execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom)).await?;
+    let mut snaps =
+        execute_code_and_snapshot_views(code, image_format, Vec::new(), Some(zoom), highlight_edges).await?;
     Ok(snaps.pop().unwrap())
 }
 
@@ -777,16 +812,24 @@ impl SnapshotOptions {
 /// Returns one image for each camera angle you provide.
 /// If you don't provide any camera angles, a default head-on camera angle will be used.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None))]
+#[pyfunction(signature = (code, image_format, snapshot_options, *, zoom=None, highlight_edges=None))]
 async fn execute_code_and_snapshot_views(
     code: String,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: Option<bool>,
+    highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
-        execute_and_snapshot_views_impl(KclInput::Code(code), image_format, snapshot_options, zoom).await
+        execute_and_snapshot_views_impl(
+            KclInput::Code(code),
+            image_format,
+            snapshot_options,
+            zoom,
+            highlight_edges,
+        )
+        .await
     })
     .await
 }
@@ -1250,6 +1293,20 @@ define_stub_info_gatherer!(stub_info);
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn executor_settings_preserve_default_edge_visibility_without_override() {
+        let settings = executor_settings(None, None);
+
+        assert!(settings.highlight_edges);
+    }
+
+    #[test]
+    fn executor_settings_apply_edge_visibility_override() {
+        let settings = executor_settings(None, Some(false));
+
+        assert!(!settings.highlight_edges);
+    }
 
     /// Cube and cylinder positioned so they do not overlap, then subtracted.
     /// The engine should report no intersection, which the executor records as

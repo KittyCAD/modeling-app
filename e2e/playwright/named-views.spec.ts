@@ -44,16 +44,20 @@ function tomlStringMakeTestDataNotAsFragile(toml: string): string {
   delete settings.settings?.meta
   const namedViews = settings.settings?.app?.named_views
   if (namedViews) {
-    const entries = Object.entries(namedViews)
-    const remappedNamedViews: { [key: string]: NamedView } = {}
-    entries.forEach(([_, value]) => {
-      if (value) {
-        // {name:'uuid1'} -> uuid1 lookup
-        const staticUuid = nameToUuid.get(value.name)
-        if (staticUuid) {
-          remappedNamedViews[staticUuid] = value
+    const entries = Object.values(namedViews)
+      .flatMap((value) => {
+        if (!value) {
+          return []
         }
-      }
+        const staticUuid = nameToUuid.get(value.name)
+        return staticUuid ? [{ staticUuid, value }] : []
+      })
+      .toSorted((left, right) =>
+        left.staticUuid.localeCompare(right.staticUuid)
+      )
+    const remappedNamedViews: { [key: string]: NamedView } = {}
+    entries.forEach(({ staticUuid, value }) => {
+      remappedNamedViews[staticUuid] = value
     })
     if (settings && settings.settings && settings.settings.app) {
       settings.settings.app.named_views = remappedNamedViews

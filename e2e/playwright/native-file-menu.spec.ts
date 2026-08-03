@@ -190,7 +190,7 @@ test.describe(
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('Edit.Change project directory')
-        await openSettingsExpectLocator(page, '#projectDirectory')
+        await openSettingsExpectLocator(page, '#libraries')
       })
 
       await test.step('Home.View.Command Palette...', async () => {
@@ -254,7 +254,8 @@ test.describe(
         throwTronAppMissing()
         return
       }
-      await homePage.goToModelingScene()
+      const sourceProjectName = `native-menu-duplicate-source-${Date.now()}`
+      await homePage.goToModelingScene(sourceProjectName)
       await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
@@ -267,6 +268,13 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Create project')
         await cmdBar.expectCommandName('Create project')
+      })
+      await test.step('Modeling.File.Duplicate project', async () => {
+        await page.waitForTimeout(250)
+        await nativeMenu.click('File.Duplicate project')
+        await expect(page.getByTestId('app-header-project-name')).toHaveText(
+          `${sourceProjectName}-copy`
+        )
       })
       await test.step('Modeling.File.Open project', async () => {
         await page.waitForTimeout(250)
@@ -334,7 +342,7 @@ test.describe(
       await test.step('Modeling.Edit.Change project directory', async () => {
         await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Change project directory')
-        await openSettingsExpectLocator(page, '#projectDirectory')
+        await openSettingsExpectLocator(page, '#libraries')
       })
       await test.step('Modeling.View.Orthographic view', async () => {
         await nativeMenu.click('View.Orthographic view')

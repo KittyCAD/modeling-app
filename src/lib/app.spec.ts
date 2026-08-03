@@ -1,7 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
@@ -10,14 +9,23 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -159,7 +167,9 @@ async function writeText(path: string, contents: string) {
 
 async function waitForHistoryIdle(kclManager: KclManager) {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    if (!kclManager.historyOperationInProgress.value) return
+    if (!kclManager.historyOperationInProgress.value) {
+      return
+    }
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
   throw new Error('History operation did not settle')
@@ -191,6 +201,54 @@ function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   })
 }
 
+function getCloudSyncPluginSetting(app: App) {
+  return (
+    app.settings.get().plugins as
+      | Record<
+          string,
+          {
+            current?: unknown
+            user?: unknown
+          }
+        >
+      | undefined
+  )?.['cloud-sync']
+}
+
+function getPluginToggle(app: App, pluginId: string) {
+  const plugin = app.registry
+    .get(pluginsValueSpec)
+    .find((plugin) => plugin.id === pluginId)
+  expect(plugin).toBeDefined()
+  if (!plugin) {
+    throw new Error(`Missing ${pluginId} plugin registry item`)
+  }
+
+  return app.registry.get(plugin.service)
+}
+
+function hasPersonalCloudLibrarySetting(app: App) {
+  const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === defaultCloudLibrary.type &&
+        library.path === defaultCloudLibrary.path
+    )
+}
+
+function hasDefaultDirectoryLibrarySetting(app: App) {
+  const projectDirectory = app.settings.get().app.projectDirectory.current
+  return app.settings
+    .get()
+    .app.libraries.current.some(
+      (library) =>
+        library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
+        library.path === projectDirectory
+    )
+}
+
 describe('project system', () => {
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -198,10 +256,20 @@ describe('project system', () => {
     try {
       const registryUserFeatures = app.registry.get(userFeaturesService)
       const registryMachineManager = app.registry.get(machineManagerService)
+      const registryEngineConnectionManager = app.registry.get(
+        engineConnectionService
+      )
+      const registryBilling = app.registry.get(billingService)
+      const registryRustContext = app.registry.get(rustContextService)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
+      expect(app.engineCommandManager).toBe(
+        registryEngineConnectionManager.manager
+      )
+      expect(app.billing.actor).toBe(registryBilling.actor)
+      expect(app.rustContext).toBe(registryRustContext.context)
     } finally {
       app.dispose()
     }
@@ -297,8 +365,11 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Missing ${pluginId} plugin registry item`)
+      }
 
-      const pluginToggle = app.registry.get(plugin!.service)
+      const pluginToggle = app.registry.get(plugin.service)
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins).toHaveBeenCalledWith(
         expect.arrayContaining([pluginId])
@@ -341,6 +412,137 @@ describe('project system', () => {
           pluginId
         ]
       ).toBeUndefined()
+    } finally {
+      app.dispose()
+      window.electron = previousElectron
+    }
+  })
+
+  it('keeps cloud sync disabled by default without the cloud projects feature', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
+      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
+      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
+      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            library: expect.objectContaining({
+              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+            }),
+          }),
+        ])
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('auto-enables cloud sync for feature-flagged users and materializes Personal Cloud', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({
+      userFeatures,
+    })
+
+    try {
+      await expect
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          current: getCloudSyncPluginSetting(app)?.current,
+          user: getCloudSyncPluginSetting(app)?.user,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasDefaultDirectoryLibrarySetting:
+            hasDefaultDirectoryLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          current: true,
+          user: true,
+          hasPersonalCloudLibrarySetting: true,
+          hasDefaultDirectoryLibrarySetting: false,
+        })
+
+      // On web, cloud sync is the project storage layer, not an optional
+      // feature: a disable attempt is overridden, the plugin stays active, and
+      // a usable library plus a create target remain (the strand-repro fix).
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await expect
+        .poll(() => ({
+          current: getCloudSyncPluginSetting(app)?.current,
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          canCreateInPersonalCloud: app
+            .getCreateProjectLibraryTargets()
+            .some(
+              (target) =>
+                target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+            ),
+        }))
+        .toEqual({
+          current: true,
+          active: true,
+          hasPersonalCloudLibrarySetting: true,
+          canCreateInPersonalCloud: true,
+        })
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('respects an explicit cloud sync opt-out on desktop', async () => {
+    const previousElectron = window.electron
+    window.electron = {
+      os: { isMac: false },
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins: vi.fn().mockResolvedValue(undefined),
+      },
+    } as unknown as typeof window.electron
+    const userFeatures = createUserFeaturesForTest(
+      new Set([OPFS_CLOUD_FEATURE_FLAG])
+    )
+    const app = createAppForTest({ userFeatures })
+
+    try {
+      // Cloud sync auto-enables for the flag on desktop too.
+      await expect
+        .poll(() => getPluginToggle(app, 'cloud-sync').active.value)
+        .toBe(true)
+
+      // Unlike web (where the disable attempt is overridden), desktop keeps
+      // cloud sync optional and honors the opt-out.
+      app.settings.actor.send({
+        type: 'set.plugins.cloud-sync',
+        data: {
+          level: 'user',
+          value: false,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
+      expect(getCloudSyncPluginSetting(app)?.user).toBe(false)
+      expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
     } finally {
       app.dispose()
       window.electron = previousElectron
@@ -450,13 +652,16 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Missing ${pluginId} plugin registry item`)
+      }
 
       app.settings.actor.send({ type: 'reload.settings' } as never)
 
       await waitForSettingsIdle(app)
 
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
-      expect(app.registry.get(plugin!.service).active.value).toBe(true)
+      expect(app.registry.get(plugin.service).active.value).toBe(true)
     } finally {
       app.dispose()
     }
@@ -545,7 +750,13 @@ describe('project system', () => {
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
 
-      await project.openEditor(mockProject.children![0].path)
+      const [mainEntry] = mockProject.children ?? []
+      expect(mainEntry).toBeDefined()
+      if (!mainEntry) {
+        throw new Error('Missing main project file entry')
+      }
+
+      await project.openEditor(mainEntry.path)
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 

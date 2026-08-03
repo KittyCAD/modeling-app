@@ -18,7 +18,9 @@ KCL supports the usual arithmetic operators on numbers and logic operators on bo
 | `\|` | Logical 'or' |
 | `!` | Unary logical 'not' |
 
-KCL also supports comparsion operators which operate on numbers and produce booleans:
+KCL also supports comparison operators which produce booleans. Ordering
+comparisons operate on numbers, while `==` and `!=` operate on numbers or
+strings:
 
 | Operator | Meaning |
 |----------|---------|
@@ -28,6 +30,9 @@ KCL also supports comparsion operators which operate on numbers and produce bool
 | `>` | Greater than |
 | `<=` | Less than or equal |
 | `>=` | Greater than or equal |
+
+String equality is exact and case-sensitive. It does not perform Unicode
+normalization.
 
 Arithmetics and logic expressions can be arbitrairly combined with the usual rules of associativity and precedence, e.g.,
 

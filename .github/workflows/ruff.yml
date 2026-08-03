@@ -18,6 +18,7 @@ jobs:
   ruff:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: astral-sh/ruff-action@v4.1.0
-
+        with:
+          version: 0.15.22
