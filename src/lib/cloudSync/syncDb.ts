@@ -140,9 +140,77 @@ export async function getAllProjectMetadata() {
 }
 
 export async function appendOutboxEntry(entry: Omit<OutboxEntry, 'id'>) {
-  await withStore<IDBValidKey>(OUTBOX_STORE, 'readwrite', (store) =>
-    store.add(entry)
-  )
+  const normalizedProjectPath = normalizePathForSync(entry.projectPath)
+  const nextEntry = {
+    ...entry,
+    projectPath: normalizedProjectPath,
+  }
+  const db = await openSyncDb()
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(OUTBOX_STORE, 'readwrite')
+    const store = transaction.objectStore(OUTBOX_STORE)
+    const request = store.openCursor()
+    const matchingDeleteEntryKeys: IDBValidKey[] = []
+    const matchingUpsertEntryKeys: IDBValidKey[] = []
+
+    request.onsuccess = () => {
+      const cursor = request.result
+      if (!cursor) {
+        if (nextEntry.kind === 'delete') {
+          for (const key of [
+            ...matchingDeleteEntryKeys,
+            ...matchingUpsertEntryKeys,
+          ]) {
+            store.delete(key)
+          }
+          store.add(nextEntry)
+          return
+        }
+
+        const retainedDeleteEntryKey = matchingDeleteEntryKeys[0]
+        if (retainedDeleteEntryKey !== undefined) {
+          for (const key of [
+            ...matchingDeleteEntryKeys.slice(1),
+            ...matchingUpsertEntryKeys,
+          ]) {
+            store.delete(key)
+          }
+          return
+        }
+
+        const retainedUpsertEntryKey = matchingUpsertEntryKeys[0]
+        if (retainedUpsertEntryKey !== undefined) {
+          for (const key of matchingUpsertEntryKeys.slice(1)) {
+            store.delete(key)
+          }
+          return
+        }
+
+        store.add(nextEntry)
+        return
+      }
+
+      const existingEntry = cursor.value as OutboxEntry
+      if (
+        normalizePathForSync(existingEntry.projectPath) ===
+        normalizedProjectPath
+      ) {
+        if (existingEntry.kind === 'delete') {
+          matchingDeleteEntryKeys.push(cursor.primaryKey)
+        } else {
+          matchingUpsertEntryKeys.push(cursor.primaryKey)
+        }
+      }
+      cursor.continue()
+    }
+    request.onerror = () => reject(request.error)
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+    transaction.oncomplete = () => {
+      db.close()
+      resolve()
+    }
+  })
 }
 
 export async function getAllOutboxEntries() {

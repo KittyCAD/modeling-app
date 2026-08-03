@@ -159,10 +159,9 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
-        requestedProjectName.name
-      )
+      const projectPathWithoutSpecificKCLFile =
+        requestedProjectName.path ??
+        joinOSPaths(projectDirectoryPath, requestedProjectName.name)
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),

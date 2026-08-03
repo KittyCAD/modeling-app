@@ -100,25 +100,26 @@ async fn inner_clone(
                     .await?;
 
                 let mut new_solid = solid.clone();
-                // Sweep-backed solids normally have separate engine entity
-                // and body artifact IDs. Preserve that split so the cloned
-                // Path and Sweep can coexist. Bodies whose artifact is the
-                // engine entity itself (including composites and pattern
-                // copies) keep those IDs together.
-                let source_entity_id = solid.id.into();
-                let result_artifact_id = if solid.artifact_id == source_entity_id {
+                // Sweep-backed solids have separate engine entity and body
+                // artifact IDs. Preserve that split so the cloned Path and
+                // Sweep can coexist. Pattern copies replace `artifact_id`
+                // with their own entity ID, so consult their retained source
+                // artifact to recover the same distinction.
+                let source_artifact_id = solid.pattern_source_artifact_id.unwrap_or(solid.artifact_id);
+                let result_artifact_id = if source_artifact_id == source_topology_id.into() {
                     new_id.into()
                 } else {
                     exec_state.next_artifact_id()
                 };
                 entity_clone_info = Some(EntityCloneInfo {
-                    source_artifact_id: solid.artifact_id,
+                    source_artifact_id,
                     result_artifact_id,
                     source_topology_id: source_topology_id.into(),
                 });
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 new_solid.topology_id = new_id;
+                new_solid.pattern_source_artifact_id = None;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -918,6 +919,7 @@ clonedCopy = clone(patternCopy)
         assert_eq!(pattern_copy.original_id(), source.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
+        assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
         let pattern_wall = pattern_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
         let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
@@ -945,7 +947,13 @@ clonedCopy = clone(patternCopy)
 
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
-            Some(Artifact::Sweep(_))
+            Some(Artifact::Sweep(sweep))
+                if sweep.path_id == cloned_copy.id.into()
+        ));
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_copy.id.into()),
+            Some(Artifact::Path(path))
+                if path.sweep_id == Some(cloned_copy.artifact_id)
         ));
         assert!(matches!(
             result.artifact_graph.get(&cloned_wall_id),

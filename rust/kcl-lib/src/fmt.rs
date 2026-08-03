@@ -92,7 +92,7 @@ pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, Format
     }
 }
 
-fn normalize_negative_zero(value: f64) -> f64 {
+pub(crate) fn normalize_negative_zero(value: f64) -> f64 {
     if value == 0.0 { 0.0 } else { value }
 }
 

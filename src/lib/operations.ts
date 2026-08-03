@@ -99,6 +99,7 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+  supportsTranslate?: boolean
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -3492,6 +3493,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Helix',
     icon: 'helix',
     prepareToEdit: prepareToEditHelix,
+    supportsTranslate: true,
   },
   subtract2d: {
     label: 'Subtract 2D',

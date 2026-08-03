@@ -2164,12 +2164,12 @@ description: Result of parsing error_large_fillet_radius.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "raw": "5",
+                  "raw": "13",
                   "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
-                    "value": 5.0,
+                    "value": 13.0,
                     "suffix": "None"
                   }
                 }

@@ -9,6 +9,13 @@ export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
   'documents',
   PROJECT_FOLDER,
 ])}`
+const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
+  INTERNAL_OPFS_META_FILE,
+  '.git',
+  '.hg',
+  '.svn',
+  '.jj',
+])
 
 export async function getDefaultCloudProjectDirectoryPath() {
   if (typeof window !== 'undefined' && window.electron?.os.isMac) {
@@ -20,7 +27,7 @@ export async function getDefaultCloudProjectDirectoryPath() {
         PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
       )
     } catch {
-      // Fall back to the cross-platform documents location below.
+      // Fall back to the shared desktop home location below.
     }
   }
 
@@ -34,7 +41,7 @@ export async function getDefaultCloudProjectDirectoryPath() {
 
   try {
     return fsZds.join(
-      await fsZds.getPath('documents'),
+      await fsZds.getPath('home'),
       CLOUD_PROJECT_LIBRARY_FOLDER,
       PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
     )
@@ -56,6 +63,12 @@ export function normalizeRelativePath(relativePath: string) {
     .replaceAll('\\', '/')
     .replace(/^\/+/g, '')
     .replace(/^(?:\.\/)+/g, '')
+}
+
+export function isCloudSyncExcludedPath(targetPath: string) {
+  return webSafePathSplit(normalizePathForSync(targetPath)).some((part) =>
+    CLOUD_SYNC_EXCLUDED_PATH_PARTS.has(part)
+  )
 }
 
 function getProjectRootFromProjectDirectoryParts(

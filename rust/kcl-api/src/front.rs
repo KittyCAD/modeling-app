@@ -1,7 +1,8 @@
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 

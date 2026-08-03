@@ -1966,6 +1966,23 @@ impl WithinFunction {
 }
 
 fn body_items_within_function(i: &mut TokenSlice) -> ModalResult<WithinFunction> {
+    // A reserved keyword followed by `=` cannot begin a valid statement. Commit to
+    // this error before trying other statement forms so the parser keeps the useful
+    // keyword location instead of reporting a later token.
+    if let Ok(keyword) = peek(terminated(any_keyword, (opt(whitespace), equals))).parse_next(i) {
+        let alternative = format!("{}Value", keyword.value);
+        return Err(ErrMode::Cut(
+            CompilationIssue::fatal(
+                keyword.as_source_range(),
+                format!(
+                    "`{}` is a reserved keyword and cannot be used as a variable name. Use a different name, such as `{alternative}`.",
+                    keyword.value
+                ),
+            )
+            .into(),
+        ));
+    }
+
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
@@ -4473,19 +4490,31 @@ mod tests {
     }
 
     fn assert_reserved(word: &str) {
-        // Try to use it as a variable name.
-        let code = format!(r#"{word} = 0"#);
-        let result = crate::parsing::top_level_parse(code.as_str());
-        let err = &result.unwrap_errs().next().unwrap();
-        // Which token causes the error may change.  In "return = 0", for
-        // example, "return" is the problem.
-        assert!(
-            err.message.starts_with("Unexpected token: ")
-                || err.message.starts_with("= is not")
-                || err.message.starts_with("Expected an identifier, but found "),
-            "Error message is: `{}`",
-            err.message,
+        let alternative = format!("{word}Value");
+        let expected_message = format!(
+            "`{word}` is a reserved keyword and cannot be used as a variable name. Use a different name, such as `{alternative}`."
         );
+
+        for code in [format!("{word} = 0"), format!("sketch() {{\n  {word} = 0\n}}")] {
+            let expected_start = code.find(word).unwrap();
+            let expected_end = expected_start + word.len();
+            let result = crate::parsing::top_level_parse(&code);
+            let errors: Vec<_> = result.unwrap_errs().collect();
+
+            assert_eq!(errors.len(), 1, "Unexpected errors for `{code}`: {errors:#?}");
+            assert_eq!(errors[0].message, expected_message, "Incorrect error for `{code}`");
+            assert_eq!(
+                errors[0].source_range,
+                SourceRange::new(expected_start, expected_end, ModuleId::default()),
+                "Incorrect error range for `{code}`",
+            );
+
+            let corrected = format!("{}{}{}", &code[..expected_start], alternative, &code[expected_end..]);
+            assert!(
+                crate::parsing::top_level_parse(&corrected).is_ok(),
+                "Suggested alternative should parse: `{corrected}`",
+            );
+        }
     }
 
     #[test]
@@ -4540,7 +4569,6 @@ e
         for word in crate::parsing::token::RESERVED_WORDS.keys().sorted() {
             assert_reserved(word);
         }
-        assert_reserved("import");
     }
 
     #[test]

@@ -37,6 +37,7 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
@@ -415,7 +416,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), true, exec_state)
+    val.coerce(&RuntimeType::point3d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -435,7 +436,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), true, exec_state)
+    val.coerce(&RuntimeType::point2d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -506,6 +507,7 @@ impl GeometryTrait for Solid {
     }
 
     fn set_artifact_id(&mut self, id: Uuid) {
+        self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
         self.artifact_id = ArtifactId::new(id);
     }
 
@@ -1028,7 +1030,7 @@ async fn pattern_circular(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
                     .entity_id(if data.use_original() {
-                        geometry.original_id()
+                        geometry.pattern_source_id()
                     } else {
                         geometry.id()
                     })
@@ -1082,6 +1084,9 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
+                new_solid
+                    .pattern_source_artifact_id
+                    .get_or_insert(new_solid.artifact_id);
                 new_solid.artifact_id = ArtifactId::new(id);
                 geometries.push(new_solid);
             }

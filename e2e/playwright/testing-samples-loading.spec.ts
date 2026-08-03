@@ -101,15 +101,25 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
       folderName1: 'ball-bearing-1',
     }
     const projectCard = page.getByRole('link', { name: 'bracket' })
+    const loadSampleFromToolbar = async () => {
+      await toolbar.loadButton.click()
+      await cmdBar.expectCommandName('Add file to project')
+      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('source')
+      await expect(page.getByTestId('cmd-bar-arg-value')).toHaveAttribute(
+        'placeholder',
+        'KCL Samples'
+      )
+      await page.keyboard.press('Enter')
+      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
+      await cmdBar.selectOption({ name: sampleOne.title }).click()
+    }
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await projectCard.click()
     await scene.settled()
 
     await test.step('Load a KCL sample with the command palette', async () => {
-      await toolbar.loadButton.click()
-      await cmdBar.selectOption({ name: 'KCL Samples' }).click()
-      await cmdBar.selectOption({ name: sampleOne.title }).click()
+      await loadSampleFromToolbar()
     })
 
     await test.step('Ensure we made and opened a new file', async () => {
@@ -120,9 +130,7 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
     })
 
     await test.step('Load a KCL sample with the command palette', async () => {
-      await toolbar.loadButton.click()
-      await cmdBar.selectOption({ name: 'KCL Samples' }).click()
-      await cmdBar.selectOption({ name: sampleOne.title }).click()
+      await loadSampleFromToolbar()
     })
 
     await test.step('Ensure we made and opened a new file with a unique name', async () => {
