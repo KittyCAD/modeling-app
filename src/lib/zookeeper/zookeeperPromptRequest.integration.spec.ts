@@ -125,9 +125,11 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   async function sendZookeeperMessage({
     code,
     selections,
+    projectFiles: providedProjectFiles,
   }: {
     code: string
     selections: Selections | null
+    projectFiles?: FileMeta[]
   }) {
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const conversation: Conversation = { exchanges: [] }
@@ -144,7 +146,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
       },
     })
     const actor = createActor(machine, { input: { apiToken: '' } }).start()
-    const projectFiles: FileMeta[] = [
+    const projectFiles: FileMeta[] = providedProjectFiles ?? [
       {
         type: 'kcl',
         relPath: 'main.kcl',
@@ -196,10 +198,14 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     return ws.sentPayloads.map((payload) => JSON.parse(payload))
   }
 
-  function sourceRangeForSnippet(code: string, snippet: string): SourceRange {
+  function sourceRangeForSnippet(
+    code: string,
+    snippet: string,
+    moduleId = 0
+  ): SourceRange {
     const start = code.indexOf(snippet)
     expect(start).toBeGreaterThanOrEqual(0)
-    return [start, start + snippet.length, 0]
+    return [start, start + snippet.length, moduleId]
   }
 
   function selectedIdentifierRange(
@@ -427,6 +433,141 @@ cfdBoundingHollowCylinder = subtract(outerBody, tools = innerBody)
     expect(userPayload?.source_ranges).toHaveLength(1)
     expect(userPayload?.source_ranges?.[0].prompt).toContain(
       'Face: `faceId(cfdBoundingHollowCylinder, index = 5)`'
+    )
+  })
+
+  it('resolves imported primitive faces against the imported file AST', async () => {
+    const code = `import "imported.kcl"
+
+activeRegion = region(segments = [])
+activeExtrude = extrude(activeRegion, length = 10mm)
+activeShell = shell(activeExtrude, faces = [], thickness = 1mm)
+`
+    const importedCode = `alignmentMarker = 0
+
+importedRegion = region(segments = [])
+importedExtrude = extrude(importedRegion, length = 10mm)
+importedShell = shell(importedExtrude, faces = [], thickness = 1mm)
+`
+    const activeAst = assertParse(code, world.instance)
+    const importedShellSnippet =
+      'importedShell = shell(importedExtrude, faces = [], thickness = 1mm)'
+    const importedShellRange = sourceRangeForSnippet(
+      importedCode,
+      importedShellSnippet,
+      1
+    )
+    const importRange = sourceRangeForSnippet(code, 'import "imported.kcl"')
+    const importedShell: Artifact = {
+      type: 'sweep',
+      id: 'imported-shell-id',
+      subType: 'extrusion',
+      pathId: 'imported-region-id',
+      surfaceIds: [],
+      edgeIds: [],
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+      codeRef: {
+        range: importRange,
+        nodePath: defaultNodePath(),
+        pathToNode: getNodePathFromSourceRange(activeAst, importRange),
+      },
+    }
+    const importedPath: Artifact = {
+      type: 'path',
+      id: 'imported-path-id',
+      subType: 'region',
+      planeId: 'imported-plane-id',
+      segIds: [],
+      consumed: true,
+      sweepId: importedShell.id,
+      trajectorySweepId: null,
+      codeRef: importedShell.codeRef,
+    }
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [importedShell.id, importedShell],
+      [importedPath.id, importedPath],
+    ])
+    const faceSelection: EnginePrimitiveSelection = {
+      type: 'enginePrimitive',
+      entityId: 'selected-imported-shell-face',
+      parentEntityId: importedPath.id,
+      primitiveIndex: 3,
+      primitiveType: 'face',
+    }
+    const modelingSelections = setupModelingSelection({
+      code,
+      artifactGraph,
+      selection: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: faceSelection,
+      },
+    })
+    const previousOperations = world.kclManager.execState.operations
+    world.kclManager.execState.operations = {
+      map: {
+        0: [
+          {
+            type: 'ModuleInstance',
+            name: 'imported',
+            moduleId: 1,
+            glob: false,
+            nodePath: defaultNodePath(),
+            sourceRange: importRange,
+          },
+        ],
+        1: [
+          {
+            type: 'StdLibCall',
+            name: 'shell',
+            unlabeledArg: {
+              value: {
+                type: 'Solid',
+                value: { artifactId: importedShell.id },
+              },
+              sourceRange: importedShellRange,
+            },
+            labeledArgs: {},
+            nodePath: defaultNodePath(),
+            sourceRange: importedShellRange,
+          },
+        ],
+      },
+    }
+    const projectFiles: FileMeta[] = [
+      {
+        type: 'kcl',
+        relPath: 'main.kcl',
+        absPath: currentFileEntry.path,
+        fileContents: code,
+        execStateFileNamesIndex: 0,
+      },
+      {
+        type: 'kcl',
+        relPath: 'imported.kcl',
+        absPath: '/projects/zoo-project/imported.kcl',
+        fileContents: importedCode,
+        execStateFileNamesIndex: 1,
+      },
+    ]
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+      projectFiles,
+    }).finally(() => {
+      world.kclManager.execState.operations = previousOperations
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.source_ranges).toHaveLength(1)
+    expect(userPayload?.source_ranges?.[0].file).toBe('imported.kcl')
+    expect(userPayload?.source_ranges?.[0].prompt).toContain(
+      'Face: `faceId(importedShell, index = 3)`'
+    )
+    expect(userPayload?.source_ranges?.[0].prompt).not.toContain(
+      'faceId(activeExtrude'
     )
   })
 

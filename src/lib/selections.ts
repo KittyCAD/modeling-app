@@ -12,6 +12,7 @@ import type { Object3D } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
 import {
@@ -304,9 +305,14 @@ export type SelectionReference = {
   id: string
   label: string
   code: string
+  moduleId: number
   graphSelection?: Selection
   enginePrimitiveSelection?: EnginePrimitiveSelection
 }
+
+export type SelectionReferenceAstResolver = (
+  sourceRange: SourceRange
+) => Node<Program> | undefined
 
 type ReferenceablePrimitiveSelection = EnginePrimitiveSelection & {
   primitiveType: 'face' | 'edge'
@@ -457,12 +463,57 @@ export function getBodySelectionFromPrimitiveParentEntityId(
   }
 }
 
+/**
+ * Resolves an imported body's code reference from the import statement to the
+ * matching operation in the imported module. The returned selection's
+ * `codeRef.range` contains the imported module ID at index 2.
+ */
+function resolveImportedBodySourceRange(
+  bodySelection: Selection,
+  kclManager: KclManager
+): Selection | null {
+  const sourceBodyId = bodySelection.artifact?.id
+  if (!sourceBodyId) return null
+
+  const importRange = bodySelection.codeRef.range
+  const moduleInstance = kclManager.operationsByModule.map[
+    importRange[2]
+  ]?.find(
+    (operation): operation is Extract<Operation, { type: 'ModuleInstance' }> =>
+      operation.type === 'ModuleInstance' &&
+      operation.sourceRange.every(
+        (value, index) => value === importRange[index]
+      )
+  )
+  if (!moduleInstance) return null
+
+  const operations =
+    kclManager.operationsByModule.map[moduleInstance.moduleId] ?? []
+  const matchingOperation = operations.findLast(
+    (operation): operation is Extract<Operation, { type: 'StdLibCall' }> =>
+      operation.type === 'StdLibCall' &&
+      operation.unlabeledArg?.value.type === 'Solid' &&
+      operation.unlabeledArg.value.value.artifactId === sourceBodyId
+  )
+  if (!matchingOperation) return null
+
+  return {
+    ...bodySelection,
+    codeRef: {
+      ...bodySelection.codeRef,
+      range: matchingOperation.sourceRange,
+    },
+  }
+}
+
 type SelectionExpressionBuilderContext = {
   primitiveSelection: ReferenceablePrimitiveSelection
+  bodySelection: Selection | null
   artifactGraph: ArtifactGraph
   kclManager: KclManager
   wasmInstance: ModuleType
   engineCommandManager: ConnectionManager
+  resolveAstForSourceRange?: SelectionReferenceAstResolver
 }
 
 type SelectionExpressionValidationContext =
@@ -796,31 +847,33 @@ async function validateAvailableReferenceExpr({
 
 function createPrimitiveIndexReferenceExpr({
   primitiveSelection,
+  bodySelection,
   artifactGraph,
   kclManager,
   wasmInstance,
+  resolveAstForSourceRange,
 }: SelectionExpressionBuilderContext): Expr | null {
-  if (!primitiveSelection.parentEntityId) {
-    return null
-  }
-
-  const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-    primitiveSelection.parentEntityId,
-    artifactGraph,
-    {
-      bodyArtifactTypes: BODY_REFERENCE_ARTIFACT_TYPES,
-      codeRefLookup: 'first',
-      lookUpPatternCopies: true,
-    }
-  )
   if (!bodySelection) {
     return null
   }
 
+  const ast = resolveAstForSourceRange
+    ? resolveAstForSourceRange(bodySelection.codeRef.range)
+    : kclManager.ast
+  if (!ast) return null
+
+  const bodySelectionForAst: Selection = {
+    ...bodySelection,
+    codeRef: {
+      ...bodySelection.codeRef,
+      pathToNode: getNodePathFromSourceRange(ast, bodySelection.codeRef.range),
+    },
+  }
+
   const bodyVariables = getVariableExprsFromSelection(
-    { graphSelections: [bodySelection], otherSelections: [] },
+    { graphSelections: [bodySelectionForAst], otherSelections: [] },
     artifactGraph,
-    kclManager.ast,
+    ast,
     wasmInstance,
     undefined,
     {
@@ -833,6 +886,7 @@ function createPrimitiveIndexReferenceExpr({
   }
 
   const bodyExpr = bodyVariables.exprs[0]
+  if (bodyExpr.type === 'PipeSubstitution') return null
   const functionName =
     primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
   return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
@@ -923,6 +977,7 @@ function createExpressionReferences({
         id: `${label}:${selection.artifact?.id || selection.engineEntityId || code}:${code}`,
         label,
         code,
+        moduleId: selection.codeRef.range[2],
         graphSelection: selection,
       },
     ]
@@ -936,6 +991,7 @@ export async function getSelectionReferences({
   engineCommandManager,
   kclManager,
   wasmInstance,
+  resolveAstForSourceRange,
 }: {
   graphSelections: Selection[]
   enginePrimitives: EnginePrimitiveSelection[]
@@ -943,6 +999,7 @@ export async function getSelectionReferences({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   wasmInstance: ModuleType
+  resolveAstForSourceRange?: SelectionReferenceAstResolver
 }): Promise<SelectionReference[]> {
   const references: SelectionReference[] = []
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
@@ -1028,12 +1085,37 @@ export async function getSelectionReferences({
   ]
 
   for (const primitiveSelection of dedupedPrimitiveSelections) {
+    const graphBodySelection = primitiveSelection.parentEntityId
+      ? getBodySelectionFromPrimitiveParentEntityId(
+          primitiveSelection.parentEntityId,
+          artifactGraph,
+          {
+            bodyArtifactTypes: BODY_REFERENCE_ARTIFACT_TYPES,
+            codeRefLookup: 'first',
+            lookUpPatternCopies: true,
+          }
+        )
+      : null
+    const bodySelection =
+      resolveAstForSourceRange && graphBodySelection
+        ? (resolveImportedBodySourceRange(graphBodySelection, kclManager) ??
+          graphBodySelection)
+        : graphBodySelection
+    const sourceRange =
+      bodySelection?.codeRef.range ??
+      primitiveSelection.graphSelection?.codeRef.range
+    if (!sourceRange) {
+      continue
+    }
+
     const code = await createPrimitiveReferenceCode({
       primitiveSelection,
+      bodySelection,
       artifactGraph,
       engineCommandManager,
       kclManager,
       wasmInstance,
+      resolveAstForSourceRange,
     })
     if (!code) {
       continue
@@ -1043,6 +1125,7 @@ export async function getSelectionReferences({
       id: `${primitiveSelection.primitiveType}:${primitiveSelection.entityId}`,
       label: primitiveSelection.primitiveType === 'face' ? 'Face' : 'Edge',
       code,
+      moduleId: sourceRange[2],
       graphSelection: primitiveSelection.graphSelection,
       enginePrimitiveSelection: primitiveSelection.enginePrimitiveSelection,
     })
@@ -1051,7 +1134,7 @@ export async function getSelectionReferences({
   return [
     ...new Map(
       references.map((reference) => [
-        `${reference.label}:${reference.code}`,
+        `${reference.moduleId}:${reference.label}:${reference.code}`,
         reference,
       ])
     ).values(),
