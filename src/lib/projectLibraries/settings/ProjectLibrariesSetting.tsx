@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  canRemoveProjectLibrary,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
@@ -38,7 +38,7 @@ export function ProjectLibrariesSetting({
       canChangeLibraryType={canManageLibraries}
       canEditLibraryDetails={canManageLibraries}
       canRemoveLibrary={(library) =>
-        canManageLibraries || library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+        canRemoveProjectLibrary(library, { canManageLibraries })
       }
     />
   )

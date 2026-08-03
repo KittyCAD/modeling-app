@@ -55,7 +55,7 @@ export function SettingsSection({
           </p>
         )}
       </div>
-      <div>{children}</div>
+      <div className="min-w-0">{children}</div>
     </section>
   )
 }

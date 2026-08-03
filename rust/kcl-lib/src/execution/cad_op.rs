@@ -56,6 +56,10 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Bool { value, .. } => OpKclValue::Bool { value: *value },
         KclValue::Number { value, ty, .. } => OpKclValue::Number { value: *value, ty: *ty },
         KclValue::String { value, .. } => OpKclValue::String { value: value.clone() },
+        KclValue::Enum { value } => OpKclValue::Enum {
+            enum_name: value.enum_id().declared_name().to_owned(),
+            variant: value.variant().to_owned(),
+        },
         KclValue::SketchVar { value, .. } => OpKclValue::SketchVar {
             value: value.initial_value,
             ty: value.ty,
