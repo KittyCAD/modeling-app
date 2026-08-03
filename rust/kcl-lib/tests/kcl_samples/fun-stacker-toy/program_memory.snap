@@ -754,6 +754,126 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
+          "from": [
+            2.009923430760289,
+            11.489955800482061
+          ],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            2.0099234307599305,
+            10.989955800482019
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.009923430760289,
+            11.489955800482061
+          ],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            2.0099234307599305,
+            10.989955800482019
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.009923430760289,
+            11.489955800482061
+          ],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            2.0099234307599305,
+            10.989955800482019
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.009923430760289,
+            11.489955800482061
+          ],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            2.0099234307599305,
+            10.989955800482019
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            2.009923430760289,
+            11.489955800482061
+          ],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "to": [
+            2.0099234307599305,
+            10.989955800482019
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
           "ccw": true,
           "center": [
             51.32992343045206,
@@ -974,6 +1094,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.681017808436987,
+            2.9649261449819755
+          ],
+          "from": [
+            4.603706583252062,
+            2.5793805253291127
+          ],
+          "radius": 1.0000000000016267,
+          "tag": {
+            "commentStart": 1251,
+            "end": 1258,
+            "moduleId": 0,
+            "start": 1251,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            4.603706583252062,
+            2.5793805253291127
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -1081,6 +1231,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "type": "Sketch",
       "id": "[uuid]",
       "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.389735024163931,
+            4.9436010398528785
+          ],
+          "from": [
+            4.3855113053204695,
+            5.035413881471218
+          ],
+          "radius": 0.9999999999999901,
+          "tag": {
+            "commentStart": 1371,
+            "end": 1378,
+            "moduleId": 0,
+            "start": 1371,
+            "type": "TagDeclarator",
+            "value": "circle3"
+          },
+          "to": [
+            4.3855113053204695,
+            5.035413881471218
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
         {
           "__geoMeta": {
             "id": "[uuid]",
@@ -1366,6 +1546,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.180583006507501,
+            6.932634833813235
+          ],
+          "from": [
+            4.170310052184412,
+            6.7896649941230365
+          ],
+          "radius": 1.0000000000026934,
+          "tag": {
+            "commentStart": 1491,
+            "end": 1498,
+            "moduleId": 0,
+            "start": 1491,
+            "type": "TagDeclarator",
+            "value": "circle4"
+          },
+          "to": [
+            4.170310052184412,
+            6.7896649941230365
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -1562,6 +1772,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            3.053920073115579,
+            8.928619929276255
+          ],
+          "from": [
+            3.9548465360984797,
+            9.362591712127168
+          ],
+          "radius": 1.0000000000068396,
+          "tag": {
+            "commentStart": 1611,
+            "end": 1618,
+            "moduleId": 0,
+            "start": 1611,
+            "type": "TagDeclarator",
+            "value": "circle5"
+          },
+          "to": [
+            3.9548465360984797,
+            9.362591712127168
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -1669,6 +1909,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       "type": "Sketch",
       "id": "[uuid]",
       "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            1.4999234319334465,
+            11.490000003408142
+          ],
+          "from": [
+            2.009923430100516,
+            11.489955800482123
+          ],
+          "radius": 0.5100000000826567,
+          "tag": {
+            "commentStart": 2038,
+            "end": 2042,
+            "moduleId": 0,
+            "start": 2038,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "to": [
+            1.4999999999983171,
+            11.999999997743084
+          ],
+          "type": "Arc",
+          "units": "in"
+        },
         {
           "__geoMeta": {
             "id": "[uuid]",
@@ -2057,6 +2327,76 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 797,
+            "end": 802,
+            "moduleId": 0,
+            "start": 797,
+            "type": "TagDeclarator",
+            "value": "line4"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 946,
             "end": 950,
             "moduleId": 0,
@@ -2154,6 +2494,126 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "to": [
               1.4999999999987144,
               11.999999999999584
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.009923430760289,
+              11.489955800482061
+            ],
+            "tag": {
+              "commentStart": 797,
+              "end": 802,
+              "moduleId": 0,
+              "start": 797,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              2.0099234307599305,
+              10.989955800482019
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.009923430760289,
+              11.489955800482061
+            ],
+            "tag": {
+              "commentStart": 797,
+              "end": 802,
+              "moduleId": 0,
+              "start": 797,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              2.0099234307599305,
+              10.989955800482019
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.009923430760289,
+              11.489955800482061
+            ],
+            "tag": {
+              "commentStart": 797,
+              "end": 802,
+              "moduleId": 0,
+              "start": 797,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              2.0099234307599305,
+              10.989955800482019
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.009923430760289,
+              11.489955800482061
+            ],
+            "tag": {
+              "commentStart": 797,
+              "end": 802,
+              "moduleId": 0,
+              "start": 797,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              2.0099234307599305,
+              10.989955800482019
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              2.009923430760289,
+              11.489955800482061
+            ],
+            "tag": {
+              "commentStart": 797,
+              "end": 802,
+              "moduleId": 0,
+              "start": 797,
+              "type": "TagDeclarator",
+              "value": "line4"
+            },
+            "to": [
+              2.0099234307599305,
+              10.989955800482019
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2381,6 +2841,20 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle2"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1251,
+            "end": 1258,
+            "moduleId": 0,
+            "start": 1251,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2388,6 +2862,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              3.681017808436987,
+              2.9649261449819755
+            ],
+            "from": [
+              4.603706583252062,
+              2.5793805253291127
+            ],
+            "radius": 1.0000000000016267,
+            "tag": {
+              "commentStart": 1251,
+              "end": 1258,
+              "moduleId": 0,
+              "start": 1251,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              4.603706583252062,
+              2.5793805253291127
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -2601,6 +3105,20 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle3"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1371,
+            "end": 1378,
+            "moduleId": 0,
+            "start": 1371,
+            "type": "TagDeclarator",
+            "value": "circle3"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2608,6 +3126,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              3.389735024163931,
+              4.9436010398528785
+            ],
+            "from": [
+              4.3855113053204695,
+              5.035413881471218
+            ],
+            "radius": 0.9999999999999901,
+            "tag": {
+              "commentStart": 1371,
+              "end": 1378,
+              "moduleId": 0,
+              "start": 1371,
+              "type": "TagDeclarator",
+              "value": "circle3"
+            },
+            "to": [
+              4.3855113053204695,
+              5.035413881471218
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -2851,6 +3399,20 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle4"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1491,
+            "end": 1498,
+            "moduleId": 0,
+            "start": 1491,
+            "type": "TagDeclarator",
+            "value": "circle4"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2858,6 +3420,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              3.180583006507501,
+              6.932634833813235
+            ],
+            "from": [
+              4.170310052184412,
+              6.7896649941230365
+            ],
+            "radius": 1.0000000000026934,
+            "tag": {
+              "commentStart": 1491,
+              "end": 1498,
+              "moduleId": 0,
+              "start": 1491,
+              "type": "TagDeclarator",
+              "value": "circle4"
+            },
+            "to": [
+              4.170310052184412,
+              6.7896649941230365
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -3101,6 +3693,20 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "circle5"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1611,
+            "end": 1618,
+            "moduleId": 0,
+            "start": 1611,
+            "type": "TagDeclarator",
+            "value": "circle5"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -3108,6 +3714,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              3.053920073115579,
+              8.928619929276255
+            ],
+            "from": [
+              3.9548465360984797,
+              9.362591712127168
+            ],
+            "radius": 1.0000000000068396,
+            "tag": {
+              "commentStart": 1611,
+              "end": 1618,
+              "moduleId": 0,
+              "start": 1611,
+              "type": "TagDeclarator",
+              "value": "circle5"
+            },
+            "to": [
+              3.9548465360984797,
+              9.362591712127168
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -3337,6 +3973,20 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "value": "arc2"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2038,
+            "end": 2042,
+            "moduleId": 0,
+            "start": 2038,
+            "type": "TagDeclarator",
+            "value": "arc2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -3344,6 +3994,36 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              1.4999234319334465,
+              11.490000003408142
+            ],
+            "from": [
+              2.009923430100516,
+              11.489955800482123
+            ],
+            "radius": 0.5100000000826567,
+            "tag": {
+              "commentStart": 2038,
+              "end": 2042,
+              "moduleId": 0,
+              "start": 2038,
+              "type": "TagDeclarator",
+              "value": "arc2"
+            },
+            "to": [
+              1.4999999999983171,
+              11.999999997743084
+            ],
+            "type": "Arc",
+            "units": "in"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",

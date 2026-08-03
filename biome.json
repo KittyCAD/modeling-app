@@ -52,7 +52,8 @@
     "includes": [
       "**",
       "!**/*.json",
-      "!**/packages/ui-components/storybook-static/**"
+      "!**/packages/ui-components/storybook-static/**",
+      "!**/rust/kcl-lib/expected-bindings/**"
     ]
   }
 }
