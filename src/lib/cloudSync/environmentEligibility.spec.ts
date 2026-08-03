@@ -79,7 +79,7 @@ describe('cloud sync environment eligibility', () => {
       baseUrl,
       environmentName: currentEnvironmentName,
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: true,
+      autoEnrollCloudLibraryProjects: true,
     })
 
     await vi.waitFor(() => {

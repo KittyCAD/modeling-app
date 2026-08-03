@@ -165,7 +165,7 @@ describe('cloud sync live conflicts', () => {
       baseUrl,
       environmentName: 'dev.zoo.dev',
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      autoEnrollCloudLibraryProjects: false,
     })
 
     await vi.waitFor(async () => {
@@ -214,7 +214,7 @@ describe('cloud sync live conflicts', () => {
       baseUrl,
       environmentName: 'dev.zoo.dev',
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      autoEnrollCloudLibraryProjects: false,
     })
 
     const inspection = await loadCloudSyncProjectConflictInspection(projectPath)
@@ -251,7 +251,7 @@ describe('cloud sync live conflicts', () => {
       baseUrl,
       environmentName: 'dev.zoo.dev',
       projectDirectoryPath: projectDirectory,
-      syncExistingLocalProjects: false,
+      autoEnrollCloudLibraryProjects: false,
     })
 
     let caughtError: unknown
