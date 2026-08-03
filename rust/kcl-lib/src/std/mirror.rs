@@ -142,15 +142,15 @@ async fn inner_mirror_3d(
     }
 
     let mut mirrored_bodies = Vec::with_capacity(unmapped_mirrored_bodies.len());
-    for ((mut mirrored_body, old_id), info) in unmapped_mirrored_bodies
+    for (mut mirrored_body, info) in unmapped_mirrored_bodies
         .into_iter()
-        .zip(old_body_ids)
         .zip(mirror_info.entity_face_edge_ids.iter())
     {
+        let mut old_geometry = GeometryWithImportedGeometry::Solid(mirrored_body.clone());
         mirrored_body.id = info.object_id;
         mirrored_body.artifact_id = ArtifactId::new(info.object_id);
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
-        fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+        fix_tags_and_references(&mut new_geometry, &mut old_geometry, exec_state, &args)
             .await
             .map_err(|e| {
                 KclError::new_internal(KclErrorDetails::new(

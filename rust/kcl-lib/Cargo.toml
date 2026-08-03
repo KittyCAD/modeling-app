@@ -49,7 +49,7 @@ ahash = { workspace = true }
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
-base64 = "0.22.1"
+base64 = "0.23.0"
 chrono = "0.4.44"
 clap = { version = "4.6.1", default-features = false, optional = true, features = [
   "std",
@@ -151,7 +151,7 @@ web-sys = { version = "0.3.76", features = ["console"] }
 
 [dev-dependencies]
 approx = "0.5"
-base64 = "0.22.1"
+base64 = "0.23.0"
 criterion = { version = "0.8.2", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.1"
