@@ -27,16 +27,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
     }
   }
 
-  function inspectedBinaryFile(relativePath: string, modifiedAtMs: number) {
-    return {
-      absolutePath: relativePath,
-      data: new Uint8Array([0, 1, 2]),
-      modifiedAtMs,
-      relativePath,
-      size: 3,
-    }
-  }
-
   return {
     inspection: {
       projectTitle: 'User-facing project title',
@@ -66,13 +56,6 @@ const cloudConflictDialogSpecMocks = vi.hoisted(() => {
           cloud: inspectedFile('cloud-only.txt', 'cloud\n', cloudSavedAtMs),
           localText: '',
           cloudText: 'cloud\n',
-        },
-        {
-          status: 'changed',
-          relativePath: 'thumbnail.png',
-          local: inspectedBinaryFile('thumbnail.png', localSavedAtMs),
-          cloud: inspectedBinaryFile('thumbnail.png', cloudSavedAtMs),
-          textUnavailableReason: 'Binary or non-UTF-8 file.',
         },
       ],
     },

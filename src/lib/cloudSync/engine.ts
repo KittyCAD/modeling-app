@@ -521,8 +521,7 @@ async function downloadRemoteProjectSnapshot({
     parsedArchive,
     project.title,
     projectId,
-    getEnvironmentName(),
-    getRemoteProjectEntrypointPath(project)
+    getEnvironmentName()
   )
   const files = filterCloudSyncProjectFilesForSync(filesWithMetadata)
 
@@ -1860,6 +1859,7 @@ async function applyLocalDataForConflict(
     projectId: metadata.remoteProjectId,
     files: localFiles,
     expectedRevision,
+    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
   }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteLegacyConflictCopy(conflict)
@@ -2407,6 +2407,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         projectId: remoteProjectId,
         files: localFiles,
         expectedRevision: metadata.remoteRevision,
+        entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
       }).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
