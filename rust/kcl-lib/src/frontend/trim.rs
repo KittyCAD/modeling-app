@@ -1,6 +1,7 @@
 use std::f64::consts::TAU;
 
-use indexmap::{IndexMap, IndexSet};
+use indexmap::IndexMap;
+use indexmap::IndexSet;
 use kcl_api::UnitLength;
 
 use crate::execution::ArtifactId;
