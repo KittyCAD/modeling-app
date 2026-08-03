@@ -184,41 +184,41 @@ export function useEngineConnectionSubscriptions() {
 
         // Handle sketch plane selection directly when in 'Sketch no face' state
         if (selectingSketchPlane) {
-          if (!engineEvent || !('data' in engineEvent)) return
-          const data = engineEvent.data as { reference?: any } | undefined
-          if (!data?.reference) return
+          ;(async () => {
+            if (!engineEvent || !('data' in engineEvent)) return
+            const data = engineEvent.data as { reference?: unknown } | undefined
+            if (!data?.reference) return
 
-          const entityRef = normalizeEntityReference(data.reference)
-          if (!entityRef) return
+            const entityRef = normalizeEntityReference(data.reference)
+            if (!entityRef) return
 
-          // Extract plane ID from EntityReference
-          let planeId: string | undefined
-          if (entityRef.type === 'plane') {
-            planeId = entityRef.plane_id
-          } else if (entityRef.type === 'face') {
-            // Check if it's a default plane
-            const entityId = entityRef.face_id
-            const foundDefaultPlane =
-              entityId &&
-              rustContext.defaultPlanes !== null &&
-              Object.entries(rustContext.defaultPlanes).find(
-                ([, plane]) => plane === entityId
-              )
-            if (foundDefaultPlane) {
-              planeId = entityId
-            } else {
-              // Regular face - use faceId
-              planeId = entityId
-            }
-          }
+            const event = await getEventForQueryEntityTypeWithPoint(
+              engineEvent,
+              {
+                engineCommandManager,
+                kclManager,
+                rustContext,
+                wasmInstance,
+                useSegmentsBasedRegions,
+              }
+            )
+            if (!stateRef.current.matches('Sketch no face')) return
+            if (event) send(event)
 
-          if (planeId) {
-            void selectSketchPlane(
+            const planeId =
+              entityRef.type === 'plane'
+                ? entityRef.plane_id
+                : entityRef.type === 'face'
+                  ? entityRef.face_id
+                  : undefined
+            if (!planeId) return
+
+            await selectSketchPlane(
               planeId,
               context.store.useSketchSolveMode?.current,
               kclManager
             )
-          }
+          })().catch(reportRejection)
           return
         }
         // Normal flow for other states

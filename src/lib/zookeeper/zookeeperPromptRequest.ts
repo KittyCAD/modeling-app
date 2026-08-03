@@ -61,7 +61,10 @@ type SourceRangePromptDraft = {
 }
 
 type ArtifactSelectionPromptHandlerArgs = {
-  selection: Selection & { artifact: Artifact }
+  selection: Selection & {
+    artifact: Artifact
+    codeRef: NonNullable<Selection['codeRef']>
+  }
   artifactGraph: ArtifactGraph
 }
 
@@ -172,6 +175,10 @@ See later source ranges for more context.`,
     },
   ]
 
+  if (!artifact.sweepId) {
+    return prompts
+  }
+
   const sweep = getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
     artifactGraph
@@ -243,6 +250,10 @@ See later source ranges for more context. about the sweep`,
       range: selection.codeRef.range,
     },
   ]
+
+  if (!artifact.sweepId) {
+    return prompts
+  }
 
   const sweep = getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
@@ -370,9 +381,13 @@ export function buildZookeeperSourceRangePromptsForSelection({
   artifactGraph: ArtifactGraph
   kclFilesMap: KclFileMetaMap
 }): SourceRangePrompt[] {
+  if (!selection.codeRef) {
+    return []
+  }
+
   const promptDrafts: SourceRangePromptDraft[] = selection.artifact
     ? zookeeperArtifactSelectionPromptHandlers[selection.artifact.type]({
-        selection: selection as Selection & { artifact: Artifact },
+        selection: selection as ArtifactSelectionPromptHandlerArgs['selection'],
         artifactGraph,
       })
     : [
