@@ -6082,6 +6082,29 @@ export default {
       }
     ]
   },
+  "planarSurface": {
+    "name": "planarSurface",
+    "preferredName": "planarSurface",
+    "qualName": "std::sketch::planarSurface",
+    "moduleName": "sketch",
+    "returnType": "[Solid; 1+]",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "sketches",
+        "ty": "[Sketch | TaggedEdge | Edge | Segment; 1+]",
+        "docs": "Which sketch or sketches should be extruded.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
   "planeOf": {
     "name": "planeOf",
     "preferredName": "planeOf",
