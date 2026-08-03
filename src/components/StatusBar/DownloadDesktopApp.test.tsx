@@ -1,10 +1,10 @@
-import { DownloadDesktopAppStatusBarItem } from '@src/components/StatusBar/DownloadDesktopAppStatusBarItem'
+import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-describe('DownloadDesktopAppStatusBarItem', () => {
+describe('DownloadDesktopApp', () => {
   it('shows the browser storage warning and restores it on hover', () => {
-    render(<DownloadDesktopAppStatusBarItem />)
+    render(<DownloadDesktopApp />)
 
     const downloadLink = screen.getByRole('link', {
       name: 'Install desktop app',

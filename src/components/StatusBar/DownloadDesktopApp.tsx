@@ -4,7 +4,7 @@ import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { useEffect, useRef, useState } from 'react'
 
-export function DownloadDesktopAppStatusBarItem() {
+export function DownloadDesktopApp() {
   const [showingWarning, setShowingWarning] = useState(true)
   const wrapperRef = useRef<HTMLDivElement>(null)
 

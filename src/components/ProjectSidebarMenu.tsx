@@ -263,6 +263,58 @@ function ProjectMenuPopover({
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
+      const getContributedProjectMenuItems = (
+        placement: NonNullable<ProjectExplorerProjectMenuItem['placement']>
+      ) =>
+        contributedProjectMenuItems
+          .filter((item) => (item.placement ?? 'project-actions') === placement)
+          .flatMap<ProjectMenuItem>((item) => {
+            if (!projectPath || !project) {
+              return []
+            }
+
+            const context = { projectPath, project }
+            if (item.isVisible && !item.isVisible(context)) {
+              return []
+            }
+
+            if (item.Component) {
+              return [{ kind: 'contributed' as const, item, context }]
+            }
+
+            const disabled =
+              typeof item.disabled === 'function'
+                ? item.disabled(context)
+                : item.disabled
+            const label =
+              typeof item.label === 'function'
+                ? item.label(context)
+                : item.label
+            const dataTestId =
+              typeof item.dataTestId === 'function'
+                ? item.dataTestId(context)
+                : item.dataTestId
+            const className =
+              typeof item.className === 'function'
+                ? item.className(context)
+                : item.className
+
+            return [
+              {
+                id: item.id,
+                Element: 'button' as const,
+                className,
+                children: (
+                  <span className="flex-1" data-testid={dataTestId}>
+                    {label}
+                  </span>
+                ),
+                disabled,
+                onClick: () => item.onSelect?.(context),
+              },
+            ]
+          })
+
       const items: ProjectMenuItem[] = [
         {
           id: 'settings',
@@ -310,50 +362,7 @@ function ProjectMenuPopover({
               },
             }
           : null,
-        ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
-          if (!projectPath || !project) {
-            return []
-          }
-
-          const context = { projectPath, project }
-          if (item.Component) {
-            return [{ kind: 'contributed' as const, item, context }]
-          }
-
-          if (item.isVisible && !item.isVisible(context)) {
-            return []
-          }
-
-          const disabled =
-            typeof item.disabled === 'function'
-              ? item.disabled(context)
-              : item.disabled
-          const label =
-            typeof item.label === 'function' ? item.label(context) : item.label
-          const dataTestId =
-            typeof item.dataTestId === 'function'
-              ? item.dataTestId(context)
-              : item.dataTestId
-          const className =
-            typeof item.className === 'function'
-              ? item.className(context)
-              : item.className
-
-          return [
-            {
-              id: item.id,
-              Element: 'button' as const,
-              className,
-              children: (
-                <span className="flex-1" data-testid={dataTestId}>
-                  {label}
-                </span>
-              ),
-              disabled,
-              onClick: () => item.onSelect?.(context),
-            },
-          ]
-        }),
+        ...getContributedProjectMenuItems('project-actions'),
         {
           id: 'importFile',
           Element: 'button' as const,
@@ -447,6 +456,7 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'before-go-home' },
+        ...getContributedProjectMenuItems('footer'),
         {
           id: 'go-home',
           Element: 'button' as const,

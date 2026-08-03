@@ -1,4 +1,4 @@
-import { DownloadDesktopAppStatusBarItem } from '@src/components/StatusBar/DownloadDesktopAppStatusBarItem'
+import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import { defaultGlobalStatusBarItems } from '@src/components/StatusBar/defaultStatusBarItems'
 import { isDesktop } from '@src/lib/isDesktop'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
@@ -16,8 +16,8 @@ vi.mock('@src/components/StatusBar/AutoUpdateDownloadStatus', () => ({
 vi.mock('@src/components/StatusBar/AutoUpdateReadyStatus', () => ({
   AutoUpdateReadyStatus: vi.fn(),
 }))
-vi.mock('@src/components/StatusBar/DownloadDesktopAppStatusBarItem', () => ({
-  DownloadDesktopAppStatusBarItem: vi.fn(),
+vi.mock('@src/components/StatusBar/DownloadDesktopApp', () => ({
+  DownloadDesktopApp: vi.fn(),
 }))
 vi.mock('@src/components/environment/Environment', () => ({
   EnvironmentChip: vi.fn(),
@@ -58,7 +58,7 @@ describe('defaultGlobalStatusBarItems', () => {
       defaultGlobalStatusBarItems({ hasCloudSyncFeature: false })[0]
     ).toEqual({
       id: 'download-desktop-app',
-      component: DownloadDesktopAppStatusBarItem,
+      component: DownloadDesktopApp,
     })
   })
 })

@@ -5,7 +5,6 @@ import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
-import { DownloadDesktopApp } from '@src/components/DownloadDesktopApp'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import {
@@ -64,6 +63,7 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
   HOME_KEYMAP_SCOPE,
@@ -149,6 +149,7 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
     projectLibraryTypesValueSpec
@@ -514,14 +515,13 @@ const Home = () => {
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
-            {!isDesktop() && (
-              <li className="contents">
-                <DownloadDesktopApp
-                  className={sidebarButtonClasses}
-                  testId="home-download-desktop-app"
-                />
-              </li>
-            )}
+            {homeSidebarItems
+              .filter((item) => item.isVisible?.() ?? true)
+              .map(({ id, Component }) => (
+                <li key={id} className="contents">
+                  <Component className={sidebarButtonClasses} />
+                </li>
+              ))}
             <li className="contents">
               <ActionButton
                 Element="externalLink"

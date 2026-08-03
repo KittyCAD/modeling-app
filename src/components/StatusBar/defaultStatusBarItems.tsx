@@ -6,7 +6,7 @@ import {
 import { HelpMenu } from '@src/components/HelpMenu'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
-import { DownloadDesktopAppStatusBarItem } from '@src/components/StatusBar/DownloadDesktopAppStatusBarItem'
+import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import type {
   AutoUpdateDownloadProgress,
@@ -38,7 +38,7 @@ export const defaultGlobalStatusBarItems = ({
       }
     : {
         id: 'download-desktop-app',
-        component: DownloadDesktopAppStatusBarItem,
+        component: DownloadDesktopApp,
       },
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [

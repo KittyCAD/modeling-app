@@ -1,7 +1,6 @@
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { DownloadDesktopApp } from '@src/components/DownloadDesktopApp'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
@@ -15,7 +14,6 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -255,32 +253,22 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         onClose={props.onClose}
       />
       {theProject && file ? (
-        <div className="w-full h-full min-h-0 flex flex-col">
-          <div className="min-h-0 flex-1">
-            <ProjectExplorer
-              wasmInstance={wasmInstance}
-              project={theProject}
-              file={file}
-              createFilePressed={createFilePressed}
-              createFolderPressed={createFolderPressed}
-              refreshExplorerPressed={refreshExplorerPressed}
-              collapsePressed={collapsePressed}
-              onRowClicked={onRowClicked}
-              onRowDoubleClicked={onRowDoubleClicked}
-              onRowEnter={onRowClicked}
-              canNavigate={true}
-              readOnly={false}
-              overrideApplicationProjectDirectory={projectDirectoryPath}
-            />
-          </div>
-          {!isDesktop() && (
-            <div className="shrink-0 border-t border-chalkboard-30 dark:border-chalkboard-80 p-1">
-              <DownloadDesktopApp
-                className="w-full !p-2 justify-start border-transparent dark:border-transparent bg-transparent dark:bg-transparent hover:border-primary/50 dark:hover:border-chalkboard-70"
-                testId="file-explorer-download-desktop-app"
-              />
-            </div>
-          )}
+        <div className={'w-full h-full flex flex-col'}>
+          <ProjectExplorer
+            wasmInstance={wasmInstance}
+            project={theProject}
+            file={file}
+            createFilePressed={createFilePressed}
+            createFolderPressed={createFolderPressed}
+            refreshExplorerPressed={refreshExplorerPressed}
+            collapsePressed={collapsePressed}
+            onRowClicked={onRowClicked}
+            onRowDoubleClicked={onRowDoubleClicked}
+            onRowEnter={onRowClicked}
+            canNavigate={true}
+            readOnly={false}
+            overrideApplicationProjectDirectory={projectDirectoryPath}
+          />
         </div>
       ) : (
         <div />
