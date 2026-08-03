@@ -23,6 +23,7 @@ use crate::execution::CurveType;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::ProfileClosed;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
 use crate::execution::types::ArrayLen;
@@ -451,14 +452,16 @@ pub async fn planar_surface(exec_state: &mut ExecState, args: Args) -> Result<Kc
         exec_state,
     )?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
-    let curves = coerce_curved_targets(curve_values, exec_state, &args.ctx, args.source_range).await?;
+    let curves = coerce_planar_surface_target(curve_values, exec_state, &args.ctx, args.source_range).await?;
 
     let result = inner_planar_surface(curves, tolerance, exec_state, args).await?;
 
-    Ok(result.into())
+    Ok(KclValue::Solid {
+        value: Box::new(result),
+    })
 }
 
-pub async fn coerce_curved_targets(
+async fn coerce_planar_surface_target(
     sketch_values: Vec<KclValue>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -487,18 +490,90 @@ pub async fn coerce_curved_targets(
         curves.push(CurveType::from(synthetic_sketch));
     }
 
+    validate_single_closed_region(&curves, source_range)?;
+
     Ok(curves)
 }
 
-#[allow(clippy::too_many_arguments)]
+fn validate_single_closed_region(curves: &[CurveType], source_range: crate::SourceRange) -> Result<(), KclError> {
+    let sketches = curves
+        .iter()
+        .filter_map(|curve| match curve {
+            CurveType::Sketch(sketch) => Some(sketch.as_ref()),
+            CurveType::EdgeTag(_) | CurveType::Edge(_) => None,
+        })
+        .collect::<Vec<_>>();
+
+    if sketches.is_empty() {
+        return Ok(());
+    }
+
+    if curves.len() != 1 || sketches.len() != 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Provide either one sketch or one list of edges or segments when creating a planar surface.".to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    let sketch = sketches[0];
+    if !sketch.synthetic_jump_path_ids.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "A sketch or segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    if !sketch_is_closed(sketch) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "A sketch or segment list passed to `planarSurface` must form one closed region.".to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    Ok(())
+}
+
+fn sketch_is_closed(sketch: &crate::execution::Sketch) -> bool {
+    if matches!(sketch.is_closed, ProfileClosed::Implicitly | ProfileClosed::Explicitly) {
+        return true;
+    }
+
+    let (Some(first_path), Some(last_path)) = (sketch.paths.first(), sketch.paths.last()) else {
+        return false;
+    };
+    let start = first_path.get_from();
+    let end = last_path.get_to();
+    let dx = start[0].to_mm() - end[0].to_mm();
+    let dy = start[1].to_mm() - end[1].to_mm();
+    dx * dx + dy * dy <= super::EQUAL_POINTS_DIST_EPSILON * super::EQUAL_POINTS_DIST_EPSILON
+}
+
+fn require_single_surface(
+    surface_ids: Vec<uuid::Uuid>,
+    source_range: crate::SourceRange,
+) -> Result<uuid::Uuid, KclError> {
+    match surface_ids.as_slice() {
+        [surface_id] => Ok(*surface_id),
+        [] => Err(KclError::new_semantic(KclErrorDetails::new(
+            "The curves passed to `planarSurface` did not form a closed region.".to_owned(),
+            vec![source_range],
+        ))),
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "The curves passed to `planarSurface` formed {} regions; exactly one region is required.",
+                surface_ids.len()
+            ),
+            vec![source_range],
+        ))),
+    }
+}
+
 async fn inner_planar_surface(
     curves: Vec<CurveType>,
     tolerance: Option<TyF64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Solid, KclError> {
-    // Extrude the element(s).
-    let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
 
     let mut curve_ids: Vec<uuid::Uuid> = Vec::new();
@@ -507,34 +582,205 @@ async fn inner_planar_surface(
         curve_ids.push(id);
     }
 
-    // TODO: Handle mock execution.
+    let cmd = ModelingCmd::from(
+        mcmd::CreatePlanarSurface::builder()
+            .curve_ids(curve_ids)
+            .tolerance(tolerance)
+            .build(),
+    );
 
-    // Surface-extrude an edge.
-    let response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(
-                mcmd::CreatePlanarSurface::builder()
-                    .curve_ids(curve_ids)
-                    .tolerance(tolerance)
-                    .build(),
-            ),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::CreatePlanarSurface(resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("CreatePlanarSurface response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
+    let surface_id = if args.ctx.no_engine_commands().await {
+        let surface_id = exec_state.next_uuid();
+        exec_state
+            .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, surface_id), cmd)
+            .await?;
+        surface_id
+    } else {
+        let response = exec_state
+            .send_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), cmd)
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::CreatePlanarSurface(resp),
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("CreatePlanarSurface response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        require_single_surface(resp.surfaces, args.source_range)?
     };
-    let surface_ids = resp.surfaces;
 
-    for surface_id in surface_ids {
-        solids.push(after_surface_creation(surface_id.into(), None, exec_state, &args).await?);
+    after_surface_creation(surface_id.into(), None, exec_state, &args).await
+}
+
+#[cfg(test)]
+mod tests {
+    use kcmc::length_unit::LengthUnit;
+
+    use super::*;
+    use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_returns_one_surface_in_mock_execution() {
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+surface = planarSurface(profile, tolerance = 0.01mm)
+"#,
+        )
+        .await
+        .unwrap();
+
+        let command = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::CreatePlanarSurface(command) => Some(command),
+                _ => None,
+            })
+            .expect("expected a CreatePlanarSurface command");
+
+        assert_eq!(command.curve_ids.len(), 1);
+        assert_eq!(command.tolerance, LengthUnit(0.01));
     }
 
-    Ok(solids)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_accepts_one_closed_segment_list_in_mock_execution() {
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [2mm, 0mm])
+  line2 = line(start = [2mm, 0mm], end = [2mm, 2mm])
+  line3 = line(start = [2mm, 2mm], end = [0mm, 2mm])
+  line4 = line(start = [0mm, 2mm], end = [0mm, 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+surface = planarSurface([profile.line1, profile.line2, profile.line3, profile.line4])
+"#,
+        )
+        .await
+        .unwrap();
+
+        let command = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::CreatePlanarSurface(command) => Some(command),
+                _ => None,
+            })
+            .expect("expected a CreatePlanarSurface command");
+
+        // Segment lists are replayed as one synthetic sketch before surface creation.
+        assert_eq!(command.curve_ids.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_accepts_tagged_and_raw_edge_lists_in_mock_execution() {
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+wall = extrude(profile, length = 5mm, bodyType = SURFACE)
+taggedEdgeSurface = planarSurface([wall.sketch.tags.circle1])
+rawEdge = getOppositeEdge(wall.sketch.tags.circle1)
+rawEdgeSurface = planarSurface([rawEdge])
+"#,
+        )
+        .await
+        .unwrap();
+
+        let commands = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::CreatePlanarSurface(command) => Some(command),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(commands.len(), 2);
+        assert!(commands.iter().all(|command| command.curve_ids.len() == 1));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_rejects_an_empty_curve_list() {
+        let err = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+surface = planarSurface([])
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
+        assert!(err.message().contains("found an empty array"), "{err:?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_rejects_an_open_sketch() {
+        let err = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [2mm, 0mm])
+}
+surface = planarSurface(profile)
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(err.message().contains("must form one closed region"), "{err:?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn planar_surface_rejects_a_sketch_with_multiple_regions() {
+        let err = parse_execute(
+            r#"
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+  circle2 = circle(start = [6mm, 0mm], center = [4mm, 0mm])
+}
+surface = planarSurface(profile)
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(err.message().contains("exactly one region"), "{err:?}");
+    }
+
+    #[test]
+    fn planar_surface_requires_exactly_one_engine_surface() {
+        let source_range = crate::SourceRange::default();
+        let surface_id = uuid::Uuid::new_v4();
+        assert_eq!(
+            require_single_surface(vec![surface_id], source_range).unwrap(),
+            surface_id
+        );
+
+        let no_surfaces = require_single_surface(Vec::new(), source_range).unwrap_err();
+        assert!(no_surfaces.message().contains("did not form a closed region"));
+
+        let multiple_surfaces =
+            require_single_surface(vec![uuid::Uuid::new_v4(), uuid::Uuid::new_v4()], source_range).unwrap_err();
+        assert!(multiple_surfaces.message().contains("formed 2 regions"));
+    }
 }

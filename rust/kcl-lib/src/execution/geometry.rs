@@ -1098,7 +1098,7 @@ impl CurveType {
             CurveType::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
                 Some(info) => Ok(info.id),
                 None => Err(KclError::new_type(KclErrorDetails::new(
-                    "Could not find a valid id to extrude".to_owned(),
+                    "Could not find a valid curve id for creating a planar surface".to_owned(),
                     vec![args.source_range],
                 ))),
             },

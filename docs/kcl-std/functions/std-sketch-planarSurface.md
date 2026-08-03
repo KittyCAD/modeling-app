@@ -1,30 +1,36 @@
 ---
 title: "planarSurface"
 subtitle: "Function in std::sketch"
-excerpt: "Fills in a closed shape to make a surface, coplanar with the shape and entirely contained by it."
+excerpt: "Fills one closed region to make a single planar surface contained by its boundary."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Fills in a closed shape to make a surface, coplanar with the shape and entirely contained by it.
+Fills one closed region to make a single planar surface contained by its boundary.
 
 ```kcl
-planarSurface(@sketches: [Sketch | TaggedEdge | Edge | Segment; 1+]): [Solid; 1+]
+planarSurface(
+  @curves: Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+],
+  tolerance?: number(Length),
+): Solid
 ```
 
-If a group of edges, segments, or sketches is provided,
-they must be provided in the order they connect in.
+A sketch must contain exactly one region, and that region must be closed.
+Alternatively, pass a non-empty list of edges or segments which form one
+closed, connected, coplanar region. List items must be provided in the
+order they connect.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | Which sketch or sketches should be extruded. | Yes |
+| `curves` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [[`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge); 1+] or [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | Which closed 2D region of space should be filled in to make a planar surface. | Yes |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
 
 ### Examples
@@ -44,7 +50,7 @@ sketch001 = sketch(on = XY) {
   coincident([line4.end, line1.start])
 }
 
-// Fill in the closed shape with a surface.
+// Fill the single closed region with one surface.
 mySurface = planarSurface([
   sketch001.line1,
   sketch001.line2,
@@ -55,18 +61,7 @@ mySurface = planarSurface([
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the planarSurface function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planarSurface0_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface0.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of planarSurface 0](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface0.png)
 
 ```kcl
 // If the sketch only has 1 region, and it's closed, then you can just pass
@@ -85,37 +80,26 @@ sketch001 = sketch(on = XY) {
   coincident([line4.end, line1.start])
 }
 
-// Fill in the closed shape with a surface.
+// Fill the sketch's single closed region with one surface.
 mySurface = planarSurface(sketch001)
 
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the planarSurface function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-planarSurface1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
+![Rendered example of planarSurface 1](/kcl-test-outputs/serial_test_example_fn_std-sketch-planarSurface1.png)
 
 ```kcl
 @settings(kclVersion = 2.0, experimentalFeatures = allow)
 
-// In this example, we'll extrude a cylinder with no caps,
-// then use `planarSurface` to add the cap.
+// In this example, we'll extrude a cylinder with no caps, then use
+// `planarSurface` to create a separate surface for one cap.
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 0.87mm, var 0.63mm], center = [var -1.35mm, var 3mm])
 }
 hidden001 = hide(sketch001)
 region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
 extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
-cap = planarSurface(extrude001.sketch.tags.circle1)
+cap = planarSurface([extrude001.sketch.tags.circle1])
 
 ```
 

@@ -3413,11 +3413,13 @@ export fn region(
   sketch?: any,
 ): Sketch {}
 
-/// Fills in a closed shape to make a surface, coplanar with the shape and entirely contained by it.
+/// Fills one closed region to make a single planar surface contained by its boundary.
 ///
-/// If a group of edges, segments, or sketches is provided, 
-/// they must be provided in the order they connect in.
-/// ```kcl,sketchSolve
+/// A sketch must contain exactly one region, and that region must be closed.
+/// Alternatively, pass a non-empty list of edges or segments which form one
+/// closed, connected, coplanar region. List items must be provided in the
+/// order they connect.
+/// ```kcl,no3d,sketchSolve
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 /// 
 /// // Sketch a closed quadrilateral
@@ -3432,17 +3434,15 @@ export fn region(
 ///   coincident([line4.end, line1.start])
 /// }
 /// 
-/// // Fill in the closed shape with a surface.
+/// // Fill the single closed region with one surface.
 /// mySurface = planarSurface([
 ///   sketch001.line1,
 ///   sketch001.line2,
 ///   sketch001.line3,
 ///   sketch001.line4
 /// ])
-/// // This should be a surface, not a solid.
-/// assertIs(isSurface(mySurface))
 /// ```
-/// ```kcl,sketchSolve
+/// ```kcl,no3d,sketchSolve
 /// // If the sketch only has 1 region, and it's closed, then you can just pass
 /// // the sketch itself in, without needing to specify the region or the bounding segments.
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
@@ -3458,22 +3458,24 @@ export fn region(
 ///   coincident([line3.end, line4.start])
 ///   coincident([line4.end, line1.start])
 /// }
-/// 
-/// // Fill in the closed shape with a surface.
+///
+/// // Fill the sketch's single closed region with one surface.
 /// mySurface = planarSurface(sketch001)
 /// ```
 /// ```kcl,sketchSolve
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 ///
-/// // In this example, we'll extrude a cylinder with no caps,
-/// // then use `planarSurface` to add the cap.
+/// // In this example, we'll extrude a cylinder with no caps, then use
+/// // `planarSurface` to create a separate surface for one cap.
 /// sketch001 = sketch(on = XY) {
 ///   circle1 = circle(start = [var 0.87mm, var 0.63mm], center = [var -1.35mm, var 3mm])
 /// }
 /// hidden001 = hide(sketch001)
 /// region001 = region(point = [-3.5682909mm, 5.3681754mm], sketch = sketch001)
 /// extrude001 = extrude(region001, length = -5, bodyType = SURFACE)
-/// cap = planarSurface(extrude001.sketch.tags.circle1)
+/// cap = planarSurface([extrude001.sketch.tags.circle1])
+/// // Demonstrate that this created a surface.
+/// assertIs(isSurface(cap))
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = true)
 export fn planarSurface(
