@@ -17,6 +17,10 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type {
+  DraftEntities,
+  DraftLineConstraintPlan,
+} from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
   clearToolSnappingState,
@@ -33,11 +37,19 @@ import {
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
+export const CONSTRAINING_DRAFT_LINE = 'Constraining draft line'
 
 export type ToolEvents =
   | BaseToolEvent
   | { type: 'finish line chain' }
   | { type: 'start next draft line'; data: [number, number] }
+  | {
+      type: 'constrain draft segment'
+      data: {
+        plan: DraftLineConstraintPlan
+        draftEntities: DraftEntities
+      }
+    }
   | {
       type:
         | `xstate.done.actor.0.${typeof TOOL_ID}.Adding point`
@@ -46,6 +58,14 @@ export type ToolEvents =
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
+      }
+    }
+  | {
+      type: `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONSTRAINING_DRAFT_LINE}`
+      output: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        draftEntities: DraftEntities
       }
     }
 
@@ -435,6 +455,46 @@ export function storePendingSketchOutcome({
   }
 
   return result
+}
+
+export function sendDraftConstraintOutcomeToParent({
+  event,
+  self,
+}: ToolActionArgs) {
+  if (!('output' in event) || !event.output) {
+    return
+  }
+
+  const output = event.output as {
+    kclSource?: SourceDelta
+    sceneGraphDelta?: SceneGraphDelta
+    draftEntities?: DraftEntities
+    error?: string
+  }
+
+  if (output.error || !output.kclSource || !output.sceneGraphDelta) {
+    return
+  }
+
+  const sendData: SketchSolveMachineEvent = {
+    type: 'update sketch outcome',
+    data: {
+      sourceDelta: output.kclSource,
+      sceneGraphDelta: output.sceneGraphDelta,
+      writeToDisk: false,
+    },
+  }
+  self._parent?.send(sendData)
+
+  if (output.draftEntities) {
+    // Keep the added/removed orientation constraint tracked as a draft
+    // entity so escaping the draft line still cleans everything up.
+    const draftData: SketchSolveMachineEvent = {
+      type: 'set draft entities',
+      data: output.draftEntities,
+    }
+    self._parent?.send(draftData)
+  }
 }
 
 export function sendStoredResultToParent({ context, self }: ToolActionArgs) {

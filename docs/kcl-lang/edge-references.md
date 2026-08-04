@@ -11,7 +11,7 @@ stable when earlier modeling operations change the body's topology.
 For most solid edges, the two adjacent faces uniquely identify the edge. Put
 those faces in `sideFaces`:
 
-```kcl
+```kcl,norun
 fillet(
   body001,
   radius = 2,
@@ -26,7 +26,7 @@ split an edge into multiple edges that still have the same side faces. To select
 one split, add an `endFaces` entry for a face touching the end of the intended
 edge:
 
-```kcl
+```kcl,norun
 {
   sideFaces = [region001.tags.bottom, region001.tags.right],
   endFaces = [startCap]
@@ -37,7 +37,7 @@ Some solid-modeling topology can leave multiple edges with the same side and
 end faces. In that case, `index` selects one of the remaining matches using a
 zero-based index:
 
-```kcl
+```kcl,norun
 {
   sideFaces = [region001.tags.bottom, endCap],
   index = 1

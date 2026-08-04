@@ -187,7 +187,7 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = '1 sweep'
+      const selectedSweep = '1 sweep'
       async function selectBracket() {
         if (selectionType === 'scene') {
           const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
@@ -258,7 +258,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
           },
           commandName: 'Translate',
           reviewValidationError:
@@ -270,7 +270,7 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -281,7 +281,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             X: '1',
           },
           commandName: 'Translate',
@@ -355,7 +355,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
           },
           commandName: 'Scale',
           reviewValidationError:
@@ -367,7 +367,7 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '1',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -378,7 +378,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             X: '1.1',
           },
           commandName: 'Scale',
@@ -456,7 +456,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
           },
           commandName: 'Rotate',
           reviewValidationError:
@@ -468,7 +468,7 @@ test.describe(
           currentArgKey: 'roll',
           currentArgValue: '0',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             Roll: '',
           },
           highlightedHeaderArg: 'roll',
@@ -479,7 +479,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedObjects,
+            Objects: selectedSweep,
             Roll: '0.1',
           },
           commandName: 'Rotate',

@@ -17,8 +17,10 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 vi.mock('@src/lib/selections', () => ({
+  engineTopologyFallbackFromReference: vi.fn(() => null),
   getEventForQueryEntityTypeWithPoint,
   normalizeEntityReference,
+  showSketchOnImportForFace: vi.fn(() => false),
 }))
 vi.mock('@src/lib/selectSketchPlane', () => ({ selectSketchPlane }))
 
