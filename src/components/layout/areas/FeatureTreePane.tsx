@@ -226,7 +226,7 @@ export const FeatureTreePaneContents = memo(() => {
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        sourceRange,
         kclManager,
         modelingSend,
       })

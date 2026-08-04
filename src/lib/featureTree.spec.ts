@@ -4,8 +4,9 @@ import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
   type FeatureTreeVisibilityState,
   resolveFeatureTreeVisibility,
+  sendSelectionEvent,
 } from '@src/lib/featureTree'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 function range(start: number, end: number, moduleId = 0): SourceRange {
   return [start, end, moduleId]
@@ -113,6 +114,37 @@ function expectHidden(
   expect(visibilityState.hideOperation).toBeDefined()
   expect(visibilityState.targetArtifact).toBeDefined()
 }
+
+describe('sendSelectionEvent', () => {
+  it('uses the raw UTF-8 range to resolve an operation after Unicode', () => {
+    const code = '// 😀\nbody001 = extrude(profile001, length = 5)'
+    const operationStart = code.indexOf('body001')
+    const encoder = new TextEncoder()
+    const sourceRange = range(
+      encoder.encode(code.slice(0, operationStart)).length,
+      encoder.encode(code).length
+    )
+    const artifact = pathArtifact('body-path', sourceRange)
+    const modelingSend = vi.fn()
+
+    sendSelectionEvent({
+      sourceRange,
+      kclManager: {
+        code,
+        ast: { body: [] },
+        artifactGraph: toArtifactGraph([artifact]),
+      } as any,
+      modelingSend: modelingSend as any,
+    })
+
+    expect(modelingSend).toHaveBeenCalledOnce()
+    const event = modelingSend.mock.calls[0][0]
+    expect(event.data.selection.entityRef).toEqual({
+      type: 'solid2d',
+      solid2d_id: 'body-path',
+    })
+  })
+})
 
 describe('resolveFeatureTreeVisibility', () => {
   it('resolves sketch visibility via artifact-id hide matching', () => {
