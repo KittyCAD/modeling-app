@@ -242,17 +242,22 @@ export async function readProjectsFromProjectDirectory({
   projectDirectoryPath,
   wasmInstancePromise,
   previousProjects,
+  previousProjectCount,
   signal,
   onProgress,
 }: {
   projectDirectoryPath: string
   wasmInstancePromise: Promise<ModuleType>
   previousProjects?: Project[]
+  previousProjectCount?: number
   signal?: AbortSignal
   onProgress?: (projects: Project[]) => void
 }) {
   const projects: Project[] = []
-  const canSendProgress = shouldSendProjectFolderReadProgress(previousProjects)
+  const canSendProgress =
+    previousProjectCount !== undefined
+      ? previousProjectCount === 0
+      : shouldSendProjectFolderReadProgress(previousProjects)
 
   const sendProgress = (folders: Project[]) => {
     if (signal?.aborted) {

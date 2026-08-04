@@ -4,7 +4,7 @@ import type {
 } from '@kittycad/lib'
 import { projects } from '@kittycad/lib'
 import { createKCClient } from '@src/lib/kcClient'
-import type { Project } from '@src/lib/project'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import { useEffect, useMemo, useState } from 'react'
 
 export type ProjectStatus = {
@@ -62,7 +62,7 @@ export function useProjectStatus(
  * Uses a single `list_projects` call rather than N individual calls.
  */
 export function useProjectStatuses(
-  localProjects: Project[] | undefined,
+  homeProjects: readonly HomeProjectEntry[],
   token?: string
 ): Map<string, ProjectStatus> {
   const [remoteProjects, setRemoteProjects] = useState<
@@ -70,9 +70,8 @@ export function useProjectStatuses(
   >([])
 
   const hasCloudProjects = useMemo(() => {
-    if (!localProjects) return false
-    return localProjects.some((p) => !!p.cloudProjectId)
-  }, [localProjects])
+    return homeProjects.some((project) => !!project.remoteProjectId)
+  }, [homeProjects])
 
   useEffect(() => {
     if (!token || !hasCloudProjects) {

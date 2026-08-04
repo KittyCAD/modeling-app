@@ -46,6 +46,7 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
@@ -64,7 +65,6 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -85,7 +85,6 @@ import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
@@ -787,19 +786,11 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
  * sync-only surface (remote entries, status bar, project-menu sync actions).
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
-  const systemIO = ctx.services.signal(systemIOService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
 
-  // A materialized cloud project can be listed either by System IO (when the
-  // cloud folder is the app's project directory, e.g. on web) or by the
-  // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
-  // local mutations show up regardless of which surface owns the entry.
   const refreshLocalCloudProjectEntries = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
     invalidateConfiguredProjectLibraryEntries()
   }
 
@@ -1013,17 +1004,26 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
     },
-    readEntries: async ({ library, signal }) => {
+    readEntries: async ({ library, onProgress, previousEntries, signal }) => {
       const wasmInstancePromise = getWasmPromise()
       if (wasmInstancePromise instanceof Error) {
         return Promise.reject(wasmInstancePromise)
       }
 
+      const entriesFromProjects = (projects: readonly Project[]) =>
+        projects.map((project) => ({
+          ...homeProjectEntryFromProject(project),
+          libraryId: library.id,
+        }))
       const projects = await readProjectsFromProjectDirectory({
         projectDirectoryPath:
           await getCloudProjectLibraryMaterializationDirectoryPath(library),
         wasmInstancePromise,
+        previousProjectCount: previousEntries?.length,
         signal,
+        onProgress: (projects) => {
+          onProgress?.(entriesFromProjects(projects))
+        },
       })
       if (!signal.aborted) {
         scheduleCloudProjectDirectoryNameSyncFromTitles({
@@ -1033,10 +1033,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         })
       }
 
-      return projects.map((project) => ({
-        ...homeProjectEntryFromProject(project),
-        libraryId: library.id,
-      }))
+      return entriesFromProjects(projects)
     },
   }
 

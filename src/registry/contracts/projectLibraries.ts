@@ -156,6 +156,8 @@ export interface ProjectLibraryTypeContribution {
   readEntries?: (input: {
     library: ProjectLibrary
     signal: AbortSignal
+    previousEntries?: HomeProjectEntryContribution[]
+    onProgress?: (entries: HomeProjectEntryContribution[]) => void
   }) => Promise<HomeProjectEntryContribution[]>
 }
 
