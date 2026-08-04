@@ -678,17 +678,6 @@ impl<'a> FromKclValue<'a> for CircularDirection {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::front::ArcDirection {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let dir = match arg.as_str()? {
-            "ccw" => Self::Ccw,
-            "cw" => Self::Cw,
-            _ => return None,
-        };
-        Some(dir)
-    }
-}
-
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;

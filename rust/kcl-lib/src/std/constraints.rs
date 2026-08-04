@@ -859,12 +859,47 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     })
 }
 
+/// Parse arc()'s optional `direction` keyword argument. The builtin constants
+/// `CCW` and `CW` are lowercase strings, so only their exact values are
+/// accepted. Anything else, like the string "CW", gets an error steering the
+/// user toward the constants instead of the generic coercion error.
+fn arc_direction_arg(args: &Args) -> Result<Option<ArcDirection>, KclError> {
+    let Some(arg) = args.labeled.get("direction") else {
+        return Ok(None);
+    };
+    if matches!(arg.value, KclValue::KclNone { .. }) {
+        return Ok(None);
+    }
+    match arg.value.as_str() {
+        Some("ccw") => Ok(Some(ArcDirection::Ccw)),
+        Some("cw") => Ok(Some(ArcDirection::Cw)),
+        Some(other) => {
+            // If they wrote something like "CW", suggest the constant they
+            // most likely meant.
+            let example = if other.eq_ignore_ascii_case("ccw") { "CCW" } else { "CW" };
+            Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "\"{other}\" is not a valid arc direction. Use one of the builtin constants `CCW` or `CW`, not a string. For example: `direction = {example}`"
+                ),
+                arg.source_ranges(),
+            )))
+        }
+        None => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "The arc direction must be one of the builtin constants `CCW` or `CW`, but found {}. For example: `direction = CW`",
+                arg.value.human_friendly_type()
+            ),
+            arg.source_ranges(),
+        ))),
+    }
+}
+
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let start: Vec<KclValue> = args.get_kw_arg("start", &RuntimeType::point2d(), exec_state)?;
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add interior.
     let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
-    let direction_opt: Option<ArcDirection> = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
+    let direction_opt = arc_direction_arg(&args)?;
     let direction = direction_opt.unwrap_or_default();
     let construction_opt = args.get_kw_arg_opt("construction", &RuntimeType::bool(), exec_state)?;
     let construction: bool = construction_opt.unwrap_or(false);
