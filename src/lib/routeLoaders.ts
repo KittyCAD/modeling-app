@@ -1,6 +1,7 @@
 import { projectSkeletonCreate } from '@src/lang/project'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -276,6 +277,7 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
 
     const project = maybeProjectInfo ?? defaultProjectData
+    setCloudSyncProjectScope(project.path)
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -342,6 +344,8 @@ export const fileLoader =
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
+    setCloudSyncProjectScope(undefined)
+
     // If on unflagged web, bump out to root, which will redirect to a project.
     if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)

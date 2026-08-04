@@ -227,7 +227,6 @@ function getConfiguredProjectRoot(targetPath: string) {
   if (normalizedTargetPath === projectDirectory) {
     return undefined
   }
-
   const relativePath = normalizeRelativePath(
     localFs.relative(projectDirectory, normalizedTargetPath)
   )
@@ -296,8 +295,15 @@ export function shouldAutoEnrollCloudLibraryProject({
 }
 
 function shouldSyncCloudLibraryProject(metadata: ProjectMetadata) {
+  const autoEnrollCloudLibraryProjects = projectPathInDirectory(
+    metadata,
+    getConfiguredProjectDirectoryPath()
+  )
+    ? config.autoEnrollCloudLibraryProjects
+    : false
+
   return shouldAutoEnrollCloudLibraryProject({
-    autoEnrollCloudLibraryProjects: config.autoEnrollCloudLibraryProjects,
+    autoEnrollCloudLibraryProjects,
     hasRemoteProjectId: Boolean(metadata.remoteProjectId),
     hasBaseManifest: Boolean(metadata.baseManifest),
   })
@@ -329,17 +335,12 @@ function isConfiguredForCloud() {
 }
 
 function getSyncScopeProjectPath(projectPath: string | undefined) {
-  if (!projectPath) {
+  const nextProjectPath = projectPath?.trim()
+  if (!nextProjectPath) {
     return undefined
   }
 
-  const normalizedProjectPath = normalizePathForSync(projectPath)
-  return isProjectPathInDirectory(
-    normalizedProjectPath,
-    getConfiguredProjectDirectoryPath()
-  )
-    ? normalizedProjectPath
-    : undefined
+  return normalizePathForSync(nextProjectPath)
 }
 
 function projectPathMatchesSyncScope(projectPath: string) {
@@ -347,6 +348,67 @@ function projectPathMatchesSyncScope(projectPath: string) {
     !syncScopeProjectPath ||
     normalizePathForSync(projectPath) === syncScopeProjectPath
   )
+}
+
+function projectPathIsSyncScope(projectPath: string) {
+  return Boolean(
+    syncScopeProjectPath &&
+      normalizePathForSync(projectPath) === syncScopeProjectPath
+  )
+}
+
+function publishScopedProjectCloudProjectId(metadata: ProjectMetadata) {
+  if (!projectPathIsSyncScope(metadata.localProjectPath)) {
+    return
+  }
+
+  updateStatus({
+    scopedProjectCloudProjectId:
+      metadata.tombstone || isProjectSyncExcluded(metadata)
+        ? undefined
+        : metadata.remoteProjectId,
+  })
+}
+
+async function getScopedProjectCloudProjectId(projectPath: string) {
+  const metadata = await getProjectMetadata(projectPath)
+  if (metadata?.tombstone || isProjectSyncExcluded(metadata)) {
+    return undefined
+  }
+  if (metadata?.remoteProjectId) {
+    return metadata.remoteProjectId
+  }
+
+  return readProjectTomlCloudProjectId(projectPath).catch(() => undefined)
+}
+
+async function refreshScopedProjectCloudProjectId(projectPath?: string) {
+  if (!projectPath) {
+    updateStatus({
+      scopedProjectPath: undefined,
+      scopedProjectCloudProjectId: undefined,
+    })
+    return
+  }
+
+  const scopedProjectPath = normalizePathForSync(projectPath)
+  updateStatus({
+    scopedProjectPath,
+    scopedProjectCloudProjectId: undefined,
+  })
+
+  try {
+    const cloudProjectId =
+      await getScopedProjectCloudProjectId(scopedProjectPath)
+    if (syncScopeProjectPath === scopedProjectPath) {
+      updateStatus({ scopedProjectCloudProjectId: cloudProjectId })
+    }
+  } catch (error) {
+    if (syncScopeProjectPath === scopedProjectPath) {
+      updateStatus({ scopedProjectCloudProjectId: undefined })
+    }
+    reportRejection(error)
+  }
 }
 
 function outboxEntriesForProject(entries: OutboxEntry[], projectPath: string) {
@@ -1704,6 +1766,7 @@ async function bindRemoteProjectIdFromToml(
     remoteProjectId: cloudBinding.projectId,
   }
   await putProjectMetadata(next)
+  publishScopedProjectCloudProjectId(next)
   return next
 }
 
@@ -1722,6 +1785,7 @@ async function markProjectFailure(
     },
   }
   await putProjectMetadata(next)
+  publishScopedProjectCloudProjectId(next)
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'failed',
@@ -1758,7 +1822,7 @@ async function markProjectSynced(
   }
 ) {
   const syncedAt = nowIso()
-  await putProjectMetadata({
+  const nextMetadata = {
     ...metadata,
     baseManifest,
     remoteRevision: remote?.revision ?? metadata.remoteRevision,
@@ -1767,7 +1831,9 @@ async function markProjectSynced(
     conflict: undefined,
     lastFailure: undefined,
     lastSyncedAt: syncedAt,
-  })
+  }
+  await putProjectMetadata(nextMetadata)
+  publishScopedProjectCloudProjectId(nextMetadata)
   if (!projectPathMatchesSyncScope(metadata.localProjectPath)) {
     return
   }
@@ -1998,7 +2064,7 @@ async function markProjectConflict(
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
 
-  await putProjectMetadata({
+  const nextMetadata = {
     ...metadata,
     remoteUpdatedAt: remoteUpdatedAt ?? metadata.remoteUpdatedAt,
     conflict: {
@@ -2013,7 +2079,9 @@ async function markProjectConflict(
       message: 'Cloud sync conflict: local and remote both changed.',
       at: createdAt,
     },
-  })
+  }
+  await putProjectMetadata(nextMetadata)
+  publishScopedProjectCloudProjectId(nextMetadata)
   reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
@@ -2258,17 +2326,17 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
     return
   }
-  if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
-    updateStatus({
-      state: 'syncing',
-      activeProjectPath: metadata.localProjectPath,
-    })
-  }
 
   try {
     metadata = await bindRemoteProjectIdFromToml(metadata, cloudBinding)
     if (!shouldSyncCloudLibraryProject(metadata) && entries.length === 0) {
       return
+    }
+    if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
+      updateStatus({
+        state: 'syncing',
+        activeProjectPath: metadata.localProjectPath,
+      })
     }
 
     const latestKind = latestOutboxKind(entries)
@@ -2805,7 +2873,7 @@ async function runCloudSync() {
 
   syncInProgress = true
   pendingStatusSyncedAt = undefined
-  updateStatus({ enabled: true, state: 'syncing' })
+  updateStatus({ enabled: true })
   const scopedProjectPath = syncScopeProjectPath
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
@@ -2814,6 +2882,7 @@ async function runCloudSync() {
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getCloudSyncScopePlan(entries, scopedProjectPath)
     if (syncScopePlan.shouldSyncRemoteIndex) {
+      updateStatus({ state: 'syncing' })
       await enqueueExistingCloudLibraryProjectsForInitialSync()
       await syncRemoteIndex().catch((error) => {
         remoteIndexFailed = true
@@ -2914,8 +2983,8 @@ function scheduleRemoteIndexSync(delay = 0) {
   scheduleSync(delay)
 }
 
-// Home syncs the full cloud index; file routes narrow status and retries to
-// the open project so unrelated project conflicts do not pollute the editor UI.
+// Home syncs the full cloud index; file routes pass the project root selected
+// by the current library so status and retries stay limited to that project.
 export function setCloudSyncProjectScope(projectPath?: string) {
   const nextSyncScopeProjectPath = getSyncScopeProjectPath(projectPath)
   if (syncScopeProjectPath === nextSyncScopeProjectPath) {
@@ -2923,6 +2992,7 @@ export function setCloudSyncProjectScope(projectPath?: string) {
   }
 
   syncScopeProjectPath = nextSyncScopeProjectPath
+  void refreshScopedProjectCloudProjectId(nextSyncScopeProjectPath)
   void refreshPendingCount()
 
   const statusProjectPath = cloudSyncStatus.value.activeProjectPath
@@ -2966,7 +3036,7 @@ export async function startCloudSyncProject(projectPath: string) {
   )
 
   await clearOutboxEntriesForProject(normalizedProjectPath)
-  await putProjectMetadata({
+  const nextMetadata = {
     ...metadata,
     localProjectPath: normalizedProjectPath,
     projectName: projectNameFromPath(normalizedProjectPath),
@@ -2974,7 +3044,9 @@ export async function startCloudSyncProject(projectPath: string) {
     syncExcluded: undefined,
     conflict: undefined,
     lastFailure: undefined,
-  })
+  }
+  await putProjectMetadata(nextMetadata)
+  publishScopedProjectCloudProjectId(nextMetadata)
   await appendOutboxEntry({
     projectPath: normalizedProjectPath,
     kind: 'upsert',
@@ -3009,7 +3081,7 @@ export async function disconnectCloudSyncProject(projectPath: string) {
   const disconnectedAt = nowIso()
 
   await removeLocalProjectCloudProjectId(normalizedProjectPath)
-  await putProjectMetadata({
+  const disconnectedMetadata = {
     ...metadata,
     localProjectPath: normalizedProjectPath,
     projectName: projectNameFromPath(normalizedProjectPath),
@@ -3026,19 +3098,23 @@ export async function disconnectCloudSyncProject(projectPath: string) {
       remoteProjectId,
       createdAt: disconnectedAt,
     },
-  })
+  }
+  await putProjectMetadata(disconnectedMetadata)
+  publishScopedProjectCloudProjectId(disconnectedMetadata)
 
   if (remoteProjectId) {
     try {
       await deleteRemoteProject(config, remoteProjectId)
     } catch (error) {
       if (!(error instanceof CloudApiError && error.status === 404)) {
-        await putProjectMetadata({
+        const restoredMetadata = {
           ...metadata,
           localProjectPath: normalizedProjectPath,
           projectName: projectNameFromPath(normalizedProjectPath),
           syncExcluded: undefined,
-        })
+        }
+        await putProjectMetadata(restoredMetadata)
+        publishScopedProjectCloudProjectId(restoredMetadata)
         await writeLocalProjectCloudProjectId(
           normalizedProjectPath,
           remoteProjectId
@@ -3050,24 +3126,8 @@ export async function disconnectCloudSyncProject(projectPath: string) {
   }
 
   await clearOutboxEntriesForProject(normalizedProjectPath)
-  await putProjectMetadata({
-    ...metadata,
-    localProjectPath: normalizedProjectPath,
-    projectName: projectNameFromPath(normalizedProjectPath),
-    remoteProjectId: undefined,
-    remoteRevision: undefined,
-    remoteUpdatedAt: undefined,
-    baseManifest: undefined,
-    tombstone: false,
-    conflict: undefined,
-    lastFailure: undefined,
-    lastSyncedAt: undefined,
-    syncExcluded: {
-      reason: 'user-disconnected',
-      remoteProjectId,
-      createdAt: disconnectedAt,
-    },
-  })
+  await putProjectMetadata(disconnectedMetadata)
+  publishScopedProjectCloudProjectId(disconnectedMetadata)
   if (remoteProjectId) {
     cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.filter(
       (project) => project.id !== remoteProjectId
@@ -3365,6 +3425,8 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
       enabled: false,
       state: 'disabled',
       activeProjectPath: undefined,
+      scopedProjectPath: undefined,
+      scopedProjectCloudProjectId: undefined,
       lastFailure: undefined,
       lastFailureAt: undefined,
     })
@@ -3390,6 +3452,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
         }
       : {}),
   })
+  void refreshScopedProjectCloudProjectId(syncScopeProjectPath)
   void refreshPendingCount()
   scheduleSync(0)
 }

@@ -112,6 +112,8 @@ export type CloudSyncStatus = {
   enabled: boolean
   state: CloudSyncState
   pendingCount: number
+  scopedProjectPath?: string
+  scopedProjectCloudProjectId?: string
   activeProjectPath?: string
   lastFailure?: string
   lastFailureKind?: ProjectSyncFailureKind
