@@ -17,6 +17,8 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   }
 })
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 const context = {
   projectDirectoryPath: '/projects',
   hasListedProjects: true,
