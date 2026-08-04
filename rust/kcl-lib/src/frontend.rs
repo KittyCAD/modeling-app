@@ -14777,6 +14777,120 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_arc_direction_flows_to_source() {
+        let initial_source = "@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let point = |x: f64, y: f64| Point2d {
+            x: Expr::Var(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        };
+
+        // Adding a clockwise arc writes its direction to the source.
+        let arc_ctor = ArcCtor {
+            start: point(5.0, 0.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Arc(arc_ctor), None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW in source, got: {}",
+            src_delta.text
+        );
+        // The new objects are the end points, the center, and then the arc.
+        let arc_id = *scene_delta.new_objects.last().unwrap();
+
+        // Editing the arc's points preserves the clockwise direction. The
+        // edited points keep the same distance to the center so that the
+        // solver doesn't need to move anything.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("start = [var 0mm, var -5mm]"),
+            "Expected edited start point in source, got: {}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW to be preserved in source, got: {}",
+            src_delta.text
+        );
+
+        // Editing the arc back to counterclockwise removes the direction
+        // argument since counterclockwise is the default.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Ccw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            !src_delta.text.contains("direction"),
+            "Expected direction argument to be removed from source, got: {}",
+            src_delta.text
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_extra_newlines_add_circle() {
         // Extra blank lines between settings and sketch.
         let initial_source = "@settings(defaultLengthUnit = mm)
