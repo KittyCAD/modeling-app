@@ -2479,17 +2479,28 @@ hide(sketch001)`
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('body001 = extrude')
+    await scene.moveCameraTo(
+      { x: 43.8, y: -79.54, z: 9.08 },
+      { x: 15, y: 0, z: 6 }
+    )
 
-    const [clickEndCap] = scene.makeMouseHelpers(0.548, 0.3913, {
+    const [clickWall] = scene.makeMouseHelpers(0.5373, 0.4864, {
       format: 'ratio',
     })
     await toolbar.startSketchPlaneSelection()
     await expect(
       page.getByText('Select a plane or face to start sketching.')
     ).toBeVisible()
-    await clickEndCap()
+    await toolbar.openFeatureTreePane()
+    await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
+    await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+    await expect(
+      toolbar
+        .getDefaultPlaneVisibilityButton('XZ')
+        .locator('[aria-label="eye crossed out"]')
+    ).toBeVisible()
+    await clickWall()
 
     await expect(toolbar.exitSketchBtn).toBeEnabled()
     await editor.expectEditor.toContain(
@@ -2537,14 +2548,25 @@ hide(sketch001)`
     await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.closePane()
+    await scene.moveCameraTo(
+      { x: 39.68, y: -7.24, z: 19.4 },
+      { x: 15, y: 10, z: 6 }
+    )
 
     await toolbar.startSketchPlaneSelection()
     await expect(
       page.getByText('Select a plane or face to start sketching.')
     ).toBeVisible()
-    const [clickChamferFace] = scene.makeMouseHelpers(0.9297, 0.4022, {
+    await toolbar.openFeatureTreePane()
+    await toolbar.getDefaultPlaneVisibilityButton('XZ').locator('..').hover()
+    await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+    await expect(
+      toolbar
+        .getDefaultPlaneVisibilityButton('XZ')
+        .locator('[aria-label="eye crossed out"]')
+    ).toBeVisible()
+    const [clickChamferFace] = scene.makeMouseHelpers(0.3456, 0.4701, {
       format: 'ratio',
     })
     await clickChamferFace()
