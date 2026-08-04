@@ -5,6 +5,7 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import toast from 'react-hot-toast'
 import { expect, test, vi } from 'vitest'
 
 const project = {
@@ -85,4 +86,37 @@ test('shows the title read-only when the project cannot be updated', () => {
 
   expect(screen.getByRole('textbox', { name: 'Project title' })).toBeDisabled()
   expect(actions.rename).not.toHaveBeenCalled()
+})
+
+test('shows a user-facing error when the title cannot be saved', async () => {
+  const saveError = new Error('Disk is read-only')
+  const rename = vi.fn().mockRejectedValue(saveError)
+  const toastError = vi.spyOn(toast, 'error').mockImplementation(() => '')
+  const consoleError = vi
+    .spyOn(console, 'error')
+    .mockImplementation(() => undefined)
+
+  render(
+    <ProjectTitleSettingsSection
+      project={project}
+      projectEntry={projectEntry}
+      projectActions={createProjectActions(rename)}
+    />
+  )
+
+  const input = screen.getByRole('textbox', { name: 'Project title' })
+  fireEvent.change(input, { target: { value: 'Updated bracket' } })
+  fireEvent.blur(input)
+
+  await waitFor(() =>
+    expect(toastError).toHaveBeenCalledWith(
+      'Error: Could not update project title. Please try again.',
+      { id: 'error' }
+    )
+  )
+  expect(input).toHaveValue('Bracket')
+  expect(consoleError).toHaveBeenCalledWith(saveError)
+
+  toastError.mockRestore()
+  consoleError.mockRestore()
 })

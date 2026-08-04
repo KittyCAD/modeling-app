@@ -3,7 +3,7 @@ import { noAutofillInputProps } from '@src/lib/autofill'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { reportRejection } from '@src/lib/trap'
+import { trap } from '@src/lib/trap'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -57,9 +57,11 @@ export function ProjectTitleSettingsSection({
     setIsSaving(true)
     try {
       await projectActions.rename(projectEntry, nextTitle)
-    } catch (error) {
+    } catch (error: unknown) {
       setDraftTitle(projectTitle)
-      reportRejection(error)
+      trap(error instanceof Error ? error : new Error(String(error)), {
+        altErr: new Error('Could not update project title. Please try again.'),
+      })
     } finally {
       setIsSaving(false)
     }

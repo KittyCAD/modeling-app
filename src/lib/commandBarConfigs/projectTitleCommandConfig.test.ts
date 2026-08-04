@@ -59,6 +59,21 @@ test('is available as a project-only settings command', () => {
   ).toBeNull()
 })
 
+test('is hidden and disabled when the current project title is read-only', () => {
+  const service = createService()
+  vi.mocked(service.canUpdateTitle).mockReturnValue(false)
+
+  const command = createProjectTitleCommand({
+    getCurrentProject: () => project,
+    service,
+  })
+
+  expect(command).toMatchObject({
+    disabled: true,
+    hideFromSearch: true,
+  })
+})
+
 test('updates the current project title', async () => {
   const service = createService()
   const command = createProjectTitleCommand({

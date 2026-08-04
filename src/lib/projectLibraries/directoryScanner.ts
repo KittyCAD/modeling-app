@@ -18,6 +18,7 @@ import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
+import { withProjectDirectoryWriteLock } from '@src/lib/projectDirectoryLock'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -109,17 +110,19 @@ export async function syncProjectDirectoryNameFromTitle({
     projectDirectoryPath,
     targetProjectDirectoryName
   )
-  if (
-    !(await canRenameProjectDirectoryTo({
-      projectPath: project.path,
-      targetPath,
-    }))
-  ) {
-    return undefined
-  }
+  return withProjectDirectoryWriteLock(project.path, async () => {
+    if (
+      !(await canRenameProjectDirectoryTo({
+        projectPath: project.path,
+        targetPath,
+      }))
+    ) {
+      return undefined
+    }
 
-  await fsZds.rename(project.path, targetPath)
-  return targetProjectDirectoryName
+    await fsZds.rename(project.path, targetPath)
+    return targetProjectDirectoryName
+  })
 }
 
 function projectsByDirectory(projects: readonly Project[]) {

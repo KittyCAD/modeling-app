@@ -36,6 +36,7 @@ import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { holdOpenProjectDirectoryLock } from '@src/lib/projectDirectoryLock'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
@@ -97,8 +98,12 @@ export function OpenedProject() {
 
   useEffect(() => {
     setCloudSyncProjectScope(projectPath ?? undefined)
+    const releaseProjectDirectoryLock = projectPath
+      ? holdOpenProjectDirectoryLock(projectPath)
+      : undefined
 
     return () => {
+      releaseProjectDirectoryLock?.()
       setCloudSyncProjectScope(undefined)
     }
   }, [projectPath])

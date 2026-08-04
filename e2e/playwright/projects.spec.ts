@@ -687,10 +687,68 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
       await cmdBar.currentArgumentInput.fill(commandProjectTitle)
       await cmdBar.progressCmdBar()
 
-      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await expect(
+        page.getByText('Project title updated.').last()
+      ).toBeVisible()
       await expect(projectSidebarToggle).toContainText(commandProjectTitle)
       expect(await fs.stat(projectPath)).toBeDefined()
     })
+  })
+
+  test(`Editing a title keeps a project open in another window at its current path`, async ({
+    page,
+    scene,
+    nativeMenu,
+    fs,
+    folderSetupFn,
+  }) => {
+    const projectName = `project-open-in-another-window`
+    const projectTitle = `Updated project title`
+    let projectPath = ''
+    await folderSetupFn(async (dir) => {
+      projectPath = `${dir}/${projectName}`
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        `${projectPath}/main.kcl`,
+        new TextEncoder().encode('part001 = startSketchOn(XY)')
+      )
+    })
+
+    await page.getByTestId('project-link').click()
+    await scene.settled()
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const lockState = await navigator.locks.query()
+          return lockState.held?.some((lock) =>
+            lock.name?.startsWith('zds-project-directory:')
+          )
+        })
+      )
+      .toBe(true)
+
+    const secondPage = await nativeMenu.openNewWindow(page)
+
+    try {
+      await expect(
+        secondPage.getByTestId('project-link').filter({ hasText: projectName })
+      ).toBeVisible()
+
+      await page.getByTestId('project-sidebar-toggle').click()
+      await page.getByTestId('project-settings').click()
+      const titleInput = page.getByTestId('project-title-setting')
+      await titleInput.fill(projectTitle)
+      await titleInput.press('Enter')
+      await expect(page.getByText('Project title updated.')).toBeVisible()
+
+      await secondPage.reload()
+      await expect(
+        secondPage.getByTestId('project-link').filter({ hasText: projectTitle })
+      ).toBeVisible()
+      expect(nodeFsSync.existsSync(projectPath)).toBe(true)
+    } finally {
+      await secondPage.close()
+    }
   })
 
   test(`Delete from project page`, async ({

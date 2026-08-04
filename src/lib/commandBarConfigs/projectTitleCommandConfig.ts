@@ -34,6 +34,11 @@ export function createProjectTitleCommand({
     return null
   }
 
+  const canUpdateTitle = () => {
+    const project = getCurrentProject()
+    return Boolean(project && service.canUpdateTitle(project))
+  }
+
   return {
     name: PROJECT_TITLE_COMMAND_NAME,
     displayName: 'Settings · project · title',
@@ -41,6 +46,12 @@ export function createProjectTitleCommand({
     groupId: 'settings',
     icon: 'settings',
     needsReview: false,
+    get disabled() {
+      return !canUpdateTitle()
+    },
+    get hideFromSearch() {
+      return !canUpdateTitle()
+    },
     onSubmit: (data) => {
       const project = getCurrentProject()
       const validation = validateProjectTitle(data?.value)
