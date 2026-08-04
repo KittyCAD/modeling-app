@@ -1,0 +1,47 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing rotate_helix.kcl
+---
+// Rotate helices.
+
+// A reference helix that is not rotated.
+helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+
+// These are moved apart so that the rotation is easy to see.
+helix002 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+  ccw = true,
+)
+  |> translate(x = 20)
+
+helix003 = helix(
+  axis = Z,
+  radius = 3,
+  length = 15,
+  revolutions = 8,
+  angleStart = 0,
+)
+  |> translate(x = -20)
+
+// Rotate an array of helices using pitch. They tip over on their sides.
+rotatedHelices = rotate([helix002, helix003], pitch = 90deg)
+
+// Rotate a single helix around an axis.
+helix004 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+  |> rotate(axis = [0, 1, 0], angle = 90deg)
