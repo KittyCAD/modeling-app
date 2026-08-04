@@ -1,7 +1,7 @@
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import { defaultGlobalStatusBarItems } from '@src/components/StatusBar/defaultStatusBarItems'
 import { isDesktop } from '@src/lib/isDesktop'
-import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { getReleaseUrl } from '@src/routes/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/isDesktop', () => ({
@@ -37,13 +37,16 @@ describe('defaultGlobalStatusBarItems', () => {
   ])(
     'shows the app version in the %s status bar',
     (_, desktop, hasCloudSyncFeature) => {
+      const appVersion = 'fe581ff'
       mockedIsDesktop.mockReturnValue(desktop)
 
-      expect(defaultGlobalStatusBarItems({ hasCloudSyncFeature })[0]).toEqual({
+      expect(
+        defaultGlobalStatusBarItems({ appVersion, hasCloudSyncFeature })[0]
+      ).toEqual({
         id: 'version',
         element: 'externalLink',
-        label: APP_VERSION,
-        href: getReleaseUrl(),
+        label: appVersion,
+        href: getReleaseUrl(appVersion),
         toolTip: {
           children: 'View the release notes on GitHub',
         },
@@ -61,5 +64,17 @@ describe('defaultGlobalStatusBarItems', () => {
       'data-testid': 'download-desktop-app',
       component: DownloadDesktopApp,
     })
+  })
+
+  it('shows no version or download item in production web with cloud sync', () => {
+    mockedIsDesktop.mockReturnValue(false)
+
+    const items = defaultGlobalStatusBarItems({
+      appVersion: '',
+      hasCloudSyncFeature: true,
+    })
+
+    expect(items.some(({ id }) => id === 'version')).toBe(false)
+    expect(items.some(({ id }) => id === 'download-desktop-app')).toBe(false)
   })
 })

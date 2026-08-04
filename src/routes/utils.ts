@@ -15,15 +15,7 @@ function getRealAppVersion(version: string | undefined) {
   return version
 }
 
-function getVercelAppVersion(
-  releaseTag: string | undefined,
-  commitSha: string | undefined
-) {
-  const versionTag = releaseTag?.match(/^v(\d+\.\d+\.\d+)$/)
-  if (versionTag) {
-    return versionTag[1]
-  }
-
+function getWebAppVersion(commitSha: string | undefined) {
   if (!commitSha || commitSha.length < 7) {
     return undefined
   }
@@ -32,13 +24,11 @@ function getVercelAppVersion(
 }
 
 export function getAppVersion({
+  gitCommitSha,
   isDesktop,
-  vercelReleaseTag,
-  vercelGitCommitSha,
 }: {
+  gitCommitSha: string | undefined
   isDesktop: boolean
-  vercelReleaseTag: string | undefined
-  vercelGitCommitSha: string | undefined
 }) {
   if (isDesktop) {
     const electronVersion = hasWindow
@@ -48,16 +38,12 @@ export function getAppVersion({
     return getRealAppVersion(electronVersion) ?? FALLBACK_APP_VERSION
   }
 
-  return (
-    getVercelAppVersion(vercelReleaseTag, vercelGitCommitSha) ??
-    FALLBACK_APP_VERSION
-  )
+  return getWebAppVersion(gitCommitSha)
 }
 
 export const APP_VERSION = getAppVersion({
+  gitCommitSha: viteEnv().MODELING_APP_COMMIT_SHA,
   isDesktop: isDesktop(),
-  vercelReleaseTag: viteEnv().MODELING_APP_RELEASE_TAG,
-  vercelGitCommitSha: viteEnv().VERCEL_GIT_COMMIT_SHA,
 })
 
 export const PACKAGE_NAME =
@@ -69,13 +55,14 @@ export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
 export const IS_STAGING_OR_DEBUG =
   IS_STAGING ||
-  APP_VERSION === FALLBACK_APP_VERSION ||
-  getRefFromVersion(APP_VERSION) !== undefined
+  (isDesktop()
+    ? APP_VERSION === FALLBACK_APP_VERSION
+    : APP_VERSION !== undefined)
 
 export const APP_DOWNLOAD_PATH = `design-studio/download${IS_STAGING_OR_DEBUG ? '/staging' : ''}`
 
-export function getRefFromVersion(version: string) {
-  const hash = version.split('.').pop()
+export function getRefFromVersion(version: string | undefined) {
+  const hash = version?.split('.').pop()
   if (hash && hash.length === 7) {
     return hash
   }
@@ -83,7 +70,11 @@ export function getRefFromVersion(version: string) {
   return undefined
 }
 
-export function getReleaseUrl(version: string = APP_VERSION) {
+export function getReleaseUrl(version: string | undefined = APP_VERSION) {
+  if (!version) {
+    return 'https://github.com/KittyCAD/modeling-app/releases'
+  }
+
   if (IS_STAGING_OR_DEBUG || version === 'main') {
     const ref = getRefFromVersion(version) ?? 'main'
     return `https://github.com/KittyCAD/modeling-app/commit/${ref}`

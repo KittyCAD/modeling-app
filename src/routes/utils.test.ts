@@ -30,40 +30,28 @@ describe('Routes utility functions', () => {
   describe('getAppVersion', () => {
     it('returns the Electron package version', () => {
       const actual = getAppVersion({
+        gitCommitSha: undefined,
         isDesktop: true,
-        vercelReleaseTag: undefined,
-        vercelGitCommitSha: undefined,
       })
       expect(actual).toBe('mocked-version')
     })
 
-    it('returns the release version injected into a Vercel production build', () => {
+    it('returns the short commit SHA for non-production web builds', () => {
       const actual = getAppVersion({
+        gitCommitSha: 'fe581ff1234567890',
         isDesktop: false,
-        vercelReleaseTag: 'v1.2.3',
-        vercelGitCommitSha: 'abcdef1234567890',
-      })
-      expect(actual).toBe('1.2.3')
-    })
-
-    it('returns the short commit SHA for Vercel deployments', () => {
-      const actual = getAppVersion({
-        isDesktop: false,
-        vercelReleaseTag: undefined,
-        vercelGitCommitSha: 'fe581ff1234567890',
       })
       expect(actual).toBe('fe581ff')
     })
 
     it.each([undefined, '', 'short'])(
-      'returns 0.0.0 when Vercel metadata is unavailable (%s)',
-      (vercelGitCommitSha) => {
+      'returns no web version when commit metadata is unavailable (%s)',
+      (gitCommitSha) => {
         const actual = getAppVersion({
+          gitCommitSha,
           isDesktop: false,
-          vercelReleaseTag: undefined,
-          vercelGitCommitSha,
         })
-        expect(actual).toBe('0.0.0')
+        expect(actual).toBeUndefined()
       }
     )
   })

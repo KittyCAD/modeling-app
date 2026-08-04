@@ -16,59 +16,73 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 export const defaultGlobalStatusBarItems = ({
+  appVersion = APP_VERSION,
   autoUpdateDownloadProgress,
   autoUpdateReady,
   hasCloudSyncFeature,
   onRestartToUpdate,
 }: {
+  appVersion?: string
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
   autoUpdateReady?: AutoUpdateReady | null
   hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
-}): StatusBarItemType[] => [
-  isDesktop() || hasCloudSyncFeature
-    ? {
-        id: 'version',
-        element: 'externalLink',
-        label: APP_VERSION,
-        href: getReleaseUrl(),
-        toolTip: {
-          children: 'View the release notes on GitHub',
-        },
-      }
-    : {
-        id: 'download-desktop-app',
-        'data-testid': 'download-desktop-app',
-        component: DownloadDesktopApp,
-      },
-  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
-    ? [
-        {
-          id: 'auto-update-download-status',
-          component: () => (
-            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
-          ),
-        },
-      ]
-    : []),
-  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
-    ? [
-        {
-          id: 'auto-update-ready-status',
-          component: () => (
-            <AutoUpdateReadyStatus
-              update={autoUpdateReady}
-              onRestart={onRestartToUpdate}
-            />
-          ),
-        },
-      ]
-    : []),
-  {
-    id: 'environment',
-    component: EnvironmentStatusBarItem,
-  },
-]
+}): StatusBarItemType[] => {
+  const desktop = isDesktop()
+  const versionOrDownloadItems: StatusBarItemType[] =
+    appVersion && (desktop || hasCloudSyncFeature)
+      ? [
+          {
+            id: 'version',
+            element: 'externalLink',
+            label: appVersion,
+            href: getReleaseUrl(appVersion),
+            toolTip: {
+              children: 'View the release notes on GitHub',
+            },
+          },
+        ]
+      : !desktop && !hasCloudSyncFeature
+        ? [
+            {
+              id: 'download-desktop-app',
+              'data-testid': 'download-desktop-app',
+              component: DownloadDesktopApp,
+            },
+          ]
+        : []
+
+  return [
+    ...versionOrDownloadItems,
+    ...(desktop && autoUpdateDownloadProgress && !autoUpdateReady
+      ? [
+          {
+            id: 'auto-update-download-status',
+            component: () => (
+              <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
+            ),
+          },
+        ]
+      : []),
+    ...(desktop && autoUpdateReady && onRestartToUpdate
+      ? [
+          {
+            id: 'auto-update-ready-status',
+            component: () => (
+              <AutoUpdateReadyStatus
+                update={autoUpdateReady}
+                onRestart={onRestartToUpdate}
+              />
+            ),
+          },
+        ]
+      : []),
+    {
+      id: 'environment',
+      component: EnvironmentStatusBarItem,
+    },
+  ]
+}
 
 function EnvironmentStatusBarItem() {
   return (
