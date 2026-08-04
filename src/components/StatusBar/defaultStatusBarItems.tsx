@@ -27,62 +27,56 @@ export const defaultGlobalStatusBarItems = ({
   autoUpdateReady?: AutoUpdateReady | null
   hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
-}): StatusBarItemType[] => {
-  const desktop = isDesktop()
-  const versionOrDownloadItems: StatusBarItemType[] =
-    appVersion && (desktop || hasCloudSyncFeature)
-      ? [
-          {
-            id: 'version',
-            element: 'externalLink',
-            label: appVersion,
-            href: getReleaseUrl(appVersion),
-            toolTip: {
-              children: 'View the release notes on GitHub',
-            },
+}): StatusBarItemType[] => [
+  ...(appVersion && (isDesktop() || hasCloudSyncFeature)
+    ? [
+        {
+          id: 'version',
+          element: 'externalLink' as const,
+          label: appVersion,
+          href: getReleaseUrl(appVersion),
+          toolTip: {
+            children: 'View this version on GitHub',
           },
-        ]
-      : !desktop && !hasCloudSyncFeature
-        ? [
-            {
-              id: 'download-desktop-app',
-              'data-testid': 'download-desktop-app',
-              component: DownloadDesktopApp,
-            },
-          ]
-        : []
-
-  return [
-    ...versionOrDownloadItems,
-    ...(desktop && autoUpdateDownloadProgress && !autoUpdateReady
+        },
+      ]
+    : !isDesktop() && !hasCloudSyncFeature
       ? [
           {
-            id: 'auto-update-download-status',
-            component: () => (
-              <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
-            ),
+            id: 'download-desktop-app',
+            'data-testid': 'download-desktop-app',
+            component: DownloadDesktopApp,
           },
         ]
       : []),
-    ...(desktop && autoUpdateReady && onRestartToUpdate
-      ? [
-          {
-            id: 'auto-update-ready-status',
-            component: () => (
-              <AutoUpdateReadyStatus
-                update={autoUpdateReady}
-                onRestart={onRestartToUpdate}
-              />
-            ),
-          },
-        ]
-      : []),
-    {
-      id: 'environment',
-      component: EnvironmentStatusBarItem,
-    },
-  ]
-}
+  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
+    ? [
+        {
+          id: 'auto-update-download-status',
+          component: () => (
+            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
+          ),
+        },
+      ]
+    : []),
+  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
+    ? [
+        {
+          id: 'auto-update-ready-status',
+          component: () => (
+            <AutoUpdateReadyStatus
+              update={autoUpdateReady}
+              onRestart={onRestartToUpdate}
+            />
+          ),
+        },
+      ]
+    : []),
+  {
+    id: 'environment',
+    component: EnvironmentStatusBarItem,
+  },
+]
 
 function EnvironmentStatusBarItem() {
   return (

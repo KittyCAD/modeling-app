@@ -48,7 +48,7 @@ describe('defaultGlobalStatusBarItems', () => {
         label: appVersion,
         href: getReleaseUrl(appVersion),
         toolTip: {
-          children: 'View the release notes on GitHub',
+          children: 'View this version on GitHub',
         },
       })
     }

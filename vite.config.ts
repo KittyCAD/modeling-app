@@ -8,20 +8,14 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
 
-function getAppCommitSha() {
-  if (process.env.VERCEL_ENV !== 'preview') {
-    return undefined
-  }
-
-  return process.env.VERCEL_GIT_COMMIT_SHA
-}
-
 export default defineConfig(({ command, mode }) => {
   return {
     customLogger: createCustomLogger(),
     define: {
       'import.meta.env.MODELING_APP_COMMIT_SHA': JSON.stringify(
-        getAppCommitSha()
+        process.env.VERCEL_ENV === 'preview'
+          ? process.env.VERCEL_GIT_COMMIT_SHA
+          : undefined
       ),
     },
     server: {

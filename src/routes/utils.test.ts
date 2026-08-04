@@ -1,4 +1,8 @@
-import { getAppVersion, getRefFromVersion } from '@src/routes/utils'
+import {
+  getAppVersion,
+  getRefFromVersion,
+  getReleaseUrl,
+} from '@src/routes/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 beforeEach(() => {
@@ -25,6 +29,12 @@ describe('Routes utility functions', () => {
     it('returns undefined on debug version', () => {
       expect(getRefFromVersion('main')).toBeUndefined()
     })
+  })
+
+  it('links a short commit SHA to its GitHub commit', () => {
+    expect(getReleaseUrl('fe581ff')).toBe(
+      'https://github.com/KittyCAD/modeling-app/commit/fe581ff'
+    )
   })
 
   describe('getAppVersion', () => {

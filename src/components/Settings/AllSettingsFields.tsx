@@ -253,7 +253,7 @@ export const AllSettingsFields = forwardRef(
                   to={getReleaseUrl()}
                   iconStart={{ icon: 'file', className: 'p-1' }}
                 >
-                  View Release on GitHub
+                  View version on GitHub
                 </ActionButton>
               )}
               <ActionButton

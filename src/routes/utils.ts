@@ -75,9 +75,9 @@ export function getReleaseUrl(version: string | undefined = APP_VERSION) {
     return 'https://github.com/KittyCAD/modeling-app/releases'
   }
 
-  if (IS_STAGING_OR_DEBUG || version === 'main') {
-    const ref = getRefFromVersion(version) ?? 'main'
-    return `https://github.com/KittyCAD/modeling-app/commit/${ref}`
+  const ref = getRefFromVersion(version)
+  if (IS_STAGING_OR_DEBUG || ref || version === 'main') {
+    return `https://github.com/KittyCAD/modeling-app/commit/${ref ?? 'main'}`
   }
 
   return `https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`
