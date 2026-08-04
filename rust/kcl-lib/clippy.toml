@@ -1,5 +1,9 @@
 enum-variant-size-threshold = 48
 
+disallowed-types = [
+  { path = "ezpz::datatypes::inputs::DatumCircularArc", reason = "The solver sweeps arcs counterclockwise from start to end, and KCL arcs must have their declared point order resolved first. Build arc constraints through crate::execution::SolverArc instead." },
+]
+
 disallowed-methods = [
   { path = "f64::hypot", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f64::min",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},

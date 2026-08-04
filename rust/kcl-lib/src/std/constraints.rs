@@ -4,7 +4,6 @@ use ezpz::Constraint as SolverConstraint;
 use ezpz::LineSide;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
-use ezpz::datatypes::inputs::DatumCircularArc;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
@@ -29,6 +28,7 @@ use crate::execution::SketchBlockConstraint;
 use crate::execution::SketchConstraint;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchVarId;
+use crate::execution::SolverArc;
 use crate::execution::TangencyMode;
 use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
@@ -1075,26 +1075,16 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
     // Build the implicit arc constraint.
     let range = args.source_range;
-    // The solver only understands counterclockwise arcs, so resolve which of
-    // the declared points is the start of the counterclockwise sweep.
-    let ((sweep_start_x, sweep_start_y), (sweep_end_x, sweep_end_y)) =
-        direction.ccw_order((start_x, start_y), (end_x, end_y));
+    let solver_arc = SolverArc::new(
+        [center_x, center_y],
+        [start_x, start_y],
+        [end_x, end_y],
+        direction,
+        range,
+    )?;
     let mut required_constraints = Vec::with_capacity(7);
     required_constraints.extend(arc_fixed_constraints);
-    required_constraints.push(ezpz::Constraint::Arc(ezpz::datatypes::inputs::DatumCircularArc {
-        center: ezpz::datatypes::inputs::DatumPoint::new_xy(
-            center_x.to_constraint_id(range)?,
-            center_y.to_constraint_id(range)?,
-        ),
-        start: ezpz::datatypes::inputs::DatumPoint::new_xy(
-            sweep_start_x.to_constraint_id(range)?,
-            sweep_start_y.to_constraint_id(range)?,
-        ),
-        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-            sweep_end_x.to_constraint_id(range)?,
-            sweep_end_y.to_constraint_id(range)?,
-        ),
-    }));
+    required_constraints.push(solver_arc.arc_constraint());
     let drag_anchor = exec_state
         .drag_anchor_target(&arc_object_id)
         .cloned()
@@ -1108,20 +1098,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         )));
     };
     if let Some(anchor) = drag_anchor {
-        required_constraints.push(ezpz::Constraint::PointArcCoincident(
-            DatumCircularArc {
-                center: DatumPoint::new_xy(center_x.to_constraint_id(range)?, center_y.to_constraint_id(range)?),
-                start: DatumPoint::new_xy(
-                    sweep_start_x.to_constraint_id(range)?,
-                    sweep_start_y.to_constraint_id(range)?,
-                ),
-                end: DatumPoint::new_xy(
-                    sweep_end_x.to_constraint_id(range)?,
-                    sweep_end_y.to_constraint_id(range)?,
-                ),
-            },
-            anchor.point,
-        ));
+        required_constraints.push(solver_arc.point_coincident_constraint(anchor.point));
         sketch_state
             .solver_optional_constraints
             .extend(anchor.fixed_constraints);
@@ -1787,14 +1764,9 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                     match (point_x, point_y) {
                         (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
                             // Extract arc center, start, and end coordinates.
-                            // The solver constrains the point to the portion of
-                            // the circle swept counterclockwise from the
-                            // datum's start to its end, so resolve the sweep
-                            // order from the arc's direction.
-                            let (arc_sweep_start, arc_sweep_end) = arc_direction.ccw_order(arc_start, arc_end);
                             let (center_x, center_y) = (&arc_center[0], &arc_center[1]);
-                            let (start_x, start_y) = (&arc_sweep_start[0], &arc_sweep_start[1]);
-                            let (end_x, end_y) = (&arc_sweep_end[0], &arc_sweep_end[1]);
+                            let (start_x, start_y) = (&arc_start[0], &arc_start[1]);
+                            let (end_x, end_y) = (&arc_end[0], &arc_end[1]);
 
                             match (center_x, center_y, start_x, start_y, end_x, end_y) {
                                 (
@@ -1806,21 +1778,14 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         point_x.to_constraint_id(range)?,
                                         point_y.to_constraint_id(range)?,
                                     );
-                                    let circular_arc = DatumCircularArc {
-                                        center: DatumPoint::new_xy(
-                                            cx.to_constraint_id(range)?,
-                                            cy.to_constraint_id(range)?,
-                                        ),
-                                        start: DatumPoint::new_xy(
-                                            sx.to_constraint_id(range)?,
-                                            sy.to_constraint_id(range)?,
-                                        ),
-                                        end: DatumPoint::new_xy(
-                                            ex.to_constraint_id(range)?,
-                                            ey.to_constraint_id(range)?,
-                                        ),
-                                    };
-                                    let constraint = SolverConstraint::PointArcCoincident(circular_arc, point);
+                                    let solver_arc = SolverArc::new(
+                                        [*cx, *cy],
+                                        [*sx, *sy],
+                                        [*ex, *ey],
+                                        *arc_direction,
+                                        range,
+                                    )?;
+                                    let constraint = solver_arc.point_coincident_constraint(point);
 
                                     let constraint_id = exec_state.next_object_id();
 
@@ -3267,6 +3232,7 @@ enum MidpointTargetVars {
         center: [SketchVarId; 2],
         start: [SketchVarId; 2],
         end: [SketchVarId; 2],
+        direction: ArcDirection,
         object_id: ObjectId,
     },
 }
@@ -3380,14 +3346,11 @@ fn extract_midpoint_target(
                 )));
             };
 
-            // The solver bisects the portion of the circle swept
-            // counterclockwise from start to end, so store the points in
-            // counterclockwise sweep order.
-            let (start, end) = direction.ccw_order([*start_x, *start_y], [*end_x, *end_y]);
             Ok(MidpointTargetVars::Arc {
                 center: [*center_x, *center_y],
-                start,
-                end,
+                start: [*start_x, *start_y],
+                end: [*end_x, *end_y],
+                direction: *direction,
                 object_id: unsolved.object_id,
             })
         }
@@ -3438,17 +3401,17 @@ pub async fn midpoint(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                 solver_point,
             ));
         }
-        MidpointTargetVars::Arc { center, start, end, .. } => {
+        MidpointTargetVars::Arc {
+            center,
+            start,
+            end,
+            direction,
+            ..
+        } => {
+            let solver_arc = SolverArc::new(center, start, end, direction, range)?;
             sketch_state
                 .solver_constraints
-                .extend(SolverConstraint::point_bisects_arc(
-                    DatumCircularArc {
-                        center: datum_point(center, range)?,
-                        start: datum_point(start, range)?,
-                        end: datum_point(end, range)?,
-                    },
-                    solver_point,
-                ));
+                .extend(solver_arc.point_bisects_constraints(solver_point));
         }
     }
 
