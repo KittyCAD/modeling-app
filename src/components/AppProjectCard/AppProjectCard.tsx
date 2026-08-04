@@ -374,7 +374,7 @@ function AppProjectCard({
               data-testid="project-card-context-rename"
               onClick={() => setIsEditing(true)}
             >
-              Rename project
+              Edit title
             </ContextMenuItem>,
             <ContextMenuItem
               key="move-to-library"

@@ -352,9 +352,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
-      toast.success(
-        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
-      )
+      toast.success('Project title updated.')
     },
     delete: async (project) => {
       const deleteProject = getProjectOperation(project, 'deleteProject')
@@ -469,6 +467,9 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         ) {
           scheduleProjectDirectoryNameSyncFromTitles({
             projects,
+            excludedProjectPaths: context.app.project
+              ? [context.app.project.path]
+              : [],
             onProjectDirectoriesRenamed: () => {
               service.actor.send({
                 type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -566,8 +567,11 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               signal,
             })
             if (!signal.aborted) {
+              const openProjectPath =
+                systemIO.value?.actor.getSnapshot().context.app.project?.path
               scheduleProjectDirectoryNameSyncFromTitles({
                 projects,
+                excludedProjectPaths: openProjectPath ? [openProjectPath] : [],
                 onProjectDirectoriesRenamed:
                   invalidateConfiguredProjectLibraryEntries,
               })

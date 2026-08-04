@@ -137,12 +137,18 @@ function projectsByDirectory(projects: readonly Project[]) {
 
 export function scheduleProjectDirectoryNameSyncFromTitles({
   projects,
+  excludedProjectPaths = [],
   onProjectDirectoriesRenamed,
 }: {
   projects: readonly Project[]
+  /** Paths held by open editors must remain stable until those editors close. */
+  excludedProjectPaths?: Iterable<string>
   onProjectDirectoriesRenamed?: () => void
 }) {
-  const projectsGroupedByDirectory = projectsByDirectory(projects).entries()
+  const excludedPaths = new Set(excludedProjectPaths)
+  const projectsGroupedByDirectory = projectsByDirectory(
+    projects.filter((project) => !excludedPaths.has(project.path))
+  ).entries()
   const syncGroups = Array.from(projectsGroupedByDirectory).filter(
     ([projectDirectoryPath]) => {
       if (scheduledProjectDirectoryNameSyncs.has(projectDirectoryPath)) {

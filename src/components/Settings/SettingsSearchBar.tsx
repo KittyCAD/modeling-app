@@ -2,12 +2,9 @@ import { Combobox } from '@headlessui/react'
 import type { Feature } from '@kittycad/lib'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
-import Fuse from 'fuse.js'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
 import { CustomIcon } from '@src/components/CustomIcon'
+import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
+import { PROJECT_TITLE_SETTING_ID } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { settingsSearchFocusRequest } from '@src/lib/searchFocusRequests'
@@ -18,13 +15,16 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
+  getKeymapItemScopes,
   KEYMAP_SCHEMA_VERSION,
   type KeymapScope,
-  getKeymapItemScopes,
   keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
+import Fuse from 'fuse.js'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -79,6 +79,17 @@ export function SettingsSearchBar({
   )
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
+      ...(hasOpenProject
+        ? [
+            {
+              category: 'Project',
+              name: PROJECT_TITLE_SETTING_ID,
+              description: 'The name shown for this project.',
+              displayName: 'Title',
+              level: 'project' as const,
+            },
+          ]
+        : []),
       ...Object.entries(settingsValues).flatMap(
         ([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {

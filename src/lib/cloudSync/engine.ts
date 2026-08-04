@@ -670,11 +670,16 @@ async function syncCloudProjectDirectoryNameFromTitle({
   pendingProjectPaths: ReadonlySet<string>
 }) {
   const sourceProjectPath = normalizePathForSync(metadata.localProjectPath)
+  // File routes and editors hold absolute paths. Defer the folder affordance
+  // until the user returns Home and the project is no longer the sync scope.
+  const isOpenProject =
+    normalizePathForSync(syncScopeProjectPath ?? '') === sourceProjectPath
   if (
     !metadata.remoteProjectId ||
     metadata.tombstone ||
     isProjectSyncExcluded(metadata) ||
     pendingProjectPaths.has(sourceProjectPath) ||
+    isOpenProject ||
     !(await exists(sourceProjectPath))
   ) {
     return metadata

@@ -139,7 +139,6 @@ describe('project command config', () => {
       'Create project',
       'Move to library',
       'Delete project',
-      'Rename project',
       'Import file from URL',
     ])
   })
@@ -348,9 +347,6 @@ describe('project command config', () => {
     const deleteCommand = commands.find(
       (command) => command.name === 'Delete project'
     )
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
-    )
 
     expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
@@ -366,57 +362,6 @@ describe('project command config', () => {
         isCurrent: false,
       },
     ])
-    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
-      {
-        name: 'Display Bracket',
-        value: 'bracket-directory',
-        isCurrent: false,
-      },
-    ])
-  })
-
-  it('renames project titles without replacing the project directory identifier', () => {
-    const systemIOActor = createSystemIOActor([
-      createProject({
-        name: 'bracket-directory',
-        title: 'Display Bracket',
-      }),
-    ])
-    const commands = createProjectCommands({
-      systemIOActor,
-      enableProjectDirectoryCommands: true,
-    })
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
-    )
-    expect(renameCommand).toBeDefined()
-    const newTitleArg = renameCommand?.args?.newName as unknown as {
-      defaultValue: (
-        context: ContextFrom<typeof commandBarMachine>
-      ) => string | undefined
-    }
-
-    expect(
-      newTitleArg.defaultValue({
-        argumentsToSubmit: {
-          oldName: 'bracket-directory',
-        },
-      } as unknown as ContextFrom<typeof commandBarMachine>)
-    ).toBe('Display Bracket')
-
-    renameCommand?.onSubmit({
-      oldName: 'bracket-directory',
-      newName: 'Retitled Bracket',
-    })
-
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        projectName: 'bracket-directory',
-        requestedProjectName: 'Retitled Bracket',
-        redirect: true,
-      },
-    })
   })
 
   it('uses home project entries for project command options', () => {
@@ -445,9 +390,6 @@ describe('project command config', () => {
     const deleteCommand = commands.find(
       (command) => command.name === 'Delete project'
     )
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
-    )
 
     expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
@@ -463,16 +405,9 @@ describe('project command config', () => {
         isCurrent: true,
       },
     ])
-    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
-      {
-        name: 'Client Bracket',
-        value: 'local:/client-projects/bracket',
-        isCurrent: true,
-      },
-    ])
   })
 
-  it('opens, renames, and deletes home project entries through project actions', async () => {
+  it('opens and deletes home project entries through project actions', async () => {
     const systemIOActor = createSystemIOActor()
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',
@@ -494,18 +429,11 @@ describe('project command config', () => {
     const deleteCommand = commands.find(
       (command) => command.name === 'Delete project'
     )
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
-    )
 
     window.location.hash = '#/home'
     try {
       await openCommand?.onSubmit({
         name: homeProject.id,
-      })
-      await renameCommand?.onSubmit({
-        oldName: homeProject.id,
-        newName: 'Updated Client Bracket',
       })
       await deleteCommand?.onSubmit({
         name: homeProject.id,
@@ -514,10 +442,6 @@ describe('project command config', () => {
       expect(homeProjectActions.open).toHaveBeenCalledWith(homeProject)
       expect(window.location.hash).toBe(
         '#/file/%2Fclient-projects%2Fbracket%2Fmain.kcl'
-      )
-      expect(homeProjectActions.rename).toHaveBeenCalledWith(
-        homeProject,
-        'Updated Client Bracket'
       )
       expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
       expect(systemIOActor.send).not.toHaveBeenCalled()
@@ -611,38 +535,6 @@ describe('project command config', () => {
     expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
-  it('defaults home project rename titles from the selected entry', () => {
-    const homeProject = createHomeProject({
-      id: 'local:/client-projects/bracket',
-      title: 'Client Bracket',
-      localProjectName: 'bracket',
-      localProjectPath: '/client-projects/bracket',
-      libraryIds: ['client-projects'],
-    })
-    const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
-      getHomeProjectActions: () => createHomeProjectActions(),
-      getHomeProjectEntries: () => [homeProject],
-    })
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
-    )
-    const newTitleArg = renameCommand?.args?.newName as unknown as {
-      defaultValue: (
-        context: ContextFrom<typeof commandBarMachine>
-      ) => string | undefined
-    }
-
-    expect(
-      newTitleArg.defaultValue({
-        argumentsToSubmit: {
-          oldName: homeProject.id,
-        },
-      } as unknown as ContextFrom<typeof commandBarMachine>)
-    ).toBe('Client Bracket')
-  })
-
   it('marks the current project directory option as current', () => {
     const systemIOActor = createSystemIOActor([
       createProject({
@@ -659,11 +551,11 @@ describe('project command config', () => {
       enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
     })
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
+    const openCommand = commands.find(
+      (command) => command.name === 'Open project'
     )
 
-    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
+    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
         name: 'Display Bracket',
         value: 'bracket-directory',

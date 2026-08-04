@@ -1,10 +1,3 @@
-import nodeFsSync from 'fs'
-import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
-import nodeFs from 'fs/promises'
-import type { Page } from '@playwright/test'
-import { NIL as uuidNIL } from 'uuid'
-
 import {
   closeOnboardingModalIfPresent,
   createProject,
@@ -15,7 +8,13 @@ import {
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import nodeFsSync from 'fs'
+import nodeFs from 'fs/promises'
+import path from 'path'
+import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -475,8 +474,8 @@ test(
 
       await page.getByLabel('checkmark').last().click()
 
-      await expect(page.getByText('Successfully renamed')).toBeVisible()
-      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
+      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await expect(page.getByText('Project title updated.')).not.toBeVisible()
       await expect(page.getByText('updated project name')).toBeVisible()
     })
 
@@ -496,8 +495,8 @@ test(
 
       await page.keyboard.press('Enter')
 
-      await expect(page.getByText('Successfully renamed')).toBeVisible()
-      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
+      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await expect(page.getByText('Project title updated.')).not.toBeVisible()
 
       await expect(page.getByText('updated name again')).toBeVisible()
     })
@@ -625,40 +624,30 @@ test(
   }
 )
 
-test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
-  test(`Rename from project page`, async ({
+test.describe(`Project management`, { tag: ['@desktop'] }, () => {
+  test(`Edit title from project settings`, async ({
     context,
     page,
     scene,
-    cmdBar,
     fs,
     folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
+    let projectPath = ''
     await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      projectPath = `${dir}/${projectName}`
+      await fs.mkdir(projectPath, { recursive: true })
       const testFileData = await nodeFs.readFile(
         'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
       )
       await fs.writeFile(
-        `${dir}/${projectName}/main.kcl`,
+        `${projectPath}/main.kcl`,
         new Uint8Array(testFileData)
       )
     })
 
-    // Constants and locators
     const projectHomeLink = page.getByTestId('project-link')
-
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_project`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
+    const updatedProjectTitle = `my_project_title_from_settings`
 
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -668,28 +657,24 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       await scene.settled()
     })
 
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
+    await test.step(`Edit the title in project settings`, async () => {
+      await page.getByTestId('project-sidebar-toggle').click()
+      await page.getByTestId('project-settings').click()
 
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
+      const titleInput = page.getByTestId('project-title-setting')
+      await expect(titleInput).toHaveValue(projectName)
+      await titleInput.fill(updatedProjectTitle)
+      await titleInput.press('Enter')
 
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
+      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await page.getByTestId('settings-close-button').click()
     })
 
     const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
-    await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
+    await test.step(`Check the project title in the breadcrumb`, async () => {
       await expect(projectSidebarToggle).toBeVisible()
-      await expect(projectSidebarToggle).toContainText(projectRenamedName)
+      await expect(projectSidebarToggle).toContainText(updatedProjectTitle)
+      expect(await fs.stat(projectPath)).toBeDefined()
     })
   })
 
@@ -745,72 +730,6 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
 
     await test.step(`Check the project was deleted and we navigated home`, async () => {
       await expect(noProjectsMessage).toBeVisible()
-    })
-  })
-  test(`Rename from home page`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn,
-  }, testInfo) => {
-    const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl')
-      )
-      await fs.writeFile(
-        `${dir}/${projectName}/main.kcl`,
-        new Uint8Array(testFileData)
-      )
-    })
-
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_home`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
-
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-      await homePage.projectsLoaded()
-      await expect(projectHomeLink).toBeVisible()
-    })
-
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
-
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
-      await cmdBar.submit()
-
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was renamed`, async () => {
-      await expect(
-        page.getByRole('link', { name: projectRenamedName })
-      ).toBeVisible()
-      await expect(projectHomeLink).not.toHaveText(projectName)
     })
   })
   test(`Delete from home page`, async ({

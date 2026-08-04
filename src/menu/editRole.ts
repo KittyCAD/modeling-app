@@ -1,8 +1,7 @@
-import type { BrowserWindow } from 'electron'
-
 import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
+import type { BrowserWindow } from 'electron'
 
 export const projectEditRole = (
   mainWindow: BrowserWindow
@@ -27,11 +26,6 @@ export const projectEditRole = (
   return {
     label: 'Edit',
     submenu: [
-      {
-        label: 'Rename Project',
-        id: 'Edit.Rename project',
-        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
-      },
       {
         label: 'Delete Project',
         id: 'Edit.Delete project',
@@ -90,11 +84,6 @@ export const modelingEditRole = (
         click: sendMenuAction(mainWindow, 'Edit.Format code'),
       },
       { type: 'separator' },
-      {
-        label: 'Rename Project',
-        id: 'Edit.Rename project',
-        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
-      },
       {
         label: 'Delete Project',
         id: 'Edit.Delete project',

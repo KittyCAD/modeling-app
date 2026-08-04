@@ -1,5 +1,10 @@
-import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
+import {
+  PROJECT_DETAILS_CATEGORY_ID,
+  ProjectTitleSettingsSection,
+} from '@src/components/Settings/ProjectTitleSettingsSection'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -26,13 +31,17 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
+import { Fragment } from 'react/jsx-runtime'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -44,7 +53,9 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout, systemIOActor, userFeatures } = useApp()
+    useSignals()
+    const app = useApp()
+    const { settings, layout, registry, systemIOActor, userFeatures } = app
     const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
@@ -53,6 +64,18 @@ export const AllSettingsFields = forwardRef(
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const executingPath = useAbsoluteFilePath()
+    const currentProject =
+      app.projectSignal.value?.projectIORefSignal.value ??
+      settings.actor.getSnapshot().context.currentProject
+    const homeProjectEntries = registry.signal(
+      homeProjectEntriesValueSpec
+    ).value
+    const homeProjectActions = registry.get(homeProjectActionsService)
+    const currentHomeProject = currentProject
+      ? homeProjectEntries.find(
+          (project) => project.localProjectPath === currentProject.path
+        )
+      : undefined
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -86,6 +109,21 @@ export const AllSettingsFields = forwardRef(
     return (
       <div className="relative overflow-y-auto">
         <div ref={scrollRef} className="flex flex-col gap-4 px-2">
+          {searchParamTab === 'project' && currentProject && (
+            <>
+              <h2
+                id={`category-${PROJECT_DETAILS_CATEGORY_ID}`}
+                className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
+              >
+                Project
+              </h2>
+              <ProjectTitleSettingsSection
+                project={currentProject}
+                projectEntry={currentHomeProject}
+                projectActions={homeProjectActions}
+              />
+            </>
+          )}
           {Object.entries(context)
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings

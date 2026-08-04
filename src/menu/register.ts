@@ -10,8 +10,8 @@ import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
-  SystemIOMachineEvents,
   type SystemIOActor,
+  SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
@@ -69,19 +69,6 @@ export function modelingMenuCallbackMostActions({
         data: {
           groupId: 'projects',
           name: 'Open project',
-        },
-      })
-    } else if (data.menuLabel === 'Edit.Rename project') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Rename project',
-          argDefaultValues: {
-            oldName: currentProject?.name,
-            newName: currentProject?.name,
-          },
         },
       })
     } else if (data.menuLabel === 'Edit.Delete project') {

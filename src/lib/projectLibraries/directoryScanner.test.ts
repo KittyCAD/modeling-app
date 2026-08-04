@@ -362,6 +362,25 @@ describe('directory project scanner', () => {
     )
   })
 
+  it('does not rename an excluded open project directory', () => {
+    const project = createProject({
+      name: 'stable-open-project',
+      path: '/projects/stable-open-project',
+      title: 'Updated project title',
+    })
+    const onProjectDirectoriesRenamed = vi.fn()
+
+    scheduleProjectDirectoryNameSyncFromTitles({
+      projects: [project],
+      excludedProjectPaths: [project.path],
+      onProjectDirectoriesRenamed,
+    })
+
+    expect(mocks.fsZds.readdir).not.toHaveBeenCalled()
+    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
+    expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
+  })
+
   it('reports rename failures without stopping the batch or risking project data', async () => {
     const renameFailure = new Error('Permission denied')
     const onProjectDirectoriesRenamed = vi.fn()

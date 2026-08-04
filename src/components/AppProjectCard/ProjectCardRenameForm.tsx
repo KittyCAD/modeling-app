@@ -43,7 +43,7 @@ export const ProjectCardRenameForm = forwardRef(
             }}
             className="!p-0"
           >
-            <Tooltip position="left">Rename project</Tooltip>
+            <Tooltip position="left">Save title</Tooltip>
           </ActionButton>
           <ActionButton
             Element="button"
