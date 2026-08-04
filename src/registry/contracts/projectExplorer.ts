@@ -45,6 +45,7 @@ export interface ProjectExplorerProjectMenuItemComponentProps {
 type ProjectExplorerProjectMenuItemBase = {
   id: string
   order?: number
+  placement?: 'project-actions' | 'footer'
   disabled?:
     | boolean
     | ((context: ProjectExplorerProjectMenuItemContext) => boolean)

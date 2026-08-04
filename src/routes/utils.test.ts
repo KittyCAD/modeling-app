@@ -1,4 +1,8 @@
-import { getAppVersion, getRefFromVersion } from '@src/routes/utils'
+import {
+  getAppVersion,
+  getRefFromVersion,
+  getReleaseUrl,
+} from '@src/routes/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 beforeEach(() => {
@@ -27,86 +31,38 @@ describe('Routes utility functions', () => {
     })
   })
 
+  it('links a short commit SHA to its GitHub commit', () => {
+    expect(getReleaseUrl('fe581ff')).toBe(
+      'https://github.com/KittyCAD/modeling-app/commit/fe581ff'
+    )
+  })
+
   describe('getAppVersion', () => {
-    it('should return 0.0.0 for web testing', () => {
-      const expected = '0.0.0'
+    it('returns the Electron package version', () => {
       const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return 0.0.0 for desktop testing', () => {
-      const expected = '0.0.0'
-      const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
+        gitCommitSha: undefined,
         isDesktop: true,
       })
-      expect(actual).toBe(expected)
+      expect(actual).toBe('mocked-version')
     })
-    it('should return another mocked packageJson version', () => {
-      const expected = 'mocked-version'
+
+    it('returns the short commit SHA for web builds', () => {
       const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
-        isDesktop: true,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return another mocked packageJson version', () => {
-      const expected = 'mocked-version'
-      const actual = getAppVersion({
-        isTestEnvironment: true,
-        NODE_ENV: 'not-development',
-        VERCEL_ENV: undefined,
-        isDesktop: true,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return dev for local development', () => {
-      const expected = 'dev'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'development',
-        VERCEL_ENV: undefined,
+        gitCommitSha: 'fe581ff1234567890',
         isDesktop: false,
       })
-      expect(actual).toBe(expected)
+      expect(actual).toBe('fe581ff')
     })
-    it('should return dev for Vercel previews', () => {
-      const expected = 'dev'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'production',
-        VERCEL_ENV: 'preview',
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return main', () => {
-      const expected = 'main'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'not-development',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
-    it('should return main because NODE_ENV is production', () => {
-      const expected = 'main'
-      const actual = getAppVersion({
-        isTestEnvironment: false,
-        NODE_ENV: 'production',
-        VERCEL_ENV: undefined,
-        isDesktop: false,
-      })
-      expect(actual).toBe(expected)
-    })
+
+    it.each([undefined, '', 'short'])(
+      'returns no web version when commit metadata is unavailable (%s)',
+      (gitCommitSha) => {
+        const actual = getAppVersion({
+          gitCommitSha,
+          isDesktop: false,
+        })
+        expect(actual).toBeUndefined()
+      }
+    )
   })
 })

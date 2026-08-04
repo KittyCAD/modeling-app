@@ -2,6 +2,11 @@ import { Combobox, Popover, RadioGroup, Transition } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
+import {
+  ZOO_DOMAIN_STAGING,
+  ZOO_DOMAIN_REGULATED,
+  ZOO_DOMAIN_PRODUCTION,
+} from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Fragment, useState } from 'react'
 
@@ -87,13 +92,13 @@ export const AdvancedSignInOptions = ({
 }) => {
   const domains: Domain[] = [
     {
-      name: 'zoo.dev',
+      name: ZOO_DOMAIN_PRODUCTION,
     },
     {
-      name: 'zoogov.dev',
+      name: ZOO_DOMAIN_REGULATED,
     },
     {
-      name: 'dev.zoo.dev',
+      name: ZOO_DOMAIN_STAGING,
     },
   ]
   const [showCustomInput, setShowCustomInput] = useState(false)
