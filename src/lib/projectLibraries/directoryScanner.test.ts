@@ -397,7 +397,6 @@ describe('directory project scanner', () => {
   it('reports rename failures without stopping the batch or risking project data', async () => {
     const renameFailure = new Error('Permission denied')
     const onProjectDirectoriesRenamed = vi.fn()
-    const onProjectDirectoryRenameFailure = vi.fn()
     const projects = [
       createProject({
         name: 'stale-one',
@@ -430,13 +429,10 @@ describe('directory project scanner', () => {
     scheduleProjectDirectoryNameSyncFromTitles({
       projects,
       onProjectDirectoriesRenamed,
-      onProjectDirectoryRenameFailure,
     })
 
     await vi.waitFor(() => expect(mocks.fsZds.rename).toHaveBeenCalledTimes(2))
     expect(mocks.trap.reportRejection).toHaveBeenCalledWith(renameFailure)
-    expect(onProjectDirectoryRenameFailure).toHaveBeenCalledOnce()
-    expect(onProjectDirectoryRenameFailure).toHaveBeenCalledWith(renameFailure)
     expect(mocks.fsZds.rename).toHaveBeenCalledWith(
       '/projects/stale-one',
       '/projects/first-project'
@@ -449,27 +445,6 @@ describe('directory project scanner', () => {
     expect(mocks.fsZds.cp).not.toHaveBeenCalled()
     expect(mocks.fsZds.rm).not.toHaveBeenCalled()
     expect(mocks.fsZds.writeFile).not.toHaveBeenCalled()
-  })
-
-  it('reports directory read failures before syncing project names', async () => {
-    const readFailure = new Error('Directory read failed')
-    const onProjectDirectoryRenameFailure = vi.fn()
-    mocks.fsZds.readdir.mockRejectedValue(readFailure)
-
-    scheduleProjectDirectoryNameSyncFromTitles({
-      projects: [
-        createProject({
-          path: '/blocked-projects/stale-id',
-        }),
-      ],
-      onProjectDirectoryRenameFailure,
-    })
-
-    await vi.waitFor(() =>
-      expect(onProjectDirectoryRenameFailure).toHaveBeenCalledWith(readFailure)
-    )
-    expect(mocks.trap.reportRejection).toHaveBeenCalledWith(readFailure)
-    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
   })
 
   it('uses a unique unix-friendly directory name when the title slug is occupied', async () => {

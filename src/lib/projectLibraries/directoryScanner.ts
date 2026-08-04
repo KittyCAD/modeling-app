@@ -138,11 +138,9 @@ function projectsByDirectory(projects: readonly Project[]) {
 export function scheduleProjectDirectoryNameSyncFromTitles({
   projects,
   onProjectDirectoriesRenamed,
-  onProjectDirectoryRenameFailure,
 }: {
   projects: readonly Project[]
   onProjectDirectoriesRenamed?: () => void
-  onProjectDirectoryRenameFailure?: (error: unknown) => void
 }) {
   const projectsGroupedByDirectory = projectsByDirectory(projects).entries()
   const syncGroups = Array.from(projectsGroupedByDirectory).filter(
@@ -164,16 +162,9 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
     void (async () => {
       let renamed = false
       for (const [projectDirectoryPath, directoryProjects] of syncGroups) {
-        let currentProjectDirectoryEntryNames: Set<string>
-        try {
-          currentProjectDirectoryEntryNames = new Set(
-            await fsZds.readdir(projectDirectoryPath)
-          )
-        } catch (error) {
-          onProjectDirectoryRenameFailure?.(error)
-          reportRejection(error)
-          continue
-        }
+        const currentProjectDirectoryEntryNames = new Set(
+          await fsZds.readdir(projectDirectoryPath)
+        )
 
         for (const project of directoryProjects) {
           let targetProjectDirectoryName: string | undefined
@@ -184,7 +175,6 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
                 projectDirectoryEntryNames: currentProjectDirectoryEntryNames,
               })
           } catch (error) {
-            onProjectDirectoryRenameFailure?.(error)
             reportRejection(error)
             continue
           }

@@ -179,22 +179,6 @@ function reportDirectoryProjectStatFailures({
   })
 }
 
-function reportProjectDirectoryRenameFailure(error: unknown) {
-  reportSystemIOError({
-    error,
-    operation: SystemIOMachineActors.renameProject,
-    risk: 'write',
-    source: 'DirectoryProjectLibrary',
-    dedupeKey:
-      'SystemIO:DirectoryProjectLibrary:rename project:sync_directory_name',
-    extra: {
-      phase: 'sync_directory_name',
-      partialMutationPossible: true,
-      dataLossPossible: false,
-    },
-  })
-}
-
 export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
 }
@@ -595,8 +579,6 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         ) {
           scheduleProjectDirectoryNameSyncFromTitles({
             projects,
-            onProjectDirectoryRenameFailure:
-              reportProjectDirectoryRenameFailure,
             onProjectDirectoriesRenamed: () => {
               service.actor.send({
                 type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -701,8 +683,6 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 if (!signal.aborted) {
                   scheduleProjectDirectoryNameSyncFromTitles({
                     projects,
-                    onProjectDirectoryRenameFailure:
-                      reportProjectDirectoryRenameFailure,
                     onProjectDirectoriesRenamed:
                       invalidateConfiguredProjectLibraryEntries,
                   })
