@@ -187,7 +187,6 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedPath = '1 path'
       const selectedSweep = '1 sweep'
       async function selectBracket() {
         if (selectionType === 'scene') {
@@ -259,7 +258,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
           },
           commandName: 'Translate',
           reviewValidationError:
@@ -271,7 +270,7 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '0',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -282,7 +281,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
             X: '1',
           },
           commandName: 'Translate',
@@ -356,7 +355,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
           },
           commandName: 'Scale',
           reviewValidationError:
@@ -368,7 +367,7 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '1',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -379,7 +378,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedPath,
+            Objects: selectedSweep,
             X: '1.1',
           },
           commandName: 'Scale',
