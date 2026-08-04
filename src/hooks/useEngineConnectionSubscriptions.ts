@@ -8,9 +8,11 @@ import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import {
+  engineTopologyFallbackFromReference,
   getCodeRefsFromEntityReference,
   getEventForQueryEntityTypeWithPoint,
   normalizeEntityReference,
+  showSketchOnImportForFace,
 } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
@@ -204,6 +206,20 @@ export function useEngineConnectionSubscriptions() {
             )
             if (!stateRef.current.matches('Sketch no face')) return
             if (event) send(event)
+
+            const topology = engineTopologyFallbackFromReference(data.reference)
+            if (
+              entityRef.type === 'face' &&
+              topology &&
+              showSketchOnImportForFace(
+                topology.parentId,
+                kclManager.artifactGraph,
+                kclManager.astSignal.value,
+                wasmInstance
+              )
+            ) {
+              return
+            }
 
             const planeId =
               entityRef.type === 'plane'
