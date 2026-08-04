@@ -28,9 +28,10 @@ where
     E: IsRetryable + std::fmt::Display,
 {
     let mut retries_remaining = config.retries;
+    // TODO: Maybe change this to a for loop?
     loop {
         // Run the closure to execute.
-        let exec_result = execute().await;
+        let exec_result = Box::pin(execute()).await;
 
         if retries_remaining > 0
             && let Err(error) = &exec_result

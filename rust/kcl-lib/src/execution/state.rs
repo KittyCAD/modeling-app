@@ -107,13 +107,17 @@ impl GlobalState {
         for (module_id, module_info) in &self.module_infos {
             match &module_info.repr {
                 ModuleRepr::Root => {}
-                ModuleRepr::Kcl(_, Some(outcome)) => {
-                    operations.insert(*module_id, outcome.artifacts.operations.clone());
+                ModuleRepr::Kcl(_, cache) => {
+                    if let Some(outcome) = cache.as_ref() {
+                        operations.insert(*module_id, outcome.artifacts.operations.clone());
+                    }
                 }
-                ModuleRepr::Foreign(_, Some((_, artifacts))) => {
-                    operations.insert(*module_id, artifacts.operations.clone());
+                ModuleRepr::Foreign(_, cache) => {
+                    if let Some((_, artifacts)) = cache.as_ref() {
+                        operations.insert(*module_id, artifacts.operations.clone());
+                    }
                 }
-                ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+                ModuleRepr::Dummy => {}
             }
         }
 
@@ -1109,15 +1113,19 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some(outcome)) => {
-                    new_commands.extend(outcome.artifacts.process_commands());
-                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                ModuleRepr::Kcl(_, cache) => {
+                    if let Some(outcome) = cache.as_mut() {
+                        new_commands.extend(outcome.artifacts.process_commands());
+                        new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                    }
                 }
-                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
-                    new_commands.extend(module_artifacts.process_commands());
-                    new_exec_artifacts.extend(module_artifacts.artifacts.clone());
+                ModuleRepr::Foreign(_, cache) => {
+                    if let Some((_, module_artifacts)) = cache.as_mut() {
+                        new_commands.extend(module_artifacts.process_commands());
+                        new_exec_artifacts.extend(module_artifacts.artifacts.clone());
+                    }
                 }
-                ModuleRepr::Root | ModuleRepr::Kcl(_, None) | ModuleRepr::Foreign(_, None) | ModuleRepr::Dummy => {}
+                ModuleRepr::Root | ModuleRepr::Dummy => {}
             }
         }
         // Take from the module artifacts so that we don't try to process them
