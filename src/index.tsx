@@ -13,6 +13,7 @@ import {
 } from '@src/lib/autoUpdate'
 import { AppContext, app } from '@src/lib/boot'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLifecycleClientReporting'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { markOnce } from '@src/lib/performance'
@@ -26,7 +27,7 @@ launchApp(app)
 function launchApp(app: App) {
   initSingletonBehavior(app)
   if (window.electron) {
-    initElectronBehavior(window.electron)
+    initElectronBehavior(window.electron, app)
   }
   mountAppToReact(app)
 }
@@ -59,7 +60,12 @@ function initSingletonBehavior(app: App) {
 }
 
 /** initialize behaviors that rely on electron (this is only available on desktop) */
-function initElectronBehavior(electron: NonNullable<typeof window.electron>) {
+function initElectronBehavior(
+  electron: NonNullable<typeof window.electron>,
+  app: App
+) {
+  initializeElectronLifecycleClientReporting(electron, app.auth.actor)
+
   // Monkey patch to prevent issues in the web app with automated browser translation
   // This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
   // we roll out our own i18n solution and can disable browser translation altogether.
