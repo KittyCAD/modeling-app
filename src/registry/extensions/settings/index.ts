@@ -6,7 +6,11 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type { ProjectTitleCommandService } from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -15,6 +19,10 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -38,6 +46,34 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
 
+  const getHomeProjectEntry = (project: Project) =>
+    ctx.valueSpecs
+      .get(homeProjectEntriesValueSpec)
+      .find((entry) => entry.localProjectPath === project.path)
+
+  const projectTitleCommand: ProjectTitleCommandService = {
+    getTitle: (project) => {
+      const entry = getHomeProjectEntry(project)
+      return entry
+        ? getHomeProjectDisplayName(entry)
+        : getProjectDisplayName(project)
+    },
+    canUpdateTitle: (project) => {
+      const entry = getHomeProjectEntry(project)
+      const actions = ctx.services.optional(homeProjectActionsService)
+      return Boolean(entry && actions?.canRename(entry))
+    },
+    updateTitle: (project, title) => {
+      const entry = getHomeProjectEntry(project)
+      const actions = ctx.services.optional(homeProjectActionsService)
+      if (!entry || !actions?.canRename(entry)) {
+        return Promise.reject(new Error('This project title cannot be edited.'))
+      }
+
+      return actions.rename(entry, title)
+    },
+  }
+
   const ensureActor = () => {
     if (settingsActor) {
       return settingsActor
@@ -58,6 +94,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
         defaultProjectLibraries,
         projectLibrarySettingDefaultPolicies,
         extensionSettings,
+        projectTitleCommand,
         wasmInstancePromise: getWasmPromise(),
       },
     }).start()

@@ -625,10 +625,11 @@ test(
 )
 
 test.describe(`Project management`, { tag: ['@desktop'] }, () => {
-  test(`Edit title from project settings`, async ({
+  test(`Edit title from project settings and the command bar`, async ({
     context,
     page,
     scene,
+    cmdBar,
     fs,
     folderSetupFn,
   }, testInfo) => {
@@ -647,7 +648,8 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
     })
 
     const projectHomeLink = page.getByTestId('project-link')
-    const updatedProjectTitle = `my_project_title_from_settings`
+    const settingsProjectTitle = `my_project_title_from_settings`
+    const commandProjectTitle = `my_project_title_from_command_bar`
 
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -663,7 +665,7 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
 
       const titleInput = page.getByTestId('project-title-setting')
       await expect(titleInput).toHaveValue(projectName)
-      await titleInput.fill(updatedProjectTitle)
+      await titleInput.fill(settingsProjectTitle)
       await titleInput.press('Enter')
 
       await expect(page.getByText('Project title updated.')).toBeVisible()
@@ -673,7 +675,20 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
     const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     await test.step(`Check the project title in the breadcrumb`, async () => {
       await expect(projectSidebarToggle).toBeVisible()
-      await expect(projectSidebarToggle).toContainText(updatedProjectTitle)
+      await expect(projectSidebarToggle).toContainText(settingsProjectTitle)
+    })
+
+    await test.step(`Edit the title through its settings command`, async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Settings · project · title')
+      await expect(cmdBar.currentArgumentInput).toHaveValue(
+        settingsProjectTitle
+      )
+      await cmdBar.currentArgumentInput.fill(commandProjectTitle)
+      await cmdBar.progressCmdBar()
+
+      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await expect(projectSidebarToggle).toContainText(commandProjectTitle)
       expect(await fs.stat(projectPath)).toBeDefined()
     })
   })

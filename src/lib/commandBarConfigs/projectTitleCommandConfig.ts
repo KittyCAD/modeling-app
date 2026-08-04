@@ -1,0 +1,76 @@
+import type { Command } from '@src/lib/commandTypes'
+import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
+import type { Project } from '@src/lib/project'
+import toast from 'react-hot-toast'
+
+export const PROJECT_TITLE_COMMAND_NAME = 'project.title'
+
+export interface ProjectTitleCommandService {
+  getTitle: (project: Project) => string
+  canUpdateTitle: (project: Project) => boolean
+  updateTitle: (project: Project, title: string) => Promise<void>
+}
+
+function validateProjectTitle(value: unknown) {
+  const title = String(value ?? '').trim()
+  if (!title) {
+    return 'Project title cannot be empty.'
+  }
+  if (title.length > MAX_PROJECT_NAME_LENGTH) {
+    return `Project title must be ${MAX_PROJECT_NAME_LENGTH} characters or fewer.`
+  }
+
+  return true
+}
+
+export function createProjectTitleCommand({
+  getCurrentProject,
+  service,
+}: {
+  getCurrentProject: () => Project | undefined
+  service?: ProjectTitleCommandService
+}): Command | null {
+  if (!getCurrentProject() || !service) {
+    return null
+  }
+
+  return {
+    name: PROJECT_TITLE_COMMAND_NAME,
+    displayName: 'Settings · project · title',
+    description: 'The name shown for this project throughout Design Studio.',
+    groupId: 'settings',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: (data) => {
+      const project = getCurrentProject()
+      const validation = validateProjectTitle(data?.value)
+      if (validation !== true) {
+        toast.error(validation)
+        return
+      }
+      if (!project || !service.canUpdateTitle(project)) {
+        toast.error('This project title cannot be edited.')
+        return
+      }
+
+      const title = String(data?.value).trim()
+      if (title === service.getTitle(project)) {
+        return
+      }
+
+      return service.updateTitle(project, title)
+    },
+    args: {
+      value: {
+        displayName: 'Title',
+        required: true,
+        inputType: 'string',
+        defaultValue: () => {
+          const project = getCurrentProject()
+          return project ? service.getTitle(project) : ''
+        },
+        validation: async ({ data }) => validateProjectTitle(data),
+      },
+    },
+  }
+}
