@@ -356,7 +356,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedSweep,
+            Objects: selectedPath,
           },
           commandName: 'Scale',
           reviewValidationError:
@@ -368,7 +368,7 @@ test.describe(
           currentArgKey: 'x',
           currentArgValue: '1',
           headerArguments: {
-            Objects: selectedSweep,
+            Objects: selectedPath,
             X: '',
           },
           highlightedHeaderArg: 'x',
@@ -379,7 +379,7 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Objects: selectedSweep,
+            Objects: selectedPath,
             X: '1.1',
           },
           commandName: 'Scale',

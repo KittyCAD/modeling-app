@@ -225,7 +225,8 @@ export function useEngineConnectionSubscriptions() {
               entityRef.type === 'plane'
                 ? entityRef.plane_id
                 : entityRef.type === 'face'
-                  ? entityRef.face_id
+                  ? ((engineEvent.data as { entity_id?: string }).entity_id ??
+                    entityRef.face_id)
                   : undefined
             if (!planeId) return
 

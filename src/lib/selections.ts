@@ -1783,6 +1783,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
+    ...(clickEntityId ? { engineEntityId: clickEntityId } : {}),
     ...(engineTopologyFallbackResolved
       ? { engineTopologyFallback: engineTopologyFallbackResolved }
       : {}),
