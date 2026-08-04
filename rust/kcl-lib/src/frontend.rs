@@ -13305,6 +13305,9 @@ sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_add_final_tangent_to_exhaust_cam_issue_11370() {
         clear_mem_cache().await;
+        // The center guess for arc2 is the previously solved tangent position. In sketch mode,
+        // adding a constraint starts from the currently solved sketch rather than a cold,
+        // under-constrained position.
         let initial_source = r#"
 @settings(defaultLengthUnit = in, experimentalFeatures = allow)
 
@@ -13341,7 +13344,7 @@ exhaustProfile = sketch(on = XY) {
   arc1 = arc(start = [var -0.22in, var 0.87in], end = [var -0.62in, var 0.4in], center = [var 0.01in, var 0.27in])
   coincident([point1, arc1])
   point2 = point(at = [var 0.54in, var 0.72in])
-  arc2 = arc(start = [var 0.69in, var 0.41in], end = [var 0.28in, var 0.89in], center = [var 0.08in, var 0.3in])
+  arc2 = arc(start = [var 0.69in, var 0.41in], end = [var 0.28in, var 0.89in], center = [var -0.98in, var -0.53in])
   coincident([point2, arc2])
   coincident([leftFlank.end, arc1.end])
   coincident([leftFlank.start, arc1.start])
@@ -13395,35 +13398,70 @@ exhaustProfile = sketch(on = XY) {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_four_shared_endpoint_tangencies_issue_11370() {
         clear_mem_cache().await;
+        // Fix the sketch's global scale and start from a solved three-tangent baseline. The
+        // fourth tangent is added below through the same frontend path used by sketch mode.
         let source = r#"
 sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -1.4in, var 0.75in], end = [var 1.41in, var 0.73in], center = [var 0in, var 0in])
+  arc1 = arc(start = [var -1.23in, var 1.01in], end = [var 1.47in, var 0.61in], center = [var 0in, var 0in])
+  radius(arc1) == 1.5882380174in
   coincident([arc1.center, ORIGIN])
-  line1 = line(start = [var 1.41in, var 0.73in], end = [var -0in, var 0in], construction = true)
+  line1 = line(start = [var 1.47in, var 0.61in], end = [var -0in, var 0in], construction = true)
   coincident([line1.end, arc1.center])
-  line2 = line(start = [var -1.39in, var 0.75in], end = [var -0in, var 0in], construction = true)
+  line2 = line(start = [var -1.23in, var 1.01in], end = [var -0in, var 0in], construction = true)
   coincident([line2.end, line1.end])
   angle([line2, line1]) == 242deg
   coincident([line1.start, arc1.end])
   coincident([line2.start, arc1.start])
-  arc2 = arc(start = [var -0.49in, var 1.85in], end = [var -1.46in, var 0.99in], center = [var 1.92in, var -1.86in])
-  arc3 = arc(start = [var 0.57in, var 2.05in], end = [var -0.49in, var 1.85in], center = [var 0.1in, var 1.01in])
+  arc2 = arc(start = [var -1.33in, var 0.88in], end = [var -1.23in, var 1.01in], center = [var 2.1in, var -1.72in])
+  arc3 = arc(start = [var 1.25in, var 0.96in], end = [var -1.33in, var 0.88in], center = [var -0.01in, var -0.12in])
   coincident([arc2.start, arc3.end])
   tangent([arc2, arc3])
-  arc4 = arc(start = [var 1.36in, var 0.8in], end = [var 0.21in, var 1.86in], center = [var 0.26in, var 0.93in])
+  arc4 = arc(start = [var 1.47in, var 0.61in], end = [var 1.25in, var 0.96in], center = [var 0.26in, var 0.11in])
   coincident([arc4.start, line1.start])
   coincident([arc3.start, arc4.end])
   tangent([arc3, arc4])
   coincident([line2.start, arc2.end])
   tangent([arc1, arc2])
-  tangent([arc1, arc4])
 }
 "#;
-        let program = Program::parse_no_errs(source).unwrap();
+        let program = Program::parse(source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
         let mock_ctx = ExecutorContext::new_mock(None).await;
-        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let version = Version(0);
 
-        assert!(outcome.issues.is_empty(), "{:#?}", outcome.issues);
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let arcs = sketch
+            .segments
+            .iter()
+            .filter(|id| {
+                matches!(
+                    frontend.scene_graph.objects.get(id.0).map(|object| &object.kind),
+                    Some(ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    })
+                )
+            })
+            .copied()
+            .collect::<Vec<_>>();
+        assert_eq!(arcs.len(), 4);
+
+        let constraint = Constraint::Tangent(Tangent {
+            input: vec![arcs[0], arcs[3]],
+        });
+        let (source_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+
+        assert!(source_delta.text.contains("tangent([arc1, arc4])"));
+        assert!(
+            scene_delta.exec_outcome.issues.is_empty(),
+            "{:#?}",
+            scene_delta.exec_outcome.issues
+        );
 
         mock_ctx.close().await;
     }
