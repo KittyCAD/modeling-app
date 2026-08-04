@@ -6,7 +6,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
+import {
+  getCloudProjectLibraryMaterializationDirectoryPath,
+  getDefaultCloudProjectDirectoryPath,
+} from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -119,12 +122,11 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
-  const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+    new Error('Missing WASM promise registry value.')
 
   const getProjectOperation = <
     OperationName extends keyof ProjectLibraryTypeOperations,
@@ -289,21 +291,28 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      const targetProjectDirectoryPath = openProject
+        ? await getCloudProjectLibraryMaterializationDirectoryPath(
+            openProject.library
+          )
+        : await getDefaultCloudProjectDirectoryPath()
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
         project.remoteProjectId,
-        await getDefaultCloudProjectDirectoryPath()
+        targetProjectDirectoryPath
       )
       if (!syncedProject) {
         return undefined
       }
 
+      const wasmInstancePromise = getWasmPromise()
+      if (wasmInstancePromise instanceof Error) {
+        return Promise.reject(wasmInstancePromise)
+      }
+
       const projectInfo = await getProjectInfo(
         syncedProject.projectPath,
-        await getWasmPromise()
+        await wasmInstancePromise
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
       return { defaultFile: projectInfo.default_file }
     },
     duplicate: async (project) => {
@@ -446,10 +455,12 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         const snapshot = service.actor.getSnapshot()
         const context = snapshot.context
         const projects = context.folders
-        entries.value = localHomeProjectEntriesFromProjects(
-          projects,
-          DEFAULT_PROJECT_LIBRARY_ID
-        )
+        if (projects !== undefined) {
+          entries.value = localHomeProjectEntriesFromProjects(
+            projects,
+            DEFAULT_PROJECT_LIBRARY_ID
+          )
+        }
 
         if (
           projects &&
@@ -489,12 +500,32 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
+function areProjectLibrariesEqual(
+  left: readonly ProjectLibrary[],
+  right: readonly ProjectLibrary[]
+) {
+  return (
+    left.length === right.length &&
+    left.every((library, index) => {
+      const otherLibrary = right[index]
+      return (
+        otherLibrary !== undefined &&
+        library.id === otherLibrary.id &&
+        library.title === otherLibrary.title &&
+        library.path === otherLibrary.path &&
+        library.type === otherLibrary.type &&
+        library.order === otherLibrary.order
+      )
+    })
+  )
+}
+
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+    new Error('Missing WASM promise registry value.')
   const refreshLocalProjectEntries = () => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -524,9 +555,14 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           settingsDetails: DirectoryProjectLibrarySettingsDetails,
           hideInSettingsOnPlatform: 'web',
           readEntries: async ({ library, signal }) => {
+            const wasmInstancePromise = getWasmPromise()
+            if (wasmInstancePromise instanceof Error) {
+              return Promise.reject(wasmInstancePromise)
+            }
+
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
-              wasmInstancePromise: getWasmPromise(),
+              wasmInstancePromise,
               signal,
             })
             if (!signal.aborted) {
@@ -546,11 +582,16 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 requestedProjectName,
                 requestedProjectTitle,
               }) => {
+                const wasmInstancePromise = getWasmPromise()
+                if (wasmInstancePromise instanceof Error) {
+                  return Promise.reject(wasmInstancePromise)
+                }
+
                 const project = await createProjectInLocalDirectory({
                   projectDirectoryPath: library.path,
                   requestedProjectName,
                   requestedProjectTitle,
-                  wasmInstancePromise: getWasmPromise(),
+                  wasmInstancePromise,
                 })
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -574,6 +615,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 if (!project.localProjectName || !project.localProjectPath) {
                   return undefined
                 }
+                const wasmInstancePromise = getWasmPromise()
+                if (wasmInstancePromise instanceof Error) {
+                  return Promise.reject(wasmInstancePromise)
+                }
 
                 const result = await duplicateProjectInDirectory({
                   source: {
@@ -583,7 +628,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   },
                   projectDirectoryPath: library.path,
                   requestedProjectTitle: getHomeProjectDisplayName(project),
-                  wasmInstance: await getWasmPromise(),
+                  wasmInstance: await wasmInstancePromise,
                 })
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -694,6 +739,9 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
   let loadId = 0
+  let lastScannedConfiguredLibraries: ProjectLibrary[] | undefined
+  let lastScannedLibraryTypes: typeof libraryTypes.value | undefined
+  let lastScannedInvalidation = -1
 
   const updateEntries = () => {
     entries.value = Array.from(entriesByLibraryId.values()).flat()
@@ -712,7 +760,30 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       // Directory library operations mutate the filesystem without changing
       // settings or library type registrations. Read this signal so known
       // mutations can invalidate and rescan configured library entries.
-      readConfiguredProjectLibraryEntriesInvalidation()
+      const invalidation = readConfiguredProjectLibraryEntriesInvalidation()
+
+      const configuredLibraries =
+        currentSettings !== undefined
+          ? projectLibrariesFromSettings(
+              currentSettings.app.libraries.current
+            ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+          : []
+
+      if (
+        lastScannedLibraryTypes === typeById &&
+        lastScannedInvalidation === invalidation &&
+        lastScannedConfiguredLibraries &&
+        areProjectLibrariesEqual(
+          lastScannedConfiguredLibraries,
+          configuredLibraries
+        )
+      ) {
+        return
+      }
+
+      lastScannedLibraryTypes = typeById
+      lastScannedInvalidation = invalidation
+      lastScannedConfiguredLibraries = configuredLibraries
       const nextLoadId = ++loadId
 
       abortController?.abort()
@@ -720,14 +791,6 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       abortController = loadController
       entriesByLibraryId.clear()
       entries.value = []
-
-      if (!currentSettings) {
-        return
-      }
-
-      const configuredLibraries = projectLibrariesFromSettings(
-        currentSettings.app.libraries.current
-      ).filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
       for (const library of configuredLibraries) {
         const readEntries = typeById.get(library.type)?.readEntries

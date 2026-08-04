@@ -67,7 +67,8 @@ export type CloudSyncRegistryService = {
   ) => number | null
   resolveProjectConflict: (
     projectPath: string,
-    resolution: CloudSyncConflictResolution
+    resolution: CloudSyncConflictResolution,
+    reviewedRemoteRevision?: CloudSyncProjectMetadata['remoteRevision']
   ) => Promise<void>
 }
 

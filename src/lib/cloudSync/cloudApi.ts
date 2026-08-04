@@ -355,12 +355,14 @@ export async function updateRemoteProject({
   projectId,
   files,
   expectedRevision,
+  entrypointPath,
 }: {
   config: CloudSyncConfig
   projectPath: string
   projectId: string
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
+  entrypointPath?: string
 }) {
   return cloudJson<RemoteProject>(
     config,
@@ -370,20 +372,30 @@ export async function updateRemoteProject({
     ),
     {
       method: 'PUT',
-      body: buildProjectFormData(projectPath, files, expectedRevision),
+      body: buildProjectFormData(projectPath, files, {
+        expectedRevision,
+        entrypointPath,
+      }),
     }
   )
+}
+
+type BuildProjectFormDataOptions = {
+  expectedRevision?: Revision
+  entrypointPath?: string
 }
 
 function buildProjectFormData(
   projectPath: string,
   files: ProjectArchiveFile[],
-  expectedRevision?: Revision
+  options?: Revision | BuildProjectFormDataOptions
 ) {
+  const uploadOptions =
+    typeof options === 'string' ? { expectedRevision: options } : options
   const uploadPayload = prepareProjectFilesForCloudUpload(
     projectPath,
     files,
-    expectedRevision
+    uploadOptions
   )
 
   const formData = new FormData()
