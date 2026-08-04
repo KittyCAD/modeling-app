@@ -1556,6 +1556,43 @@ p3 = [342.51, 216.38],
           ]
         )
 
+        sendSceneCommand.mockClear()
+
+        actor.send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          },
+        })
+
+        expect(actor.getSnapshot().context.selectionRanges).toEqual({
+          graphSelections: [
+            {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          ],
+          otherSelections: [],
+        })
+        expect(sendSceneCommand.mock.calls.map(([event]) => event.cmd)).toEqual(
+          [
+            {
+              type: 'select_entity',
+              entities: [{ type: 'solid3d', solid3d_id: 'body-id' }],
+            },
+          ]
+        )
+
         actor.stop()
       })
     })

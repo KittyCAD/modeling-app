@@ -1767,7 +1767,7 @@ export const modelingMachine = setup({
           } else if (!isEmpty && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [sel],
-              otherSelections: selectionRanges.otherSelections || [],
+              otherSelections: [],
             }
           } else if (!isEmpty && kclManager.isShiftDown) {
             // Handle Shift key – compare V2 to V2 via selectionV2Equals
