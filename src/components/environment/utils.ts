@@ -1,10 +1,14 @@
+import { ZOO_DOMAIN_STAGING, ZOO_DOMAIN_PRODUCTION } from '@src/lib/constants'
+
+const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '0.0.0.0']
+
 export function getEnvironmentLabel(
   domain: string | undefined,
   urls: URL[]
 ): string | undefined {
   let label = domain
   for (const url of urls) {
-    if (['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname)) {
+    if (LOCAL_HOSTNAMES.includes(url.hostname)) {
       label = `${label} + local`
     } else if (url.search) {
       label = `${label} + ${url.search.substring(1)}`
@@ -14,19 +18,19 @@ export function getEnvironmentLabel(
 }
 
 export function isNonStandardEnvironment(
-  label: string | undefined,
-  production: boolean
+  environmentLabel: string | undefined,
+  productionApp: boolean
 ): boolean {
-  if (!label) {
+  if (!environmentLabel) {
     return false
   }
-  if (label.includes('+')) {
+  if (environmentLabel.includes('+')) {
     return true
   }
-  if (!production && label === 'zoo.dev') {
+  if (productionApp && environmentLabel === ZOO_DOMAIN_STAGING) {
     return true
   }
-  if (production && label === 'dev.zoo.dev') {
+  if (!productionApp && environmentLabel === ZOO_DOMAIN_PRODUCTION) {
     return true
   }
   return false
