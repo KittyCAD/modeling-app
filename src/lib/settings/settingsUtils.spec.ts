@@ -12,7 +12,11 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
-import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
+import {
+  getDefaultCloudProjectLibrarySetting,
+  getDefaultProjectLibrarySettings,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+} from '@src/lib/projectLibraries'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
@@ -441,6 +445,50 @@ describe('project settings serialization regression', () => {
 
     expect(serializedToml).toContain('[settings.project]')
     expect(serializedToml).toContain('directory = "/library-projects"')
+  })
+
+  it('omits the default personal cloud library path when serializing settings', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            libraries: [
+              {
+                title: 'Personal Cloud',
+                path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+                type: 'cloud',
+              },
+            ],
+          },
+        },
+        projectLibrariesExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('[[settings.app.libraries]]')
+    expect(serializedToml).toContain('title = "Personal Cloud"')
+    expect(serializedToml).toContain('type = "cloud"')
+    expect(serializedToml).not.toContain('path =')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      projectLibrariesExtensionSettings
+    )
+    expect(parsedPayload.app?.libraries).toEqual([
+      getDefaultCloudProjectLibrarySetting(),
+    ])
   })
 
   it('preserves extension-contributed plugin settings through wasm round-trip', async () => {

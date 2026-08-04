@@ -1911,7 +1911,6 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   })
 
   test(`Translate point-and-click with segment-to-body coercion`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1930,11 +1929,9 @@ box = extrude(profile, length = 30)`
     const segmentToSelect = `yLine(length = 20)`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
       await scene.settled()
     })
 
@@ -1976,6 +1973,37 @@ box = extrude(profile, length = 30)`
           reviewValidationError:
             'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
+        await expect(cmdBar.cmdBarElement.getByRole('alert')).toContainText(
+          'Check these arguments'
+        )
+
+        const codemodToggle = cmdBar.cmdBarElement.getByRole('button', {
+          name: 'Code changes',
+        })
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'false')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).not.toBeAttached()
+
+        await codemodToggle.click()
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'true')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).toBeVisible()
+        await expect(
+          cmdBar.cmdBarElement.getByRole('textbox', {
+            name: 'Current file',
+          })
+        ).not.toContainText('translate(box)')
+        const proposedFile = cmdBar.cmdBarElement.getByRole('textbox', {
+          name: 'Proposed file',
+        })
+        await expect(proposedFile).toContainText('translate(box)')
+        await proposedFile.selectText()
+        await page.keyboard.press('ControlOrMeta+C')
+        await expect
+          .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+          .toContain('translate(box)')
       })
 
       await test.step('Add x translation', async () => {
@@ -2004,6 +2032,11 @@ box = extrude(profile, length = 30)`
           },
           commandName: 'Translate',
         })
+        await expect(
+          cmdBar.cmdBarElement.getByRole('button', {
+            name: 'Code changes',
+          })
+        ).not.toBeAttached()
         await cmdBar.submit()
         await scene.settled()
       })

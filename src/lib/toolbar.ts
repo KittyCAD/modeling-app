@@ -1175,7 +1175,7 @@ export function buildToolbarConfig(
               icon: 'move',
               status: 'available',
               title: 'Translate',
-              description: 'Apply a translation to a solid or sketch.',
+              description: 'Apply a translation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -1215,7 +1215,7 @@ export function buildToolbarConfig(
               icon: 'scale',
               status: 'available',
               title: 'Scale',
-              description: 'Apply scaling to a solid or sketch.',
+              description: 'Apply scaling to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',

@@ -234,7 +234,8 @@ function hasPersonalCloudLibrarySetting(app: App) {
     .app.libraries.current.some(
       (library) =>
         library.type === defaultCloudLibrary.type &&
-        library.path === defaultCloudLibrary.path
+        library.path === defaultCloudLibrary.path &&
+        library.source === defaultCloudLibrary.source
     )
 }
 
