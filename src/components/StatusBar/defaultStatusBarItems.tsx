@@ -28,7 +28,7 @@ export const defaultGlobalStatusBarItems = ({
   hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  ...(appVersion && (isDesktop() || hasCloudSyncFeature)
+  ...(appVersion && isDesktop()
     ? [
         {
           id: 'version',

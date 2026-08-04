@@ -31,28 +31,25 @@ describe('defaultGlobalStatusBarItems', () => {
     mockedIsDesktop.mockReset()
   })
 
-  it.each([
-    ['web with cloud sync', false, true],
-    ['desktop without cloud sync', true, false],
-  ])(
-    'shows the app version in the %s status bar',
-    (_, desktop, hasCloudSyncFeature) => {
-      const appVersion = 'fe581ff'
-      mockedIsDesktop.mockReturnValue(desktop)
+  it('shows the app version in the desktop status bar', () => {
+    const appVersion = '1.2.3'
+    mockedIsDesktop.mockReturnValue(true)
 
-      expect(
-        defaultGlobalStatusBarItems({ appVersion, hasCloudSyncFeature })[0]
-      ).toEqual({
-        id: 'version',
-        element: 'externalLink',
-        label: appVersion,
-        href: getReleaseUrl(appVersion),
-        toolTip: {
-          children: 'View this version on GitHub',
-        },
-      })
-    }
-  )
+    expect(
+      defaultGlobalStatusBarItems({
+        appVersion,
+        hasCloudSyncFeature: false,
+      })[0]
+    ).toEqual({
+      id: 'version',
+      element: 'externalLink',
+      label: appVersion,
+      href: getReleaseUrl(appVersion),
+      toolTip: {
+        children: 'View this version on GitHub',
+      },
+    })
+  })
 
   it('shows the desktop app download in the web status bar without cloud sync', () => {
     mockedIsDesktop.mockReturnValue(false)
@@ -66,11 +63,11 @@ describe('defaultGlobalStatusBarItems', () => {
     })
   })
 
-  it('shows no version or download item in production web with cloud sync', () => {
+  it('shows no version or download item in web with cloud sync', () => {
     mockedIsDesktop.mockReturnValue(false)
 
     const items = defaultGlobalStatusBarItems({
-      appVersion: '',
+      appVersion: 'fe581ff',
       hasCloudSyncFeature: true,
     })
 
