@@ -1587,7 +1587,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: 'Set scale on solid or sketch.',
+    description: 'Set scale on a solid, sketch, or helix.',
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1597,6 +1597,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,

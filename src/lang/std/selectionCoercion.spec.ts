@@ -1,5 +1,8 @@
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import { coerceSelectionsToBody } from '@src/lang/std/selectionCoercion'
+import {
+  coerceSelectionsForBodyOnlySelectionTypes,
+  coerceSelectionsToBody,
+} from '@src/lang/std/selectionCoercion'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
@@ -188,6 +191,132 @@ describe('coerceSelectionsToBody', () => {
         solid3d_id: 'sweep-1',
       })
     }
+  })
+
+  it('should coerce a segment when the command also accepts helices', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set('path-1', {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    })
+    artifactGraph.set('sweep-1', {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    })
+    artifactGraph.set('segment-1', {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    })
+
+    const result = coerceSelectionsForBodyOnlySelectionTypes(
+      {
+        graphSelections: [{ codeRef: { range: [10, 20, 0], pathToNode: [] } }],
+        otherSelections: [],
+      },
+      ['path', 'sweep', 'compositeSolid', 'helix'],
+      artifactGraph
+    )
+
+    expect(result?.graphSelections[0].entityRef).toEqual({
+      type: 'solid3d',
+      solid3d_id: 'sweep-1',
+    })
+  })
+
+  it('should preserve a helix while coercing another selection to a body', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set('path-1', {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    })
+    artifactGraph.set('sweep-1', {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    })
+    artifactGraph.set('segment-1', {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    })
+    artifactGraph.set('helix-1', {
+      type: 'helix',
+      id: 'helix-1',
+      codeRef: {
+        range: [200, 300, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      axisId: 'axis-1',
+      trajectorySweepId: null,
+      consumed: false,
+    })
+
+    const result = coerceSelectionsForBodyOnlySelectionTypes(
+      {
+        graphSelections: [
+          { codeRef: { range: [10, 20, 0], pathToNode: [] } },
+          { codeRef: { range: [200, 300, 0], pathToNode: [] } },
+        ],
+        otherSelections: [],
+      },
+      ['path', 'sweep', 'compositeSolid', 'helix'],
+      artifactGraph
+    )
+
+    expect(result?.graphSelections).toHaveLength(2)
+    expect(result?.graphSelections).toContainEqual({
+      codeRef: { range: [200, 300, 0], pathToNode: [] },
+    })
+    expect(result?.graphSelections).toContainEqual(
+      expect.objectContaining({
+        entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' },
+      })
+    )
   })
 
   it('should keep sweep (body with entityRef) as body selection', () => {

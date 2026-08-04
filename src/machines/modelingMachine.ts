@@ -3227,45 +3227,12 @@ export const modelingMachine = setup({
                 index: primitiveFaceSelection.primitiveIndex,
               }
 
-        if (primitiveFaceSelection && !primitiveFace) {
-          return reject(
-            new Error('Could not resolve the selected primitive face in KCL.')
-          )
-        }
-
-        if (primitiveFaceSelection) {
-          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
-            primitiveFaceSelection.entityId
-          )
-          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
-            return reject(
-              new Error(
-                'Could not get details for the selected primitive face.'
-              )
-            )
-          }
-          const { origin, z_axis, y_axis } = faceInfo
-          result = {
-            type: 'extrudeFace',
-            faceId: primitiveFaceSelection.entityId,
-            faceInfo: { type: 'primitiveFace' },
-            position: [origin.x, origin.y, origin.z].map(
-              (coordinate) =>
-                coordinate / kclManager.sceneInfra.baseUnitMultiplier
-            ) as [number, number, number],
-            zAxis: [z_axis.x, z_axis.y, z_axis.z],
-            yAxis: [y_axis.x, y_axis.y, y_axis.z],
-            sketchPathToNode: [],
-            extrudePathToNode: [],
-          }
-        } else {
-          const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-            sceneInfra: kclManager.sceneInfra,
-            rustContext,
-          })
-          if (!err(defaultResult) && defaultResult) {
-            result = defaultResult
-          }
+        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+          sceneInfra: kclManager.sceneInfra,
+          rustContext,
+        })
+        if (!err(defaultResult) && defaultResult) {
+          result = defaultResult
         }
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
@@ -3294,6 +3261,37 @@ export const modelingMachine = setup({
           )
           if (sweepFaceSelected) {
             result = sweepFaceSelected
+          }
+        }
+        if (!result && primitiveFaceSelection) {
+          if (!primitiveFace) {
+            return reject(
+              new Error('Could not resolve the selected primitive face in KCL.')
+            )
+          }
+          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
+            primitiveFaceSelection.entityId
+          )
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+            return reject(
+              new Error(
+                'Could not get details for the selected primitive face.'
+              )
+            )
+          }
+          const { origin, z_axis, y_axis } = faceInfo
+          result = {
+            type: 'extrudeFace',
+            faceId: primitiveFaceSelection.entityId,
+            faceInfo: { type: 'primitiveFace' },
+            position: [origin.x, origin.y, origin.z].map(
+              (coordinate) =>
+                coordinate / kclManager.sceneInfra.baseUnitMultiplier
+            ) as [number, number, number],
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            sketchPathToNode: [],
+            extrudePathToNode: [],
           }
         }
         if (!result) {
@@ -3387,7 +3385,11 @@ export const modelingMachine = setup({
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
           }
-        } else if (primitiveFace) {
+        } else if (
+          result.type === 'extrudeFace' &&
+          result.faceInfo.type === 'primitiveFace' &&
+          primitiveFace
+        ) {
           if (setProgramOutcome.type !== 'Success') {
             return reject(
               new Error('Could not update SceneGraph before creating sketch.')
@@ -9474,8 +9476,9 @@ export const modelingMachine = setup({
           const graphFaceSelection =
             context.selectionRanges.graphSelections.find(
               (candidate) =>
-                candidate.entityRef?.type === 'face' &&
-                candidate.entityRef.face_id === event.data
+                candidate.engineEntityId === event.data ||
+                (candidate.entityRef?.type === 'face' &&
+                  candidate.entityRef.face_id === event.data)
             )
           const graphFaceTopology = graphFaceSelection
             ? getEngineTopologyFallbackNormalized(graphFaceSelection)
@@ -9487,7 +9490,9 @@ export const modelingMachine = setup({
           ) {
             primitiveFaceReference = {
               type: 'enginePrimitive',
-              entityId: graphFaceSelection.entityRef.face_id,
+              entityId:
+                graphFaceSelection.engineEntityId ??
+                graphFaceSelection.entityRef.face_id,
               parentEntityId: graphFaceTopology.parentId,
               primitiveIndex: graphFaceTopology.primitiveIndex,
               primitiveType: 'face',

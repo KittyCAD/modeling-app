@@ -3,6 +3,10 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
+import {
+  clearOutboxEntriesForProject,
+  deleteProjectMetadata,
+} from '@src/lib/cloudSync/syncDb'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
@@ -208,6 +212,26 @@ function normalizeProjectPathForCloudMetadata(projectPath: string) {
   return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
+/**
+ * Deletes conflict-copy project folders created by older cloud sync builds.
+ *
+ * TODO: Delete this cleanup after cloud_sync_conflict_copy_detected client error
+ * reports drop to zero, confirming generated conflict-copy projects have aged
+ * out of active clients.
+ */
+async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
+  try {
+    await fsZds.rm(projectPath, { recursive: true })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+
+  await clearOutboxEntriesForProject(projectPath)
+  await deleteProjectMetadata(projectPath)
+}
+
 export function shouldSendProjectFolderReadProgress(
   folders: readonly Project[] | undefined
 ) {
@@ -286,11 +310,17 @@ export async function readProjectsFromProjectDirectory({
       return projects
     }
 
-    const project = await getProjectInfo(entry.path, wasmInstance)
     const cloudMetadata = cloudProjectMetadataByPath.get(
       normalizeProjectPathForCloudMetadata(entry.path)
     )
+    if (cloudMetadata?.syncExcluded?.reason === 'conflict-copy') {
+      await deleteLegacyCloudConflictCopyProject(entry.path).catch(
+        reportRejection
+      )
+      continue
+    }
 
+    const project = await getProjectInfo(entry.path, wasmInstance)
     project.cloudProjectId ??= cloudMetadata?.remoteProjectId
     project.cloudConflict = cloudMetadata?.conflict
     if (project.metadata) {

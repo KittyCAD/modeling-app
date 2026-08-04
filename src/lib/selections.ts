@@ -1739,6 +1739,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
+    ...(clickEntityId ? { engineEntityId: clickEntityId } : {}),
     ...(engineTopologyFallbackResolved
       ? { engineTopologyFallback: engineTopologyFallbackResolved }
       : {}),
@@ -3261,6 +3262,54 @@ export async function selectOffsetSketchPlane(
   return true
 }
 
+function getSweepForFace(
+  faceId: ArtifactId,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+) {
+  const artifact = artifactGraph.get(faceId)
+  let sweep = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
+  if (err(sweep) && artifact?.type === 'edgeCut') {
+    sweep = getOwningSweepForEdgeCut(artifact, artifactGraph, ast, wasmInstance)
+  }
+  return sweep
+}
+
+export function showSketchOnImportForFace(
+  faceId: ArtifactId,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): boolean {
+  const sweep = getSweepForFace(faceId, artifactGraph, ast, wasmInstance)
+  if (err(sweep)) return false
+
+  const maybeImportNode = getNodeFromPath<ImportStatement>(
+    ast,
+    sweep.codeRef.pathToNode,
+    wasmInstance,
+    ['ImportStatement']
+  )
+  if (
+    err(maybeImportNode) ||
+    maybeImportNode.node?.type !== 'ImportStatement'
+  ) {
+    return false
+  }
+
+  if (maybeImportNode.node.path.type === 'Kcl') {
+    showSketchOnImportToast(maybeImportNode.node.path.filename)
+  } else if (maybeImportNode.node.path.type === 'Foreign') {
+    showSketchOnImportToast(maybeImportNode.node.path.path)
+  } else if (maybeImportNode.node.path.type === 'Std') {
+    toast.error("Can't sketch on this face.")
+  } else {
+    const _exhaustiveCheck: never = maybeImportNode.node.path
+  }
+  return true
+}
+
 export async function selectionBodyFace(
   planeOrFaceId: ArtifactId,
   artifactGraph: ArtifactGraph,
@@ -3293,38 +3342,15 @@ export async function selectionBodyFace(
 
   // Artifact is likely an sweep face
   const faceId = planeOrFaceId
-  let extrusion = getSweepFromSuspectedSweepSurface(faceId, artifactGraph)
-  if (err(extrusion) && artifact?.type === 'edgeCut') {
-    extrusion = getOwningSweepForEdgeCut(
-      artifact,
+  if (
+    showSketchOnImportForFace(
+      faceId,
       artifactGraph,
       ast,
       systemDeps.wasmInstance
     )
-  }
-  if (!err(extrusion)) {
-    const maybeImportNode = getNodeFromPath<ImportStatement>(
-      ast,
-      extrusion.codeRef.pathToNode,
-      systemDeps.wasmInstance,
-      ['ImportStatement']
-    )
-    if (
-      !err(maybeImportNode) &&
-      maybeImportNode.node &&
-      maybeImportNode.node.type === 'ImportStatement'
-    ) {
-      if (maybeImportNode.node.path.type === 'Kcl') {
-        showSketchOnImportToast(maybeImportNode.node.path.filename)
-      } else if (maybeImportNode.node.path.type === 'Foreign') {
-        showSketchOnImportToast(maybeImportNode.node.path.path)
-      } else if (maybeImportNode.node.path.type === 'Std') {
-        toast.error("Can't sketch on this face.")
-      } else {
-        // force tsc error if more cases are added
-        const _exhaustiveCheck: never = maybeImportNode.node.path
-      }
-    }
+  ) {
+    return
   }
 
   if (
@@ -3345,6 +3371,12 @@ export async function selectionBodyFace(
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
+  const extrusion = getSweepForFace(
+    faceId,
+    artifactGraph,
+    ast,
+    systemDeps.wasmInstance
+  )
 
   const edgeCutMeta = getEdgeCutMeta(
     artifact,

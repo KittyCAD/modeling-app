@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart rolling_ball_chamfer_interacting_edges.kcl
+extension: md
+snapshot_kind: binary
+---

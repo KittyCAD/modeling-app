@@ -2466,9 +2466,9 @@ extrude001 = extrude(region001, length = 30)`
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const shellDeclaration2 =
-      'shell001 = shell(extrude001, faces = face001, thickness = 5)'
+      'shell001 = shell(extrude001, faces = capStart001, thickness = 5)'
     const secondaryShellFaceDeclaration =
-      'face001 = faceId(extrude001, index = 2)'
+      'extrude001 = extrude(profile001, length = 500, tagStart = $capStart001)'
     const editedShellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 2)'
     const secondaryShellCode = `sketch001 = startSketchOn(-XZ)
@@ -2576,8 +2576,9 @@ extrude001 = extrude(profile001, length = 500)`
     })
     await test.step('Replace modeling code with secondary shell snippet', async () => {
       await editor.openPane()
-      await editor.replaceCode('', secondaryShellCode)
-      await scene.settled(cmdBar)
+      await scene.waitForExecutionDoneAfter(() =>
+        editor.replaceCode('', secondaryShellCode)
+      )
       await editor.closePane()
     })
 

@@ -102,6 +102,7 @@ interface StdLibCallInfo {
   supportsAppearance?: boolean
   supportsTransform?: boolean
   supportsTranslate?: boolean
+  supportsScale?: boolean
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -3062,6 +3063,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'helix',
     prepareToEdit: prepareToEditHelix,
     supportsTranslate: true,
+    supportsScale: true,
   },
   subtract2d: {
     label: 'Subtract 2D',

@@ -1219,7 +1219,7 @@ export function buildToolbarConfig(
               icon: 'scale',
               status: 'available',
               title: 'Scale',
-              description: 'Apply scaling to a solid or sketch.',
+              description: 'Apply scaling to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
