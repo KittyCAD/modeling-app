@@ -50,7 +50,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000000016972654291179558,
+                        "n": 0.00000000000000000016972918988975575,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                         }
                       },
                       {
-                        "n": 0.00000000515625029524017,
+                        "n": 0.0000000005156246760256065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                         }
                       },
                       {
-                        "n": -0.0000000014062499558768293,
+                        "n": -0.0000000001406249777007383,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -170,7 +170,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                   "line": {
                     "start": [
                       {
-                        "n": -3.749999926791303,
+                        "n": -3.7499999562816084,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -178,7 +178,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                         }
                       },
                       {
-                        "n": 0.000000011367188523792038,
+                        "n": 0.0000000011367173868848113,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -293,8 +293,8 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000000000000016972654291179558,
-                    0.00000000515625029524017
+                    0.00000000000000000016972918988975575,
+                    0.0000000005156246760256065
                   ],
                   "tag": {
                     "commentStart": 238,
@@ -306,7 +306,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                   },
                   "to": [
                     10.0,
-                    -0.0000000014062499558768293
+                    -0.0000000001406249777007383
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -318,12 +318,12 @@ description: Variables in memory after executing sketch_block_coincident_constra
                   },
                   "from": [
                     10.0,
-                    -0.0000000014062499558768293
+                    -0.0000000001406249777007383
                   ],
                   "tag": null,
                   "to": [
-                    -3.749999926791303,
-                    0.000000011367188523792038
+                    -3.7499999562816084,
+                    0.0000000011367173868848113
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -334,8 +334,8 @@ description: Variables in memory after executing sketch_block_coincident_constra
                     "sourceRange": []
                   },
                   "from": [
-                    -3.749999926791303,
-                    0.000000011367188523792038
+                    -3.7499999562816084,
+                    0.0000000011367173868848113
                   ],
                   "tag": {
                     "commentStart": 456,
@@ -386,12 +386,12 @@ description: Variables in memory after executing sketch_block_coincident_constra
               },
               "start": {
                 "from": [
-                  0.0000000000000000016972654291179558,
-                  0.00000000515625029524017
+                  0.00000000000000000016972918988975575,
+                  0.0000000005156246760256065
                 ],
                 "to": [
-                  0.0000000000000000016972654291179558,
-                  0.00000000515625029524017
+                  0.00000000000000000016972918988975575,
+                  0.0000000005156246760256065
                 ],
                 "units": "mm",
                 "tag": null,

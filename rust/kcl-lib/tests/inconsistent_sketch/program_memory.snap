@@ -59,7 +59,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.6470452934402346,
+                        "n": -2.6470451105581825,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -67,7 +67,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                         }
                       },
                       {
-                        "n": 2.7895987741173176,
+                        "n": 2.789598916417392,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -77,7 +77,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.6970452659913564,
+                        "n": 1.6970454036727465,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -85,7 +85,7 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                         }
                       },
                       {
-                        "n": 2.0904012258826823,
+                        "n": 2.090401083582608,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -182,8 +182,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.6470452934402346,
-                    2.7895987741173176
+                    -2.6470451105581825,
+                    2.789598916417392
                   ],
                   "tag": {
                     "commentStart": 61,
@@ -194,8 +194,8 @@ description: Variables in memory after executing inconsistent_sketch.kcl
                     "value": "line1"
                   },
                   "to": [
-                    1.6970452659913564,
-                    2.0904012258826823
+                    1.6970454036727465,
+                    2.090401083582608
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -234,12 +234,12 @@ description: Variables in memory after executing inconsistent_sketch.kcl
               },
               "start": {
                 "from": [
-                  -2.6470452934402346,
-                  2.7895987741173176
+                  -2.6470451105581825,
+                  2.789598916417392
                 ],
                 "to": [
-                  -2.6470452934402346,
-                  2.7895987741173176
+                  -2.6470451105581825,
+                  2.789598916417392
                 ],
                 "units": "mm",
                 "tag": null,
