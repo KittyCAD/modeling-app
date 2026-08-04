@@ -745,7 +745,11 @@ function getProjectLibraryRoute(library: ProjectLibrary) {
 }
 
 function getProjectLibraryIconName(library: ProjectLibrary): CustomIconName {
-  if (library.icon === 'network' || library.type === 'cloud') {
+  if (library.type === 'cloud' || library.icon === 'cloud') {
+    return 'cloud'
+  }
+
+  if (library.icon === 'network') {
     return 'network'
   }
 
