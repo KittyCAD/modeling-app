@@ -12,6 +12,10 @@ export type ProjectModelingSettings = {
  */
 base_unit?: UnitLength | null, 
 /**
+ * The KittyCAD Language version for this project.
+ */
+kcl_version?: string | null, 
+/**
  * Highlight edges of 3D objects?
  */
 highlight_edges?: DefaultTrue, 
