@@ -19,7 +19,6 @@ import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
-import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
@@ -231,41 +230,16 @@ function normalizeProjectPathForCloudMetadata(projectPath: string) {
  * out of active clients.
  */
 async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
-  let phase = 'delete_project_directory'
-  let projectDirectoryRemoved = false
-  const rejectWithReport = (error: unknown): Promise<never> => {
-    reportSystemIOError({
-      error,
-      operation: 'delete legacy cloud conflict copy project',
-      risk: 'destructive',
-      source: 'ProjectDirectoryScanner',
-      extra: {
-        phase,
-        projectDirectoryRemoved,
-        partialMutationPossible: true,
-        dataLossPossible: true,
-      },
-    })
-    return Promise.reject(error)
-  }
-
   try {
-    try {
-      await fsZds.rm(projectPath, { recursive: true })
-      projectDirectoryRemoved = true
-    } catch (error) {
-      if (!isPathNotFoundError(error)) {
-        return rejectWithReport(error)
-      }
-    }
-
-    phase = 'clear_project_outbox'
-    await clearOutboxEntriesForProject(projectPath)
-    phase = 'delete_project_metadata'
-    await deleteProjectMetadata(projectPath)
+    await fsZds.rm(projectPath, { recursive: true })
   } catch (error) {
-    return rejectWithReport(error)
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
   }
+
+  await clearOutboxEntriesForProject(projectPath)
+  await deleteProjectMetadata(projectPath)
 }
 
 export function shouldSendProjectFolderReadProgress(

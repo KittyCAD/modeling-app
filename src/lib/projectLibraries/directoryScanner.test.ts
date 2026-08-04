@@ -69,9 +69,6 @@ const mocks = vi.hoisted(() => {
     trap: {
       reportRejection: vi.fn(),
     },
-    systemIOErrorReporting: {
-      reportSystemIOError: vi.fn(),
-    },
   }
 })
 
@@ -94,8 +91,6 @@ vi.mock('@src/lib/fs-zds', () => ({
 }))
 
 vi.mock('@src/lib/trap', () => mocks.trap)
-
-vi.mock('@src/lib/systemIOErrorReporting', () => mocks.systemIOErrorReporting)
 
 import {
   readProjectsFromProjectDirectory,
@@ -174,8 +169,6 @@ describe('directory project scanner', () => {
     mocks.desktop.mkdirOrNOOP.mockResolvedValue(undefined)
     mocks.fsZds.rename.mockResolvedValue(undefined)
     mocks.fsZds.rm.mockResolvedValue(undefined)
-    mocks.cloudSyncDb.clearOutboxEntriesForProject.mockResolvedValue(undefined)
-    mocks.cloudSyncDb.deleteProjectMetadata.mockResolvedValue(undefined)
   })
 
   it('aggregates non-missing project stat failures', async () => {
@@ -351,84 +344,9 @@ describe('directory project scanner', () => {
     )
     expect(mocks.trap.reportRejection).toHaveBeenCalledWith(deleteError)
     expect(
-      mocks.systemIOErrorReporting.reportSystemIOError
-    ).toHaveBeenCalledWith({
-      error: deleteError,
-      operation: 'delete legacy cloud conflict copy project',
-      risk: 'destructive',
-      source: 'ProjectDirectoryScanner',
-      extra: {
-        phase: 'delete_project_directory',
-        projectDirectoryRemoved: false,
-        partialMutationPossible: true,
-        dataLossPossible: true,
-      },
-    })
-    expect(
       mocks.cloudSyncDb.clearOutboxEntriesForProject
     ).not.toHaveBeenCalled()
     expect(mocks.cloudSyncDb.deleteProjectMetadata).not.toHaveBeenCalled()
-  })
-
-  it('reports metadata cleanup failures after deleting a legacy conflict copy', async () => {
-    const project = createProject({
-      name: 'normal',
-      path: '/projects/normal',
-    })
-    const conflictCopyPath = '/projects/normal (cloud conflict 20260717T120000)'
-    const metadataError = new Error('metadata delete failed')
-
-    vi.mocked(getCloudSyncProjectMetadataIndex).mockResolvedValue(
-      new Map([
-        [conflictCopyPath, createLegacyConflictCopyMetadata(conflictCopyPath)],
-      ])
-    )
-    mocks.fsZds.readdir.mockResolvedValue([
-      'normal',
-      'normal (cloud conflict 20260717T120000)',
-    ])
-    mocks.fsZds.stat.mockImplementation(async (path: string) => {
-      if (path === '/projects/normal') {
-        return dirStat(1)
-      }
-      if (path === conflictCopyPath) {
-        return dirStat(2)
-      }
-      throw mocks.pathNotFound()
-    })
-    mocks.cloudSyncDb.deleteProjectMetadata.mockRejectedValue(metadataError)
-    mocks.desktop.getProjectInfo.mockResolvedValue(project)
-
-    const projects = await readProjectsFromProjectDirectory({
-      projectDirectoryPath: '/projects',
-      wasmInstancePromise: Promise.resolve({} as ModuleType),
-    })
-
-    expect(projects).toEqual([project])
-    expect(mocks.fsZds.rm).toHaveBeenCalledWith(conflictCopyPath, {
-      recursive: true,
-    })
-    expect(mocks.cloudSyncDb.clearOutboxEntriesForProject).toHaveBeenCalledWith(
-      conflictCopyPath
-    )
-    expect(mocks.cloudSyncDb.deleteProjectMetadata).toHaveBeenCalledWith(
-      conflictCopyPath
-    )
-    expect(mocks.trap.reportRejection).toHaveBeenCalledWith(metadataError)
-    expect(
-      mocks.systemIOErrorReporting.reportSystemIOError
-    ).toHaveBeenCalledWith({
-      error: metadataError,
-      operation: 'delete legacy cloud conflict copy project',
-      risk: 'destructive',
-      source: 'ProjectDirectoryScanner',
-      extra: {
-        phase: 'delete_project_metadata',
-        projectDirectoryRemoved: true,
-        partialMutationPossible: true,
-        dataLossPossible: true,
-      },
-    })
   })
 
   it('batches scheduled directory name sync refreshes', async () => {
