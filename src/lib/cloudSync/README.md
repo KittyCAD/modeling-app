@@ -90,11 +90,13 @@ flowchart TD
   CompareBase -->|"Local changed, remote unchanged"| PushGuarded["Upload with expected_revision"]
   CompareBase -->|"Local clean, remote changed"| PullRemote["Hydrate OPFS from remote archive"]
   CompareBase -->|"Both unchanged or manifests equal"| MarkSynced["Clear outbox and update base"]
-  CompareBase -->|"Both changed differently"| Conflict["Keep local primary and record conflict"]
+  CompareBase -->|"Both changed on independent files"| AutoReconcile["Upload merged archive with latest expected_revision"]
+  CompareBase -->|"Both changed same files differently"| Conflict["Keep local primary and record conflict"]
   DeleteRemote --> Done["Done"]
   ForgetLocal --> Done
   CreateRemote --> MarkSynced
   PushGuarded --> MarkSynced
+  AutoReconcile --> MarkSynced
   PullRemote --> MarkSynced
   Conflict --> Blocked["Persist conflict status"]
 ```
@@ -124,7 +126,7 @@ flowchart TD
 - A remote-only project discovered from the cloud index may remain remote-only; local materialization happens when a caller explicitly opens or moves it into a local library.
 - A remotely deleted project may remove the local OPFS mirror only when that local mirror still matches the last synced base.
 - Remote hydration may replace OPFS only when local is clean relative to the last synced base.
-- If local and remote both changed differently, local remains primary and the conflict stores the remote revision/update metadata. The cloud archive is fetched on demand for inspection or resolution.
+- If local and remote both changed differently but only on independent file paths, cloud sync may upload a merged archive under the latest remote `expected_revision`. If both sides changed the same path differently, local remains primary and the conflict stores the remote revision/update metadata. The cloud archive is fetched on demand for inspection or resolution.
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
 - Home rename of a cloud project acts on the local materialization when one exists and acts directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
@@ -159,8 +161,8 @@ Remote deletes are intentionally not revision-guarded. A project-root `rm` recor
 
 If a remote project disappears from the cloud index, the local mirror is removed only when its manifest still matches `ProjectMetadata.baseManifest` and it has no pending local outbox work. Dirty or unverifiable local projects are detached from the missing remote id and queued as local-first projects so user data is preserved and the stale id does not keep retrying a 404.
 
-Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when the caller explicitly materializes a remote-only project into a local library. If both local and remote changed since the base, the local project remains primary and the remote archive is fetched live when the user inspects or resolves the conflict.
+Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when the caller explicitly materializes a remote-only project into a local library. If both local and remote changed since the base, the engine may auto-reconcile changes that touch independent file paths. Same-path divergent changes keep the local project primary and fetch the remote archive live when the user inspects or resolves the conflict.
 
-This implementation is whole-project archive based. It does not attempt file-level merging because the cloud API does not expose file-level revisions. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
+This implementation is whole-project archive based. It can auto-reconcile independent file-level changes by comparing local and remote manifests to `baseManifest`, but it does not attempt same-file line or syntax merges because the base stores file fingerprints instead of file contents. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
 
 When a cloud title changes, the title is written into `project.toml` only when that can be done without overwriting local edits. The local project directory name is treated as an implementation detail and may differ from the cloud title when uniqueness requires it.

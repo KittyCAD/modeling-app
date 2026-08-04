@@ -2030,6 +2030,89 @@ function latestOutboxKind(entries: OutboxEntry[]) {
   return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
 }
 
+function projectManifestEntryEqual(
+  left: ProjectManifest['files'][string] | undefined,
+  right: ProjectManifest['files'][string] | undefined
+) {
+  if (!left || !right) {
+    return left === right
+  }
+
+  return left.byteSize === right.byteSize && left.sha256 === right.sha256
+}
+
+function projectArchiveFileMap(files: ProjectArchiveFile[]) {
+  const filesByPath = new Map<string, ProjectArchiveFile>()
+  for (const file of files) {
+    const relativePath = normalizeRelativePath(file.relativePath)
+    filesByPath.set(relativePath, {
+      ...file,
+      relativePath,
+    })
+  }
+  return filesByPath
+}
+
+/**
+ * Builds a whole-project snapshot when local and remote changed independent
+ * paths from the last synced base. This is intentionally file-level only: when
+ * both sides changed the same path differently, the user-facing conflict flow
+ * remains responsible for choosing the winner.
+ */
+export function getCloudSyncAutoReconciledProjectFiles({
+  baseManifest,
+  localFiles,
+  localManifest,
+  remoteFiles,
+  remoteManifest,
+}: {
+  baseManifest: ProjectManifest
+  localFiles: ProjectArchiveFile[]
+  localManifest: ProjectManifest
+  remoteFiles: ProjectArchiveFile[]
+  remoteManifest: ProjectManifest
+}) {
+  const localFilesByPath = projectArchiveFileMap(localFiles)
+  const remoteFilesByPath = projectArchiveFileMap(remoteFiles)
+  const relativePaths = Array.from(
+    new Set([
+      ...Object.keys(baseManifest.files),
+      ...Object.keys(localManifest.files),
+      ...Object.keys(remoteManifest.files),
+    ])
+  ).sort((left, right) => left.localeCompare(right))
+  const mergedFiles: ProjectArchiveFile[] = []
+
+  for (const relativePath of relativePaths) {
+    const baseEntry = baseManifest.files[relativePath]
+    const localEntry = localManifest.files[relativePath]
+    const remoteEntry = remoteManifest.files[relativePath]
+    const localChanged = !projectManifestEntryEqual(localEntry, baseEntry)
+    const remoteChanged = !projectManifestEntryEqual(remoteEntry, baseEntry)
+
+    if (projectManifestEntryEqual(localEntry, remoteEntry)) {
+      const file = localFilesByPath.get(relativePath)
+      if (file) {
+        mergedFiles.push(file)
+      }
+      continue
+    }
+
+    if (localChanged && remoteChanged) {
+      return undefined
+    }
+
+    const selectedFile = remoteChanged
+      ? remoteFilesByPath.get(relativePath)
+      : localFilesByPath.get(relativePath)
+    if (selectedFile) {
+      mergedFiles.push(selectedFile)
+    }
+  }
+
+  return mergedFiles
+}
+
 export type CloudSyncProjectSyncPreflightAction =
   | 'delete-remote'
   | 'forget-missing-local'
@@ -2076,16 +2159,19 @@ export function getCloudSyncProjectSyncPreflightAction({
 export type CloudSyncRemoteArchiveReconciliationAction =
   | 'mark-synced'
   | 'hydrate-clean-local'
+  | 'auto-reconcile'
   | 'mark-conflict'
 
 export function getCloudSyncRemoteArchiveReconciliationAction({
   hasBaseManifest,
   localMatchesRemote,
   localClean,
+  canAutoReconcile,
 }: {
   hasBaseManifest: boolean
   localMatchesRemote: boolean
   localClean: boolean
+  canAutoReconcile?: boolean
 }): CloudSyncRemoteArchiveReconciliationAction {
   if (!hasBaseManifest && localMatchesRemote) {
     return 'mark-synced'
@@ -2095,6 +2181,9 @@ export function getCloudSyncRemoteArchiveReconciliationAction({
   }
   if (localMatchesRemote) {
     return 'mark-synced'
+  }
+  if (canAutoReconcile) {
+    return 'auto-reconcile'
   }
   return 'mark-conflict'
 }
@@ -2436,13 +2525,28 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       localManifest,
       remoteManifest
     )
+    const localClean = Boolean(
+      metadata.baseManifest &&
+        projectManifestsEqual(localManifest, metadata.baseManifest)
+    )
+    const autoReconciledFiles =
+      metadata.baseManifest &&
+      remoteRevision &&
+      !localMatchesRemote &&
+      !localClean
+        ? getCloudSyncAutoReconciledProjectFiles({
+            baseManifest: metadata.baseManifest,
+            localFiles,
+            localManifest,
+            remoteFiles,
+            remoteManifest,
+          })
+        : undefined
     const reconciliationAction = getCloudSyncRemoteArchiveReconciliationAction({
       hasBaseManifest: Boolean(metadata.baseManifest),
       localMatchesRemote,
-      localClean: Boolean(
-        metadata.baseManifest &&
-          projectManifestsEqual(localManifest, metadata.baseManifest)
-      ),
+      localClean,
+      canAutoReconcile: Boolean(autoReconciledFiles),
     })
 
     if (reconciliationAction === 'mark-synced') {
@@ -2462,6 +2566,29 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
         metadata,
         remoteManifest,
         remoteSyncMetadata(remoteProject)
+      )
+      return
+    }
+
+    if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
+      const autoReconciledManifest =
+        await projectManifestFromFiles(autoReconciledFiles)
+      const updated = await updateRemoteProject({
+        config,
+        projectPath: metadata.localProjectPath,
+        projectId: remoteProjectId,
+        files: autoReconciledFiles,
+        expectedRevision: remoteRevision,
+      }).catch(rejectRemoteUploadFailure)
+      await replaceLocalProjectWithFiles(
+        metadata.localProjectPath,
+        autoReconciledFiles
+      )
+      await clearOutboxEntriesForProject(metadata.localProjectPath)
+      await markProjectSynced(
+        metadata,
+        autoReconciledManifest,
+        remoteSyncMetadata(updated, { useNowAsUpdatedAtFallback: true })
       )
       return
     }
