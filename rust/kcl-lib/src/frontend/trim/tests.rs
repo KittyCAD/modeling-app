@@ -810,9 +810,9 @@ mod sync {
             y: 5.0 * libm::sin(45.0_f64.to_radians()),
         };
 
-        let t = project_point_onto_directed_arc(point, center, start, end, ArcDirection::Ccw);
+        let t = project_point_onto_arc(point, center, start, end, ArcDirection::Ccw);
 
-        assert!((t - project_point_onto_arc(point, center, start, end)).abs() < 1e-9);
+        assert!((t - project_point_onto_ccw_arc(point, center, start, end)).abs() < 1e-9);
         assert!((t - 0.5).abs() < 1e-5);
     }
 
@@ -825,17 +825,17 @@ mod sync {
         let end = Coords2d { x: 0.0, y: 5.0 };
 
         let bottom = Coords2d { x: 0.0, y: -5.0 };
-        let t_bottom = project_point_onto_directed_arc(bottom, center, start, end, ArcDirection::Cw);
+        let t_bottom = project_point_onto_arc(bottom, center, start, end, ArcDirection::Cw);
         assert!((t_bottom - 1.0 / 3.0).abs() < 1e-5);
 
         let left = Coords2d { x: -5.0, y: 0.0 };
-        let t_left = project_point_onto_directed_arc(left, center, start, end, ArcDirection::Cw);
+        let t_left = project_point_onto_arc(left, center, start, end, ArcDirection::Cw);
         assert!((t_left - 2.0 / 3.0).abs() < 1e-5);
 
-        let t_start = project_point_onto_directed_arc(start, center, start, end, ArcDirection::Cw);
+        let t_start = project_point_onto_arc(start, center, start, end, ArcDirection::Cw);
         assert!(t_start.abs() < 1e-5);
 
-        let t_end = project_point_onto_directed_arc(end, center, start, end, ArcDirection::Cw);
+        let t_end = project_point_onto_arc(end, center, start, end, ArcDirection::Cw);
         assert!((t_end - 1.0).abs() < 1e-5);
     }
 
@@ -852,7 +852,7 @@ mod sync {
             x: 5.0 * libm::cos(30.0_f64.to_radians()),
             y: 5.0 * libm::sin(30.0_f64.to_radians()),
         };
-        let t = project_point_onto_directed_arc(near_start, center, start, end, ArcDirection::Cw);
+        let t = project_point_onto_arc(near_start, center, start, end, ArcDirection::Cw);
         assert!(t.abs() < 1e-9);
 
         // Point at 60 degrees is off the clockwise arc, nearer the end.
@@ -860,7 +860,7 @@ mod sync {
             x: 5.0 * libm::cos(60.0_f64.to_radians()),
             y: 5.0 * libm::sin(60.0_f64.to_radians()),
         };
-        let t = project_point_onto_directed_arc(near_end, center, start, end, ArcDirection::Cw);
+        let t = project_point_onto_arc(near_end, center, start, end, ArcDirection::Cw);
         assert!((t - 1.0).abs() < 1e-9);
     }
 

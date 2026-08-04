@@ -1064,12 +1064,12 @@ fn is_point_on_circle(point: Coords2d, center: Coords2d, radius: f64, epsilon: f
     (dist - radius).abs() <= epsilon
 }
 
-/// Like [`project_point_onto_arc`], but for an arc that sweeps in the given
+/// Like [`project_point_onto_ccw_arc`], but for an arc that sweeps in the given
 /// direction from its declared start to its declared end. Returns t where t=0
 /// at the declared start and t=1 at the declared end, increasing along the
 /// arc's direction of travel. Points off the arc clamp to the nearest
-/// endpoint, matching [`project_point_onto_arc`].
-fn project_point_onto_directed_arc(
+/// endpoint, matching [`project_point_onto_ccw_arc`].
+pub fn project_point_onto_arc(
     point: Coords2d,
     arc_center: Coords2d,
     arc_start: Coords2d,
@@ -1077,7 +1077,7 @@ fn project_point_onto_directed_arc(
     direction: ArcDirection,
 ) -> f64 {
     let (sweep_start, sweep_end) = direction.ccw_order(arc_start, arc_end);
-    let t = project_point_onto_arc(point, arc_center, sweep_start, sweep_end);
+    let t = project_point_onto_ccw_arc(point, arc_center, sweep_start, sweep_end);
     // A point at clockwise-fraction f from the declared start is at
     // counterclockwise-fraction 1-f from the declared end, so mirror the
     // parameter back into declared-order space.
@@ -1086,7 +1086,7 @@ fn project_point_onto_directed_arc(
 
 /// Helper to calculate the parametric position of a point on an arc
 /// Returns t where t=0 at start, t=1 at end, based on CCW angle
-pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: Coords2d, arc_end: Coords2d) -> f64 {
+fn project_point_onto_ccw_arc(point: Coords2d, arc_center: Coords2d, arc_start: Coords2d, arc_end: Coords2d) -> f64 {
     // Calculate angles
     let start_angle = libm::atan2(arc_start.y - arc_center.y, arc_start.x - arc_center.x);
     let end_angle = libm::atan2(arc_end.y - arc_center.y, arc_end.x - arc_center.x);
@@ -1586,7 +1586,7 @@ impl CurveHandle {
                 let center = self
                     .center
                     .ok_or_else(|| format!("Curve {} missing center for arc projection", self.segment_id.0))?;
-                Ok(project_point_onto_directed_arc(
+                Ok(project_point_onto_arc(
                     point,
                     center,
                     self.start,
@@ -4942,9 +4942,8 @@ pub(crate) fn build_trim_plan(
             // Calculate split point parametric position
             let split_point_t_opt = match segment {
                 Segment::Line(_) => Some(project_point_onto_segment(split_point, start_coords, end_coords)),
-                Segment::Arc(arc) => segment_center_coords.map(|center| {
-                    project_point_onto_directed_arc(split_point, center, start_coords, end_coords, arc.direction)
-                }),
+                Segment::Arc(arc) => segment_center_coords
+                    .map(|center| project_point_onto_arc(split_point, center, start_coords, end_coords, arc.direction)),
                 _ => None,
             };
 
@@ -4996,7 +4995,7 @@ pub(crate) fn build_trim_plan(
                                 Segment::Line(_) => project_point_onto_segment(point_coords, start_coords, end_coords),
                                 Segment::Arc(arc) => {
                                     if let Some(center) = segment_center_coords {
-                                        project_point_onto_directed_arc(
+                                        project_point_onto_arc(
                                             point_coords,
                                             center,
                                             start_coords,
