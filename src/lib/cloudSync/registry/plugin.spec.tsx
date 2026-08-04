@@ -456,7 +456,7 @@ describe('cloud sync project library', () => {
         .get(CLOUD_PROJECT_LIBRARY_TYPE)
       expect(cloudLibraryType).toMatchObject({
         title: 'Cloud',
-        icon: 'network',
+        icon: 'cloud',
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
         operations: {
           duplicateProject: expect.any(Object),

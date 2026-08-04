@@ -5,7 +5,7 @@ import { reportRejection } from '@src/lib/trap'
 const route = '/cloud-sync'
 
 function submit(params: Parameters<typeof reportClientError>[0]) {
-  void reportClientError(params).catch(reportRejection)
+  void Promise.resolve(reportClientError(params)).catch(reportRejection)
 }
 
 export function reportCloudSyncConflict() {
@@ -13,6 +13,19 @@ export function reportCloudSyncConflict() {
     code: ClientErrorCode.CloudSyncConflict,
     errorName: 'CloudSyncConflict',
     message: 'Cloud sync conflict: local and remote both changed.',
+    route,
+    extra: {
+      source: 'CloudSyncEngine',
+      operation: 'reconcile-project',
+    },
+  })
+}
+
+export function reportCloudSyncConflictCopyDetected() {
+  submit({
+    code: ClientErrorCode.CloudSyncConflictCopyDetected,
+    errorName: 'CloudSyncConflictCopyDetected',
+    message: 'Cloud sync "conflict copy" folder detected',
     route,
     extra: {
       source: 'CloudSyncEngine',
