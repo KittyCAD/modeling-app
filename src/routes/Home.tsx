@@ -63,6 +63,7 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
   HOME_KEYMAP_SCOPE,
@@ -148,6 +149,7 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
     projectLibraryTypesValueSpec
@@ -513,6 +515,13 @@ const Home = () => {
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
+            {homeSidebarItems
+              .filter((item) => item.isVisible?.() ?? true)
+              .map(({ id, Component }) => (
+                <li key={id} className="contents">
+                  <Component className={sidebarButtonClasses} />
+                </li>
+              ))}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -584,6 +593,7 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
+            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },
