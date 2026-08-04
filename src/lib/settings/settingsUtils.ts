@@ -403,6 +403,30 @@ function mergeSettingsPayloads(
   )
 }
 
+export function migrateLegacyProjectDirectoryToLibraries(
+  payload: DeepPartial<SaveSettingsPayload>,
+  initialDefaultDir: string
+): DeepPartial<SaveSettingsPayload> {
+  const legacyProjectDirectory =
+    typeof payload.app?.projectDirectory === 'string'
+      ? payload.app.projectDirectory
+      : undefined
+
+  if (
+    !legacyProjectDirectory ||
+    payload.app?.libraries !== undefined ||
+    legacyProjectDirectory === initialDefaultDir
+  ) {
+    return payload
+  }
+
+  return mergeSettingsPayloads(payload, {
+    app: {
+      libraries: getDefaultProjectLibrarySettings(legacyProjectDirectory),
+    },
+  })
+}
+
 function withLegacyProjectDirectoryMirroredFromLibraries(
   payload: DeepPartial<SaveSettingsPayload>
 ): DeepPartial<SaveSettingsPayload> {
@@ -990,30 +1014,19 @@ export async function loadAndValidateSettings(
     extensionSettings
   )
   const initialDefaultDir = await getInitialDefaultDir()
-  const legacyProjectDirectory =
-    typeof appSettings.app?.projectDirectory === 'string'
-      ? appSettings.app.projectDirectory
-      : undefined
-
-  const policyDefaultProjectLibraries = resolveProjectLibrarySettingDefaults(
-    projectLibrarySettingDefaultPolicies,
-    {
-      initialDefaultDir,
-      legacyProjectDirectory,
-      isDesktop: isDesktop(),
-    }
-  )
 
   let settingsNext = createSettings(extensionSettings)
   settingsNext.app.projectDirectory.default = initialDefaultDir
-  if (settingsNext.app.libraries) {
-    settingsNext.app.libraries.default = mergeProjectLibrarySettings(
-      policyDefaultProjectLibraries,
-      defaultProjectLibraries
-    )
-  }
+  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+    getDefaultProjectLibrarySettings(initialDefaultDir),
+    defaultProjectLibraries
+  )
 
-  settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
+  settingsNext = setSettingsAtLevel(
+    settingsNext,
+    'user',
+    migrateLegacyProjectDirectoryToLibraries(appSettings, initialDefaultDir)
+  )
 
   // Load the project settings if they exist
   if (projectPath) {

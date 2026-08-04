@@ -3,7 +3,7 @@ import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
-export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
+export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Projects'
 export const NEW_PROJECT_LIBRARY_TITLE = 'Project Library'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
