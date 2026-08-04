@@ -1,5 +1,6 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import { execFileSync } from 'node:child_process'
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
@@ -8,12 +9,39 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
 import { createCustomLogger, indexHtmlCsp } from './vite.base.config'
 
+const RELEASE_TAG_PATTERN = /^v(\d+\.\d+\.\d+)$/
+
+function getVercelReleaseTag() {
+  if (process.env.VERCEL_ENV !== 'production') {
+    return undefined
+  }
+
+  const commitSha = process.env.VERCEL_GIT_COMMIT_SHA
+  if (!commitSha) {
+    throw new Error('Missing VERCEL_GIT_COMMIT_SHA for a production deployment')
+  }
+
+  const tags = execFileSync(
+    'git',
+    ['tag', '--points-at', commitSha, '--list', 'v*'],
+    { encoding: 'utf8' }
+  )
+    .trim()
+    .split('\n')
+  const releaseTag = tags.find((tag) => RELEASE_TAG_PATTERN.test(tag))
+  if (!releaseTag) {
+    throw new Error(`No release tag found for production commit ${commitSha}`)
+  }
+
+  return releaseTag
+}
+
 export default defineConfig(({ command, mode }) => {
   return {
     customLogger: createCustomLogger(),
     define: {
-      'import.meta.env.VERCEL_GIT_COMMIT_REF': JSON.stringify(
-        process.env.VERCEL_GIT_COMMIT_REF
+      'import.meta.env.MODELING_APP_RELEASE_TAG': JSON.stringify(
+        getVercelReleaseTag()
       ),
       'import.meta.env.VERCEL_GIT_COMMIT_SHA': JSON.stringify(
         process.env.VERCEL_GIT_COMMIT_SHA

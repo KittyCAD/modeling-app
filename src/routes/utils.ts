@@ -16,10 +16,10 @@ function getRealAppVersion(version: string | undefined) {
 }
 
 function getVercelAppVersion(
-  commitRef: string | undefined,
+  releaseTag: string | undefined,
   commitSha: string | undefined
 ) {
-  const versionTag = commitRef?.match(/^v(\d+\.\d+\.\d+)$/)
+  const versionTag = releaseTag?.match(/^v(\d+\.\d+\.\d+)$/)
   if (versionTag) {
     return versionTag[1]
   }
@@ -33,11 +33,11 @@ function getVercelAppVersion(
 
 export function getAppVersion({
   isDesktop,
-  vercelGitCommitRef,
+  vercelReleaseTag,
   vercelGitCommitSha,
 }: {
   isDesktop: boolean
-  vercelGitCommitRef: string | undefined
+  vercelReleaseTag: string | undefined
   vercelGitCommitSha: string | undefined
 }) {
   if (isDesktop) {
@@ -49,14 +49,14 @@ export function getAppVersion({
   }
 
   return (
-    getVercelAppVersion(vercelGitCommitRef, vercelGitCommitSha) ??
+    getVercelAppVersion(vercelReleaseTag, vercelGitCommitSha) ??
     FALLBACK_APP_VERSION
   )
 }
 
 export const APP_VERSION = getAppVersion({
   isDesktop: isDesktop(),
-  vercelGitCommitRef: viteEnv().VERCEL_GIT_COMMIT_REF,
+  vercelReleaseTag: viteEnv().MODELING_APP_RELEASE_TAG,
   vercelGitCommitSha: viteEnv().VERCEL_GIT_COMMIT_SHA,
 })
 

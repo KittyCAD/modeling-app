@@ -31,16 +31,16 @@ describe('Routes utility functions', () => {
     it('returns the Electron package version', () => {
       const actual = getAppVersion({
         isDesktop: true,
-        vercelGitCommitRef: undefined,
+        vercelReleaseTag: undefined,
         vercelGitCommitSha: undefined,
       })
       expect(actual).toBe('mocked-version')
     })
 
-    it('returns the release version from a Vercel tag', () => {
+    it('returns the release version injected into a Vercel production build', () => {
       const actual = getAppVersion({
         isDesktop: false,
-        vercelGitCommitRef: 'v1.2.3',
+        vercelReleaseTag: 'v1.2.3',
         vercelGitCommitSha: 'abcdef1234567890',
       })
       expect(actual).toBe('1.2.3')
@@ -49,7 +49,7 @@ describe('Routes utility functions', () => {
     it('returns the short commit SHA for Vercel deployments', () => {
       const actual = getAppVersion({
         isDesktop: false,
-        vercelGitCommitRef: 'staging',
+        vercelReleaseTag: undefined,
         vercelGitCommitSha: 'fe581ff1234567890',
       })
       expect(actual).toBe('fe581ff')
@@ -60,7 +60,7 @@ describe('Routes utility functions', () => {
       (vercelGitCommitSha) => {
         const actual = getAppVersion({
           isDesktop: false,
-          vercelGitCommitRef: undefined,
+          vercelReleaseTag: undefined,
           vercelGitCommitSha,
         })
         expect(actual).toBe('0.0.0')

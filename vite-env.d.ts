@@ -3,6 +3,6 @@
 declare const __APP_VERSION__: string
 
 interface ImportMetaEnv {
-  readonly VERCEL_GIT_COMMIT_REF?: string
+  readonly MODELING_APP_RELEASE_TAG?: string
   readonly VERCEL_GIT_COMMIT_SHA?: string
 }
