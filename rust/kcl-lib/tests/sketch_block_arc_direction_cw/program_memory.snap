@@ -50,7 +50,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                   "line": {
                     "start": [
                       {
-                        "n": -4.999999999974895,
+                        "n": -4.999999999976806,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                         }
                       },
                       {
-                        "n": 0.000000000025105446463911806,
+                        "n": 0.000000000023193352679654093,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     ],
                     "end": [
                       {
-                        "n": 4.999999999974853,
+                        "n": 4.999999999972941,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                         }
                       },
                       {
-                        "n": 0.000000000025147079439392828,
+                        "n": 0.000000000027059186127375507,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -173,8 +173,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     "sourceRange": []
                   },
                   "from": [
-                    -4.999999999974895,
-                    0.000000000025105446463911806
+                    -4.999999999976806,
+                    0.000000000023193352679654093
                   ],
                   "tag": {
                     "commentStart": 248,
@@ -185,8 +185,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     "value": "base"
                   },
                   "to": [
-                    4.999999999974853,
-                    0.000000000025147079439392828
+                    4.999999999972941,
+                    0.000000000027059186127375507
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -198,14 +198,14 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000002518873998269555,
-                    4.999999999853533
+                    0.00000000003092459621711896,
+                    4.999999999851621
                   ],
                   "from": [
-                    4.999999999974853,
-                    0.000000000025147079439392828
+                    4.999999999972941,
+                    0.000000000027059186127375507
                   ],
-                  "radius": 7.071067811708533,
+                  "radius": 7.071067811700421,
                   "tag": {
                     "commentStart": 317,
                     "end": 320,
@@ -215,8 +215,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     "value": "top"
                   },
                   "to": [
-                    -4.999999999924515,
-                    0.00000000002518696362585615
+                    -4.99999999991496,
+                    0.00000000003092726075237806
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -255,12 +255,12 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
               },
               "start": {
                 "from": [
-                  -4.999999999974895,
-                  0.000000000025105446463911806
+                  -4.999999999976806,
+                  0.000000000023193352679654093
                 ],
                 "to": [
-                  -4.999999999974895,
-                  0.000000000025105446463911806
+                  -4.999999999976806,
+                  0.000000000023193352679654093
                 ],
                 "units": "mm",
                 "tag": null,
@@ -300,7 +300,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                   "point": {
                     "position": [
                       {
-                        "n": 0.00000000000007078089617842896,
+                        "n": 0.000000000006570913030057677,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -308,7 +308,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                         }
                       },
                       {
-                        "n": 12.071067811516144,
+                        "n": 12.071067811508033,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -386,7 +386,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                   "arc": {
                     "start": [
                       {
-                        "n": -4.9999999999497895,
+                        "n": -4.999999999953613,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -394,7 +394,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                         }
                       },
                       {
-                        "n": 0.00000000005021089295292906,
+                        "n": 0.000000000046386705382501555,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -404,7 +404,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     ],
                     "end": [
                       {
-                        "n": 4.999999999949706,
+                        "n": 4.999999999945882,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -412,7 +412,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                         }
                       },
                       {
-                        "n": 0.00000000005029415890393273,
+                        "n": 0.00000000005411837228181021,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -422,7 +422,7 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000041636083055010866,
+                        "n": 0.0000000000038654403910111745,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -578,8 +578,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
               "sourceRange": []
             },
             "from": [
-              -4.999999999974895,
-              0.000000000025105446463911806
+              -4.999999999976806,
+              0.000000000023193352679654093
             ],
             "tag": {
               "commentStart": 248,
@@ -590,8 +590,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
               "value": "base"
             },
             "to": [
-              4.999999999974853,
-              0.000000000025147079439392828
+              4.999999999972941,
+              0.000000000027059186127375507
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -603,14 +603,14 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
             },
             "ccw": true,
             "center": [
-              0.00000000002518873998269555,
-              4.999999999853533
+              0.00000000003092459621711896,
+              4.999999999851621
             ],
             "from": [
-              4.999999999974853,
-              0.000000000025147079439392828
+              4.999999999972941,
+              0.000000000027059186127375507
             ],
-            "radius": 7.071067811708533,
+            "radius": 7.071067811700421,
             "tag": {
               "commentStart": 317,
               "end": 320,
@@ -620,8 +620,8 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
               "value": "top"
             },
             "to": [
-              -4.999999999924515,
-              0.00000000002518696362585615
+              -4.99999999991496,
+              0.00000000003092726075237806
             ],
             "type": "Arc",
             "units": "mm"
@@ -660,12 +660,12 @@ description: Variables in memory after executing sketch_block_arc_direction_cw.k
         },
         "start": {
           "from": [
-            -4.999999999974895,
-            0.000000000025105446463911806
+            -4.999999999976806,
+            0.000000000023193352679654093
           ],
           "to": [
-            -4.999999999974895,
-            0.000000000025105446463911806
+            -4.999999999976806,
+            0.000000000023193352679654093
           ],
           "units": "mm",
           "tag": null,
