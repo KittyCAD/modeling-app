@@ -28,6 +28,8 @@ import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
+  isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
   projectLibrariesFromSettings,
   type ProjectLibrarySetting,
@@ -482,7 +484,7 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      syncExistingLocalProjects: !window.electron,
+      autoEnrollCloudLibraryProjects: true,
     })
   }
 
@@ -670,7 +672,7 @@ export class App implements AppSubsystems {
    * libraries side by side; web treats Personal Cloud as the canonical project
    * library and replaces only the recognized default directory row.
    */
-  private materializePersonalCloudLibraryOnEnable = (
+  private materializePersonalCloudLibraryOnEnable = async (
     snapshot: SnapshotFrom<typeof this.settings.actor>
   ) => {
     if (!snapshot.matches('idle')) {
@@ -691,8 +693,7 @@ export class App implements AppSubsystems {
     )
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
-      library.type === defaultCloudLibrary.type &&
-      library.path === defaultCloudLibrary.path
+      isPersonalCloudProjectLibrarySetting(library)
     const shouldReplaceDirectoryLibraryOnWeb = (
       library: ProjectLibrarySetting
     ) =>
@@ -708,7 +709,17 @@ export class App implements AppSubsystems {
       currentLibraries.flatMap((library) => {
         if (isDefaultCloudLibrary(library)) {
           hasPersonalCloudLibrary = true
-          return [library]
+          return [
+            isLegacyPersonalCloudProjectLibraryPathSetting(library)
+              ? {
+                  ...library,
+                  path: defaultCloudLibrary.path,
+                  ...(defaultCloudLibrary.source
+                    ? { source: defaultCloudLibrary.source }
+                    : {}),
+                }
+              : library,
+          ]
         }
 
         if (shouldReplaceDirectoryLibraryOnWeb(library)) {
@@ -822,7 +833,9 @@ export class App implements AppSubsystems {
     }
 
     if (shouldMaterializePersonalCloudLibrary) {
-      this.materializePersonalCloudLibraryOnEnable(snapshot)
+      void this.materializePersonalCloudLibraryOnEnable(snapshot).catch(
+        reportRejection
+      )
     }
   }
 

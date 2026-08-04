@@ -173,7 +173,7 @@ describe('cloud sync status coalescing', () => {
         baseUrl,
         environmentName,
         projectDirectoryPath: projectDirectory,
-        syncExistingLocalProjects: false,
+        autoEnrollCloudLibraryProjects: false,
       })
 
       await vi.waitFor(() => {

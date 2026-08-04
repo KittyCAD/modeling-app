@@ -46,7 +46,7 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
   ...libraryTypeOptions,
   {
     label: 'Cloud',
-    icon: 'network',
+    icon: 'cloud',
     value: 'cloud',
     defaultLibrary: {
       title: 'Cloud',
@@ -267,7 +267,7 @@ describe('ProjectLibrariesSettingInput', () => {
     const updateValue = vi.fn()
     const cloudLibrary: ProjectLibrarySetting = {
       title: 'Personal Cloud',
-      path: '/personal',
+      path: '/cloud/personal',
       type: 'cloud',
     }
 

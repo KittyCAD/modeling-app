@@ -27,6 +27,7 @@ export function coerceSelectionsToBody(
   artifactGraph: ArtifactGraph
 ): Selections | Error {
   const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
+  const passthroughSelections: Selection[] = []
   const codeRefOnlyV2: Array<Selection> = []
   const remainingOtherSelections: Selections['otherSelections'] = []
   const seenBodyIds = new Set<string>()
@@ -88,6 +89,11 @@ export function coerceSelectionsToBody(
       ) {
         codeRefOnlyV2.push({ codeRef: selection.artifact.codeRef })
       }
+      continue
+    }
+
+    if (selection.artifact.type === 'helix') {
+      passthroughSelections.push(selV2)
       continue
     }
 
@@ -189,6 +195,7 @@ export function coerceSelectionsToBody(
         ): v2 is typeof v2 & { entityRef: NonNullable<typeof v2.entityRef> } =>
           v2.entityRef != null
       ),
+    ...passthroughSelections,
     ...codeRefOnlyV2,
   ]
 
@@ -211,10 +218,14 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
     return selections
   }
 
-  const onlyAcceptsBodies = selectionTypes?.every(
-    (type) => type === 'sweep' || type === 'compositeSolid' || type === 'path'
+  const onlyAcceptsBodyLikeObjects = selectionTypes?.every(
+    (type) =>
+      type === 'sweep' ||
+      type === 'compositeSolid' ||
+      type === 'path' ||
+      type === 'helix'
   )
-  if (!onlyAcceptsBodies) {
+  if (!onlyAcceptsBodyLikeObjects) {
     return selections
   }
 
