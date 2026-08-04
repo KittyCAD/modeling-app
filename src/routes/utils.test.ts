@@ -46,7 +46,7 @@ describe('Routes utility functions', () => {
       expect(actual).toBe('mocked-version')
     })
 
-    it('returns the short commit SHA for non-production web builds', () => {
+    it('returns the short commit SHA for web builds', () => {
       const actual = getAppVersion({
         gitCommitSha: 'fe581ff1234567890',
         isDesktop: false,

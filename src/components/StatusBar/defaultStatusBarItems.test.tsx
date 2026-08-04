@@ -43,7 +43,7 @@ describe('defaultGlobalStatusBarItems', () => {
     ).toEqual({
       id: 'version',
       element: 'externalLink',
-      label: appVersion,
+      label: `v${appVersion}`,
       href: getReleaseUrl(appVersion),
       toolTip: {
         children: 'View this version on GitHub',

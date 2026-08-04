@@ -4,4 +4,5 @@ declare const __APP_VERSION__: string
 
 interface ImportMetaEnv {
   readonly MODELING_APP_COMMIT_SHA?: string
+  readonly VERCEL_ENV?: 'development' | 'preview' | 'production'
 }

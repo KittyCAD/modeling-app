@@ -57,7 +57,7 @@ export const IS_STAGING_OR_DEBUG =
   IS_STAGING ||
   (isDesktop()
     ? APP_VERSION === FALLBACK_APP_VERSION
-    : APP_VERSION !== undefined)
+    : viteEnv().VERCEL_ENV !== 'production')
 
 export const APP_DOWNLOAD_PATH = `design-studio/download${IS_STAGING_OR_DEBUG ? '/staging' : ''}`
 
