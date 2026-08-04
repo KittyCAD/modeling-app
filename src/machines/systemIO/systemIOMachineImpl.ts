@@ -523,6 +523,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
+        const existingDisplayName = getProjectDisplayName(project)
         const projectPath = fsZds.join(
           input.context.projectDirectoryPath,
           projectDirectoryName
@@ -545,7 +546,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         await writeProjectTitleToProjectToml(projectPath, requestedProjectTitle)
 
         return {
-          message: 'Project title updated.',
+          message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectTitle}"`,
           oldName: projectDirectoryName,
           newName: projectDirectoryName,
           redirect: input.redirect,

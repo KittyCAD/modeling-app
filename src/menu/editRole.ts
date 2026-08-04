@@ -1,7 +1,8 @@
+import type { BrowserWindow } from 'electron'
+
 import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
-import type { BrowserWindow } from 'electron'
 
 export const projectEditRole = (
   mainWindow: BrowserWindow

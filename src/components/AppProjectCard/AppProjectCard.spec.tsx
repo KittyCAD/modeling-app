@@ -282,13 +282,13 @@ describe('ProjectCard', () => {
   test('shows project actions in the card context menu', () => {
     renderProjectCard()
 
-    expect(screen.queryByText('Edit title')).not.toBeInTheDocument()
+    expect(screen.queryByText('Rename project')).not.toBeInTheDocument()
     expect(screen.queryByText('Delete project')).not.toBeInTheDocument()
 
     fireEvent.contextMenu(screen.getByTestId('project-link'))
 
     expect(screen.getByTestId('project-card-context-rename')).toHaveTextContent(
-      'Edit title'
+      'Rename project'
     )
     expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
       'Delete project'

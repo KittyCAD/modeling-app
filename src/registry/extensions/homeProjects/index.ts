@@ -352,7 +352,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
-      toast.success('Project title updated.')
+      toast.success(
+        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+      )
     },
     delete: async (project) => {
       const deleteProject = getProjectOperation(project, 'deleteProject')

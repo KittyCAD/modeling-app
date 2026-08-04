@@ -1,3 +1,10 @@
+import nodeFsSync from 'fs'
+import path from 'path'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
+import nodeFs from 'fs/promises'
+import type { Page } from '@playwright/test'
+import { NIL as uuidNIL } from 'uuid'
+
 import {
   closeOnboardingModalIfPresent,
   createProject,
@@ -8,13 +15,7 @@ import {
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
-import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import nodeFsSync from 'fs'
-import nodeFs from 'fs/promises'
-import path from 'path'
-import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -474,8 +475,8 @@ test(
 
       await page.getByLabel('checkmark').last().click()
 
-      await expect(page.getByText('Project title updated.')).toBeVisible()
-      await expect(page.getByText('Project title updated.')).not.toBeVisible()
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
       await expect(page.getByText('updated project name')).toBeVisible()
     })
 
@@ -495,8 +496,8 @@ test(
 
       await page.keyboard.press('Enter')
 
-      await expect(page.getByText('Project title updated.')).toBeVisible()
-      await expect(page.getByText('Project title updated.')).not.toBeVisible()
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+      await expect(page.getByText('Successfully renamed')).not.toBeVisible()
 
       await expect(page.getByText('updated name again')).toBeVisible()
     })
@@ -624,7 +625,7 @@ test(
   }
 )
 
-test.describe(`Project management`, { tag: ['@desktop'] }, () => {
+test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
   test(`Edit title from project settings and the command bar`, async ({
     context,
     page,
@@ -668,7 +669,7 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
       await titleInput.fill(settingsProjectTitle)
       await titleInput.press('Enter')
 
-      await expect(page.getByText('Project title updated.')).toBeVisible()
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
       await page.getByTestId('settings-close-button').click()
     })
 
@@ -687,68 +688,10 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
       await cmdBar.currentArgumentInput.fill(commandProjectTitle)
       await cmdBar.progressCmdBar()
 
-      await expect(
-        page.getByText('Project title updated.').last()
-      ).toBeVisible()
+      await expect(page.getByText('Successfully renamed').last()).toBeVisible()
       await expect(projectSidebarToggle).toContainText(commandProjectTitle)
       expect(await fs.stat(projectPath)).toBeDefined()
     })
-  })
-
-  test(`Editing a title keeps a project open in another window at its current path`, async ({
-    page,
-    scene,
-    nativeMenu,
-    fs,
-    folderSetupFn,
-  }) => {
-    const projectName = `project-open-in-another-window`
-    const projectTitle = `Updated project title`
-    let projectPath = ''
-    await folderSetupFn(async (dir) => {
-      projectPath = `${dir}/${projectName}`
-      await fs.mkdir(projectPath, { recursive: true })
-      await fs.writeFile(
-        `${projectPath}/main.kcl`,
-        new TextEncoder().encode('part001 = startSketchOn(XY)')
-      )
-    })
-
-    await page.getByTestId('project-link').click()
-    await scene.settled()
-    await expect
-      .poll(() =>
-        page.evaluate(async () => {
-          const lockState = await navigator.locks.query()
-          return lockState.held?.some((lock) =>
-            lock.name?.startsWith('zds-project-directory:')
-          )
-        })
-      )
-      .toBe(true)
-
-    const secondPage = await nativeMenu.openNewWindow(page)
-
-    try {
-      await expect(
-        secondPage.getByTestId('project-link').filter({ hasText: projectName })
-      ).toBeVisible()
-
-      await page.getByTestId('project-sidebar-toggle').click()
-      await page.getByTestId('project-settings').click()
-      const titleInput = page.getByTestId('project-title-setting')
-      await titleInput.fill(projectTitle)
-      await titleInput.press('Enter')
-      await expect(page.getByText('Project title updated.')).toBeVisible()
-
-      await secondPage.reload()
-      await expect(
-        secondPage.getByTestId('project-link').filter({ hasText: projectTitle })
-      ).toBeVisible()
-      expect(nodeFsSync.existsSync(projectPath)).toBe(true)
-    } finally {
-      await secondPage.close()
-    }
   })
 
   test(`Delete from project page`, async ({
@@ -805,6 +748,63 @@ test.describe(`Project management`, { tag: ['@desktop'] }, () => {
       await expect(noProjectsMessage).toBeVisible()
     })
   })
+
+  test(`Editing a title keeps a project open in another window at its current path`, async ({
+    page,
+    scene,
+    nativeMenu,
+    fs,
+    folderSetupFn,
+  }) => {
+    const projectName = `project-open-in-another-window`
+    const projectTitle = `Updated project title`
+    let projectPath = ''
+    await folderSetupFn(async (dir) => {
+      projectPath = `${dir}/${projectName}`
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        `${projectPath}/main.kcl`,
+        new TextEncoder().encode('part001 = startSketchOn(XY)')
+      )
+    })
+
+    await page.getByTestId('project-link').click()
+    await scene.settled()
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const lockState = await navigator.locks.query()
+          return lockState.held?.some((lock) =>
+            lock.name?.startsWith('zds-project-directory:')
+          )
+        })
+      )
+      .toBe(true)
+
+    const secondPage = await nativeMenu.openNewWindow(page)
+
+    try {
+      await expect(
+        secondPage.getByTestId('project-link').filter({ hasText: projectName })
+      ).toBeVisible()
+
+      await page.getByTestId('project-sidebar-toggle').click()
+      await page.getByTestId('project-settings').click()
+      const titleInput = page.getByTestId('project-title-setting')
+      await titleInput.fill(projectTitle)
+      await titleInput.press('Enter')
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
+
+      await secondPage.reload()
+      await expect(
+        secondPage.getByTestId('project-link').filter({ hasText: projectTitle })
+      ).toBeVisible()
+      expect(nodeFsSync.existsSync(projectPath)).toBe(true)
+    } finally {
+      await secondPage.close()
+    }
+  })
+
   test(`Delete from home page`, async ({
     context,
     page,
