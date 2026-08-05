@@ -172,21 +172,21 @@ function createTaggedCapGraph(
     }
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: config.sweepId,
       codeRef,
       pathId: config.pathId,
       subType: 'extrusion',
       surfaceIds: [config.capStartId, config.capEndId],
-      edgeIds: [],
       method: 'new',
       trajectoryId: null,
       consumed: false,
     }
     const capStart: Artifact = {
       type: 'cap',
+      edgeCutEdgeIds: [],
       id: config.capStartId,
       subType: 'start',
-      edgeCutEdgeIds: [],
       sweepId: config.sweepId,
       pathIds: [],
       faceCodeRef: codeRef,
@@ -194,9 +194,9 @@ function createTaggedCapGraph(
     }
     const capEnd: Artifact = {
       type: 'cap',
+      edgeCutEdgeIds: [],
       id: config.capEndId,
       subType: 'end',
-      edgeCutEdgeIds: [],
       sweepId: config.sweepId,
       pathIds: [],
       faceCodeRef: codeRef,
@@ -258,29 +258,29 @@ function createTaggedWallAndCapGraph(
   }
   const segment: Artifact = {
     type: 'segment',
+    edgeIds: [],
+    commonSurfaceIds: [],
     id: segmentId,
     pathId,
-    edgeIds: [],
     codeRef: segmentCodeRef,
-    commonSurfaceIds: [wallId, capId],
   }
   const sweep: Artifact = {
     type: 'sweep',
+    edgeIds: [],
     id: sweepId,
     codeRef: sweepCodeRef,
     pathId,
     subType: 'extrusion',
     surfaceIds: [wallId, capId],
-    edgeIds: [],
     method: 'new',
     trajectoryId: null,
     consumed: false,
   }
   const wall: Artifact = {
     type: 'wall',
+    edgeCutEdgeIds: [],
     id: wallId,
     segId: segmentId,
-    edgeCutEdgeIds: [],
     sweepId,
     pathIds: [pathId],
     faceCodeRef: segmentCodeRef,
@@ -288,9 +288,9 @@ function createTaggedWallAndCapGraph(
   }
   const cap: Artifact = {
     type: 'cap',
+    edgeCutEdgeIds: [],
     id: capId,
     subType: 'end',
-    edgeCutEdgeIds: [],
     sweepId,
     pathIds: [pathId],
     faceCodeRef: sweepCodeRef,

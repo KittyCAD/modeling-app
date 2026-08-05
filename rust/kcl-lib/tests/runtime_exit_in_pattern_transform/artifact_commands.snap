@@ -243,15 +243,6 @@ description: Artifact commands runtime_exit_in_pattern_transform.kcl
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
     }
   ]
 }

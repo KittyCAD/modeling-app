@@ -649,6 +649,23 @@ function buildEdgeExpr(
     artifactGraph,
     wasmInstance
   )
+  if (err(regularTagResult) && edgeArtifact.type === 'segment') {
+    const directTagResult = mutateAstWithTagForSketchSegment(
+      structuredClone(ast),
+      resolved.codeRef.pathToNode,
+      wasmInstance
+    )
+    if (!err(directTagResult)) {
+      return {
+        modifiedAst: directTagResult.modifiedAst,
+        edgeExpr: createCallExpressionStdLibKw(
+          'getBoundedEdge',
+          structuredClone(sourceSurfaceExpr),
+          [createLabeledArg('edge', createLocalName(directTagResult.tag))]
+        ),
+      }
+    }
+  }
   if (err(regularTagResult)) return regularTagResult
   if (regularTagResult.exprs.length === 0) {
     return new Error('Expected at least one tag for each blend edge.')
@@ -3491,10 +3508,10 @@ function faceRefToArtifactId(v: OpKclValue): string | null {
 }
 
 /**
- * Finds an edge artifact (segment, edgeCut, or sweepEdge) given the set of face
+ * Finds an edge artifact (segment or edgeCut) given the set of face
  * artifact IDs from an edgeRef. For getCommonEdge(faces=[seg01, capStart001]),
  * one "face" may be the segment (the edge) and one the cap; or both may be
- * wall/cap and we find the segment whose commonSurfaceIds match.
+ * wall/cap and we find the segment whose derived common faces match.
  */
 function findEdgeArtifactFromFaceIds(
   faceIds: string[],
@@ -3516,9 +3533,9 @@ function findEdgeArtifactFromFaceIds(
   const faceIdSet = new Set(faceIds)
   for (const [, artifact] of artifactGraph) {
     if (artifact.type !== 'segment') continue
-    const commonIds = artifact.commonSurfaceIds
-    if (!commonIds?.length) continue
-    const commonSet = new Set(commonIds)
+    const commonFaces = getCommonFacesForEdge(artifact, artifactGraph)
+    if (err(commonFaces)) continue
+    const commonSet = new Set(commonFaces.map((face) => face.id))
     if (
       faceIdSet.size === commonSet.size &&
       [...faceIdSet].every((id) => commonSet.has(id))

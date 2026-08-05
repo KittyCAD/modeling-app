@@ -14,10 +14,10 @@ flowchart LR
     6["Segment<br>[785, 824, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
-  subgraph path13 [Path]
-    13["Path Region<br>[855, 894, 0]<br>Consumed: true"]
+  subgraph path11 [Path]
+    11["Path Region<br>[855, 894, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-    14["Segment<br>[855, 894, 0]"]
+    12["Segment<br>[855, 894, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
   1["Plane<br>[285, 766, 0]"]
@@ -30,59 +30,39 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   10["Cap End"]
     %% face_code_ref=Missing NodePath
-  11["SweepEdge Opposite"]
-  12["SweepEdge Adjacent"]
-  15["Sweep Extrusion<br>[847, 907, 0]<br>Consumed: false"]
+  13["Sweep Extrusion<br>[847, 907, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  16[Wall]
+  14[Wall]
     %% face_code_ref=Missing NodePath
-  17["Cap Start"]
+  15["Cap Start"]
     %% face_code_ref=Missing NodePath
-  18["Cap End"]
+  16["Cap End"]
     %% face_code_ref=Missing NodePath
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["SketchBlock<br>[285, 766, 0]"]
+  17["SketchBlock<br>[285, 766, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  22["SketchBlockConstraint EqualRadius<br>[743, 764, 0]"]
+  18["SketchBlockConstraint EqualRadius<br>[743, 764, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 5
-  1 <--x 13
-  1 <--x 21
+  1 <--x 11
+  1 <--x 17
   2 --- 3
   2 --- 4
   2 <--x 5
-  2 <--x 13
-  21 --- 2
+  2 <--x 11
+  17 --- 2
   3 <--x 6
-  4 <--x 14
+  4 <--x 12
   5 <--x 6
   5 ---- 7
   6 --- 8
-  6 x--> 9
-  6 --- 11
-  6 --- 12
   7 --- 8
   7 --- 9
   7 --- 10
-  7 --- 11
-  7 --- 12
-  8 --- 11
-  8 --- 12
-  11 <--x 10
-  13 <--x 14
-  13 ---- 15
-  14 --- 16
-  14 x--> 17
-  14 --- 19
-  14 --- 20
-  15 --- 16
-  15 --- 17
-  15 --- 18
-  15 --- 19
-  15 --- 20
-  16 --- 19
-  16 --- 20
-  19 <--x 18
+  11 <--x 12
+  11 ---- 13
+  12 --- 14
+  13 --- 14
+  13 --- 15
+  13 --- 16
 ```

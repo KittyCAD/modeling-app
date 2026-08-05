@@ -624,8 +624,7 @@ export function addMirror3D({
     (selection) =>
       selection.entityRef?.type === 'edge' ||
       selection.artifact?.type === 'segment' ||
-      selection.artifact?.type === 'sweepEdge' ||
-      selection.artifact?.type === 'edgeCutEdge'
+      selection.artifact?.type === 'edgeCut'
   )
   let acrossArg: Expr
   if (isEdgeSelection) {
