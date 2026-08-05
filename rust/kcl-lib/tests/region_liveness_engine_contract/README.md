@@ -12,8 +12,8 @@ engine's ownership behavior. These tests prevent an engine change from silently
 making the KCL rules stale.
 
 The `.kcl` files in this directory create the geometry needed by the contract
-tests. The Rust assertions are in the `region_liveness_engine_contract` module
-in `rust/kcl-lib/src/simulation_tests.rs`.
+tests. The Rust assertions are in
+`rust/kcl-lib/src/simulation_tests/region_liveness_engine_contract.rs`.
 
 ## What the tests protect
 
