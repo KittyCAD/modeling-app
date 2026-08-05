@@ -171,7 +171,7 @@ function resolveArcEndpoints({
 }): {
   start: Coords2d
   end: Coords2d
-  firstClickIsArcStart: boolean
+  direction: 'ccw' | 'cw'
 } {
   const startFromCenter = subVec(startPoint, centerPoint)
   const endFromCenter = subVec(endPoint, centerPoint)
@@ -189,13 +189,13 @@ function resolveArcEndpoints({
     return {
       start: startPoint,
       end: endPoint,
-      firstClickIsArcStart: true,
+      direction: 'ccw',
     }
   }
   return {
-    start: endPoint,
-    end: startPoint,
-    firstClickIsArcStart: false,
+    start: startPoint,
+    end: endPoint,
+    direction: 'cw',
   }
 }
 
@@ -267,6 +267,7 @@ async function editArcWithThreePoints({
             x: { type: 'Var', value: roundOff(arcEndpoints.end[0]), units },
             y: { type: 'Var', value: roundOff(arcEndpoints.end[1]), units },
           },
+          direction: arcEndpoints.direction,
         },
       },
     ],
@@ -806,12 +807,8 @@ export async function finalizeArcActor({
     return { error: 'Failed to find arc after final edit' }
   }
 
-  const firstClickPointId = arcEndpoints.firstClickIsArcStart
-    ? editedArc.kind.segment.start
-    : editedArc.kind.segment.end
-  const lastClickPointId = arcEndpoints.firstClickIsArcStart
-    ? editedArc.kind.segment.end
-    : editedArc.kind.segment.start
+  const firstClickPointId = editedArc.kind.segment.start
+  const lastClickPointId = editedArc.kind.segment.end
 
   const newObjects = [...editResult.sceneGraphDelta.new_objects]
   let latestKclSource = editResult.kclSource

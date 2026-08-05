@@ -199,6 +199,9 @@ function getArcTangentDirection({
   if (arcObj.kind.segment.start === tangentPointId) {
     tangentDirection = scaleVec(tangentDirection, -1)
   }
+  if (arcObj.kind.segment.direction === 'cw') {
+    tangentDirection = scaleVec(tangentDirection, -1)
+  }
 
   tangentDirection = normalizeVec(tangentDirection)
   if (isInvalidUnitVector(tangentDirection)) {
@@ -241,8 +244,8 @@ export function findTangentialArcCenter({
   return addVec(startPoint, scaleVec(normal, t))
 }
 
-// Swap start/end when the endpoint is on the right side of the tangent
-// because sketch-solve arcs are interpreted CCW from start to end.
+// A point on the right side of the tangent needs a clockwise arc. Keep the
+// declared endpoints stable so point identity does not change with direction.
 export function resolveTangentialArcEndpoints(
   tangentStartPoint: Coords2d,
   endPoint: Coords2d,
@@ -256,8 +259,8 @@ export function resolveTangentialArcEndpoints(
   const swapped = cross2d(tangentDirection, chord) < -EPSILON
   return {
     swapped,
-    start: swapped ? endPoint : tangentStartPoint,
-    end: swapped ? tangentStartPoint : endPoint,
+    start: tangentStartPoint,
+    end: endPoint,
   }
 }
 
@@ -554,6 +557,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                     units,
                   },
                 },
+                direction: arcEndpoints.swapped ? 'cw' : 'ccw',
               },
             },
           ],
@@ -897,6 +901,7 @@ export async function finalizeArcActor({
                 units,
               },
             },
+            direction: arcEndpoints.swapped ? 'cw' : 'ccw',
           },
         },
       ],
@@ -908,13 +913,8 @@ export async function finalizeArcActor({
       return { error: 'Failed to find arc after final edit' }
     }
 
-    const tangentArcPointId = arcEndpoints.swapped
-      ? arcObj.kind.segment.end
-      : arcObj.kind.segment.start
-
-    const freeArcPointId = arcEndpoints.swapped
-      ? arcObj.kind.segment.start
-      : arcObj.kind.segment.end
+    const tangentArcPointId = arcObj.kind.segment.start
+    const freeArcPointId = arcObj.kind.segment.end
 
     const newObjects = [...arcEditResult.sceneGraphDelta.new_objects]
 

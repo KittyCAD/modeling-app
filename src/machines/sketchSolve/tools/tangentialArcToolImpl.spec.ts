@@ -280,6 +280,45 @@ describe('tangentialArcToolImpl', () => {
       expect(tangentInfoAtCenter).toBeNull()
     })
 
+    it('reverses the smooth continuation direction at both endpoints of a clockwise arc', () => {
+      const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const start = createPointApiObject({ id: 2, x: 5, y: 0, owner: 4 })
+      const end = createPointApiObject({ id: 3, x: 0, y: 5, owner: 4 })
+      const arc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        direction: 'cw',
+      })
+      const sceneGraphDelta = createSceneGraphDelta(
+        [center, start, end, arc],
+        [1, 2, 3, 4]
+      )
+
+      const tangentInfoAtStart = resolveTangentInfoFromClick({
+        clickedId: 2,
+        sceneGraphDelta,
+      })
+      const tangentInfoAtEnd = resolveTangentInfoFromClick({
+        clickedId: 3,
+        sceneGraphDelta,
+      })
+
+      expect(tangentInfoAtStart).toMatchObject({
+        ownerId: 4,
+        tangentStart: { pointId: 2, position: [5, 0] },
+      })
+      expect(tangentInfoAtStart?.tangentDirection[0]).toBeCloseTo(0)
+      expect(tangentInfoAtStart?.tangentDirection[1]).toBeCloseTo(1)
+      expect(tangentInfoAtEnd).toMatchObject({
+        ownerId: 4,
+        tangentStart: { pointId: 3, position: [0, 5] },
+      })
+      expect(tangentInfoAtEnd?.tangentDirection[0]).toBeCloseTo(1)
+      expect(tangentInfoAtEnd?.tangentDirection[1]).toBeCloseTo(0)
+    })
+
     it('should return null when the clicked segment is not a line/line endpoint', () => {
       const center = createPointApiObject({ id: 1, x: 0, y: 0 })
       const start = createPointApiObject({ id: 2, x: 10, y: 0 })
@@ -310,21 +349,86 @@ describe('tangentialArcToolImpl', () => {
       })
     })
 
-    it('swaps start/end order when endpoint is on the right side of tangent direction', () => {
+    it('keeps start/end order and selects CW when endpoint is on the right side of tangent direction', () => {
       const result = resolveTangentialArcEndpoints([0, 0], [1, -1], [1, 0])
 
       expect(result).toEqual({
-        start: [1, -1],
-        end: [0, 0],
+        start: [0, 0],
+        end: [1, -1],
         swapped: true,
       })
     })
   })
 
   describe('finalizeArcActor', () => {
+    it('writes CW direction without reversing the tangent and free endpoints', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+      const center = createPointApiObject({ id: 1, x: 0, y: -1 })
+      const start = createPointApiObject({ id: 2, x: 0, y: 0 })
+      const end = createPointApiObject({ id: 3, x: 1, y: -1 })
+      const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
+      vi.mocked(rustContext.editSegments).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta([center, start, end, arc], [4]),
+      })
+      vi.mocked(rustContext.addConstraint)
+        .mockResolvedValueOnce({
+          kclSource: { text: 'coincident' },
+          sceneGraphDelta: createSceneGraphDelta([], [11]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'tangent' },
+          sceneGraphDelta: createSceneGraphDelta([], [12]),
+        })
+
+      await finalizeArcActor({
+        input: {
+          arcId: 4,
+          endPoint: [1, -1],
+          tangentInfo: {
+            ownerId: 5,
+            tangentStart: {
+              pointId: 2,
+              position: [0, 0],
+            },
+            tangentDirection: [1, 0],
+          },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(editSegmentsSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        [
+          {
+            id: 4,
+            ctor: expect.objectContaining({
+              type: 'Arc',
+              direction: 'cw',
+              start: expect.objectContaining({
+                x: expect.objectContaining({ value: 0 }),
+                y: expect.objectContaining({ value: 0 }),
+              }),
+              end: expect.objectContaining({
+                x: expect.objectContaining({ value: 1 }),
+                y: expect.objectContaining({ value: -1 }),
+              }),
+            }),
+          },
+        ],
+        expect.anything()
+      )
+    })
+
     it('adds a coincident constraint for a snapped free endpoint before tangent constraints', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const center = createPointApiObject({ id: 1, x: 0, y: 1 })
       const start = createPointApiObject({ id: 2, x: 0, y: 0 })
@@ -366,6 +470,21 @@ describe('tangentialArcToolImpl', () => {
           sketchId: 7,
         },
       })
+
+      expect(editSegmentsSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        [
+          {
+            id: 4,
+            ctor: expect.objectContaining({
+              type: 'Arc',
+              direction: 'ccw',
+            }),
+          },
+        ],
+        expect.anything()
+      )
 
       expect(addConstraintSpy).toHaveBeenNthCalledWith(
         1,
