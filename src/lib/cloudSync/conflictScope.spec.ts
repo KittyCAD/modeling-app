@@ -157,7 +157,7 @@ describe('cloud sync conflict scoping', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
     await remoteIndexStarted

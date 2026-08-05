@@ -83,7 +83,7 @@ describe('disconnectCloudSyncProject', () => {
       enabled: true,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
   })
 
@@ -284,7 +284,7 @@ describe('cloud sync upload failures', () => {
       enabled: false,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
     setCloudSyncProjectScope(projectPath)
     configureCloudSyncEngine({ enabled: true })
@@ -320,7 +320,7 @@ describe('cloud sync upload failures', () => {
       enabled: true,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
 
     expect(cloudSyncStatus.value).toMatchObject({

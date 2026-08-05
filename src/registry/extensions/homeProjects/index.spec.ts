@@ -8,7 +8,7 @@ import { signal } from '@preact/signals-core'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
-  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
 } from '@src/lib/projectLibraries'
@@ -29,7 +29,7 @@ vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 const library = {
   id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
-  path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
+  path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
   type: CLOUD_PROJECT_LIBRARY_TYPE,
 } satisfies ProjectLibrary
 
