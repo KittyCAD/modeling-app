@@ -144,8 +144,10 @@ describe('testing settings initialization', () => {
 
   it('falls back to default project libraries after clearing user-level libraries', () => {
     const settings = createSettingsWithProjectLibraries()
-    settings.app.libraries.default =
-      getDefaultProjectLibrarySettings('/tmp/projects')
+    settings.app.libraries.default = [
+      getDefaultCloudProjectLibrarySetting(),
+      ...getDefaultProjectLibrarySettings('/tmp/projects'),
+    ]
 
     setSettingsAtLevel(settings, 'user', {
       app: {
@@ -156,6 +158,7 @@ describe('testing settings initialization', () => {
     clearSettingsAtLevel(settings, 'user')
 
     expect(settings.app.libraries.current).toEqual([
+      getDefaultCloudProjectLibrarySetting(),
       {
         title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',

@@ -505,7 +505,7 @@ describe('project system', () => {
           current: true,
           user: true,
           hasPersonalCloudLibrarySetting: true,
-          hasDefaultDirectoryLibrarySetting: false,
+          hasDefaultDirectoryLibrarySetting: true,
         })
 
       // On web, cloud sync is the project storage layer, not an optional

@@ -243,14 +243,22 @@ export function resolveProjectLibrarySettingDefaults(
   policies: readonly ProjectLibrarySettingDefaultPolicy[],
   input: ProjectLibrarySettingDefaultPolicyInput
 ) {
+  const defaults: ProjectLibrarySetting[] = []
+  const seenLibraries = new Set<string>()
+
   for (const policy of policies) {
-    const defaults = policy.getDefaultLibraries(input)
-    if (defaults && defaults.length > 0) {
-      return mergeProjectLibrarySettings(defaults)
+    for (const library of policy.getDefaultLibraries(input) ?? []) {
+      const key = `${library.type}:${library.path}`
+      if (seenLibraries.has(key)) {
+        continue
+      }
+
+      seenLibraries.add(key)
+      defaults.push(library)
     }
   }
 
-  return []
+  return defaults
 }
 
 export const projectLibrariesContract = defineContract({

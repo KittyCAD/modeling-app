@@ -432,11 +432,16 @@ describe('projectLibrariesFromSettings', () => {
 })
 
 describe('project library default policies', () => {
-  test('resolves the highest-priority default library policy', () => {
+  test('composes default library policies in priority order', () => {
     const directoryPolicy = {
       id: 'directory',
       priority: 0,
       getDefaultLibraries: () => [
+        {
+          title: 'Lower-priority Personal Cloud',
+          path: '/cloud/personal',
+          type: 'cloud',
+        },
         {
           title: 'Projects',
           path: '/projects',
@@ -471,6 +476,11 @@ describe('project library default policies', () => {
         title: 'Personal Cloud',
         path: '/cloud/personal',
         type: 'cloud',
+      },
+      {
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
       },
     ])
   })
