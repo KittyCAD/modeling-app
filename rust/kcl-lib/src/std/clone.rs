@@ -109,7 +109,7 @@ async fn inner_clone(
                 )
                 .await?;
 
-            fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+            fix_tags_and_references(&mut new_geometry, &mut geometry, exec_state, &args)
                 .await
                 .map_err(|e| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -126,18 +126,45 @@ async fn inner_clone(
 /// Fix the tags and references of the cloned geometry.
 pub(super) async fn fix_tags_and_references(
     new_geometry: &mut GeometryWithImportedGeometry,
-    old_geometry_id: uuid::Uuid,
+    old_geometry: &mut GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<()> {
+    let old_geometry_id = old_geometry.id(&args.ctx).await?;
+    let source_topology_id = match old_geometry {
+        GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
+        GeometryWithImportedGeometry::Solid(solid) => {
+            let original_id = solid.original_id();
+
+            // Pattern copies keep the source body's topology in their KCL
+            // value. CSG outputs do too, but their original body has been
+            // consumed, so follow the existing replacement chain to the live
+            // body whose topology was patterned or cloned.
+            exec_state
+                .check_solid_id_consumed(&original_id)
+                .and_then(|info| info.suggested_replacement_key())
+                .and_then(|key| exec_state.latest_consumed_output(Some(key)))
+                .map(|key| key.engine_id())
+                .unwrap_or(original_id)
+        }
+        GeometryWithImportedGeometry::ImportedGeometry(_) => old_geometry_id,
+    };
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
+    let (entity_id_map, source_topology_id) = get_old_new_child_map(
+        new_geometry_id,
+        old_geometry_id,
+        source_topology_id,
+        old_geometry,
+        exec_state,
+        args,
+    )
+    .await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            sketch.clone = Some(old_geometry_id);
+            sketch.clone = Some(source_topology_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
@@ -155,7 +182,7 @@ pub(super) async fn fix_tags_and_references(
             sketch.id = new_geometry_id;
             sketch.original_id = new_geometry_id;
             sketch.artifact_id = new_geometry_id.into();
-            sketch.clone = Some(old_geometry_id);
+            sketch.clone = Some(source_topology_id);
 
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
             let sketch_for_post = sketch.clone();
@@ -263,44 +290,83 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
 async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
+    candidate_source_topology_id: uuid::Uuid,
+    old_geometry: &GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Get the old geometries entity ids.
-    let response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(
-                mcmd::EntityGetAllChildUuids::builder()
-                    .entity_id(old_geometry_id)
-                    .build(),
-            ),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(old_resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
+) -> Result<(HashMap<uuid::Uuid, uuid::Uuid>, uuid::Uuid)> {
+    // Query the cloned entity's own children first for artifact graph ID
+    // management. If its KCL value references those children, this is the
+    // live topology even when its original ID was produced in another module.
+    // Pattern copies retain the source topology's child IDs instead.
+    let current_entity_ids = get_all_child_uuids(old_geometry_id, exec_state, args).await?;
+    let source_topology_id = if old_geometry_id == candidate_source_topology_id
+        || geometry_references_any_child(old_geometry, &current_entity_ids)
+    {
+        old_geometry_id
+    } else {
+        candidate_source_topology_id
     };
-    let old_entity_ids = old_resp.entity_ids;
+
+    // Get the old geometries entity ids.
+    let old_entity_ids = if source_topology_id == old_geometry_id {
+        current_entity_ids
+    } else {
+        get_all_child_uuids(source_topology_id, exec_state, args).await?
+    };
 
     // Get the new geometries entity ids.
+    let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
+
+    // Create a map of old entity ids to new entity ids.
+    Ok((
+        HashMap::from_iter(
+            old_entity_ids
+                .iter()
+                .zip(new_entity_ids.iter())
+                .map(|(old_id, new_id)| (*old_id, *new_id)),
+        ),
+        source_topology_id,
+    ))
+}
+
+fn geometry_references_any_child(geometry: &GeometryWithImportedGeometry, child_ids: &[uuid::Uuid]) -> bool {
+    let sketch_references_any_child = |sketch: &Sketch| {
+        sketch
+            .paths
+            .iter()
+            .chain(&sketch.inner_paths)
+            .any(|path| child_ids.contains(&path.get_id()))
+    };
+
+    match geometry {
+        GeometryWithImportedGeometry::ImportedGeometry(_) => true,
+        GeometryWithImportedGeometry::Sketch(sketch) => sketch_references_any_child(sketch),
+        GeometryWithImportedGeometry::Solid(solid) => {
+            solid
+                .value
+                .iter()
+                .any(|surface| child_ids.contains(&surface.get_id()) || child_ids.contains(&surface.face_id()))
+                || solid.start_cap_id.is_some_and(|id| child_ids.contains(&id))
+                || solid.end_cap_id.is_some_and(|id| child_ids.contains(&id))
+                || solid.sketch().is_some_and(sketch_references_any_child)
+        }
+    }
+}
+
+async fn get_all_child_uuids(
+    geometry_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<uuid::Uuid>> {
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(
-                mcmd::EntityGetAllChildUuids::builder()
-                    .entity_id(new_geometry_id)
-                    .build(),
-            ),
+            ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(geometry_id).build()),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(new_resp),
+        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(resp),
     } = response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
@@ -308,15 +374,7 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
-    let new_entity_ids = new_resp.entity_ids;
-
-    // Create a map of old entity ids to new entity ids.
-    Ok(HashMap::from_iter(
-        old_entity_ids
-            .iter()
-            .zip(new_entity_ids.iter())
-            .map(|(old_id, new_id)| (*old_id, *new_id)),
-    ))
+    Ok(resp.entity_ids)
 }
 
 /// Fix the tags and references of a sketch.

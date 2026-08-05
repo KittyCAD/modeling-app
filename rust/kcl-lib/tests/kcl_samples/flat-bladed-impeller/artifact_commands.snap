@@ -83,7 +83,7 @@ description: Artifact commands flat-bladed-impeller.kcl
         "path": "[uuid]",
         "to": {
           "x": 38.75,
-          "y": -0.000000000000000000000000025000039576582697,
+          "y": -0.0000000000000000000000000025000049231360345,
           "z": 0.0
         }
       }
@@ -105,7 +105,7 @@ description: Artifact commands flat-bladed-impeller.kcl
           "type": "line",
           "end": {
             "x": 118.75,
-            "y": -0.000000000000000000000000033333386165999255,
+            "y": -0.000000000000000000000000003333339898153603,
             "z": 0.0
           },
           "relative": false
@@ -156,7 +156,7 @@ description: Artifact commands flat-bladed-impeller.kcl
           "type": "line",
           "end": {
             "x": 38.75,
-            "y": -0.000000000000000000000000025000039551582655,
+            "y": -0.000000000000000000000000002500004922886034,
             "z": 0.0
           },
           "relative": false
@@ -514,7 +514,7 @@ description: Artifact commands flat-bladed-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000010000000777403703,
+            "x": 0.0000000010000000891687927,
             "y": 0.0
           },
           "radius": 17.500000001500002,
@@ -657,7 +657,7 @@ description: Artifact commands flat-bladed-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000010000000777403703,
+            "x": 0.0000000010000000891687927,
             "y": 0.0
           },
           "radius": 12.5000000015,

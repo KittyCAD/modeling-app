@@ -768,6 +768,84 @@ describe('ProjectExplorer', () => {
     const renameField = screen.getByTestId('file-rename-field')
     expect(renameField.innerText).toBe('')
   })
+  it('should create a file in the folder targeted by the toolbar or context menu', async () => {
+    project.children = [
+      createFolder('active-folder'),
+      createFolder('selected-folder'),
+    ]
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const { rerender } = render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    const activeFolder = screen.getByRole('treeitem', {
+      name: 'active-folder',
+    })
+    const selectedFolder = screen.getByRole('treeitem', {
+      name: 'selected-folder',
+    })
+    fireEvent.click(selectedFolder)
+    fireEvent.click(selectedFolder)
+    expect(selectedFolder).toHaveAttribute('aria-expanded', 'false')
+
+    fireEvent.keyDown(window, { key: 'ArrowUp' })
+    await waitFor(() => {
+      expect(activeFolder.className).toContain('outline-primary')
+    })
+    expect(selectedFolder).toHaveAttribute('aria-selected', 'true')
+
+    rerender(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={performance.now()}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    expect(selectedFolder).toHaveAttribute('aria-expanded', 'true')
+    expect(activeFolder).not.toHaveAttribute('aria-expanded', 'true')
+    const newFileRow = screen
+      .getByTestId('file-rename-field')
+      .closest('[role="treeitem"]')
+    expect(selectedFolder.nextElementSibling).toBe(newFileRow)
+    expect(newFileRow).toHaveAttribute('aria-level', '2')
+
+    fireEvent.keyDown(screen.getByTestId('file-rename-field'), {
+      key: 'Escape',
+    })
+    await waitFor(() => {
+      expect(screen.queryByTestId('file-rename-field')).not.toBeInTheDocument()
+    })
+
+    fireEvent.contextMenu(activeFolder)
+    fireEvent.click(await screen.findByTestId('context-menu-create-file'))
+
+    const contextMenuFileRow = screen
+      .getByTestId('file-rename-field')
+      .closest('[role="treeitem"]')
+    expect(activeFolder.nextElementSibling).toBe(contextMenuFileRow)
+    expect(contextMenuFileRow).toHaveAttribute('aria-level', '2')
+  })
   it('should render a placefolder for a folder when create folder is pressed', () => {
     const mainFile = createFile('main.kcl')
     project.children = [createFolder('parts', [mainFile])]

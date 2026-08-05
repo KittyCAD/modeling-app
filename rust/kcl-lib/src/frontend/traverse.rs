@@ -129,6 +129,10 @@ fn dfs_mut_body_item<V: Visitor>(
                 return ret;
             }
         }
+        // This traversal descends into expressions, and a type declaration holds
+        // none: an alias holds a `Type`, and enum variants are identifiers. The
+        // visitor has already seen the statement itself above. `crate::walk` is the
+        // traversal that reaches variants, and it does.
         ast::BodyItem::TypeDeclaration(_) => {}
         ast::BodyItem::ReturnStatement(node) => {
             ret = dfs_mut_expr(&mut node.argument, visitor);

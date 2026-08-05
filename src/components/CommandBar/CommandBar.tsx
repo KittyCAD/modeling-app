@@ -23,8 +23,16 @@ export const CommandBar = () => {
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
-    context: { selectedCommand, currentArgument, commands },
+    context: {
+      selectedCommand,
+      currentArgument,
+      commands,
+      reviewValidationDetails,
+    },
   } = commandBarState
+  const showsCodemodReview =
+    commandBarState.matches('Review') &&
+    reviewValidationDetails?.type === 'codemod'
 
   // The command palette used to have light dismiss behavior, but we've decided
   // it's not a great fit for workflows where the user may want to review other
@@ -153,7 +161,9 @@ export const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className={`relative z-50 pointer-events-auto w-full ${
+              showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
+            } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
             as="div"
             data-testid="command-bar"
           >
