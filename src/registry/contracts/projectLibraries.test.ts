@@ -1,6 +1,6 @@
 import {
   areProjectLibrarySettingsEqual,
-  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
   DEFAULT_PROJECT_LIBRARY_ID,
   formatProjectLibraryPathForDisplay,
   getContainingDirectoryProjectLibraryPath,
@@ -8,10 +8,9 @@ import {
   getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
   getProjectLibraryIdFromSetting,
-  INITIAL_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
   moveProjectLibrarySetting,
   normalizeProjectLibrarySetting,
-  normalizeProjectLibrarySettingPath,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   projectLibrariesFromSettings,
   projectLibraryFromSetting,
@@ -65,15 +64,6 @@ describe('project library settings', () => {
     )
   })
 
-  test('normalizes project library setting paths consistently', () => {
-    expect(normalizeProjectLibrarySettingPath('  \\projects\\client\\  ')).toBe(
-      '/projects/client'
-    )
-    expect(normalizeProjectLibrarySettingPath('/projects/client///')).toBe(
-      '/projects/client'
-    )
-  })
-
   test('maps the default cloud library to the stable cloud library id', () => {
     const library = projectLibraryFromSetting(
       getDefaultCloudProjectLibrarySetting()
@@ -82,18 +72,18 @@ describe('project library settings', () => {
     expect(library).toEqual(
       expect.objectContaining({
         id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
         type: 'cloud',
       })
     )
     expect(library.source).toBeUndefined()
   })
 
-  test('maps an empty personal cloud path to the stable cloud library id', () => {
+  test('maps the legacy personal cloud path to the stable cloud library id', () => {
     expect(
       projectLibraryFromSetting({
         ...getDefaultCloudProjectLibrarySetting(),
-        path: '',
+        path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
       })
     ).toEqual(
       expect.objectContaining({
@@ -102,22 +92,12 @@ describe('project library settings', () => {
     )
   })
 
-  test('omits default personal cloud paths when serializing project libraries', () => {
+  test('omits the default personal cloud path when serializing project libraries', () => {
     expect(
       projectLibrarySettingsToSerialized([
         {
           title: 'Personal Cloud',
-          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
-          type: 'cloud',
-        },
-        {
-          title: 'Personal Cloud',
-          path: '',
-          type: 'cloud',
-        },
-        {
-          title: 'Personal Cloud',
-          path: INITIAL_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+          path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
           type: 'cloud',
         },
         {
@@ -128,14 +108,6 @@ describe('project library settings', () => {
         },
       ])
     ).toEqual([
-      {
-        title: 'Personal Cloud',
-        type: 'cloud',
-      },
-      {
-        title: 'Personal Cloud',
-        type: 'cloud',
-      },
       {
         title: 'Personal Cloud',
         type: 'cloud',
@@ -149,39 +121,11 @@ describe('project library settings', () => {
     ])
   })
 
-  test('preserves an explicit cloud root path when serializing project libraries', () => {
-    expect(
-      projectLibrarySettingsToSerialized([
-        {
-          title: 'Root Cloud',
-          path: '/',
-          type: 'cloud',
-        },
-      ])
-    ).toEqual([
-      {
-        title: 'Root Cloud',
-        path: '/',
-        type: 'cloud',
-      },
-    ])
-  })
-
-  test('normalizes default personal cloud paths to omitted path settings', () => {
+  test('fills the default personal cloud path when parsing serialized project libraries', () => {
     expect(
       projectLibrarySettingsFromSerialized([
         {
           title: 'Personal Cloud',
-          type: 'cloud',
-        },
-        {
-          title: 'Personal Cloud',
-          path: '',
-          type: 'cloud',
-        },
-        {
-          title: 'Personal Cloud',
-          path: INITIAL_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
           type: 'cloud',
         },
         {
@@ -192,8 +136,6 @@ describe('project library settings', () => {
         },
       ])
     ).toEqual([
-      getDefaultCloudProjectLibrarySetting(),
-      getDefaultCloudProjectLibrarySetting(),
       getDefaultCloudProjectLibrarySetting(),
       {
         title: 'Team Cloud',
@@ -219,7 +161,7 @@ describe('project library settings', () => {
   test('formats cloud library paths with a zoo:// display prefix', () => {
     expect(
       formatProjectLibraryPathForDisplay({
-        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+        path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
         type: 'cloud',
       })
     ).toBe('zoo://personal')
@@ -461,7 +403,7 @@ describe('projectLibrariesFromSettings', () => {
         },
         {
           title: 'Personal Cloud',
-          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+          path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_LOCAL_PATH,
           type: 'cloud',
         },
       ])

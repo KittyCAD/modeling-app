@@ -14,7 +14,7 @@ The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloud
 
 ## Libraries and disk persistence
 
-The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. Each configured cloud-type library contributes its own local materialization path. The personal cloud library may omit that path and use the app-managed default:
+The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. Each configured cloud-type library contributes its own local materialization path. A source-less Personal Cloud library still accepts the legacy `/personal` path and resolves it to the app-managed default:
 - On web: `<opfs-root>/documents/zoo-design-studio-projects`
 - Linux: `~/Zoo/personal`
 - Windows: `%USERPROFILE%\Zoo\personal`

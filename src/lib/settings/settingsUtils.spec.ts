@@ -13,9 +13,9 @@ import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import {
-  DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
   getDefaultCloudProjectLibrarySetting,
   getDefaultProjectLibrarySettings,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
 } from '@src/lib/projectLibraries'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
@@ -458,7 +458,7 @@ describe('project settings serialization regression', () => {
             libraries: [
               {
                 title: 'Personal Cloud',
-                path: DEFAULT_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
+                path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
                 type: 'cloud',
               },
             ],

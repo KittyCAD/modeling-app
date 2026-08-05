@@ -1,10 +1,5 @@
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { PROJECT_FOLDER } from '@src/lib/constants'
-import {
-  CLOUD_PROJECT_LIBRARY_TYPE,
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
-} from '@src/lib/projectLibraries'
 import { Themes } from '@src/lib/theme'
 import type { DeepPartial } from '@src/lib/types'
 
@@ -15,28 +10,13 @@ export const PLAYWRIGHT_PROJECT_DIRECTORY = `/documents/${PROJECT_FOLDER}`
 export const PLAYWRIGHT_PROJECT_LIBRARY_TITLE = 'Projects'
 
 export function playwrightProjectLibraries(
-  projectDirectory: string = PLAYWRIGHT_PROJECT_DIRECTORY,
-  {
-    cloudSyncWebEnabled = false,
-  }: {
-    cloudSyncWebEnabled?: boolean
-  } = {}
+  projectDirectory: string = PLAYWRIGHT_PROJECT_DIRECTORY
 ) {
-  if (cloudSyncWebEnabled) {
-    return [
-      {
-        title: PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE,
-        path: projectDirectory,
-        type: CLOUD_PROJECT_LIBRARY_TYPE,
-      },
-    ]
-  }
-
   return [
     {
       title: PLAYWRIGHT_PROJECT_LIBRARY_TITLE,
       path: projectDirectory,
-      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      type: 'directory',
     },
   ]
 }

@@ -29,11 +29,12 @@ import {
   withRemoteProjectMetadataInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import {
+  PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
-import { INITIAL_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING } from '@src/lib/projectLibraries'
+import { LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH } from '@src/lib/projectLibraries'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const encoder = new TextEncoder()
@@ -65,36 +66,21 @@ describe('cloudSync sync helpers', () => {
     ).resolves.toBe('/team-cloud')
   })
 
-  it('resolves default personal cloud library paths to the app-managed materialization directory', async () => {
-    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/appData')
+  it('resolves the legacy personal cloud library path to the app-managed materialization directory', async () => {
+    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/documents')
     vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
       parts.reduce((targetPath, part) => `${targetPath}/${part}`)
     )
 
-    for (const path of [
-      undefined,
-      '',
-      INITIAL_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH_SETTING,
-    ]) {
-      await expect(
-        getCloudProjectLibraryMaterializationDirectoryPath({
-          ...(path === undefined ? {} : { path }),
-          type: 'cloud',
-        })
-      ).resolves.toBe('/appData/CloudSync/Zoo/local')
-    }
-
-    expect(fsZds.getPath).toHaveBeenCalledTimes(3)
-    expect(fsZds.getPath).toHaveBeenCalledWith('appData')
-  })
-
-  it('requires explicit paths for non-personal cloud libraries', async () => {
     await expect(
       getCloudProjectLibraryMaterializationDirectoryPath({
-        source: '/team',
+        path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
         type: 'cloud',
       })
-    ).rejects.toThrow('Expected a cloud project library materialization path.')
+    ).resolves.toBe(`/documents/${PROJECT_FOLDER}`)
+
+    expect(fsZds.getPath).toHaveBeenCalledTimes(1)
+    expect(fsZds.getPath).toHaveBeenCalledWith('documents')
   })
 
   it('rejects non-cloud libraries as cloud materialization sources', async () => {

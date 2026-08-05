@@ -1,17 +1,20 @@
-import { webSafePathSplit } from '@src/lib/pathUtils'
+import { PROJECT_FOLDER } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   isDefaultPersonalCloudProjectLibraryPathSetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 
-export const DEFAULT_CLOUD_PROJECT_LIBRARY_MATERIALIZATION_PATH_PARTS = [
-  'CloudSync',
-  'Zoo',
-  'local',
-] as const
 export const INTERNAL_OPFS_META_FILE = '._meta'
+export const CLOUD_PROJECT_LIBRARY_FOLDER = 'Zoo'
+export const PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER = 'personal'
+export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
+  'documents',
+  PROJECT_FOLDER,
+])}`
 const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
   INTERNAL_OPFS_META_FILE,
   '.git',
@@ -21,33 +24,54 @@ const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
 ])
 
 export async function getCloudProjectLibraryMaterializationDirectoryPath(
-  library: Pick<ProjectLibrarySetting, 'source' | 'type'> & { path?: string }
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
 ) {
   if (library.type !== CLOUD_PROJECT_LIBRARY_TYPE) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
     throw new Error('Expected a cloud project library.')
   }
 
-  if (isDefaultPersonalCloudProjectLibraryPathSetting(library)) {
-    return getDefaultCloudProjectLibraryMaterializationDirectoryPath()
+  if (
+    isLegacyPersonalCloudProjectLibraryPathSetting(library) ||
+    isDefaultPersonalCloudProjectLibraryPathSetting(library)
+  ) {
+    return getDefaultCloudProjectDirectoryPath()
   }
 
-  const configuredPath = normalizePathForSync(library.path?.trim() ?? '')
-  if (configuredPath) {
-    return configuredPath
-  }
-
-  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-  throw new Error('Expected a cloud project library materialization path.')
+  return normalizePathForSync(library.path)
 }
 
-export async function getDefaultCloudProjectLibraryMaterializationDirectoryPath() {
-  return normalizePathForSync(
-    fsZds.join(
-      await fsZds.getPath('appData'),
-      ...DEFAULT_CLOUD_PROJECT_LIBRARY_MATERIALIZATION_PATH_PARTS
+async function getDefaultCloudProjectDirectoryPath() {
+  if (typeof window !== 'undefined' && window.electron?.os.isMac) {
+    try {
+      return fsZds.join(
+        fsZds.dirname(await fsZds.getPath('appData')),
+        'CloudStorage',
+        CLOUD_PROJECT_LIBRARY_FOLDER,
+        PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
+      )
+    } catch {
+      // Fall back to the shared desktop home location below.
+    }
+  }
+
+  if (typeof window !== 'undefined' && !window.electron) {
+    try {
+      return fsZds.join(await fsZds.getPath('documents'), PROJECT_FOLDER)
+    } catch {
+      return DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH
+    }
+  }
+
+  try {
+    return fsZds.join(
+      await fsZds.getPath('home'),
+      CLOUD_PROJECT_LIBRARY_FOLDER,
+      PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER
     )
-  )
+  } catch {
+    return DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH
+  }
 }
 
 export function normalizePathForSync(targetPath: string) {

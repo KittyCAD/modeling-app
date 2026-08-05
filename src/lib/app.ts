@@ -22,19 +22,18 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
-  isDefaultPersonalCloudProjectLibraryPathSetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
-  normalizeProjectLibrarySettingPath,
-  type ProjectLibrarySetting,
   projectLibrariesFromSettings,
+  type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -128,6 +127,10 @@ function getZookeeperReplayFallbackFilePath(
   ].filter((path, index, paths) => paths.indexOf(path) === index)
 
   return candidates.find((path) => path && !deletedPaths.has(path))
+}
+
+function normalizeProjectLibrarySettingPath(path: string) {
+  return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -677,27 +680,18 @@ export class App implements AppSubsystems {
     }
 
     const currentLibraries = snapshot.context.app.libraries?.current ?? []
-    const defaultDirectoryLibraryPathCandidates = [
-      snapshot.context.app.projectDirectory?.current,
-      snapshot.context.app.projectDirectory?.default,
-      ...(snapshot.context.app.libraries?.default ?? [])
-        .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
-        .map((library) => library.path),
-    ].filter((path): path is string => Boolean(path?.trim()))
     const defaultDirectoryLibraryPaths = new Set(
-      defaultDirectoryLibraryPathCandidates.map(
-        normalizeProjectLibrarySettingPath
-      )
+      [
+        snapshot.context.app.projectDirectory?.current,
+        snapshot.context.app.projectDirectory?.default,
+        ...(snapshot.context.app.libraries?.default ?? [])
+          .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+          .map((library) => library.path),
+      ]
+        .filter((path): path is string => Boolean(path?.trim()))
+        .map(normalizeProjectLibrarySettingPath)
     )
-    const shouldUseProjectDirectoryForPersonalCloud =
-      typeof window !== 'undefined' &&
-      !window.electron &&
-      Boolean(defaultDirectoryLibraryPathCandidates[0])
-    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting(
-      shouldUseProjectDirectoryForPersonalCloud
-        ? defaultDirectoryLibraryPathCandidates[0]
-        : undefined
-    )
+    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
       isPersonalCloudProjectLibrarySetting(library)
     const shouldReplaceDirectoryLibraryOnWeb = (
@@ -715,14 +709,17 @@ export class App implements AppSubsystems {
       currentLibraries.flatMap((library) => {
         if (isDefaultCloudLibrary(library)) {
           hasPersonalCloudLibrary = true
-          if (
-            shouldUseProjectDirectoryForPersonalCloud &&
-            isDefaultPersonalCloudProjectLibraryPathSetting(library)
-          ) {
-            return [defaultCloudLibrary]
-          }
-
-          return [library]
+          return [
+            isLegacyPersonalCloudProjectLibraryPathSetting(library)
+              ? {
+                  ...library,
+                  path: defaultCloudLibrary.path,
+                  ...(defaultCloudLibrary.source
+                    ? { source: defaultCloudLibrary.source }
+                    : {}),
+                }
+              : library,
+          ]
         }
 
         if (shouldReplaceDirectoryLibraryOnWeb(library)) {
