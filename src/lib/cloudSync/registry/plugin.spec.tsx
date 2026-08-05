@@ -1,10 +1,10 @@
+import type { Feature } from '@kittycad/lib'
 import {
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
   Registry,
 } from '@kittycad/registry'
-import type { Feature } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
@@ -25,8 +25,8 @@ import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
 import { Themes } from '@src/lib/theme'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
@@ -37,6 +37,7 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
+  projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -479,6 +480,36 @@ describe('cloud sync project library', () => {
           project,
         })
       ).toEqual({ defaultFile: projectWellFormed.default_file })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('uses Personal Cloud as the web project library default', () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+
+    try {
+      const defaultPolicies = registry.get(
+        projectLibrarySettingDefaultPoliciesValueSpec
+      )
+      const personalCloudPolicy = defaultPolicies.find(
+        (policy) =>
+          policy.id === 'cloud-sync.personal-cloud-library-default-policy'
+      )
+
+      expect(
+        personalCloudPolicy?.getDefaultLibraries({
+          initialDefaultDir: '/projects',
+          isDesktop: false,
+        })
+      ).toEqual([getDefaultCloudProjectLibrarySetting()])
+      expect(
+        personalCloudPolicy?.getDefaultLibraries({
+          initialDefaultDir: '/projects',
+          isDesktop: true,
+        })
+      ).toBeUndefined()
     } finally {
       registry[Symbol.dispose]()
     }

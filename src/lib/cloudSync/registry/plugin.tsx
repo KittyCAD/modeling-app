@@ -76,8 +76,9 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
-  type ProjectLibraryTypeContribution,
   type ProjectLibrarySettingsDetailsProps,
+  type ProjectLibraryTypeContribution,
+  projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -1044,6 +1045,12 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync.project-library-type',
       provides: [
+        provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+          id: 'cloud-sync.personal-cloud-library-default-policy',
+          priority: 10,
+          getDefaultLibraries: ({ isDesktop }) =>
+            isDesktop ? undefined : [getDefaultCloudProjectLibrarySetting()],
+        }),
         provide(projectLibraryTypesValueSpec, cloudLibraryType, {
           key: 'cloud-sync.project-library-type',
         }),
