@@ -1971,7 +1971,7 @@ description: Artifact commands snowman.kcl
           "type": "line",
           "end": {
             "x": 18.0,
-            "y": -0.005000029668266223,
+            "y": -0.00500002965632076,
             "z": 0.0
           },
           "relative": false
@@ -1987,8 +1987,8 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.000275398936473,
-            "y": -0.005000029668266312,
+            "x": 18.000275849550174,
+            "y": -0.00500002965632077,
             "z": 0.0
           },
           "relative": false
@@ -2004,17 +2004,17 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 17.499493256719706,
-            "y": -0.010550714230660821
+            "x": 17.499492284372938,
+            "y": -0.010549823674176981
           },
-          "radius": 0.5008129032506309,
+          "radius": 0.5008143162543024,
           "start": {
             "unit": "degrees",
-            "value": 0.6350421650757201
+            "value": 0.6349384840722224
           },
           "end": {
             "unit": "degrees",
-            "value": -85.36326409967279
+            "value": -85.3631615132916
           },
           "relative": false
         }
@@ -2029,8 +2029,8 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.339850797996827,
-            "y": -1.9283045232221967,
+            "x": 1.3398514943177136,
+            "y": -1.9283124368642235,
             "z": 0.0
           },
           "relative": false
@@ -2046,17 +2046,17 @@ description: Artifact commands snowman.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.2336350998369878,
-            "y": -0.6838792488192935
+            "x": 1.2336494751078868,
+            "y": -0.6838657302181186
           },
-          "radius": 1.248949974221675,
+          "radius": 1.2489701656030785,
           "start": {
             "unit": "degrees",
-            "value": -85.1214451132558
+            "value": -85.12215396831893
           },
           "end": {
             "unit": "degrees",
-            "value": -188.4775892999571
+            "value": -188.47687774561865
           },
           "relative": false
         }

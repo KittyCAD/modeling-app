@@ -171,7 +171,7 @@ description: Artifact commands counterdrilled-weldment.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000008466667362968474,
+            "x": 0.0000000000846666729720085,
             "y": 0.0
           },
           "radius": 15.875000000296332,

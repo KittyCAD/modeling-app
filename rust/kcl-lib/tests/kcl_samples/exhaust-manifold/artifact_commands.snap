@@ -68,8 +68,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000001409032764429975,
-          "y": 0.000000000011402974233642712,
+          "x": -0.0000000000000000013060808865652342,
+          "y": -0.000000000000000019311215059418917,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000010502130392353463,
-            "y": 76.20000000001173,
+            "x": -0.000000000000000020604771226425775,
+            "y": 76.19999999999999,
             "z": 0.0
           },
           "relative": false
@@ -107,32 +107,19 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 76.1925637821706,
-            "y": 77.26452999792058
+            "x": 76.19256378079282,
+            "y": 77.26453018267313
           },
-          "radius": 76.19999999878596,
+          "radius": 76.20000000000003,
           "start": {
             "unit": "degrees",
-            "value": -179.1995398925103
+            "value": -179.19953975358283
           },
           "end": {
             "unit": "degrees",
-            "value": -260.41160245303007
+            "value": -260.41160243094714
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 63.4999999999728,
-          "y": 152.40000000002266,
-          "z": 0.0
         }
       }
     },
@@ -145,24 +132,11 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 219.71000000330395,
-            "y": 178.80621675616018,
+            "x": 219.71,
+            "y": 178.79630090911354,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 219.71000000000058,
-          "y": 178.80621677569627,
-          "z": 0.0
         }
       }
     },
@@ -175,32 +149,19 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 207.01192242909482,
-            "y": 253.9407549482153
+            "x": 207.0156586574323,
+            "y": 253.93147044461358
           },
-          "radius": 76.20000000258831,
+          "radius": 76.20000002132515,
           "start": {
             "unit": "degrees",
-            "value": -80.40739777451618
+            "value": -80.41024692218753
           },
           "end": {
             "unit": "degrees",
-            "value": 8.399416244314482
+            "value": 8.395434826006303
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 282.3945876876202,
-          "y": 265.07151370352415,
-          "z": 0.0
         }
       }
     },
@@ -213,8 +174,8 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 264.1599999999971,
-            "y": 388.6200000000112,
+            "x": 264.15999999999997,
+            "y": 388.62,
             "z": 0.0
           },
           "relative": false
@@ -286,7 +247,7 @@ description: Artifact commands exhaust-manifold.kcl
         "path": "[uuid]",
         "to": {
           "x": 20.6374999967615,
-          "y": -0.000000002032000125456427,
+          "y": -0.0000000020319999349845237,
           "z": 0.0
         }
       }
@@ -307,13 +268,13 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000031115002543351638,
+            "x": -0.000000003111500255890914,
             "y": -0.00000000482600004680922
           },
           "radius": 20.637499999873,
           "start": {
             "unit": "radians",
-            "value": 0.00000000013538461157456023
+            "value": 0.00000000013538462080396804
           },
           "end": {
             "unit": "radians",
@@ -331,7 +292,7 @@ description: Artifact commands exhaust-manifold.kcl
         "path": "[uuid]",
         "to": {
           "x": 19.621499995681997,
-          "y": -0.0000000020320001376484287,
+          "y": -0.000000002031999947176524,
           "z": 0.0
         }
       }
@@ -346,12 +307,12 @@ description: Artifact commands exhaust-manifold.kcl
           "type": "arc",
           "center": {
             "x": -0.000000003111500257446664,
-            "y": -0.0000000020320001681284337
+            "y": -0.0000000020319999918805287
           },
           "radius": 19.6214999987935,
           "start": {
             "unit": "radians",
-            "value": 0.000000000000000001553398310209658
+            "value": 0.0000000000000000022783173811004365
           },
           "end": {
             "unit": "radians",
@@ -629,7 +590,7 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.0000000000000000006540697278779964,
+          "x": 0.0000000000000000000004285191666396082,
           "y": 3.0479999999999996,
           "z": 0.0
         }
@@ -651,7 +612,7 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000000006539199511711464,
+            "x": 0.0000000000000000000003471003983438192,
             "y": 130.048,
             "z": 0.0
           },
@@ -669,12 +630,12 @@ description: Artifact commands exhaust-manifold.kcl
           "type": "arc",
           "center": {
             "x": 76.19999999999999,
-            "y": 130.04800001314274
+            "y": 130.04800001314266
           },
           "radius": 76.19999999999999,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999011777
+            "value": -179.99999999011786
           },
           "end": {
             "unit": "degrees",
@@ -693,8 +654,8 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 188.03858785727195,
-            "y": 227.14366585542382,
+            "x": 188.03858785727178,
+            "y": 227.14366585542376,
             "z": 0.0
           },
           "relative": false
@@ -708,8 +669,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 188.03858687395396,
-          "y": 227.14367145207788,
+          "x": 188.03858687459865,
+          "y": 227.14367144841964,
           "z": 0.0
         }
       }
@@ -723,17 +684,17 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 174.8524182762042,
-            "y": 302.19408756334695
+            "x": 174.85244609668098,
+            "y": 302.19409247450443
           },
-          "radius": 76.20000000500605,
+          "radius": 76.2000000315463,
           "start": {
             "unit": "degrees",
-            "value": -80.03498420607544
+            "value": -80.03500544809032
           },
           "end": {
             "unit": "degrees",
-            "value": 5.050179277967374
+            "value": 5.050177428395309
           },
           "relative": false
         }
@@ -746,8 +707,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 250.75661415036322,
-          "y": 308.90183460483127,
+          "x": 250.75664216426836,
+          "y": 308.90183706367424,
           "z": 0.0
         }
       }
@@ -761,8 +722,8 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 244.09399999708933,
-            "y": 384.8099999965271,
+            "x": 244.09399999708944,
+            "y": 384.80999999652727,
             "z": 0.0
           },
           "relative": false
@@ -893,7 +854,7 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000010160000800002163,
+            "x": -0.000000001016000080000216,
             "y": 0.0
           },
           "radius": 19.621499998984,
@@ -1177,8 +1138,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 109.22000000160868,
-          "y": -31.74999998098202,
+          "x": 109.21999999999998,
+          "y": -31.75,
           "z": 0.0
         }
       }
@@ -1200,23 +1161,10 @@ description: Artifact commands exhaust-manifold.kcl
           "type": "line",
           "end": {
             "x": 43.18,
-            "y": -31.749999983257823,
+            "y": -31.75,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.281958477238334,
-          "y": -29.967258594825246,
-          "z": 0.0
         }
       }
     },
@@ -1229,17 +1177,17 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 43.18000001076166,
-            "y": -24.130000003916923
+            "x": 43.18,
+            "y": -24.13
           },
-          "radius": 7.619999916092684,
+          "radius": 7.620000000000001,
           "start": {
             "unit": "degrees",
-            "value": -130.00000001616104
+            "value": -90.0
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000008091835
+            "value": -129.99999993524267
           },
           "relative": false
         }
@@ -1252,8 +1200,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.281958477238334,
-          "y": -29.96725859482525,
+          "x": 38.281958488,
+          "y": -29.967258582,
           "z": 0.0
         }
       }
@@ -1270,7 +1218,7 @@ description: Artifact commands exhaust-manifold.kcl
             "x": 23.587833698,
             "y": -47.479034582
           },
-          "radius": 22.86000002740193,
+          "radius": 22.86000004414411,
           "start": {
             "unit": "degrees",
             "value": 49.99999998628958
@@ -1287,35 +1235,22 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.995667396,
-          "y": -31.749999983257823,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 3.9956673852383373,
-            "y": -24.130000003916923
+            "x": 3.995667396000004,
+            "y": -24.13
           },
-          "radius": 7.619999979340901,
+          "radius": 7.6199998954335895,
           "start": {
             "unit": "degrees",
-            "value": -89.99999991908165
+            "value": -50.00000006475733
           },
           "end": {
             "unit": "degrees",
-            "value": -49.99999998383899
+            "value": -90.0
           },
           "relative": false
         }
@@ -1329,7 +1264,7 @@ description: Artifact commands exhaust-manifold.kcl
         "path": "[uuid]",
         "to": {
           "x": 3.995667396,
-          "y": -31.749999983257823,
+          "y": -31.75,
           "z": 0.0
         }
       }
@@ -1378,7 +1313,7 @@ description: Artifact commands exhaust-manifold.kcl
           "type": "line",
           "end": {
             "x": 47.175667396,
-            "y": 34.28999997737499,
+            "y": 34.29,
             "z": 0.0
           },
           "relative": false
@@ -1389,11 +1324,36 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 47.175667396,
+            "y": 26.669999999999998
+          },
+          "radius": 7.620000000000001,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 50.00000006475731
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 52.07370889892555,
-          "y": 32.50725857118549,
+          "x": 52.073708908,
+          "y": 32.507258582,
           "z": 0.0
         }
       }
@@ -1407,80 +1367,17 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 47.175667381456925,
-            "y": 26.670000005293247
+            "x": 76.563916722,
+            "y": 61.69355199999998
           },
-          "radius": 7.619999886609498,
+          "radius": 38.10000002958656,
           "start": {
             "unit": "degrees",
-            "value": 49.99999995540601
+            "value": -129.99999973679655
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99999989064872
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 52.07370887530803,
-          "y": 32.50725854303922,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 76.56391676923504,
-            "y": 61.693552000000004
-          },
-          "radius": 38.10000011080835,
-          "start": {
-            "unit": "degrees",
-            "value": -129.9999997912112
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -50.000000025010706
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 105.95216631333632,
-            "y": 26.66999999734923
-          },
-          "radius": 7.619999956435221,
-          "start": {
-            "unit": "degrees",
-            "value": 129.9999999877281
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 90.00000005248543
+            "value": -49.99999997059603
           },
           "relative": false
         }
@@ -1494,7 +1391,45 @@ description: Artifact commands exhaust-manifold.kcl
         "path": "[uuid]",
         "to": {
           "x": 105.95216630199998,
-          "y": 34.28999998914066,
+          "y": 34.29,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 105.95216630199998,
+            "y": 26.669999999999998
+          },
+          "radius": 7.620000000000001,
+          "start": {
+            "unit": "degrees",
+            "value": 90.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 129.99999993524267
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 105.95216630199998,
+          "y": 34.29,
           "z": 0.0
         }
       }
@@ -1543,7 +1478,7 @@ description: Artifact commands exhaust-manifold.kcl
           "type": "line",
           "end": {
             "x": 149.132166302,
-            "y": -31.749999983335982,
+            "y": -31.75,
             "z": 0.0
           },
           "relative": false
@@ -1554,35 +1489,22 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 144.23412477897477,
-          "y": -29.96725859513932,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 149.1321663127114,
-            "y": -24.130000003898637
+            "x": 149.132166302,
+            "y": -24.13
           },
-          "radius": 7.619999916484404,
+          "radius": 7.620000000000001,
           "start": {
             "unit": "degrees",
-            "value": -130.00000001578334
+            "value": -90.0
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000008054063
+            "value": -129.99999993524267
           },
           "relative": false
         }
@@ -1595,8 +1517,8 @@ description: Artifact commands exhaust-manifold.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 144.23412477866103,
-          "y": -29.967258595513265,
+          "x": 144.23412478999998,
+          "y": -29.967258582,
           "z": 0.0
         }
       }
@@ -1610,17 +1532,17 @@ description: Artifact commands exhaust-manifold.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 129.54000000062754,
-            "y": -47.479034582
+            "x": 129.54,
+            "y": -47.47903458199999
           },
-          "radius": 22.860000026100405,
+          "radius": 22.860000044144112,
           "start": {
             "unit": "degrees",
-            "value": 49.999999987494476
+            "value": 49.99999998628956
           },
           "end": {
             "unit": "degrees",
-            "value": 130.00000001491532
+            "value": 130.00000001371038
           },
           "relative": false
         }
@@ -1630,35 +1552,22 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 109.22000000321736,
-          "y": -31.749999961964043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
           "type": "arc",
           "center": {
-            "x": 109.87218410212314,
-            "y": -24.039844228397335
+            "x": 109.87218411599999,
+            "y": -24.039844223999978
           },
-          "radius": 7.73768993529187,
+          "radius": 7.7376898406410355,
           "start": {
             "unit": "degrees",
-            "value": -94.83500672666104
+            "value": -50.00000061053357
           },
           "end": {
             "unit": "degrees",
-            "value": -50.00000051088887
+            "value": -94.83500682630579
           },
           "relative": false
         }

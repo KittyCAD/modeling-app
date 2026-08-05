@@ -13,6 +13,8 @@ import {
   OAUTH2_DEVICE_CLIENT_ID,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
+  ZOO_DOMAIN_REGULATED,
+  ZOO_DOMAIN_PRODUCTION,
 } from '@src/lib/constants'
 import {
   ClientErrorCode,
@@ -336,7 +338,10 @@ export function getCookie(): string | null {
   }
 
   const baseDomain = env().VITE_ZOO_BASE_DOMAIN
-  if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
+  if (
+    baseDomain === ZOO_DOMAIN_PRODUCTION ||
+    baseDomain === ZOO_DOMAIN_REGULATED
+  ) {
     return getCookieByName(LEGACY_COOKIE_NAME)
   } else {
     return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)

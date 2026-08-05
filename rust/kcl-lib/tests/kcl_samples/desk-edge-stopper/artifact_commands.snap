@@ -68,8 +68,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000004227283076576668,
-          "y": 0.0000000006505813876391879,
+          "x": -0.0000000000004227293813903384,
+          "y": 0.00000000006505811401169924,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.999999999357872,
-            "y": 0.000000000650581380165635,
+            "x": 29.99999999993579,
+            "y": 0.00000000006505811338144842,
             "z": 0.0
           },
           "relative": false
@@ -107,7 +107,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.99999999934942,
+            "x": 29.999999999934943,
             "y": 20.5,
             "z": 0.0
           },
@@ -124,7 +124,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000013222977237898476,
+            "x": -0.00000000013223138252763111,
             "y": 20.5,
             "z": 0.0
           },
@@ -141,8 +141,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000026287445926628794,
-            "y": 25.499999998698836,
+            "x": -0.0000000002628760609798414,
+            "y": 25.499999999869885,
             "z": 0.0
           },
           "relative": false
@@ -158,8 +158,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.999999995431136,
-            "y": 25.49999999869884,
+            "x": 29.999999999543114,
+            "y": 25.499999999869885,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.999999994129972,
-            "y": 45.49999999869884,
+            "x": 29.999999999412996,
+            "y": 45.499999999869885,
             "z": 0.0
           },
           "relative": false
@@ -192,8 +192,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 34.999999991527645,
-            "y": 45.49999999869884,
+            "x": 34.99999999915276,
+            "y": 45.499999999869885,
             "z": 0.0
           },
           "relative": false
@@ -209,8 +209,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 34.99999999071442,
-            "y": -4.999999995771221,
+            "x": 34.99999999907144,
+            "y": -4.999999999577121,
             "z": 0.0
           },
           "relative": false
@@ -226,8 +226,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000004227289304388791,
-            "y": -4.999999996259157,
+            "x": -0.00000000000042273000645458984,
+            "y": -4.999999999625915,
             "z": 0.0
           },
           "relative": false
@@ -243,8 +243,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000042272869911894785,
-            "y": 0.0000000013011627860531014,
+            "x": -0.00000000000042272977399300457,
+            "y": 0.00000000013011622892521313,
             "z": 0.0
           },
           "relative": false

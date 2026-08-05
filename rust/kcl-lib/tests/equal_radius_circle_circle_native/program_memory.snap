@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing equal_circle_circle_native.kcl
+description: Variables in memory after executing equal_radius_circle_circle_native.kcl
 ---
 {
   "__sketch_1_on": {
@@ -68,7 +68,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000010000000814903708,
+                        "n": 0.0000000010000000747403698,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -294,7 +294,7 @@ description: Variables in memory after executing equal_circle_circle_native.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000010000000814903708,
+                    0.0000000010000000747403698,
                     0.0
                   ],
                   "from": [
