@@ -276,6 +276,41 @@ describe('project system', () => {
     }
   })
 
+  it('annotates opened projects with their owning library path', async () => {
+    const app = createAppForTest()
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const library = app.settings
+        .get()
+        .app.libraries.current.find(
+          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+        )
+      expect(library).toBeDefined()
+      if (!library) {
+        return
+      }
+
+      const projectPath = fsZds.join(library.path, 'bracket')
+      const openedProject = await app.openProject({
+        ...mockProject,
+        name: 'bracket',
+        path: projectPath,
+        default_file: fsZds.join(projectPath, 'main.kcl'),
+      })
+
+      expect(openedProject.projectIORefSignal.value).toEqual(
+        expect.objectContaining({
+          libraryPath: library.path,
+          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        })
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('sets KCL runtime flags when the app wasm instance becomes active', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
     const wasmInstance = createRuntimeFlagsWasmInstance()

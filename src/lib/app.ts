@@ -22,6 +22,7 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
@@ -349,7 +350,12 @@ export class App implements AppSubsystems {
 
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(projectIORef)
+    const projectIORefSignal = signal(
+      await projectWithLibraryOwnership(
+        projectIORef,
+        this.settings.get().app.libraries.current
+      )
+    )
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
     // These extensions make global project operations un/redoable.
@@ -413,7 +419,15 @@ export class App implements AppSubsystems {
           p.path === projectIORefSignal.value.path
       )
       if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
+        projectIORefSignal.value = {
+          ...foundProject,
+          ...(projectIORefSignal.value.libraryPath
+            ? { libraryPath: projectIORefSignal.value.libraryPath }
+            : {}),
+          ...(projectIORefSignal.value.libraryType
+            ? { libraryType: projectIORefSignal.value.libraryType }
+            : {}),
+        }
       }
     })
 

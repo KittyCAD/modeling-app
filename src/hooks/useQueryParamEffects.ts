@@ -1,7 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
-import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -75,17 +74,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
-  async function getDefaultCloudProjectDirectoryPath() {
-    const cloudLibrary = app.settings
-      .get()
-      .app.libraries.current.find(
-        (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-      )
-
-    return cloudLibrary
-      ? getCloudProjectLibraryMaterializationDirectoryPath(cloudLibrary).catch(
-          () => undefined
-        )
+  function getCurrentCloudLibraryPath() {
+    const currentProject = app.project?.projectIORefSignal.value
+    return currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
+      ? currentProject.libraryPath
       : undefined
   }
 
@@ -144,8 +136,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const targetProjectDirectoryPath =
-        await getDefaultCloudProjectDirectoryPath()
+      const targetProjectDirectoryPath = getCurrentCloudLibraryPath()
       const localCloudProject = targetProjectDirectoryPath
         ? await app.registry
             .get(cloudSyncService)
