@@ -7153,7 +7153,7 @@ export default {
     "moduleName": "solver",
     "returnType": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "2.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -7163,6 +7163,69 @@ export default {
         "docs": "The two line segments whose relative angle should match the value set with `==`, measured counterclockwise from the first line to the second, modulo 180 degrees. The order of the lines matters.",
         "required": true,
         "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "solver::angleDimension": {
+    "name": "angleDimension",
+    "preferredName": "solver::angleDimension",
+    "qualName": "std::solver::angleDimension",
+    "moduleName": "solver",
+    "returnType": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "lines",
+        "ty": "[Segment; 2]",
+        "docs": "The ordered pair of line segments whose selected angle sector should match the value set with `==`. A line's positive direction runs from its start point to its end point; its negative direction is the reverse.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "sector",
+        "ty": "number(_)",
+        "docs": "Which counterclockwise sweep about the line intersection to constrain: `1`, first line's positive direction to the second line's positive direction; `2`, second positive to first negative; `3`, first negative to second negative; or `4`, second negative to first positive.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "inverse",
+        "ty": "bool",
+        "docs": "Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null

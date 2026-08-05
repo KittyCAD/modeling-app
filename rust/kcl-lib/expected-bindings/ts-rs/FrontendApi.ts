@@ -9,7 +9,7 @@ import type { PlaneName } from "./PlaneName";
 import type { SketchCheckpointId } from "./SketchCheckpointId";
 import type { SourceRange } from "./SourceRange";
 
-export type Angle = { lines: Array<ApiObjectId>, angle: Number, source: ConstraintSource, };
+export type Angle = { lines: Array<ApiObjectId>, angle: Number, sector?: number, inverse?: boolean, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
 export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean, };
 
