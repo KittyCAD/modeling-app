@@ -375,8 +375,12 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
     )
   }
 
-  const statusBarItem = computed(() =>
-    nullableStatusBarItem(
+  const statusBarItem = computed(() => {
+    const status = cloudSyncStatus.value
+    const shouldStatusItemBeVisible =
+      !status.scopedProjectPath || Boolean(status.scopedProjectCloudProjectId)
+
+    return nullableStatusBarItem(
       settings.value &&
         userFeatures.value &&
         userFeaturesContextHas(
@@ -384,7 +388,8 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
           OPFS_CLOUD_FEATURE_FLAG,
           false
         ) &&
-        cloudSyncStatus.value.enabled
+        status.enabled &&
+        shouldStatusItemBeVisible
         ? {
             id: 'cloud-sync',
             component: CloudSyncStatusBarItemWithSettings,
@@ -393,7 +398,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
           }
         : null
     )
-  )
+  })
 
   return {
     item: defineRuntimeRegistryItem({

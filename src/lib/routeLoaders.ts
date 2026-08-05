@@ -17,9 +17,7 @@ import {
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
-  isPathInDirectoryProjectLibrary,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
@@ -276,17 +274,18 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
 
     const project = maybeProjectInfo ?? defaultProjectData
+    const projectRef = await app.openProject(project)
+    const openedProject = projectRef.projectIORefSignal.value
 
     // Fire off the event to load the project settings
     // once we know it's idle.
     await waitFor(settingsActor, (state) => state.matches('idle'))
     settingsActor.send({
       type: 'load.project',
-      project,
+      project: openedProject,
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
@@ -303,16 +302,8 @@ export const fileLoader =
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir =
-      getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries?.current
-      ) ?? ''
-    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
-      project.path,
-      appProjectDir
-    )
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
+    const requestedProjectDirectoryPath =
+      openedProject.libraryPath ?? getParentAbsolutePath(openedProject.path)
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
@@ -322,7 +313,7 @@ export const fileLoader =
 
     const projectData: IndexLoaderData = {
       code: editor.code,
-      project,
+      project: openedProject,
       file: {
         name: currentFileName || '',
         path: currentFilePath || '',
@@ -335,7 +326,7 @@ export const fileLoader =
     }
   }
 
-// Loads the settings and by extension the projects in the default directory
+// Loads the settings and by extension the configured project library entries
 // and returns them to the Home route, along with any errors that occurred
 
 // Should also clear currently loaded projects in SystemIO. They may be stale.

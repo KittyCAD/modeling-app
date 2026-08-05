@@ -329,6 +329,92 @@ describe('cloud sync status presentation', () => {
   })
 })
 
+describe('cloud sync status bar contribution', () => {
+  function createStatusBarRegistry() {
+    const registry = new Registry()
+    const settings = createSettingsService({})
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+    const userFeaturesExtension = defineRegistryItem({
+      id: 'test-user-features-service',
+      providesServices: [
+        provideService(userFeaturesService, createUserFeaturesService()),
+      ],
+    })
+
+    registry.configure([
+      settingsExtension,
+      userFeaturesExtension,
+      cloudSyncPlugin,
+    ])
+    enableCloudSyncPlugin(registry)
+
+    return registry
+  }
+
+  test('hides on file routes scoped to a local-only project', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectPath: '/projects/local',
+    }
+    const registry = createStatusBarRegistry()
+
+    try {
+      expect(
+        registry
+          .get(statusBarGlobalItemsValueSpec)
+          .some((item) => item.id === 'cloud-sync')
+      ).toBe(false)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('shows on file routes scoped to a cloud-backed project', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectPath: '/projects/cloud',
+      scopedProjectCloudProjectId: 'cloud-project-123',
+    }
+    const registry = createStatusBarRegistry()
+
+    try {
+      expect(
+        registry
+          .get(statusBarGlobalItemsValueSpec)
+          .some((item) => item.id === 'cloud-sync')
+      ).toBe(true)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('shows aggregate cloud status on Home', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    const registry = createStatusBarRegistry()
+
+    try {
+      expect(
+        registry
+          .get(statusBarGlobalItemsValueSpec)
+          .some((item) => item.id === 'cloud-sync')
+      ).toBe(true)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+})
+
 describe('cloud sync status bar conflict dialog', () => {
   test('keeps inspecting the clicked project when global conflict status changes', async () => {
     cloudConflictDialogMocks.conflict = {
@@ -562,7 +648,7 @@ describe('cloud sync project library', () => {
     }
   })
 
-  test('does not synthesize a personal cloud library row when toggled', () => {
+  test('keeps the cloud library type registered across plugin toggles', () => {
     const registry = new Registry()
     registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
 
@@ -904,7 +990,7 @@ describe('cloud sync project library', () => {
 
       render(
         <SettingsDetails
-          library={getDefaultCloudProjectLibrarySetting()}
+          library={getDefaultCloudProjectLibrarySetting('/cloud-local')}
           index={0}
           updateLibrary={vi.fn()}
           commitLibrary={vi.fn()}
