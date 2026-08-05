@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import { ClientErrorCode } from '@src/lib/clientErrors'
 import type {
   ElectronLifecycleDiagnostics,
@@ -43,46 +44,6 @@ const base = {
 const unresponsiveReport: ElectronLifecycleReport = {
   ...base,
   eventType: 'renderer-unresponsive',
-}
-
-const createAuthActor = (initiallyLoggedIn: boolean) => {
-  let loggedIn = initiallyLoggedIn
-  const listeners = new Set<
-    (snapshot: { matches: (state: 'loggedIn') => boolean }) => void
-  >()
-  const getSnapshot = () => ({
-    matches: (state: 'loggedIn') => state === 'loggedIn' && loggedIn,
-  })
-  const unsubscribe = vi.fn()
-  const actor = {
-    getSnapshot,
-    subscribe: vi.fn(
-      (
-        listener: (snapshot: {
-          matches: (state: 'loggedIn') => boolean
-        }) => void
-      ) => {
-        listeners.add(listener)
-        return {
-          unsubscribe: () => {
-            listeners.delete(listener)
-            unsubscribe()
-          },
-        }
-      }
-    ),
-  }
-
-  return {
-    actor,
-    setLoggedIn(value: boolean) {
-      loggedIn = value
-      for (const listener of listeners) {
-        listener(getSnapshot())
-      }
-    },
-    unsubscribe,
-  }
 }
 
 const createElectronBridge = (
@@ -176,14 +137,14 @@ describe('electronLifecycleReportToClientError', () => {
 
 describe('initializeElectronLifecycleClientReporting', () => {
   it('performs the initial drain for an authenticated renderer', async () => {
-    const auth = createAuthActor(true)
+    const isLoggedIn = signal(true)
     const drain = vi.fn(async () => [unresponsiveReport])
     const bridge = createElectronBridge(drain)
     const reporter = vi.fn(async () => {})
 
     const stop = initializeElectronLifecycleClientReporting(
       bridge.electron,
-      auth.actor,
+      isLoggedIn,
       reporter
     )
 
@@ -195,15 +156,15 @@ describe('initializeElectronLifecycleClientReporting', () => {
     stop()
   })
 
-  it('keeps reports queued until the auth actor reaches loggedIn', async () => {
-    const auth = createAuthActor(false)
+  it('keeps reports queued until the user is logged in', async () => {
+    const isLoggedIn = signal(false)
     const drain = vi.fn(async () => [unresponsiveReport])
     const bridge = createElectronBridge(drain)
     const reporter = vi.fn(async () => {})
 
     const stop = initializeElectronLifecycleClientReporting(
       bridge.electron,
-      auth.actor,
+      isLoggedIn,
       reporter
     )
     bridge.notify()
@@ -211,14 +172,14 @@ describe('initializeElectronLifecycleClientReporting', () => {
 
     expect(drain).not.toHaveBeenCalled()
 
-    auth.setLoggedIn(true)
+    isLoggedIn.value = true
     await vi.waitFor(() => expect(reporter).toHaveBeenCalledTimes(1))
     expect(drain).toHaveBeenCalledTimes(1)
     stop()
   })
 
   it('coalesces notifications received while a drain is in flight', async () => {
-    const auth = createAuthActor(true)
+    const isLoggedIn = signal(true)
     let resolveFirstDrain: (reports: ElectronLifecycleReport[]) => void =
       () => {}
     const firstDrain = new Promise<ElectronLifecycleReport[]>((resolve) => {
@@ -231,7 +192,7 @@ describe('initializeElectronLifecycleClientReporting', () => {
     const bridge = createElectronBridge(drain)
     const stop = initializeElectronLifecycleClientReporting(
       bridge.electron,
-      auth.actor,
+      isLoggedIn,
       vi.fn(async () => {})
     )
 
@@ -248,7 +209,7 @@ describe('initializeElectronLifecycleClientReporting', () => {
 
   it('logs drain errors and removes lifecycle and auth subscriptions', async () => {
     const warning = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const auth = createAuthActor(true)
+    const isLoggedIn = signal(true)
     const drain = vi.fn(async () =>
       Promise.reject(new Error('main process unavailable'))
     )
@@ -256,7 +217,7 @@ describe('initializeElectronLifecycleClientReporting', () => {
     const reporter = vi.fn(async () => {})
     const stop = initializeElectronLifecycleClientReporting(
       bridge.electron,
-      auth.actor,
+      isLoggedIn,
       reporter
     )
 
@@ -265,11 +226,10 @@ describe('initializeElectronLifecycleClientReporting', () => {
 
     stop()
     expect(bridge.unsubscribe).toHaveBeenCalledTimes(1)
-    expect(auth.unsubscribe).toHaveBeenCalledTimes(1)
 
     bridge.notify()
-    auth.setLoggedIn(false)
-    auth.setLoggedIn(true)
+    isLoggedIn.value = false
+    isLoggedIn.value = true
     await Promise.resolve()
     expect(drain).toHaveBeenCalledTimes(1)
   })

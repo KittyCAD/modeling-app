@@ -64,7 +64,7 @@ function initElectronBehavior(
   electron: NonNullable<typeof window.electron>,
   app: App
 ) {
-  initializeElectronLifecycleClientReporting(electron, app.auth.actor)
+  initializeElectronLifecycleClientReporting(electron, app.auth.isLoggedIn)
 
   // Monkey patch to prevent issues in the web app with automated browser translation
   // This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until

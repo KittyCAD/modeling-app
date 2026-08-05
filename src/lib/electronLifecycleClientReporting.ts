@@ -1,23 +1,14 @@
+import type { IElectronAPI } from '@root/interface'
+import type { ReadonlySignal } from '@preact/signals-core'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import type { ElectronLifecycleReport } from '@src/lib/electronLifecycle'
 
 type ReportClientErrorParams = Parameters<typeof reportClientError>[0]
 
-type ElectronLifecycleBridge = {
-  drainElectronLifecycleReports: () => Promise<ElectronLifecycleReport[]>
-  onElectronLifecycleReportAvailable: (callback: () => void) => () => void
-}
-
-type AuthSnapshotBridge = {
-  matches: (state: 'loggedIn') => boolean
-}
-
-type AuthActorBridge = {
-  getSnapshot: () => AuthSnapshotBridge
-  subscribe: (listener: (snapshot: AuthSnapshotBridge) => void) => {
-    unsubscribe: () => void
-  }
-}
+type ElectronLifecycleBridge = Pick<
+  IElectronAPI,
+  'drainElectronLifecycleReports' | 'onElectronLifecycleReportAvailable'
+>
 
 type ClientErrorReporter = (
   params: ReportClientErrorParams
@@ -59,12 +50,12 @@ export const electronLifecycleReportToClientError = (
 
 export const initializeElectronLifecycleClientReporting = (
   electron: ElectronLifecycleBridge,
-  authActor: AuthActorBridge,
+  isLoggedInSignal: ReadonlySignal<boolean>,
   clientErrorReporter: ClientErrorReporter = reportClientError
 ) => {
   let drainRequested = false
   let drainInFlight: Promise<void> | undefined
-  let isLoggedIn = authActor.getSnapshot().matches('loggedIn')
+  let isLoggedIn = isLoggedInSignal.value
   let stopped = false
 
   const requestDrain = () => {
@@ -107,9 +98,9 @@ export const initializeElectronLifecycleClientReporting = (
   }
 
   const unsubscribe = electron.onElectronLifecycleReportAvailable(requestDrain)
-  const authSubscription = authActor.subscribe((snapshot) => {
+  const unsubscribeFromAuth = isLoggedInSignal.subscribe((nextIsLoggedIn) => {
     const wasLoggedIn = isLoggedIn
-    isLoggedIn = snapshot.matches('loggedIn')
+    isLoggedIn = nextIsLoggedIn
     if (isLoggedIn && !wasLoggedIn) {
       requestDrain()
     }
@@ -119,6 +110,6 @@ export const initializeElectronLifecycleClientReporting = (
   return () => {
     stopped = true
     unsubscribe()
-    authSubscription.unsubscribe()
+    unsubscribeFromAuth()
   }
 }
