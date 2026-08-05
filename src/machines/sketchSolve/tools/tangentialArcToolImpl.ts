@@ -244,24 +244,14 @@ export function findTangentialArcCenter({
   return addVec(startPoint, scaleVec(normal, t))
 }
 
-// A point on the right side of the tangent needs a clockwise arc. Keep the
-// declared endpoints stable so point identity does not change with direction.
-export function resolveTangentialArcEndpoints(
+// A point on the right side of the tangent needs a clockwise arc.
+export function resolveTangentialArcDirection(
   tangentStartPoint: Coords2d,
   endPoint: Coords2d,
   tangentDirection: Coords2d
-): {
-  start: Coords2d
-  end: Coords2d
-  swapped: boolean
-} {
+): 'ccw' | 'cw' {
   const chord = subVec(endPoint, tangentStartPoint)
-  const swapped = cross2d(tangentDirection, chord) < -EPSILON
-  return {
-    swapped,
-    start: tangentStartPoint,
-    end: endPoint,
-  }
+  return cross2d(tangentDirection, chord) < -EPSILON ? 'cw' : 'ccw'
 }
 
 export function resolveTangentInfoFromClick({
@@ -504,7 +494,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       if (!centerPoint) {
         return
       }
-      const arcEndpoints = resolveTangentialArcEndpoints(
+      const direction = resolveTangentialArcDirection(
         context.tangentInfo.tangentStart.position,
         endPoint,
         context.tangentInfo.tangentDirection
@@ -536,28 +526,32 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                 start: {
                   x: {
                     type: 'Var',
-                    value: roundOff(arcEndpoints.start[0]),
+                    value: roundOff(
+                      context.tangentInfo.tangentStart.position[0]
+                    ),
                     units,
                   },
                   y: {
                     type: 'Var',
-                    value: roundOff(arcEndpoints.start[1]),
+                    value: roundOff(
+                      context.tangentInfo.tangentStart.position[1]
+                    ),
                     units,
                   },
                 },
                 end: {
                   x: {
                     type: 'Var',
-                    value: roundOff(arcEndpoints.end[0]),
+                    value: roundOff(endPoint[0]),
                     units,
                   },
                   y: {
                     type: 'Var',
-                    value: roundOff(arcEndpoints.end[1]),
+                    value: roundOff(endPoint[1]),
                     units,
                   },
                 },
-                direction: arcEndpoints.swapped ? 'cw' : 'ccw',
+                direction,
               },
             },
           ],
@@ -853,7 +847,7 @@ export async function finalizeArcActor({
       error: 'Could not solve a tangential arc center for this endpoint',
     }
   }
-  const arcEndpoints = resolveTangentialArcEndpoints(
+  const direction = resolveTangentialArcDirection(
     startPoint,
     endPoint,
     tangentDirection
@@ -880,28 +874,28 @@ export async function finalizeArcActor({
             start: {
               x: {
                 type: 'Var',
-                value: roundOff(arcEndpoints.start[0]),
+                value: roundOff(startPoint[0]),
                 units,
               },
               y: {
                 type: 'Var',
-                value: roundOff(arcEndpoints.start[1]),
+                value: roundOff(startPoint[1]),
                 units,
               },
             },
             end: {
               x: {
                 type: 'Var',
-                value: roundOff(arcEndpoints.end[0]),
+                value: roundOff(endPoint[0]),
                 units,
               },
               y: {
                 type: 'Var',
-                value: roundOff(arcEndpoints.end[1]),
+                value: roundOff(endPoint[1]),
                 units,
               },
             },
-            direction: arcEndpoints.swapped ? 'cw' : 'ccw',
+            direction,
           },
         },
       ],

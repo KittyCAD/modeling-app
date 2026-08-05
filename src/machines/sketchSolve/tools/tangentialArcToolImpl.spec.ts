@@ -15,7 +15,7 @@ import {
   finalizeArcActor,
   findTangentialArcCenter,
   resolveTangentInfoFromClick,
-  resolveTangentialArcEndpoints,
+  resolveTangentialArcDirection,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
 import { Group, Mesh, Sprite } from 'three'
 import { describe, expect, it, vi } from 'vitest'
@@ -338,25 +338,17 @@ describe('tangentialArcToolImpl', () => {
     })
   })
 
-  describe('resolveTangentialArcEndpoints', () => {
-    it('keeps start/end order when endpoint is on the left side of tangent direction', () => {
-      const result = resolveTangentialArcEndpoints([0, 0], [1, 1], [1, 0])
+  describe('resolveTangentialArcDirection', () => {
+    it('selects CCW when endpoint is on the left side of tangent direction', () => {
+      const result = resolveTangentialArcDirection([0, 0], [1, 1], [1, 0])
 
-      expect(result).toEqual({
-        start: [0, 0],
-        end: [1, 1],
-        swapped: false,
-      })
+      expect(result).toBe('ccw')
     })
 
-    it('keeps start/end order and selects CW when endpoint is on the right side of tangent direction', () => {
-      const result = resolveTangentialArcEndpoints([0, 0], [1, -1], [1, 0])
+    it('selects CW when endpoint is on the right side of tangent direction', () => {
+      const result = resolveTangentialArcDirection([0, 0], [1, -1], [1, 0])
 
-      expect(result).toEqual({
-        start: [0, 0],
-        end: [1, -1],
-        swapped: true,
-      })
+      expect(result).toBe('cw')
     })
   })
 
