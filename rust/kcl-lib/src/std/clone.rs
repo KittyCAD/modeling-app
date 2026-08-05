@@ -150,8 +150,15 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::ImportedGeometry(_) => old_geometry_id,
     };
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map =
-        get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await?;
+    let (entity_id_map, source_topology_id) = get_old_new_child_map(
+        new_geometry_id,
+        old_geometry_id,
+        source_topology_id,
+        old_geometry,
+        exec_state,
+        args,
+    )
+    .await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
@@ -283,30 +290,68 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
 async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
-    source_topology_id: uuid::Uuid,
+    candidate_source_topology_id: uuid::Uuid,
+    old_geometry: &GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
-    // Artifact graph ID management expects the cloned entity's own children
-    // to be queried first. Pattern copies retain the source topology in KCL,
-    // though, so use that topology for the runtime old-to-new ID map.
-    if old_geometry_id != source_topology_id {
-        get_all_child_uuids(old_geometry_id, exec_state, args).await?;
-    }
+) -> Result<(HashMap<uuid::Uuid, uuid::Uuid>, uuid::Uuid)> {
+    // Query the cloned entity's own children first for artifact graph ID
+    // management. If its KCL value references those children, this is the
+    // live topology even when its original ID was produced in another module.
+    // Pattern copies retain the source topology's child IDs instead.
+    let current_entity_ids = get_all_child_uuids(old_geometry_id, exec_state, args).await?;
+    let source_topology_id = if old_geometry_id == candidate_source_topology_id
+        || geometry_references_any_child(old_geometry, &current_entity_ids)
+    {
+        old_geometry_id
+    } else {
+        candidate_source_topology_id
+    };
 
     // Get the old geometries entity ids.
-    let old_entity_ids = get_all_child_uuids(source_topology_id, exec_state, args).await?;
+    let old_entity_ids = if source_topology_id == old_geometry_id {
+        current_entity_ids
+    } else {
+        get_all_child_uuids(source_topology_id, exec_state, args).await?
+    };
 
     // Get the new geometries entity ids.
     let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
 
     // Create a map of old entity ids to new entity ids.
-    Ok(HashMap::from_iter(
-        old_entity_ids
-            .iter()
-            .zip(new_entity_ids.iter())
-            .map(|(old_id, new_id)| (*old_id, *new_id)),
+    Ok((
+        HashMap::from_iter(
+            old_entity_ids
+                .iter()
+                .zip(new_entity_ids.iter())
+                .map(|(old_id, new_id)| (*old_id, *new_id)),
+        ),
+        source_topology_id,
     ))
+}
+
+fn geometry_references_any_child(geometry: &GeometryWithImportedGeometry, child_ids: &[uuid::Uuid]) -> bool {
+    let sketch_references_any_child = |sketch: &Sketch| {
+        sketch
+            .paths
+            .iter()
+            .chain(&sketch.inner_paths)
+            .any(|path| child_ids.contains(&path.get_id()))
+    };
+
+    match geometry {
+        GeometryWithImportedGeometry::ImportedGeometry(_) => true,
+        GeometryWithImportedGeometry::Sketch(sketch) => sketch_references_any_child(sketch),
+        GeometryWithImportedGeometry::Solid(solid) => {
+            solid
+                .value
+                .iter()
+                .any(|surface| child_ids.contains(&surface.get_id()) || child_ids.contains(&surface.face_id()))
+                || solid.start_cap_id.is_some_and(|id| child_ids.contains(&id))
+                || solid.end_cap_id.is_some_and(|id| child_ids.contains(&id))
+                || solid.sketch().is_some_and(sketch_references_any_child)
+        }
+    }
 }
 
 async fn get_all_child_uuids(
