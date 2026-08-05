@@ -1,0 +1,13 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+secondSketch = sketch(on = offsetPlane(XY, offset = 20mm)) {
+  c = circle(start = [var 8mm, var 0mm], center = [var 0mm, var 0mm])
+}
+firstRegion = region(segments = [firstSketch.c])
+secondRegion = region(segments = [secondSketch.c])
+
+first = loft([firstRegion, secondRegion])
+second = loft([firstRegion, secondRegion])

@@ -55,6 +55,8 @@ pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedRegionInfo;
+pub(crate) use state::ConsumedRegionOperation;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
