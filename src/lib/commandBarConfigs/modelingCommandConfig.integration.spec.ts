@@ -422,6 +422,243 @@ describe('Extrude surface arguments', () => {
   })
 })
 
+describe('Revolve dialog arguments', () => {
+  function revolveConfig() {
+    const commandConfig = modelingMachineCommandConfig.Revolve
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Revolve should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Revolve'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = revolveConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Revolve'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const required = revolveConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('uses grouped, compact profile and axis controls', () => {
+    expect(
+      revolveConfig().dialogLayout?.groups.map((group) => group.id)
+    ).toEqual(['selection', 'axis', 'extent', 'result', 'advanced'])
+    expect(revolveConfig().dialogLayout).toMatchObject({
+      showCommandDescription: false,
+    })
+    expect(revolveConfig().args?.sketches.dialog).toMatchObject({
+      group: 'selection',
+      compactSelection: true,
+    })
+    expect(revolveConfig().args?.axisOrEdge.dialog).toMatchObject({
+      group: 'axis',
+      controlStyle: 'segmented',
+    })
+  })
+
+  it('shows only fields for the selected axis and extent modes', () => {
+    const fullAxis = {
+      axisOrEdge: 'Axis',
+      extentType: 'full',
+      directionMode: 'twoSides',
+    }
+    expect(evaluateHidden('axis', fullAxis)).toBe(false)
+    expect(evaluateRequired('axis', fullAxis)).toBe(true)
+    expect(evaluateHidden('edge', fullAxis)).toBe(true)
+    expect(evaluateHidden('angle', fullAxis)).toBe(true)
+    expect(evaluateRequired('angle', fullAxis)).toBe(false)
+    expect(evaluateHidden('directionMode', fullAxis)).toBe(true)
+
+    const angleEdge = {
+      axisOrEdge: 'Edge',
+      extentType: 'angle',
+      directionMode: 'oneSide',
+    }
+    expect(evaluateHidden('axis', angleEdge)).toBe(true)
+    expect(evaluateHidden('edge', angleEdge)).toBe(false)
+    expect(evaluateRequired('edge', angleEdge)).toBe(true)
+    expect(evaluateHidden('angle', angleEdge)).toBe(false)
+    expect(evaluateRequired('angle', angleEdge)).toBe(true)
+    expect(evaluateHidden('directionMode', angleEdge)).toBe(false)
+    expect(evaluateHidden('bidirectionalAngle', angleEdge)).toBe(true)
+
+    const twoSides = { ...angleEdge, directionMode: 'twoSides' }
+    expect(evaluateHidden('bidirectionalAngle', twoSides)).toBe(false)
+    expect(evaluateRequired('bidirectionalAngle', twoSides)).toBe(true)
+  })
+
+  it('hydrates UI modes from existing Revolve arguments', () => {
+    const axisOrEdge = revolveConfig().args?.axisOrEdge
+    const extentType = revolveConfig().args?.extentType
+    const directionMode = revolveConfig().args?.directionMode
+    if (
+      axisOrEdge?.inputType !== 'options' ||
+      typeof axisOrEdge.defaultValue !== 'function' ||
+      extentType?.inputType !== 'options' ||
+      typeof extentType.defaultValue !== 'function' ||
+      directionMode?.inputType !== 'options' ||
+      typeof directionMode.defaultValue !== 'function'
+    ) {
+      throw new Error('Revolve dialog modes should have derived defaults')
+    }
+
+    expect(
+      axisOrEdge.defaultValue({
+        argumentsToSubmit: { edge: selectionsForArtifact() },
+      } as never)
+    ).toBe('Edge')
+    expect(extentType.defaultValue({ argumentsToSubmit: {} } as never)).toBe(
+      'full'
+    )
+    expect(
+      extentType.defaultValue({
+        argumentsToSubmit: { angle: parsedLength('90deg') },
+      } as never)
+    ).toBe('angle')
+    expect(
+      directionMode.defaultValue({
+        argumentsToSubmit: { symmetric: true },
+      } as never)
+    ).toBe('symmetric')
+    expect(
+      directionMode.defaultValue({
+        argumentsToSubmit: { bidirectionalAngle: parsedLength('30deg') },
+      } as never)
+    ).toBe('twoSides')
+  })
+
+  it('keeps UI-only modes out of the legacy command bar', () => {
+    expect(evaluateHidden('extentType', {}, false)).toBe(true)
+    expect(evaluateHidden('directionMode', {}, false)).toBe(true)
+    expect(evaluateRequired('angle', {}, false)).toBe(true)
+  })
+})
+
+describe('Hole dialog arguments', () => {
+  function holeConfig() {
+    const commandConfig = modelingMachineCommandConfig.Hole
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Hole should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Hole'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const hidden = holeConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Hole'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const required = holeConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('uses grouped placement, hole, bottom, and advanced sections', () => {
+    expect(holeConfig().dialogLayout?.groups.map((group) => group.id)).toEqual([
+      'placement',
+      'hole',
+      'bottom',
+      'advanced',
+    ])
+    expect(holeConfig().dialogLayout).toMatchObject({
+      showCommandDescription: false,
+    })
+    expect(holeConfig().args?.face.dialog).toMatchObject({
+      group: 'placement',
+      compactSelection: true,
+    })
+    expect(holeConfig().args?.holeType?.dialog).toMatchObject({
+      group: 'hole',
+      controlStyle: 'segmented',
+    })
+  })
+
+  it('defaults hidden implementation choices to a simple flat blind hole', () => {
+    expect(holeConfig().args?.holeBody).toMatchObject({
+      required: true,
+      defaultValue: 'blind',
+    })
+    expect(evaluateHidden('holeBody', {})).toBe(true)
+    expect(holeConfig().args?.holeType).toMatchObject({
+      required: true,
+      defaultValue: 'simple',
+    })
+    expect(holeConfig().args?.holeBottom).toMatchObject({
+      required: true,
+      defaultValue: 'flat',
+    })
+  })
+
+  it('shows only dimensions associated with the selected head type', () => {
+    const simple = { holeType: 'simple', holeBottom: 'flat' }
+    expect(evaluateHidden('counterboreDepth', simple)).toBe(true)
+    expect(evaluateHidden('counterboreDiameter', simple)).toBe(true)
+    expect(evaluateHidden('countersinkAngle', simple)).toBe(true)
+    expect(evaluateHidden('countersinkDiameter', simple)).toBe(true)
+
+    const counterbore = { ...simple, holeType: 'counterbore' }
+    expect(evaluateHidden('counterboreDepth', counterbore)).toBe(false)
+    expect(evaluateRequired('counterboreDepth', counterbore)).toBe(true)
+    expect(evaluateHidden('counterboreDiameter', counterbore)).toBe(false)
+    expect(evaluateRequired('counterboreDiameter', counterbore)).toBe(true)
+    expect(evaluateHidden('countersinkAngle', counterbore)).toBe(true)
+
+    const countersink = { ...simple, holeType: 'countersink' }
+    expect(evaluateHidden('countersinkAngle', countersink)).toBe(false)
+    expect(evaluateRequired('countersinkAngle', countersink)).toBe(true)
+    expect(evaluateHidden('countersinkDiameter', countersink)).toBe(false)
+    expect(evaluateRequired('countersinkDiameter', countersink)).toBe(true)
+    expect(evaluateHidden('countersinkHeadClearance', countersink)).toBe(false)
+    expect(evaluateHidden('counterboreDepth', countersink)).toBe(true)
+  })
+
+  it('shows point angle only for a drill-point bottom', () => {
+    expect(evaluateHidden('drillPointAngle', { holeBottom: 'flat' })).toBe(true)
+    expect(evaluateHidden('drillPointAngle', { holeBottom: 'drill' })).toBe(
+      false
+    )
+    expect(evaluateRequired('drillPointAngle', { holeBottom: 'drill' })).toBe(
+      true
+    )
+  })
+})
+
 describe('Sweep-like bodyType argument', () => {
   it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep

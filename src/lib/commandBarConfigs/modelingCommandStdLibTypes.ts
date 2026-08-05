@@ -6,6 +6,10 @@ import type {
   ExtrudeExtentType,
 } from '@src/lib/commandBarConfigs/extrudeDialog'
 import type {
+  RevolveDirectionMode,
+  RevolveExtentType,
+} from '@src/lib/commandBarConfigs/revolveDialog'
+import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -94,7 +98,8 @@ export type RevolveCommandArgs = Override<
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
     edge: Selections | undefined
-    angle: KclCommandValue
+    extentType?: RevolveExtentType
+    directionMode?: RevolveDirectionMode
     bodyType?: KclPreludeBodyType
   }
 >

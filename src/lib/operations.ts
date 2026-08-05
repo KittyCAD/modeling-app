@@ -1773,6 +1773,16 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axisOrEdge,
     axis,
     edge,
+    extentType:
+      'angle' in operation.labeledArgs && operation.labeledArgs.angle
+        ? 'angle'
+        : 'full',
+    directionMode:
+      symmetric === true
+        ? 'symmetric'
+        : bidirectionalAngle
+          ? 'twoSides'
+          : 'oneSide',
     angle,
     tolerance,
     symmetric,
