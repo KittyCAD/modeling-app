@@ -28,7 +28,7 @@ pub struct RequestBody {
 pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error);
@@ -40,7 +40,10 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
 pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute(&ctx, program).await.map(|_| ()).map_err(|err| err.error);
+    let res = do_execute(&ctx, program, None)
+        .await
+        .map(|_| ())
+        .map_err(|err| err.error);
     ctx.close().await;
     res
 }
@@ -56,7 +59,7 @@ pub struct Snapshot3d {
 pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let image = do_execute_and_snapshot(&ctx, program)
+    let image = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error)?;
@@ -81,6 +84,7 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     with_export_step: bool,
+    deprecation_version_override: Option<&str>,
 ) -> Result<
     (
         ExecState,
@@ -92,7 +96,7 @@ pub async fn execute_and_snapshot_ast(
     ExecErrorWithState,
 > {
     let ctx = new_context(true, current_file).await?;
-    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
+    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, deprecation_version_override).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
         Err(err) => {
             // If there was an error executing the program, return it.
@@ -128,7 +132,7 @@ pub async fn execute_and_snapshot_no_auth(
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
     let ctx = new_context(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, env_ref, snap)| (snap, env_ref))
         .map_err(|err| err.error);
@@ -139,8 +143,10 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute(
     ctx: &ExecutorContext,
     program: Program,
+    deprecation_version_override: Option<&str>,
 ) -> Result<(ExecState, EnvironmentRef), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
+    exec_state.set_deprecation_version_override(deprecation_version_override);
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
         #[cfg(feature = "snapshot-engine-responses")]
@@ -169,8 +175,9 @@ async fn do_execute(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
+    deprecation_version_override: Option<&str>,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
-    let (exec_state, env_ref) = do_execute(ctx, program).await?;
+    let (exec_state, env_ref) = do_execute(ctx, program, deprecation_version_override).await?;
     let snapshot_png_bytes = ctx
         .prepare_snapshot()
         .await

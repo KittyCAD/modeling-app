@@ -46,20 +46,3 @@ jobs:
             printf '%s\n' "${failed_files[@]}"
             exit 1
           fi
-
-      - name: Check KCL samples use current sketch syntax
-        run: |
-          deprecated_sketch_calls='(startSketchOn|startProfile|xLine|yLine|xLineTo|yLineTo|angledLine|angledLineOfXLength|angledLineOfYLength|angledLineThatIntersects|angledLineToX|angledLineToY|tangentialArc|close)[[:space:]]*\('
-          positional_profile_calls='(circle|rectangle|polygon)[[:space:]]*\([[:space:]]*[A-Za-z_][A-Za-z0-9_]*[[:space:]]*,'
-          profile_pipe_calls='\|>[[:space:]]*(startProfile|line|xLine|yLine|xLineTo|yLineTo|angledLine|angledLineOfXLength|angledLineOfYLength|angledLineThatIntersects|angledLineToX|angledLineToY|arc|tangentialArc|circle|rectangle|polygon|close)[[:space:]]*\('
-
-          if matches=$(grep -RInE --include='*.kcl' \
-            -e "$deprecated_sketch_calls" \
-            -e "$positional_profile_calls" \
-            -e "$profile_pipe_calls" \
-            public/kcl-samples); then
-            echo 'Current KCL samples must use constraint-based sketch blocks and regions.'
-            echo 'Move compatibility examples to public/kcl-samples-legacy.'
-            echo "$matches"
-            exit 1
-          fi

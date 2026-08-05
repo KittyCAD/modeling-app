@@ -84,6 +84,10 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub issues: Vec<CompilationIssue>,
+    /// If set, use this version only when deciding whether to emit
+    /// `deprecated_since` warnings. Runtime behavior still uses the version
+    /// declared by the KCL program.
+    pub deprecation_version_override: Option<String>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -579,6 +583,17 @@ impl ExecState {
 
     pub fn issues(&self) -> &[CompilationIssue] {
         &self.global.issues
+    }
+
+    pub(crate) fn deprecation_version(&self) -> &str {
+        self.global
+            .deprecation_version_override
+            .as_deref()
+            .unwrap_or(&self.mod_local.settings.kcl_version)
+    }
+
+    pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
+        self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -1267,6 +1282,7 @@ impl GlobalState {
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
+            deprecation_version_override: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
