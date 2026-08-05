@@ -12,13 +12,13 @@ export function ArgumentGroup({
   children,
 }: ArgumentGroupProps) {
   return (
-    <section className="flex flex-col gap-2 border-t border-chalkboard-20 pt-2 first:border-t-0 first:pt-0 dark:border-chalkboard-70">
+    <section className="flex flex-col gap-2.5 border-chalkboard-20 border-t pt-2.5 first:border-t-0 first:pt-0 dark:border-chalkboard-80">
       <div className="flex flex-col gap-0.5">
-        <h3 className="my-0 text-[11px] font-semibold uppercase leading-tight text-chalkboard-70 dark:text-chalkboard-30">
+        <h3 className="my-0 text-xs font-medium leading-tight text-chalkboard-70 dark:text-chalkboard-30">
           {title}
         </h3>
         {description && (
-          <p className="my-0 text-[10px] leading-tight text-chalkboard-60 dark:text-chalkboard-40">
+          <p className="my-0 text-[11px] leading-tight text-chalkboard-60 dark:text-chalkboard-40">
             {description}
           </p>
         )}

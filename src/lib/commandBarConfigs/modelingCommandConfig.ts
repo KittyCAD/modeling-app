@@ -11,6 +11,12 @@ import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import {
+  getExtrudeDirectionMode,
+  getExtrudeExtentType,
+  hasExtrudeDialogValue,
+  normalizeExtrudeDialogArguments,
+} from '@src/lib/commandBarConfigs/extrudeDialog'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -44,7 +50,8 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
-  KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
@@ -224,6 +231,44 @@ const isEditingNodeSelection = (context: {
   selectedCommand?: { useModelingDialog?: boolean }
 }) =>
   isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
+
+const isUsingModelingDialog = (context: {
+  argumentsToSubmit: Record<string, unknown>
+  selectedCommand?: { useModelingDialog?: boolean }
+}) => context.selectedCommand?.useModelingDialog === true
+
+function extrudeSelectionIncludesFace({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) {
+    return false
+  }
+
+  return (
+    sketches.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'cap' ||
+        selection.artifact?.type === 'wall'
+    ) ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'face'
+    )
+  )
+}
+
+function extrudeSelectionSupportsMethod(context: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  return (
+    extrudeSelectionIncludesFace(context) ||
+    extrudeSelectionRequiresMethod(context)
+  )
+}
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -620,26 +665,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeExtrudeDialogArguments,
       groups: [
         {
           id: 'selection',
-          title: 'Selection',
-          description: 'Choose the profiles or faces to extrude.',
+          title: 'Profile',
         },
         {
           id: 'extent',
           title: 'Extent',
-          description: 'Set distance, direction, and termination selections.',
         },
         {
-          id: 'operation',
-          title: 'Operation',
-          description: 'Choose the generated body behavior.',
+          id: 'result',
+          title: 'Result',
         },
         {
           id: 'advanced',
-          title: 'Advanced',
-          description: 'Tags, twist, seams, and lower-level method controls.',
+          title: 'More options',
           collapsible: true,
         },
       ],
@@ -656,9 +699,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             displayName: 'Profiles',
             dialog: {
               group: 'selection',
-              selectionHeading: 'Profiles',
               selectionEmptyLabel: 'Select profiles or faces',
-              selectionHint: 'Pick sketch regions, sketch segments, or faces.',
+              compactSelection: true,
+              hideLabel: true,
             },
             selectionTypes: [
               'solid2d',
@@ -674,72 +717,180 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             multiple: true,
             hidden: isEditingNodeSelection,
           },
-          length: {
+          extentType: {
+            inputType: 'options',
+            displayName: 'Type',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getExtrudeExtentType(argumentsToSubmit),
+            hidden: (context) => !isUsingModelingDialog(context),
+            options: [
+              { name: 'Distance', value: 'distance' },
+              { name: 'To face', value: 'toFace' },
+            ],
             dialog: {
               group: 'extent',
+              order: -20,
+              controlStyle: 'segmented',
+            },
+          },
+          directionMode: {
+            inputType: 'options',
+            displayName: 'Direction',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getExtrudeDirectionMode(argumentsToSubmit),
+            hidden: (context) =>
+              !isUsingModelingDialog(context) ||
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            options: [
+              { name: 'One side', value: 'oneSide' },
+              { name: 'Symmetric', value: 'symmetric' },
+              { name: 'Two sides', value: 'twoSides' },
+            ],
+            dialog: {
+              group: 'extent',
+              order: -10,
+              controlStyle: 'segmented',
+            },
+          },
+          length: {
+            displayName: 'Distance',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'distance',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) !== 'distance',
+            dialog: {
+              group: 'extent',
+              order: 0,
             },
             defaultValue: KCL_DEFAULT_LENGTH,
             prepopulate: true,
           },
           to: {
             inputType: 'selection',
+            displayName: 'To face',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) !== 'toFace',
             dialog: {
               group: 'extent',
-              selectionHeading: 'To',
-              selectionEmptyLabel: 'Optional terminating face',
-              selectionHint: 'Use this for an up-to-face style extent.',
+              order: 0,
+              selectionEmptyLabel: 'Select a terminating face',
+              compactSelection: true,
+              hideLabel: true,
             },
             // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
             selectionTypes: ['cap', 'wall'],
             clearSelectionFirst: true,
             multiple: false,
-            description: 'Only parallel faces are supported for now.',
+            description: 'Parallel faces only.',
           },
           symmetric: {
+            hidden: (context) => isUsingModelingDialog(context),
             dialog: {
               group: 'extent',
-              controlStyle: 'segmented',
             },
           },
           bidirectionalLength: {
+            displayName: 'Second distance',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'distance' &&
+              getExtrudeDirectionMode(context.argumentsToSubmit) === 'twoSides',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) !== 'distance' ||
+                getExtrudeDirectionMode(context.argumentsToSubmit) !==
+                  'twoSides'),
             dialog: {
               group: 'extent',
+              order: 10,
             },
           },
           tagStart: {
+            displayName: 'Start face tag',
             dialog: {
               group: 'advanced',
+              order: 40,
             },
             // TODO: add validation like for Clone command
           },
           tagEnd: {
+            displayName: 'End face tag',
             dialog: {
               group: 'advanced',
+              order: 50,
             },
           },
           draftAngle: {
+            displayName: 'Draft angle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
             dialog: {
               group: 'advanced',
+              order: 10,
             },
           },
           twistAngle: {
+            displayName: 'Twist angle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
             dialog: {
               group: 'advanced',
+              order: 20,
             },
           },
           twistAngleStep: {
+            displayName: 'Twist step',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
+                !hasExtrudeDialogValue(context.argumentsToSubmit.twistAngle)),
             dialog: {
               group: 'advanced',
+              order: 21,
             },
           },
           twistCenter: {
+            displayName: 'Twist center',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
+                !hasExtrudeDialogValue(context.argumentsToSubmit.twistAngle)),
             dialog: {
               group: 'advanced',
+              order: 22,
             },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
             inputType: 'selection',
+            displayName: 'Direction reference',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            dialog: {
+              group: 'advanced',
+              order: 0,
+              selectionEmptyLabel: 'Select an edge',
+              compactSelection: true,
+            },
             selectionTypes: [
               'segment',
               'sweepEdge',
@@ -751,26 +902,52 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           method: {
             inputType: 'options',
+            displayName: 'Operation',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !extrudeSelectionSupportsMethod(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.method),
             dialog: {
-              group: 'advanced',
+              group: 'result',
+              order: 0,
               controlStyle: 'segmented',
             },
             required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
+            options: [
+              {
+                name: 'Merge',
+                value: KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+              },
+              {
+                name: 'New body',
+                value: KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+              },
+            ],
           },
           hideSeams: {
+            displayName: 'Hide seams',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.hideSeams) &&
+              (!extrudeSelectionIncludesFace(context) ||
+                context.argumentsToSubmit.method ===
+                  KCL_PRELUDE_EXTRUDE_METHOD_NEW),
             dialog: {
               group: 'advanced',
+              order: 30,
               controlStyle: 'segmented',
             },
           },
           bodyType: {
             inputType: 'options',
+            displayName: 'Output',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !extrudeSelectionRequiresBodyType(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.bodyType),
             dialog: {
-              group: 'operation',
+              group: 'result',
+              order: 10,
               controlStyle: 'segmented',
             },
             required: extrudeSelectionRequiresBodyType,

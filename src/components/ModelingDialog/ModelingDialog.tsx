@@ -105,6 +105,27 @@ const DEFAULT_DIALOG_GROUP: CommandDialogGroup = {
   title: 'Parameters',
 }
 
+function ValidationIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="h-3.5 w-3.5"
+    >
+      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M10 6.5V10.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="10" cy="13.5" r="0.9" fill="currentColor" />
+    </svg>
+  )
+}
+
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
 
@@ -284,6 +305,10 @@ function hasMeaningfulDialogValue(value: unknown): boolean {
   return true
 }
 
+function hasOpenworthyDialogValue(value: unknown): boolean {
+  return typeof value === 'boolean' ? value : hasMeaningfulDialogValue(value)
+}
+
 function isMissingRequiredDialogValue(
   arg: CommandArgument<unknown>,
   value: unknown
@@ -347,10 +372,13 @@ function resolveDialogGroups(
     .filter((group) => group.fields.length > 0)
     .map((group) => ({
       ...group,
+      fields: [...group.fields].sort(
+        (a, b) => (a.arg.dialog?.order ?? 0) - (b.arg.dialog?.order ?? 0)
+      ),
       defaultOpen:
         group.defaultOpen ||
         group.fields.some((field) =>
-          hasMeaningfulDialogValue(draftValues[field.argName])
+          hasOpenworthyDialogValue(draftValues[field.argName])
         ),
     }))
 }
@@ -385,12 +413,16 @@ async function resolveDefaultValue(
 }
 
 function evaluateVisibility(
+  argName: string,
   arg: CommandArgument<unknown>,
   context: CommandBarContext,
   machineContext?: MachineContext
 ): { isHidden: boolean; isRequired: boolean; isDisabled: boolean } {
-  const shouldShowDisabledSelectionInEdit =
+  const shouldDisableSelectionInEdit =
     isSelectionArgument(arg) && Boolean(context.argumentsToSubmit.nodeToEdit)
+  const shouldRevealHiddenSelectionInEdit =
+    shouldDisableSelectionInEdit &&
+    !isSelectionValueEmpty(context.argumentsToSubmit[argName])
   const isRawHidden =
     typeof arg.hidden === 'function'
       ? arg.hidden(context, machineContext)
@@ -401,9 +433,9 @@ function evaluateVisibility(
       : !!arg.required
 
   return {
-    isHidden: isRawHidden && !shouldShowDisabledSelectionInEdit,
+    isHidden: isRawHidden && !shouldRevealHiddenSelectionInEdit,
     isRequired,
-    isDisabled: shouldShowDisabledSelectionInEdit,
+    isDisabled: shouldDisableSelectionInEdit,
   }
 }
 
@@ -571,11 +603,15 @@ export function ModelingDialog() {
       }
     }
 
-    return nextValues
+    return (
+      selectedCommand?.dialogLayout?.normalizeArguments?.(nextValues) ??
+      nextValues
+    )
   }, [
     activeSelectionArgName,
     commandBarState.context.argumentsToSubmit,
     draftValues,
+    selectedCommand?.dialogLayout,
     selectedCommand?.args,
     selectionRanges,
   ])
@@ -594,6 +630,7 @@ export function ModelingDialog() {
     }
     return Object.entries(selectedCommand.args).map(([argName, arg]) => {
       const { isHidden, isRequired, isDisabled } = evaluateVisibility(
+        argName,
         arg,
         dialogContext,
         selectedMachineContext
@@ -638,6 +675,7 @@ export function ModelingDialog() {
           },
         }
         const { isRequired } = evaluateVisibility(
+          argName,
           arg,
           contextWithDraft,
           selectedMachineContext
@@ -1089,17 +1127,22 @@ export function ModelingDialog() {
       }
 
       const wasmInstance = await wasmPromise
-      const argumentsToSubmit: Record<string, unknown> = {
+      const normalizeArguments =
+        selectedCommand.dialogLayout?.normalizeArguments ??
+        ((values: Record<string, unknown>) => values)
+      let argumentsToSubmit = normalizeArguments({
         ...commandBarState.context.argumentsToSubmit,
         ...draftValues,
-      }
+      })
 
       for (const [argName, arg] of Object.entries(selectedCommand.args)) {
+        argumentsToSubmit = normalizeArguments(argumentsToSubmit)
         const currentContext: CommandBarContext = {
           ...commandBarState.context,
           argumentsToSubmit,
         }
         const { isRequired, isDisabled } = evaluateVisibility(
+          argName,
           arg,
           currentContext,
           selectedMachineContext
@@ -1247,7 +1290,10 @@ export function ModelingDialog() {
         argumentsToSubmit[argName] = value
       }
 
-      return { ok: true, argumentsToSubmit }
+      return {
+        ok: true,
+        argumentsToSubmit: normalizeArguments(argumentsToSubmit),
+      }
     },
     [
       activeSelectionFieldName,
@@ -1257,6 +1303,7 @@ export function ModelingDialog() {
       kclManager.astSignal.value,
       kclManager.rustContext,
       selectedCommand?.args,
+      selectedCommand?.dialogLayout,
       selectedMachineContext,
       selectionRanges,
       wasmPromise,
@@ -1416,7 +1463,7 @@ export function ModelingDialog() {
     const description = arg.description ? (
       <MarkdownText
         text={arg.description}
-        className="text-[10px] leading-tight text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown"
+        className="parsed-markdown text-[11px] leading-snug text-chalkboard-70 dark:text-chalkboard-40"
       />
     ) : undefined
 
@@ -1426,7 +1473,9 @@ export function ModelingDialog() {
       kclManager.astSignal.value,
       capturedSelection
     )
-    const label = capitalizeFirstLetter(arg.displayName || argName)
+    const label = arg.displayName
+      ? capitalizeFirstLetter(arg.displayName)
+      : toTitleCase(argName)
 
     if (arg.inputType === 'kcl') {
       return (
@@ -1490,6 +1539,8 @@ export function ModelingDialog() {
         selectionHeading={arg.dialog?.selectionHeading || arg.displayName}
         selectionEmptyLabel={arg.dialog?.selectionEmptyLabel}
         selectionHint={arg.dialog?.selectionHint}
+        compactSelection={arg.dialog?.compactSelection}
+        hideLabel={arg.dialog?.hideLabel}
         isSelecting={isActivelySelecting}
         currentSelectionLabel={selectionSummary(
           kclManager.astSignal.value,
@@ -1547,7 +1598,7 @@ export function ModelingDialog() {
       style={{ paddingTop: dialogTopOffset }}
     >
       <Draggable
-        className="relative ml-auto mr-2 pointer-events-auto flex !h-auto w-full max-w-[21rem] flex-col overflow-hidden border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+        className="pointer-events-auto relative ml-auto mr-2 flex !h-auto w-[calc(100%_-_1rem)] max-w-[21rem] flex-col overflow-hidden rounded-md border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-10"
         containerRef={modelingAreaContainerRef}
         startInContainer
         data-testid="modeling-dialog"
@@ -1565,11 +1616,12 @@ export function ModelingDialog() {
           }}
           className="flex min-h-0 w-full flex-col px-3 pt-2 text-xs"
         >
-          {selectedCommand.description && (
-            <p className="mt-1 mb-2 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
-              {selectedCommand.description}
-            </p>
-          )}
+          {selectedCommand.description &&
+            selectedCommand.dialogLayout?.showCommandDescription !== false && (
+              <p className="mt-1 mb-2 text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-40">
+                {selectedCommand.description}
+              </p>
+            )}
 
           <div className="flex min-h-0 flex-col gap-3 overflow-y-auto pr-1">
             {groupedFields.length > 0
@@ -1603,12 +1655,20 @@ export function ModelingDialog() {
               )}
           </div>
 
-          <div className="sticky bottom-0 -mx-3 mt-3 flex shrink-0 items-center justify-between gap-3 border-chalkboard-20 border-t bg-chalkboard-10 px-3 py-3 dark:border-chalkboard-80 dark:bg-chalkboard-100">
+          <div className="sticky bottom-0 -mx-3 mt-3 flex shrink-0 items-center justify-between gap-3 border-chalkboard-20 border-t bg-chalkboard-10 px-3 py-2 dark:border-chalkboard-80 dark:bg-chalkboard-100">
             <div className="min-w-0 flex-1">
               {validationErrorToDisplay && (
-                <p className="my-0 text-xs leading-tight text-destroy-70 dark:text-destroy-40">
-                  {validationErrorToDisplay}
-                </p>
+                <div
+                  role="alert"
+                  className="flex min-w-0 items-start gap-1.5 text-destroy-70 dark:text-destroy-40"
+                >
+                  <span className="mt-px shrink-0" aria-hidden="true">
+                    <ValidationIcon />
+                  </span>
+                  <p className="my-0 min-w-0 break-words text-[11px] leading-snug">
+                    {validationErrorToDisplay}
+                  </p>
+                </div>
               )}
             </div>
             <SubmitButton

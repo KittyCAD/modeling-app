@@ -154,11 +154,42 @@ describe('GDT tolerance defaults', () => {
 })
 
 describe('Extrude surface arguments', () => {
-  it('allows extrude profiles to include body edge selections', () => {
+  function extrudeConfig() {
     const commandConfig = modelingMachineCommandConfig.Extrude
     if (!commandConfig || isArray(commandConfig)) {
       throw new Error('Extrude should have a single command config')
     }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Extrude'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const hidden = extrudeConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Extrude'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const required = extrudeConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('allows extrude profiles to include body edge selections', () => {
+    const commandConfig = extrudeConfig()
 
     expect(commandConfig.args?.sketches).toMatchObject({
       inputType: 'selection',
@@ -168,6 +199,80 @@ describe('Extrude surface arguments', () => {
         'primitiveEdge',
         'enginePrimitiveEdge',
       ]),
+    })
+  })
+
+  it('shows only fields associated with the selected extent and direction', () => {
+    const distance = {
+      extentType: 'distance',
+      directionMode: 'oneSide',
+    }
+    expect(evaluateHidden('length', distance)).toBe(false)
+    expect(evaluateRequired('length', distance)).toBe(true)
+    expect(evaluateHidden('to', distance)).toBe(true)
+    expect(evaluateHidden('bidirectionalLength', distance)).toBe(true)
+
+    const twoSides = { ...distance, directionMode: 'twoSides' }
+    expect(evaluateHidden('bidirectionalLength', twoSides)).toBe(false)
+    expect(evaluateRequired('bidirectionalLength', twoSides)).toBe(true)
+
+    const toFace = { extentType: 'toFace', directionMode: 'twoSides' }
+    expect(evaluateHidden('length', toFace)).toBe(true)
+    expect(evaluateHidden('to', toFace)).toBe(false)
+    expect(evaluateRequired('to', toFace)).toBe(true)
+    expect(evaluateHidden('directionMode', toFace)).toBe(true)
+  })
+
+  it('hydrates dialog modes from an existing Extrude call', () => {
+    const extentType = extrudeConfig().args?.extentType
+    const directionMode = extrudeConfig().args?.directionMode
+    if (
+      extentType?.inputType !== 'options' ||
+      typeof extentType.defaultValue !== 'function' ||
+      directionMode?.inputType !== 'options' ||
+      typeof directionMode.defaultValue !== 'function'
+    ) {
+      throw new Error('Extrude dialog modes should have derived defaults')
+    }
+
+    expect(
+      extentType.defaultValue({
+        argumentsToSubmit: { to: selectionsForArtifact() },
+      } as never)
+    ).toBe('toFace')
+    expect(
+      directionMode.defaultValue({
+        argumentsToSubmit: { symmetric: true },
+      } as never)
+    ).toBe('symmetric')
+    expect(
+      directionMode.defaultValue({
+        argumentsToSubmit: { bidirectionalLength: parsedLength() },
+      } as never)
+    ).toBe('twoSides')
+  })
+
+  it('keeps dependent twist controls hidden until twist is enabled', () => {
+    const defaultArgs = { extentType: 'distance' }
+    expect(evaluateHidden('twistAngleStep', defaultArgs)).toBe(true)
+    expect(evaluateHidden('twistCenter', defaultArgs)).toBe(true)
+
+    const twistedArgs = { ...defaultArgs, twistAngle: parsedLength('30deg') }
+    expect(evaluateHidden('twistAngleStep', twistedArgs)).toBe(false)
+    expect(evaluateHidden('twistCenter', twistedArgs)).toBe(false)
+  })
+
+  it('uses compact profile collection and puts operation in Result', () => {
+    expect(extrudeConfig().args?.sketches.dialog).toMatchObject({
+      group: 'selection',
+      compactSelection: true,
+    })
+    expect(extrudeConfig().args?.method?.dialog).toMatchObject({
+      group: 'result',
+      controlStyle: 'segmented',
+    })
+    expect(extrudeConfig().dialogLayout).toMatchObject({
+      showCommandDescription: false,
     })
   })
 

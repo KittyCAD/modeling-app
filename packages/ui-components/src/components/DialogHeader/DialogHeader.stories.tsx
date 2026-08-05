@@ -23,10 +23,10 @@ function HeaderPreview({ title }: { title: string }) {
   const [closeCount, setCloseCount] = useState(0)
 
   return (
-    <div className="relative flex w-80 flex-col overflow-hidden rounded border border-chalkboard-20 bg-chalkboard-10 shadow dark:border-chalkboard-70 dark:bg-chalkboard-100">
+    <div className="relative flex w-80 flex-col overflow-hidden rounded-md border border-chalkboard-30 bg-chalkboard-10 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100">
       <DialogHeader title={title} onClose={() => setCloseCount((n) => n + 1)} />
       <div className="px-3 py-4 text-xs text-chalkboard-70 dark:text-chalkboard-40">
-        Close clicked {closeCount} times
+        Cancel clicked {closeCount} times
       </div>
     </div>
   )

@@ -64,10 +64,17 @@ export type CommandDialogGroup = {
 }
 export type CommandDialogLayout = {
   groups: CommandDialogGroup[]
+  showCommandDescription?: boolean
+  normalizeArguments?: (
+    argumentsToSubmit: Record<string, unknown>
+  ) => Record<string, unknown>
 }
 export type CommandArgumentDialogConfig = {
   group?: string
+  order?: number
   controlStyle?: 'select' | 'segmented'
+  compactSelection?: boolean
+  hideLabel?: boolean
   selectionHeading?: string
   selectionEmptyLabel?: string
   selectionHint?: string

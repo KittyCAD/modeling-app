@@ -9,7 +9,9 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, keymap, tooltips } from '@codemirror/view'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
+import Tooltip from '@src/components/Tooltip'
 import { editorTheme } from '@src/editor/plugins/theme'
 import {
   createLocalName,
@@ -495,24 +497,49 @@ export function ModelingDialogKclInput({
       : 'text-succeed-80 dark:text-succeed-40'
 
   return (
-    <div
-      className={['flex flex-col gap-1', disabled ? 'opacity-60' : ''].join(
-        ' '
-      )}
-    >
-      <span id={labelId} className="text-xs font-medium leading-tight">
+    <div className="flex flex-col gap-1">
+      <span
+        id={labelId}
+        className="text-xs font-medium leading-tight text-chalkboard-80 dark:text-chalkboard-20"
+      >
         {label}
-        {isRequired ? ' *' : ''}
+        {isRequired && <span aria-hidden="true"> *</span>}
+        {isRequired && <span className="sr-only"> (required)</span>}
       </span>
-      <div
-        ref={editorWrapperRef}
-        id={inputId}
-        data-testid={inputId}
-        className={[
-          styles.kclEditor,
-          disabled ? styles.kclEditorDisabled : '',
-        ].join(' ')}
-      />
+      <div className="relative">
+        <div
+          ref={editorWrapperRef}
+          id={inputId}
+          data-testid={inputId}
+          className={[
+            styles.kclEditor,
+            arg.createVariable !== 'disallow' ? styles.kclEditorWithAction : '',
+            disabled ? styles.kclEditorDisabled : '',
+          ].join(' ')}
+        />
+        {arg.createVariable !== 'disallow' && (
+          <button
+            type="button"
+            aria-label="Create variable"
+            aria-pressed={createNewVariable}
+            id={`${inputId}-variable-checkbox`}
+            data-testid={`${inputId}-variable-checkbox`}
+            disabled={disabled || arg.createVariable === 'force'}
+            onClick={() => setCreateNewVariable((current) => !current)}
+            className={[
+              'absolute top-1/2 right-1 m-0 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm border-0 p-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed',
+              createNewVariable
+                ? 'bg-primary/15 text-primary hover:bg-primary/20'
+                : 'bg-transparent text-chalkboard-60 hover:bg-chalkboard-20 hover:text-chalkboard-90 dark:text-chalkboard-40 dark:hover:bg-chalkboard-80 dark:hover:text-chalkboard-10',
+            ].join(' ')}
+          >
+            <CustomIcon name="make-variable" className="h-4 w-4" />
+            <Tooltip position="left">
+              {createNewVariable ? 'Do not create variable' : 'Create variable'}
+            </Tooltip>
+          </button>
+        )}
+      </div>
       {!isEmpty && (
         <div className="flex min-w-0 items-center gap-1 text-[10px] leading-tight">
           <span className="text-chalkboard-60 dark:text-chalkboard-40">=</span>
@@ -529,64 +556,44 @@ export function ModelingDialogKclInput({
           </span>
         </div>
       )}
-      {arg.createVariable !== 'disallow' && (
+      {arg.createVariable !== 'disallow' && createNewVariable && (
         <div className="flex min-w-0 items-center gap-1.5 text-[10px] leading-tight">
           <input
-            type="checkbox"
-            id={`${inputId}-variable-checkbox`}
-            data-testid={`${inputId}-variable-checkbox`}
-            checked={createNewVariable}
+            type="text"
+            id={`${inputId}-variable-name`}
+            name={`${inputId}-variable-name`}
+            className="min-w-0 flex-1 border-0 border-chalkboard-50 border-b border-solid bg-transparent px-0 py-px focus:outline-none"
+            placeholder="Variable name"
+            value={newVariableName}
             disabled={disabled}
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck="false"
             onChange={(event) => {
-              setCreateNewVariable(event.target.checked)
+              setHasEditedVariableName(true)
+              setNewVariableName(event.target.value)
             }}
-            className="m-0 bg-chalkboard-10 dark:bg-chalkboard-80"
+            onKeyDown={(event) => {
+              if (
+                event.currentTarget.value === '' &&
+                event.key === 'Backspace' &&
+                arg.createVariable !== 'force'
+              ) {
+                setCreateNewVariable(false)
+              }
+            }}
           />
-          <label
-            htmlFor={`${inputId}-variable-checkbox`}
-            className="whitespace-nowrap border-none bg-transparent p-0 text-chalkboard-80 dark:text-chalkboard-20"
+          <span
+            className={
+              isNewVariableNameUnique
+                ? 'shrink-0 text-succeed-60 dark:text-succeed-40'
+                : 'shrink-0 text-destroy-60 dark:text-destroy-40'
+            }
+            aria-live="polite"
           >
-            Create new variable
-          </label>
-          {createNewVariable && (
-            <>
-              <input
-                type="text"
-                id={`${inputId}-variable-name`}
-                name={`${inputId}-variable-name`}
-                className="min-w-0 flex-1 border-0 border-b border-solid border-chalkboard-50 bg-transparent px-0 py-px focus:outline-none"
-                placeholder="Variable name"
-                value={newVariableName}
-                disabled={disabled}
-                autoCapitalize="off"
-                autoCorrect="off"
-                autoComplete="off"
-                spellCheck="false"
-                onChange={(event) => {
-                  setHasEditedVariableName(true)
-                  setNewVariableName(event.target.value)
-                }}
-                onKeyDown={(event) => {
-                  if (
-                    event.currentTarget.value === '' &&
-                    event.key === 'Backspace' &&
-                    arg.createVariable !== 'force'
-                  ) {
-                    setCreateNewVariable(false)
-                  }
-                }}
-              />
-              <span
-                className={
-                  isNewVariableNameUnique
-                    ? 'shrink-0 text-succeed-60 dark:text-succeed-40'
-                    : 'shrink-0 text-destroy-60 dark:text-destroy-40'
-                }
-              >
-                {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
-              </span>
-            </>
-          )}
+            {isNewVariableNameUnique ? 'Available' : 'Unavailable'}
+          </span>
         </div>
       )}
       {description}

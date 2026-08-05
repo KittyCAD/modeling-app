@@ -43,6 +43,8 @@ export type ArgumentFieldProps<Item extends SelectionListItem> = {
   isSelecting?: boolean
   disabled?: boolean
   controlStyle?: 'select' | 'segmented'
+  compactSelection?: boolean
+  hideLabel?: boolean
   onChange: (value: unknown) => void
   onStartSelecting?: () => void
   onRemoveSelection?: (item: Item) => void
@@ -63,6 +65,22 @@ function FieldDescription({ description }: { description?: ReactNode }) {
   return <>{description}</>
 }
 
+function FieldLabel({
+  label,
+  isRequired,
+}: {
+  label: ReactNode
+  isRequired: boolean
+}) {
+  return (
+    <span className="text-xs font-medium leading-tight text-chalkboard-80 dark:text-chalkboard-20">
+      {label}
+      {isRequired && <span aria-hidden="true"> *</span>}
+      {isRequired && <span className="sr-only"> (required)</span>}
+    </span>
+  )
+}
+
 export function ArgumentField<Item extends SelectionListItem>({
   name,
   inputType,
@@ -79,17 +97,16 @@ export function ArgumentField<Item extends SelectionListItem>({
   isSelecting = false,
   disabled = false,
   controlStyle = 'select',
+  compactSelection = false,
+  hideLabel = false,
   onChange,
   onStartSelecting,
   onRemoveSelection,
   onClearSelection,
 }: ArgumentFieldProps<Item>) {
-  const fieldClassName = [
-    'flex flex-col gap-1',
-    disabled ? 'opacity-60' : '',
-  ].join(' ')
+  const fieldClassName = 'flex flex-col gap-1'
   const inputClassName =
-    'w-full rounded border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
+    'min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1.5 text-xs leading-tight focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed disabled:bg-chalkboard-10 disabled:text-chalkboard-60 dark:border-chalkboard-70 dark:disabled:bg-chalkboard-90 dark:disabled:text-chalkboard-50'
 
   if (inputType === 'options') {
     const selectedIndex = options.findIndex((option) =>
@@ -99,10 +116,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     if (controlStyle === 'segmented') {
       return (
         <div className={fieldClassName}>
-          <span className="text-xs font-medium leading-tight">
-            {label}
-            {isRequired ? ' *' : ''}
-          </span>
+          <FieldLabel label={label} isRequired={isRequired} />
           <ChoiceGroup
             name={name}
             value={value}
@@ -120,10 +134,7 @@ export function ArgumentField<Item extends SelectionListItem>({
 
     return (
       <label className={fieldClassName}>
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+        <FieldLabel label={label} isRequired={isRequired} />
         <select
           value={selectedIndex >= 0 ? String(selectedIndex) : ''}
           disabled={disabled}
@@ -158,10 +169,7 @@ export function ArgumentField<Item extends SelectionListItem>({
     if (controlStyle === 'segmented') {
       return (
         <div className={fieldClassName}>
-          <span className="text-xs font-medium leading-tight">
-            {label}
-            {isRequired ? ' *' : ''}
-          </span>
+          <FieldLabel label={label} isRequired={isRequired} />
           <ChoiceGroup
             name={name}
             value={value === true || value === false ? value : undefined}
@@ -181,10 +189,7 @@ export function ArgumentField<Item extends SelectionListItem>({
 
     return (
       <label className={fieldClassName}>
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+        <FieldLabel label={label} isRequired={isRequired} />
         <select
           value={boolValue}
           disabled={disabled}
@@ -216,18 +221,12 @@ export function ArgumentField<Item extends SelectionListItem>({
     }
 
     return (
-      <div
-        className={['flex flex-col gap-2', disabled ? 'opacity-60' : ''].join(
-          ' '
-        )}
-      >
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+      <div className="flex flex-col gap-1">
+        {!hideLabel && <FieldLabel label={label} isRequired={isRequired} />}
         <div
           className={[
-            'relative rounded-sm border p-2 transition-colors',
+            'relative rounded-sm border transition-colors',
+            compactSelection ? 'px-2 py-1' : 'p-2',
             disabled
               ? 'border-chalkboard-20 bg-chalkboard-10/30 dark:border-chalkboard-80 dark:bg-chalkboard-100/30'
               : isSelecting
@@ -243,8 +242,7 @@ export function ArgumentField<Item extends SelectionListItem>({
               typeof label === 'string' ? `Select ${label}` : `Select ${name}`
             }
             onClick={activateCollector}
-            onFocus={activateCollector}
-            className="absolute inset-0 z-0 m-0 h-full w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 focus:outline-current disabled:cursor-not-allowed"
+            className="absolute inset-0 z-0 m-0 h-full w-full cursor-pointer rounded-sm border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed"
           />
           <div className="pointer-events-none relative z-10">
             <SelectionList
@@ -257,10 +255,24 @@ export function ArgumentField<Item extends SelectionListItem>({
               hint={selectionHint}
               isActive={isSelecting}
               onClear={disabled ? undefined : onClearSelection}
+              compact={compactSelection}
             />
-            {isSelecting && currentSelectionLabel && (
-              <p className="my-1 mb-0 text-[10px] leading-tight text-primary/80 dark:text-primary/80">
-                Selecting now: {currentSelectionLabel}
+            {!compactSelection && !disabled && !isSelecting && (
+              <p className="mt-1.5 mb-0 border-chalkboard-20 border-t pt-1.5 text-[10px] leading-tight text-chalkboard-60 dark:border-chalkboard-70 dark:text-chalkboard-40">
+                Click to {selectionItems.length > 0 ? 'change' : 'pick'} the
+                selection in the scene
+              </p>
+            )}
+            {isSelecting && (
+              <p
+                className="mt-1.5 mb-0 border-primary/20 border-t pt-1.5 text-[10px] leading-tight text-primary dark:border-primary/25 dark:text-primary"
+                aria-live="polite"
+              >
+                {currentSelectionLabel ? (
+                  <>Selecting: {currentSelectionLabel}</>
+                ) : (
+                  'Selecting in the scene...'
+                )}
               </p>
             )}
           </div>
@@ -273,10 +285,7 @@ export function ArgumentField<Item extends SelectionListItem>({
   if (inputType === 'text') {
     return (
       <label className={fieldClassName}>
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+        <FieldLabel label={label} isRequired={isRequired} />
         <textarea
           value={typeof value === 'string' ? value : ''}
           disabled={disabled}
@@ -296,10 +305,7 @@ export function ArgumentField<Item extends SelectionListItem>({
   ) {
     return (
       <label className={fieldClassName}>
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+        <FieldLabel label={label} isRequired={isRequired} />
         <input
           type="text"
           value={typeof value === 'string' ? value : ''}
@@ -326,16 +332,13 @@ export function ArgumentField<Item extends SelectionListItem>({
       typeof value === 'string' && value.startsWith('#') ? value : '#ffffff'
     return (
       <label className={fieldClassName}>
-        <span className="text-xs font-medium leading-tight">
-          {label}
-          {isRequired ? ' *' : ''}
-        </span>
+        <FieldLabel label={label} isRequired={isRequired} />
         <input
           type="color"
           value={colorValue}
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          className="h-8 w-full rounded border border-chalkboard-30 bg-transparent disabled:cursor-not-allowed"
+          className="h-8 w-full rounded-sm border border-chalkboard-30 bg-transparent focus-visible:outline focus-visible:outline-1 focus-visible:outline-appForeground disabled:cursor-not-allowed dark:border-chalkboard-70"
         />
         <FieldDescription description={description} />
       </label>
@@ -344,10 +347,7 @@ export function ArgumentField<Item extends SelectionListItem>({
 
   return (
     <label className={fieldClassName}>
-      <span className="text-xs font-medium leading-tight">
-        {label}
-        {isRequired ? ' *' : ''}
-      </span>
+      <FieldLabel label={label} isRequired={isRequired} />
       <input
         type="text"
         value={typeof value === 'string' ? value : ''}

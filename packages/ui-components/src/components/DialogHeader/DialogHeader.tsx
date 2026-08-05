@@ -27,7 +27,7 @@ function CloseIcon() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-      className="h-4 w-4"
+      className="h-3.5 w-3.5"
     >
       <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" />
     </svg>
@@ -41,9 +41,9 @@ export function DialogHeader({
 }: DialogHeaderProps) {
   return (
     <>
-      <div className="flex items-center gap-1.5 border-b border-chalkboard-20 px-3 py-1.5 pr-8 text-chalkboard-60 cursor-move select-none dark:border-chalkboard-70 dark:text-chalkboard-40">
+      <div className="flex min-h-8 cursor-move select-none items-center gap-1.5 border-chalkboard-30 border-b bg-chalkboard-10 px-2 py-1 pr-20 text-chalkboard-60 dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-40">
         <DragHandleIcon />
-        <span className="min-w-0 truncate text-xs uppercase tracking-wide">
+        <span className="min-w-0 truncate text-xs font-medium text-chalkboard-90 dark:text-chalkboard-10">
           {title}
         </span>
       </div>
@@ -51,14 +51,13 @@ export function DialogHeader({
         data-testid="command-bar-close-button"
         onClick={onClose}
         onMouseDown={(event) => event.stopPropagation()}
-        className="group m-0 border-none bg-transparent p-0 hover:bg-transparent !absolute right-2 top-2"
+        className="!absolute top-0.5 right-1 m-0 flex h-7 items-center gap-1 rounded-sm border-none bg-transparent px-2 py-1 text-xs text-chalkboard-80 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90"
         type="button"
         aria-label={closeLabel}
         title={`${closeLabel} esc`}
       >
-        <span className="inline-flex h-4 w-4 items-center justify-center rounded-sm bg-destroy-10 text-destroy-80 group-hover:brightness-110 dark:bg-destroy-80 dark:text-destroy-10">
-          <CloseIcon />
-        </span>
+        <CloseIcon />
+        <span>{closeLabel}</span>
       </button>
     </>
   )

@@ -34,6 +34,7 @@ type FieldPreviewProps = {
   description?: string
   initialSelectionItems?: SelectionListItem[]
   initialSelecting?: boolean
+  disabled?: boolean
   controlStyle?: 'select' | 'segmented'
 }
 
@@ -54,7 +55,7 @@ const meta = {
   },
   decorators: [
     (Story: StoryFn) => (
-      <div className="w-80 rounded border border-chalkboard-20 bg-chalkboard-10 p-3 text-chalkboard-100 dark:border-chalkboard-70 dark:bg-chalkboard-100 dark:text-chalkboard-10">
+      <div className="w-80 rounded-md border border-chalkboard-30 bg-chalkboard-10 p-3 text-chalkboard-100 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100 dark:text-chalkboard-10">
         <Story />
       </div>
     ),
@@ -83,6 +84,7 @@ function FieldPreview({
   description,
   initialSelectionItems = [],
   initialSelecting = false,
+  disabled = false,
   controlStyle,
 }: FieldPreviewProps) {
   const [value, setValue] = useState(initialValue)
@@ -103,6 +105,7 @@ function FieldPreview({
       selectionEmptyLabel="Select profiles or faces"
       selectionHint="Multiple selections are accepted."
       isSelecting={isSelecting}
+      disabled={disabled}
       currentSelectionLabel="1 face, 1 edge"
       description={
         description ? <Description>{description}</Description> : undefined
@@ -170,6 +173,19 @@ export const Selection: Story = {
       initialSelectionItems={selectionItems}
       initialSelecting
       description="Pick scene objects or code-backed selections."
+    />
+  ),
+}
+
+export const ReadOnlySelection: Story = {
+  render: () => (
+    <FieldPreview
+      name="objects"
+      inputType="selectionMixed"
+      label="Objects"
+      initialSelectionItems={selectionItems}
+      disabled
+      description="Captured selections stay legible while selection edits are unavailable."
     />
   ),
 }
