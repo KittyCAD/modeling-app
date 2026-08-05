@@ -349,15 +349,31 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
+  private setCloudSyncOpenedProject(project?: Project) {
+    this.registry.get(cloudSyncService).setOpenedProject(
+      project
+        ? {
+            projectPath: project.path,
+            ...(project.libraryPath
+              ? { libraryPath: project.libraryPath }
+              : {}),
+            ...(project.libraryType
+              ? { libraryType: project.libraryType }
+              : {}),
+          }
+        : undefined
+    )
+  }
+
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(
-      await projectWithLibraryOwnership(
-        projectIORef,
-        this.settings.get().app.libraries.current
-      )
+    const ownedProject = await projectWithLibraryOwnership(
+      projectIORef,
+      this.settings.get().app.libraries.current
     )
+    const projectIORefSignal = signal(ownedProject)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -458,6 +474,7 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }

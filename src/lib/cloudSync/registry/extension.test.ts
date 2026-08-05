@@ -42,7 +42,7 @@ vi.mock('@src/lib/cloudSync', () => ({
   installCloudSyncFileSystemObserver: vi.fn(),
   resolveCloudSyncProjectConflict: vi.fn(),
   retryCloudSync: vi.fn(),
-  setCloudSyncProjectScope: vi.fn(),
+  setCloudSyncOpenedProject: vi.fn(),
   getCloudSyncRemoteProjectThumbnailUrl: vi.fn(),
 }))
 

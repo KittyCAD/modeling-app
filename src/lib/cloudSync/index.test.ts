@@ -34,7 +34,11 @@ import {
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
-import { LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH } from '@src/lib/projectLibraries'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+} from '@src/lib/projectLibraries'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const encoder = new TextEncoder()
@@ -713,7 +717,8 @@ describe('cloudSync sync helpers', () => {
     expect(
       getCloudSyncScopePlan(entries, {
         projectPath: '/projects/current',
-        syncable: true,
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
       })
     ).toEqual({
       shouldSyncRemoteIndex: false,
@@ -753,7 +758,8 @@ describe('cloudSync sync helpers', () => {
     expect(
       getCloudSyncScopePlan(entries, {
         projectPath: '/projects/current',
-        syncable: true,
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
       })
     ).toEqual({
       shouldSyncRemoteIndex: false,
@@ -766,7 +772,8 @@ describe('cloudSync sync helpers', () => {
     expect(
       getCloudSyncScopePlan([], {
         projectPath: '/projects/current',
-        syncable: true,
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
       })
     ).toEqual({
       shouldSyncRemoteIndex: false,
@@ -775,7 +782,7 @@ describe('cloudSync sync helpers', () => {
     })
   })
 
-  it('suppresses sync work for file-route scopes outside project libraries', () => {
+  it('suppresses sync work for opened projects outside cloud libraries', () => {
     const entries: OutboxEntry[] = [
       {
         projectPath: '/projects/other',
@@ -788,7 +795,18 @@ describe('cloudSync sync helpers', () => {
     expect(
       getCloudSyncScopePlan(entries, {
         projectPath: '/external/random',
-        syncable: false,
+        libraryPath: '/external',
+        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      })
+    ).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: [],
+      pendingCount: 0,
+    })
+
+    expect(
+      getCloudSyncScopePlan(entries, {
+        projectPath: '/external/random',
       })
     ).toEqual({
       shouldSyncRemoteIndex: false,

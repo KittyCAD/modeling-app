@@ -1,3 +1,5 @@
+import type { ProjectLibraryType } from '@src/lib/projectLibraries'
+
 /** Cloud API project revision token used for guarded updates. */
 export type Revision = string
 
@@ -100,14 +102,11 @@ export type CloudSyncConfig = {
   autoEnrollCloudLibraryProjects?: boolean
 }
 
-/**
- * File-route scope for status and retry behavior. A non-syncable scope still
- * hides Home/global sync state while a project is open, but it cannot enqueue
- * or retry sync work for that project.
- */
-export type CloudSyncProjectScope = {
+/** Currently opened project context used to scope status and retry behavior. */
+export type CloudSyncOpenedProject = {
   projectPath: string
-  syncable: boolean
+  libraryPath?: string
+  libraryType?: ProjectLibraryType
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */

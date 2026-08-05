@@ -8,7 +8,7 @@ import {
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
 import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
 import {
@@ -29,6 +29,10 @@ import {
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+} from '@src/lib/projectLibraries'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorsMock = vi.hoisted(() => ({
@@ -105,7 +109,7 @@ describe('cloud sync file policy', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope(undefined)
+    setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
     clientErrorsMock.reportClientError.mockClear()
     vi.unstubAllGlobals()
@@ -249,9 +253,10 @@ describe('cloud sync file policy', () => {
       cloudProjectDirectoryPaths: [cloudProjectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
-    setCloudSyncProjectScope({
+    setCloudSyncOpenedProject({
       projectPath: directoryProjectPath,
-      syncable: true,
+      libraryPath: directoryLibraryPath,
+      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
     })
 
     await notifyCloudSyncWriteLikeMutation(`${directoryProjectPath}/main.kcl`)
@@ -277,9 +282,8 @@ describe('cloud sync file policy', () => {
       cloudProjectDirectoryPaths: [cloudProjectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
-    setCloudSyncProjectScope({
+    setCloudSyncOpenedProject({
       projectPath: externalProjectPath,
-      syncable: false,
     })
 
     await notifyCloudSyncWriteLikeMutation(`${externalProjectPath}/main.kcl`)
@@ -463,9 +467,10 @@ describe('cloud sync file policy', () => {
       createdAt: '2026-07-08T12:01:00.000Z',
     })
 
-    setCloudSyncProjectScope({
+    setCloudSyncOpenedProject({
       projectPath,
-      syncable: true,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
     })
     configureCloudSyncEngine({
       enabled: true,

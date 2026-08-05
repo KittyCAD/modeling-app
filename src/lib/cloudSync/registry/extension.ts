@@ -18,7 +18,7 @@ import {
   installCloudSyncFileSystemObserver,
   resolveCloudSyncProjectConflict,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
   startCloudSyncProject,
 } from '@src/lib/cloudSync'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
@@ -112,7 +112,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     },
     installFileSystemObserver: installCloudSyncFileSystemObserver,
     retry: retryCloudSync,
-    setProjectScope: setCloudSyncProjectScope,
+    setOpenedProject: setCloudSyncOpenedProject,
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,

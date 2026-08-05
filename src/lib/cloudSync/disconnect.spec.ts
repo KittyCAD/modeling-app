@@ -8,7 +8,7 @@ import {
   getCloudSyncProjectMetadata,
   notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
 import {
   appendOutboxEntry,
@@ -26,6 +26,7 @@ import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const projectDirectory = '/documents/Projects'
@@ -225,7 +226,7 @@ describe('cloud sync upload failures', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope(undefined)
+    setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
@@ -286,7 +287,11 @@ describe('cloud sync upload failures', () => {
       environmentName: 'dev.zoo.dev',
       cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
-    setCloudSyncProjectScope(projectPath)
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
     configureCloudSyncEngine({ enabled: true })
     retryCloudSync()
     await vi.waitFor(() => {

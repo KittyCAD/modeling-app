@@ -47,8 +47,8 @@ import {
 import type {
   CloudSyncConfig,
   CloudSyncLocalProject,
+  CloudSyncOpenedProject,
   CloudSyncProjectMetadataIndexEntry,
-  CloudSyncProjectScope,
   CloudSyncStatus,
   OutboxEntry,
   ProjectArchiveFile,
@@ -79,6 +79,7 @@ import {
   getUniqueDuplicateProjectName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
@@ -411,34 +412,29 @@ function isConfiguredForCloud() {
   return config.enabled === true
 }
 
-type CloudSyncProjectScopeInput = CloudSyncProjectScope | string
+type CloudSyncOpenedProjectScope = {
+  projectPath: string
+  syncable: boolean
+}
 
-function normalizeCloudSyncProjectScope(
-  scope: CloudSyncProjectScopeInput | undefined
-): CloudSyncProjectScope | undefined {
-  if (!scope) {
+function normalizeCloudSyncOpenedProject(
+  openedProject: CloudSyncOpenedProject | undefined
+): CloudSyncOpenedProjectScope | undefined {
+  if (!openedProject) {
     return undefined
   }
 
-  const projectPath =
-    typeof scope === 'string' ? scope.trim() : scope.projectPath.trim()
+  const projectPath = openedProject.projectPath.trim()
   if (!projectPath) {
     return undefined
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
-  if (typeof scope === 'string') {
-    return {
-      projectPath: normalizedProjectPath,
-      syncable: Boolean(
-        getOwningCloudLibraryMaterializationPath(normalizedProjectPath)
-      ),
-    }
-  }
-
   return {
     projectPath: normalizedProjectPath,
-    syncable: scope.syncable,
+    syncable:
+      openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
+      Boolean(openedProject.libraryPath?.trim()),
   }
 }
 
@@ -482,7 +478,7 @@ async function getScopedProjectCloudProjectId(projectPath: string) {
 }
 
 async function refreshScopedProjectCloudProjectId(
-  scope?: CloudSyncProjectScope
+  scope?: CloudSyncOpenedProjectScope
 ) {
   if (!scope) {
     updateStatus({
@@ -534,11 +530,10 @@ export type CloudSyncScopePlan = {
   pendingCount: number
 }
 
-export function getCloudSyncScopePlan(
+function getCloudSyncScopePlanForScope(
   entries: OutboxEntry[],
-  scope?: CloudSyncProjectScope
+  normalizedScope?: CloudSyncOpenedProjectScope
 ): CloudSyncScopePlan {
-  const normalizedScope = normalizeCloudSyncProjectScope(scope)
   const normalizedScopeProjectPath = normalizedScope?.projectPath
   if (normalizedScopeProjectPath) {
     if (!normalizedScope.syncable) {
@@ -565,6 +560,16 @@ export function getCloudSyncScopePlan(
     projectPaths,
     pendingCount: projectPaths.length,
   }
+}
+
+export function getCloudSyncScopePlan(
+  entries: OutboxEntry[],
+  openedProject?: CloudSyncOpenedProject
+): CloudSyncScopePlan {
+  return getCloudSyncScopePlanForScope(
+    entries,
+    normalizeCloudSyncOpenedProject(openedProject)
+  )
 }
 
 function getEnvironmentName() {
@@ -1059,7 +1064,7 @@ async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
     updateStatus({
-      pendingCount: getCloudSyncScopePlan(
+      pendingCount: getCloudSyncScopePlanForScope(
         entries,
         syncScopeProjectPath
           ? {
@@ -3154,7 +3159,7 @@ async function runCloudSync() {
 
   try {
     let entries = await getAllOutboxEntries()
-    let syncScopePlan = getCloudSyncScopePlan(entries, scopedScope)
+    let syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
     if (syncScopePlan.shouldSyncRemoteIndex) {
       updateStatus({ state: 'syncing' })
       await enqueueExistingCloudLibraryProjectsForInitialSync()
@@ -3170,7 +3175,7 @@ async function runCloudSync() {
       })
 
       entries = await getAllOutboxEntries()
-      syncScopePlan = getCloudSyncScopePlan(entries, scopedScope)
+      syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
     }
 
     for (const projectPath of syncScopePlan.projectPaths) {
@@ -3257,10 +3262,12 @@ function scheduleRemoteIndexSync(delay = 0) {
   scheduleSync(delay)
 }
 
-// Home syncs the full cloud index; file routes pass the project root selected
-// by the current library so status and retries stay limited to that project.
-export function setCloudSyncProjectScope(scope?: CloudSyncProjectScopeInput) {
-  const nextScope = normalizeCloudSyncProjectScope(scope)
+// With no opened project, Home syncs the full cloud index. App.openProject()
+// passes ownership context so file-route status and retries stay project-local.
+export function setCloudSyncOpenedProject(
+  openedProject?: CloudSyncOpenedProject
+) {
+  const nextScope = normalizeCloudSyncOpenedProject(openedProject)
   const nextSyncScopeProjectPath = nextScope?.projectPath
   const nextSyncScopeSyncable = nextScope?.syncable ?? false
   if (
