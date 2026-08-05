@@ -91,7 +91,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 0.6349999999999997,
-            "y": 4.190999999999996,
+            "y": 4.190999999999999,
             "z": 0.0
           },
           "relative": false
@@ -107,7 +107,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.535228395061726,
+            "x": 14.53522839506173,
             "y": 19.304,
             "z": 0.0
           },
@@ -158,7 +158,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.874999999999996,
+            "x": 15.875,
             "y": 24.764999999999997,
             "z": 0.0
           },
@@ -175,7 +175,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.874999999999996,
+            "x": 15.875,
             "y": 20.7606644295302,
             "z": 0.0
           },
@@ -192,7 +192,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 19.557999999999996,
+            "x": 19.558,
             "y": 24.764999999999997,
             "z": 0.0
           },
@@ -209,7 +209,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.113999999999997,
+            "x": 23.114,
             "y": 24.764999999999997,
             "z": 0.0
           },
@@ -226,7 +226,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.113999999999997,
+            "x": 23.114,
             "y": 21.209,
             "z": 0.0
           },
@@ -244,7 +244,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 9.21377160493827,
-            "y": 6.096,
+            "y": 6.095999999999999,
             "z": 0.0
           },
           "relative": false
@@ -260,8 +260,8 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.113999999999997,
-            "y": 6.096,
+            "x": 23.114,
+            "y": 6.095999999999999,
             "z": 0.0
           },
           "relative": false
@@ -277,7 +277,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.113999999999997,
+            "x": 23.114,
             "y": 0.6350000000000002,
             "z": 0.0
           },
@@ -312,7 +312,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 7.874,
-            "y": 4.639335570469799,
+            "y": 4.6393355704698,
             "z": 0.0
           },
           "relative": false
@@ -328,7 +328,7 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.190999999999999,
+            "x": 4.190999999999998,
             "y": 0.6350000000000002,
             "z": 0.0
           },
@@ -361,7 +361,7 @@ description: Artifact commands zoo-logo.kcl
         "path": "[uuid]",
         "to": {
           "x": 44.46834426389047,
-          "y": 22.807772281224057,
+          "y": 22.80777228122406,
           "z": 0.0
         }
       }
@@ -376,12 +376,12 @@ description: Artifact commands zoo-logo.kcl
           "type": "arc",
           "center": {
             "x": 36.779199999999996,
-            "y": 12.700000000000003
+            "y": 12.7
           },
-          "radius": 12.700000000000044,
+          "radius": 12.70000000000005,
           "start": {
             "unit": "degrees",
-            "value": 52.7391704772662
+            "value": 52.739170477266214
           },
           "end": {
             "unit": "degrees",
@@ -437,7 +437,7 @@ description: Artifact commands zoo-logo.kcl
         "path": "[uuid]",
         "to": {
           "x": 29.0900557361097,
-          "y": 2.592227718775792,
+          "y": 2.592227718775793,
           "z": 0.0
         }
       }
@@ -452,7 +452,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "arc",
           "center": {
             "x": 36.779199999999996,
-            "y": 12.699999999999996
+            "y": 12.699999999999998
           },
           "radius": 12.700000000000056,
           "start": {
@@ -461,7 +461,7 @@ description: Artifact commands zoo-logo.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 41.26082952273267
+            "value": 41.26082952273268
           },
           "relative": false
         }
@@ -475,7 +475,7 @@ description: Artifact commands zoo-logo.kcl
         "path": "[uuid]",
         "to": {
           "x": 33.11177201975145,
-          "y": 6.904990421949947,
+          "y": 6.9049904219499485,
           "z": 0.0
         }
       }
@@ -492,7 +492,7 @@ description: Artifact commands zoo-logo.kcl
             "x": 36.779199999999996,
             "y": 12.7
           },
-          "radius": 6.85800000000013,
+          "radius": 6.858000000000128,
           "start": {
             "unit": "degrees",
             "value": -122.32807071423709
@@ -558,7 +558,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 44.46834426389047,
-            "y": 22.807772281224057,
+            "y": 22.80777228122406,
             "z": 0.0
           },
           "relative": false
@@ -573,7 +573,7 @@ description: Artifact commands zoo-logo.kcl
         "path": "[uuid]",
         "to": {
           "x": 29.0900557361097,
-          "y": 2.592227718775792,
+          "y": 2.592227718775793,
           "z": 0.0
         }
       }
@@ -588,7 +588,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 33.11177201975145,
-            "y": 6.904990421949947,
+            "y": 6.9049904219499485,
             "z": 0.0
           },
           "relative": false
@@ -618,7 +618,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 46.32598266600315,
-            "y": 21.07549644666529,
+            "y": 21.075496446665294,
             "z": 0.0
           },
           "relative": false
@@ -632,8 +632,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 71.18914426389033,
-          "y": 22.8077722812241,
+          "x": 71.18914426389034,
+          "y": 22.807772281224093,
           "z": 0.0
         }
       }
@@ -653,11 +653,11 @@ description: Artifact commands zoo-logo.kcl
           "radius": 12.699999999999996,
           "start": {
             "unit": "degrees",
-            "value": 52.73917047726683
+            "value": 52.73917047726677
           },
           "end": {
             "unit": "degrees",
-            "value": 221.26082952273325
+            "value": 221.26082952273316
           },
           "relative": false
         }
@@ -670,8 +670,46 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 55.81085573610965,
-          "y": 2.592227718775898,
+          "x": 55.81085573610964,
+          "y": 2.5922277187759044,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 63.5,
+            "y": 12.700000000000003
+          },
+          "radius": 12.700000000000005,
+          "start": {
+            "unit": "degrees",
+            "value": -127.26082952273326
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 41.26082952273321
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 67.16742798024856,
+          "y": 18.495009578049892,
           "z": 0.0
         }
       }
@@ -688,14 +726,14 @@ description: Artifact commands zoo-logo.kcl
             "x": 63.5,
             "y": 12.7
           },
-          "radius": 12.700000000000003,
+          "radius": 6.858,
           "start": {
             "unit": "degrees",
-            "value": -127.26082952273322
+            "value": 57.671929285762126
           },
           "end": {
             "unit": "degrees",
-            "value": 41.26082952273324
+            "value": 216.32807071423778
           },
           "relative": false
         }
@@ -708,8 +746,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 67.16742798024855,
-          "y": 18.495009578049896,
+          "x": 59.832572019751424,
+          "y": 6.9049904219501075,
           "z": 0.0
         }
       }
@@ -724,16 +762,16 @@ description: Artifact commands zoo-logo.kcl
           "type": "arc",
           "center": {
             "x": 63.5,
-            "y": 12.7
+            "y": 12.699999999999998
           },
-          "radius": 6.857999999999999,
+          "radius": 6.858000000000006,
           "start": {
             "unit": "degrees",
-            "value": 57.671929285762225
+            "value": -122.32807071423797
           },
           "end": {
             "unit": "degrees",
-            "value": 216.32807071423784
+            "value": 36.328070714237846
           },
           "relative": false
         }
@@ -746,46 +784,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 59.83257201975144,
-          "y": 6.904990421950103,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 63.5,
-            "y": 12.7
-          },
-          "radius": 6.858000000000004,
-          "start": {
-            "unit": "degrees",
-            "value": -122.32807071423788
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 36.32807071423788
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 53.95321733399696,
-          "y": 4.324503553334645,
+          "x": 53.95321733399695,
+          "y": 4.324503553334653,
           "z": 0.0
         }
       }
@@ -799,8 +799,8 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 57.97493361763875,
-            "y": 8.63726625650885,
+            "x": 57.97493361763874,
+            "y": 8.637266256508855,
             "z": 0.0
           },
           "relative": false
@@ -814,8 +814,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 67.16742798024855,
-          "y": 18.495009578049896,
+          "x": 67.16742798024856,
+          "y": 18.495009578049892,
           "z": 0.0
         }
       }
@@ -829,8 +829,8 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 71.18914426389033,
-            "y": 22.8077722812241,
+            "x": 71.18914426389034,
+            "y": 22.807772281224093,
             "z": 0.0
           },
           "relative": false
@@ -844,8 +844,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 55.81085573610965,
-          "y": 2.592227718775898,
+          "x": 55.81085573610964,
+          "y": 2.5922277187759044,
           "z": 0.0
         }
       }
@@ -859,8 +859,8 @@ description: Artifact commands zoo-logo.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 59.83257201975144,
-            "y": 6.904990421950103,
+            "x": 59.832572019751424,
+            "y": 6.9049904219501075,
             "z": 0.0
           },
           "relative": false
@@ -875,7 +875,7 @@ description: Artifact commands zoo-logo.kcl
         "path": "[uuid]",
         "to": {
           "x": 69.02506638236125,
-          "y": 16.76273374349115,
+          "y": 16.762733743491143,
           "z": 0.0
         }
       }
@@ -890,7 +890,7 @@ description: Artifact commands zoo-logo.kcl
           "type": "line",
           "end": {
             "x": 73.04678266600303,
-            "y": 21.07549644666536,
+            "y": 21.075496446665348,
             "z": 0.0
           },
           "relative": false
@@ -904,7 +904,7 @@ description: Artifact commands zoo-logo.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 19.557999999999996,
+          "x": 19.558,
           "y": 21.209
         }
       }
@@ -917,7 +917,7 @@ description: Artifact commands zoo-logo.kcl
         "object_id": "[uuid]",
         "query_point": {
           "x": 40.44662798024872,
-          "y": 22.807772281224057
+          "y": 22.80777228122406
         }
       }
     },
@@ -940,8 +940,8 @@ description: Artifact commands zoo-logo.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 67.16742798024855,
-          "y": 22.8077722812241
+          "x": 67.16742798024856,
+          "y": 22.807772281224093
         }
       }
     },
@@ -953,7 +953,7 @@ description: Artifact commands zoo-logo.kcl
         "object_id": "[uuid]",
         "query_point": {
           "x": 73.04678266600303,
-          "y": 16.76273374349115
+          "y": 16.762733743491143
         }
       }
     },

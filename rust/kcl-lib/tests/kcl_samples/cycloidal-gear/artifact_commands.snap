@@ -68,8 +68,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.810999999999948,
-          "y": -7.6200000000009425,
+          "x": 11.810999999999934,
+          "y": -7.620000000000938,
           "z": 0.0
         }
       }
@@ -90,17 +90,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.810999999999979,
-            "y": -0.000000000000015509815654013436
+            "x": 11.810999999999982,
+            "y": 0.000000000000028199664825478976
           },
-          "radius": 7.620000000000927,
+          "radius": 7.6200000000009664,
           "start": {
             "unit": "degrees",
-            "value": -90.00000000000024
+            "value": -90.00000000000037
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99999999999947
+            "value": 89.99999999999915
           },
           "relative": false
         }
@@ -113,8 +113,8 @@ description: Artifact commands cycloidal-gear.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 11.810999999999948,
-          "y": -7.620000000001868,
+          "x": 11.810999999999934,
+          "y": -7.62000000000189,
           "z": 0.0
         }
       }
@@ -128,17 +128,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.810999999999861,
-            "y": -20.345400000002517
+            "x": 11.81099999999986,
+            "y": -20.34540000000254
           },
-          "radius": 12.725400000000647,
+          "radius": 12.72540000000065,
           "start": {
             "unit": "degrees",
-            "value": 89.99999999999962
+            "value": 89.99999999999967
           },
           "end": {
             "unit": "degrees",
-            "value": 150.00000000000017
+            "value": 150.00000000000003
           },
           "relative": false
         }
@@ -153,17 +153,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -5.80863325015635,
-            "y": -10.172700000003363
+            "x": -5.808633250156211,
+            "y": -10.172700000003234
           },
-          "radius": 7.619999999999183,
+          "radius": 7.619999999999135,
           "start": {
             "unit": "degrees",
-            "value": -29.999999999993637
+            "value": -29.999999999994955
           },
           "end": {
             "unit": "degrees",
-            "value": -210.00000000000813
+            "value": -210.0000000000071
           },
           "relative": false
         }
@@ -178,17 +178,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -23.42826650032207,
-            "y": 0.000000000001236555302597253
+            "x": -23.42826650032167,
+            "y": 0.0000000000011223466600540631
           },
-          "radius": 12.725400000011605,
+          "radius": 12.725400000011305,
           "start": {
             "unit": "degrees",
-            "value": -29.999999999990997
+            "value": -29.999999999991257
           },
           "end": {
             "unit": "degrees",
-            "value": 29.999999999975394
+            "value": 29.999999999976584
           },
           "relative": false
         }
@@ -203,17 +203,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -5.808633250146101,
-            "y": 10.17270000000645
+            "x": -5.808633250146086,
+            "y": 10.172700000006566
           },
-          "radius": 7.620000000008365,
+          "radius": 7.620000000008449,
           "start": {
             "unit": "degrees",
-            "value": -150.00000000000034
+            "value": -149.99999999999937
           },
           "end": {
             "unit": "degrees",
-            "value": -330.0000000000206
+            "value": -330.0000000000202
           },
           "relative": false
         }
@@ -228,17 +228,17 @@ description: Artifact commands cycloidal-gear.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.811000000021059,
-            "y": 20.34540000000574
+            "x": 11.811000000021114,
+            "y": 20.345400000006006
           },
-          "radius": 12.725400000001015,
+          "radius": 12.72540000000104,
           "start": {
             "unit": "degrees",
-            "value": -150.00000000001575
+            "value": -150.0000000000155
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000000000061
+            "value": -90.00000000000097
           },
           "relative": false
         }

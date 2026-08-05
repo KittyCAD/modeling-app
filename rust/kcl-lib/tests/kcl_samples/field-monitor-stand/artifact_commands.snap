@@ -69,7 +69,7 @@ description: Artifact commands field-monitor-stand.kcl
         "path": "[uuid]",
         "to": {
           "x": -60.0,
-          "y": -0.000000000000002377020796912479,
+          "y": -0.000000000000002412191995757565,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000023751434269250426,
-            "y": -0.0000000000000003702983272262302,
+            "x": -0.0000000000000023893312324136985,
+            "y": -0.0000000000000003755578414039189,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -41.38443734240586,
-            "y": 113.70280711509494,
+            "x": -41.384437342405924,
+            "y": 113.70280711509491,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -44.20351520476359,
-            "y": 112.67674668511792,
+            "x": -44.20351520476365,
+            "y": 112.6767466851179,
             "z": 0.0
           },
           "relative": false
@@ -141,25 +141,8 @@ description: Artifact commands field-monitor-stand.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.284444020226353,
-            "y": 3.0,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -60.0,
-            "y": 2.999999999999999,
+            "x": -4.284444020226357,
+            "y": 2.9999999999999996,
             "z": 0.0
           },
           "relative": false
@@ -176,7 +159,24 @@ description: Artifact commands field-monitor-stand.kcl
           "type": "line",
           "end": {
             "x": -60.0,
-            "y": -0.000000000000001918764639840866,
+            "y": 2.9999999999999987,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -60.0,
+            "y": -0.0000000000000019538345480224137,
             "z": 0.0
           },
           "relative": false
