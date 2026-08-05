@@ -68,8 +68,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.000000000000006899522647848546,
-          "y": -0.000000000000014526668752594063,
+          "x": 0.00000000000000004751442319125145,
+          "y": -0.00000000000000001251222676741394,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15.000000000000014,
-            "y": -0.0000000000000227123911579229,
+            "x": 15.0,
+            "y": -0.000000000000000049629976485344605,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.5911099154688,
-            "y": 3.105828541230285
+            "x": 11.59110991546882,
+            "y": 3.105828541230249
           },
-          "radius": 4.611583517181057,
+          "radius": 4.611583517180992,
           "start": {
             "unit": "degrees",
-            "value": -42.33654837853874
+            "value": -42.33654837853849
           },
           "end": {
             "unit": "degrees",
-            "value": 72.33654837853828
+            "value": 72.33654837853848
           },
           "relative": false
         }
@@ -130,8 +130,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.500000000000012,
-          "y": 12.990381056766559,
+          "x": 7.500000000000002,
+          "y": 12.990381056766578,
           "z": 0.0
         }
       }
@@ -145,8 +145,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000001841228201007036,
-            "y": -0.000000000000017724866664549068,
+            "x": 0.00000000000000007000425470851272,
+            "y": -0.0000000000000000022143988957514074,
             "z": 0.0
           },
           "relative": false
@@ -160,8 +160,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.500000000000007,
-          "y": 12.990381056766555,
+          "x": 7.500000000000002,
+          "y": 12.990381056766578,
           "z": 0.0
         }
       }
@@ -175,13 +175,13 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 17.677669529663696,
+            "x": 17.67766952966369,
             "y": 17.67766952966368
           },
-          "radius": 11.205160877167222,
+          "radius": 11.205160877167215,
           "start": {
             "unit": "degrees",
-            "value": -155.27173896822453
+            "value": -155.2717389682246
           },
           "end": {
             "unit": "degrees",
@@ -870,8 +870,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000000009502754108900857,
-          "y": -0.000000000000000000000000019297620301673507,
+          "x": -0.00000000000000000000420770827310535,
+          "y": 0.0000000000000000000000000000000000000000000000000000000000035782337847701565,
           "z": 0.0
         }
       }
@@ -892,8 +892,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.275286442096036,
-            "y": -0.00000000000000000000000003859524070819622,
+            "x": 17.22059756513262,
+            "y": 0.0000000000000000000000000000000000000000000000000000000000046672614583958563,
             "z": 0.0
           },
           "relative": false
@@ -909,8 +909,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.275286442095986,
-            "y": 34.69963210574459,
+            "x": 17.22059756513262,
+            "y": 34.80477969331079,
             "z": 0.0
           },
           "relative": false
@@ -926,17 +926,17 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.8591628289673547,
-            "y": 34.699187315239854
+            "x": 2.0412659549877077,
+            "y": 34.80437917672039
           },
-          "radius": 15.416123619545244,
+          "radius": 15.17933161542886,
           "start": {
             "unit": "degrees",
-            "value": 0.0016531145780483711
+            "value": 0.0015117866082072103
           },
           "end": {
             "unit": "degrees",
-            "value": 96.92665036146335
+            "value": 97.72835929947483
           },
           "relative": false
         }
@@ -951,8 +951,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000019005508210462823,
-            "y": -0.000000000000000000000000019297620249248904,
+            "x": -0.0000000000000000000084154165462107,
+            "y": 0.0000000000000000000000000000000000000000000000000000000000049784122222889134,
             "z": 0.0
           },
           "relative": false

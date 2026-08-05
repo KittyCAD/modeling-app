@@ -68,8 +68,8 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.171590562284995,
-          "y": 0.040234072415046236,
+          "x": 6.171590562837805,
+          "y": 0.04023407243536596,
           "z": 0.0
         }
       }
@@ -90,17 +90,17 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5292370187392501,
-            "y": -0.7929933368219767
+            "x": 0.5292370192073315,
+            "y": -0.7929933366808146
           },
-          "radius": 5.703544636966302,
+          "radius": 5.7035446370324685,
           "start": {
             "unit": "radians",
-            "value": 0.14661409687579935
+            "value": 0.14661409685266916
           },
           "end": {
             "unit": "radians",
-            "value": 6.429799404055386
+            "value": 6.429799404032256
           },
           "relative": false
         }
@@ -113,8 +113,8 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.588952607192236,
-          "y": -4.738995824243563,
+          "x": -3.588952606477915,
+          "y": -4.738995824455021,
           "z": 0.0
         }
       }
@@ -128,8 +128,8 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.8508105330438274,
-            "y": 3.801100695035914,
+            "x": -2.850810533113438,
+            "y": 3.801100694863619,
             "z": 0.0
           },
           "relative": false
@@ -143,8 +143,8 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.559130139063624,
-          "y": -4.829127980838372,
+          "x": 4.559130139601422,
+          "y": -4.829127980721099,
           "z": 0.0
         }
       }
@@ -175,8 +175,8 @@ description: Artifact commands fillet_ambiguous_region_edge_specifier_broad.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.329805418436562,
-            "y": 3.459782376178803,
+            "x": 4.329805418841413,
+            "y": 3.459782376465208,
             "z": 0.0
           },
           "relative": false
