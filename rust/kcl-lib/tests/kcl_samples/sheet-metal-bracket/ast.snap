@@ -437,6 +437,43 @@ description: Result of parsing sheet-metal-bracket.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": "cutoutDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "raw": "1.1",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.1,
+              "suffix": "None"
+            }
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
             "name": "exteriorBendRadius",
             "start": 0,
             "type": "Identifier"
@@ -11064,11 +11101,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11082,11 +11119,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11121,11 +11158,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11139,11 +11176,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11251,11 +11288,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11269,11 +11306,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11308,11 +11345,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11326,11 +11363,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11438,11 +11475,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11456,11 +11493,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11495,11 +11532,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11513,11 +11550,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11625,11 +11662,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11643,11 +11680,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11682,11 +11719,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11700,11 +11737,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12640,11 +12677,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12658,11 +12695,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12697,11 +12734,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12715,11 +12752,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12827,11 +12864,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12845,11 +12882,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12884,11 +12921,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12902,11 +12939,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13014,11 +13051,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13032,11 +13069,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13071,11 +13108,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13089,11 +13126,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13201,11 +13238,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13219,11 +13256,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13258,11 +13295,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13276,11 +13313,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14216,11 +14253,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14234,11 +14271,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14273,11 +14310,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14291,11 +14328,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14644,11 +14681,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14662,11 +14699,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14701,11 +14738,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14719,11 +14756,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15099,11 +15136,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15117,11 +15154,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15156,11 +15193,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15174,11 +15211,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15554,11 +15591,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15572,11 +15609,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.0
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15611,11 +15648,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15629,11 +15666,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16973,11 +17010,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-20.7in",
+                                  "raw": "-3.25in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -20.7
+                                  "value": -3.25
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16991,11 +17028,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "15.39in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 15.39
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17030,11 +17067,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17048,11 +17085,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17240,6 +17277,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle1",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -17273,11 +17444,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-19.36in",
+                                  "raw": "-3.25in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -19.36
+                                  "value": -3.25
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17291,11 +17462,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-17.22in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -17.22
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17330,11 +17501,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.76in",
+                                  "raw": "-3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.76
+                                  "value": -3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17348,11 +17519,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17540,6 +17711,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -17573,11 +17878,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "20.08in",
+                                  "raw": "3.75in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 20.08
+                                  "value": 3.75
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17591,11 +17896,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-16.61in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -16.61
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17630,11 +17935,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17648,11 +17953,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-13.56in",
+                                  "raw": "-2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -13.56
+                                  "value": -2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17840,6 +18145,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -17873,11 +18312,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "21.35in",
+                                  "raw": "3.75in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 21.35
+                                  "value": 3.75
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17891,11 +18330,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10.44in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 10.44
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17930,11 +18369,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "16.76in",
+                                  "raw": "3.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 16.76
+                                  "value": 3.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17948,11 +18387,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "13.56in",
+                                  "raw": "2in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 13.56
+                                  "value": 2.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18140,6 +18579,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle4",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -18173,11 +18746,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "10.28in",
+                                  "raw": "1.1875in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 10.28
+                                  "value": 1.1875
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18191,11 +18764,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3.88in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 3.88
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18230,11 +18803,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18248,11 +18821,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18440,6 +19013,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle5",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle5",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -18473,11 +19180,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-9.18in",
+                                  "raw": "-0.8125in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -9.18
+                                  "value": -0.8125
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18491,11 +19198,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "3.96in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 3.96
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18530,11 +19237,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18548,11 +19255,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "5.79in",
+                                  "raw": "1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 5.79
+                                  "value": 1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18740,6 +19447,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle6",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle6",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -18773,11 +19614,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-6.26in",
+                                  "raw": "-0.8125in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -6.26
+                                  "value": -0.8125
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18791,11 +19632,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-8.07in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -8.07
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18830,11 +19671,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-7.55in",
+                                  "raw": "-1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -7.55
+                                  "value": -1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18848,11 +19689,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19040,6 +19881,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                 },
                 {
                   "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle7",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle7",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
                   "declaration": {
                     "commentStart": 0,
                     "end": 0,
@@ -19073,11 +20048,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.14in",
+                                  "raw": "1.1875in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.14
+                                  "value": 1.1875
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19091,11 +20066,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-8.3in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -8.3
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19130,11 +20105,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "7.55in",
+                                  "raw": "1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 7.55
+                                  "value": 1.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19148,11 +20123,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5.79in",
+                                  "raw": "-1.5in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -5.79
+                                  "value": -1.5
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19295,6 +20270,140 @@ description: Result of parsing sheet-metal-bracket.kcl
                               "end": 0,
                               "moduleId": 0,
                               "name": "line2",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle8",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle8",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -20005,11 +21114,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.14in",
+                                  "raw": "1.1in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": -0.14
+                                  "value": 1.1
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20023,11 +21132,11 @@ description: Result of parsing sheet-metal-bracket.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "1.01in",
+                                  "raw": "0in",
                                   "start": 0,
                                   "suffix": "Inch",
                                   "type": "NumericLiteral",
-                                  "value": 1.01
+                                  "value": 0.0
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20264,6 +21373,219 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle9",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "circle9",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle9",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "cutoutDiameter",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   },
                   "moduleId": 0,
                   "start": 0,
@@ -22765,7 +24087,7 @@ description: Result of parsing sheet-metal-bracket.kcl
             }
           }
         ],
-        "9": [
+        "10": [
           {
             "commentStart": 0,
             "end": 0,
@@ -22777,19 +24099,7 @@ description: Result of parsing sheet-metal-bracket.kcl
             }
           }
         ],
-        "13": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "17": [
+        "14": [
           {
             "commentStart": 0,
             "end": 0,
@@ -22813,7 +24123,19 @@ description: Result of parsing sheet-metal-bracket.kcl
             }
           }
         ],
-        "29": [
+        "19": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "30": [
           {
             "commentStart": 0,
             "end": 0,
