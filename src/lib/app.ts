@@ -17,6 +17,7 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isDesktop } from '@src/lib/isDesktop'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
@@ -27,6 +28,7 @@ import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
@@ -127,6 +129,10 @@ function getZookeeperReplayFallbackFilePath(
   ].filter((path, index, paths) => paths.indexOf(path) === index)
 
   return candidates.find((path) => path && !deletedPaths.has(path))
+}
+
+function normalizeProjectLibrarySettingPath(path: string) {
+  return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -677,9 +683,9 @@ export class App implements AppSubsystems {
    * Cloud library row in user settings.
    *
    * This is intentionally tied to the plugin activation lifecycle instead of a
-   * plugin-side startup reconciliation pass. Existing directory libraries stay
-   * visible so resetting `app.libraries` can still reveal the default project
-   * directory library.
+   * plugin-side startup reconciliation pass. Desktop keeps directory and cloud
+   * libraries side by side; web treats Personal Cloud as the canonical project
+   * library and replaces only the recognized default directory row.
    */
   private materializePersonalCloudLibraryOnEnable = async (
     snapshot: SnapshotFrom<typeof this.settings.actor>
@@ -689,9 +695,28 @@ export class App implements AppSubsystems {
     }
 
     const currentLibraries = snapshot.context.app.libraries?.current ?? []
+    const defaultDirectoryLibraryPaths = new Set(
+      [
+        snapshot.context.app.projectDirectory?.current,
+        snapshot.context.app.projectDirectory?.default,
+        ...(snapshot.context.app.libraries?.default ?? [])
+          .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+          .map((library) => library.path),
+      ]
+        .filter((path): path is string => Boolean(path?.trim()))
+        .map(normalizeProjectLibrarySettingPath)
+    )
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
       isPersonalCloudProjectLibrarySetting(library)
+    const shouldReplaceDirectoryLibraryOnWeb = (
+      library: ProjectLibrarySetting
+    ) =>
+      !isDesktop() &&
+      library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
+      defaultDirectoryLibraryPaths.has(
+        normalizeProjectLibrarySettingPath(library.path)
+      )
 
     let hasPersonalCloudLibrary = false
     const nextLibraries = mergeProjectLibrarySettings(
@@ -709,6 +734,15 @@ export class App implements AppSubsystems {
                 }
               : library,
           ]
+        }
+
+        if (shouldReplaceDirectoryLibraryOnWeb(library)) {
+          if (hasPersonalCloudLibrary) {
+            return []
+          }
+
+          hasPersonalCloudLibrary = true
+          return [defaultCloudLibrary]
         }
 
         return [library]
