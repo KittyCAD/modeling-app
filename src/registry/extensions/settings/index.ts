@@ -9,7 +9,6 @@ import { signal } from '@preact/signals-core'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -54,20 +53,17 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       .find((entry) => entry.localProjectPath === project.path)
 
   const projectTitle: ProjectTitleService = {
-    getTitle: getProjectDisplayName,
     canUpdateTitle: (project) => project.readWriteAccess,
     updateTitle: async (project, title) => {
+      if (!project.readWriteAccess) {
+        return Promise.reject(new Error('This project title cannot be edited.'))
+      }
+
       const entry = getHomeProjectEntry(project)
       const actions = ctx.services.optional(homeProjectActionsService)
       if (entry && actions?.canRename(entry)) {
         await actions.rename(entry, title)
       } else {
-        if (!project.readWriteAccess) {
-          return Promise.reject(
-            new Error('This project title cannot be edited.')
-          )
-        }
-
         await writeProjectTitleToProjectToml(project.path, title)
         ctx.services.optional(systemIOService)?.actor.send({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,

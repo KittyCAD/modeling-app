@@ -51,7 +51,6 @@ export function SettingsSectionsList({
       )}
       {visibleCategories.map(([category]) => (
         <button
-          type="button"
           key={category}
           onClick={() =>
             scrollRef.current
@@ -67,7 +66,6 @@ export function SettingsSectionsList({
         </button>
       ))}
       <button
-        type="button"
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-resets`)?.scrollIntoView({
             block: 'center',
@@ -79,7 +77,6 @@ export function SettingsSectionsList({
         Resets
       </button>
       <button
-        type="button"
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-about`)?.scrollIntoView({
             block: 'center',

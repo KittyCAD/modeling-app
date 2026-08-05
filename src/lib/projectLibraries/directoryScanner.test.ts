@@ -363,25 +363,6 @@ describe('directory project scanner', () => {
     )
   })
 
-  it('does not rename an excluded open project directory', () => {
-    const project = createProject({
-      name: 'remote-project-id',
-      path: '/projects/remote-project-id',
-      title: 'Updated project title',
-    })
-    const onProjectDirectoriesRenamed = vi.fn()
-
-    scheduleProjectDirectoryNameSyncFromTitles({
-      projects: [project],
-      excludedProjectPaths: [project.path],
-      onProjectDirectoriesRenamed,
-    })
-
-    expect(mocks.fsZds.readdir).not.toHaveBeenCalled()
-    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
-    expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
-  })
-
   it('does not rename a local project directory after its title changes', async () => {
     const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
       project: createProject({

@@ -2,6 +2,7 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { ProjectTitleService } from '@src/lib/projectTitle'
 import { trap } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
@@ -19,7 +20,7 @@ export function ProjectTitleSettingsSection({
   project,
   service,
 }: ProjectTitleSettingsSectionProps) {
-  const projectTitle = service.getTitle(project)
+  const projectTitle = getProjectDisplayName(project)
   const [draftTitle, setDraftTitle] = useState(projectTitle)
   const [isSaving, setIsSaving] = useState(false)
   const canEdit = service.canUpdateTitle(project)

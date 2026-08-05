@@ -21,7 +21,6 @@ function createProjectTitleService(
   updateTitle = vi.fn().mockResolvedValue(undefined)
 ): ProjectTitleService {
   return {
-    getTitle: (project) => project.title ?? project.name,
     canUpdateTitle: () => true,
     updateTitle,
   }

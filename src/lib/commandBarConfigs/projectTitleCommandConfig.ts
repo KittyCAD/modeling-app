@@ -1,6 +1,7 @@
 import type { Command } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { ProjectTitleService } from '@src/lib/projectTitle'
 import toast from 'react-hot-toast'
 
@@ -60,7 +61,7 @@ export function createProjectTitleCommand({
       }
 
       const title = String(data?.value).trim()
-      if (title === service.getTitle(project)) {
+      if (title === getProjectDisplayName(project)) {
         return
       }
 
@@ -73,7 +74,7 @@ export function createProjectTitleCommand({
         inputType: 'string',
         defaultValue: () => {
           const project = getCurrentProject()
-          return project ? service.getTitle(project) : ''
+          return project ? getProjectDisplayName(project) : ''
         },
         validation: async ({ data }) => validateProjectTitle(data),
       },

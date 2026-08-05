@@ -18,7 +18,6 @@ import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
-import { withProjectDirectoryWriteLock } from '@src/lib/projectDirectoryLock'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -114,19 +113,17 @@ export async function syncProjectDirectoryNameFromTitle({
     projectDirectoryPath,
     targetProjectDirectoryName
   )
-  return withProjectDirectoryWriteLock(project.path, async () => {
-    if (
-      !(await canRenameProjectDirectoryTo({
-        projectPath: project.path,
-        targetPath,
-      }))
-    ) {
-      return undefined
-    }
+  if (
+    !(await canRenameProjectDirectoryTo({
+      projectPath: project.path,
+      targetPath,
+    }))
+  ) {
+    return undefined
+  }
 
-    await fsZds.rename(project.path, targetPath)
-    return targetProjectDirectoryName
-  })
+  await fsZds.rename(project.path, targetPath)
+  return targetProjectDirectoryName
 }
 
 function projectsByDirectory(projects: readonly Project[]) {
@@ -144,18 +141,12 @@ function projectsByDirectory(projects: readonly Project[]) {
 
 export function scheduleProjectDirectoryNameSyncFromTitles({
   projects,
-  excludedProjectPaths = [],
   onProjectDirectoriesRenamed,
 }: {
   projects: readonly Project[]
-  /** Paths held by open editors must remain stable until those editors close. */
-  excludedProjectPaths?: Iterable<string>
   onProjectDirectoriesRenamed?: () => void
 }) {
-  const excludedPaths = new Set(excludedProjectPaths)
-  const projectsGroupedByDirectory = projectsByDirectory(
-    projects.filter((project) => !excludedPaths.has(project.path))
-  ).entries()
+  const projectsGroupedByDirectory = projectsByDirectory(projects).entries()
   const syncGroups = Array.from(projectsGroupedByDirectory).filter(
     ([projectDirectoryPath]) => {
       if (scheduledProjectDirectoryNameSyncs.has(projectDirectoryPath)) {

@@ -21,7 +21,6 @@ const project = {
 
 function createService(): ProjectTitleService {
   return {
-    getTitle: vi.fn(() => 'Bracket'),
     canUpdateTitle: vi.fn(() => true),
     updateTitle: vi.fn().mockResolvedValue(undefined),
   }

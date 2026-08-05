@@ -469,9 +469,6 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         ) {
           scheduleProjectDirectoryNameSyncFromTitles({
             projects,
-            excludedProjectPaths: context.app.project
-              ? [context.app.project.path]
-              : [],
             onProjectDirectoriesRenamed: () => {
               service.actor.send({
                 type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -569,11 +566,8 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               signal,
             })
             if (!signal.aborted) {
-              const openProjectPath =
-                systemIO.value?.actor.getSnapshot().context.app.project?.path
               scheduleProjectDirectoryNameSyncFromTitles({
                 projects,
-                excludedProjectPaths: openProjectPath ? [openProjectPath] : [],
                 onProjectDirectoriesRenamed:
                   invalidateConfiguredProjectLibraryEntries,
               })

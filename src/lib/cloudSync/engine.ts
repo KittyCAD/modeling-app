@@ -76,7 +76,6 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
-import { withProjectDirectoryWriteLock } from '@src/lib/projectDirectoryLock'
 import {
   getProjectDirectoryNameFromTitle,
   getUniqueDuplicateProjectName,
@@ -672,16 +671,11 @@ async function syncCloudProjectDirectoryNameFromTitle({
 }) {
   const sourceProjectPath = normalizePathForSync(metadata.localProjectPath)
   const currentProjectName = projectNameFromPath(sourceProjectPath)
-  // File routes and editors hold absolute paths. Defer the folder affordance
-  // until the user returns Home and the project is no longer the sync scope.
-  const isOpenProject =
-    normalizePathForSync(syncScopeProjectPath ?? '') === sourceProjectPath
   if (
     !metadata.remoteProjectId ||
     metadata.tombstone ||
     isProjectSyncExcluded(metadata) ||
     pendingProjectPaths.has(sourceProjectPath) ||
-    isOpenProject ||
     !(await exists(sourceProjectPath))
   ) {
     return metadata
@@ -703,68 +697,62 @@ async function syncCloudProjectDirectoryNameFromTitle({
     return nextMetadata
   }
 
-  return (
-    (await withProjectDirectoryWriteLock(sourceProjectPath, async () => {
-      const projectTitle =
-        title?.trim() || (await readLocalProjectTitle(sourceProjectPath))
-      if (!projectTitle?.trim()) {
-        return metadata
-      }
+  const projectTitle =
+    title?.trim() || (await readLocalProjectTitle(sourceProjectPath))
+  if (!projectTitle?.trim()) {
+    return metadata
+  }
 
-      const preferredProjectName = cloudProjectDirectoryNameFromTitle(
-        projectTitle,
-        currentProjectName
-      )
-      if (preferredProjectName === currentProjectName) {
-        if (metadata.projectName === currentProjectName) {
-          return metadata
-        }
-
-        const nextMetadata = {
-          ...metadata,
-          localProjectPath: sourceProjectPath,
-          projectName: currentProjectName,
-        }
-        await putProjectMetadata(nextMetadata)
-        return nextMetadata
-      }
-
-      const targetProjectPath = normalizePathForSync(
-        await uniqueUnixProjectPath(
-          localFs.dirname(sourceProjectPath),
-          preferredProjectName,
-          sourceProjectPath
-        )
-      )
-      if (targetProjectPath === sourceProjectPath) {
-        return metadata
-      }
-
-      await localFs.rename(sourceProjectPath, targetProjectPath)
-      const nextMetadata = {
-        ...metadata,
-        localProjectPath: targetProjectPath,
-        projectName: projectNameFromPath(targetProjectPath),
-        tombstone: false,
-      }
-      await deleteProjectMetadata(sourceProjectPath)
-      await putProjectMetadata(nextMetadata)
-
-      if (
-        normalizePathForSync(syncScopeProjectPath ?? '') === sourceProjectPath
-      ) {
-        syncScopeProjectPath = targetProjectPath
-      }
-      if (
-        normalizePathForSync(cloudSyncStatus.value.activeProjectPath ?? '') ===
-        sourceProjectPath
-      ) {
-        updateStatus({ activeProjectPath: targetProjectPath })
-      }
-
-      return nextMetadata
-    })) ?? metadata
+  const preferredProjectName = cloudProjectDirectoryNameFromTitle(
+    projectTitle,
+    currentProjectName
   )
+  if (preferredProjectName === currentProjectName) {
+    if (metadata.projectName === currentProjectName) {
+      return metadata
+    }
+
+    const nextMetadata = {
+      ...metadata,
+      localProjectPath: sourceProjectPath,
+      projectName: currentProjectName,
+    }
+    await putProjectMetadata(nextMetadata)
+    return nextMetadata
+  }
+
+  const targetProjectPath = normalizePathForSync(
+    await uniqueUnixProjectPath(
+      localFs.dirname(sourceProjectPath),
+      preferredProjectName,
+      sourceProjectPath
+    )
+  )
+  if (targetProjectPath === sourceProjectPath) {
+    return metadata
+  }
+
+  await localFs.rename(sourceProjectPath, targetProjectPath)
+  const nextMetadata = {
+    ...metadata,
+    localProjectPath: targetProjectPath,
+    projectName: projectNameFromPath(targetProjectPath),
+    tombstone: false,
+  }
+  await deleteProjectMetadata(sourceProjectPath)
+  await putProjectMetadata(nextMetadata)
+
+  if (normalizePathForSync(syncScopeProjectPath ?? '') === sourceProjectPath) {
+    syncScopeProjectPath = targetProjectPath
+  }
+  if (
+    normalizePathForSync(cloudSyncStatus.value.activeProjectPath ?? '') ===
+    sourceProjectPath
+  ) {
+    updateStatus({ activeProjectPath: targetProjectPath })
+  }
+
+  return nextMetadata
 }
 
 export function scheduleCloudProjectDirectoryNameSyncFromTitles({

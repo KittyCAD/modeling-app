@@ -6,7 +6,6 @@ import {
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
-  setCloudSyncProjectScope,
 } from '@src/lib/cloudSync'
 import {
   normalizeProjectArchiveFilesForCloudSync,
@@ -185,7 +184,6 @@ describe('cloud sync local project names', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope()
     configureCloudSyncEngine({ enabled: false })
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
@@ -240,25 +238,6 @@ describe('cloud sync local project names', () => {
     })
     expect(await getAllOutboxEntries()).toEqual([])
     expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
-  })
-
-  it('keeps the open cloud project directory stable', async () => {
-    const files = createIdBasedCloudProjectFiles()
-    configureCloudSyncTestFs(files)
-    await seedIdBasedCloudProjectMetadata()
-    setCloudSyncProjectScope(idProjectPath)
-
-    const onProjectDirectoriesRenamed = scheduleIdBasedProjectDirectorySync()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    expect(files.get(`${idProjectPath}/main.kcl`)).toBe('x = 1')
-    expect(files.has(`${titleProjectPath}/main.kcl`)).toBe(false)
-    expect(await getCloudSyncProjectMetadata(idProjectPath)).toMatchObject({
-      localProjectPath: idProjectPath,
-      projectName: remoteProjectId,
-      remoteProjectId,
-    })
-    expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
   })
 
   it('does not rename an established cloud project directory after its title changes', async () => {
