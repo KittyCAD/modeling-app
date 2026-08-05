@@ -510,8 +510,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.300000000063334,
-              -1.2499999992512607
+              4.3,
+              -1.25
             ],
             "tag": {
               "commentStart": 5900,
@@ -523,7 +523,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.7,
-              -1.2499999993408593
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -533,16 +533,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.7000000004236875,
-              -0.9500000001542096
+              1.7,
+              -0.95
             ],
             "from": [
-              1.5071637195763126,
-              -1.179813330504931
+              1.7,
+              -1.25
             ],
-            "radius": 0.2999999966965624,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 5981,
               "end": 5985,
@@ -552,8 +552,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc2"
             },
             "to": [
-              1.7,
-              -1.249999996850772
+              1.5071637173537797,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -569,10 +569,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.86925333
             ],
             "from": [
-              1.5071637195763126,
-              -1.1798133305049312
+              1.50716372,
+              -1.17981333
             ],
-            "radius": 0.9000000010788162,
+            "radius": 0.900000001737957,
             "tag": {
               "commentStart": 6144,
               "end": 6148,
@@ -582,8 +582,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc3"
             },
             "to": [
-              0.3501460204236877,
-              -1.1798133305049312
+              0.35014602000000017,
+              -1.17981333
             ],
             "type": "Arc",
             "units": "in"
@@ -593,16 +593,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.1573097395763125,
-              -0.9500000001542096
+              0.15730974000000017,
+              -0.95
             ],
             "from": [
-              0.15730974,
-              -1.2499999993408593
+              0.35014602000000017,
+              -1.17981333
             ],
-            "radius": 0.29999999918664966,
+            "radius": 0.2999999958832122,
             "tag": {
               "commentStart": 6336,
               "end": 6340,
@@ -612,8 +612,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc4"
             },
             "to": [
-              0.3501460220242846,
-              -1.1798133324124485
+              0.1573097400000002,
+              -1.2499999958832122
             ],
             "type": "Arc",
             "units": "in"
@@ -625,7 +625,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               0.15730974,
-              -1.2499999993408593
+              -1.25
             ],
             "tag": {
               "commentStart": 6512,
@@ -685,7 +685,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.85730974,
-              1.3499999991092517
+              1.35
             ],
             "type": "ToPoint",
             "units": "in"
@@ -695,16 +695,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.857309739427438,
-              1.0500000002083956
+              1.85730974,
+              1.05
             ],
             "from": [
-              2.0501460196427383,
-              1.279813329574232
+              1.85730974,
+              1.35
             ],
-            "radius": 0.29999999553580703,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 6916,
               "end": 6920,
@@ -714,8 +714,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc8"
             },
             "to": [
-              1.85730974,
-              1.3499999957442026
+              2.0501460226462203,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -727,14 +727,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274318596474,
-              2.4288800000000004
+              3.0143274300000003,
+              2.4288799999999995
             ],
             "from": [
-              2.0501460187129146,
-              1.279813328466111
+              2.05014602,
+              1.27981333
             ],
-            "radius": 1.5000000043625337,
+            "radius": 1.5000000011648253,
             "tag": {
               "commentStart": 7090,
               "end": 7094,
@@ -744,8 +744,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc9"
             },
             "to": [
-              3.9785088486920492,
-              1.279813331558755
+              3.9785088458682414,
+              1.2798133349240386
             ],
             "type": "Arc",
             "units": "in"
@@ -755,16 +755,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              4.171345130446312,
-              1.049999999895639
+              4.17134513,
+              1.05
             ],
             "from": [
-              3.9785088486920492,
-              1.279813331558755
+              4.17134513,
+              1.35
             ],
-            "radius": 0.29999999828485124,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7276,
               "end": 7281,
@@ -774,8 +774,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc10"
             },
             "to": [
-              4.171345130171499,
-              1.3499999981804902
+              3.9785088473537797,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -787,7 +787,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               4.17134513,
-              1.349999999572467
+              1.35
             ],
             "tag": {
               "commentStart": 7451,
@@ -847,7 +847,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               5.87134513,
-              -1.2499999993439364
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -857,16 +857,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              5.87134513042171,
-              -0.9500000001534897
+              5.87134513,
+              -0.95
             ],
             "from": [
-              5.678508849565937,
-              -1.1798133305172962
+              5.87134513,
+              -1.25
             ],
-            "radius": 0.2999999967119844,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7860,
               "end": 7865,
@@ -876,8 +876,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc14"
             },
             "to": [
-              5.87134513,
-              -1.249999996865474
+              5.67850884735378,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -889,14 +889,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000024707,
-              -1.86925333
+              5.1,
+              -1.8692533299999998
             ],
             "from": [
-              5.678508849553584,
-              -1.1798133305320184
+              5.67850885,
+              -1.17981333
             ],
-            "radius": 0.900000001027575,
+            "radius": 0.9000000017379572,
             "tag": {
               "commentStart": 8040,
               "end": 8045,
@@ -906,8 +906,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc15"
             },
             "to": [
-              4.521491150466833,
-              -1.1798133305563496
+              4.52149115,
+              -1.179813329999999
             ],
             "type": "Arc",
             "units": "in"
@@ -917,16 +917,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              4.325676539453667,
-              -0.9464505601731235
+              4.32567654,
+              -0.9464505599999992
             ],
             "from": [
-              4.300000000126668,
-              -1.2499999985025214
+              4.52149115,
+              -1.179813329999999
             ],
-            "radius": 0.304633462019365,
+            "radius": 0.3046334582929542,
             "tag": {
               "commentStart": 8228,
               "end": 8233,
@@ -936,8 +936,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc16"
             },
             "to": [
-              4.521491152254805,
-              -1.179813332687173
+              4.3000000004591765,
+              -1.2499999945715918
             ],
             "type": "Arc",
             "units": "in"
@@ -976,12 +976,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "start": {
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "to": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "units": "in",
           "tag": null,
@@ -1342,8 +1342,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.300000000063334,
-              -1.2499999992512607
+              4.3,
+              -1.25
             ],
             "tag": {
               "commentStart": 5900,
@@ -1355,7 +1355,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.7,
-              -1.2499999993408593
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1365,16 +1365,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.7000000004236875,
-              -0.9500000001542096
+              1.7,
+              -0.95
             ],
             "from": [
-              1.5071637195763126,
-              -1.179813330504931
+              1.7,
+              -1.25
             ],
-            "radius": 0.2999999966965624,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 5981,
               "end": 5985,
@@ -1384,8 +1384,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc2"
             },
             "to": [
-              1.7,
-              -1.249999996850772
+              1.5071637173537797,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -1401,10 +1401,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.86925333
             ],
             "from": [
-              1.5071637195763126,
-              -1.1798133305049312
+              1.50716372,
+              -1.17981333
             ],
-            "radius": 0.9000000010788162,
+            "radius": 0.900000001737957,
             "tag": {
               "commentStart": 6144,
               "end": 6148,
@@ -1414,8 +1414,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc3"
             },
             "to": [
-              0.3501460204236877,
-              -1.1798133305049312
+              0.35014602000000017,
+              -1.17981333
             ],
             "type": "Arc",
             "units": "in"
@@ -1425,16 +1425,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.1573097395763125,
-              -0.9500000001542096
+              0.15730974000000017,
+              -0.95
             ],
             "from": [
-              0.15730974,
-              -1.2499999993408593
+              0.35014602000000017,
+              -1.17981333
             ],
-            "radius": 0.29999999918664966,
+            "radius": 0.2999999958832122,
             "tag": {
               "commentStart": 6336,
               "end": 6340,
@@ -1444,8 +1444,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc4"
             },
             "to": [
-              0.3501460220242846,
-              -1.1798133324124485
+              0.1573097400000002,
+              -1.2499999958832122
             ],
             "type": "Arc",
             "units": "in"
@@ -1457,7 +1457,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               0.15730974,
-              -1.2499999993408593
+              -1.25
             ],
             "tag": {
               "commentStart": 6512,
@@ -1517,7 +1517,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.85730974,
-              1.3499999991092517
+              1.35
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1527,16 +1527,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.857309739427438,
-              1.0500000002083956
+              1.85730974,
+              1.05
             ],
             "from": [
-              2.0501460196427383,
-              1.279813329574232
+              1.85730974,
+              1.35
             ],
-            "radius": 0.29999999553580703,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 6916,
               "end": 6920,
@@ -1546,8 +1546,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc8"
             },
             "to": [
-              1.85730974,
-              1.3499999957442026
+              2.0501460226462203,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -1559,14 +1559,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274318596474,
-              2.4288800000000004
+              3.0143274300000003,
+              2.4288799999999995
             ],
             "from": [
-              2.0501460187129146,
-              1.279813328466111
+              2.05014602,
+              1.27981333
             ],
-            "radius": 1.5000000043625337,
+            "radius": 1.5000000011648253,
             "tag": {
               "commentStart": 7090,
               "end": 7094,
@@ -1576,8 +1576,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc9"
             },
             "to": [
-              3.9785088486920492,
-              1.279813331558755
+              3.9785088458682414,
+              1.2798133349240386
             ],
             "type": "Arc",
             "units": "in"
@@ -1587,16 +1587,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              4.171345130446312,
-              1.049999999895639
+              4.17134513,
+              1.05
             ],
             "from": [
-              3.9785088486920492,
-              1.279813331558755
+              4.17134513,
+              1.35
             ],
-            "radius": 0.29999999828485124,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7276,
               "end": 7281,
@@ -1606,8 +1606,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc10"
             },
             "to": [
-              4.171345130171499,
-              1.3499999981804902
+              3.9785088473537797,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -1619,7 +1619,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               4.17134513,
-              1.349999999572467
+              1.35
             ],
             "tag": {
               "commentStart": 7451,
@@ -1679,7 +1679,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               5.87134513,
-              -1.2499999993439364
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1689,16 +1689,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              5.87134513042171,
-              -0.9500000001534897
+              5.87134513,
+              -0.95
             ],
             "from": [
-              5.678508849565937,
-              -1.1798133305172962
+              5.87134513,
+              -1.25
             ],
-            "radius": 0.2999999967119844,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7860,
               "end": 7865,
@@ -1708,8 +1708,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc14"
             },
             "to": [
-              5.87134513,
-              -1.249999996865474
+              5.67850884735378,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -1721,14 +1721,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000024707,
-              -1.86925333
+              5.1,
+              -1.8692533299999998
             ],
             "from": [
-              5.678508849553584,
-              -1.1798133305320184
+              5.67850885,
+              -1.17981333
             ],
-            "radius": 0.900000001027575,
+            "radius": 0.9000000017379572,
             "tag": {
               "commentStart": 8040,
               "end": 8045,
@@ -1738,8 +1738,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc15"
             },
             "to": [
-              4.521491150466833,
-              -1.1798133305563496
+              4.52149115,
+              -1.179813329999999
             ],
             "type": "Arc",
             "units": "in"
@@ -1749,16 +1749,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              4.325676539453667,
-              -0.9464505601731235
+              4.32567654,
+              -0.9464505599999992
             ],
             "from": [
-              4.300000000126668,
-              -1.2499999985025214
+              4.52149115,
+              -1.179813329999999
             ],
-            "radius": 0.304633462019365,
+            "radius": 0.3046334582929542,
             "tag": {
               "commentStart": 8228,
               "end": 8233,
@@ -1768,8 +1768,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc16"
             },
             "to": [
-              4.521491152254805,
-              -1.179813332687173
+              4.3000000004591765,
+              -1.2499999945715918
             ],
             "type": "Arc",
             "units": "in"
@@ -1808,12 +1808,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "start": {
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "to": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "units": "in",
           "tag": null,
@@ -2174,8 +2174,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.300000000063334,
-              -1.2499999992512607
+              4.3,
+              -1.25
             ],
             "tag": {
               "commentStart": 5900,
@@ -2187,7 +2187,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.7,
-              -1.2499999993408593
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2197,16 +2197,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.7000000004236875,
-              -0.9500000001542096
+              1.7,
+              -0.95
             ],
             "from": [
-              1.5071637195763126,
-              -1.179813330504931
+              1.7,
+              -1.25
             ],
-            "radius": 0.2999999966965624,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 5981,
               "end": 5985,
@@ -2216,8 +2216,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc2"
             },
             "to": [
-              1.7,
-              -1.249999996850772
+              1.5071637173537797,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -2233,10 +2233,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.86925333
             ],
             "from": [
-              1.5071637195763126,
-              -1.1798133305049312
+              1.50716372,
+              -1.17981333
             ],
-            "radius": 0.9000000010788162,
+            "radius": 0.900000001737957,
             "tag": {
               "commentStart": 6144,
               "end": 6148,
@@ -2246,8 +2246,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc3"
             },
             "to": [
-              0.3501460204236877,
-              -1.1798133305049312
+              0.35014602000000017,
+              -1.17981333
             ],
             "type": "Arc",
             "units": "in"
@@ -2257,16 +2257,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.1573097395763125,
-              -0.9500000001542096
+              0.15730974000000017,
+              -0.95
             ],
             "from": [
-              0.15730974,
-              -1.2499999993408593
+              0.35014602000000017,
+              -1.17981333
             ],
-            "radius": 0.29999999918664966,
+            "radius": 0.2999999958832122,
             "tag": {
               "commentStart": 6336,
               "end": 6340,
@@ -2276,8 +2276,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc4"
             },
             "to": [
-              0.3501460220242846,
-              -1.1798133324124485
+              0.1573097400000002,
+              -1.2499999958832122
             ],
             "type": "Arc",
             "units": "in"
@@ -2289,7 +2289,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               0.15730974,
-              -1.2499999993408593
+              -1.25
             ],
             "tag": {
               "commentStart": 6512,
@@ -2349,7 +2349,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.85730974,
-              1.3499999991092517
+              1.35
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2359,16 +2359,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.857309739427438,
-              1.0500000002083956
+              1.85730974,
+              1.05
             ],
             "from": [
-              2.0501460196427383,
-              1.279813329574232
+              1.85730974,
+              1.35
             ],
-            "radius": 0.29999999553580703,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 6916,
               "end": 6920,
@@ -2378,8 +2378,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc8"
             },
             "to": [
-              1.85730974,
-              1.3499999957442026
+              2.0501460226462203,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -2391,14 +2391,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274318596474,
-              2.4288800000000004
+              3.0143274300000003,
+              2.4288799999999995
             ],
             "from": [
-              2.0501460187129146,
-              1.279813328466111
+              2.05014602,
+              1.27981333
             ],
-            "radius": 1.5000000043625337,
+            "radius": 1.5000000011648253,
             "tag": {
               "commentStart": 7090,
               "end": 7094,
@@ -2408,8 +2408,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc9"
             },
             "to": [
-              3.9785088486920492,
-              1.279813331558755
+              3.9785088458682414,
+              1.2798133349240386
             ],
             "type": "Arc",
             "units": "in"
@@ -2419,16 +2419,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              4.171345130446312,
-              1.049999999895639
+              4.17134513,
+              1.05
             ],
             "from": [
-              3.9785088486920492,
-              1.279813331558755
+              4.17134513,
+              1.35
             ],
-            "radius": 0.29999999828485124,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7276,
               "end": 7281,
@@ -2438,8 +2438,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc10"
             },
             "to": [
-              4.171345130171499,
-              1.3499999981804902
+              3.9785088473537797,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -2451,7 +2451,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               4.17134513,
-              1.349999999572467
+              1.35
             ],
             "tag": {
               "commentStart": 7451,
@@ -2511,7 +2511,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               5.87134513,
-              -1.2499999993439364
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2521,16 +2521,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              5.87134513042171,
-              -0.9500000001534897
+              5.87134513,
+              -0.95
             ],
             "from": [
-              5.678508849565937,
-              -1.1798133305172962
+              5.87134513,
+              -1.25
             ],
-            "radius": 0.2999999967119844,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7860,
               "end": 7865,
@@ -2540,8 +2540,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc14"
             },
             "to": [
-              5.87134513,
-              -1.249999996865474
+              5.67850884735378,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -2553,14 +2553,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000024707,
-              -1.86925333
+              5.1,
+              -1.8692533299999998
             ],
             "from": [
-              5.678508849553584,
-              -1.1798133305320184
+              5.67850885,
+              -1.17981333
             ],
-            "radius": 0.900000001027575,
+            "radius": 0.9000000017379572,
             "tag": {
               "commentStart": 8040,
               "end": 8045,
@@ -2570,8 +2570,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc15"
             },
             "to": [
-              4.521491150466833,
-              -1.1798133305563496
+              4.52149115,
+              -1.179813329999999
             ],
             "type": "Arc",
             "units": "in"
@@ -2581,16 +2581,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              4.325676539453667,
-              -0.9464505601731235
+              4.32567654,
+              -0.9464505599999992
             ],
             "from": [
-              4.300000000126668,
-              -1.2499999985025214
+              4.52149115,
+              -1.179813329999999
             ],
-            "radius": 0.304633462019365,
+            "radius": 0.3046334582929542,
             "tag": {
               "commentStart": 8228,
               "end": 8233,
@@ -2600,8 +2600,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc16"
             },
             "to": [
-              4.521491152254805,
-              -1.179813332687173
+              4.3000000004591765,
+              -1.2499999945715918
             ],
             "type": "Arc",
             "units": "in"
@@ -2640,12 +2640,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "start": {
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "to": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "units": "in",
           "tag": null,
@@ -2775,8 +2775,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "sourceRange": []
           },
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "tag": {
             "commentStart": 5900,
@@ -2788,7 +2788,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "to": [
             1.7,
-            -1.2499999993408593
+            -1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2798,16 +2798,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            1.7000000004236875,
-            -0.9500000001542096
+            1.7,
+            -0.95
           ],
           "from": [
-            1.5071637195763126,
-            -1.179813330504931
+            1.7,
+            -1.25
           ],
-          "radius": 0.2999999966965624,
+          "radius": 0.30000000000000004,
           "tag": {
             "commentStart": 5981,
             "end": 5985,
@@ -2817,8 +2817,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc2"
           },
           "to": [
-            1.7,
-            -1.249999996850772
+            1.5071637173537797,
+            -1.1798133331536425
           ],
           "type": "Arc",
           "units": "in"
@@ -2834,10 +2834,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
             -1.86925333
           ],
           "from": [
-            1.5071637195763126,
-            -1.1798133305049312
+            1.50716372,
+            -1.17981333
           ],
-          "radius": 0.9000000010788162,
+          "radius": 0.900000001737957,
           "tag": {
             "commentStart": 6144,
             "end": 6148,
@@ -2847,8 +2847,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc3"
           },
           "to": [
-            0.3501460204236877,
-            -1.1798133305049312
+            0.35014602000000017,
+            -1.17981333
           ],
           "type": "Arc",
           "units": "in"
@@ -2858,16 +2858,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            0.1573097395763125,
-            -0.9500000001542096
+            0.15730974000000017,
+            -0.95
           ],
           "from": [
-            0.15730974,
-            -1.2499999993408593
+            0.35014602000000017,
+            -1.17981333
           ],
-          "radius": 0.29999999918664966,
+          "radius": 0.2999999958832122,
           "tag": {
             "commentStart": 6336,
             "end": 6340,
@@ -2877,8 +2877,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc4"
           },
           "to": [
-            0.3501460220242846,
-            -1.1798133324124485
+            0.1573097400000002,
+            -1.2499999958832122
           ],
           "type": "Arc",
           "units": "in"
@@ -2890,7 +2890,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "from": [
             0.15730974,
-            -1.2499999993408593
+            -1.25
           ],
           "tag": {
             "commentStart": 6512,
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "to": [
             1.85730974,
-            1.3499999991092517
+            1.35
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2960,16 +2960,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            1.857309739427438,
-            1.0500000002083956
+            1.85730974,
+            1.05
           ],
           "from": [
-            2.0501460196427383,
-            1.279813329574232
+            1.85730974,
+            1.35
           ],
-          "radius": 0.29999999553580703,
+          "radius": 0.30000000000000004,
           "tag": {
             "commentStart": 6916,
             "end": 6920,
@@ -2979,8 +2979,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc8"
           },
           "to": [
-            1.85730974,
-            1.3499999957442026
+            2.0501460226462203,
+            1.2798133331536425
           ],
           "type": "Arc",
           "units": "in"
@@ -2992,14 +2992,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "ccw": true,
           "center": [
-            3.0143274318596474,
-            2.4288800000000004
+            3.0143274300000003,
+            2.4288799999999995
           ],
           "from": [
-            2.0501460187129146,
-            1.279813328466111
+            2.05014602,
+            1.27981333
           ],
-          "radius": 1.5000000043625337,
+          "radius": 1.5000000011648253,
           "tag": {
             "commentStart": 7090,
             "end": 7094,
@@ -3009,8 +3009,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc9"
           },
           "to": [
-            3.9785088486920492,
-            1.279813331558755
+            3.9785088458682414,
+            1.2798133349240386
           ],
           "type": "Arc",
           "units": "in"
@@ -3020,16 +3020,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": false,
+          "ccw": true,
           "center": [
-            4.171345130446312,
-            1.049999999895639
+            4.17134513,
+            1.05
           ],
           "from": [
-            3.9785088486920492,
-            1.279813331558755
+            4.17134513,
+            1.35
           ],
-          "radius": 0.29999999828485124,
+          "radius": 0.30000000000000004,
           "tag": {
             "commentStart": 7276,
             "end": 7281,
@@ -3039,8 +3039,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc10"
           },
           "to": [
-            4.171345130171499,
-            1.3499999981804902
+            3.9785088473537797,
+            1.2798133331536425
           ],
           "type": "Arc",
           "units": "in"
@@ -3052,7 +3052,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "from": [
             4.17134513,
-            1.349999999572467
+            1.35
           ],
           "tag": {
             "commentStart": 7451,
@@ -3112,7 +3112,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "to": [
             5.87134513,
-            -1.2499999993439364
+            -1.25
           ],
           "type": "ToPoint",
           "units": "in"
@@ -3122,16 +3122,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            5.87134513042171,
-            -0.9500000001534897
+            5.87134513,
+            -0.95
           ],
           "from": [
-            5.678508849565937,
-            -1.1798133305172962
+            5.87134513,
+            -1.25
           ],
-          "radius": 0.2999999967119844,
+          "radius": 0.30000000000000004,
           "tag": {
             "commentStart": 7860,
             "end": 7865,
@@ -3141,8 +3141,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc14"
           },
           "to": [
-            5.87134513,
-            -1.249999996865474
+            5.67850884735378,
+            -1.1798133331536425
           ],
           "type": "Arc",
           "units": "in"
@@ -3154,14 +3154,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "ccw": true,
           "center": [
-            5.100000000024707,
-            -1.86925333
+            5.1,
+            -1.8692533299999998
           ],
           "from": [
-            5.678508849553584,
-            -1.1798133305320184
+            5.67850885,
+            -1.17981333
           ],
-          "radius": 0.900000001027575,
+          "radius": 0.9000000017379572,
           "tag": {
             "commentStart": 8040,
             "end": 8045,
@@ -3171,8 +3171,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc15"
           },
           "to": [
-            4.521491150466833,
-            -1.1798133305563496
+            4.52149115,
+            -1.179813329999999
           ],
           "type": "Arc",
           "units": "in"
@@ -3182,16 +3182,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            4.325676539453667,
-            -0.9464505601731235
+            4.32567654,
+            -0.9464505599999992
           ],
           "from": [
-            4.300000000126668,
-            -1.2499999985025214
+            4.52149115,
+            -1.179813329999999
           ],
-          "radius": 0.304633462019365,
+          "radius": 0.3046334582929542,
           "tag": {
             "commentStart": 8228,
             "end": 8233,
@@ -3201,8 +3201,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "value": "arc16"
           },
           "to": [
-            4.521491152254805,
-            -1.179813332687173
+            4.3000000004591765,
+            -1.2499999945715918
           ],
           "type": "Arc",
           "units": "in"
@@ -3241,12 +3241,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
       },
       "start": {
         "from": [
-          4.300000000063334,
-          -1.2499999992512607
+          4.3,
+          -1.25
         ],
         "to": [
-          4.300000000063334,
-          -1.2499999992512607
+          4.3,
+          -1.25
         ],
         "units": "in",
         "tag": null,
@@ -3382,7 +3382,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.349999999572467,
+                        "n": 1.35,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3392,7 +3392,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.97850884852055,
+                        "n": 3.97850885,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3400,7 +3400,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.2798133317631397,
+                        "n": 1.27981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3410,7 +3410,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.171345130274813,
+                        "n": 4.17134513,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3418,7 +3418,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.0500000001000238,
+                        "n": 1.05,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3526,7 +3526,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 5.678508849565937,
+                        "n": 5.67850885,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3534,7 +3534,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133305172962,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3552,7 +3552,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999986878727,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3562,7 +3562,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 5.87134513042171,
+                        "n": 5.87134513,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3570,7 +3570,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.9500000001534897,
+                        "n": -0.95,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3678,7 +3678,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 5.678508849553584,
+                        "n": 5.67850885,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3686,7 +3686,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133305320184,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3696,7 +3696,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.521491150470646,
+                        "n": 4.52149115,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3704,7 +3704,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133305608935,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3714,7 +3714,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 5.100000000024707,
+                        "n": 5.1,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3830,7 +3830,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 4.300000000126668,
+                        "n": 4.3,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3838,7 +3838,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999985025214,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3848,7 +3848,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.521491150953644,
+                        "n": 4.52149115,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133311365093,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3866,7 +3866,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.325676539453667,
+                        "n": 4.32567654,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3874,7 +3874,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.9464505601731235,
+                        "n": -0.94645056,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3982,7 +3982,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.5071637195763126,
+                        "n": 1.50716372,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3990,7 +3990,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.179813330504931,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4008,7 +4008,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999986817185,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4018,7 +4018,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.7000000004236875,
+                        "n": 1.7,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4026,7 +4026,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.9500000001542096,
+                        "n": -0.95,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4134,7 +4134,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.5071637195763126,
+                        "n": 1.50716372,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4142,7 +4142,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133305049312,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4152,7 +4152,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3501460204236875,
+                        "n": 0.35014602,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4160,7 +4160,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.179813330504931,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4294,7 +4294,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999993408593,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4304,7 +4304,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.35014602084737495,
+                        "n": 0.35014602,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4312,7 +4312,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.1798133310098622,
+                        "n": -1.17981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4322,7 +4322,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.15730973957631253,
+                        "n": 0.15730974,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4330,7 +4330,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.9500000001542096,
+                        "n": -0.95,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4438,7 +4438,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.0501460196427383,
+                        "n": 2.05014602,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4446,7 +4446,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.279813329574232,
+                        "n": 1.27981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4464,7 +4464,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.3499999982185034,
+                        "n": 1.35,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4474,7 +4474,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.857309739427438,
+                        "n": 1.85730974,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4482,7 +4482,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.0500000002083956,
+                        "n": 1.05,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4590,7 +4590,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.0501460187129146,
+                        "n": 2.05014602,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4598,7 +4598,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.279813328466111,
+                        "n": 1.27981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4608,7 +4608,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.978508848795363,
+                        "n": 3.97850885,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4616,7 +4616,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.2798133314356304,
+                        "n": 1.27981333,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4626,7 +4626,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.0143274318596474,
+                        "n": 3.01432743,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5702,7 +5702,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.300000000063334,
+                        "n": 4.3,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5710,7 +5710,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999992512607,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5728,7 +5728,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999993408593,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5830,7 +5830,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.349999999572467,
+                        "n": 1.35,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6088,7 +6088,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999993439364,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6190,7 +6190,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -1.2499999993408593,
+                        "n": -1.25,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6448,7 +6448,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 1.3499999991092517,
+                        "n": 1.35,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6545,8 +6545,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.300000000063334,
-                    -1.2499999992512607
+                    4.3,
+                    -1.25
                   ],
                   "tag": {
                     "commentStart": 5900,
@@ -6558,7 +6558,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     1.7,
-                    -1.2499999993408593
+                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6568,33 +6568,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
+                  "ccw": false,
+                  "center": [
+                    1.7,
+                    -0.95
+                  ],
                   "from": [
                     1.7,
-                    -1.2499999993408593
+                    -1.25
                   ],
-                  "tag": null,
-                  "to": [
-                    1.5071637195763126,
-                    -1.179813330504931
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
-                  "center": [
-                    1.7000000004236875,
-                    -0.9500000001542096
-                  ],
-                  "from": [
-                    1.5071637195763126,
-                    -1.179813330504931
-                  ],
-                  "radius": 0.2999999966965624,
+                  "radius": 0.30000000000000004,
                   "tag": {
                     "commentStart": 5981,
                     "end": 5985,
@@ -6604,8 +6587,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    1.7,
-                    -1.249999996850772
+                    1.5071637173537797,
+                    -1.1798133331536425
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -6616,13 +6599,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.7,
-                    -1.249999996850772
+                    1.5071637173537797,
+                    -1.1798133331536425
                   ],
                   "tag": null,
                   "to": [
-                    1.5071637195763126,
-                    -1.1798133305049312
+                    1.50716372,
+                    -1.17981333
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6638,10 +6621,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     -1.86925333
                   ],
                   "from": [
-                    1.5071637195763126,
-                    -1.1798133305049312
+                    1.50716372,
+                    -1.17981333
                   ],
-                  "radius": 0.9000000010788162,
+                  "radius": 0.900000001737957,
                   "tag": {
                     "commentStart": 6144,
                     "end": 6148,
@@ -6651,8 +6634,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    0.3501460204236877,
-                    -1.1798133305049312
+                    0.35014602000000017,
+                    -1.17981333
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -6662,33 +6645,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    0.3501460204236877,
-                    -1.1798133305049312
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.15730974,
-                    -1.2499999993408593
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    0.1573097395763125,
-                    -0.9500000001542096
+                    0.15730974000000017,
+                    -0.95
                   ],
                   "from": [
-                    0.15730974,
-                    -1.2499999993408593
+                    0.35014602000000017,
+                    -1.17981333
                   ],
-                  "radius": 0.29999999918664966,
+                  "radius": 0.2999999958832122,
                   "tag": {
                     "commentStart": 6336,
                     "end": 6340,
@@ -6698,8 +6664,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    0.3501460220242846,
-                    -1.1798133324124485
+                    0.1573097400000002,
+                    -1.2499999958832122
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -6710,13 +6676,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.3501460220242846,
-                    -1.1798133324124485
+                    0.1573097400000002,
+                    -1.2499999958832122
                   ],
                   "tag": null,
                   "to": [
                     0.15730974,
-                    -1.2499999993408593
+                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6728,7 +6694,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "from": [
                     0.15730974,
-                    -1.2499999993408593
+                    -1.25
                   ],
                   "tag": {
                     "commentStart": 6512,
@@ -6788,103 +6754,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     1.85730974,
-                    1.3499999991092517
+                    1.35
                   ],
                   "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.85730974,
-                    1.3499999991092517
-                  ],
-                  "tag": null,
-                  "to": [
-                    2.0501460196427383,
-                    1.279813329574232
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
-                  "center": [
-                    1.857309739427438,
-                    1.0500000002083956
-                  ],
-                  "from": [
-                    2.0501460196427383,
-                    1.279813329574232
-                  ],
-                  "radius": 0.29999999553580703,
-                  "tag": {
-                    "commentStart": 6916,
-                    "end": 6920,
-                    "moduleId": 0,
-                    "start": 6916,
-                    "type": "TagDeclarator",
-                    "value": "arc8"
-                  },
-                  "to": [
-                    1.85730974,
-                    1.3499999957442026
-                  ],
-                  "type": "Arc",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    1.85730974,
-                    1.3499999957442026
-                  ],
-                  "tag": null,
-                  "to": [
-                    2.0501460187129146,
-                    1.279813328466111
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
-                  "center": [
-                    3.0143274318596474,
-                    2.4288800000000004
-                  ],
-                  "from": [
-                    2.0501460187129146,
-                    1.279813328466111
-                  ],
-                  "radius": 1.5000000043625337,
-                  "tag": {
-                    "commentStart": 7090,
-                    "end": 7094,
-                    "moduleId": 0,
-                    "start": 7090,
-                    "type": "TagDeclarator",
-                    "value": "arc9"
-                  },
-                  "to": [
-                    3.9785088486920492,
-                    1.279813331558755
-                  ],
-                  "type": "Arc",
                   "units": "in"
                 },
                 {
@@ -6894,25 +6766,25 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": false,
                   "center": [
-                    4.171345130446312,
-                    1.049999999895639
+                    1.85730974,
+                    1.05
                   ],
                   "from": [
-                    3.9785088486920492,
-                    1.279813331558755
+                    1.85730974,
+                    1.35
                   ],
-                  "radius": 0.29999999828485124,
+                  "radius": 0.30000000000000004,
                   "tag": {
-                    "commentStart": 7276,
-                    "end": 7281,
+                    "commentStart": 6916,
+                    "end": 6920,
                     "moduleId": 0,
-                    "start": 7276,
+                    "start": 6916,
                     "type": "TagDeclarator",
-                    "value": "arc10"
+                    "value": "arc8"
                   },
                   "to": [
-                    4.171345130171499,
-                    1.3499999981804902
+                    2.0501460226462203,
+                    1.2798133331536425
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -6923,13 +6795,107 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.171345130171499,
-                    1.3499999981804902
+                    2.0501460226462203,
+                    1.2798133331536425
+                  ],
+                  "tag": null,
+                  "to": [
+                    2.05014602,
+                    1.27981333
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    3.0143274300000003,
+                    2.4288799999999995
+                  ],
+                  "from": [
+                    2.05014602,
+                    1.27981333
+                  ],
+                  "radius": 1.5000000011648253,
+                  "tag": {
+                    "commentStart": 7090,
+                    "end": 7094,
+                    "moduleId": 0,
+                    "start": 7090,
+                    "type": "TagDeclarator",
+                    "value": "arc9"
+                  },
+                  "to": [
+                    3.9785088458682414,
+                    1.2798133349240386
+                  ],
+                  "type": "Arc",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.9785088458682414,
+                    1.2798133349240386
                   ],
                   "tag": null,
                   "to": [
                     4.17134513,
-                    1.349999999572467
+                    1.35
+                  ],
+                  "type": "ToPoint",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    4.17134513,
+                    1.05
+                  ],
+                  "from": [
+                    4.17134513,
+                    1.35
+                  ],
+                  "radius": 0.30000000000000004,
+                  "tag": {
+                    "commentStart": 7276,
+                    "end": 7281,
+                    "moduleId": 0,
+                    "start": 7276,
+                    "type": "TagDeclarator",
+                    "value": "arc10"
+                  },
+                  "to": [
+                    3.9785088473537797,
+                    1.2798133331536425
+                  ],
+                  "type": "Arc",
+                  "units": "in"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.9785088473537797,
+                    1.2798133331536425
+                  ],
+                  "tag": null,
+                  "to": [
+                    4.17134513,
+                    1.35
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -6941,7 +6907,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "from": [
                     4.17134513,
-                    1.349999999572467
+                    1.35
                   ],
                   "tag": {
                     "commentStart": 7451,
@@ -7001,7 +6967,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     5.87134513,
-                    -1.2499999993439364
+                    -1.25
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -7011,33 +6977,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
+                  "ccw": false,
+                  "center": [
+                    5.87134513,
+                    -0.95
+                  ],
                   "from": [
                     5.87134513,
-                    -1.2499999993439364
+                    -1.25
                   ],
-                  "tag": null,
-                  "to": [
-                    5.678508849565937,
-                    -1.1798133305172962
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
-                  "center": [
-                    5.87134513042171,
-                    -0.9500000001534897
-                  ],
-                  "from": [
-                    5.678508849565937,
-                    -1.1798133305172962
-                  ],
-                  "radius": 0.2999999967119844,
+                  "radius": 0.30000000000000004,
                   "tag": {
                     "commentStart": 7860,
                     "end": 7865,
@@ -7047,8 +6996,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc14"
                   },
                   "to": [
-                    5.87134513,
-                    -1.249999996865474
+                    5.67850884735378,
+                    -1.1798133331536425
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -7059,13 +7008,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.87134513,
-                    -1.249999996865474
+                    5.67850884735378,
+                    -1.1798133331536425
                   ],
                   "tag": null,
                   "to": [
-                    5.678508849553584,
-                    -1.1798133305320184
+                    5.67850885,
+                    -1.17981333
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -7077,14 +7026,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    5.100000000024707,
-                    -1.86925333
+                    5.1,
+                    -1.8692533299999998
                   ],
                   "from": [
-                    5.678508849553584,
-                    -1.1798133305320184
+                    5.67850885,
+                    -1.17981333
                   ],
-                  "radius": 0.900000001027575,
+                  "radius": 0.9000000017379572,
                   "tag": {
                     "commentStart": 8040,
                     "end": 8045,
@@ -7094,8 +7043,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc15"
                   },
                   "to": [
-                    4.521491150466833,
-                    -1.1798133305563496
+                    4.52149115,
+                    -1.179813329999999
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -7105,33 +7054,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    4.521491150466833,
-                    -1.1798133305563496
-                  ],
-                  "tag": null,
-                  "to": [
-                    4.300000000126668,
-                    -1.2499999985025214
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    4.325676539453667,
-                    -0.9464505601731235
+                    4.32567654,
+                    -0.9464505599999992
                   ],
                   "from": [
-                    4.300000000126668,
-                    -1.2499999985025214
+                    4.52149115,
+                    -1.179813329999999
                   ],
-                  "radius": 0.304633462019365,
+                  "radius": 0.3046334582929542,
                   "tag": {
                     "commentStart": 8228,
                     "end": 8233,
@@ -7141,8 +7073,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc16"
                   },
                   "to": [
-                    4.521491152254805,
-                    -1.179813332687173
+                    4.3000000004591765,
+                    -1.2499999945715918
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -7153,8 +7085,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.521491152254805,
-                    -1.179813332687173
+                    4.3000000004591765,
+                    -1.2499999945715918
                   ],
                   "tag": null,
                   "to": [
@@ -7557,12 +7489,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
               },
               "start": {
                 "from": [
-                  4.300000000063334,
-                  -1.2499999992512607
+                  4.3,
+                  -1.25
                 ],
                 "to": [
-                  4.300000000063334,
-                  -1.2499999992512607
+                  4.3,
+                  -1.25
                 ],
                 "units": "in",
                 "tag": null,
@@ -7924,8 +7856,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.300000000063334,
-              -1.2499999992512607
+              4.3,
+              -1.25
             ],
             "tag": {
               "commentStart": 5900,
@@ -7937,7 +7869,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.7,
-              -1.2499999993408593
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -7947,16 +7879,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.7000000004236875,
-              -0.9500000001542096
+              1.7,
+              -0.95
             ],
             "from": [
-              1.5071637195763126,
-              -1.179813330504931
+              1.7,
+              -1.25
             ],
-            "radius": 0.2999999966965624,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 5981,
               "end": 5985,
@@ -7966,8 +7898,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc2"
             },
             "to": [
-              1.7,
-              -1.249999996850772
+              1.5071637173537797,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -7983,10 +7915,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.86925333
             ],
             "from": [
-              1.5071637195763126,
-              -1.1798133305049312
+              1.50716372,
+              -1.17981333
             ],
-            "radius": 0.9000000010788162,
+            "radius": 0.900000001737957,
             "tag": {
               "commentStart": 6144,
               "end": 6148,
@@ -7996,8 +7928,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc3"
             },
             "to": [
-              0.3501460204236877,
-              -1.1798133305049312
+              0.35014602000000017,
+              -1.17981333
             ],
             "type": "Arc",
             "units": "in"
@@ -8007,16 +7939,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.1573097395763125,
-              -0.9500000001542096
+              0.15730974000000017,
+              -0.95
             ],
             "from": [
-              0.15730974,
-              -1.2499999993408593
+              0.35014602000000017,
+              -1.17981333
             ],
-            "radius": 0.29999999918664966,
+            "radius": 0.2999999958832122,
             "tag": {
               "commentStart": 6336,
               "end": 6340,
@@ -8026,8 +7958,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc4"
             },
             "to": [
-              0.3501460220242846,
-              -1.1798133324124485
+              0.1573097400000002,
+              -1.2499999958832122
             ],
             "type": "Arc",
             "units": "in"
@@ -8039,7 +7971,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               0.15730974,
-              -1.2499999993408593
+              -1.25
             ],
             "tag": {
               "commentStart": 6512,
@@ -8099,7 +8031,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.85730974,
-              1.3499999991092517
+              1.35
             ],
             "type": "ToPoint",
             "units": "in"
@@ -8109,16 +8041,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.857309739427438,
-              1.0500000002083956
+              1.85730974,
+              1.05
             ],
             "from": [
-              2.0501460196427383,
-              1.279813329574232
+              1.85730974,
+              1.35
             ],
-            "radius": 0.29999999553580703,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 6916,
               "end": 6920,
@@ -8128,8 +8060,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc8"
             },
             "to": [
-              1.85730974,
-              1.3499999957442026
+              2.0501460226462203,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -8141,14 +8073,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274318596474,
-              2.4288800000000004
+              3.0143274300000003,
+              2.4288799999999995
             ],
             "from": [
-              2.0501460187129146,
-              1.279813328466111
+              2.05014602,
+              1.27981333
             ],
-            "radius": 1.5000000043625337,
+            "radius": 1.5000000011648253,
             "tag": {
               "commentStart": 7090,
               "end": 7094,
@@ -8158,8 +8090,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc9"
             },
             "to": [
-              3.9785088486920492,
-              1.279813331558755
+              3.9785088458682414,
+              1.2798133349240386
             ],
             "type": "Arc",
             "units": "in"
@@ -8169,16 +8101,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              4.171345130446312,
-              1.049999999895639
+              4.17134513,
+              1.05
             ],
             "from": [
-              3.9785088486920492,
-              1.279813331558755
+              4.17134513,
+              1.35
             ],
-            "radius": 0.29999999828485124,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7276,
               "end": 7281,
@@ -8188,8 +8120,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc10"
             },
             "to": [
-              4.171345130171499,
-              1.3499999981804902
+              3.9785088473537797,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -8201,7 +8133,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               4.17134513,
-              1.349999999572467
+              1.35
             ],
             "tag": {
               "commentStart": 7451,
@@ -8261,7 +8193,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               5.87134513,
-              -1.2499999993439364
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -8271,16 +8203,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              5.87134513042171,
-              -0.9500000001534897
+              5.87134513,
+              -0.95
             ],
             "from": [
-              5.678508849565937,
-              -1.1798133305172962
+              5.87134513,
+              -1.25
             ],
-            "radius": 0.2999999967119844,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7860,
               "end": 7865,
@@ -8290,8 +8222,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc14"
             },
             "to": [
-              5.87134513,
-              -1.249999996865474
+              5.67850884735378,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -8303,14 +8235,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000024707,
-              -1.86925333
+              5.1,
+              -1.8692533299999998
             ],
             "from": [
-              5.678508849553584,
-              -1.1798133305320184
+              5.67850885,
+              -1.17981333
             ],
-            "radius": 0.900000001027575,
+            "radius": 0.9000000017379572,
             "tag": {
               "commentStart": 8040,
               "end": 8045,
@@ -8320,8 +8252,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc15"
             },
             "to": [
-              4.521491150466833,
-              -1.1798133305563496
+              4.52149115,
+              -1.179813329999999
             ],
             "type": "Arc",
             "units": "in"
@@ -8331,16 +8263,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              4.325676539453667,
-              -0.9464505601731235
+              4.32567654,
+              -0.9464505599999992
             ],
             "from": [
-              4.300000000126668,
-              -1.2499999985025214
+              4.52149115,
+              -1.179813329999999
             ],
-            "radius": 0.304633462019365,
+            "radius": 0.3046334582929542,
             "tag": {
               "commentStart": 8228,
               "end": 8233,
@@ -8350,8 +8282,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc16"
             },
             "to": [
-              4.521491152254805,
-              -1.179813332687173
+              4.3000000004591765,
+              -1.2499999945715918
             ],
             "type": "Arc",
             "units": "in"
@@ -8390,12 +8322,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "start": {
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "to": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "units": "in",
           "tag": null,
@@ -8756,8 +8688,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "sourceRange": []
             },
             "from": [
-              4.300000000063334,
-              -1.2499999992512607
+              4.3,
+              -1.25
             ],
             "tag": {
               "commentStart": 5900,
@@ -8769,7 +8701,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.7,
-              -1.2499999993408593
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -8779,16 +8711,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.7000000004236875,
-              -0.9500000001542096
+              1.7,
+              -0.95
             ],
             "from": [
-              1.5071637195763126,
-              -1.179813330504931
+              1.7,
+              -1.25
             ],
-            "radius": 0.2999999966965624,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 5981,
               "end": 5985,
@@ -8798,8 +8730,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc2"
             },
             "to": [
-              1.7,
-              -1.249999996850772
+              1.5071637173537797,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -8815,10 +8747,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.86925333
             ],
             "from": [
-              1.5071637195763126,
-              -1.1798133305049312
+              1.50716372,
+              -1.17981333
             ],
-            "radius": 0.9000000010788162,
+            "radius": 0.900000001737957,
             "tag": {
               "commentStart": 6144,
               "end": 6148,
@@ -8828,8 +8760,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc3"
             },
             "to": [
-              0.3501460204236877,
-              -1.1798133305049312
+              0.35014602000000017,
+              -1.17981333
             ],
             "type": "Arc",
             "units": "in"
@@ -8839,16 +8771,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              0.1573097395763125,
-              -0.9500000001542096
+              0.15730974000000017,
+              -0.95
             ],
             "from": [
-              0.15730974,
-              -1.2499999993408593
+              0.35014602000000017,
+              -1.17981333
             ],
-            "radius": 0.29999999918664966,
+            "radius": 0.2999999958832122,
             "tag": {
               "commentStart": 6336,
               "end": 6340,
@@ -8858,8 +8790,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc4"
             },
             "to": [
-              0.3501460220242846,
-              -1.1798133324124485
+              0.1573097400000002,
+              -1.2499999958832122
             ],
             "type": "Arc",
             "units": "in"
@@ -8871,7 +8803,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               0.15730974,
-              -1.2499999993408593
+              -1.25
             ],
             "tag": {
               "commentStart": 6512,
@@ -8931,7 +8863,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               1.85730974,
-              1.3499999991092517
+              1.35
             ],
             "type": "ToPoint",
             "units": "in"
@@ -8941,16 +8873,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              1.857309739427438,
-              1.0500000002083956
+              1.85730974,
+              1.05
             ],
             "from": [
-              2.0501460196427383,
-              1.279813329574232
+              1.85730974,
+              1.35
             ],
-            "radius": 0.29999999553580703,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 6916,
               "end": 6920,
@@ -8960,8 +8892,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc8"
             },
             "to": [
-              1.85730974,
-              1.3499999957442026
+              2.0501460226462203,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -8973,14 +8905,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              3.0143274318596474,
-              2.4288800000000004
+              3.0143274300000003,
+              2.4288799999999995
             ],
             "from": [
-              2.0501460187129146,
-              1.279813328466111
+              2.05014602,
+              1.27981333
             ],
-            "radius": 1.5000000043625337,
+            "radius": 1.5000000011648253,
             "tag": {
               "commentStart": 7090,
               "end": 7094,
@@ -8990,8 +8922,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc9"
             },
             "to": [
-              3.9785088486920492,
-              1.279813331558755
+              3.9785088458682414,
+              1.2798133349240386
             ],
             "type": "Arc",
             "units": "in"
@@ -9001,16 +8933,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              4.171345130446312,
-              1.049999999895639
+              4.17134513,
+              1.05
             ],
             "from": [
-              3.9785088486920492,
-              1.279813331558755
+              4.17134513,
+              1.35
             ],
-            "radius": 0.29999999828485124,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7276,
               "end": 7281,
@@ -9020,8 +8952,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc10"
             },
             "to": [
-              4.171345130171499,
-              1.3499999981804902
+              3.9785088473537797,
+              1.2798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -9033,7 +8965,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "from": [
               4.17134513,
-              1.349999999572467
+              1.35
             ],
             "tag": {
               "commentStart": 7451,
@@ -9093,7 +9025,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               5.87134513,
-              -1.2499999993439364
+              -1.25
             ],
             "type": "ToPoint",
             "units": "in"
@@ -9103,16 +9035,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              5.87134513042171,
-              -0.9500000001534897
+              5.87134513,
+              -0.95
             ],
             "from": [
-              5.678508849565937,
-              -1.1798133305172962
+              5.87134513,
+              -1.25
             ],
-            "radius": 0.2999999967119844,
+            "radius": 0.30000000000000004,
             "tag": {
               "commentStart": 7860,
               "end": 7865,
@@ -9122,8 +9054,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc14"
             },
             "to": [
-              5.87134513,
-              -1.249999996865474
+              5.67850884735378,
+              -1.1798133331536425
             ],
             "type": "Arc",
             "units": "in"
@@ -9135,14 +9067,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              5.100000000024707,
-              -1.86925333
+              5.1,
+              -1.8692533299999998
             ],
             "from": [
-              5.678508849553584,
-              -1.1798133305320184
+              5.67850885,
+              -1.17981333
             ],
-            "radius": 0.900000001027575,
+            "radius": 0.9000000017379572,
             "tag": {
               "commentStart": 8040,
               "end": 8045,
@@ -9152,8 +9084,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc15"
             },
             "to": [
-              4.521491150466833,
-              -1.1798133305563496
+              4.52149115,
+              -1.179813329999999
             ],
             "type": "Arc",
             "units": "in"
@@ -9163,16 +9095,16 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              4.325676539453667,
-              -0.9464505601731235
+              4.32567654,
+              -0.9464505599999992
             ],
             "from": [
-              4.300000000126668,
-              -1.2499999985025214
+              4.52149115,
+              -1.179813329999999
             ],
-            "radius": 0.304633462019365,
+            "radius": 0.3046334582929542,
             "tag": {
               "commentStart": 8228,
               "end": 8233,
@@ -9182,8 +9114,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "value": "arc16"
             },
             "to": [
-              4.521491152254805,
-              -1.179813332687173
+              4.3000000004591765,
+              -1.2499999945715918
             ],
             "type": "Arc",
             "units": "in"
@@ -9222,12 +9154,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
         },
         "start": {
           "from": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "to": [
-            4.300000000063334,
-            -1.2499999992512607
+            4.3,
+            -1.25
           ],
           "units": "in",
           "tag": null,
@@ -9400,7 +9332,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.5000000011871886,
+                        "n": 2.4999999999999973,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9408,7 +9340,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 5.99999999296682,
+                        "n": 6.000000000000015,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9418,7 +9350,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000001351356562868794,
+                        "n": -0.000000000000000002330793382131764,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9426,7 +9358,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 3.000000000000475,
+                        "n": 3.0,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9436,7 +9368,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.9997072355194647,
+                        "n": 2.999707235464285,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9444,7 +9376,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 3.0419106298394074,
+                        "n": 3.041910637113115,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9552,7 +9484,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 8.650000000000023,
+                        "n": 8.65,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9560,7 +9492,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 7.03961483368883,
+                        "n": 7.03922444524069,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9570,7 +9502,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 11.117897150862287,
+                        "n": 11.118074690985614,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9578,7 +9510,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 10.435886365956677,
+                        "n": 10.435314602788262,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9588,7 +9520,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 8.150075686184836,
+                        "n": 8.150222781788674,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9596,7 +9528,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 9.997667517646272,
+                        "n": 9.997301986008408,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9704,7 +9636,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000055473730883069887,
+                        "n": -0.00000000000000000005142050734508796,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9712,7 +9644,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000004489359934505005,
+                        "n": -0.0000000000000000007602840574574377,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9722,7 +9654,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000000041346970048635684,
+                        "n": -0.000000000000000000811211465607314,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9730,7 +9662,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 3.000000000000462,
+                        "n": 3.0,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9824,7 +9756,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.4999999999989293,
+                        "n": 2.5,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9832,7 +9764,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 6.000000000000893,
+                        "n": 6.0,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9842,7 +9774,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 8.650000000130078,
+                        "n": 8.65,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9850,7 +9782,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 7.039614832919693,
+                        "n": 7.039224445240691,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9944,7 +9876,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 11.117897153055914,
+                        "n": 11.118074690985614,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9952,7 +9884,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 10.43588636628048,
+                        "n": 10.435314602788262,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9962,7 +9894,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 10.399999999999888,
+                        "n": 10.4,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9970,7 +9902,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 15.300000000000441,
+                        "n": 15.3,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10067,8 +9999,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000055473730883069887,
-                    0.0000000000004489359934505005
+                    -0.00000000000000000005142050734508796,
+                    -0.0000000000000000007602840574574377
                   ],
                   "tag": {
                     "commentStart": 550,
@@ -10079,8 +10011,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line1"
                   },
                   "to": [
-                    0.00000000000041346970048635684,
-                    3.000000000000462
+                    -0.000000000000000000811211465607314,
+                    3.0
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -10092,14 +10024,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": false,
                   "center": [
-                    2.9997072355185272,
-                    3.0419106298393928
+                    2.9997072354642844,
+                    3.0419106371131153
                   ],
                   "from": [
-                    0.00000000000041346970048635684,
-                    3.000000000000462
+                    -0.000000000000000000811211465607314,
+                    3.0
                   ],
-                  "radius": 2.999999999952203,
+                  "radius": 3.0000000000000013,
                   "tag": {
                     "commentStart": 629,
                     "end": 633,
@@ -10109,8 +10041,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    2.500000001202307,
-                    5.9999999928717624
+                    2.4999999999999964,
+                    6.000000000000019
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -10121,25 +10053,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.500000001202307,
-                    5.9999999928717624
-                  ],
-                  "tag": null,
-                  "to": [
-                    2.4999999999989293,
-                    6.000000000000893
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    2.4999999999989293,
-                    6.000000000000893
+                    2.4999999999999964,
+                    6.000000000000019
                   ],
                   "tag": {
                     "commentStart": 777,
@@ -10150,25 +10065,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line3"
                   },
                   "to": [
-                    8.650000000130078,
-                    7.039614832919693
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    8.650000000130078,
-                    7.039614832919693
-                  ],
-                  "tag": null,
-                  "to": [
-                    8.650000000000023,
-                    7.03961483368883
+                    8.65,
+                    7.039224445240691
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -10180,14 +10078,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    8.150075686184836,
-                    9.997667517646272
+                    8.150222781788674,
+                    9.99730198600841
                   ],
                   "from": [
-                    8.650000000000023,
-                    7.03961483368883
+                    8.65,
+                    7.039224445240691
                   ],
-                  "radius": 3.000000000101902,
+                  "radius": 3.0000000008395733,
                   "tag": {
                     "commentStart": 898,
                     "end": 902,
@@ -10197,8 +10095,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    11.1178971501033,
-                    10.435886365844606
+                    11.118074690598998,
+                    10.435314602731205
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -10209,25 +10107,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    11.1178971501033,
-                    10.435886365844606
-                  ],
-                  "tag": null,
-                  "to": [
-                    11.117897153055914,
-                    10.43588636628048
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    11.117897153055914,
-                    10.43588636628048
+                    11.118074690598998,
+                    10.435314602731205
                   ],
                   "tag": {
                     "commentStart": 1053,
@@ -10238,8 +10119,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line5"
                   },
                   "to": [
-                    10.399999999999888,
-                    15.300000000000441
+                    10.4,
+                    15.3
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -10278,12 +10159,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
               },
               "start": {
                 "from": [
-                  -0.000000000000055473730883069887,
-                  0.0000000000004489359934505005
+                  -0.00000000000000000005142050734508796,
+                  -0.0000000000000000007602840574574377
                 ],
                 "to": [
-                  -0.000000000000055473730883069887,
-                  0.0000000000004489359934505005
+                  -0.00000000000000000005142050734508796,
+                  -0.0000000000000000007602840574574377
                 ],
                 "units": "in",
                 "tag": null,
@@ -10341,7 +10222,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.479055469985776,
+                        "n": 2.4790554699857763,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10349,7 +10230,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 8.07442326008067,
+                        "n": 8.074423260080666,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10359,7 +10240,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000000485785528829653,
+                        "n": 0.000000000000000010685195004182599,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10385,7 +10266,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 5.120000000517433,
+                        "n": 5.12000000051743,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10493,7 +10374,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 7.403093971415511,
+                        "n": 7.403093971440892,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10501,7 +10382,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 8.942664230396767,
+                        "n": 8.942664230252742,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10511,7 +10392,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.872307432316267,
+                        "n": 9.872308535094726,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10519,7 +10400,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 12.161489532689737,
+                        "n": 12.161489629482993,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10529,7 +10410,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": 6.8839534754411105,
+                        "n": 6.883954570735472,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10537,7 +10418,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 11.897405022179015,
+                        "n": 11.897405215531672,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10645,7 +10526,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000000000257507766881101,
+                        "n": 0.00000000000000000000001687083333226804,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10663,7 +10544,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000000000025744879967367972,
+                        "n": 0.00000000000000000000001366537001353619,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10765,7 +10646,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.479055469985776,
+                        "n": 2.4790554699857763,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10773,7 +10654,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 8.074423260080671,
+                        "n": 8.074423260080666,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10783,7 +10664,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 7.403094010128817,
+                        "n": 7.403094010128811,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10791,7 +10672,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 8.942664010056056,
+                        "n": 8.942664010056054,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10885,7 +10766,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 9.872307643715088,
+                        "n": 9.87230874662474,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10893,7 +10774,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 12.16148955137131,
+                        "n": 12.161489648176152,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10903,7 +10784,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.609999999885407,
+                        "n": 9.609999999885412,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10911,7 +10792,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": 15.149999999863272,
+                        "n": 15.14999999986328,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11008,7 +10889,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000000000000000257507766881101,
+                    0.00000000000000000000001687083333226804,
                     0.12
                   ],
                   "tag": {
@@ -11020,7 +10901,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line1"
                   },
                   "to": [
-                    0.000000000000000000025744879967367972,
+                    0.00000000000000000000001366537001353619,
                     5.12
                   ],
                   "type": "ToPoint",
@@ -11034,10 +10915,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "ccw": false,
                   "center": [
                     3.0,
-                    5.1200000005174315
+                    5.120000000517428
                   ],
                   "from": [
-                    0.000000000000000000025744879967367972,
+                    0.00000000000000000000001366537001353619,
                     5.12
                   ],
                   "radius": 3.0,
@@ -11051,7 +10932,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     2.4790554699857745,
-                    8.074423260080668
+                    8.074423260080664
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -11063,7 +10944,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "from": [
                     2.4790554699857745,
-                    8.074423260080668
+                    8.074423260080664
                   ],
                   "tag": {
                     "commentStart": 3508,
@@ -11074,8 +10955,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line3"
                   },
                   "to": [
-                    7.403094010128817,
-                    8.942664010056056
+                    7.403094010128811,
+                    8.942664010056054
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11086,13 +10967,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.403094010128817,
-                    8.942664010056056
+                    7.403094010128811,
+                    8.942664010056054
                   ],
                   "tag": null,
                   "to": [
-                    7.403093971415511,
-                    8.942664230396767
+                    7.403093971440892,
+                    8.942664230252742
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11104,14 +10985,14 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    6.8839534754411105,
-                    11.897405022179015
+                    6.883954570735472,
+                    11.897405215531672
                   ],
                   "from": [
-                    7.403093971415511,
-                    8.942664230396767
+                    7.403093971440892,
+                    8.942664230252742
                   ],
-                  "radius": 3.0000000001970886,
+                  "radius": 3.0000000012419803,
                   "tag": {
                     "commentStart": 3653,
                     "end": 3657,
@@ -11121,8 +11002,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    9.872307432468912,
-                    12.161489532703227
+                    9.872308537329053,
+                    12.161489629680442
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -11133,13 +11014,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    9.872307432468912,
-                    12.161489532703227
+                    9.872308537329053,
+                    12.161489629680442
                   ],
                   "tag": null,
                   "to": [
-                    9.872307643715088,
-                    12.16148955137131
+                    9.87230874662474,
+                    12.161489648176152
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11150,8 +11031,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    9.872307643715088,
-                    12.16148955137131
+                    9.87230874662474,
+                    12.161489648176152
                   ],
                   "tag": {
                     "commentStart": 3843,
@@ -11162,8 +11043,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     "value": "line5"
                   },
                   "to": [
-                    9.609999999885407,
-                    15.149999999863272
+                    9.609999999885412,
+                    15.14999999986328
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11202,11 +11083,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
               },
               "start": {
                 "from": [
-                  0.0000000000000000000257507766881101,
+                  0.00000000000000000000001687083333226804,
                   0.12
                 ],
                 "to": [
-                  0.0000000000000000000257507766881101,
+                  0.00000000000000000000001687083333226804,
                   0.12
                 ],
                 "units": "in",
@@ -11293,12 +11174,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000012250001001319543,
+              -0.00000000012250001007444544,
               -0.00000000019000000184288268
             ],
             "from": [
               0.8124999998725,
-              -0.00000000008000000493922942
+              -0.00000000007999999744033558
             ],
             "radius": 0.812499999995,
             "tag": {
@@ -11311,7 +11192,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               0.8124999998725,
-              -0.00000000008000000493922942
+              -0.00000000007999999744033558
             ],
             "type": "Circle",
             "units": "in"
@@ -11351,11 +11232,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "start": {
           "from": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "to": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "units": "in",
           "tag": null,
@@ -11419,12 +11300,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000012250001001319543,
+              -0.00000000012250001007444544,
               -0.00000000019000000184288268
             ],
             "from": [
               0.8124999998725,
-              -0.00000000008000000493922942
+              -0.00000000007999999744033558
             ],
             "radius": 0.812499999995,
             "tag": {
@@ -11437,7 +11318,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "to": [
               0.8124999998725,
-              -0.00000000008000000493922942
+              -0.00000000007999999744033558
             ],
             "type": "Circle",
             "units": "in"
@@ -11477,11 +11358,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "start": {
           "from": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "to": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "units": "in",
           "tag": null,
@@ -11545,7 +11426,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              -0.0000000000400000030696148,
+              -0.000000000040000003069614796,
               0.0
             ],
             "from": [
@@ -11671,7 +11552,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
             },
             "ccw": true,
             "center": [
-              -0.0000000000400000030696148,
+              -0.000000000040000003069614796,
               0.0
             ],
             "from": [
@@ -11989,12 +11870,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000012250001001319543,
+            -0.00000000012250001007444544,
             -0.00000000019000000184288268
           ],
           "from": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "radius": 0.812499999995,
           "tag": {
@@ -12007,7 +11888,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "to": [
             0.8124999998725,
-            -0.00000000008000000493922942
+            -0.00000000007999999744033558
           ],
           "type": "Circle",
           "units": "in"
@@ -12047,11 +11928,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "start": {
         "from": [
           0.8124999998725,
-          -0.00000000008000000493922942
+          -0.00000000007999999744033558
         ],
         "to": [
           0.8124999998725,
-          -0.00000000008000000493922942
+          -0.00000000007999999744033558
         ],
         "units": "in",
         "tag": null,
@@ -12089,7 +11970,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "ccw": true,
           "center": [
-            -0.0000000000400000030696148,
+            -0.000000000040000003069614796,
             0.0
           ],
           "from": [
@@ -12199,7 +12080,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000493922942,
+                        "n": -0.00000000007999999744033558,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12209,7 +12090,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000012250001001319543,
+                        "n": -0.00000000012250001007444544,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12319,7 +12200,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000541922949,
+                        "n": -0.0000000000799999979203356,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12337,7 +12218,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000661922968,
+                        "n": -0.00000000007999999968033578,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12431,7 +12312,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000012250001001319543,
+                        "n": -0.00000000012250001007444544,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12439,7 +12320,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000800000061392296,
+                        "n": -0.00000000007999999864033567,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12457,7 +12338,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000573922954,
+                        "n": -0.00000000007999999824033563,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12560,7 +12441,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000517922945,
+                        "n": -0.00000000007999999768033558,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12578,7 +12459,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                         }
                       },
                       {
-                        "n": -0.00000000008000000501922943,
+                        "n": -0.00000000007999999752033557,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12677,12 +12558,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000012250001001319543,
+                    -0.00000000012250001007444544,
                     -0.00000000019000000184288268
                   ],
                   "from": [
                     0.8124999998725,
-                    -0.00000000008000000493922942
+                    -0.00000000007999999744033558
                   ],
                   "radius": 0.812499999995,
                   "tag": {
@@ -12695,7 +12576,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     0.8124999998725,
-                    -0.00000000008000000493922942
+                    -0.00000000007999999744033558
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -12707,12 +12588,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "from": [
                     0.8124999998725,
-                    -0.00000000008000000493922942
+                    -0.00000000007999999744033558
                   ],
                   "tag": null,
                   "to": [
                     0.77249999983,
-                    -0.00000000008000000541922949
+                    -0.0000000000799999979203356
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -12725,11 +12606,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   "ccw": true,
                   "center": [
                     -0.00000000012250001013569545,
-                    -0.00000000008000000661922968
+                    -0.00000000007999999968033578
                   ],
                   "from": [
                     0.77249999983,
-                    -0.00000000008000000541922949
+                    -0.0000000000799999979203356
                   ],
                   "radius": 0.7724999999525,
                   "tag": {
@@ -12742,7 +12623,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "to": [
                     0.77249999983,
-                    -0.00000000008000000541922949
+                    -0.0000000000799999979203356
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -12782,11 +12663,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "start": {
                 "from": [
                   0.8124999998725,
-                  -0.00000000008000000493922942
+                  -0.00000000007999999744033558
                 ],
                 "to": [
                   0.8124999998725,
-                  -0.00000000008000000493922942
+                  -0.00000000007999999744033558
                 ],
                 "units": "in",
                 "tag": null,
@@ -12850,7 +12731,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000400000030696148,
+                        "n": -0.000000000040000003069614796,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12970,7 +12851,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000004000000314961481,
+                        "n": -0.000000000040000003149614806,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13076,7 +12957,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0000000000400000030696148,
+                    -0.000000000040000003069614796,
                     0.0
                   ],
                   "from": [
@@ -13123,7 +13004,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000004000000314961481,
+                    -0.000000000040000003149614806,
                     0.0
                   ],
                   "from": [

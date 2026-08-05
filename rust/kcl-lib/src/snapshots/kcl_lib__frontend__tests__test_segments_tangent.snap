@@ -1,10 +1,9 @@
 ---
 source: kcl-lib/src/frontend.rs
-expression: "src_delta.text.as_str()"
+expression: src_delta.text.as_str()
 ---
 sketch(on = XY) {
-  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.27])
+  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.26])
   arc1 = arc(start = [var 4.51, var 2.03], end = [var 7.05, var 2.02], center = [var 5.78, var 2.55])
   tangent([line1, arc1])
 }
-

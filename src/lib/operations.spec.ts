@@ -19,6 +19,7 @@ import {
   enterEditFlow,
   filterOperations,
   getHideOpForArtifact,
+  getOperationCalculatedDisplay,
   getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
@@ -1044,6 +1045,44 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
       expect(argDefaultValues.note).toBe('Note on XY')
       expect(argDefaultValues.framePlane).toBe('XZ')
+    })
+  })
+
+  describe('getOperationCalculatedDisplay', () => {
+    const red: OpKclValue = { type: 'Enum', enum_name: 'Color', variant: 'Red' }
+    const green: OpKclValue = {
+      type: 'Enum',
+      enum_name: 'Color',
+      variant: 'Green',
+    }
+
+    // An enum reaches this function whenever an enum-valued variable appears in
+    // the feature tree: `getFeatureTreeValueDetail` passes a VariableDeclaration's
+    // value through unchanged, and the Rust side already maps `KclValue::Enum` to
+    // `OpKclValue::Enum`. Before this arm existed the switch fell through to
+    // `default`, which returned the value's type, so the tree read "Enum".
+    it.each([
+      ['a variant as its qualified name', red, 'Color::Red'],
+      [
+        'every variant of an array',
+        { type: 'Array', value: [red, green] },
+        'Color::Red, Color::Green',
+      ],
+      [
+        'a variant nested in an array of arrays',
+        { type: 'Array', value: [{ type: 'Array', value: [green] }] },
+        'Color::Green',
+      ],
+    ] as const)('renders %s', (_case, value, expected) => {
+      expect(getOperationCalculatedDisplay(value as OpKclValue)).toBe(expected)
+    })
+
+    it('still falls back to the type name for a value it cannot render', () => {
+      // Guards the arm above from being written as a catch-all: a type with no
+      // case of its own must keep the old behaviour rather than crash.
+      expect(
+        getOperationCalculatedDisplay({ type: 'Uuid', value: 'abc' })
+      ).toBe('Uuid')
     })
   })
 

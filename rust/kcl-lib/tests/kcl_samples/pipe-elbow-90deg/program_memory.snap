@@ -146,14 +146,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -163,8 +163,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -203,12 +203,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -268,14 +268,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -285,8 +285,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -325,12 +325,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -390,14 +390,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -407,8 +407,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -447,12 +447,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -512,14 +512,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -529,8 +529,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -569,12 +569,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -634,14 +634,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -651,8 +651,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -691,12 +691,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -756,14 +756,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -773,8 +773,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -813,12 +813,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -878,14 +878,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -895,8 +895,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -935,12 +935,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1000,14 +1000,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1017,8 +1017,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1057,12 +1057,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1122,14 +1122,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1139,8 +1139,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1179,12 +1179,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1244,14 +1244,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1261,8 +1261,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1301,12 +1301,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1366,14 +1366,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1383,8 +1383,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1423,12 +1423,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1488,14 +1488,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1505,8 +1505,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1545,12 +1545,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1610,14 +1610,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1627,8 +1627,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1667,12 +1667,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1732,14 +1732,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1749,8 +1749,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1789,12 +1789,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1854,14 +1854,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1871,8 +1871,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1911,12 +1911,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -1976,14 +1976,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 },
                 "ccw": true,
                 "center": [
-                  56.0,
-                  80.0
+                  56.00000000200154,
+                  79.99999999432897
                 ],
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
-                "radius": 5.999999999999999,
+                "radius": 6.000000002405851,
                 "tag": {
                   "commentStart": 2678,
                   "end": 2692,
@@ -1993,8 +1993,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "value": "boltHoleCircle"
                 },
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2033,12 +2033,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "start": {
               "from": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "to": [
-                57.99692021818228,
-                74.34205782618673
+                57.99691896872725,
+                74.34205737627413
               ],
               "units": "mm",
               "tag": null,
@@ -2100,14 +2100,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "ccw": true,
             "center": [
-              56.0,
-              80.0
+              56.00000000200154,
+              79.99999999432897
             ],
             "from": [
-              57.99692021818228,
-              74.34205782618673
+              57.99691896872725,
+              74.34205737627413
             ],
-            "radius": 5.999999999999999,
+            "radius": 6.000000002405851,
             "tag": {
               "commentStart": 2678,
               "end": 2692,
@@ -2117,8 +2117,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "value": "boltHoleCircle"
             },
             "to": [
-              57.99692021818228,
-              74.34205782618673
+              57.99691896872725,
+              74.34205737627413
             ],
             "type": "Circle",
             "units": "mm"
@@ -2157,12 +2157,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "start": {
           "from": [
-            57.99692021818228,
-            74.34205782618673
+            57.99691896872725,
+            74.34205737627413
           ],
           "to": [
-            57.99692021818228,
-            74.34205782618673
+            57.99691896872725,
+            74.34205737627413
           ],
           "units": "mm",
           "tag": null,
@@ -2219,14 +2219,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           "ccw": true,
           "center": [
-            56.0,
-            80.0
+            56.00000000200154,
+            79.99999999432897
           ],
           "from": [
-            57.99692021818228,
-            74.34205782618673
+            57.99691896872725,
+            74.34205737627413
           ],
-          "radius": 5.999999999999999,
+          "radius": 6.000000002405851,
           "tag": {
             "commentStart": 2678,
             "end": 2692,
@@ -2236,8 +2236,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "boltHoleCircle"
           },
           "to": [
-            57.99692021818228,
-            74.34205782618673
+            57.99691896872725,
+            74.34205737627413
           ],
           "type": "Circle",
           "units": "mm"
@@ -2276,12 +2276,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "start": {
         "from": [
-          57.99692021818228,
-          74.34205782618673
+          57.99691896872725,
+          74.34205737627413
         ],
         "to": [
-          57.99692021818228,
-          74.34205782618673
+          57.99691896872725,
+          74.34205737627413
         ],
         "units": "mm",
         "tag": null,
@@ -2317,7 +2317,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000002481909337461628,
+                        "n": 0.000000001200924891952988,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2325,7 +2325,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 80.0,
+                        "n": 79.99999999659738,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2335,7 +2335,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "end": [
                       {
-                        "n": 56.0,
+                        "n": 56.00000000160124,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2343,7 +2343,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 80.0,
+                        "n": 79.99999999546318,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2438,7 +2438,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 57.99692021818228,
+                        "n": 57.99691896872725,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2446,7 +2446,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 74.34205782618673,
+                        "n": 74.34205737627413,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2456,7 +2456,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "center": [
                       {
-                        "n": 56.0,
+                        "n": 56.00000000200154,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2464,7 +2464,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 80.0,
+                        "n": 79.99999999432897,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2558,7 +2558,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000000008806775095095474,
+                        "n": 0.0000000004003082961309546,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2566,7 +2566,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000024952535309086193,
+                        "n": -0.000000001134206604994998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2576,7 +2576,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000000000017213242253882444,
+                        "n": 0.000000000800616593151939,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2584,7 +2584,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 80.0,
+                        "n": 79.99999999773159,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2683,14 +2683,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   },
                   "ccw": true,
                   "center": [
-                    56.0,
-                    80.0
+                    56.00000000200154,
+                    79.99999999432897
                   ],
                   "from": [
-                    57.99692021818228,
-                    74.34205782618673
+                    57.99691896872725,
+                    74.34205737627413
                   ],
-                  "radius": 5.999999999999999,
+                  "radius": 6.000000002405851,
                   "tag": {
                     "commentStart": 2678,
                     "end": 2692,
@@ -2700,8 +2700,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "value": "boltHoleCircle"
                   },
                   "to": [
-                    57.99692021818228,
-                    74.34205782618673
+                    57.99691896872725,
+                    74.34205737627413
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -2740,12 +2740,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               },
               "start": {
                 "from": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "to": [
-                  57.99692021818228,
-                  74.34205782618673
+                  57.99691896872725,
+                  74.34205737627413
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2848,14 +2848,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "ccw": true,
             "center": [
-              80.00000000325018,
-              0.000000001731690322916593
+              80.00000000032503,
+              0.00000000017316874370371722
             ],
             "from": [
-              121.95327150495379,
-              -21.187803338172763
+              121.95327133894554,
+              -21.187803661242402
             ],
-            "radius": 47.00000000070343,
+            "radius": 47.000000000070344,
             "tag": {
               "commentStart": 598,
               "end": 614,
@@ -2865,8 +2865,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "value": "elbowOuterCircle"
             },
             "to": [
-              121.95327150495379,
-              -21.187803338172763
+              121.95327133894554,
+              -21.187803661242402
             ],
             "type": "Circle",
             "units": "mm"
@@ -2905,12 +2905,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "start": {
           "from": [
-            121.95327150495379,
-            -21.187803338172763
+            121.95327133894554,
+            -21.187803661242402
           ],
           "to": [
-            121.95327150495379,
-            -21.187803338172763
+            121.95327133894554,
+            -21.187803661242402
           ],
           "units": "mm",
           "tag": null,
@@ -2972,14 +2972,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           "ccw": true,
           "center": [
-            80.00000000325018,
-            0.000000001731690322916593
+            80.00000000032503,
+            0.00000000017316874370371722
           ],
           "from": [
-            121.95327150495379,
-            -21.187803338172763
+            121.95327133894554,
+            -21.187803661242402
           ],
-          "radius": 47.00000000070343,
+          "radius": 47.000000000070344,
           "tag": {
             "commentStart": 598,
             "end": 614,
@@ -2989,8 +2989,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "elbowOuterCircle"
           },
           "to": [
-            121.95327150495379,
-            -21.187803338172763
+            121.95327133894554,
+            -21.187803661242402
           ],
           "type": "Circle",
           "units": "mm"
@@ -3029,12 +3029,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "start": {
         "from": [
-          121.95327150495379,
-          -21.187803338172763
+          121.95327133894554,
+          -21.187803661242402
         ],
         "to": [
-          121.95327150495379,
-          -21.187803338172763
+          121.95327133894554,
+          -21.187803661242402
         ],
         "units": "mm",
         "tag": null,
@@ -3074,7 +3074,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000010833939715519058,
+                        "n": 0.00000000010833940987714105,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3082,7 +3082,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 0.0000000005772301044901706,
+                        "n": 0.00000000005772291432230389,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3092,7 +3092,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "end": [
                       {
-                        "n": 80.00000000216679,
+                        "n": 80.00000000021669,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3100,7 +3100,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 0.0000000011544602113418611,
+                        "n": 0.00000000011544582882880933,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3195,7 +3195,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 105.65717226251472,
+                        "n": 105.65717154707032,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3203,7 +3203,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 24.534863194445666,
+                        "n": 24.534863933840352,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3213,7 +3213,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "center": [
                       {
-                        "n": 80.00000000401963,
+                        "n": 80.00000000040197,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3221,7 +3221,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 0.0000000024674763689652963,
+                        "n": 0.00000000024674722101870335,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3315,7 +3315,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 121.95327150495379,
+                        "n": 121.95327133894554,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3323,7 +3323,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": -21.187803338172763,
+                        "n": -21.187803661242402,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3333,7 +3333,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "center": [
                       {
-                        "n": 80.00000000325018,
+                        "n": 80.00000000032503,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3341,7 +3341,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 0.000000001731690322916593,
+                        "n": 0.00000000017316874370371722,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3439,14 +3439,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   },
                   "ccw": true,
                   "center": [
-                    80.00000000325018,
-                    0.000000001731690322916593
+                    80.00000000032503,
+                    0.00000000017316874370371722
                   ],
                   "from": [
-                    121.95327150495379,
-                    -21.187803338172763
+                    121.95327133894554,
+                    -21.187803661242402
                   ],
-                  "radius": 47.00000000070343,
+                  "radius": 47.000000000070344,
                   "tag": {
                     "commentStart": 598,
                     "end": 614,
@@ -3456,8 +3456,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "value": "elbowOuterCircle"
                   },
                   "to": [
-                    121.95327150495379,
-                    -21.187803338172763
+                    121.95327133894554,
+                    -21.187803661242402
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -3468,13 +3468,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    121.95327150495379,
-                    -21.187803338172763
+                    121.95327133894554,
+                    -21.187803661242402
                   ],
                   "tag": null,
                   "to": [
-                    105.65717226251472,
-                    24.534863194445666
+                    105.65717154707032,
+                    24.534863933840352
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -3486,14 +3486,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   },
                   "ccw": true,
                   "center": [
-                    80.00000000401963,
-                    0.0000000024674763689652963
+                    80.00000000040197,
+                    0.00000000024674722101870335
                   ],
                   "from": [
-                    105.65717226251472,
-                    24.534863194445666
+                    105.65717154707032,
+                    24.534863933840352
                   ],
-                  "radius": 35.50000000212925,
+                  "radius": 35.500000000212964,
                   "tag": {
                     "commentStart": 1053,
                     "end": 1069,
@@ -3503,8 +3503,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "value": "elbowInnerCircle"
                   },
                   "to": [
-                    105.65717226251472,
-                    24.534863194445666
+                    105.65717154707032,
+                    24.534863933840352
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -3543,12 +3543,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               },
               "start": {
                 "from": [
-                  121.95327150495379,
-                  -21.187803338172763
+                  121.95327133894554,
+                  -21.187803661242402
                 ],
                 "to": [
-                  121.95327150495379,
-                  -21.187803338172763
+                  121.95327133894554,
+                  -21.187803661242402
                 ],
                 "units": "mm",
                 "tag": null,
@@ -3613,14 +3613,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "ccw": true,
             "center": [
-              0.000000015956567330010124,
-              79.99999999676287
+              0.000000001595658507730511,
+              79.99999999967628
             ],
             "from": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
-            "radius": 65.0000000042402,
+            "radius": 65.00000000042404,
             "tag": {
               "commentStart": 1621,
               "end": 1638,
@@ -3630,8 +3630,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
             "type": "Circle",
             "units": "mm"
@@ -3670,12 +3670,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "start": {
           "from": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "to": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "units": "mm",
           "tag": null,
@@ -3746,14 +3746,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           },
           "ccw": true,
           "center": [
-            0.000000015956567330010124,
-            79.99999999676287
+            0.000000001595658507730511,
+            79.99999999967628
           ],
           "from": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
-          "radius": 65.0000000042402,
+          "radius": 65.00000000042404,
           "tag": {
             "commentStart": 1621,
             "end": 1638,
@@ -3763,8 +3763,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           },
           "to": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "type": "Circle",
           "units": "mm"
@@ -3803,12 +3803,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       },
       "start": {
         "from": [
-          59.12788512385724,
-          53.00197778738383
+          59.127884757715854,
+          53.00197702905686
         ],
         "to": [
-          59.12788512385724,
-          53.00197778738383
+          59.127884757715854,
+          53.00197702905686
         ],
         "units": "mm",
         "tag": null,
@@ -3848,7 +3848,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000005318855775156797,
+                        "n": 0.0000000005318861697304429,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3856,7 +3856,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": -0.0000000010790476917117855,
+                        "n": -0.00000000010790477445128217,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3866,7 +3866,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000010637711551448528,
+                        "n": 0.0000000010637723390956807,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3874,7 +3874,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 79.99999999784191,
+                        "n": 79.99999999978418,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3969,7 +3969,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 35.43933553961451,
+                        "n": 35.439335548127474,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3977,7 +3977,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 77.92551250223232,
+                        "n": 77.9255130528234,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3987,7 +3987,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000019346853375798334,
+                        "n": 0.000000001934687767885464,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3995,7 +3995,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 79.99999999656441,
+                        "n": 79.99999999965644,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4089,7 +4089,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 59.12788512385724,
+                        "n": 59.127884757715854,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4097,7 +4097,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 53.00197778738383,
+                        "n": 53.00197702905686,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4107,7 +4107,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000015956567330010124,
+                        "n": 0.000000001595658507730511,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                         }
                       },
                       {
-                        "n": 79.99999999676287,
+                        "n": 79.99999999967628,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4213,14 +4213,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000015956567330010124,
-                    79.99999999676287
+                    0.000000001595658507730511,
+                    79.99999999967628
                   ],
                   "from": [
-                    59.12788512385724,
-                    53.00197778738383
+                    59.127884757715854,
+                    53.00197702905686
                   ],
-                  "radius": 65.0000000042402,
+                  "radius": 65.00000000042404,
                   "tag": {
                     "commentStart": 1621,
                     "end": 1638,
@@ -4230,8 +4230,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "value": "flangeOuterCircle"
                   },
                   "to": [
-                    59.12788512385724,
-                    53.00197778738383
+                    59.127884757715854,
+                    53.00197702905686
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -4242,13 +4242,13 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    59.12788512385724,
-                    53.00197778738383
+                    59.127884757715854,
+                    53.00197702905686
                   ],
                   "tag": null,
                   "to": [
-                    35.43933553961451,
-                    77.92551250223232
+                    35.439335548127474,
+                    77.9255130528234
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4260,14 +4260,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000019346853375798334,
-                    79.99999999656441
+                    0.000000001934687767885464,
+                    79.99999999965644
                   ],
                   "from": [
-                    35.43933553961451,
-                    77.92551250223232
+                    35.439335548127474,
+                    77.9255130528234
                   ],
-                  "radius": 35.500000006792185,
+                  "radius": 35.500000000679215,
                   "tag": {
                     "commentStart": 2077,
                     "end": 2094,
@@ -4277,8 +4277,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                     "value": "flangeInnerCircle"
                   },
                   "to": [
-                    35.43933553961451,
-                    77.92551250223232
+                    35.439335548127474,
+                    77.9255130528234
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -4317,12 +4317,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               },
               "start": {
                 "from": [
-                  59.12788512385724,
-                  53.00197778738383
+                  59.127884757715854,
+                  53.00197702905686
                 ],
                 "to": [
-                  59.12788512385724,
-                  53.00197778738383
+                  59.127884757715854,
+                  53.00197702905686
                 ],
                 "units": "mm",
                 "tag": null,
@@ -4381,14 +4381,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "ccw": true,
             "center": [
-              0.000000015956567330010124,
-              79.99999999676287
+              0.000000001595658507730511,
+              79.99999999967628
             ],
             "from": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
-            "radius": 65.0000000042402,
+            "radius": 65.00000000042404,
             "tag": {
               "commentStart": 1621,
               "end": 1638,
@@ -4398,8 +4398,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
             "type": "Circle",
             "units": "mm"
@@ -4438,12 +4438,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "start": {
           "from": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "to": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "units": "mm",
           "tag": null,
@@ -4534,14 +4534,14 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             },
             "ccw": true,
             "center": [
-              0.000000015956567330010124,
-              79.99999999676287
+              0.000000001595658507730511,
+              79.99999999967628
             ],
             "from": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
-            "radius": 65.0000000042402,
+            "radius": 65.00000000042404,
             "tag": {
               "commentStart": 1621,
               "end": 1638,
@@ -4551,8 +4551,8 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              59.12788512385724,
-              53.00197778738383
+              59.127884757715854,
+              53.00197702905686
             ],
             "type": "Circle",
             "units": "mm"
@@ -4591,12 +4591,12 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         },
         "start": {
           "from": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "to": [
-            59.12788512385724,
-            53.00197778738383
+            59.127884757715854,
+            53.00197702905686
           ],
           "units": "mm",
           "tag": null,
