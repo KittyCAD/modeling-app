@@ -38,7 +38,9 @@ const desktopMocks = vi.hoisted(() => ({
 }))
 
 const cloudSyncPathMocks = vi.hoisted(() => ({
-  getDefaultCloudProjectDirectoryPath: vi.fn(),
+  getCloudProjectLibraryMaterializationDirectoryPath: vi.fn(
+    async (library: { path: string }) => library.path
+  ),
 }))
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({
@@ -62,8 +64,8 @@ vi.mock('@src/lib/desktop', () => {
 })
 
 vi.mock('@src/lib/cloudSync/paths', () => ({
-  getDefaultCloudProjectDirectoryPath:
-    cloudSyncPathMocks.getDefaultCloudProjectDirectoryPath,
+  getCloudProjectLibraryMaterializationDirectoryPath:
+    cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath,
 }))
 
 function createSettingsService(): SettingsRegistryService {
@@ -404,9 +406,6 @@ describe('home project actions', () => {
         remoteProjectId: 'remote-123',
       }),
     })
-    cloudSyncPathMocks.getDefaultCloudProjectDirectoryPath.mockResolvedValue(
-      '/cloud-projects'
-    )
     desktopMocks.getProjectInfo.mockResolvedValue({
       default_file: '/cloud-projects/remote-title/main.kcl',
     })
@@ -414,6 +413,7 @@ describe('home project actions', () => {
       id: 'remote:remote-123',
       source: 'remote',
       status: 'cloud-only',
+      libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
       name: 'remote-title',
       title: 'Remote title',
       remoteProjectId: 'remote-123',
@@ -425,7 +425,14 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                getDefaultCloudProjectLibrarySetting('/cloud-projects'),
+              ],
+            }).service
+          ),
         ],
       }),
       defineRegistryItem({
@@ -439,6 +446,27 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.wasm',
         provides: [provideWasmPromise(wasmPromise)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: CLOUD_PROJECT_LIBRARY_TYPE,
+            title: 'Cloud',
+            readEntries: async () => [],
+            operations: {
+              openProject: {
+                run: ({ project }) => {
+                  if (!project.defaultFile) {
+                    return undefined
+                  }
+
+                  return { defaultFile: project.defaultFile }
+                },
+              },
+            },
+          }),
+        ],
       }),
       homeProjectsExtension,
     ])

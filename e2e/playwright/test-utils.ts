@@ -940,6 +940,7 @@ export async function setup(
   testInfo?: TestInfo,
   userFeatures: readonly Feature[] = []
 ) {
+  const cloudSyncWebEnabled = userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG)
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -983,7 +984,7 @@ export async function setup(
         settings: {
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
-            cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            cloudSyncEnabled: cloudSyncWebEnabled,
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
@@ -991,7 +992,12 @@ export async function setup(
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            libraries: playwrightProjectLibraries(),
+            libraries: playwrightProjectLibraries(
+              PLAYWRIGHT_PROJECT_DIRECTORY,
+              {
+                cloudSyncWebEnabled,
+              }
+            ),
             onboarding_status: 'dismissed',
           },
           project: {

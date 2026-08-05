@@ -61,7 +61,7 @@ describe('cloud sync extension', () => {
     cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath.mockClear()
   })
 
-  it('uses the configured cloud project library materialization directory for runtime policy', async () => {
+  it('uses cloud project library materialization directories for runtime policy', async () => {
     const settings = signal(
       createSettingsSnapshot({
         cloudSyncEnabled: true,
@@ -120,7 +120,7 @@ describe('cloud sync extension', () => {
         autoEnrollCloudLibraryProjects: true,
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
-        projectDirectoryPath: '/cloud-personal',
+        cloudProjectDirectoryPaths: ['/cloud-personal'],
       })
     })
     const resolvedCloudLibrary =
@@ -140,7 +140,7 @@ describe('cloud sync extension', () => {
     settings.value = createSettingsSnapshot({
       cloudSyncEnabled: true,
       projectDirectoryPath: '/other-projects',
-      cloudLibraryPath: '/team-cloud',
+      cloudLibraryPaths: ['/team-cloud', '/org-cloud'],
     })
 
     await vi.waitFor(() => {
@@ -150,9 +150,17 @@ describe('cloud sync extension', () => {
         autoEnrollCloudLibraryProjects: true,
         baseUrl: 'https://api.dev.zoo.dev',
         environmentName: 'dev.zoo.dev',
-        projectDirectoryPath: '/team-cloud',
+        cloudProjectDirectoryPaths: ['/team-cloud', '/org-cloud'],
       })
     })
+    expect(
+      cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/org-cloud',
+        type: 'cloud',
+      })
+    )
 
     settings.value = createSettingsSnapshot({
       cloudSyncEnabled: false,
@@ -206,13 +214,17 @@ function createSettingsSnapshot({
   cloudSyncEnabled,
   projectDirectoryPath,
   cloudLibraryPath = '/cloud-personal',
+  cloudLibraryPaths,
   cloudLibrarySource,
 }: {
   cloudSyncEnabled: boolean
   projectDirectoryPath: string
   cloudLibraryPath?: string
+  cloudLibraryPaths?: string[]
   cloudLibrarySource?: string
 }): SettingsType {
+  const resolvedCloudLibraryPaths = cloudLibraryPaths ?? [cloudLibraryPath]
+
   return {
     app: {
       libraries: {
@@ -222,12 +234,14 @@ function createSettingsSnapshot({
             path: projectDirectoryPath,
             type: 'directory',
           },
-          {
-            title: 'Personal Cloud',
-            path: cloudLibraryPath,
-            ...(cloudLibrarySource ? { source: cloudLibrarySource } : {}),
+          ...resolvedCloudLibraryPaths.map((path, index) => ({
+            title: index === 0 ? 'Personal Cloud' : `Cloud ${index + 1}`,
+            path,
+            ...(index === 0 && cloudLibrarySource
+              ? { source: cloudLibrarySource }
+              : {}),
             type: 'cloud',
-          },
+          })),
         ],
       },
       projectDirectory: {

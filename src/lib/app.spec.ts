@@ -6,14 +6,15 @@ import { App } from '@src/lib/app'
 import {
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
+  PROJECT_FOLDER,
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -227,20 +228,34 @@ function getPluginToggle(app: App, pluginId: string) {
   return app.registry.get(plugin.service)
 }
 
-function hasPersonalCloudLibrarySetting(app: App) {
-  const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+function getPersonalCloudLibrarySetting(app: App) {
   return app.settings
     .get()
-    .app.libraries.current.some(
+    .app.libraries.current.find(
       (library) =>
-        library.type === defaultCloudLibrary.type &&
-        library.path === defaultCloudLibrary.path &&
-        library.source === defaultCloudLibrary.source
+        library.type === CLOUD_PROJECT_LIBRARY_TYPE && !library.source
     )
 }
 
+function hasPersonalCloudLibrarySetting(app: App) {
+  return Boolean(getPersonalCloudLibrarySetting(app))
+}
+
+function getDefaultProjectDirectorySettingPath(app: App) {
+  const settings = app.settings.get()
+  const projectDirectory = settings.app.projectDirectory
+  return (
+    projectDirectory.current ||
+    projectDirectory.default ||
+    settings.app.libraries.default.find(
+      (library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+    )?.path ||
+    ''
+  )
+}
+
 function hasDefaultDirectoryLibrarySetting(app: App) {
-  const projectDirectory = app.settings.get().app.projectDirectory.current
+  const projectDirectory = getDefaultProjectDirectorySettingPath(app)
   return app.settings
     .get()
     .app.libraries.current.some(
@@ -462,6 +477,7 @@ describe('project system', () => {
           current: getCloudSyncPluginSetting(app)?.current,
           user: getCloudSyncPluginSetting(app)?.user,
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          personalCloudLibraryPath: getPersonalCloudLibrarySetting(app)?.path,
           hasDefaultDirectoryLibrarySetting:
             hasDefaultDirectoryLibrarySetting(app),
         }))
@@ -470,6 +486,7 @@ describe('project system', () => {
           current: true,
           user: true,
           hasPersonalCloudLibrarySetting: true,
+          personalCloudLibraryPath: `/documents/${PROJECT_FOLDER}`,
           hasDefaultDirectoryLibrarySetting: false,
         })
 
