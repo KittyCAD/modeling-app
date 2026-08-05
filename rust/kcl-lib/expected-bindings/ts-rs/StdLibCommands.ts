@@ -7212,7 +7212,7 @@ export default {
       },
       {
         "name": "direction",
-        "ty": "ArcDirectionString",
+        "ty": "string",
         "docs": "The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`.",
         "required": false,
         "special": false,
