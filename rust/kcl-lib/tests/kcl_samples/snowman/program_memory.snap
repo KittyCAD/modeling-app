@@ -68,8 +68,7 @@ description: Variables in memory after executing snowman.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 134,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -133,8 +132,7 @@ description: Variables in memory after executing snowman.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 139,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -549,7 +547,7 @@ description: Variables in memory after executing snowman.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 139,
                   "origin": {
                     "x": 0.0,
@@ -612,10 +610,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 7597,
-                    "end": 7604,
+                    "commentStart": 7512,
+                    "end": 7519,
                     "moduleId": 0,
-                    "start": 7597,
+                    "start": 7512,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -630,7 +628,7 @@ description: Variables in memory after executing snowman.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XZ",
+                "kind": "Custom",
                 "objectId": 139,
                 "origin": {
                   "x": 0.0,
@@ -777,7 +775,7 @@ description: Variables in memory after executing snowman.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 134,
                   "origin": {
                     "x": 0.0,
@@ -840,10 +838,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 7088,
-                    "end": 7095,
+                    "commentStart": 7042,
+                    "end": 7049,
                     "moduleId": 0,
-                    "start": 7088,
+                    "start": 7042,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -858,7 +856,7 @@ description: Variables in memory after executing snowman.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XZ",
+                "kind": "Custom",
                 "objectId": 134,
                 "origin": {
                   "x": 0.0,
@@ -956,72 +954,6 @@ description: Variables in memory after executing snowman.kcl
       "angle": "degrees"
     }
   },
-  "armSketchL": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 139,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
-  },
-  "armSketchR": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 134,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
-  },
   "armZOffset": {
     "type": "Number",
     "value": 4.2,
@@ -1047,10 +979,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8215,
-            "end": 8222,
+            "commentStart": 8130,
+            "end": 8137,
             "moduleId": 0,
-            "start": 8215,
+            "start": 8130,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1078,10 +1010,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 71.8,
             "tag": {
-              "commentStart": 8215,
-              "end": 8222,
+              "commentStart": 8130,
+              "end": 8137,
               "moduleId": 0,
-              "start": 8215,
+              "start": 8130,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -6116,10 +6048,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6643,
-            "end": 6650,
+            "commentStart": 6636,
+            "end": 6643,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6636,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6147,10 +6079,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 18.0,
             "tag": {
-              "commentStart": 6643,
-              "end": 6650,
+              "commentStart": 6636,
+              "end": 6643,
               "moduleId": 0,
-              "start": 6643,
+              "start": 6636,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7105,10 +7037,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7597,
-            "end": 7604,
+            "commentStart": 7512,
+            "end": 7519,
             "moduleId": 0,
-            "start": 7597,
+            "start": 7512,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7136,10 +7068,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 7597,
-              "end": 7604,
+              "commentStart": 7512,
+              "end": 7519,
               "moduleId": 0,
-              "start": 7597,
+              "start": 7512,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7154,7 +7086,7 @@ description: Variables in memory after executing snowman.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
+          "kind": "Custom",
           "objectId": 139,
           "origin": {
             "x": 0.0,
@@ -9698,10 +9630,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 18.0,
           "tag": {
-            "commentStart": 6643,
-            "end": 6650,
+            "commentStart": 6636,
+            "end": 6643,
             "moduleId": 0,
-            "start": 6643,
+            "start": 6636,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9788,10 +9720,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 7088,
-            "end": 7095,
+            "commentStart": 7042,
+            "end": 7049,
             "moduleId": 0,
-            "start": 7088,
+            "start": 7042,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9806,7 +9738,7 @@ description: Variables in memory after executing snowman.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
+        "kind": "Custom",
         "objectId": 134,
         "origin": {
           "x": 0.0,
@@ -9884,10 +9816,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 7597,
-            "end": 7604,
+            "commentStart": 7512,
+            "end": 7519,
             "moduleId": 0,
-            "start": 7597,
+            "start": 7512,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9902,7 +9834,7 @@ description: Variables in memory after executing snowman.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
+        "kind": "Custom",
         "objectId": 139,
         "origin": {
           "x": 0.0,
@@ -9980,10 +9912,10 @@ description: Variables in memory after executing snowman.kcl
           ],
           "radius": 71.8,
           "tag": {
-            "commentStart": 8215,
-            "end": 8222,
+            "commentStart": 8130,
+            "end": 8137,
             "moduleId": 0,
-            "start": 8215,
+            "start": 8130,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10066,10 +9998,10 @@ description: Variables in memory after executing snowman.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7088,
-            "end": 7095,
+            "commentStart": 7042,
+            "end": 7049,
             "moduleId": 0,
-            "start": 7088,
+            "start": 7042,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10097,10 +10029,10 @@ description: Variables in memory after executing snowman.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 7088,
-              "end": 7095,
+              "commentStart": 7042,
+              "end": 7049,
               "moduleId": 0,
-              "start": 7088,
+              "start": 7042,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -10115,7 +10047,7 @@ description: Variables in memory after executing snowman.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
+          "kind": "Custom",
           "objectId": 134,
           "origin": {
             "x": 0.0,
@@ -10546,10 +10478,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 18.0,
                   "tag": {
-                    "commentStart": 6643,
-                    "end": 6650,
+                    "commentStart": 6636,
+                    "end": 6643,
                     "moduleId": 0,
-                    "start": 6643,
+                    "start": 6636,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10768,10 +10700,10 @@ description: Variables in memory after executing snowman.kcl
                   ],
                   "radius": 71.8,
                   "tag": {
-                    "commentStart": 8215,
-                    "end": 8222,
+                    "commentStart": 8130,
+                    "end": 8137,
                     "moduleId": 0,
-                    "start": 8215,
+                    "start": 8130,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
