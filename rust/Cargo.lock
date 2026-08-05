@@ -1203,9 +1203,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.26"
+version = "0.2.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0928f6a0ebd0cbc7ecb75d2457a84de6931cb20201e118cda73cfc16514ce283"
+checksum = "efe67ec082138e1802b2fc40a78564d14b97b9590e5ae08a98815b014cf80787"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
