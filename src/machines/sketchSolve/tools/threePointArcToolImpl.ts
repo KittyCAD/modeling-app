@@ -787,21 +787,6 @@ export async function finalizeArcActor({
     return editResult
   }
 
-  const centerPoint = findThreePointArcCenter({
-    startPoint,
-    endPoint,
-    throughPoint,
-  })
-  if (!centerPoint) {
-    return { error: 'Cannot create arc from collinear points' }
-  }
-  const arcEndpoints = resolveArcEndpoints({
-    centerPoint,
-    startPoint,
-    endPoint,
-    throughPoint,
-  })
-
   const editedArc = editResult.sceneGraphDelta.new_graph.objects[arcId]
   if (!isArcSegment(editedArc)) {
     return { error: 'Failed to find arc after final edit' }

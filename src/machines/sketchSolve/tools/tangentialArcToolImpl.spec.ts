@@ -365,15 +365,16 @@ describe('tangentialArcToolImpl', () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
       const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
       const center = createPointApiObject({ id: 1, x: 0, y: -1 })
       const start = createPointApiObject({ id: 2, x: 0, y: 0 })
       const end = createPointApiObject({ id: 3, x: 1, y: -1 })
       const arc = createArcApiObject({ id: 4, center: 1, start: 2, end: 3 })
-      vi.mocked(rustContext.editSegments).mockResolvedValue({
+      editSegmentsSpy.mockResolvedValue({
         kclSource: { text: 'edit' },
         sceneGraphDelta: createSceneGraphDelta([center, start, end, arc], [4]),
       })
-      vi.mocked(rustContext.addConstraint)
+      addConstraintSpy
         .mockResolvedValueOnce({
           kclSource: { text: 'coincident' },
           sceneGraphDelta: createSceneGraphDelta([], [11]),
