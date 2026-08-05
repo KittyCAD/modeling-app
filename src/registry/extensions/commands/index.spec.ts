@@ -102,15 +102,28 @@ describe('commands extension', () => {
     )
   })
 
-  it('exposes view commands in command palette search', () => {
-    const searchableAppCommandIds = appCommands
-      .filter((command) => command.hideFromSearch !== true)
-      .map((command) => command.id)
+  it('exposes view commands with command palette metadata', () => {
+    const searchableAppCommands = appCommands.filter(
+      (command) => command.hideFromSearch !== true
+    )
 
-    expect(searchableAppCommandIds).toEqual([
-      APP_COMMAND_IDS.modeling.centerCameraOnSelection,
-      APP_COMMAND_IDS.view.reset,
-    ])
+    expect(searchableAppCommands).toHaveLength(2)
+    expect(searchableAppCommands).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
+          displayName: 'Center camera on selection',
+          description: 'Center the camera on the current selection.',
+          icon: 'camera',
+        }),
+        expect.objectContaining({
+          id: APP_COMMAND_IDS.view.reset,
+          displayName: 'Reset view',
+          description: 'Restore the default camera position and view.',
+          icon: 'refresh',
+        }),
+      ])
+    )
   })
 
   it('runs toolbar commands against the KclManager from command input', () => {
