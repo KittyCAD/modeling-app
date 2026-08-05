@@ -211,7 +211,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityLinearPatternTransform::builder()
-                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .entity_id(if use_original { solid.topology_id() } else { solid.id() })
                     .transform(Default::default())
                     .transforms(transforms)
                     .build(),
@@ -454,7 +454,7 @@ fn array_to_point2d(
 pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
-    fn original_id(&self) -> Uuid;
+    fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
@@ -477,7 +477,7 @@ impl GeometryTrait for Sketch {
     fn id(&self) -> Uuid {
         self.id
     }
-    fn original_id(&self) -> Uuid {
+    fn topology_id(&self) -> Uuid {
         self.original_id
     }
     fn array_to_point3d(
@@ -515,8 +515,8 @@ impl GeometryTrait for Solid {
         self.id
     }
 
-    fn original_id(&self) -> Uuid {
-        self.topology_id()
+    fn topology_id(&self) -> Uuid {
+        Solid::topology_id(self)
     }
 
     fn array_to_point3d(
