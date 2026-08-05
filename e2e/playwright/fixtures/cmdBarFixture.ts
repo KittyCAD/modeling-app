@@ -268,6 +268,16 @@ export class CmdBarFixture {
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
   }
 
+  openCmdBarViaHotkey = async () => {
+    const cmdSearchBar = this.page.getByPlaceholder('Search commands')
+    await expect(async () => {
+      if (!(await cmdSearchBar.isVisible())) {
+        await this.page.keyboard.press('ControlOrMeta+K')
+      }
+      await expect(cmdSearchBar).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 12_000 })
+  }
+
   closeCmdBar = async () => {
     const cmdBarCloseBtn = this.page.getByTestId('command-bar-close-button')
     await cmdBarCloseBtn.click()
