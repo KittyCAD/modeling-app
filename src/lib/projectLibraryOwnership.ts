@@ -14,6 +14,7 @@ export type ProjectLibraryOwnership = {
   libraryType: ProjectLibrarySetting['type']
 }
 
+/** Return the local filesystem root that represents a project library. */
 async function getProjectLibraryLocalPath(library: ProjectLibrarySetting) {
   if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
     return getCloudProjectLibraryMaterializationDirectoryPath(library).catch(
@@ -26,6 +27,7 @@ async function getProjectLibraryLocalPath(library: ProjectLibrarySetting) {
     : undefined
 }
 
+/** Find the most specific configured library that owns a project path. */
 export async function getProjectLibraryOwnership(
   libraries: readonly ProjectLibrarySetting[],
   projectPath: string
@@ -54,6 +56,7 @@ export async function getProjectLibraryOwnership(
     .at(0)
 }
 
+/** Annotate a project with current library ownership, dropping stale ownership first. */
 export async function projectWithLibraryOwnership(
   project: Project,
   libraries: readonly ProjectLibrarySetting[]
