@@ -7274,6 +7274,16 @@ export default {
         "deprecatedSince": null
       },
       {
+        "name": "direction",
+        "ty": "string",
+        "docs": "The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
         "name": "construction",
         "ty": "bool",
         "docs": "Whether this segment is construction geometry rather than part of the modeled profile.",

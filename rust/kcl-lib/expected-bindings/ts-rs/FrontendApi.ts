@@ -11,7 +11,12 @@ import type { SourceRange } from "./SourceRange";
 
 export type Angle = { lines: Array<ApiObjectId>, angle: Number, sector?: number, inverse?: boolean, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
-export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean, };
+export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean, 
+/**
+ * The direction that the arc sweeps from start to end. Omitted when it's
+ * the default, counterclockwise.
+ */
+direction?: ArcDirection, };
 
 export type ApiCap = { id: ApiObjectId, kind: ApiCapKind, source: ApiCapSource, solidOutputIndex?: number, };
 
@@ -63,7 +68,17 @@ export type ApiWall = { id: ApiObjectId, source: ApiWallSource, solidOutputIndex
 
 export type ApiWallSource = { solid: ApiSourceRefRange, sweep: ApiSourceRefRange, path?: ApiSourceRefRange, segment: ApiSourceRefRange, };
 
-export type ArcCtor = { start: ApiPoint2d<Expr>, end: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, construction?: boolean, };
+export type ArcCtor = { start: ApiPoint2d<Expr>, end: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, 
+/**
+ * The direction that the arc sweeps from start to end. `None` means it
+ * wasn't written in the source, which defaults to counterclockwise.
+ */
+direction?: ArcDirection, construction?: boolean, };
+
+/**
+ * The direction that an arc sweeps from its start point to its end point.
+ */
+export type ArcDirection = "ccw" | "cw";
 
 export type CircleCtor = { start: ApiPoint2d<Expr>, center: ApiPoint2d<Expr>, construction?: boolean, };
 

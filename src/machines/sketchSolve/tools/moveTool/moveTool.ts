@@ -280,6 +280,7 @@ function buildSegmentCtorWithDrag({
       center: newCenter,
       start: newStart,
       end: newEnd,
+      direction: baseCtor.direction,
     }
   } else if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)

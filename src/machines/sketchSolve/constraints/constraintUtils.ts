@@ -132,6 +132,12 @@ export function getLinePoints(
   ] as const
 }
 
+/**
+ * Returns the arc's defining points with start and end in counterclockwise
+ * sweep order: sweeping CCW from the returned start to the returned end
+ * traverses the arc. For a clockwise arc, this is the reverse of its declared
+ * start and end.
+ */
 export function getArcPoints(
   arcObj: ApiObject | undefined | null,
   objects: ApiObject[]
@@ -168,10 +174,14 @@ export function getArcPoints(
     return null
   }
 
+  const isClockwise = arcObj.kind.segment.direction === 'cw'
+  const declaredStart = pointToCoords2d(startObj)
+  const declaredEnd = pointToCoords2d(endObj)
+
   return {
     center: pointToCoords2d(centerObj),
-    start: pointToCoords2d(startObj),
-    end: pointToCoords2d(endObj),
+    start: isClockwise ? declaredEnd : declaredStart,
+    end: isClockwise ? declaredStart : declaredEnd,
     isCircle: false,
   }
 }

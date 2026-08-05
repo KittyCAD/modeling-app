@@ -675,6 +675,7 @@ class ArcSegment implements SketchEntityUtils {
         radius: number
         startAngle: number
         endAngle: number
+        ccw: boolean
       } {
     if (input.type !== 'Arc') {
       return new Error('Invalid input type for ArcSegment')
@@ -727,6 +728,7 @@ class ArcSegment implements SketchEntityUtils {
       radius,
       startAngle,
       endAngle,
+      ccw: input.direction !== 'cw',
     }
   }
 
@@ -879,7 +881,7 @@ class ArcSegment implements SketchEntityUtils {
       return arcData
     }
 
-    const { centerX, centerY, radius, startAngle, endAngle } = arcData
+    const { centerX, centerY, radius, startAngle, endAngle, ccw } = arcData
 
     const arcSegmentBody = group.children.find(
       (child) => child.userData.type === ARC_SEGMENT_BODY
@@ -889,10 +891,9 @@ class ArcSegment implements SketchEntityUtils {
       return
     }
 
-    // Always draw arcs CCW from start to end.
-    // The solver also uses a CCW convention from start to end, so we keep
-    // the angles as-is and force ccw = true to match that behaviour.
-    const ccw = true
+    // Draw the arc from start to end in the segment's sweep direction. By
+    // default arcs sweep CCW; direction = CW sweeps the other way around the
+    // circle.
     arcSegmentBody.geometry.setPositions(
       createArcPositions({
         center: [centerX, centerY],

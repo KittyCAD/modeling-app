@@ -370,6 +370,37 @@ pub enum StartOrEnd<T> {
     End(T),
 }
 
+/// The direction that an arc sweeps from its start point to its end point.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "lowercase")]
+pub enum ArcDirection {
+    #[default]
+    Ccw,
+    Cw,
+}
+
+impl ArcDirection {
+    pub fn is_ccw(&self) -> bool {
+        matches!(self, ArcDirection::Ccw)
+    }
+
+    pub fn is_clockwise(self) -> bool {
+        matches!(self, ArcDirection::Cw)
+    }
+
+    /// Reorder an arc's declared start and end so that sweeping
+    /// counterclockwise from the first to the second traverses the arc. Useful
+    /// for consumers like the solver that only understand counterclockwise
+    /// arcs.
+    pub fn ccw_order<T>(self, start: T, end: T) -> (T, T) {
+        match self {
+            ArcDirection::Ccw => (start, end),
+            ArcDirection::Cw => (end, start),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiArc")]
 pub struct Arc {
@@ -380,6 +411,12 @@ pub struct Arc {
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
     pub construction: bool,
+    /// The direction that the arc sweeps from start to end. Omitted when it's
+    /// the default, counterclockwise.
+    #[serde(default, skip_serializing_if = "ArcDirection::is_ccw")]
+    #[ts(as = "Option<ArcDirection>")]
+    #[ts(optional)]
+    pub direction: ArcDirection,
 }
 
 impl Arc {
@@ -399,6 +436,11 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
+    /// The direction that the arc sweeps from start to end. `None` means it
+    /// wasn't written in the source, which defaults to counterclockwise.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub direction: Option<ArcDirection>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub construction: Option<bool>,
