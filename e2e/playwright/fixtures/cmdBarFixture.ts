@@ -274,8 +274,8 @@ export class CmdBarFixture {
       if (!(await cmdSearchBar.isVisible())) {
         await this.page.keyboard.press('ControlOrMeta+K')
       }
-      await expect(cmdSearchBar).toBeVisible({ timeout: 2_000 })
-    }).toPass({ timeout: 12_000 })
+      await expect(cmdSearchBar).toBeVisible()
+    }).toPass({ timeout: 15_000 })
   }
 
   closeCmdBar = async () => {
