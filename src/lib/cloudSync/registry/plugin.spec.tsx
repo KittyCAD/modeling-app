@@ -218,9 +218,11 @@ function createSettingsService({
   }
 }
 
-function createUserFeaturesService(): UserFeaturesRegistryService {
+function createUserFeaturesService(
+  featureIds: Set<Feature> = new Set([OPFS_CLOUD_FEATURE_FLAG])
+): UserFeaturesRegistryService {
   const context = signal({
-    featureIds: new Set([OPFS_CLOUD_FEATURE_FLAG]),
+    featureIds,
   })
 
   return {
@@ -487,7 +489,13 @@ describe('cloud sync project library', () => {
 
   test('uses Personal Cloud as the web project library default', () => {
     const registry = new Registry()
-    registry.configure([cloudSyncProjectLibraryType])
+    const userFeaturesExtension = defineRegistryItem({
+      id: 'test-user-features-service',
+      providesServices: [
+        provideService(userFeaturesService, createUserFeaturesService()),
+      ],
+    })
+    registry.configure([userFeaturesExtension, cloudSyncProjectLibraryType])
 
     try {
       const defaultPolicies = registry.get(
@@ -504,6 +512,45 @@ describe('cloud sync project library', () => {
           isDesktop: false,
         })
       ).toEqual([getDefaultCloudProjectLibrarySetting()])
+      expect(
+        personalCloudPolicy?.getDefaultLibraries({
+          initialDefaultDir: '/projects',
+          isDesktop: true,
+        })
+      ).toBeUndefined()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('keeps the cloud project library default gated by feature flag and platform', () => {
+    const registry = new Registry()
+    const userFeaturesExtension = defineRegistryItem({
+      id: 'test-user-features-service',
+      providesServices: [
+        provideService(
+          userFeaturesService,
+          createUserFeaturesService(new Set())
+        ),
+      ],
+    })
+    registry.configure([userFeaturesExtension, cloudSyncProjectLibraryType])
+
+    try {
+      const defaultPolicies = registry.get(
+        projectLibrarySettingDefaultPoliciesValueSpec
+      )
+      const personalCloudPolicy = defaultPolicies.find(
+        (policy) =>
+          policy.id === 'cloud-sync.personal-cloud-library-default-policy'
+      )
+
+      expect(
+        personalCloudPolicy?.getDefaultLibraries({
+          initialDefaultDir: '/projects',
+          isDesktop: false,
+        })
+      ).toBeUndefined()
       expect(
         personalCloudPolicy?.getDefaultLibraries({
           initialDefaultDir: '/projects',
