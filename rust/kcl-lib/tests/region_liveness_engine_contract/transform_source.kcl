@@ -1,0 +1,11 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+translated = translate(sharedRegion, x = 1mm, y = 2mm)
+rotated = rotate(sharedRegion, axis = [0, 0, 1], angle = 10deg)
+scaled = scale(sharedRegion, x = 1.1, y = 1.1, z = 1)
+solid = extrude(sharedRegion, length = 10mm)

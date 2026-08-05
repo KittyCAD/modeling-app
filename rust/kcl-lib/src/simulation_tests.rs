@@ -27,6 +27,7 @@ use crate::walk::Node;
 use crate::walk::walk;
 
 mod kcl_samples;
+mod region_liveness_engine_contract;
 
 /// A simulation test.
 #[derive(Debug, Clone)]
