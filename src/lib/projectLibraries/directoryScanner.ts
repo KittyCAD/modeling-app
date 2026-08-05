@@ -158,6 +158,7 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
     return
   }
 
+  const { promise: sync, resolve: completeSync } = Promise.withResolvers<void>()
   queueMicrotask(() => {
     void (async () => {
       let renamed = false
@@ -196,8 +197,10 @@ export function scheduleProjectDirectoryNameSyncFromTitles({
         for (const [projectDirectoryPath] of syncGroups) {
           scheduledProjectDirectoryNameSyncs.delete(projectDirectoryPath)
         }
+        completeSync()
       })
   })
+  return sync
 }
 
 export function sortProjectDirectoryEntriesByModifiedDesc(
