@@ -30,6 +30,7 @@ import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
+  getDefaultDirectoryProjectLibraryPath,
   isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
@@ -712,16 +713,16 @@ export class App implements AppSubsystems {
     }
 
     const currentLibraries = snapshot.context.app.libraries?.current ?? []
+    const defaultDirectoryLibraryPathCandidates = [
+      getDefaultDirectoryProjectLibraryPath(currentLibraries),
+      ...(snapshot.context.app.libraries?.default ?? [])
+        .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+        .map((library) => library.path),
+    ].filter((path): path is string => Boolean(path?.trim()))
     const defaultDirectoryLibraryPaths = new Set(
-      [
-        snapshot.context.app.projectDirectory?.current,
-        snapshot.context.app.projectDirectory?.default,
-        ...(snapshot.context.app.libraries?.default ?? [])
-          .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
-          .map((library) => library.path),
-      ]
-        .filter((path): path is string => Boolean(path?.trim()))
-        .map(normalizeProjectLibrarySettingPath)
+      defaultDirectoryLibraryPathCandidates.map(
+        normalizeProjectLibrarySettingPath
+      )
     )
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>

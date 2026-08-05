@@ -71,15 +71,12 @@ function loadRouteSettings(
 async function getCanonicalWebProjectLibrary(
   settings: AppSettings['settings']
 ): Promise<CanonicalWebProjectLibrary> {
-  const fallbackLibraryPath =
-    settings.app.projectDirectory.current.trim() ||
-    (await getInitialDefaultDir())
   const configuredLibrary = getDefaultDirectoryProjectLibrarySetting(
     settings.app.libraries?.current
   )
   const libraryPath = configuredLibrary?.path.trim()
     ? configuredLibrary.path
-    : fallbackLibraryPath
+    : await getInitialDefaultDir()
   const library = {
     title: configuredLibrary?.title || DEFAULT_PROJECT_LIBRARY_TITLE,
     path: libraryPath,
@@ -209,11 +206,7 @@ export const fileLoader =
       )
     }
 
-    const settings = await loadRouteSettings(
-      app,
-      wasmInstance,
-      projectPathData.projectPath
-    )
+    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData

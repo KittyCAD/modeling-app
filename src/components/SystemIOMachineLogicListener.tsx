@@ -74,7 +74,7 @@ export function SystemIOMachineLogicListener() {
       filePathWithExtension = decodeURIComponent(encodedURI)
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
-        defaultDirectoryLibraryPath
+        projectDirectoryPath
       )
     }
 
