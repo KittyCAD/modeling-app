@@ -41,7 +41,7 @@ base = extrude(region001, length = height)
 hide(sketch001)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
-sketch002 = sketch(on = startSketchOn(base, face = START)) {
+sketch002 = sketch(on = faceOf(base, face = START)) {
   line1 = line(start = [var -6.4in, var -10.4in], end = [var 6.4in, var -10.4in])
   line2 = line(start = [var 6.4in, var -10.4in], end = [var 6.4in, var 10.4in])
   coincident([line1.end, line2.start])
@@ -55,7 +55,7 @@ shellExtrude = extrude(region002, length = -(height - t))
 hide(sketch002)
 
 // Create the pegs on the top of the base
-pegSketchPlane = startSketchOn(base, face = END)
+pegSketchPlane = faceOf(base, face = END)
 pegSeedSketch = sketch(on = pegSketchPlane) {
   pegCircle = circle(start = [var -1.6in, var -8in], center = [var -4in, var -8in])
   pegCenterGuide = line(start = [var -4in, var -8in], end = [var 0in, var 0in], construction = true)
@@ -83,7 +83,7 @@ pegPattern = patternLinear3d(
   |> patternLinear3d(axis = [0, 1, 0], instances = lbumps, distance = pitch)
 
 // Create the tubes on the bottom of the base
-tubeSketchPlane = startSketchOn(shellExtrude, face = START)
+tubeSketchPlane = faceOf(shellExtrude, face = START)
 tubeSeedSketch = sketch(on = tubeSketchPlane) {
   tubeCircle = circle(start = [var 2.4in, var -4in], center = [var 0in, var -4in])
   tubeCenterGuide = line(start = [var 0in, var -4in], end = [var 0in, var 0in], construction = true)
