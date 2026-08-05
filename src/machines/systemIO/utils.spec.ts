@@ -330,6 +330,49 @@ describe('System IO Utils', () => {
     }
   })
 
+  it('uses exec state index 0 for the selected project file when exec filenames are unavailable', async () => {
+    const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode('boxHeight = 50mm')
+    )
+
+    try {
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'boxHeight = 500mm',
+        selectedFilePath: mainPath,
+        fileNames: {},
+        projectContext: {
+          name: 'zookeeper-project',
+          path: projectPath,
+          children: [
+            {
+              name: 'main.kcl',
+              path: mainPath,
+              children: null,
+            },
+          ],
+          metadata: null,
+          kcl_file_count: 1,
+          directory_count: 0,
+          default_file: mainPath,
+          readWriteAccess: true,
+        },
+      })
+
+      const mainFile = projectFiles.find((file) => file.relPath === 'main.kcl')
+      expect(mainFile).toMatchObject({
+        type: 'kcl',
+        fileContents: 'boxHeight = 500mm',
+        execStateFileNamesIndex: 0,
+      })
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('keeps the currently focused file as the navigation target after project-wide edits', () => {
     const preparedPayload = prepareMlEphantNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',

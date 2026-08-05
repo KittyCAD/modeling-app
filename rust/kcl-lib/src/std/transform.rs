@@ -30,13 +30,14 @@ fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::Transf
         .build()
 }
 
-/// Scale a solid or a sketch.
+/// Scale a solid, a sketch, or a helix.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -141,13 +142,14 @@ async fn inner_scale(
     Ok(objects)
 }
 
-/// Move a solid or a sketch.
+/// Move a solid, a sketch, or a helix.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,
@@ -245,13 +247,14 @@ async fn inner_translate(
     Ok(objects)
 }
 
-/// Rotate a solid or a sketch.
+/// Rotate a solid, a sketch, or a helix.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
             RuntimeType::sketches(),
             RuntimeType::solids(),
+            RuntimeType::helices(),
             RuntimeType::imported(),
         ]),
         exec_state,

@@ -32,13 +32,8 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  CHILD_TOOL_DONE_EVENT,
-  ORIGIN_TARGET,
-  type SketchSolveContext,
-  type SketchSolveMachineEvent,
-  type SolveActionArgs,
-  type SpawnToolActor,
   buildSegmentCtorFromObject,
+  CHILD_TOOL_DONE_EVENT,
   cleanupSketchSolveGroup,
   clearDraftEntities,
   clearHoverCallbacks,
@@ -48,8 +43,13 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
+  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
+  type SketchSolveContext,
+  type SketchSolveMachineEvent,
+  type SolveActionArgs,
+  type SpawnToolActor,
   sendToActorIfActive,
   setDraftEntities,
   spawnTool,
@@ -60,12 +60,13 @@ import {
   updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
+import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import {
   type ConstraintToolName,
   constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
@@ -359,10 +360,28 @@ export const sketchSolveMachine = setup({
     'send escape to tool': ({ context }) => {
       sendToActorIfActive(context.childTool, { type: 'escape' })
     },
-    'store pending tool': assign(({ event, system }) => {
+    'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
+    'constrain draft line': ({ context, event }) => {
+      assertEvent(event, 'equip tool')
+      if (!context.draftEntities) {
+        return
+      }
+      const plan = buildDraftLineConstraintPlan(
+        event.data.tool,
+        context.draftEntities,
+        context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+      )
+      if (!plan) {
+        return
+      }
+      sendToActorIfActive(context.childTool, {
+        type: 'constrain draft segment',
+        data: { plan, draftEntities: context.draftEntities },
+      })
+    },
     'apply current selection with equipped constraint tool': ({
       context,
       event,
@@ -962,6 +981,9 @@ export const sketchSolveMachine = setup({
         assign({
           editingConstraintId: undefined,
         }),
+        'clear selection',
+        'update selected code highlight',
+        'refresh selection styling',
       ],
     },
   },
@@ -1038,13 +1060,38 @@ export const sketchSolveMachine = setup({
           reenter: true,
         },
 
-        'equip tool': {
-          target: 'switching tool',
-          actions: ['send unequip to tool', 'store pending tool'],
-        },
+        'equip tool': [
+          {
+            guard: ({ context, event }) => {
+              assertEvent(event, 'equip tool')
+              return (
+                context.sketchSolveToolName === 'lineTool' &&
+                buildDraftLineConstraintPlan(
+                  event.data.tool,
+                  context.draftEntities,
+                  context.sketchExecOutcome?.sceneGraphDelta.new_graph
+                    .objects || []
+                ) !== null
+              )
+            },
+            actions: 'constrain draft line',
+            description:
+              'Pressing the horizontal/vertical constraint hotkey while drawing a line constrains the in-progress draft segment instead of switching tools.',
+          },
+          {
+            target: 'switching tool',
+            actions: ['send unequip to tool', 'store pending tool'],
+          },
+        ],
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
-          actions: ['clear child tool', 'send tool unequipped to parent'],
+          actions: [
+            'clear selection',
+            'update selected code highlight',
+            'refresh selection styling',
+            'clear child tool',
+            'send tool unequipped to parent',
+          ],
         },
         escape: {
           // Forward escape to child tool only when tool is active
@@ -1067,7 +1114,11 @@ export const sketchSolveMachine = setup({
       on: {
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'using tool',
-          actions: [],
+          actions: [
+            'clear selection',
+            'update selected code highlight',
+            'refresh selection styling',
+          ],
         },
       },
 
@@ -1114,7 +1165,7 @@ export const sketchSolveMachine = setup({
             ({ event }) => {
               toastSketchSolveError(event, 'Failed to exit sketch cleanly')
             },
-            ({ event, context, self }) => {
+            ({ self }) => {
               // Clear draft entities even on error to allow exit to continue
               sendToActorIfActive(self, { type: 'clear draft entities' })
             },
@@ -1134,7 +1185,13 @@ export const sketchSolveMachine = setup({
       on: {
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
-          actions: ['clear child tool', 'send tool unequipped to parent'],
+          actions: [
+            'clear selection',
+            'update selected code highlight',
+            'refresh selection styling',
+            'clear child tool',
+            'send tool unequipped to parent',
+          ],
         },
       },
 

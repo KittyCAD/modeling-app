@@ -28,7 +28,6 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -235,7 +234,8 @@ function hasPersonalCloudLibrarySetting(app: App) {
     .app.libraries.current.some(
       (library) =>
         library.type === defaultCloudLibrary.type &&
-        library.path === defaultCloudLibrary.path
+        library.path === defaultCloudLibrary.path &&
+        library.source === defaultCloudLibrary.source
     )
 }
 
@@ -433,11 +433,15 @@ describe('project system', () => {
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
       expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
       expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(
-        app.registry
-          .get(projectLibrariesValueSpec)
-          .some((library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
-      ).toBe(false)
+      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            library: expect.objectContaining({
+              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+            }),
+          }),
+        ])
+      )
     } finally {
       app.dispose()
     }
@@ -460,11 +464,6 @@ describe('project system', () => {
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
           hasDefaultDirectoryLibrarySetting:
             hasDefaultDirectoryLibrarySetting(app),
-          hasPersonalCloudLibrary: app.registry
-            .get(projectLibrariesValueSpec)
-            .some(
-              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-            ),
         }))
         .toEqual({
           active: true,
@@ -472,7 +471,6 @@ describe('project system', () => {
           user: true,
           hasPersonalCloudLibrarySetting: true,
           hasDefaultDirectoryLibrarySetting: false,
-          hasPersonalCloudLibrary: true,
         })
 
       // On web, cloud sync is the project storage layer, not an optional
@@ -491,11 +489,7 @@ describe('project system', () => {
         .poll(() => ({
           current: getCloudSyncPluginSetting(app)?.current,
           active: getPluginToggle(app, 'cloud-sync').active.value,
-          hasPersonalCloudLibrary: app.registry
-            .get(projectLibrariesValueSpec)
-            .some(
-              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-            ),
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
           canCreateInPersonalCloud: app
             .getCreateProjectLibraryTargets()
             .some(
@@ -506,7 +500,7 @@ describe('project system', () => {
         .toEqual({
           current: true,
           active: true,
-          hasPersonalCloudLibrary: true,
+          hasPersonalCloudLibrarySetting: true,
           canCreateInPersonalCloud: true,
         })
     } finally {

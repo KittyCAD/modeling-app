@@ -257,6 +257,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
+name = "base64"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b25655df2c3cdd83c5e5b293b88acd880332b2ddadd7c30ac43144fdc0033da9"
+
+[[package]]
 name = "bigdecimal"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -332,7 +338,7 @@ version = "3.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6dee98b0db6a962de883bf5d20362dee4d7ca0d12fe39a7c6c73c844e1cd7c1f"
 dependencies = [
- "darling 0.20.11",
+ "darling 0.23.0",
  "ident_case",
  "prettyplease",
  "proc-macro2",
@@ -528,9 +534,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.6.3"
+version = "4.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fb99565819980999fb7b4a1796046a5c949e6d4ff132cf5fadf5a641e20d776"
+checksum = "d91e0c145792ef73a6ad36d27c75ac09f1832222a3c209689d90f534685ee5b7"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -552,14 +558,14 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.6.3"
+version = "4.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32f2392eae7f16557a3d727ef3a12e57b2b2ca6f98566a5f4fb41ffe305df077"
+checksum = "d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061"
 dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.118",
+ "syn 3.0.3",
 ]
 
 [[package]]
@@ -1197,9 +1203,9 @@ dependencies = [
 
 [[package]]
 name = "ezpz"
-version = "0.2.26"
+version = "0.2.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0928f6a0ebd0cbc7ecb75d2457a84de6931cb20201e118cda73cfc16514ce283"
+checksum = "efe67ec082138e1802b2fc40a78564d14b97b9590e5ae08a98815b014cf80787"
 dependencies = [
  "faer",
  "indexmap 2.14.0",
@@ -1941,7 +1947,7 @@ version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "727805d60e7938b76b826a6ef209eb70eaa1812794f9424d4a4e2d740662df5f"
 dependencies = [
- "base64",
+ "base64 0.22.1",
  "bytes",
  "futures-channel",
  "futures-core",
@@ -2099,9 +2105,9 @@ dependencies = [
 
 [[package]]
 name = "ignore"
-version = "0.4.30"
+version = "0.4.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b009b6744c1445efd7244084e25e498636412effb6760b55067553baa925cc7"
+checksum = "7f8a7b8211e695a1d0cd91cace480d4d0bd57667ab10277cc412c5f7f4884f83"
 dependencies = [
  "crossbeam-deque",
  "globset",
@@ -2344,10 +2350,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "indexmap 2.14.0",
- "kcl-error 0.2.170",
+ "kcl-error 0.2.174",
  "kittycad-measurements",
  "kittycad-unit-conversion-derive",
  "parse-display 0.11.0",
@@ -2356,13 +2362,14 @@ dependencies = [
  "pyo3-stub-gen",
  "schemars 0.8.22",
  "serde",
+ "serde_json",
  "ts-rs",
  "uuid",
 ]
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.170"
+version = "0.1.174"
 dependencies = [
  "anyhow",
  "clap",
@@ -2373,7 +2380,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2382,7 +2389,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.170"
+version = "0.1.174"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2392,7 +2399,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "miette",
  "pyo3",
@@ -2405,9 +2412,9 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.170"
+version = "0.2.174"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39149a2390900e7ee349fe2ad371f4fe15f8cd6521be7c3554bbffd6d0fa792d"
+checksum = "efc121c9f9d1edf4eee7e96812c8072e4cbbaf254f15370fadcfb2e503142ad9"
 dependencies = [
  "miette",
  "schemars 0.8.22",
@@ -2419,7 +2426,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "anyhow",
  "clap",
@@ -2440,7 +2447,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.170"
+version = "0.1.174"
 dependencies = [
  "anyhow",
  "clap",
@@ -2460,14 +2467,14 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "ahash",
  "anyhow",
  "approx 0.5.1",
  "async-recursion",
  "async-trait",
- "base64",
+ "base64 0.23.0",
  "bon",
  "chrono",
  "clap",
@@ -2497,7 +2504,7 @@ dependencies = [
  "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
- "kcl-error 0.2.170",
+ "kcl-error 0.2.174",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2550,7 +2557,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.170"
+version = "0.3.174"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2567,7 +2574,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "logos",
  "proptest",
@@ -2575,7 +2582,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.170"
+version = "0.2.174"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2588,7 +2595,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.170"
+version = "0.1.174"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2625,7 +2632,7 @@ checksum = "dc7690732dfec0288a47ede25d94130d1efdba21f63084ab609ce2018a9e727d"
 dependencies = [
  "anyhow",
  "async-trait",
- "base64",
+ "base64 0.22.1",
  "bigdecimal",
  "bytes",
  "chrono",
@@ -2665,9 +2672,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.217"
+version = "0.2.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13fa97ccecf077d08e26a6c4ddc311a9d21547676341fcd1cf6a4fbfb23adf2a"
+checksum = "79add5ae11c20a108795061d5d49c020893ad04d6b5791846024f73e255d2c85"
 dependencies = [
  "anyhow",
  "bon",
@@ -2677,7 +2684,7 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.4.2",
- "kcl-error 0.2.170 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kcl-error 0.2.174 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
@@ -4330,7 +4337,7 @@ version = "0.12.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eddd3ca559203180a307f12d114c268abf583f59b03cb906fd0b3ff8646c1147"
 dependencies = [
- "base64",
+ "base64 0.22.1",
  "bytes",
  "futures-core",
  "futures-util",
@@ -4823,7 +4830,7 @@ version = "3.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "76a5c54c7310e7b8b9577c286d7e399ddd876c3e12b3ed917a8aabc4b96e9e8c"
 dependencies = [
- "base64",
+ "base64 0.22.1",
  "bs58",
  "chrono",
  "hex",
@@ -5455,9 +5462,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.53.0"
+version = "1.53.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d988bcd52dbe076d3d46903332f58c912b87a2c49b1428419a5845154762ffee"
+checksum = "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed"
 dependencies = [
  "bytes",
  "libc",

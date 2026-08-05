@@ -108,6 +108,12 @@ impl NodePathExt for NodePath {
                     }
                 }
             }
+            // Nothing to descend into: `Step` has no variant that could name a
+            // position inside a type declaration, so the statement's own path is
+            // the finest answer available, and nothing asks for more -- a type
+            // declaration emits no operation. Pinned by
+            // `type_declaration_resolves_to_the_statement`, together with its
+            // TypeScript counterpart in `getNodePathFromSourceRange.spec.ts`.
             BodyItem::TypeDeclaration(_) => {}
             BodyItem::ReturnStatement(node) => {
                 if node.argument.contains_range(&range) {
@@ -741,6 +747,80 @@ mod tests {
                     Step::ArrayElement { index: 1 }
                 ],
             }
+        );
+    }
+
+    /// A range anywhere inside a type declaration resolves to the declaration
+    /// statement, never to something within it. `Step` has no variant that could
+    /// name a position inside one, so this is the only answer the type can give,
+    /// and nothing needs a finer one: a type declaration emits no operation.
+    ///
+    /// The TypeScript side answers identically -- `moreNodePathFromSourceRange`
+    /// has no `TypeDeclaration` branch, so it returns the statement's path. This
+    /// test and its TypeScript counterpart pin that agreement, so teaching one
+    /// side to descend without the other fails a test rather than resolving a
+    /// range to the wrong node.
+    #[test]
+    fn type_declaration_resolves_to_the_statement() {
+        let code = "@settings(experimentalFeatures = allow)\ntype Color { | Red | Green }\nshade = Color::Red\n";
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
+
+        let statement = NodePath {
+            steps: vec![Step::ProgramBodyItem { index: 0 }],
+        };
+        // The declared name, a variant, and the enum body all answer the same way.
+        for needle in ["Color", "Red", "{ | Red | Green }"] {
+            let start = code.find(needle).unwrap();
+            assert_eq!(
+                NodePath::from_range(&programs, 0, range(start, start + needle.len())).unwrap(),
+                statement,
+                "range covering `{needle}`"
+            );
+        }
+
+        // For contrast, a range in the following statement is reached normally, so
+        // the assertions above are about type declarations rather than about
+        // `from_range` returning the enclosing statement for everything.
+        let use_site = code.find("Color::Red").unwrap();
+        assert_eq!(
+            NodePath::from_range(&programs, 0, range(use_site, use_site + "Color::Red".len())).unwrap(),
+            NodePath {
+                steps: vec![
+                    Step::ProgramBodyItem { index: 1 },
+                    Step::VariableDeclarationDeclaration,
+                    Step::VariableDeclarationInit,
+                ],
+            }
+        );
+    }
+
+    /// `fill_node_paths` gives a type declaration its own path and stops, the same
+    /// way it treats an import statement.
+    #[test]
+    fn test_fill_node_paths_type_declaration() {
+        let code = "@settings(experimentalFeatures = allow)\ntype Color { | Red | Green }\n";
+        let parsed = crate::Program::parse_no_errs(code).unwrap();
+        let mut ast = parsed.ast;
+        fill_node_paths(&mut ast);
+
+        let ty_decl = match &ast.body[0] {
+            BodyItem::TypeDeclaration(n) => n,
+            _ => panic!("expected TypeDeclaration"),
+        };
+        assert_eq!(
+            ty_decl.node_path,
+            Some(NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 0 }]
+            })
         );
     }
 

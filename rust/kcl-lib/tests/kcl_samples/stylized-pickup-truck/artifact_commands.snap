@@ -68,8 +68,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2099.999996,
-          "y": 399.9999994000001,
+          "x": -2099.999995999999,
+          "y": 399.9999993999999,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2099.9999995999997,
-            "y": 399.9999986,
+            "x": 2099.9999996000006,
+            "y": 399.9999985999999,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2099.999996299999,
-          "y": 399.9999982,
+          "x": 2099.9999962999996,
+          "y": 399.9999981999999,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2099.999994099999,
-            "y": 750.0000019000004,
+            "x": 2099.9999940999996,
+            "y": 750.0000019000001,
             "z": 0.0
           },
           "relative": false
@@ -135,8 +135,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2099.999992999999,
-          "y": 750.0000016500004,
+          "x": 2099.9999929999994,
+          "y": 750.0000016500002,
           "z": 0.0
         }
       }
@@ -150,8 +150,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2099.9999833999987,
-            "y": 750.0000011500003,
+            "x": -2099.999983399998,
+            "y": 750.0000011500001,
             "z": 0.0
           },
           "relative": false
@@ -165,8 +165,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2099.9999854999987,
-          "y": 750.0000004000002,
+          "x": -2099.9999854999983,
+          "y": 750.0000004000001,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2099.9999896999993,
-            "y": 399.99999900000006,
+            "x": -2099.999989699999,
+            "y": 399.9999989999999,
             "z": 0.0
           },
           "relative": false
@@ -352,8 +352,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -525.0000000033983,
-          "y": 350.0000000001905,
+          "x": -525.0000000003397,
+          "y": 350.0000000000106,
           "z": 0.0
         }
       }
@@ -374,8 +374,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000020267,
-            "y": 804.663338826553,
+            "x": -262.5000000002049,
+            "y": 804.6633388240975,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +391,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000007751,
-            "y": 804.6633388266686,
+            "x": 262.5000000000789,
+            "y": 804.6633388241028,
             "z": 0.0
           },
           "relative": false
@@ -408,8 +408,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 525.0000000017147,
-            "y": 350.0000000000272,
+            "x": 525.0000000001713,
+            "y": 350.0000000000027,
             "z": 0.0
           },
           "relative": false
@@ -425,8 +425,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000005006,
-            "y": -104.66333882676334,
+            "x": 262.5000000000521,
+            "y": -104.66333882410355,
             "z": 0.0
           },
           "relative": false
@@ -442,8 +442,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000023643,
-            "y": -104.66333882642047,
+            "x": -262.5000000002379,
+            "y": -104.66333882409188,
             "z": 0.0
           },
           "relative": false
@@ -459,8 +459,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -525.000000003414,
-            "y": 350.00000000016325,
+            "x": -525.0000000003412,
+            "y": 350.00000000000784,
             "z": 0.0
           },
           "relative": false
@@ -904,7 +904,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "path": "[uuid]",
         "to": {
           "x": -1999.9999959999993,
-          "y": 749.9999963999998,
+          "y": 749.9999963999996,
           "z": 0.0
         }
       }
@@ -925,8 +925,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2000.0000000000005,
-            "y": 749.9999948999997,
+            "x": 2000.000000000001,
+            "y": 749.9999948999996,
             "z": 0.0
           },
           "relative": false
@@ -941,7 +941,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "path": "[uuid]",
         "to": {
           "x": 1999.9999970000001,
-          "y": 749.9999941499997,
+          "y": 749.9999941499996,
           "z": 0.0
         }
       }
@@ -985,7 +985,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1999.999983999998,
+            "x": -1999.9999839999982,
             "y": 1149.9999953499996,
             "z": 0.0
           },
@@ -1000,8 +1000,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1999.9999859999982,
-          "y": 1149.9999957999999,
+          "x": -1999.9999859999984,
+          "y": 1149.9999957999996,
           "z": 0.0
         }
       }
@@ -1015,8 +1015,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1999.9999899999984,
-            "y": 749.9999956499997,
+            "x": -1999.9999899999987,
+            "y": 749.9999956499995,
             "z": 0.0
           },
           "relative": false
@@ -1956,7 +1956,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000019500001439964887,
+            "x": -0.0000001950000057260315,
             "y": 349.99999973999996
           },
           "radius": 349.99999997,
@@ -1994,7 +1994,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000015500001109003403,
+            "x": -0.00000015500000415114012,
             "y": 349.99999987999996
           },
           "radius": 175.00000000499998,
@@ -3226,8 +3226,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -819.9999908799992,
-          "y": 829.9999963999998,
+          "x": -819.9999908799994,
+          "y": 829.9999963999996,
           "z": 0.0
         }
       }
@@ -3248,8 +3248,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.9999850399987,
-            "y": 829.9999947399997,
+            "x": -459.99998503999893,
+            "y": 829.9999947399996,
             "z": 0.0
           },
           "relative": false
@@ -3263,8 +3263,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -459.99998065999836,
-          "y": 829.9999939099996,
+          "x": -459.99998065999813,
+          "y": 829.9999939099995,
           "z": 0.0
         }
       }
@@ -3278,7 +3278,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -459.99997773999814,
+            "x": -459.9999777399979,
             "y": 1069.9999956999998,
             "z": 0.0
           },
@@ -3293,7 +3293,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -459.999976279998,
+          "x": -459.9999762799978,
           "y": 1069.9999957699997,
           "z": 0.0
         }
@@ -3308,7 +3308,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999859599985,
+            "x": -819.9999859599989,
             "y": 1069.9999959099998,
             "z": 0.0
           },
@@ -3323,7 +3323,7 @@ description: Artifact commands stylized-pickup-truck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -819.9999867799986,
+          "x": -819.999986779999,
           "y": 1069.9999961199997,
           "z": 0.0
         }
@@ -3338,8 +3338,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -819.9999884199989,
-            "y": 829.9999955699997,
+            "x": -819.9999884199991,
+            "y": 829.9999955699996,
             "z": 0.0
           },
           "relative": false

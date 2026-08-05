@@ -5,6 +5,8 @@ use crate::frontend::trim::execute_trim_flow;
 /// Helper function to run a trim test with the common pattern:
 /// - Execute trim flow with base code and trim points
 /// - Snapshot the result after normalizing leading and trailing whitespace
+///
+/// For app smoke testing, see "Trim tool smoke tests" in `rust/AGENTS.md`.
 async fn assert_trim_result(snapshot_name: &str, base_kcl_code: &str, trim_points: &[Coords2d], sketch_id: ObjectId) {
     let result = execute_trim_flow(base_kcl_code, trim_points, sketch_id).await;
 
@@ -1894,6 +1896,49 @@ async fn test_split_arc_with_point_segment_coincident_on_one_side_and_intersecti
 }
 
 #[tokio::test]
+async fn test_split_arc_between_two_point_segment_coincident_terminations() {
+    let base_kcl_code = r#"sketch012 = sketch(on = XY) {
+  arc1 = arc(start = [var -20.19mm, var 40.27mm], end = [var 4.32mm, var -10.51mm], center = [var 28.89mm, var 32.66mm])
+  line1 = line(start = [var 4.32mm, var -10.51mm], end = [var 12.07mm, var -10.3mm])
+  coincident([line1.start, arc1.end])
+  arc2 = arc(start = [var -6.97mm, var 42.96mm], end = [var 12.07mm, var -10.3mm], center = [var 40.14mm, var 29.77mm])
+  coincident([arc2.end, line1.end])
+  line2 = line(start = [var -6.97mm, var 42.96mm], end = [var -20.19mm, var 40.27mm])
+  coincident([line2.start, arc2.start])
+  coincident([line2.end, arc1.start])
+  line3 = line(start = [var -10.84mm, var 42.17mm], end = [var -17.05mm, var 13.78mm])
+  coincident([line3.start, line2])
+  coincident([line3.end, arc1])
+  line4 = line(start = [var -8.41mm, var 42.67mm], end = [var -14.8mm, var 9.03mm])
+  coincident([line4.start, line2])
+  coincident([line4.end, arc1])
+  line5 = line(start = [var -3.63mm, var 7.92mm], end = [var -4.91mm, var 0mm])
+  coincident([line5.start, arc2])
+  horizontal([line5.end, ORIGIN])
+  line6 = line(start = [var -4.91mm, var 0mm], end = [var -9.25mm, var 0mm])
+  coincident([line5.end, line6.start])
+  horizontal([line6.end, ORIGIN])
+  line7 = line(start = [var -0.48mm, var -7.4mm], end = [var 7.49mm, var -6.66mm])
+  coincident([line7.start, arc1])
+  coincident([line7.end, arc2])
+  line8 = line(start = [var 9.38mm, var -8.27mm], end = [var 8.68mm, var -10.39mm])
+  coincident([line8.start, arc2])
+  coincident([line8.end, line1])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 4.24, y: 0.0 }, Coords2d { x: 1.39, y: -3.16 }];
+
+    assert_trim_result(
+        "test_split_arc_between_two_point_segment_coincident_terminations",
+        base_kcl_code,
+        &trim_points,
+        ObjectId(1),
+    )
+    .await;
+}
+
+#[tokio::test]
 async fn test_split_straight_segments_migrate_constraints() {
     // split straight segments should migrate other constraints correctly
     let base_kcl_code = r#"sketch(on = YZ) {
@@ -2754,8 +2799,8 @@ mod get_trim_spawn_terminations_tests {
             intersecting_seg_id,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 1.8273063333627224).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7443175958421935).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 1.8109968114535633).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.743299969685973).abs() < 1e-5);
             assert_eq!(intersecting_seg_id, crate::frontend::api::ObjectId(11));
         }
     }
@@ -2838,8 +2883,8 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - 2.0716435933183504).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.7918829774915763).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 2.071671330558468).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.791881035862689).abs() < 1e-5);
         }
     }
 
@@ -3016,16 +3061,16 @@ mod get_trim_spawn_terminations_tests {
             trim_termination_coords,
         } = result.left_side
         {
-            assert!((trim_termination_coords.x - 0.008837118620591083).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 2.809080419697051).abs() < 1e-5);
+            assert!((trim_termination_coords.x - 0.008803091254108455).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 2.8099058939065307).abs() < 1e-5);
         }
 
         if let TrimTermination::SegEndPoint {
             trim_termination_coords,
         } = result.right_side
         {
-            assert!((trim_termination_coords.x - (-5.1310115335133135)).abs() < 1e-5);
-            assert!((trim_termination_coords.y - 1.0662359198714615).abs() < 1e-5);
+            assert!((trim_termination_coords.x - (-5.131579678278041)).abs() < 1e-5);
+            assert!((trim_termination_coords.y - 1.0668109413896305).abs() < 1e-5);
         }
     }
 

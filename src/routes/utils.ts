@@ -1,51 +1,48 @@
-import env, { viteEnv } from '@src/env'
-import {
-  IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
-  IS_PLAYWRIGHT_KEY,
-} from '@src/lib/constants'
+import { viteEnv } from '@src/env'
+import { IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const hasWindow = typeof window !== 'undefined'
-const isTestEnv =
-  hasWindow && window.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
+const FALLBACK_APP_VERSION = '0.0.0'
+
+function getRealAppVersion(version: string | undefined) {
+  if (!version || ['0.0.0', 'dev', 'main'].includes(version)) {
+    return undefined
+  }
+
+  return version
+}
+
+function getWebAppVersion(commitSha: string | undefined) {
+  if (!commitSha || commitSha.length < 7) {
+    return undefined
+  }
+
+  return commitSha.slice(0, 7)
+}
 
 export function getAppVersion({
-  isTestEnvironment,
-  NODE_ENV,
-  VERCEL_ENV,
+  gitCommitSha,
   isDesktop,
 }: {
-  isTestEnvironment: boolean
-  NODE_ENV: string | undefined
-  VERCEL_ENV: string | undefined
+  gitCommitSha: string | undefined
   isDesktop: boolean
 }) {
-  if (isTestEnvironment && NODE_ENV === 'development') {
-    return '0.0.0'
-  }
-
   if (isDesktop) {
-    if (hasWindow && window.electron) {
-      // @ts-ignore
-      return window.electron.packageJson.version
-    }
-    return '0.0.0'
+    const electronVersion = hasWindow
+      ? (window.electron?.packageJson as { version?: string } | undefined)
+          ?.version
+      : undefined
+    return getRealAppVersion(electronVersion) ?? FALLBACK_APP_VERSION
   }
 
-  // Web based runtimes
-  if (NODE_ENV === 'development' || VERCEL_ENV === 'preview') {
-    return 'dev'
-  }
-
-  return 'main'
+  return getWebAppVersion(gitCommitSha)
 }
 
 export const APP_VERSION = getAppVersion({
-  isTestEnvironment: isTestEnv,
-  NODE_ENV: env().NODE_ENV,
-  VERCEL_ENV: viteEnv().VERCEL_ENV,
+  gitCommitSha: viteEnv().MODELING_APP_COMMIT_SHA,
   isDesktop: isDesktop(),
 })
 
@@ -57,12 +54,15 @@ export const PACKAGE_NAME =
 export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
 export const IS_STAGING_OR_DEBUG =
-  IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === 'dev'
+  IS_STAGING ||
+  (isDesktop()
+    ? APP_VERSION === FALLBACK_APP_VERSION
+    : viteEnv().VERCEL_ENV !== 'production')
 
 export const APP_DOWNLOAD_PATH = `design-studio/download${IS_STAGING_OR_DEBUG ? '/staging' : ''}`
 
-export function getRefFromVersion(version: string) {
-  const hash = version.split('.').pop()
+export function getRefFromVersion(version: string | undefined) {
+  const hash = version?.split('.').pop()
   if (hash && hash.length === 7) {
     return hash
   }
@@ -70,10 +70,14 @@ export function getRefFromVersion(version: string) {
   return undefined
 }
 
-export function getReleaseUrl(version: string = APP_VERSION) {
-  if (IS_STAGING_OR_DEBUG || version === 'main') {
-    const ref = getRefFromVersion(version) ?? 'main'
-    return `https://github.com/KittyCAD/modeling-app/commit/${ref}`
+export function getReleaseUrl(version: string | undefined = APP_VERSION) {
+  if (!version) {
+    return 'https://github.com/KittyCAD/modeling-app/releases'
+  }
+
+  const ref = getRefFromVersion(version)
+  if (IS_STAGING_OR_DEBUG || ref || version === 'main') {
+    return `https://github.com/KittyCAD/modeling-app/commit/${ref ?? 'main'}`
   }
 
   return `https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`

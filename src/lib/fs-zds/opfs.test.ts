@@ -161,4 +161,29 @@ describe('opfs', () => {
     expect(stat.mtimeMs).toEqual(expect.any(Number))
     expect(JSON.parse(repaired)).toEqual({ mtimeMs: stat.mtimeMs })
   })
+
+  test('copies files from nested directories', async () => {
+    const projects = root.addDirectory('projects')
+    const source = projects.addDirectory('source')
+    source
+      .addDirectory('nested')
+      .addDirectory('deep')
+      .addFile('main.kcl', 'cube = 1')
+    projects.addDirectory('target')
+
+    const opfs = await getOpfs()
+    const sourcePath = path.resolve('projects', 'source')
+    const targetPath = path.resolve('projects', 'target')
+    const nestedPath = path.join('nested', 'deep', 'main.kcl')
+
+    await opfs.impl.cp(sourcePath, targetPath, {
+      recursive: true,
+    })
+
+    await expect(
+      opfs.impl.readFile(path.join(targetPath, nestedPath), {
+        encoding: 'utf-8',
+      })
+    ).resolves.toBe('cube = 1')
+  })
 })
