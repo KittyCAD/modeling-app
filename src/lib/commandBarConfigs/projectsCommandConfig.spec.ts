@@ -98,6 +98,7 @@ function createHomeProjectActions(
     })),
     duplicate: vi.fn(async () => undefined),
     rename: vi.fn(async () => undefined),
+    renameLocalProject: vi.fn(async () => undefined),
     delete: vi.fn(async () => undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn(async () => undefined),

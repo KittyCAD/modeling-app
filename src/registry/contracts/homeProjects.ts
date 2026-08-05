@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
@@ -86,6 +87,7 @@ export interface HomeProjectActionsService {
   ) => Promise<HomeProjectOpenResult | undefined>
   duplicate: (project: HomeProjectEntry) => Promise<void>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
+  renameLocalProject: (project: Project, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
   getMoveToLibraryTargets: (
     project: HomeProjectEntry

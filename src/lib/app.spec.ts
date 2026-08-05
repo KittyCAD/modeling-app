@@ -1,5 +1,10 @@
 import type { Feature } from '@kittycad/lib'
-import { pluginsValueSpec } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  pluginsValueSpec,
+  provide,
+  Slot,
+} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
@@ -9,12 +14,12 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -27,6 +32,7 @@ import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
@@ -764,6 +770,42 @@ describe('project system', () => {
       app.closeProject()
 
       expect(app.project).toBeUndefined()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('keeps an open project title in sync with its Home entry', async () => {
+    const homeEntriesSlot = new Slot()
+    const app = createAppForTest({
+      registryOverrides: [homeEntriesSlot.of()],
+    })
+
+    try {
+      const project = await app.openProject({
+        ...mockProject,
+        title: 'Bracket',
+      })
+
+      app.registry.reconfigure(homeEntriesSlot, [
+        defineRegistryItem({
+          id: 'test.updated-home-project',
+          provides: [
+            provide(homeProjectEntriesValueSpec, {
+              source: 'local',
+              status: 'local',
+              name: mockProject.name,
+              title: 'Updated bracket',
+              localProjectPath: mockProject.path,
+              localProjectName: mockProject.name,
+              defaultFile: mockProject.default_file,
+              readWriteAccess: true,
+            }),
+          ],
+        }),
+      ])
+
+      expect(project.projectIORefSignal.value.title).toBe('Updated bracket')
     } finally {
       app.dispose()
     }

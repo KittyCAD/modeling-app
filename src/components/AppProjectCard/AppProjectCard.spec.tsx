@@ -59,6 +59,7 @@ function createProjectActions({
     }),
     duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
+    renameLocalProject: vi.fn().mockResolvedValue(undefined),
     delete: vi.fn().mockResolvedValue(undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn().mockResolvedValue(undefined),

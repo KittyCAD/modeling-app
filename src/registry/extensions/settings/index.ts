@@ -6,34 +6,27 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
-  type SettingsActorType,
   getOnlySettingsFromContext,
+  type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { homeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import {
-  homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibrarySettingDefaultsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-} from '@src/registry/contracts/projectLibraries'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
@@ -47,30 +40,21 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
 
-  const getHomeProjectEntry = (project: Project) =>
-    ctx.valueSpecs
-      .get(homeProjectEntriesValueSpec)
-      .find((entry) => entry.localProjectPath === project.path)
-
   const projectTitle: ProjectTitleService = {
-    canUpdateTitle: (project) => project.readWriteAccess,
+    canUpdateTitle: (project) =>
+      project.readWriteAccess &&
+      Boolean(ctx.services.optional(homeProjectActionsService)),
     updateTitle: async (project, title) => {
       if (!project.readWriteAccess) {
         return Promise.reject(new Error('This project title cannot be edited.'))
       }
 
-      const entry = getHomeProjectEntry(project)
       const actions = ctx.services.optional(homeProjectActionsService)
-      if (entry && actions?.canRename(entry)) {
-        await actions.rename(entry, title)
-      } else {
-        await writeProjectTitleToProjectToml(project.path, title)
-        ctx.services.optional(systemIOService)?.actor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
+      if (!actions) {
+        return Promise.reject(new Error('Project actions are unavailable.'))
       }
 
-      project.title = title
+      await actions.renameLocalProject(project, title)
     },
   }
 

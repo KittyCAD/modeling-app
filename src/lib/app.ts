@@ -17,13 +17,12 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -31,9 +30,11 @@ import {
   isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
-  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -232,6 +233,7 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  private disposeProjectEntrySync: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -349,6 +351,7 @@ export class App implements AppSubsystems {
 
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
+    this.disposeProjectEntrySync?.()
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
@@ -417,6 +420,25 @@ export class App implements AppSubsystems {
       }
     })
 
+    const homeProjectEntries = this.registry.signal(homeProjectEntriesValueSpec)
+    let syncedProjectTitle = projectIORef.title ?? projectIORef.name
+    this.disposeProjectEntrySync = effect(() => {
+      const entry = homeProjectEntries.value.find(
+        (candidate) =>
+          candidate.localProjectPath === projectIORefSignal.value.path
+      )
+      const title = entry ? getHomeProjectDisplayName(entry) : undefined
+      if (!title || title === syncedProjectTitle) {
+        return
+      }
+
+      syncedProjectTitle = title
+      projectIORefSignal.value = {
+        ...projectIORefSignal.value,
+        title,
+      }
+    })
+
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -441,6 +463,8 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
+    this.disposeProjectEntrySync?.()
+    this.disposeProjectEntrySync = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
     this.project?.close()

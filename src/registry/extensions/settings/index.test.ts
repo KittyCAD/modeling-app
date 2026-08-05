@@ -1,21 +1,15 @@
-import { Registry } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  provideService,
+  Registry,
+} from '@kittycad/registry'
 import type { Project } from '@src/lib/project'
+import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
+import { homeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import { settingsService } from '@src/registry/contracts/settings'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import settingsRegistryItem from '.'
-
-const mocks = vi.hoisted(() => ({
-  writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
-}))
-
-vi.mock('@src/lib/desktop', async (importOriginal) => {
-  const actual = await importOriginal<Record<string, unknown>>()
-  return {
-    ...actual,
-    writeProjectTitleToProjectToml: mocks.writeProjectTitleToProjectToml,
-  }
-})
 
 const project = {
   metadata: null,
@@ -48,17 +42,24 @@ describe('settings extension', () => {
   })
 
   it('updates a writable project title before Home has indexed it', async () => {
+    const renameLocalProject = vi.fn().mockResolvedValue(undefined)
     const registry = new Registry()
-    registry.configure([settingsRegistryItem])
+    registry.configure([
+      settingsRegistryItem,
+      defineRegistryItem({
+        id: 'test.home-project-actions',
+        providesServices: [
+          provideService(homeProjectActionsService, {
+            renameLocalProject,
+          } as unknown as HomeProjectActionsService),
+        ],
+      }),
+    ])
 
     const service = registry.get(settingsService).projectTitle
     await service.updateTitle(project, 'Updated bracket')
 
-    expect(mocks.writeProjectTitleToProjectToml).toHaveBeenCalledWith(
-      project.path,
-      'Updated bracket'
-    )
-    expect(project.title).toBe('Updated bracket')
+    expect(renameLocalProject).toHaveBeenCalledWith(project, 'Updated bracket')
 
     registry[Symbol.dispose]()
   })
