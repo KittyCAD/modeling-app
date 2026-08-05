@@ -102,6 +102,17 @@ describe('commands extension', () => {
     )
   })
 
+  it('exposes view commands in command palette search', () => {
+    const searchableAppCommandIds = appCommands
+      .filter((command) => command.hideFromSearch !== true)
+      .map((command) => command.id)
+
+    expect(searchableAppCommandIds).toEqual([
+      APP_COMMAND_IDS.modeling.centerCameraOnSelection,
+      APP_COMMAND_IDS.view.reset,
+    ])
+  })
+
   it('runs toolbar commands against the KclManager from command input', () => {
     const sentEvents: unknown[] = []
     const kclManager = {
