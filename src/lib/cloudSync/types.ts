@@ -95,8 +95,19 @@ export type CloudSyncConfig = {
   token?: string
   baseUrl?: string
   environmentName?: string
-  projectDirectoryPath?: string
+  /** Local materialization paths for configured cloud-type project libraries. */
+  cloudProjectDirectoryPaths?: string[]
   autoEnrollCloudLibraryProjects?: boolean
+}
+
+/**
+ * File-route scope for status and retry behavior. A non-syncable scope still
+ * hides Home/global sync state while a project is open, but it cannot enqueue
+ * or retry sync work for that project.
+ */
+export type CloudSyncProjectScope = {
+  projectPath: string
+  syncable: boolean
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */
@@ -112,6 +123,8 @@ export type CloudSyncStatus = {
   enabled: boolean
   state: CloudSyncState
   pendingCount: number
+  scopedProjectPath?: string
+  scopedProjectCloudProjectId?: string
   activeProjectPath?: string
   lastFailure?: string
   lastFailureKind?: ProjectSyncFailureKind

@@ -30,7 +30,6 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -75,6 +74,7 @@ import {
   getHomeProjectEntriesForLibrary,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -232,8 +232,8 @@ const Home = () => {
   }, [app, selectedProjectLibraryId])
 
   useEffect(() => {
-    setCloudSyncProjectScope(undefined)
-  }, [])
+    registry.get(cloudSyncService).setProjectScope(undefined)
+  }, [registry])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(

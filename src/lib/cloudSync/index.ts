@@ -14,6 +14,7 @@ export { retryCloudSyncEngine as retryCloudSync } from '@src/lib/cloudSync/engin
 export type {
   CloudSyncConfig,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncProjectScope,
   CloudSyncStatus,
   ProjectMetadata as CloudSyncProjectMetadata,
   ProjectSyncFailure,

@@ -1,6 +1,7 @@
 import { projectSkeletonCreate } from '@src/lang/project'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
@@ -15,11 +16,12 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
   isPathInDirectoryProjectLibrary,
+  normalizeProjectLibrarySettingPath,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
@@ -44,6 +46,7 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -118,6 +121,61 @@ async function fileExists(filePath: string) {
   } catch {
     return false
   }
+}
+
+type ProjectLibraryPathResolution = {
+  library: ProjectLibrarySetting
+  path: string
+}
+
+async function resolveProjectLibraryLocalPath(library: ProjectLibrarySetting) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return getCloudProjectLibraryMaterializationDirectoryPath(library).catch(
+      () => undefined
+    )
+  }
+
+  return library.path.trim() ? library.path : undefined
+}
+
+async function getContainingProjectLibraryPath(
+  libraries: readonly ProjectLibrarySetting[],
+  projectPath: string
+): Promise<ProjectLibraryPathResolution | undefined> {
+  const candidates: ProjectLibraryPathResolution[] = []
+
+  for (const library of libraries) {
+    const libraryPath = await resolveProjectLibraryLocalPath(library)
+    if (!libraryPath) {
+      continue
+    }
+
+    const normalizedProjectPath =
+      normalizeProjectLibrarySettingPath(projectPath)
+    const normalizedLibraryPath =
+      normalizeProjectLibrarySettingPath(libraryPath)
+    if (
+      normalizedProjectPath !== normalizedLibraryPath &&
+      isPathInDirectoryProjectLibrary(projectPath, libraryPath)
+    ) {
+      candidates.push({ library, path: libraryPath })
+    }
+  }
+
+  return candidates
+    .toSorted(
+      (left, right) =>
+        normalizeProjectLibrarySettingPath(right.path).length -
+        normalizeProjectLibrarySettingPath(left.path).length
+    )
+    .at(0)
+}
+
+function canProjectLibraryScopeCloudSync(library?: ProjectLibrarySetting) {
+  return (
+    library?.type === CLOUD_PROJECT_LIBRARY_TYPE ||
+    library?.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
 }
 
 function redirectToFile(filePath: string, routerSearch: string) {
@@ -276,6 +334,14 @@ export const fileLoader =
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
 
     const project = maybeProjectInfo ?? defaultProjectData
+    const owningProjectLibrary = await getContainingProjectLibraryPath(
+      settings.settings.app.libraries.current,
+      project.path
+    )
+    app.registry.get(cloudSyncService).setProjectScope({
+      projectPath: project.path,
+      syncable: canProjectLibraryScopeCloudSync(owningProjectLibrary?.library),
+    })
 
     // Fire off the event to load the project settings
     // once we know it's idle.
@@ -303,16 +369,8 @@ export const fileLoader =
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir =
-      getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries?.current
-      ) ?? ''
-    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
-      project.path,
-      appProjectDir
-    )
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
+    const requestedProjectDirectoryPath =
+      owningProjectLibrary?.path ?? getParentAbsolutePath(project.path)
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
@@ -335,13 +393,15 @@ export const fileLoader =
     }
   }
 
-// Loads the settings and by extension the projects in the default directory
+// Loads the settings and by extension the configured project library entries
 // and returns them to the Home route, along with any errors that occurred
 
 // Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
+    app.registry.get(cloudSyncService).setProjectScope(undefined)
+
     // If on unflagged web, bump out to root, which will redirect to a project.
     if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)

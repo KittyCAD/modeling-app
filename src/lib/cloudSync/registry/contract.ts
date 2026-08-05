@@ -6,6 +6,7 @@ import type {
   CloudSyncLocalProject,
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncProjectScope,
   CloudSyncStatus,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
@@ -16,7 +17,7 @@ export type CloudSyncRegistryService = {
   configure: (config: CloudSyncConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
-  setProjectScope: (projectPath?: string) => void
+  setProjectScope: (scope?: CloudSyncProjectScope) => void
   /**
    * Explicitly enroll a local-only project in cloud sync, even when the global
    * policy is not auto-enrolling existing local projects.
@@ -45,8 +46,7 @@ export type CloudSyncRegistryService = {
   /**
    * Materialize a remote cloud project into the local library directory the
    * caller is opening it from. `targetProjectDirectoryPath` is the resolved
-   * local path of that library; when omitted the engine falls back to the
-   * configured project directory.
+   * local path of that owning cloud library.
    */
   ensureProjectLocallySynced: (
     remoteProjectId: string,
