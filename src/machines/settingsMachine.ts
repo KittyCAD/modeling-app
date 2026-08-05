@@ -12,16 +12,14 @@ import {
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
-import {
-  createProjectTitleCommand,
-  type ProjectTitleCommandService,
-} from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
+import { createProjectTitleCommand } from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
 } from '@src/lib/commandBarConfigs/settingsCommandConfig'
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -55,7 +53,7 @@ export type SettingsActorDepsType = {
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
   projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
   extensionSettings: ResolvedExtensionSettings
-  projectTitleCommand?: ProjectTitleCommandService
+  projectTitleCommand?: ProjectTitleService
   wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
@@ -226,7 +224,7 @@ export const settingsMachine = setup({
         settings: SettingsType
         actor: AnyActorRef
         commandBarActor: ActorRefFrom<typeof commandBarMachine>
-        projectTitleCommand?: ProjectTitleCommandService
+        projectTitleCommand?: ProjectTitleService
       }
     >(({ input, receive }) => {
       // If the user wants to hide the settings commands

@@ -31,10 +31,6 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
-import {
-  homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
@@ -55,7 +51,7 @@ export const AllSettingsFields = forwardRef(
   ) => {
     useSignals()
     const app = useApp()
-    const { settings, layout, registry, systemIOActor, userFeatures } = app
+    const { settings, layout, systemIOActor, userFeatures } = app
     const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
@@ -67,15 +63,6 @@ export const AllSettingsFields = forwardRef(
     const currentProject =
       app.projectSignal.value?.projectIORefSignal.value ??
       settings.actor.getSnapshot().context.currentProject
-    const homeProjectEntries = registry.signal(
-      homeProjectEntriesValueSpec
-    ).value
-    const homeProjectActions = registry.get(homeProjectActionsService)
-    const currentHomeProject = currentProject
-      ? homeProjectEntries.find(
-          (project) => project.localProjectPath === currentProject.path
-        )
-      : undefined
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -119,8 +106,7 @@ export const AllSettingsFields = forwardRef(
               </h2>
               <ProjectTitleSettingsSection
                 project={currentProject}
-                projectEntry={currentHomeProject}
-                projectActions={homeProjectActions}
+                service={settings.projectTitle}
               />
             </>
           )}

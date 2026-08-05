@@ -261,6 +261,35 @@ describe('cloud sync local project names', () => {
     expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
   })
 
+  it('does not rename an established cloud project directory after its title changes', async () => {
+    const files = new Map<string, string>()
+    addCloudProjectFiles(files, titleProjectPath)
+    configureCloudSyncTestFs(files)
+    await seedCleanTitleCloudProjectMetadata()
+    const onProjectDirectoriesRenamed = vi.fn()
+
+    scheduleCloudProjectDirectoryNameSyncFromTitles({
+      projects: [
+        {
+          path: titleProjectPath,
+          name: expectedProjectName,
+          title: 'Updated title',
+          readWriteAccess: true,
+        },
+      ],
+      onProjectDirectoriesRenamed,
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(files.get(`${titleProjectPath}/main.kcl`)).toBe('x = 1')
+    expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
+    expect(await getCloudSyncProjectMetadata(titleProjectPath)).toMatchObject({
+      localProjectPath: titleProjectPath,
+      projectName: expectedProjectName,
+      remoteProjectId,
+    })
+  })
+
   it('removes exact duplicate local realizations when syncing a known clean cloud project', async () => {
     const files = new Map<string, string>()
     addCloudProjectFiles(files, titleProjectPath)

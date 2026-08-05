@@ -6,11 +6,11 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ProjectTitleCommandService } from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -18,6 +18,7 @@ import {
   getOnlySettingsFromContext,
   settingsMachine,
 } from '@src/machines/settingsMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import {
   homeProjectActionsService,
@@ -33,6 +34,7 @@ import {
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
@@ -51,26 +53,28 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       .get(homeProjectEntriesValueSpec)
       .find((entry) => entry.localProjectPath === project.path)
 
-  const projectTitleCommand: ProjectTitleCommandService = {
-    getTitle: (project) => {
-      const entry = getHomeProjectEntry(project)
-      return entry
-        ? getHomeProjectDisplayName(entry)
-        : getProjectDisplayName(project)
-    },
-    canUpdateTitle: (project) => {
+  const projectTitle: ProjectTitleService = {
+    getTitle: getProjectDisplayName,
+    canUpdateTitle: (project) => project.readWriteAccess,
+    updateTitle: async (project, title) => {
       const entry = getHomeProjectEntry(project)
       const actions = ctx.services.optional(homeProjectActionsService)
-      return Boolean(entry && actions?.canRename(entry))
-    },
-    updateTitle: (project, title) => {
-      const entry = getHomeProjectEntry(project)
-      const actions = ctx.services.optional(homeProjectActionsService)
-      if (!entry || !actions?.canRename(entry)) {
-        return Promise.reject(new Error('This project title cannot be edited.'))
+      if (entry && actions?.canRename(entry)) {
+        await actions.rename(entry, title)
+      } else {
+        if (!project.readWriteAccess) {
+          return Promise.reject(
+            new Error('This project title cannot be edited.')
+          )
+        }
+
+        await writeProjectTitleToProjectToml(project.path, title)
+        ctx.services.optional(systemIOService)?.actor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
       }
 
-      return actions.rename(entry, title)
+      project.title = title
     },
   }
 
@@ -94,7 +98,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
         defaultProjectLibraries,
         projectLibrarySettingDefaultPolicies,
         extensionSettings,
-        projectTitleCommand,
+        projectTitleCommand: projectTitle,
         wasmInstancePromise: getWasmPromise(),
       },
     }).start()
@@ -117,6 +121,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       ensureActor()
       return settingsSignal
     },
+    projectTitle,
     get: () => {
       ensureActor()
       return settingsSignal.value

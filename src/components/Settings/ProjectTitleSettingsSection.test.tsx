@@ -1,9 +1,6 @@
 import { ProjectTitleSettingsSection } from '@src/components/Settings/ProjectTitleSettingsSection'
 import type { Project } from '@src/lib/project'
-import type {
-  HomeProjectActionsService,
-  HomeProjectEntry,
-} from '@src/registry/contracts/homeProjects'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import toast from 'react-hot-toast'
 import { expect, test, vi } from 'vitest'
@@ -20,43 +17,22 @@ const project = {
   readWriteAccess: true,
 } satisfies Project
 
-const projectEntry = {
-  id: 'local:/projects/bracket',
-  source: 'local',
-  status: 'local',
-  name: 'bracket',
-  title: 'Bracket',
-  localProjectPath: '/projects/bracket',
-  localProjectName: 'bracket',
-  defaultFile: '/projects/bracket/main.kcl',
-  readWriteAccess: true,
-} satisfies HomeProjectEntry
-
-function createProjectActions(
-  rename = vi.fn().mockResolvedValue(undefined)
-): HomeProjectActionsService {
+function createProjectTitleService(
+  updateTitle = vi.fn().mockResolvedValue(undefined)
+): ProjectTitleService {
   return {
-    canOpen: () => true,
-    canDuplicate: () => true,
-    canRename: () => true,
-    canDelete: () => true,
-    canMoveToLibrary: () => false,
-    open: vi.fn().mockResolvedValue(undefined),
-    duplicate: vi.fn().mockResolvedValue(undefined),
-    rename,
-    delete: vi.fn().mockResolvedValue(undefined),
-    getMoveToLibraryTargets: () => [],
-    moveToLibrary: vi.fn().mockResolvedValue(undefined),
+    getTitle: (project) => project.title ?? project.name,
+    canUpdateTitle: () => true,
+    updateTitle,
   }
 }
 
-test('updates the current project title on blur', async () => {
-  const rename = vi.fn().mockResolvedValue(undefined)
+test('updates the current project title on blur without a Home entry', async () => {
+  const updateTitle = vi.fn().mockResolvedValue(undefined)
   render(
     <ProjectTitleSettingsSection
       project={project}
-      projectEntry={projectEntry}
-      projectActions={createProjectActions(rename)}
+      service={createProjectTitleService(updateTitle)}
     />
   )
 
@@ -67,30 +43,24 @@ test('updates the current project title on blur', async () => {
   fireEvent.blur(input)
 
   await waitFor(() =>
-    expect(rename).toHaveBeenCalledWith(projectEntry, 'Updated bracket')
+    expect(updateTitle).toHaveBeenCalledWith(project, 'Updated bracket')
   )
   expect(input).toHaveValue('Updated bracket')
 })
 
 test('shows the title read-only when the project cannot be updated', () => {
-  const actions = createProjectActions()
-  actions.canRename = () => false
+  const service = createProjectTitleService()
+  service.canUpdateTitle = () => false
 
-  render(
-    <ProjectTitleSettingsSection
-      project={project}
-      projectEntry={projectEntry}
-      projectActions={actions}
-    />
-  )
+  render(<ProjectTitleSettingsSection project={project} service={service} />)
 
   expect(screen.getByRole('textbox', { name: 'Project title' })).toBeDisabled()
-  expect(actions.rename).not.toHaveBeenCalled()
+  expect(service.updateTitle).not.toHaveBeenCalled()
 })
 
 test('shows a user-facing error when the title cannot be saved', async () => {
   const saveError = new Error('Disk is read-only')
-  const rename = vi.fn().mockRejectedValue(saveError)
+  const updateTitle = vi.fn().mockRejectedValue(saveError)
   const toastError = vi.spyOn(toast, 'error').mockImplementation(() => '')
   const consoleError = vi
     .spyOn(console, 'error')
@@ -99,8 +69,7 @@ test('shows a user-facing error when the title cannot be saved', async () => {
   render(
     <ProjectTitleSettingsSection
       project={project}
-      projectEntry={projectEntry}
-      projectActions={createProjectActions(rename)}
+      service={createProjectTitleService(updateTitle)}
     />
   )
 

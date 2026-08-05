@@ -10,11 +10,13 @@ import {
   mergeExtensionSettings,
 } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export type SettingsRegistryService = {
   actor: SettingsActorType
   current: ReadonlySignal<SettingsType>
+  projectTitle: ProjectTitleService
   get: () => SettingsType
   send: SettingsActorType['send']
   useSettings: () => SettingsType

@@ -128,6 +128,7 @@ function createProject(overrides: Partial<Project> = {}): Project {
   return {
     name,
     path,
+    cloudProjectId: overrides.cloudProjectId ?? name,
     title: 'My Cool Project',
     children: [],
     default_file: `${path}/main.kcl`,
@@ -364,8 +365,8 @@ describe('directory project scanner', () => {
 
   it('does not rename an excluded open project directory', () => {
     const project = createProject({
-      name: 'stable-open-project',
-      path: '/projects/stable-open-project',
+      name: 'remote-project-id',
+      path: '/projects/remote-project-id',
       title: 'Updated project title',
     })
     const onProjectDirectoriesRenamed = vi.fn()
@@ -379,6 +380,22 @@ describe('directory project scanner', () => {
     expect(mocks.fsZds.readdir).not.toHaveBeenCalled()
     expect(mocks.fsZds.rename).not.toHaveBeenCalled()
     expect(onProjectDirectoriesRenamed).not.toHaveBeenCalled()
+  })
+
+  it('does not rename a local project directory after its title changes', async () => {
+    const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
+      project: createProject({
+        name: 'stable-project-directory',
+        path: '/projects/stable-project-directory',
+        cloudProjectId: undefined,
+        title: 'Updated project title',
+      }),
+      projectDirectoryEntryNames: ['stable-project-directory'],
+    })
+
+    expect(targetProjectDirectoryName).toBeUndefined()
+    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
+    expect(mocks.fsZds.stat).not.toHaveBeenCalled()
   })
 
   it('reports rename failures without stopping the batch or risking project data', async () => {

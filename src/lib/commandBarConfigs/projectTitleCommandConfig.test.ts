@@ -1,10 +1,10 @@
 import {
   createProjectTitleCommand,
   PROJECT_TITLE_COMMAND_NAME,
-  type ProjectTitleCommandService,
 } from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import { beforeEach, expect, test, vi } from 'vitest'
 
 const project = {
@@ -19,7 +19,7 @@ const project = {
   readWriteAccess: true,
 } satisfies Project
 
-function createService(): ProjectTitleCommandService {
+function createService(): ProjectTitleService {
   return {
     getTitle: vi.fn(() => 'Bracket'),
     canUpdateTitle: vi.fn(() => true),

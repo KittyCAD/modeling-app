@@ -1,15 +1,10 @@
 import type { Command } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import toast from 'react-hot-toast'
 
 export const PROJECT_TITLE_COMMAND_NAME = 'project.title'
-
-export interface ProjectTitleCommandService {
-  getTitle: (project: Project) => string
-  canUpdateTitle: (project: Project) => boolean
-  updateTitle: (project: Project, title: string) => Promise<void>
-}
 
 function validateProjectTitle(value: unknown) {
   const title = String(value ?? '').trim()
@@ -28,7 +23,7 @@ export function createProjectTitleCommand({
   service,
 }: {
   getCurrentProject: () => Project | undefined
-  service?: ProjectTitleCommandService
+  service?: ProjectTitleService
 }): Command | null {
   if (!getCurrentProject() || !service) {
     return null
