@@ -137,7 +137,7 @@ export fn arc(
   center: Point2d,
   /// The direction that the arc sweeps from start to end: `CCW` for
   /// counterclockwise or `CW` for clockwise. Defaults to `CCW`.
-  direction?: string,
+  direction?: ArcDirectionString,
   /// Whether this segment is construction geometry rather than part of the modeled profile.
   construction?: bool,
 ): Segment {}

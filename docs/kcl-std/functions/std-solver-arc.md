@@ -12,7 +12,7 @@ solver::arc(
   start: Point2d,
   end: Point2d,
   center: Point2d,
-  direction?: string,
+  direction?: ArcDirectionString,
   construction?: bool,
 ): Segment
 ```
@@ -28,7 +28,7 @@ example, but the arc travels from the base line's start to its end.
 | `start` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point where the arc begins. | Yes |
 | `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point where the arc ends. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle the arc lies on. | Yes |
-| `direction` | [`string`](/docs/kcl-std/types/std-types-string) | The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`. | No |
+| `direction` | [`ArcDirectionString`](/docs/kcl-std/types/std-types-ArcDirectionString) | The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`. | No |
 | `construction` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether this segment is construction geometry rather than part of the modeled profile. | No |
 
 ### Returns

@@ -16,6 +16,7 @@ does.
 
 ## Types
 
+* [`ArcDirectionString`](/docs/kcl-std/types/std-types-ArcDirectionString)
 * [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d)
 * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)
 * [`BoundedEdge`](/docs/kcl-std/types/std-types-BoundedEdge)

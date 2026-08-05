@@ -406,3 +406,7 @@ export type ft = number(ft)
 export type yd = number(yd)
 export type rad = number(rad)
 export type deg = number(deg)
+
+/// Arc direction, i.e. clockwise or counterclockwise. Always use one of the
+/// constants `CW` or `CCW`, never a string literal.
+export type ArcDirectionString = string
