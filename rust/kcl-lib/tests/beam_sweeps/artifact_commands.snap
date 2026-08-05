@@ -291,7 +291,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000019050003262682662,
+            "x": -0.0000000000000001905000914559118,
             "y": 0.0
           },
           "radius": 406.4,
@@ -329,7 +329,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000018415002957829626,
+            "x": -0.00000000000000018415003798245127,
             "y": 0.0
           },
           "radius": 393.7,
@@ -587,7 +587,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000019050003262682662,
+            "x": -0.0000000000000001905000914559118,
             "y": 0.0
           },
           "radius": 406.4,
@@ -625,7 +625,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000018415002957829626,
+            "x": -0.00000000000000018415003798245127,
             "y": 0.0
           },
           "radius": 393.7,
@@ -883,7 +883,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000019050003262682662,
+            "x": -0.0000000000000001905000914559118,
             "y": 0.0
           },
           "radius": 406.4,
@@ -921,7 +921,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000018415002957829626,
+            "x": -0.00000000000000018415003798245127,
             "y": 0.0
           },
           "radius": 393.7,
@@ -1179,7 +1179,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000019050003262682662,
+            "x": -0.0000000000000001905000914559118,
             "y": 0.0
           },
           "radius": 406.4,
@@ -1217,7 +1217,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000018415002957829626,
+            "x": -0.00000000000000018415003798245127,
             "y": 0.0
           },
           "radius": 393.7,
@@ -1475,7 +1475,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000019050003262682662,
+            "x": -0.0000000000000001905000914559118,
             "y": 0.0
           },
           "radius": 406.4,
@@ -1513,7 +1513,7 @@ description: Artifact commands beam_sweeps.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000018415002957829626,
+            "x": -0.00000000000000018415003798245127,
             "y": 0.0
           },
           "radius": 393.7,

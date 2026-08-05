@@ -1538,6 +1538,38 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('default plane selection synchronization', () => {
+  test('selects the plane in the engine and clears the code selection', () => {
+    const code = 'body001 = extrude(region001, length = 10)'
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [],
+        otherSelections: [{ name: 'XY', id: 'xy-plane-id' }],
+      },
+      artifactGraph: new Map(),
+      code,
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.map((event) =>
+        event.type === 'modeling_cmd_req' ? event.cmd : undefined
+      )
+    ).toEqual([
+      { type: 'select_clear' },
+      { type: 'select_add', entities: ['xy-plane-id'] },
+    ])
+    expect(result.codeMirrorSelection.main.head).toBe(code.length)
+  })
+})
+
 describe('mixed entity-reference selection highlighting', () => {
   test('keeps engine primitive selections when graph selections use entity references', () => {
     const graphFaceId = 'graph-face-id'

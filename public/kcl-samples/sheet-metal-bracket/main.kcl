@@ -20,6 +20,7 @@ hatHeight = 2.5
 bendAngle = 75deg
 thickness = 0.125
 interiorBendRadius = 0.125
+cutoutDiameter = 1.1
 
 // Calculate remaining parameters
 exteriorBendRadius = interiorBendRadius + thickness
@@ -122,10 +123,10 @@ hidden001 = hide(sketch001)
 
 // Cut the bolt pattern in the left base flange
 sketch002 = sketch(on = XY) {
-  line1 = line(start = [var -7.55in, var -5.79in], end = [var 7.55in, var -5.79in], construction = true)
-  line2 = line(start = [var 7.55in, var -5.79in], end = [var 7.55in, var 5.79in], construction = true)
-  line3 = line(start = [var 7.55in, var 5.79in], end = [var -7.55in, var 5.79in], construction = true)
-  line4 = line(start = [var -7.55in, var 5.79in], end = [var -7.55in, var -5.79in], construction = true)
+  line1 = line(start = [var -1in, var -1.5in], end = [var 1in, var -1.5in], construction = true)
+  line2 = line(start = [var 1in, var -1.5in], end = [var 1in, var 1.5in], construction = true)
+  line3 = line(start = [var 1in, var 1.5in], end = [var -1in, var 1.5in], construction = true)
+  line4 = line(start = [var -1in, var 1.5in], end = [var -1in, var -1.5in], construction = true)
   coincident([line1.end, line2.start])
   coincident([line2.end, line3.start])
   coincident([line3.end, line4.start])
@@ -134,10 +135,10 @@ sketch002 = sketch(on = XY) {
   parallel([line3, line1])
   perpendicular([line1, line2])
   horizontal(line3)
-  line5 = line(start = [var -16.76in, var -13.56in], end = [var 16.76in, var -13.56in], construction = true)
-  line6 = line(start = [var 16.76in, var -13.56in], end = [var 16.76in, var 13.56in], construction = true)
-  line7 = line(start = [var 16.76in, var 13.56in], end = [var -16.76in, var 13.56in], construction = true)
-  line8 = line(start = [var -16.76in, var 13.56in], end = [var -16.76in, var -13.56in], construction = true)
+  line5 = line(start = [var -3.5in, var -2in], end = [var 3.5in, var -2in], construction = true)
+  line6 = line(start = [var 3.5in, var -2in], end = [var 3.5in, var 2in], construction = true)
+  line7 = line(start = [var 3.5in, var 2in], end = [var -3.5in, var 2in], construction = true)
+  line8 = line(start = [var -3.5in, var 2in], end = [var -3.5in, var -2in], construction = true)
   coincident([line5.end, line6.start])
   coincident([line6.end, line7.start])
   coincident([line7.end, line8.start])
@@ -146,16 +147,16 @@ sketch002 = sketch(on = XY) {
   parallel([line7, line5])
   perpendicular([line5, line6])
   horizontal(line7)
-  line9 = line(start = [var -16.76in, var 13.56in], end = [var -0in, var -0in], construction = true)
+  line9 = line(start = [var -3.5in, var 2in], end = [var 0in, var 0in], construction = true)
   coincident([line9.start, line8.start])
   coincident([line9.end, ORIGIN])
-  line10 = line(start = [var -0in, var -0in], end = [var 16.76in, var -13.56in], construction = true)
+  line10 = line(start = [var 0in, var 0in], end = [var 3.5in, var -2in], construction = true)
   coincident([line10.start, line9.end])
   coincident([line10.end, line6.start])
-  line11 = line(start = [var 7.55in, var 5.79in], end = [var -0in, var -0in], construction = true)
+  line11 = line(start = [var 1in, var 1.5in], end = [var 0in, var 0in], construction = true)
   coincident([line11.start, line3.start])
   coincident([line11.end, line10.start])
-  line12 = line(start = [var -0in, var -0in], end = [var -7.55in, var -5.79in], construction = true)
+  line12 = line(start = [var 0in, var 0in], end = [var -1in, var -1.5in], construction = true)
   coincident([line12.start, line11.end])
   coincident([line12.end, line4.end])
   parallel([line9, line10])
@@ -166,22 +167,30 @@ sketch002 = sketch(on = XY) {
   distance([line6.start, line6.end]) == mountingBoltPatternY
   distance([line1.start, line1.end]) == componentBoltPatternX
   distance([line2.start, line2.end]) == componentBoltPatternY
-  circle1 = circle(start = [var -20.7in, var 15.39in], center = [var -16.76in, var 13.56in])
+  circle1 = circle(start = [var -3.25in, var 2in], center = [var -3.5in, var 2in])
   coincident([circle1.center, line9.start])
-  circle2 = circle(start = [var -19.36in, var -17.22in], center = [var -16.76in, var -13.56in])
+  horizontal([circle1.center, circle1.start])
+  circle2 = circle(start = [var -3.25in, var -2in], center = [var -3.5in, var -2in])
   coincident([circle2.center, line8.end])
-  circle3 = circle(start = [var 20.08in, var -16.61in], center = [var 16.76in, var -13.56in])
+  horizontal([circle2.center, circle2.start])
+  circle3 = circle(start = [var 3.75in, var -2in], center = [var 3.5in, var -2in])
   coincident([circle3.center, line10.end])
-  circle4 = circle(start = [var 21.35in, var 10.44in], center = [var 16.76in, var 13.56in])
+  horizontal([circle3.center, circle3.start])
+  circle4 = circle(start = [var 3.75in, var 2in], center = [var 3.5in, var 2in])
   coincident([circle4.center, line7.start])
-  circle5 = circle(start = [var 10.28in, var 3.88in], center = [var 7.55in, var 5.79in])
+  horizontal([circle4.center, circle4.start])
+  circle5 = circle(start = [var 1.1875in, var 1.5in], center = [var 1in, var 1.5in])
   coincident([circle5.center, line11.start])
-  circle6 = circle(start = [var -9.18in, var 3.96in], center = [var -7.55in, var 5.79in])
+  horizontal([circle5.center, circle5.start])
+  circle6 = circle(start = [var -0.8125in, var 1.5in], center = [var -1in, var 1.5in])
   coincident([circle6.center, line4.start])
-  circle7 = circle(start = [var -6.26in, var -8.07in], center = [var -7.55in, var -5.79in])
+  horizontal([circle6.center, circle6.start])
+  circle7 = circle(start = [var -0.8125in, var -1.5in], center = [var -1in, var -1.5in])
   coincident([circle7.center, line12.end])
-  circle8 = circle(start = [var 7.14in, var -8.3in], center = [var 7.55in, var -5.79in])
+  horizontal([circle7.center, circle7.start])
+  circle8 = circle(start = [var 1.1875in, var -1.5in], center = [var 1in, var -1.5in])
   coincident([circle8.center, line2.start])
+  horizontal([circle8.center, circle8.start])
   radius(circle1) == mountingBoltDiameter
   radius(circle4) == mountingBoltDiameter
   radius(circle3) == mountingBoltDiameter
@@ -190,8 +199,10 @@ sketch002 = sketch(on = XY) {
   radius(circle6) == componentBoltDiameter
   radius(circle5) == componentBoltDiameter
   radius(circle8) == componentBoltDiameter
-  circle9 = circle(start = [var -0.14in, var 1.01in], center = [var 0in, var 0in])
+  circle9 = circle(start = [var 1.1in, var 0in], center = [var 0in, var 0in])
   coincident([circle9.center, line12.start])
+  horizontal([circle9.center, circle9.start])
+  radius(circle9) == cutoutDiameter
 }
 
 region001 = region(point = [-83.5119mm, -54.1555mm], sketch = sketch002)

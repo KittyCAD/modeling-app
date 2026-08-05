@@ -1,52 +1,52 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[563, 612, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[563, 612, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    5["Segment<br>[618, 642, 0]"]
+    3["Segment<br>[618, 642, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    6["Segment<br>[648, 686, 0]"]
+    4["Segment<br>[648, 686, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    7["Segment<br>[692, 717, 0]"]
+    5["Segment<br>[692, 717, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    8["Segment<br>[723, 762, 0]"]
+    6["Segment<br>[723, 762, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    9["Segment<br>[768, 775, 0]"]
+    7["Segment<br>[768, 775, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-    10[Solid2d]
+    8[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Plane<br>[540, 557, 0]"]
+  1["Plane<br>[540, 557, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  11["Sweep Extrusion<br>[804, 922, 0]<br>Consumed: false"]
+  9["Sweep Extrusion<br>[804, 922, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  10[Wall]
+    %% face_code_ref=Missing NodePath
+  11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
     %% face_code_ref=Missing NodePath
   13[Wall]
     %% face_code_ref=Missing NodePath
-  14[Wall]
+  14["Cap Start"]
     %% face_code_ref=Missing NodePath
-  15[Wall]
+  15["Cap End"]
     %% face_code_ref=Missing NodePath
-  11 --- 1
-  11 --- 2
-  4 --- 3
-  3 --- 5
-  3 --- 6
-  3 --- 7
-  3 --- 8
-  3 --- 9
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 ---- 9
   3 --- 10
-  3 ---- 11
+  4 --- 11
   5 --- 12
   6 --- 13
-  7 --- 14
-  8 --- 15
-  11 --- 12
-  11 --- 13
-  11 --- 14
-  11 --- 15
+  9 --- 10
+  9 --- 11
+  9 --- 12
+  9 --- 13
+  9 --- 14
+  9 --- 15
 ```

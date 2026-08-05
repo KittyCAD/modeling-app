@@ -1,68 +1,68 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[285, 766, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    3["Segment<br>[383, 430, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    4["Segment<br>[660, 716, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
   subgraph path5 [Path]
     5["Path Region<br>[785, 824, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-    11["Segment<br>[785, 824, 0]"]
+    6["Segment<br>[785, 824, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
-  subgraph path6 [Path]
-    6["Path Region<br>[855, 894, 0]<br>Consumed: true"]
+  subgraph path11 [Path]
+    11["Path Region<br>[855, 894, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
     12["Segment<br>[855, 894, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
-  subgraph path7 [Path]
-    7["Path<br>[285, 766, 0]<br>Consumed: false"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    9["Segment<br>[383, 430, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    10["Segment<br>[660, 716, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
-    %% face_code_ref=Missing NodePath
-  3["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  8["Plane<br>[285, 766, 0]"]
+  1["Plane<br>[285, 766, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  13["SketchBlock<br>[285, 766, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  14["SketchBlockConstraint EqualRadius<br>[743, 764, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
-  15["Sweep Extrusion<br>[777, 837, 0]<br>Consumed: false"]
+  7["Sweep Extrusion<br>[777, 837, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  16["Sweep Extrusion<br>[847, 907, 0]<br>Consumed: false"]
+  8[Wall]
+    %% face_code_ref=Missing NodePath
+  9["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  10["Cap End"]
+    %% face_code_ref=Missing NodePath
+  13["Sweep Extrusion<br>[847, 907, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  17[Wall]
+  14[Wall]
     %% face_code_ref=Missing NodePath
-  18[Wall]
+  15["Cap Start"]
     %% face_code_ref=Missing NodePath
-  15 --- 1
-  16 --- 2
-  15 --- 3
-  16 --- 4
-  7 x--> 5
-  8 x--> 5
-  5 <--x 11
-  5 ---- 15
-  7 x--> 6
-  8 x--> 6
-  6 <--x 12
-  6 ---- 16
-  8 --- 7
+  16["Cap End"]
+    %% face_code_ref=Missing NodePath
+  17["SketchBlock<br>[285, 766, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  18["SketchBlockConstraint EqualRadius<br>[743, 764, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
+  1 --- 2
+  1 <--x 5
+  1 <--x 11
+  1 <--x 17
+  2 --- 3
+  2 --- 4
+  2 <--x 5
+  2 <--x 11
+  17 --- 2
+  3 <--x 6
+  4 <--x 12
+  5 <--x 6
+  5 ---- 7
+  6 --- 8
+  7 --- 8
   7 --- 9
   7 --- 10
-  13 --- 7
-  8 <--x 13
-  9 <--x 11
-  10 <--x 12
-  11 --- 17
-  12 --- 18
-  15 --- 17
-  16 --- 18
+  11 <--x 12
+  11 ---- 13
+  12 --- 14
+  13 --- 14
+  13 --- 15
+  13 --- 16
 ```

@@ -1,7 +1,11 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[0, 17, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[0, 17, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
+    3["Segment<br>[0, 17, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    4["Segment<br>[0, 17, 0]"]
       %% [ProgramBodyItem { index: 0 }]
     5["Segment<br>[0, 17, 0]"]
       %% [ProgramBodyItem { index: 0 }]
@@ -9,44 +13,40 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }]
     7["Segment<br>[0, 17, 0]"]
       %% [ProgramBodyItem { index: 0 }]
-    8["Segment<br>[0, 17, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    9["Segment<br>[0, 17, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    10[Solid2d]
+    8[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Plane<br>[0, 17, 0]"]
+  1["Plane<br>[0, 17, 0]"]
     %% [ProgramBodyItem { index: 0 }]
-  11["Sweep Extrusion<br>[0, 17, 0]<br>Consumed: false"]
+  9["Sweep Extrusion<br>[0, 17, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
+  10[Wall]
+    %% face_code_ref=Missing NodePath
+  11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
     %% face_code_ref=Missing NodePath
   13[Wall]
     %% face_code_ref=Missing NodePath
-  14[Wall]
+  14["Cap Start"]
     %% face_code_ref=Missing NodePath
-  15[Wall]
+  15["Cap End"]
     %% face_code_ref=Missing NodePath
-  11 --- 1
-  11 --- 2
-  4 --- 3
-  3 --- 5
-  3 --- 6
-  3 --- 7
-  3 --- 8
-  3 --- 9
-  3 --- 10
-  3 ---- 11
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 ---- 9
+  4 --- 10
+  5 --- 11
   6 --- 12
   7 --- 13
-  8 --- 14
+  9 --- 10
+  9 --- 11
+  9 --- 12
+  9 --- 13
+  9 --- 14
   9 --- 15
-  11 --- 12
-  11 --- 13
-  11 --- 14
-  11 --- 15
 ```

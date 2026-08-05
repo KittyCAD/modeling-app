@@ -53,6 +53,7 @@ let machineManagerInThisFile: MachineManager = null!
 
 const TESTS_WITHOUT_ENGINE_WORLD = [
   'routes a cursor inside a sketch block segment to sketch solve edit',
+  'synchronizes default plane selection with the engine and editor',
   'shows default planes again when canceling sketch plane selection on a blank scene',
   'hides default planes when canceling sketch plane selection with geometry present',
 ]
@@ -1484,6 +1485,116 @@ p3 = [342.51, 216.38],
           }, 10_000)
         }
       )
+    })
+
+    describe('selection synchronization', () => {
+      it('synchronizes default plane selection with the engine and editor', () => {
+        const code = 'body001 = extrude(region001, length = 10)'
+        const dispatch = vi.fn()
+        const sendSceneCommand = vi.fn().mockResolvedValue(undefined)
+        const context = {
+          ...modelingMachineInitialInternalContext,
+          selectionRanges: {
+            graphSelections: [
+              {
+                entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+                codeRef: { range: [0, code.length, 0], pathToNode: [] },
+              },
+            ],
+            otherSelections: [],
+          },
+          kclManager: {
+            artifactGraph: new Map(),
+            ast: { body: [] },
+            code,
+            editorView: { dispatch },
+            hidePlanes: vi.fn(),
+            isShiftDown: false,
+            sceneEntitiesManager: { activeSegments: {} },
+            sceneInfra: {
+              resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {
+            connection: { pingIntervalId: 1 },
+            sendSceneCommand,
+          },
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        } as any
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'defaultPlaneSelection',
+            selection: { name: 'XY', id: 'xy-plane-id' },
+          },
+        })
+
+        expect(actor.getSnapshot().context.selectionRanges).toEqual({
+          graphSelections: [],
+          otherSelections: [{ name: 'XY', id: 'xy-plane-id' }],
+        })
+        expect(dispatch).toHaveBeenCalledWith({
+          selection: expect.objectContaining({
+            main: expect.objectContaining({ head: code.length }),
+          }),
+        })
+        expect(sendSceneCommand.mock.calls.map(([event]) => event.cmd)).toEqual(
+          [
+            { type: 'select_clear' },
+            { type: 'select_add', entities: ['xy-plane-id'] },
+          ]
+        )
+
+        sendSceneCommand.mockClear()
+
+        actor.send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          },
+        })
+
+        expect(actor.getSnapshot().context.selectionRanges).toEqual({
+          graphSelections: [
+            {
+              entityRef: { type: 'solid3d', solid3d_id: 'body-id' },
+              codeRef: {
+                range: [0, code.length, 0],
+                pathToNode: [],
+              },
+            },
+          ],
+          otherSelections: [],
+        })
+        expect(sendSceneCommand.mock.calls.map(([event]) => event.cmd)).toEqual(
+          [
+            {
+              type: 'select_entity',
+              entities: [{ type: 'solid3d', solid3d_id: 'body-id' }],
+            },
+          ]
+        )
+
+        actor.stop()
+      })
     })
 
     describe('modelingMachine sketch entry', () => {

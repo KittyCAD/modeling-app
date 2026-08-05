@@ -1898,6 +1898,12 @@ export function handleSelectionBatch({
               range: defaultSourceRange(),
             }
           }
+          if (isDefaultPlaneSelection(selection)) {
+            return {
+              id: selection.id,
+              range: defaultSourceRange(),
+            }
+          }
           return undefined
         })
         .filter(isNonNullable),
@@ -1931,6 +1937,14 @@ export function handleSelectionBatch({
       }
 
       if (isEngineRegionSelection(other)) {
+        selectionToEngine.push({
+          id: other.id,
+          range: defaultSourceRange(),
+        })
+        continue
+      }
+
+      if (isDefaultPlaneSelection(other)) {
         selectionToEngine.push({
           id: other.id,
           range: defaultSourceRange(),

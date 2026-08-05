@@ -1,10 +1,14 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[736, 772, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[736, 772, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    5["Segment<br>[1053, 1071, 0]"]
-      %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    3["Segment<br>[926, 989, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
+    4["Segment<br>[926, 989, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
+    5["Segment<br>[926, 989, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     6["Segment<br>[926, 989, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     7["Segment<br>[926, 989, 0]"]
@@ -97,22 +101,18 @@ flowchart LR
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
     51["Segment<br>[926, 989, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    52["Segment<br>[926, 989, 0]"]
-      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    53["Segment<br>[926, 989, 0]"]
-      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    54["Segment<br>[926, 989, 0]"]
-      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwArg { index: 1 }, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg]
-    55[Solid2d]
+    52["Segment<br>[1053, 1071, 0]"]
+      %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    53[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Plane<br>[713, 730, 0]"]
+  1["Plane<br>[713, 730, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  56["Sweep Extrusion<br>[1125, 1163, 0]<br>Consumed: false"]
+  54["Sweep Extrusion<br>[1125, 1163, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  55[Wall]
+    %% face_code_ref=Missing NodePath
+  56[Wall]
+    %% face_code_ref=Missing NodePath
   57[Wall]
     %% face_code_ref=Missing NodePath
   58[Wall]
@@ -209,163 +209,163 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   104[Wall]
     %% face_code_ref=Missing NodePath
-  105[Wall]
+  105["Cap Start"]
     %% face_code_ref=Missing NodePath
-  106[Wall]
+  106["Cap End"]
     %% face_code_ref=Missing NodePath
-  56 --- 1
-  56 --- 2
-  4 --- 3
-  3 --- 5
-  3 --- 6
-  3 --- 7
-  3 --- 8
-  3 --- 9
-  3 --- 10
-  3 --- 11
-  3 --- 12
-  3 --- 13
-  3 --- 14
-  3 --- 15
-  3 --- 16
-  3 --- 17
-  3 --- 18
-  3 --- 19
-  3 --- 20
-  3 --- 21
-  3 --- 22
-  3 --- 23
-  3 --- 24
-  3 --- 25
-  3 --- 26
-  3 --- 27
-  3 --- 28
-  3 --- 29
-  3 --- 30
-  3 --- 31
-  3 --- 32
-  3 --- 33
-  3 --- 34
-  3 --- 35
-  3 --- 36
-  3 --- 37
-  3 --- 38
-  3 --- 39
-  3 --- 40
-  3 --- 41
-  3 --- 42
-  3 --- 43
-  3 --- 44
-  3 --- 45
-  3 --- 46
-  3 --- 47
-  3 --- 48
-  3 --- 49
-  3 --- 50
-  3 --- 51
-  3 --- 52
-  3 --- 53
-  3 --- 54
-  3 --- 55
-  3 ---- 56
-  5 --- 57
-  6 --- 58
-  7 --- 59
-  8 --- 60
-  9 --- 61
-  10 --- 62
-  11 --- 63
-  12 --- 64
-  13 --- 65
-  14 --- 66
-  15 --- 67
-  16 --- 68
-  17 --- 69
-  18 --- 70
-  19 --- 71
-  20 --- 72
-  21 --- 73
-  22 --- 74
-  23 --- 75
-  24 --- 76
-  25 --- 77
-  26 --- 78
-  27 --- 79
-  28 --- 80
-  29 --- 81
-  30 --- 82
-  31 --- 83
-  32 --- 84
-  33 --- 85
-  34 --- 86
-  35 --- 87
-  36 --- 88
-  37 --- 89
-  38 --- 90
-  39 --- 91
-  40 --- 92
-  41 --- 93
-  42 --- 94
-  43 --- 95
-  44 --- 96
-  45 --- 97
-  46 --- 98
-  47 --- 99
-  48 --- 100
-  49 --- 101
-  50 --- 102
-  51 --- 103
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 --- 9
+  2 --- 10
+  2 --- 11
+  2 --- 12
+  2 --- 13
+  2 --- 14
+  2 --- 15
+  2 --- 16
+  2 --- 17
+  2 --- 18
+  2 --- 19
+  2 --- 20
+  2 --- 21
+  2 --- 22
+  2 --- 23
+  2 --- 24
+  2 --- 25
+  2 --- 26
+  2 --- 27
+  2 --- 28
+  2 --- 29
+  2 --- 30
+  2 --- 31
+  2 --- 32
+  2 --- 33
+  2 --- 34
+  2 --- 35
+  2 --- 36
+  2 --- 37
+  2 --- 38
+  2 --- 39
+  2 --- 40
+  2 --- 41
+  2 --- 42
+  2 --- 43
+  2 --- 44
+  2 --- 45
+  2 --- 46
+  2 --- 47
+  2 --- 48
+  2 --- 49
+  2 --- 50
+  2 --- 51
+  2 --- 52
+  2 --- 53
+  2 ---- 54
+  3 --- 100
+  4 --- 101
+  5 --- 102
+  6 --- 103
+  7 --- 55
+  8 --- 56
+  9 --- 57
+  10 --- 58
+  11 --- 59
+  12 --- 60
+  13 --- 61
+  14 --- 62
+  15 --- 63
+  16 --- 64
+  17 --- 65
+  18 --- 66
+  19 --- 67
+  20 --- 68
+  21 --- 69
+  22 --- 70
+  23 --- 71
+  24 --- 72
+  25 --- 73
+  26 --- 74
+  27 --- 75
+  28 --- 76
+  29 --- 77
+  30 --- 78
+  31 --- 79
+  32 --- 80
+  33 --- 81
+  34 --- 82
+  35 --- 83
+  36 --- 84
+  37 --- 85
+  38 --- 86
+  39 --- 87
+  40 --- 88
+  41 --- 89
+  42 --- 90
+  43 --- 91
+  44 --- 92
+  45 --- 93
+  46 --- 94
+  47 --- 95
+  48 --- 96
+  49 --- 97
+  50 --- 98
+  51 --- 99
   52 --- 104
-  53 --- 105
+  54 --- 55
+  54 --- 56
+  54 --- 57
+  54 --- 58
+  54 --- 59
+  54 --- 60
+  54 --- 61
+  54 --- 62
+  54 --- 63
+  54 --- 64
+  54 --- 65
+  54 --- 66
+  54 --- 67
+  54 --- 68
+  54 --- 69
+  54 --- 70
+  54 --- 71
+  54 --- 72
+  54 --- 73
+  54 --- 74
+  54 --- 75
+  54 --- 76
+  54 --- 77
+  54 --- 78
+  54 --- 79
+  54 --- 80
+  54 --- 81
+  54 --- 82
+  54 --- 83
+  54 --- 84
+  54 --- 85
+  54 --- 86
+  54 --- 87
+  54 --- 88
+  54 --- 89
+  54 --- 90
+  54 --- 91
+  54 --- 92
+  54 --- 93
+  54 --- 94
+  54 --- 95
+  54 --- 96
+  54 --- 97
+  54 --- 98
+  54 --- 99
+  54 --- 100
+  54 --- 101
+  54 --- 102
+  54 --- 103
+  54 --- 104
+  54 --- 105
   54 --- 106
-  56 --- 57
-  56 --- 58
-  56 --- 59
-  56 --- 60
-  56 --- 61
-  56 --- 62
-  56 --- 63
-  56 --- 64
-  56 --- 65
-  56 --- 66
-  56 --- 67
-  56 --- 68
-  56 --- 69
-  56 --- 70
-  56 --- 71
-  56 --- 72
-  56 --- 73
-  56 --- 74
-  56 --- 75
-  56 --- 76
-  56 --- 77
-  56 --- 78
-  56 --- 79
-  56 --- 80
-  56 --- 81
-  56 --- 82
-  56 --- 83
-  56 --- 84
-  56 --- 85
-  56 --- 86
-  56 --- 87
-  56 --- 88
-  56 --- 89
-  56 --- 90
-  56 --- 91
-  56 --- 92
-  56 --- 93
-  56 --- 94
-  56 --- 95
-  56 --- 96
-  56 --- 97
-  56 --- 98
-  56 --- 99
-  56 --- 100
-  56 --- 101
-  56 --- 102
-  56 --- 103
-  56 --- 104
-  56 --- 105
-  56 --- 106
 ```

@@ -90,8 +90,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15000.000000000002,
-            "y": -15000.000000000002,
+            "x": 15000.0,
+            "y": -15000.0,
             "z": 0.0
           },
           "relative": false
@@ -108,7 +108,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": 15000.0,
-            "y": 14999.999999999996,
+            "y": 15000.0,
             "z": 0.0
           },
           "relative": false
@@ -125,7 +125,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -15000.0,
-            "y": 14999.999999999996,
+            "y": 15000.0,
             "z": 0.0
           },
           "relative": false
@@ -340,8 +340,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 25000.0,
-            "y": -25000.000000000004,
+            "x": 25000.000000000004,
+            "y": -25000.0,
             "z": 0.0
           },
           "relative": false
@@ -357,8 +357,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 24999.999999999996,
-            "y": 24999.999999999996,
+            "x": 25000.000000000004,
+            "y": 25000.0,
             "z": 0.0
           },
           "relative": false
@@ -375,7 +375,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -25000.0,
-            "y": 24999.999999999993,
+            "y": 25000.0,
             "z": 0.0
           },
           "relative": false
@@ -594,7 +594,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": 5000.0,
-            "y": 3999.9999999999995,
+            "y": 4000.0,
             "z": 0.0
           },
           "relative": false
@@ -611,7 +611,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -5000.0,
-            "y": 3999.999999999999,
+            "y": 4000.0,
             "z": 0.0
           },
           "relative": false
@@ -826,8 +826,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 15000.000000000002,
-            "y": -15000.000000000002,
+            "x": 15000.0,
+            "y": -15000.0,
             "z": 0.0
           },
           "relative": false
@@ -844,7 +844,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": 15000.0,
-            "y": 14999.999999999996,
+            "y": 15000.0,
             "z": 0.0
           },
           "relative": false
@@ -861,7 +861,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -15000.0,
-            "y": 14999.999999999996,
+            "y": 15000.0,
             "z": 0.0
           },
           "relative": false
@@ -1008,7 +1008,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": 14700.0,
-            "y": -14700.000000000002,
+            "y": -14700.0,
             "z": 0.0
           },
           "relative": false
@@ -1024,8 +1024,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14699.999999999998,
-            "y": 14699.999999999996,
+            "x": 14700.0,
+            "y": 14700.0,
             "z": 0.0
           },
           "relative": false
@@ -1042,7 +1042,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -14700.0,
-            "y": 14699.999999999996,
+            "y": 14700.0,
             "z": 0.0
           },
           "relative": false
@@ -1240,7 +1240,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": 12000.0,
-            "y": -12000.000000000002,
+            "y": -12000.0,
             "z": 0.0
           },
           "relative": false
@@ -1256,8 +1256,8 @@ description: Artifact commands spinning-highrise-tower.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11999.999999999998,
-            "y": 11999.999999999998,
+            "x": 12000.0,
+            "y": 12000.0,
             "z": 0.0
           },
           "relative": false
@@ -1274,7 +1274,7 @@ description: Artifact commands spinning-highrise-tower.kcl
           "type": "line",
           "end": {
             "x": -12000.0,
-            "y": 11999.999999999996,
+            "y": 12000.0,
             "z": 0.0
           },
           "relative": false

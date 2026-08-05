@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path<br>[75, 101, 1]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[75, 101, 1]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[107, 125, 1]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -21,7 +21,7 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 9 }]
     11[Solid2d]
   end
-  2["Plane<br>[52, 69, 1]"]
+  1["Plane<br>[52, 69, 1]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["Sweep Revolve<br>[302, 319, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 10 }]
@@ -41,17 +41,17 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   20[Wall]
     %% face_code_ref=Missing NodePath
-  2 --- 1
-  1 --- 3
-  1 --- 4
-  1 --- 5
-  1 --- 6
-  1 --- 7
-  1 --- 8
-  1 --- 9
-  1 --- 10
-  1 --- 11
-  1 ---- 12
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 --- 9
+  2 --- 10
+  2 --- 11
+  2 ---- 12
   3 --- 13
   4 --- 14
   5 --- 15

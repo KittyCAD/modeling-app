@@ -1,61 +1,61 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[133, 158, 0]<br>Consumed: false"]
+  subgraph path2 [Path]
+    2["Path<br>[133, 158, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
   end
-  subgraph path4 [Path]
-    4["Path<br>[164, 270, 0]<br>Consumed: true"]
+  subgraph path3 [Path]
+    3["Path<br>[164, 270, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
+    4["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
+    5["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
+    6["Segment<br>[164, 270, 0]"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     7["Segment<br>[164, 270, 0]"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     8["Segment<br>[164, 270, 0]"]
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-    9["Segment<br>[164, 270, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-    10["Segment<br>[164, 270, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-    11["Segment<br>[164, 270, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-    12[Solid2d]
+    9[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
-  6["Plane<br>[110, 127, 0]"]
+  1["Plane<br>[110, 127, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  13["Sweep Extrusion<br>[276, 295, 0]<br>Consumed: false"]
+  10["Sweep Extrusion<br>[276, 295, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
+  11[Wall]
+    %% face_code_ref=Missing NodePath
+  12[Wall]
+    %% face_code_ref=Missing NodePath
+  13[Wall]
+    %% face_code_ref=Missing NodePath
   14[Wall]
     %% face_code_ref=Missing NodePath
-  15[Wall]
+  15["Cap Start"]
     %% face_code_ref=Missing NodePath
-  16[Wall]
+  16["Cap End"]
     %% face_code_ref=Missing NodePath
-  17[Wall]
-    %% face_code_ref=Missing NodePath
-  13 --- 1
-  13 --- 2
-  6 --- 3
-  4 --- 5
-  6 --- 4
-  4 --- 7
-  4 --- 8
-  4 --- 9
-  4 --- 10
-  4 --- 11
-  4 --- 12
-  4 ---- 13
-  13 <--x 5
+  17["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+  1 --- 2
+  1 --- 3
+  3 --- 4
+  3 --- 5
+  3 --- 6
+  3 --- 7
+  3 --- 8
+  3 --- 9
+  3 ---- 10
+  3 --- 17
+  5 --- 11
+  6 --- 12
+  7 --- 13
   8 --- 14
-  9 --- 15
+  10 --- 11
+  10 --- 12
+  10 --- 13
+  10 --- 14
+  10 --- 15
   10 --- 16
-  11 --- 17
-  13 --- 14
-  13 --- 15
-  13 --- 16
-  13 --- 17
+  10 x--> 17
 ```
