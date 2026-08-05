@@ -58,10 +58,14 @@ export default function CommandBarSelectionMixedInput({
 
     if (!selection || selection.graphSelections.length === 0) return
 
-    // Check if this argument only accepts body types (path, sweep, compositeSolid)
+    // Check if this argument only accepts body types
     // These are the artifact types that represent 3D bodies/objects
     const onlyAcceptsBodies = arg.selectionTypes?.every(
-      (type) => type === 'sweep' || type === 'compositeSolid' || type === 'path'
+      (type) =>
+        type === 'sweep' ||
+        type === 'compositeSolid' ||
+        type === 'path' ||
+        type === 'helix'
     )
 
     if (!onlyAcceptsBodies) return // Command accepts non-body types

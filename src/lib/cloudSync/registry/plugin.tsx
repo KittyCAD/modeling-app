@@ -24,26 +24,30 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import {
-  type CloudSyncProjectMetadata,
   type CloudSyncProjectMetadataIndexEntry,
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  duplicateRemoteCloudProject,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
 import {
-  getDefaultCloudProjectDirectoryPath,
+  getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectEntryFromProject,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
@@ -72,7 +76,9 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
+  type ProjectLibrarySettingsDetailsProps,
   type ProjectLibraryTypeContribution,
+  projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -98,13 +104,18 @@ type CloudSyncStatusBarPresentation = {
   tooltip: string
 }
 
-type CloudConflictProjectMenuDialog = {
+type CloudConflictDialogRequest = {
   projectPath: string
-  projectName: string
+  projectName?: string
 }
 
-const cloudConflictProjectMenuDialog =
-  signal<CloudConflictProjectMenuDialog | null>(null)
+const cloudConflictDialogRequest = signal<CloudConflictDialogRequest | null>(
+  null
+)
+
+function openCloudConflictDialog(request: CloudConflictDialogRequest) {
+  cloudConflictDialogRequest.value = request
+}
 
 const preservedCloudProjectDefaultFiles = signal<Map<string, string>>(new Map())
 
@@ -134,13 +145,15 @@ function getPreservedCloudProjectDefaultFile(
     : undefined
 }
 
-function CloudProjectLibrarySettingsDetails() {
+function CloudProjectLibrarySettingsDetails({
+  library,
+}: ProjectLibrarySettingsDetailsProps) {
   const [storagePath, setStoragePath] = useState<string>()
 
   useEffect(() => {
     let disposed = false
 
-    getDefaultCloudProjectDirectoryPath()
+    getCloudProjectLibraryMaterializationDirectoryPath(library)
       .then((projectDirectoryPath) => {
         if (!disposed) {
           setStoragePath(projectDirectoryPath)
@@ -155,11 +168,11 @@ function CloudProjectLibrarySettingsDetails() {
     return () => {
       disposed = true
     }
-  }, [])
+  }, [library])
 
   return (
-    <div className="min-w-0 text-sm m-0 flex items-stretch gap-2">
-      <p className="min-w-0 px-2 py-1 flex-1 truncate text-2">
+    <div className="m-0 flex min-w-0 flex-1 items-center gap-2 text-sm">
+      <p className="flex h-8 min-w-0 flex-1 items-center truncate px-1 text-2">
         {storagePath
           ? `Stored locally at ${storagePath}`
           : 'Resolving local storage path...'}
@@ -169,9 +182,9 @@ function CloudProjectLibrarySettingsDetails() {
           Element="button"
           type="button"
           tabIndex={0}
-          className="!p-0"
+          className="h-8 w-8 shrink-0 justify-center !p-0"
           iconStart={{
-            icon: 'folder',
+            icon: 'folderOpen',
             bgClassName: '!bg-transparent',
           }}
           disabled={!storagePath}
@@ -238,12 +251,9 @@ function CloudSyncStatusBarItem({
   useSignals()
   const location = useLocation()
   const status = cloudSyncStatus.value
-  const conflictMetadata = useCloudSyncProjectConflict(status.activeProjectPath)
+  const activeProjectPath = status.activeProjectPath
+  const conflictMetadata = useCloudSyncProjectConflict(activeProjectPath)
   const conflictMetadataList = useCloudSyncProjectConflicts()
-  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
-  const [selectedConflict, setSelectedConflict] = useState<
-    CloudSyncProjectMetadata | undefined
-  >()
   if (!status.enabled) {
     return null
   }
@@ -254,9 +264,8 @@ function CloudSyncStatusBarItem({
   const canInspectConflict =
     status.state === 'conflict' &&
     isFileRoute &&
-    status.activeProjectPath &&
+    activeProjectPath &&
     conflictMetadata?.conflict
-  const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
   const statusBarButtonContent = (
@@ -311,7 +320,12 @@ function CloudSyncStatusBarItem({
                     key={metadata.localProjectPath}
                     type="button"
                     className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
-                    onClick={() => setSelectedConflict(metadata)}
+                    onClick={() =>
+                      openCloudConflictDialog({
+                        projectPath: metadata.localProjectPath,
+                        projectName: metadata.projectName,
+                      })
+                    }
                   >
                     {metadata.projectName}
                   </button>
@@ -330,8 +344,10 @@ function CloudSyncStatusBarItem({
           className={statusBarClassName}
           data-testid="cloud-sync-status"
           onClick={() => {
-            if (canInspectConflict) {
-              setIsInspectingConflict(true)
+            if (canInspectConflict && activeProjectPath) {
+              openCloudConflictDialog({
+                projectPath: activeProjectPath,
+              })
               return
             }
             retryCloudSync()
@@ -340,23 +356,7 @@ function CloudSyncStatusBarItem({
           {statusBarButtonContent}
         </button>
       )}
-      {isInspectingConflict && status.activeProjectPath && (
-        <CloudConflictDialog
-          projectPath={status.activeProjectPath}
-          resolvedTheme={resolvedTheme}
-          onDismiss={() => setIsInspectingConflict(false)}
-          onResolved={() => setIsInspectingConflict(false)}
-        />
-      )}
-      {selectedConflictProjectPath && (
-        <CloudConflictDialog
-          projectPath={selectedConflictProjectPath}
-          resolvedTheme={resolvedTheme}
-          onDismiss={() => setSelectedConflict(undefined)}
-          onResolved={() => setSelectedConflict(undefined)}
-        />
-      )}
-      <CloudConflictProjectMenuDialogHost resolvedTheme={resolvedTheme} />
+      <CloudConflictDialogHost resolvedTheme={resolvedTheme} />
     </>
   )
 }
@@ -430,10 +430,10 @@ function CloudConflictProjectMenuItem({
         }}
         className={`${className}bg-warn-10/50 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30`}
         onClick={() => {
-          cloudConflictProjectMenuDialog.value = {
+          openCloudConflictDialog({
             projectPath: context.projectPath,
             projectName: getProjectDisplayName(context.project),
-          }
+          })
           close()
         }}
       >
@@ -448,17 +448,17 @@ function CloudConflictProjectMenuItem({
   )
 }
 
-export function CloudConflictProjectMenuDialogHost({
+export function CloudConflictDialogHost({
   resolvedTheme,
 }: {
   resolvedTheme: ResolvedTheme
 }) {
   useSignals()
-  const dialog = cloudConflictProjectMenuDialog.value
+  const dialog = cloudConflictDialogRequest.value
 
   useEffect(() => {
     return () => {
-      cloudConflictProjectMenuDialog.value = null
+      cloudConflictDialogRequest.value = null
     }
   }, [])
 
@@ -472,10 +472,10 @@ export function CloudConflictProjectMenuDialogHost({
       projectName={dialog.projectName}
       resolvedTheme={resolvedTheme}
       onDismiss={() => {
-        cloudConflictProjectMenuDialog.value = null
+        cloudConflictDialogRequest.value = null
       }}
       onResolved={() => {
-        cloudConflictProjectMenuDialog.value = null
+        cloudConflictDialogRequest.value = null
       }}
     />
   )
@@ -789,9 +789,10 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
+  const userFeatures = ctx.services.signal(userFeaturesService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    Promise.reject(new Error('Missing WASM promise registry value.'))
+    new Error('Missing WASM promise registry value.')
 
   // A materialized cloud project can be listed either by System IO (when the
   // cloud folder is the app's project directory, e.g. on web) or by the
@@ -807,7 +808,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudLibraryType: ProjectLibraryTypeContribution = {
     type: CLOUD_PROJECT_LIBRARY_TYPE,
     title: 'Cloud',
-    icon: 'network',
+    icon: 'cloud',
     order: 10,
     defaultSetting: getDefaultCloudProjectLibrarySetting(),
     newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
@@ -817,14 +818,23 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         // Creating a project only needs the local library folder, so it stays
         // available whether or not cloud sync is currently enabled. When sync
         // is on we also enroll the new project; otherwise it is picked up the
-        // next time sync is enabled (via syncExistingLocalProjects on web /
-        // startProjectSync on desktop).
-        run: async ({ requestedProjectName, requestedProjectTitle }) => {
+        // next time sync is enabled through cloud-library auto-enrollment.
+        run: async ({
+          library,
+          requestedProjectName,
+          requestedProjectTitle,
+        }) => {
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error) {
+            return Promise.reject(wasmInstancePromise)
+          }
+
           const project = await createProjectInLocalDirectory({
-            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            projectDirectoryPath:
+              await getCloudProjectLibraryMaterializationDirectoryPath(library),
             requestedProjectName,
             requestedProjectTitle,
-            wasmInstancePromise: getWasmPromise(),
+            wasmInstancePromise,
           })
 
           if (cloudSyncStatus.value.enabled) {
@@ -834,6 +844,52 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           }
 
           return project
+        },
+      },
+      duplicateProject: {
+        run: async ({ library, project }) => {
+          if (project.localProjectName && project.localProjectPath) {
+            const wasmInstancePromise = getWasmPromise()
+            if (wasmInstancePromise instanceof Error) {
+              return Promise.reject(wasmInstancePromise)
+            }
+
+            const result = await duplicateProjectInDirectory({
+              source: {
+                directoryName: project.localProjectName,
+                displayName: getHomeProjectDisplayName(project),
+                path: project.localProjectPath,
+              },
+              projectDirectoryPath:
+                await getCloudProjectLibraryMaterializationDirectoryPath(
+                  library
+                ),
+              requestedProjectTitle: getHomeProjectDisplayName(project),
+              wasmInstance: await wasmInstancePromise,
+            })
+            refreshLocalCloudProjectEntries()
+
+            return result
+          }
+
+          if (!project.remoteProjectId) {
+            return undefined
+          }
+
+          const sourceTitle = getHomeProjectDisplayName(project)
+          const duplicatedProject = await duplicateRemoteCloudProject(
+            project.remoteProjectId,
+            sourceTitle
+          )
+          if (!duplicatedProject) {
+            return undefined
+          }
+
+          return {
+            message: `Successfully duplicated "${sourceTitle}" as "${duplicatedProject.title}"`,
+            name: duplicatedProject.id,
+            title: duplicatedProject.title,
+          }
         },
       },
       // Rename/delete act on the remote project directly when it has not been
@@ -933,9 +989,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
       moveProjectTo: {
-        run: async ({ source }) => {
+        run: async ({ library, source }) => {
           const result = await moveProjectIntoLocalDirectory({
-            projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
+            projectDirectoryPath:
+              await getCloudProjectLibraryMaterializationDirectoryPath(library),
             sourceProjectPath: source.localProjectPath,
             sourceProjectName: source.localProjectName,
             defaultFile: source.defaultFile,
@@ -958,10 +1015,16 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
     },
-    readEntries: async ({ signal }) => {
+    readEntries: async ({ library, signal }) => {
+      const wasmInstancePromise = getWasmPromise()
+      if (wasmInstancePromise instanceof Error) {
+        return Promise.reject(wasmInstancePromise)
+      }
+
       const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath: await getDefaultCloudProjectDirectoryPath(),
-        wasmInstancePromise: getWasmPromise(),
+        projectDirectoryPath:
+          await getCloudProjectLibraryMaterializationDirectoryPath(library),
+        wasmInstancePromise,
         signal,
       })
       if (!signal.aborted) {
@@ -974,7 +1037,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
 
       return projects.map((project) => ({
         ...homeProjectEntryFromProject(project),
-        libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        libraryId: library.id,
       }))
     },
   }
@@ -983,6 +1046,20 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync.project-library-type',
       provides: [
+        provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+          id: 'cloud-sync.personal-cloud-library-default-policy',
+          priority: 10,
+          getDefaultLibraries: ({ isDesktop }) =>
+            !isDesktop &&
+            userFeatures.value &&
+            userFeaturesContextHas(
+              userFeatures.value.context.value,
+              OPFS_CLOUD_FEATURE_FLAG,
+              false
+            )
+              ? [getDefaultCloudProjectLibrarySetting()]
+              : undefined,
+        }),
         provide(projectLibraryTypesValueSpec, cloudLibraryType, {
           key: 'cloud-sync.project-library-type',
         }),

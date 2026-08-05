@@ -22106,8 +22106,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "tag": {
                   "commentStart": 10023,
@@ -22118,8 +22118,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000002052278907602857,
-                  5.792893000000191
+                  -0.0000000000000000031840307777407338,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22166,8 +22166,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22178,8 +22178,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 10278,
@@ -22215,7 +22215,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22227,7 +22227,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 10486,
@@ -22262,8 +22262,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000025231385225471546,
-                  0.000000000000047531216209014505
+                  -0.000000000000000004737501161190792,
+                  -0.000000000000000003035949115006643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22275,14 +22275,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.499960627686796,
-                  5.792987272663473
+                  0.4999659746545835,
+                  5.792974363316551
                 ],
                 "from": [
-                  0.8535529999999693,
-                  6.146445999999969
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999606361388794,
+                "radius": 0.49996598127502273,
                 "tag": {
                   "commentStart": 11931,
                   "end": 11935,
@@ -22292,8 +22292,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004359514416130139,
-                  5.792893000000332
+                  0.0000000000000004996003610813204,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -22332,12 +22332,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "to": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "units": "mm",
               "tag": null,
@@ -22522,8 +22522,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "tag": {
                   "commentStart": 10023,
@@ -22534,8 +22534,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000002052278907602857,
-                  5.792893000000191
+                  -0.0000000000000000031840307777407338,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22582,8 +22582,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22594,8 +22594,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 10278,
@@ -22631,7 +22631,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22643,7 +22643,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 10486,
@@ -22678,8 +22678,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000025231385225471546,
-                  0.000000000000047531216209014505
+                  -0.000000000000000004737501161190792,
+                  -0.000000000000000003035949115006643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -22691,14 +22691,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.499960627686796,
-                  5.792987272663473
+                  0.4999659746545835,
+                  5.792974363316551
                 ],
                 "from": [
-                  0.8535529999999693,
-                  6.146445999999969
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999606361388794,
+                "radius": 0.49996598127502273,
                 "tag": {
                   "commentStart": 11931,
                   "end": 11935,
@@ -22708,8 +22708,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004359514416130139,
-                  5.792893000000332
+                  0.0000000000000004996003610813204,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -22748,12 +22748,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "to": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "units": "mm",
               "tag": null,
@@ -22943,8 +22943,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000000000004632618022463197,
-                  -0.000000000000000000000000000000000884148686676154
+                  -0.0000000000000004632619153507145,
+                  0.0
                 ],
                 "tag": {
                   "commentStart": 15548,
@@ -22955,7 +22955,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.0000000000000012444483727783944,
+                  -0.0000000000000012444486766078476,
                   5.792893
                 ],
                 "type": "ToPoint",
@@ -22968,14 +22968,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.49999999999989614,
-                  5.792892218813416
+                  0.49999999999999784,
+                  5.792892218813458
                 ],
                 "from": [
-                  -0.0000000000000012444483727783944,
+                  -0.0000000000000012444486766078476,
                   5.792893
                 ],
-                "radius": 0.5000000000005076,
+                "radius": 0.5000000000006093,
                 "tag": {
                   "commentStart": 15624,
                   "end": 15628,
@@ -22985,8 +22985,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc2"
                 },
                 "to": [
-                  0.8535530000000735,
-                  6.146446000000073
+                  0.8535530000002174,
+                  6.146446000000216
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -22997,8 +22997,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8535530000000735,
-                  6.146446000000073
+                  0.8535530000002174,
+                  6.146446000000216
                 ],
                 "tag": {
                   "commentStart": 15788,
@@ -23129,8 +23129,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.00000000000000030884120124017877,
-                  -0.0000000000000000000000000000000006111330766517786
+                  -0.0000000000000003088412766431086,
+                  0.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -23169,12 +23169,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.0000000000000004632618022463197,
-                -0.000000000000000000000000000000000884148686676154
+                -0.0000000000000004632619153507145,
+                0.0
               ],
               "to": [
-                -0.0000000000000004632618022463197,
-                -0.000000000000000000000000000000000884148686676154
+                -0.0000000000000004632619153507145,
+                0.0
               ],
               "units": "mm",
               "tag": null,
@@ -23359,8 +23359,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000000000004632618022463197,
-                  -0.000000000000000000000000000000000884148686676154
+                  -0.0000000000000004632619153507145,
+                  0.0
                 ],
                 "tag": {
                   "commentStart": 15548,
@@ -23371,7 +23371,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.0000000000000012444483727783944,
+                  -0.0000000000000012444486766078476,
                   5.792893
                 ],
                 "type": "ToPoint",
@@ -23384,14 +23384,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.49999999999989614,
-                  5.792892218813416
+                  0.49999999999999784,
+                  5.792892218813458
                 ],
                 "from": [
-                  -0.0000000000000012444483727783944,
+                  -0.0000000000000012444486766078476,
                   5.792893
                 ],
-                "radius": 0.5000000000005076,
+                "radius": 0.5000000000006093,
                 "tag": {
                   "commentStart": 15624,
                   "end": 15628,
@@ -23401,8 +23401,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc2"
                 },
                 "to": [
-                  0.8535530000000735,
-                  6.146446000000073
+                  0.8535530000002174,
+                  6.146446000000216
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -23413,8 +23413,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  0.8535530000000735,
-                  6.146446000000073
+                  0.8535530000002174,
+                  6.146446000000216
                 ],
                 "tag": {
                   "commentStart": 15788,
@@ -23545,8 +23545,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.00000000000000030884120124017877,
-                  -0.0000000000000000000000000000000006111330766517786
+                  -0.0000000000000003088412766431086,
+                  0.0
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -23585,12 +23585,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.0000000000000004632618022463197,
-                -0.000000000000000000000000000000000884148686676154
+                -0.0000000000000004632619153507145,
+                0.0
               ],
               "to": [
-                -0.0000000000000004632618022463197,
-                -0.000000000000000000000000000000000884148686676154
+                -0.0000000000000004632619153507145,
+                0.0
               ],
               "units": "mm",
               "tag": null,
@@ -23667,8 +23667,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "tag": {
             "commentStart": 10023,
@@ -23679,8 +23679,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line1"
           },
           "to": [
-            -0.00000000000002052278907602857,
-            5.792893000000191
+            -0.0000000000000000031840307777407338,
+            5.792893
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -23727,8 +23727,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line4"
           },
           "to": [
-            1.8999999999999997,
-            3.300000000000004
+            1.9,
+            3.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -23739,8 +23739,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            1.8999999999999997,
-            3.300000000000004
+            1.9,
+            3.3
           ],
           "tag": {
             "commentStart": 10278,
@@ -23776,7 +23776,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "to": [
             2.6,
-            1.4000000000000041
+            1.4
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -23788,7 +23788,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "from": [
             2.6,
-            1.4000000000000041
+            1.4
           ],
           "tag": {
             "commentStart": 10486,
@@ -23823,8 +23823,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line8"
           },
           "to": [
-            -0.0000000000000025231385225471546,
-            0.000000000000047531216209014505
+            -0.000000000000000004737501161190792,
+            -0.000000000000000003035949115006643
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -23836,14 +23836,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "ccw": true,
           "center": [
-            0.499960627686796,
-            5.792987272663473
+            0.4999659746545835,
+            5.792974363316551
           ],
           "from": [
-            0.8535529999999693,
-            6.146445999999969
+            0.853553,
+            6.146446
           ],
-          "radius": 0.4999606361388794,
+          "radius": 0.49996598127502273,
           "tag": {
             "commentStart": 11931,
             "end": 11935,
@@ -23853,8 +23853,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "arc1"
           },
           "to": [
-            0.0000000004359514416130139,
-            5.792893000000332
+            0.0000000000000004996003610813204,
+            5.792893
           ],
           "type": "Arc",
           "units": "mm"
@@ -23893,12 +23893,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       },
       "start": {
         "from": [
-          -0.000000000000003784600022853469,
-          0.00000000000007129682425268764
+          -0.000000000000000003147429574235216,
+          -0.0000000000000000045539236725099626
         ],
         "to": [
-          -0.000000000000003784600022853469,
-          0.00000000000007129682425268764
+          -0.000000000000000003147429574235216,
+          -0.0000000000000000045539236725099626
         ],
         "units": "mm",
         "tag": null,
@@ -23959,8 +23959,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "tag": {
             "commentStart": 10023,
@@ -23971,8 +23971,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line1"
           },
           "to": [
-            -0.00000000000002052278907602857,
-            5.792893000000191
+            -0.0000000000000000031840307777407338,
+            5.792893
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -24019,8 +24019,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line4"
           },
           "to": [
-            1.8999999999999997,
-            3.300000000000004
+            1.9,
+            3.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -24031,8 +24031,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            1.8999999999999997,
-            3.300000000000004
+            1.9,
+            3.3
           ],
           "tag": {
             "commentStart": 10278,
@@ -24068,7 +24068,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "to": [
             2.6,
-            1.4000000000000041
+            1.4
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -24080,7 +24080,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "from": [
             2.6,
-            1.4000000000000041
+            1.4
           ],
           "tag": {
             "commentStart": 10486,
@@ -24115,8 +24115,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line8"
           },
           "to": [
-            -0.0000000000000025231385225471546,
-            0.000000000000047531216209014505
+            -0.000000000000000004737501161190792,
+            -0.000000000000000003035949115006643
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -24128,14 +24128,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "ccw": true,
           "center": [
-            0.499960627686796,
-            5.792987272663473
+            0.4999659746545835,
+            5.792974363316551
           ],
           "from": [
-            0.8535529999999693,
-            6.146445999999969
+            0.853553,
+            6.146446
           ],
-          "radius": 0.4999606361388794,
+          "radius": 0.49996598127502273,
           "tag": {
             "commentStart": 11931,
             "end": 11935,
@@ -24145,8 +24145,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "arc1"
           },
           "to": [
-            0.0000000004359514416130139,
-            5.792893000000332
+            0.0000000000000004996003610813204,
+            5.792893
           ],
           "type": "Arc",
           "units": "mm"
@@ -24185,12 +24185,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       },
       "start": {
         "from": [
-          -0.000000000000003784600022853469,
-          0.00000000000007129682425268764
+          -0.000000000000000003147429574235216,
+          -0.0000000000000000045539236725099626
         ],
         "to": [
-          -0.000000000000003784600022853469,
-          0.00000000000007129682425268764
+          -0.000000000000000003147429574235216,
+          -0.0000000000000000045539236725099626
         ],
         "units": "mm",
         "tag": null,
@@ -24254,7 +24254,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "arc": {
                     "start": [
                       {
-                        "n": 0.8535529999999693,
+                        "n": 0.853553,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24262,7 +24262,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 6.146445999999969,
+                        "n": 6.146446,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24272,7 +24272,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 0.0000000003269557802253521,
+                        "n": 0.00000000000000026952120300177773,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24280,7 +24280,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792893000000311,
+                        "n": 5.792893,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24290,7 +24290,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "center": [
                       {
-                        "n": 0.49996062768679594,
+                        "n": 0.4999659746545834,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24298,7 +24298,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792987272663473,
+                        "n": 5.792974363316551,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24406,7 +24406,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000031289036904819034,
+                        "n": -0.000000000000000003895990634758761,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24414,7 +24414,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000005876731867481786,
+                        "n": 0.0000000000000000020175211602578856,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24424,7 +24424,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999975,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24432,7 +24432,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000004623781303694226,
+                        "n": 0.000000000000000008588965993025752,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24527,7 +24527,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.8999999999999981,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24535,7 +24535,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000003370830735205596,
+                        "n": 0.000000000000000015160410825793656,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24545,7 +24545,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999988,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24553,7 +24553,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.100000000000021,
+                        "n": 5.1,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24648,7 +24648,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000003122172849808089,
+                        "n": -0.000000000000000003927286070758622,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24656,7 +24656,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000005868173046911024,
+                        "n": -0.00000000000000001728602697733108,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24666,7 +24666,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 2.599999999999998,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24674,7 +24674,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000004606663662540572,
+                        "n": -0.00000000000000003001813028215221,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24769,7 +24769,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 2.5999999999999983,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24777,7 +24777,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000003345154273444792,
+                        "n": -0.000000000000000042750233586973364,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24787,7 +24787,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 2.599999999999999,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24795,7 +24795,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 2.600000000000021,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24890,7 +24890,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000003784600022853469,
+                        "n": -0.000000000000000003147429574235216,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24898,7 +24898,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000007129682425268764,
+                        "n": -0.0000000000000000045539236725099626,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24908,7 +24908,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000002052278907602857,
+                        "n": -0.0000000000000000031840307777407338,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -24916,7 +24916,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792893000000191,
+                        "n": 5.792893,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25130,7 +25130,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.8999999999999995,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25138,7 +25138,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.100000000000008,
+                        "n": 5.1,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25148,7 +25148,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999997,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25156,7 +25156,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 3.300000000000004,
+                        "n": 3.3,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25370,7 +25370,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 2.5999999999999996,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25378,7 +25378,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 2.6000000000000085,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25396,7 +25396,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 1.4000000000000041,
+                        "n": 1.4,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25610,7 +25610,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.1999999999999986,
+                        "n": 1.2,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25618,7 +25618,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000023765608116674113,
+                        "n": -0.0000000000000000015179745575033216,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25628,7 +25628,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000025231385225471546,
+                        "n": -0.000000000000000004737501161190792,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25636,7 +25636,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000047531216209014505,
+                        "n": -0.000000000000000003035949115006643,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25733,8 +25733,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000003784600022853469,
-                    0.00000000000007129682425268764
+                    -0.000000000000000003147429574235216,
+                    -0.0000000000000000045539236725099626
                   ],
                   "tag": {
                     "commentStart": 10023,
@@ -25745,8 +25745,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line1"
                   },
                   "to": [
-                    -0.00000000000002052278907602857,
-                    5.792893000000191
+                    -0.0000000000000000031840307777407338,
+                    5.792893
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -25757,8 +25757,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000002052278907602857,
-                    5.792893000000191
+                    -0.0000000000000000031840307777407338,
+                    5.792893
                   ],
                   "tag": null,
                   "to": [
@@ -25810,8 +25810,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line4"
                   },
                   "to": [
-                    1.8999999999999997,
-                    3.300000000000004
+                    1.9,
+                    3.3
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -25822,8 +25822,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    1.8999999999999997,
-                    3.300000000000004
+                    1.9,
+                    3.3
                   ],
                   "tag": {
                     "commentStart": 10278,
@@ -25859,7 +25859,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "to": [
                     2.6,
-                    1.4000000000000041
+                    1.4
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -25871,7 +25871,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "from": [
                     2.6,
-                    1.4000000000000041
+                    1.4
                   ],
                   "tag": {
                     "commentStart": 10486,
@@ -25906,8 +25906,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line8"
                   },
                   "to": [
-                    -0.0000000000000025231385225471546,
-                    0.000000000000047531216209014505
+                    -0.000000000000000004737501161190792,
+                    -0.000000000000000003035949115006643
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -25918,13 +25918,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000025231385225471546,
-                    0.000000000000047531216209014505
+                    -0.000000000000000004737501161190792,
+                    -0.000000000000000003035949115006643
                   ],
                   "tag": null,
                   "to": [
-                    0.8535529999999693,
-                    6.146445999999969
+                    0.853553,
+                    6.146446
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -25936,14 +25936,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "ccw": true,
                   "center": [
-                    0.499960627686796,
-                    5.792987272663473
+                    0.4999659746545835,
+                    5.792974363316551
                   ],
                   "from": [
-                    0.8535529999999693,
-                    6.146445999999969
+                    0.853553,
+                    6.146446
                   ],
-                  "radius": 0.4999606361388794,
+                  "radius": 0.49996598127502273,
                   "tag": {
                     "commentStart": 11931,
                     "end": 11935,
@@ -25953,8 +25953,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "arc1"
                   },
                   "to": [
-                    0.0000000004359514416130139,
-                    5.792893000000332
+                    0.0000000000000004996003610813204,
+                    5.792893
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -25993,12 +25993,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               },
               "start": {
                 "from": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "to": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "units": "mm",
                 "tag": null,
@@ -26187,8 +26187,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "tag": {
                   "commentStart": 10023,
@@ -26199,8 +26199,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000002052278907602857,
-                  5.792893000000191
+                  -0.0000000000000000031840307777407338,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26247,8 +26247,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26259,8 +26259,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 10278,
@@ -26296,7 +26296,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26308,7 +26308,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 10486,
@@ -26343,8 +26343,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000025231385225471546,
-                  0.000000000000047531216209014505
+                  -0.000000000000000004737501161190792,
+                  -0.000000000000000003035949115006643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26356,14 +26356,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.499960627686796,
-                  5.792987272663473
+                  0.4999659746545835,
+                  5.792974363316551
                 ],
                 "from": [
-                  0.8535529999999693,
-                  6.146445999999969
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999606361388794,
+                "radius": 0.49996598127502273,
                 "tag": {
                   "commentStart": 11931,
                   "end": 11935,
@@ -26373,8 +26373,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004359514416130139,
-                  5.792893000000332
+                  0.0000000000000004996003610813204,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -26413,12 +26413,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "to": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "units": "mm",
               "tag": null,
@@ -26603,8 +26603,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000003784600022853469,
-                  0.00000000000007129682425268764
+                  -0.000000000000000003147429574235216,
+                  -0.0000000000000000045539236725099626
                 ],
                 "tag": {
                   "commentStart": 10023,
@@ -26615,8 +26615,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000002052278907602857,
-                  5.792893000000191
+                  -0.0000000000000000031840307777407338,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26663,8 +26663,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26675,8 +26675,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000004
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 10278,
@@ -26712,7 +26712,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26724,7 +26724,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000041
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 10486,
@@ -26759,8 +26759,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000025231385225471546,
-                  0.000000000000047531216209014505
+                  -0.000000000000000004737501161190792,
+                  -0.000000000000000003035949115006643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -26772,14 +26772,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.499960627686796,
-                  5.792987272663473
+                  0.4999659746545835,
+                  5.792974363316551
                 ],
                 "from": [
-                  0.8535529999999693,
-                  6.146445999999969
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999606361388794,
+                "radius": 0.49996598127502273,
                 "tag": {
                   "commentStart": 11931,
                   "end": 11935,
@@ -26789,8 +26789,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004359514416130139,
-                  5.792893000000332
+                  0.0000000000000004996003610813204,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -26829,12 +26829,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "to": [
-                -0.000000000000003784600022853469,
-                0.00000000000007129682425268764
+                -0.000000000000000003147429574235216,
+                -0.0000000000000000045539236725099626
               ],
               "units": "mm",
               "tag": null,
@@ -27030,8 +27030,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              -0.000000000000003784600022853469,
-              0.00000000000007129682425268764
+              -0.000000000000000003147429574235216,
+              -0.0000000000000000045539236725099626
             ],
             "tag": {
               "commentStart": 10023,
@@ -27042,8 +27042,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line1"
             },
             "to": [
-              -0.00000000000002052278907602857,
-              5.792893000000191
+              -0.0000000000000000031840307777407338,
+              5.792893
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27090,8 +27090,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line4"
             },
             "to": [
-              1.8999999999999997,
-              3.300000000000004
+              1.9,
+              3.3
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27102,8 +27102,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              1.8999999999999997,
-              3.300000000000004
+              1.9,
+              3.3
             ],
             "tag": {
               "commentStart": 10278,
@@ -27139,7 +27139,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               2.6,
-              1.4000000000000041
+              1.4
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27151,7 +27151,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "from": [
               2.6,
-              1.4000000000000041
+              1.4
             ],
             "tag": {
               "commentStart": 10486,
@@ -27186,8 +27186,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line8"
             },
             "to": [
-              -0.0000000000000025231385225471546,
-              0.000000000000047531216209014505
+              -0.000000000000000004737501161190792,
+              -0.000000000000000003035949115006643
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27199,14 +27199,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "ccw": true,
             "center": [
-              0.499960627686796,
-              5.792987272663473
+              0.4999659746545835,
+              5.792974363316551
             ],
             "from": [
-              0.8535529999999693,
-              6.146445999999969
+              0.853553,
+              6.146446
             ],
-            "radius": 0.4999606361388794,
+            "radius": 0.49996598127502273,
             "tag": {
               "commentStart": 11931,
               "end": 11935,
@@ -27216,8 +27216,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc1"
             },
             "to": [
-              0.0000000004359514416130139,
-              5.792893000000332
+              0.0000000000000004996003610813204,
+              5.792893
             ],
             "type": "Arc",
             "units": "mm"
@@ -27256,12 +27256,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         },
         "start": {
           "from": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "to": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "units": "mm",
           "tag": null,
@@ -27446,8 +27446,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              -0.000000000000003784600022853469,
-              0.00000000000007129682425268764
+              -0.000000000000000003147429574235216,
+              -0.0000000000000000045539236725099626
             ],
             "tag": {
               "commentStart": 10023,
@@ -27458,8 +27458,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line1"
             },
             "to": [
-              -0.00000000000002052278907602857,
-              5.792893000000191
+              -0.0000000000000000031840307777407338,
+              5.792893
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27506,8 +27506,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line4"
             },
             "to": [
-              1.8999999999999997,
-              3.300000000000004
+              1.9,
+              3.3
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27518,8 +27518,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              1.8999999999999997,
-              3.300000000000004
+              1.9,
+              3.3
             ],
             "tag": {
               "commentStart": 10278,
@@ -27555,7 +27555,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               2.6,
-              1.4000000000000041
+              1.4
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27567,7 +27567,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "from": [
               2.6,
-              1.4000000000000041
+              1.4
             ],
             "tag": {
               "commentStart": 10486,
@@ -27602,8 +27602,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line8"
             },
             "to": [
-              -0.0000000000000025231385225471546,
-              0.000000000000047531216209014505
+              -0.000000000000000004737501161190792,
+              -0.000000000000000003035949115006643
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27615,14 +27615,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "ccw": true,
             "center": [
-              0.499960627686796,
-              5.792987272663473
+              0.4999659746545835,
+              5.792974363316551
             ],
             "from": [
-              0.8535529999999693,
-              6.146445999999969
+              0.853553,
+              6.146446
             ],
-            "radius": 0.4999606361388794,
+            "radius": 0.49996598127502273,
             "tag": {
               "commentStart": 11931,
               "end": 11935,
@@ -27632,8 +27632,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc1"
             },
             "to": [
-              0.0000000004359514416130139,
-              5.792893000000332
+              0.0000000000000004996003610813204,
+              5.792893
             ],
             "type": "Arc",
             "units": "mm"
@@ -27672,12 +27672,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         },
         "start": {
           "from": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "to": [
-            -0.000000000000003784600022853469,
-            0.00000000000007129682425268764
+            -0.000000000000000003147429574235216,
+            -0.0000000000000000045539236725099626
           ],
           "units": "mm",
           "tag": null,
@@ -27862,8 +27862,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000022044622360052028,
-              0.00000000000004157633469598311
+              -0.0000000000000000023987356306458905,
+              0.000000000000000007751455997811905
             ],
             "tag": {
               "commentStart": 12379,
@@ -27874,8 +27874,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line1"
             },
             "to": [
-              -0.00000000000001197294221396365,
-              5.792893000000112
+              -0.0000000000000000024067414062879685,
+              5.792893
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27922,8 +27922,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line4"
             },
             "to": [
-              1.8999999999999997,
-              3.300000000000002
+              1.9,
+              3.3
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27934,8 +27934,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              1.8999999999999997,
-              3.300000000000002
+              1.9,
+              3.3
             ],
             "tag": {
               "commentStart": 12634,
@@ -27971,7 +27971,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "to": [
               2.6,
-              1.4000000000000024
+              1.4
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -27983,7 +27983,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "from": [
               2.6,
-              1.4000000000000024
+              1.4
             ],
             "tag": {
               "commentStart": 12842,
@@ -28018,8 +28018,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line8"
             },
             "to": [
-              -0.0000000000000014394556328337985,
-              0.000000000000027717556488649587
+              -0.000000000000000003846040109656163,
+              0.000000000000000005167637331874603
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -28031,14 +28031,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "ccw": true,
             "center": [
-              0.4999749447561642,
-              5.792952708152364
+              0.4999777793769562,
+              5.792945864177255
             ],
             "from": [
-              0.8535529999999821,
-              6.146445999999982
+              0.853553,
+              6.146446
             ],
-            "radius": 0.4999749479036583,
+            "radius": 0.49997778217170163,
             "tag": {
               "commentStart": 14287,
               "end": 14291,
@@ -28048,8 +28048,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc1"
             },
             "to": [
-              0.0000000004177480028566549,
-              5.792893000000195
+              0.0,
+              5.792893
             ],
             "type": "Arc",
             "units": "mm"
@@ -28088,12 +28088,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         },
         "start": {
           "from": [
-            -0.0000000000000022044622360052028,
-            0.00000000000004157633469598311
+            -0.0000000000000000023987356306458905,
+            0.000000000000000007751455997811905
           ],
           "to": [
-            -0.0000000000000022044622360052028,
-            0.00000000000004157633469598311
+            -0.0000000000000000023987356306458905,
+            0.000000000000000007751455997811905
           ],
           "units": "mm",
           "tag": null,
@@ -28278,8 +28278,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000004632618022463197,
-              -0.000000000000000000000000000000000884148686676154
+              -0.0000000000000004632619153507145,
+              0.0
             ],
             "tag": {
               "commentStart": 15548,
@@ -28290,7 +28290,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line1"
             },
             "to": [
-              -0.0000000000000012444483727783944,
+              -0.0000000000000012444486766078476,
               5.792893
             ],
             "type": "ToPoint",
@@ -28303,14 +28303,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "ccw": true,
             "center": [
-              0.49999999999989614,
-              5.792892218813416
+              0.49999999999999784,
+              5.792892218813458
             ],
             "from": [
-              -0.0000000000000012444483727783944,
+              -0.0000000000000012444486766078476,
               5.792893
             ],
-            "radius": 0.5000000000005076,
+            "radius": 0.5000000000006093,
             "tag": {
               "commentStart": 15624,
               "end": 15628,
@@ -28320,8 +28320,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "arc2"
             },
             "to": [
-              0.8535530000000735,
-              6.146446000000073
+              0.8535530000002174,
+              6.146446000000216
             ],
             "type": "Arc",
             "units": "mm"
@@ -28332,8 +28332,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "sourceRange": []
             },
             "from": [
-              0.8535530000000735,
-              6.146446000000073
+              0.8535530000002174,
+              6.146446000000216
             ],
             "tag": {
               "commentStart": 15788,
@@ -28464,8 +28464,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "line8"
             },
             "to": [
-              -0.00000000000000030884120124017877,
-              -0.0000000000000000000000000000000006111330766517786
+              -0.0000000000000003088412766431086,
+              0.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -28504,12 +28504,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         },
         "start": {
           "from": [
-            -0.0000000000000004632618022463197,
-            -0.000000000000000000000000000000000884148686676154
+            -0.0000000000000004632619153507145,
+            0.0
           ],
           "to": [
-            -0.0000000000000004632618022463197,
-            -0.000000000000000000000000000000000884148686676154
+            -0.0000000000000004632619153507145,
+            0.0
           ],
           "units": "mm",
           "tag": null,
@@ -28620,8 +28620,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000004632618022463197,
-            -0.000000000000000000000000000000000884148686676154
+            -0.0000000000000004632619153507145,
+            0.0
           ],
           "tag": {
             "commentStart": 15548,
@@ -28632,7 +28632,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line1"
           },
           "to": [
-            -0.0000000000000012444483727783944,
+            -0.0000000000000012444486766078476,
             5.792893
           ],
           "type": "ToPoint",
@@ -28645,14 +28645,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "ccw": true,
           "center": [
-            0.49999999999989614,
-            5.792892218813416
+            0.49999999999999784,
+            5.792892218813458
           ],
           "from": [
-            -0.0000000000000012444483727783944,
+            -0.0000000000000012444486766078476,
             5.792893
           ],
-          "radius": 0.5000000000005076,
+          "radius": 0.5000000000006093,
           "tag": {
             "commentStart": 15624,
             "end": 15628,
@@ -28662,8 +28662,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "arc2"
           },
           "to": [
-            0.8535530000000735,
-            6.146446000000073
+            0.8535530000002174,
+            6.146446000000216
           ],
           "type": "Arc",
           "units": "mm"
@@ -28674,8 +28674,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            0.8535530000000735,
-            6.146446000000073
+            0.8535530000002174,
+            6.146446000000216
           ],
           "tag": {
             "commentStart": 15788,
@@ -28806,8 +28806,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line8"
           },
           "to": [
-            -0.00000000000000030884120124017877,
-            -0.0000000000000000000000000000000006111330766517786
+            -0.0000000000000003088412766431086,
+            0.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -28846,12 +28846,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       },
       "start": {
         "from": [
-          -0.0000000000000004632618022463197,
-          -0.000000000000000000000000000000000884148686676154
+          -0.0000000000000004632619153507145,
+          0.0
         ],
         "to": [
-          -0.0000000000000004632618022463197,
-          -0.000000000000000000000000000000000884148686676154
+          -0.0000000000000004632619153507145,
+          0.0
         ],
         "units": "mm",
         "tag": null,
@@ -28915,7 +28915,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "arc": {
                     "start": [
                       {
-                        "n": -0.000000000000002025634922668971,
+                        "n": -0.0000000000000020256354391094292,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -28951,7 +28951,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "center": [
                       {
-                        "n": 0.49999999999989536,
+                        "n": 0.49999999999999706,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -28959,7 +28959,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792892218813416,
+                        "n": 5.792892218813458,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29067,7 +29067,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000038150971883814353,
+                        "n": -0.00000000000000038150981198293914,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29075,7 +29075,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000000013061447283992333,
+                        "n": 0.000000000000000013061447283992338,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29093,7 +29093,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000000002612289458104611,
+                        "n": 0.000000000000000026122894581046123,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29196,7 +29196,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000000003918434190422279,
+                        "n": 0.0000000000000000391843419042228,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29309,7 +29309,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000038150971883814353,
+                        "n": -0.00000000000000038150981198293914,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29317,7 +29317,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.000000000000000013061447283992333,
+                        "n": -0.000000000000000013061447283992338,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29335,7 +29335,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.00000000000000002612289458104611,
+                        "n": -0.000000000000000026122894581046123,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29438,7 +29438,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.00000000000000003918434190422279,
+                        "n": -0.0000000000000000391843419042228,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29551,7 +29551,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000004632618022463197,
+                        "n": -0.0000000000000004632619153507145,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29559,7 +29559,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.000000000000000000000000000000000884148686676154,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -29569,7 +29569,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000012444483727783944,
+                        "n": -0.0000000000000012444486766078476,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -30279,7 +30279,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.00000000000000000000000000000000030556653817310603,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -30289,7 +30289,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000000030884120124017877,
+                        "n": -0.0000000000000003088412766431086,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -30297,7 +30297,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": -0.0000000000000000000000000000000006111330766517786,
+                        "n": 0.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -30394,8 +30394,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000004632618022463197,
-                    -0.000000000000000000000000000000000884148686676154
+                    -0.0000000000000004632619153507145,
+                    0.0
                   ],
                   "tag": {
                     "commentStart": 15548,
@@ -30406,7 +30406,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line1"
                   },
                   "to": [
-                    -0.0000000000000012444483727783944,
+                    -0.0000000000000012444486766078476,
                     5.792893
                   ],
                   "type": "ToPoint",
@@ -30419,14 +30419,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "ccw": true,
                   "center": [
-                    0.49999999999989614,
-                    5.792892218813416
+                    0.49999999999999784,
+                    5.792892218813458
                   ],
                   "from": [
-                    -0.0000000000000012444483727783944,
+                    -0.0000000000000012444486766078476,
                     5.792893
                   ],
-                  "radius": 0.5000000000005076,
+                  "radius": 0.5000000000006093,
                   "tag": {
                     "commentStart": 15624,
                     "end": 15628,
@@ -30436,8 +30436,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "arc2"
                   },
                   "to": [
-                    0.8535530000000735,
-                    6.146446000000073
+                    0.8535530000002174,
+                    6.146446000000216
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -30448,8 +30448,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    0.8535530000000735,
-                    6.146446000000073
+                    0.8535530000002174,
+                    6.146446000000216
                   ],
                   "tag": {
                     "commentStart": 15788,
@@ -30580,8 +30580,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line8"
                   },
                   "to": [
-                    -0.00000000000000030884120124017877,
-                    -0.0000000000000000000000000000000006111330766517786
+                    -0.0000000000000003088412766431086,
+                    0.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -30620,12 +30620,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               },
               "start": {
                 "from": [
-                  -0.0000000000000004632618022463197,
-                  -0.000000000000000000000000000000000884148686676154
+                  -0.0000000000000004632619153507145,
+                  0.0
                 ],
                 "to": [
-                  -0.0000000000000004632618022463197,
-                  -0.000000000000000000000000000000000884148686676154
+                  -0.0000000000000004632619153507145,
+                  0.0
                 ],
                 "units": "mm",
                 "tag": null,
@@ -30692,8 +30692,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000022044622360052028,
-            0.00000000000004157633469598311
+            -0.0000000000000000023987356306458905,
+            0.000000000000000007751455997811905
           ],
           "tag": {
             "commentStart": 12379,
@@ -30704,8 +30704,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line1"
           },
           "to": [
-            -0.00000000000001197294221396365,
-            5.792893000000112
+            -0.0000000000000000024067414062879685,
+            5.792893
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -30752,8 +30752,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line4"
           },
           "to": [
-            1.8999999999999997,
-            3.300000000000002
+            1.9,
+            3.3
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -30764,8 +30764,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "sourceRange": []
           },
           "from": [
-            1.8999999999999997,
-            3.300000000000002
+            1.9,
+            3.3
           ],
           "tag": {
             "commentStart": 12634,
@@ -30801,7 +30801,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "to": [
             2.6,
-            1.4000000000000024
+            1.4
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -30813,7 +30813,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "from": [
             2.6,
-            1.4000000000000024
+            1.4
           ],
           "tag": {
             "commentStart": 12842,
@@ -30848,8 +30848,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "line8"
           },
           "to": [
-            -0.0000000000000014394556328337985,
-            0.000000000000027717556488649587
+            -0.000000000000000003846040109656163,
+            0.000000000000000005167637331874603
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -30861,14 +30861,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           "ccw": true,
           "center": [
-            0.4999749447561642,
-            5.792952708152364
+            0.4999777793769562,
+            5.792945864177255
           ],
           "from": [
-            0.8535529999999821,
-            6.146445999999982
+            0.853553,
+            6.146446
           ],
-          "radius": 0.4999749479036583,
+          "radius": 0.49997778217170163,
           "tag": {
             "commentStart": 14287,
             "end": 14291,
@@ -30878,8 +30878,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "value": "arc1"
           },
           "to": [
-            0.0000000004177480028566549,
-            5.792893000000195
+            0.0,
+            5.792893
           ],
           "type": "Arc",
           "units": "mm"
@@ -30918,12 +30918,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       },
       "start": {
         "from": [
-          -0.0000000000000022044622360052028,
-          0.00000000000004157633469598311
+          -0.0000000000000000023987356306458905,
+          0.000000000000000007751455997811905
         ],
         "to": [
-          -0.0000000000000022044622360052028,
-          0.00000000000004157633469598311
+          -0.0000000000000000023987356306458905,
+          0.000000000000000007751455997811905
         ],
         "units": "mm",
         "tag": null,
@@ -30987,7 +30987,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "arc": {
                     "start": [
                       {
-                        "n": 0.8535529999999821,
+                        "n": 0.853553,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -30995,7 +30995,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 6.146445999999982,
+                        "n": 6.146446,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31005,7 +31005,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 0.0000000003133061146236402,
+                        "n": -0.000000000000000017981897255830234,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31013,7 +31013,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792893000000182,
+                        "n": 5.792893,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31023,7 +31023,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "center": [
                       {
-                        "n": 0.49997494475616416,
+                        "n": 0.4999777793769562,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31031,7 +31031,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792952708152364,
+                        "n": 5.792945864177255,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31139,7 +31139,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000018127556442120004,
+                        "n": -0.0000000000000000028698189758741682,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31147,7 +31147,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000003418455997128338,
+                        "n": 0.000000000000000040628310556269227,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31157,7 +31157,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999986,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31165,7 +31165,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000026792785209967032,
+                        "n": 0.00000000000000007350516511472654,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31260,7 +31260,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.8999999999999988,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31268,7 +31268,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000019401010419806965,
+                        "n": 0.00000000000000010638201967318385,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31278,7 +31278,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999992,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31286,7 +31286,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.100000000000012,
+                        "n": 5.1,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31381,7 +31381,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000018521539286017283,
+                        "n": -0.0000000000000000028707935742267512,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31389,7 +31389,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000034245610897518216,
+                        "n": -0.0000000000000000147868307563897,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31399,7 +31399,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 2.5999999999999988,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31407,7 +31407,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000026914887062481122,
+                        "n": -0.00000000000000003732511751059131,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31502,7 +31502,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 2.599999999999999,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31510,7 +31510,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000001958416319868915,
+                        "n": -0.00000000000000005986340426479293,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31520,7 +31520,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 2.5999999999999996,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31528,7 +31528,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 2.600000000000012,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31623,7 +31623,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000022044622360052028,
+                        "n": -0.0000000000000000023987356306458905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31631,7 +31631,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000004157633469598311,
+                        "n": 0.000000000000000007751455997811905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31641,7 +31641,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000001197294221396365,
+                        "n": -0.0000000000000000024067414062879685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31649,7 +31649,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.792893000000112,
+                        "n": 5.792893,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31863,7 +31863,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.8999999999999997,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31871,7 +31871,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 5.100000000000005,
+                        "n": 5.1,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31881,7 +31881,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": 1.8999999999999997,
+                        "n": 1.9,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -31889,7 +31889,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 3.300000000000002,
+                        "n": 3.3,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32103,7 +32103,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 2.5999999999999996,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32111,7 +32111,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 2.600000000000005,
+                        "n": 2.6,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32129,7 +32129,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 1.4000000000000024,
+                        "n": 1.4,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32343,7 +32343,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.1999999999999993,
+                        "n": 1.2,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32351,7 +32351,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.00000000000001385877825172306,
+                        "n": 0.0000000000000000025838186659373015,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32361,7 +32361,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000014394556328337985,
+                        "n": -0.000000000000000003846040109656163,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32369,7 +32369,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         }
                       },
                       {
-                        "n": 0.000000000000027717556488649587,
+                        "n": 0.000000000000000005167637331874603,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -32466,8 +32466,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000022044622360052028,
-                    0.00000000000004157633469598311
+                    -0.0000000000000000023987356306458905,
+                    0.000000000000000007751455997811905
                   ],
                   "tag": {
                     "commentStart": 12379,
@@ -32478,8 +32478,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line1"
                   },
                   "to": [
-                    -0.00000000000001197294221396365,
-                    5.792893000000112
+                    -0.0000000000000000024067414062879685,
+                    5.792893
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -32490,8 +32490,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000001197294221396365,
-                    5.792893000000112
+                    -0.0000000000000000024067414062879685,
+                    5.792893
                   ],
                   "tag": null,
                   "to": [
@@ -32543,8 +32543,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line4"
                   },
                   "to": [
-                    1.8999999999999997,
-                    3.300000000000002
+                    1.9,
+                    3.3
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -32555,8 +32555,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    1.8999999999999997,
-                    3.300000000000002
+                    1.9,
+                    3.3
                   ],
                   "tag": {
                     "commentStart": 12634,
@@ -32592,7 +32592,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "to": [
                     2.6,
-                    1.4000000000000024
+                    1.4
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -32604,7 +32604,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "from": [
                     2.6,
-                    1.4000000000000024
+                    1.4
                   ],
                   "tag": {
                     "commentStart": 12842,
@@ -32639,8 +32639,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "line8"
                   },
                   "to": [
-                    -0.0000000000000014394556328337985,
-                    0.000000000000027717556488649587
+                    -0.000000000000000003846040109656163,
+                    0.000000000000000005167637331874603
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -32651,13 +32651,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000014394556328337985,
-                    0.000000000000027717556488649587
+                    -0.000000000000000003846040109656163,
+                    0.000000000000000005167637331874603
                   ],
                   "tag": null,
                   "to": [
-                    0.8535529999999821,
-                    6.146445999999982
+                    0.853553,
+                    6.146446
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -32669,14 +32669,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   },
                   "ccw": true,
                   "center": [
-                    0.4999749447561642,
-                    5.792952708152364
+                    0.4999777793769562,
+                    5.792945864177255
                   ],
                   "from": [
-                    0.8535529999999821,
-                    6.146445999999982
+                    0.853553,
+                    6.146446
                   ],
-                  "radius": 0.4999749479036583,
+                  "radius": 0.49997778217170163,
                   "tag": {
                     "commentStart": 14287,
                     "end": 14291,
@@ -32686,8 +32686,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "value": "arc1"
                   },
                   "to": [
-                    0.0000000004177480028566549,
-                    5.792893000000195
+                    0.0,
+                    5.792893
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -32726,12 +32726,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               },
               "start": {
                 "from": [
-                  -0.0000000000000022044622360052028,
-                  0.00000000000004157633469598311
+                  -0.0000000000000000023987356306458905,
+                  0.000000000000000007751455997811905
                 ],
                 "to": [
-                  -0.0000000000000022044622360052028,
-                  0.00000000000004157633469598311
+                  -0.0000000000000000023987356306458905,
+                  0.000000000000000007751455997811905
                 ],
                 "units": "mm",
                 "tag": null,
@@ -32920,8 +32920,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000000000022044622360052028,
-                  0.00000000000004157633469598311
+                  -0.0000000000000000023987356306458905,
+                  0.000000000000000007751455997811905
                 ],
                 "tag": {
                   "commentStart": 12379,
@@ -32932,8 +32932,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000001197294221396365,
-                  5.792893000000112
+                  -0.0000000000000000024067414062879685,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -32980,8 +32980,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000002
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -32992,8 +32992,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000002
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 12634,
@@ -33029,7 +33029,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000024
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33041,7 +33041,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000024
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 12842,
@@ -33076,8 +33076,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000014394556328337985,
-                  0.000000000000027717556488649587
+                  -0.000000000000000003846040109656163,
+                  0.000000000000000005167637331874603
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33089,14 +33089,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.4999749447561642,
-                  5.792952708152364
+                  0.4999777793769562,
+                  5.792945864177255
                 ],
                 "from": [
-                  0.8535529999999821,
-                  6.146445999999982
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999749479036583,
+                "radius": 0.49997778217170163,
                 "tag": {
                   "commentStart": 14287,
                   "end": 14291,
@@ -33106,8 +33106,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004177480028566549,
-                  5.792893000000195
+                  0.0,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -33146,12 +33146,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.0000000000000022044622360052028,
-                0.00000000000004157633469598311
+                -0.0000000000000000023987356306458905,
+                0.000000000000000007751455997811905
               ],
               "to": [
-                -0.0000000000000022044622360052028,
-                0.00000000000004157633469598311
+                -0.0000000000000000023987356306458905,
+                0.000000000000000007751455997811905
               ],
               "units": "mm",
               "tag": null,
@@ -33336,8 +33336,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000000000022044622360052028,
-                  0.00000000000004157633469598311
+                  -0.0000000000000000023987356306458905,
+                  0.000000000000000007751455997811905
                 ],
                 "tag": {
                   "commentStart": 12379,
@@ -33348,8 +33348,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line1"
                 },
                 "to": [
-                  -0.00000000000001197294221396365,
-                  5.792893000000112
+                  -0.0000000000000000024067414062879685,
+                  5.792893
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33396,8 +33396,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line4"
                 },
                 "to": [
-                  1.8999999999999997,
-                  3.300000000000002
+                  1.9,
+                  3.3
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33408,8 +33408,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "sourceRange": []
                 },
                 "from": [
-                  1.8999999999999997,
-                  3.300000000000002
+                  1.9,
+                  3.3
                 ],
                 "tag": {
                   "commentStart": 12634,
@@ -33445,7 +33445,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "to": [
                   2.6,
-                  1.4000000000000024
+                  1.4
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33457,7 +33457,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "from": [
                   2.6,
-                  1.4000000000000024
+                  1.4
                 ],
                 "tag": {
                   "commentStart": 12842,
@@ -33492,8 +33492,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "line8"
                 },
                 "to": [
-                  -0.0000000000000014394556328337985,
-                  0.000000000000027717556488649587
+                  -0.000000000000000003846040109656163,
+                  0.000000000000000005167637331874603
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -33505,14 +33505,14 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 },
                 "ccw": true,
                 "center": [
-                  0.4999749447561642,
-                  5.792952708152364
+                  0.4999777793769562,
+                  5.792945864177255
                 ],
                 "from": [
-                  0.8535529999999821,
-                  6.146445999999982
+                  0.853553,
+                  6.146446
                 ],
-                "radius": 0.4999749479036583,
+                "radius": 0.49997778217170163,
                 "tag": {
                   "commentStart": 14287,
                   "end": 14291,
@@ -33522,8 +33522,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "value": "arc1"
                 },
                 "to": [
-                  0.0000000004177480028566549,
-                  5.792893000000195
+                  0.0,
+                  5.792893
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -33562,12 +33562,12 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             },
             "start": {
               "from": [
-                -0.0000000000000022044622360052028,
-                0.00000000000004157633469598311
+                -0.0000000000000000023987356306458905,
+                0.000000000000000007751455997811905
               ],
               "to": [
-                -0.0000000000000022044622360052028,
-                0.00000000000004157633469598311
+                -0.0000000000000000023987356306458905,
+                0.000000000000000007751455997811905
               ],
               "units": "mm",
               "tag": null,

@@ -9,6 +9,7 @@ export enum SystemIOMachineEvents {
   navigateToProject = 'navigate to project',
   navigateToFile = 'navigate to file',
   createProject = 'create project',
+  duplicateProject = 'duplicate project',
   renameProject = 'rename project',
   done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
