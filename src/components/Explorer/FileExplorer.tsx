@@ -170,6 +170,17 @@ function FileExplorerRowContextMenu({
       menuTargetElement={itemRef}
       callback={callback}
       items={[
+        ...(row.isFolder && !row.isFake
+          ? [
+              <ContextMenuItem
+                key="create-file"
+                data-testid="context-menu-create-file"
+                onClick={row.onCreateFile}
+              >
+                Create new file
+              </ContextMenuItem>,
+            ]
+          : []),
         <ContextMenuItem data-testid="context-menu-rename" onClick={onRename}>
           Rename
         </ContextMenuItem>,

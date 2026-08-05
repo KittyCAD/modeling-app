@@ -137,8 +137,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "sourceRange": []
             },
             "from": [
-              -0.00000000000000008331965970786588,
-              0.000000000000000000003109110386983066
+              -0.000000000000000000837371604523271,
+              0.0000000000000000000001484372029178405
             ],
             "tag": {
               "commentStart": 32,
@@ -149,8 +149,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "value": "line1"
             },
             "to": [
-              29.668887996034876,
-              0.000000000000000027865596450687793
+              29.66888885445431,
+              0.00000000000000000028012941781912637
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -162,14 +162,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             },
             "ccw": true,
             "center": [
-              14.834443998017436,
-              4.960000000000001
+              14.834444427227156,
+              4.960000450474033
             ],
             "from": [
-              29.668887996034876,
-              0.000000000000000027865596450687793
+              29.66888885445431,
+              0.00000000000000000028012941781912637
             ],
-            "radius": 15.641685610263224,
+            "radius": 15.64168616016807,
             "tag": {
               "commentStart": 156,
               "end": 160,
@@ -179,7 +179,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "value": "arc1"
             },
             "to": [
-              -0.000000000000005329070518200751,
+              0.0,
               0.000000000000006217248937900877
             ],
             "type": "Arc",
@@ -192,14 +192,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             },
             "ccw": true,
             "center": [
-              14.834443998017436,
-              4.960000000000001
+              14.834444427227156,
+              4.960000450474033
             ],
             "from": [
-              29.668887996034876,
-              0.000000000000000027865596450687793
+              29.66888885445431,
+              0.00000000000000000028012941781912637
             ],
-            "radius": 15.641685610263224,
+            "radius": 15.64168616016807,
             "tag": {
               "commentStart": 156,
               "end": 160,
@@ -209,7 +209,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               "value": "arc1"
             },
             "to": [
-              -0.000000000000005329070518200751,
+              0.0,
               0.000000000000006217248937900877
             ],
             "type": "Arc",
@@ -273,12 +273,12 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
         },
         "start": {
           "from": [
-            -0.00000000000000008331965970786588,
-            0.000000000000000000003109110386983066
+            -0.000000000000000000837371604523271,
+            0.0000000000000000000001484372029178405
           ],
           "to": [
-            -0.00000000000000008331965970786588,
-            0.000000000000000000003109110386983066
+            -0.000000000000000000837371604523271,
+            0.0000000000000000000001484372029178405
           ],
           "units": "mm",
           "tag": null,
@@ -587,8 +587,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "sourceRange": []
           },
           "from": [
-            -0.00000000000000008331965970786588,
-            0.000000000000000000003109110386983066
+            -0.000000000000000000837371604523271,
+            0.0000000000000000000001484372029178405
           ],
           "tag": {
             "commentStart": 32,
@@ -599,8 +599,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "value": "line1"
           },
           "to": [
-            29.668887996034876,
-            0.000000000000000027865596450687793
+            29.66888885445431,
+            0.00000000000000000028012941781912637
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -612,14 +612,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           "ccw": true,
           "center": [
-            14.834443998017436,
-            4.960000000000001
+            14.834444427227156,
+            4.960000450474033
           ],
           "from": [
-            29.668887996034876,
-            0.000000000000000027865596450687793
+            29.66888885445431,
+            0.00000000000000000028012941781912637
           ],
-          "radius": 15.641685610263224,
+          "radius": 15.64168616016807,
           "tag": {
             "commentStart": 156,
             "end": 160,
@@ -629,7 +629,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "value": "arc1"
           },
           "to": [
-            -0.000000000000005329070518200751,
+            0.0,
             0.000000000000006217248937900877
           ],
           "type": "Arc",
@@ -642,14 +642,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
           },
           "ccw": true,
           "center": [
-            14.834443998017436,
-            4.960000000000001
+            14.834444427227156,
+            4.960000450474033
           ],
           "from": [
-            29.668887996034876,
-            0.000000000000000027865596450687793
+            29.66888885445431,
+            0.00000000000000000028012941781912637
           ],
-          "radius": 15.641685610263224,
+          "radius": 15.64168616016807,
           "tag": {
             "commentStart": 156,
             "end": 160,
@@ -659,7 +659,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
             "value": "arc1"
           },
           "to": [
-            -0.000000000000005329070518200751,
+            0.0,
             0.000000000000006217248937900877
           ],
           "type": "Arc",
@@ -723,12 +723,12 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
       },
       "start": {
         "from": [
-          -0.00000000000000008331965970786588,
-          0.000000000000000000003109110386983066
+          -0.000000000000000000837371604523271,
+          0.0000000000000000000001484372029178405
         ],
         "to": [
-          -0.00000000000000008331965970786588,
-          0.000000000000000000003109110386983066
+          -0.000000000000000000837371604523271,
+          0.0000000000000000000001484372029178405
         ],
         "units": "mm",
         "tag": null,
@@ -940,7 +940,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "arc": {
                     "start": [
                       {
-                        "n": 29.668887996034876,
+                        "n": 29.66888885445431,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -948,7 +948,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       },
                       {
-                        "n": 0.00000000000000005572734116716498,
+                        "n": 0.000000000000000000560036167341524,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -958,7 +958,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000001666370965197007,
+                        "n": -0.000000000000000001674520996345385,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -966,7 +966,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       },
                       {
-                        "n": -0.00000000000000002785626911938856,
+                        "n": -0.0000000000000000002796840609298555,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -976,7 +976,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     ],
                     "center": [
                       {
-                        "n": 14.834443998017438,
+                        "n": 14.834444427227155,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -984,7 +984,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       },
                       {
-                        "n": 4.96,
+                        "n": 4.960000450474033,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1092,7 +1092,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000008331965970786588,
+                        "n": -0.000000000000000000837371604523271,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1100,7 +1100,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       },
                       {
-                        "n": 0.000000000000000000003109110386983066,
+                        "n": 0.0000000000000000000001484372029178405,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1110,7 +1110,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     ],
                     "end": [
                       {
-                        "n": 29.668887996034876,
+                        "n": 29.66888885445431,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                         }
                       },
                       {
-                        "n": 0.000000000000000027865596450687793,
+                        "n": 0.00000000000000000028012941781912637,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000000008331965970786588,
-                    0.000000000000000000003109110386983066
+                    -0.000000000000000000837371604523271,
+                    0.0000000000000000000001484372029178405
                   ],
                   "tag": {
                     "commentStart": 32,
@@ -1347,8 +1347,8 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "value": "line1"
                   },
                   "to": [
-                    29.668887996034876,
-                    0.000000000000000027865596450687793
+                    29.66888885445431,
+                    0.00000000000000000028012941781912637
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1360,14 +1360,14 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                   },
                   "ccw": true,
                   "center": [
-                    14.834443998017436,
-                    4.960000000000001
+                    14.834444427227156,
+                    4.960000450474033
                   ],
                   "from": [
-                    29.668887996034876,
-                    0.000000000000000027865596450687793
+                    29.66888885445431,
+                    0.00000000000000000028012941781912637
                   ],
-                  "radius": 15.641685610263224,
+                  "radius": 15.64168616016807,
                   "tag": {
                     "commentStart": 156,
                     "end": 160,
@@ -1377,7 +1377,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "value": "arc1"
                   },
                   "to": [
-                    -0.000000000000005329070518200751,
+                    0.0,
                     0.000000000000006217248937900877
                   ],
                   "type": "Arc",
@@ -1389,7 +1389,7 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000005329070518200751,
+                    0.0,
                     0.000000000000006217248937900877
                   ],
                   "tag": null,
@@ -1458,12 +1458,12 @@ description: Variables in memory after executing sketch_on_face_of_region_extrud
               },
               "start": {
                 "from": [
-                  -0.00000000000000008331965970786588,
-                  0.000000000000000000003109110386983066
+                  -0.000000000000000000837371604523271,
+                  0.0000000000000000000001484372029178405
                 ],
                 "to": [
-                  -0.00000000000000008331965970786588,
-                  0.000000000000000000003109110386983066
+                  -0.000000000000000000837371604523271,
+                  0.0000000000000000000001484372029178405
                 ],
                 "units": "mm",
                 "tag": null,

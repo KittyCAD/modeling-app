@@ -21,6 +21,7 @@ type CodeDiffViewProps = {
   language: CodeDiffLanguage
   resolvedTheme: ResolvedTheme
   compact?: boolean
+  vividChanges?: boolean
   testId?: string
 }
 
@@ -68,6 +69,71 @@ const diffEditorTheme = EditorView.theme({
   },
 })
 
+const vividDiffChangeTheme: Record<ResolvedTheme, Extension> = {
+  light: EditorView.theme(
+    {
+      '&.cm-merge-a .cm-changedLine': {
+        backgroundColor: 'oklch(var(--_fern-20) / 0.26)',
+      },
+      '&.cm-merge-b .cm-changedLine': {
+        backgroundColor: 'oklch(var(--_river-20) / 0.34)',
+      },
+      '&.cm-merge-a .cm-changedText': {
+        background: 'oklch(var(--_fern-30) / 0.72)',
+        borderRadius: '2px',
+      },
+      '&.cm-merge-b .cm-changedText': {
+        background: 'oklch(var(--_river-30) / 0.72)',
+        borderRadius: '2px',
+      },
+      '.cm-changeGutter': {
+        width: '4px',
+        paddingLeft: '1px',
+      },
+      '&.cm-merge-a .cm-changedLineGutter': {
+        background: 'oklch(var(--_fern-70) / 1)',
+      },
+      '&.cm-merge-b .cm-changedLineGutter': {
+        background: 'oklch(var(--_river-70) / 1)',
+      },
+    },
+    {
+      dark: false,
+    }
+  ),
+  dark: EditorView.theme(
+    {
+      '&.cm-merge-a .cm-changedLine': {
+        backgroundColor: 'oklch(var(--_fern-90) / 0.5)',
+      },
+      '&.cm-merge-b .cm-changedLine': {
+        backgroundColor: 'oklch(var(--_river-90) / 0.58)',
+      },
+      '&.cm-merge-a .cm-changedText': {
+        background: 'oklch(var(--_fern-60) / 0.58)',
+        borderRadius: '2px',
+      },
+      '&.cm-merge-b .cm-changedText': {
+        background: 'oklch(var(--_river-60) / 0.62)',
+        borderRadius: '2px',
+      },
+      '.cm-changeGutter': {
+        width: '4px',
+        paddingLeft: '1px',
+      },
+      '&.cm-merge-a .cm-changedLineGutter': {
+        background: 'oklch(var(--_fern-40) / 1)',
+      },
+      '&.cm-merge-b .cm-changedLineGutter': {
+        background: 'oklch(var(--_river-40) / 1)',
+      },
+    },
+    {
+      dark: true,
+    }
+  ),
+}
+
 const compactDiffEditorTheme = EditorView.theme({
   '&': {
     fontSize: '0.75rem',
@@ -79,11 +145,13 @@ function diffEditorExtensions(
   language: CodeDiffLanguage,
   resolvedTheme: ResolvedTheme,
   labelId: string,
-  compact: boolean
+  compact: boolean,
+  vividChanges: boolean
 ): Extension[] {
   return [
     ...languageExtensions(language, resolvedTheme),
     diffEditorTheme,
+    vividChanges ? vividDiffChangeTheme[resolvedTheme] : [],
     compact ? compactDiffEditorTheme : [],
     lineNumbers(),
     EditorState.readOnly.of(true),
@@ -104,6 +172,7 @@ export function CodeDiffView({
   language,
   resolvedTheme,
   compact = false,
+  vividChanges = false,
   testId,
 }: CodeDiffViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -122,7 +191,8 @@ export function CodeDiffView({
           language,
           resolvedTheme,
           beforeLabelId,
-          compact
+          compact,
+          vividChanges
         ),
       },
       b: {
@@ -131,7 +201,8 @@ export function CodeDiffView({
           language,
           resolvedTheme,
           afterLabelId,
-          compact
+          compact,
+          vividChanges
         ),
       },
       parent: containerRef.current,
@@ -158,6 +229,7 @@ export function CodeDiffView({
     compact,
     language,
     resolvedTheme,
+    vividChanges,
   ])
 
   return (
