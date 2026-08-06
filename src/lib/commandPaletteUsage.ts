@@ -2,12 +2,19 @@ import type { FuseResult } from 'fuse.js'
 
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
+import { isRecord } from '@src/lib/utils'
 
 export const COMMAND_PALETTE_USAGE_STORAGE_KEY = 'zoo.commandPalette.usage'
 
 const STORAGE_VERSION = 1
 const MAX_HISTORY_ENTRIES = 100
 const MAX_USAGE_COUNT = 1_000_000
+const MAX_STORAGE_BYTES = 64 * 1024
+// Fuse scores are lower-is-better; usage can close at most a 0.03 score gap.
+const MAX_FREQUENCY_SCORE_BOOST = 0.02
+const FREQUENCY_SATURATION_COUNT = 5
+const MAX_RECENCY_SCORE_BOOST = 0.01
+const RECENCY_WINDOW_MS = 30 * 24 * 60 * 60 * 1000
 
 export type CommandUsageEntry = {
   count: number
@@ -24,10 +31,6 @@ function getLocalStorage(): CommandUsageStorage | undefined {
   } catch {
     return undefined
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
 }
 
 function usageKey(command: Command) {
@@ -65,6 +68,9 @@ export function readCommandPaletteUsage(
   try {
     const serialized = storage.getItem(COMMAND_PALETTE_USAGE_STORAGE_KEY)
     if (!serialized) {
+      return new Map()
+    }
+    if (serialized.length > MAX_STORAGE_BYTES) {
       return new Map()
     }
     const parsed: unknown = JSON.parse(serialized)
@@ -124,28 +130,44 @@ export function recordCommandPaletteUsage(
 
 type IsCommandDisabled = (command: Command) => boolean
 
-function compareUsage(a: Command, b: Command, history: CommandUsageHistory) {
-  const aUsage = history.get(usageKey(a))
-  const bUsage = history.get(usageKey(b))
-
-  if (!aUsage || !bUsage) {
-    return Number(!aUsage) - Number(!bUsage)
+function usageScoreBoost(usage: CommandUsageEntry | undefined, now: number) {
+  if (!usage) {
+    return 0
   }
-  return bUsage.count - aUsage.count || bUsage.lastUsedAt - aUsage.lastUsedAt
+
+  const frequencyBoost =
+    MAX_FREQUENCY_SCORE_BOOST *
+    Math.min(usage.count / FREQUENCY_SATURATION_COUNT, 1)
+  const age = Math.max(0, now - usage.lastUsedAt)
+  const recencyBoost =
+    MAX_RECENCY_SCORE_BOOST * Math.max(0, 1 - age / RECENCY_WINDOW_MS)
+
+  return frequencyBoost + recencyBoost
 }
 
 export function rankCommandSearchResults(
   results: readonly FuseResult<Command>[],
   history: CommandUsageHistory,
-  isDisabled: IsCommandDisabled
+  isDisabled: IsCommandDisabled,
+  now = Date.now()
 ) {
-  return [...results]
+  return results
+    .map((result) => {
+      const score = result.score ?? 1
+      return {
+        result,
+        disabled: isDisabled(result.item),
+        score,
+        adjustedScore:
+          score - usageScoreBoost(history.get(usageKey(result.item)), now),
+      }
+    })
     .sort(
       (a, b) =>
-        Number(isDisabled(a.item)) - Number(isDisabled(b.item)) ||
-        compareUsage(a.item, b.item, history) ||
-        (a.score ?? 1) - (b.score ?? 1) ||
-        a.refIndex - b.refIndex
+        Number(a.disabled) - Number(b.disabled) ||
+        a.adjustedScore - b.adjustedScore ||
+        a.score - b.score ||
+        a.result.refIndex - b.result.refIndex
     )
-    .map(({ item }) => item)
+    .map(({ result }) => result.item)
 }

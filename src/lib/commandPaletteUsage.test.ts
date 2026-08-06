@@ -1,4 +1,4 @@
-import Fuse from 'fuse.js'
+import type { FuseResult } from 'fuse.js'
 
 import {
   COMMAND_PALETTE_USAGE_STORAGE_KEY,
@@ -9,6 +9,8 @@ import {
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import { describe, expect, it, vi } from 'vitest'
+
+const DAY_MS = 24 * 60 * 60 * 1000
 
 function command(name: string, overrides: Partial<Command> = {}): Command {
   return {
@@ -35,22 +37,25 @@ function storageWith(initialValue: string | null = null) {
   }
 }
 
-function search(commands: Command[], query: string) {
-  return new Fuse(commands, {
-    keys: ['displayName', 'name', 'description'],
-    threshold: 0.3,
-    ignoreLocation: true,
-    includeScore: true,
-  }).search(query)
-}
-
 function rank(
   commands: Command[],
-  query: string,
   history: ReturnType<typeof readCommandPaletteUsage>,
-  isDisabled: (command: Command) => boolean = () => false
+  {
+    scores = commands.map(() => 0.01),
+    isDisabled = () => false,
+    now = 0,
+  }: {
+    scores?: number[]
+    isDisabled?: (command: Command) => boolean
+    now?: number
+  } = {}
 ) {
-  return rankCommandSearchResults(search(commands, query), history, isDisabled)
+  const results: FuseResult<Command>[] = commands.map((item, refIndex) => ({
+    item,
+    refIndex,
+    score: scores[refIndex],
+  }))
+  return rankCommandSearchResults(results, history, isDisabled, now)
 }
 
 describe('command palette usage persistence', () => {
@@ -76,6 +81,9 @@ describe('command palette usage persistence', () => {
 
   it('fails open for invalid or unavailable storage', () => {
     expect(readCommandPaletteUsage(storageWith('{not-json'))).toEqual(new Map())
+    expect(
+      readCommandPaletteUsage(storageWith(' '.repeat(64 * 1024 + 1)))
+    ).toEqual(new Map())
     expect(
       readCommandPaletteUsage(
         storageWith(JSON.stringify({ version: 2, entries: [] }))
@@ -122,26 +130,50 @@ describe('command palette usage ranking', () => {
     recordCommandPaletteUsage(resetView, 100, storage)
 
     expect(
-      rank([resetLayout, resetView], 'reset', readCommandPaletteUsage(storage))
+      rank([resetLayout, resetView], readCommandPaletteUsage(storage), {
+        now: 100,
+      })
     ).toEqual([resetView, resetLayout])
 
-    recordCommandPaletteUsage(resetLayout, 200, storage)
-    recordCommandPaletteUsage(resetLayout, 300, storage)
+    recordCommandPaletteUsage(resetLayout, 100, storage)
+    recordCommandPaletteUsage(resetLayout, 100, storage)
     expect(
-      rank([resetLayout, resetView], 'reset', readCommandPaletteUsage(storage))
+      rank([resetLayout, resetView], readCommandPaletteUsage(storage), {
+        now: 100,
+      })
     ).toEqual([resetLayout, resetView])
   })
 
-  it('uses recency when matching commands have equal counts', () => {
+  it('allows a recent selection to outrank several old selections', () => {
     const storage = storageWith()
-    const older = command('Open older')
-    const newer = command('Open newer')
-    recordCommandPaletteUsage(older, 100, storage)
-    recordCommandPaletteUsage(newer, 200, storage)
+    const frequentOld = command('Open older')
+    const recent = command('Open recent')
+    recordCommandPaletteUsage(frequentOld, 0, storage)
+    recordCommandPaletteUsage(frequentOld, 0, storage)
+    recordCommandPaletteUsage(frequentOld, 0, storage)
+    recordCommandPaletteUsage(recent, 30 * DAY_MS, storage)
 
     expect(
-      rank([older, newer], 'open', readCommandPaletteUsage(storage))
-    ).toEqual([newer, older])
+      rank([frequentOld, recent], readCommandPaletteUsage(storage), {
+        now: 30 * DAY_MS,
+      })
+    ).toEqual([recent, frequentOld])
+  })
+
+  it('does not let usage overcome a clearly better text match', () => {
+    const storage = storageWith()
+    const exact = command('Rectangle')
+    const weaker = command('Create named view')
+    for (let count = 0; count < 10; count++) {
+      recordCommandPaletteUsage(weaker, 100, storage)
+    }
+
+    expect(
+      rank([exact, weaker], readCommandPaletteUsage(storage), {
+        now: 100,
+        scores: [0.005, 0.04],
+      })
+    ).toEqual([exact, weaker])
   })
 
   it('tracks variants of the same machine event separately', () => {
@@ -153,7 +185,9 @@ describe('command palette usage ranking', () => {
     recordCommandPaletteUsage(tangentialArc, 100, storage)
 
     expect(
-      rank([line, tangentialArc], 'change', readCommandPaletteUsage(storage))
+      rank([line, tangentialArc], readCommandPaletteUsage(storage), {
+        now: 100,
+      })
     ).toEqual([tangentialArc, line])
   })
 
@@ -164,21 +198,18 @@ describe('command palette usage ranking', () => {
     recordCommandPaletteUsage(disabled, 100, storage)
 
     expect(
-      rank(
-        [disabled, enabled],
-        'reset',
-        readCommandPaletteUsage(storage),
-        (candidate) => Boolean(candidate.disabled)
-      )
+      rank([disabled, enabled], readCommandPaletteUsage(storage), {
+        isDisabled: (candidate) => Boolean(candidate.disabled),
+        now: 100,
+      })
     ).toEqual([enabled, disabled])
   })
 
   it('preserves Fuse order when there is no history', () => {
     const commands = [command('Second'), command('First')]
-    const results = search(commands, 's')
 
-    expect(rankCommandSearchResults(results, new Map(), () => false)).toEqual(
-      results.map(({ item }) => item)
+    expect(rank(commands, new Map(), { scores: [0.01, 0.02] })).toEqual(
+      commands
     )
   })
 })
