@@ -23,10 +23,10 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
-// Remove this extension once @kittycad/lib includes the Curve3d schema variant.
+// Remove this extension once @kittycad/lib includes the Helix schema variant.
 export type EntityReference =
   | SdkEntityReference
-  | { type: 'curve3d'; curve_id: string }
+  | { type: 'helix'; helix_id: string }
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr

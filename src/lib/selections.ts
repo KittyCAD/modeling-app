@@ -1288,10 +1288,10 @@ export function normalizeEntityReference(
     return { type: 'solid3d', solid3d_id }
   }
 
-  if (type === 'curve3d') {
-    const curve_id = raw.curve_id ?? raw.curveId
-    if (typeof curve_id !== 'string') return null
-    return { type: 'curve3d', curve_id }
+  if (type === 'helix') {
+    const helix_id = raw.helix_id ?? raw.helixId
+    if (typeof helix_id !== 'string') return null
+    return { type: 'helix', helix_id }
   }
 
   if (type === 'solid2d_edge' || type === 'solid2dEdge') {
@@ -1539,23 +1539,18 @@ export async function getEventForQueryEntityTypeWithPoint(
     } else if (refType === 'segment') {
       const segmentId = ref.segment_id ?? ref.segmentId
       if (typeof segmentId === 'string') entityIdFromRef = segmentId
-    } else if (refType === 'helix') {
-      const helixId = ref.helix_id ?? ref.helixId ?? ref.id
-      if (typeof helixId === 'string') entityIdFromRef = helixId
     }
     if (entityIdFromRef) {
       const artifact = getArtifactOfTypes(
         {
           key: entityIdFromRef,
-          types: ['path', 'solid2d', 'segment', 'helix'],
+          types: ['path', 'solid2d', 'segment'],
         },
         artifactGraph
       )
       if (!err(artifact)) {
         if (artifact.type === 'path')
           entityRef = { type: 'solid2d', solid2d_id: artifact.id }
-        else if (artifact.type === 'helix')
-          entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
       }
     }
     if (!entityRef) {
@@ -1620,8 +1615,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     entityId = entityRef.solid2d_id
   } else if (entityRef.type === 'solid3d') {
     entityId = entityRef.solid3d_id
-  } else if (entityRef.type === 'curve3d') {
-    entityId = entityRef.curve_id
+  } else if (entityRef.type === 'helix') {
+    entityId = entityRef.helix_id
   } else if (entityRef.type === 'solid2d_edge') {
     // For Solid2D edges, the edge_id is the curve UUID
     // We'll use it to find the segment later in getCodeRefsFromEntityReference
@@ -2281,7 +2276,7 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        // Remove this cast once @kittycad/lib includes the Curve3d schema variant.
+        // Remove this cast once @kittycad/lib includes the Helix schema variant.
         entities: entityReferences as SdkEntityReference[],
       },
       cmd_id: uuidv4(),
@@ -2437,8 +2432,7 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      if (v2Selection.entityRef.type === 'curve3d') {
-        // Helix is currently the only standalone 3D curve produced by KCL.
+      if (v2Selection.entityRef.type === 'helix') {
         incrementOrInitializeSelectionType('helix')
       } else if (v2Selection.entityRef.type === 'solid2d_edge') {
         incrementOrInitializeSelectionType('segment')
@@ -3542,8 +3536,8 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'curve3d' && entityRef.curve_id) {
-    const refs = getCodeRefsByArtifactId(entityRef.curve_id, artifactGraph)
+  if (entityRef.type === 'helix' && entityRef.helix_id) {
+    const refs = getCodeRefsByArtifactId(entityRef.helix_id, artifactGraph)
     if (refs?.length) codeRefs.push({ range: refs[0].range })
   } else if (entityRef.type === 'segment' && entityRef.segment_id) {
     const segmentRefs = getCodeRefsByArtifactId(

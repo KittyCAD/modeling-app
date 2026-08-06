@@ -2000,23 +2000,21 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
-  test('normalizes standalone 3D curve entity references', () => {
+  test('normalizes standalone helix entity references', () => {
     expect(
       normalizeEntityReference({
-        type: 'curve3d',
-        curve_id: 'helix-1',
+        type: 'helix',
+        helix_id: 'helix-1',
       })
     ).toEqual({
-      type: 'curve3d',
-      curve_id: 'helix-1',
+      type: 'helix',
+      helix_id: 'helix-1',
     })
   })
 
   test('labels a standalone 3D curve using its helix artifact', () => {
     const selection: Selections = {
-      graphSelections: [
-        { entityRef: { type: 'curve3d', curve_id: 'helix-1' } },
-      ],
+      graphSelections: [{ entityRef: { type: 'helix', helix_id: 'helix-1' } }],
       otherSelections: [],
     }
     const artifactGraph = new Map([
