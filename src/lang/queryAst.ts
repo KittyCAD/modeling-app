@@ -1686,8 +1686,7 @@ export function artifactToEntityRef(
     return { type: 'solid2d', solid2d_id: artifactId }
   if (artifactType === 'sweep' || artifactType === 'compositeSolid')
     return { type: 'solid3d', solid3d_id: artifactId }
-  if (artifactType === 'helix')
-    return { type: 'curve3d', curve_id: artifactId }
+  if (artifactType === 'helix') return { type: 'curve3d', curve_id: artifactId }
   if (artifactType === 'segment')
     return pathId != null
       ? { type: 'segment', path_id: pathId, segment_id: artifactId }
