@@ -220,6 +220,11 @@ export interface ProjectLibraryTypeContribution {
     library: ProjectLibrary
     signal: AbortSignal
   }) => Promise<HomeProjectEntryContribution[]>
+  /**
+   * Discover local project folders for one configured library. Implementations
+   * return observations only; identity resolution across cloud project IDs is not
+   * part of the projectLibraries contract.
+   */
   readRealizations?: (input: {
     library: ProjectLibrary
     signal: AbortSignal
@@ -400,6 +405,11 @@ function projectLibraryRealizationFromContribution(
   }
 }
 
+/**
+ * Combines realization observations by normalized local path only. Overlapping
+ * libraries preserve all memberships on a single realization; separate folders
+ * that reference the same cloud project remain separate for cloudSync policy.
+ */
 export function combineProjectLibraryRealizationContributions(
   contributionGroups: readonly ProjectLibraryRealizationContributionGroup[]
 ) {
