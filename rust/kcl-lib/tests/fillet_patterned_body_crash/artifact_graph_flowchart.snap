@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart fillet_patterned_body_crash.kcl
+extension: md
+snapshot_kind: binary
+---

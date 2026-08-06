@@ -311,6 +311,19 @@ impl Stack {
         }
     }
 
+    pub fn get_tag_from_indexed_solid(
+        &self,
+        var: &str,
+        source_range: SourceRange,
+        index: usize,
+        tag: &str,
+        from_sketch: bool,
+    ) -> Result<Option<KclValue>, KclError> {
+        match &self.backend {
+            StackBackend::Arena(stack) => stack.get_tag_from_indexed_solid(var, source_range, index, tag, from_sketch),
+        }
+    }
+
     #[cfg(test)]
     pub(crate) fn current_env_ref(&self) -> EnvironmentRef {
         match &self.backend {

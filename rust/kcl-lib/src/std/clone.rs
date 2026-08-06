@@ -130,6 +130,26 @@ pub(super) async fn fix_tags_and_references(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<()> {
+    fix_tags_and_references_inner(new_geometry, old_geometry, exec_state, args, None).await
+}
+
+pub(super) async fn fix_tags_and_references_with_child_ids(
+    new_geometry: &mut GeometryWithImportedGeometry,
+    old_geometry: &mut GeometryWithImportedGeometry,
+    new_child_ids: &[uuid::Uuid],
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<()> {
+    fix_tags_and_references_inner(new_geometry, old_geometry, exec_state, args, Some(new_child_ids)).await
+}
+
+async fn fix_tags_and_references_inner(
+    new_geometry: &mut GeometryWithImportedGeometry,
+    old_geometry: &mut GeometryWithImportedGeometry,
+    exec_state: &mut ExecState,
+    args: &Args,
+    new_child_ids: Option<&[uuid::Uuid]>,
+) -> Result<()> {
     let old_geometry_id = old_geometry.id(&args.ctx).await?;
     let source_topology_id = match old_geometry {
         GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
@@ -150,8 +170,15 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::ImportedGeometry(_) => old_geometry_id,
     };
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map =
-        get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await?;
+    let entity_id_map = get_old_new_child_map(
+        new_geometry_id,
+        old_geometry_id,
+        source_topology_id,
+        new_child_ids,
+        exec_state,
+        args,
+    )
+    .await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
@@ -284,6 +311,7 @@ async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
     source_topology_id: uuid::Uuid,
+    known_new_entity_ids: Option<&[uuid::Uuid]>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
@@ -298,7 +326,10 @@ async fn get_old_new_child_map(
     let old_entity_ids = get_all_child_uuids(source_topology_id, exec_state, args).await?;
 
     // Get the new geometries entity ids.
-    let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
+    let new_entity_ids = match known_new_entity_ids {
+        Some(ids) => ids.to_vec(),
+        None => get_all_child_uuids(new_geometry_id, exec_state, args).await?,
+    };
 
     // Create a map of old entity ids to new entity ids.
     Ok(HashMap::from_iter(

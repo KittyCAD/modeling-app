@@ -44,6 +44,7 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::args::TyF64;
 use crate::std::axis_or_reference::Axis2dOrPoint2d;
+use crate::std::clone::fix_tags_and_references_with_child_ids;
 use crate::std::shapes::POINT_ZERO_ZERO;
 use crate::std::utils::point_3d_to_mm;
 use crate::std::utils::point_to_mm;
@@ -219,18 +220,22 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )
         .await?;
 
-    let mut mock_ids = Vec::new();
-    let entity_ids = if let OkWebSocketResponseData::Modeling {
+    let entity_infos = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+        pattern_info.entity_face_edge_ids.clone()
     } else if args.ctx.no_engine_commands().await {
-        mock_ids.reserve(extra_instances);
-        for _ in 0..extra_instances {
-            mock_ids.push(exec_state.next_uuid());
-        }
-        &mock_ids
+        (0..extra_instances)
+            .map(|_| {
+                serde_json::from_value(serde_json::json!({
+                    "object_id": exec_state.next_uuid(),
+                    "faces": [],
+                    "edges": [],
+                }))
+                .expect("mock face/edge info is valid")
+            })
+            .collect()
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!("EntityLinearPattern response was not as expected: {resp:?}"),
@@ -239,10 +244,13 @@ async fn send_pattern_transform<T: GeometryTrait>(
     };
 
     let mut geometries = vec![solid.clone()];
-    for id in entity_ids.iter().copied() {
+    for info in &entity_infos {
         let mut new_solid = solid.clone();
-        new_solid.set_id(id);
-        new_solid.set_artifact_id(id);
+        new_solid.set_id(info.object_id);
+        new_solid.set_artifact_id(info.object_id);
+        new_solid
+            .fix_pattern_tags_and_references(solid, info, exec_state, args)
+            .await?;
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -464,6 +472,14 @@ pub trait GeometryTrait: Clone {
     ) -> Result<[TyF64; 3], KclError>;
     #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
+    #[allow(async_fn_in_trait)]
+    async fn fix_pattern_tags_and_references(
+        &mut self,
+        original: &Self,
+        info: &kcmc::output::FaceEdgeInfo,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError>;
 }
 
 impl GeometryTrait for Sketch {
@@ -491,6 +507,16 @@ impl GeometryTrait for Sketch {
     }
 
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
+        Ok(())
+    }
+
+    async fn fix_pattern_tags_and_references(
+        &mut self,
+        _: &Self,
+        _: &kcmc::output::FaceEdgeInfo,
+        _: &mut ExecState,
+        _: &Args,
+    ) -> Result<(), KclError> {
         Ok(())
     }
 }
@@ -530,6 +556,37 @@ impl GeometryTrait for Solid {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, args), solid_set)
             .await
+    }
+
+    async fn fix_pattern_tags_and_references(
+        &mut self,
+        original: &Self,
+        info: &kcmc::output::FaceEdgeInfo,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        if args.ctx.no_engine_commands().await {
+            return Ok(());
+        }
+        let mut old_geometry = crate::execution::GeometryWithImportedGeometry::Solid(original.clone());
+        let mut new_geometry = crate::execution::GeometryWithImportedGeometry::Solid(self.clone());
+        let child_ids = info.faces.iter().chain(&info.edges).copied().collect::<Vec<_>>();
+        fix_tags_and_references_with_child_ids(&mut new_geometry, &mut old_geometry, &child_ids, exec_state, args)
+            .await
+            .map_err(|error| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("failed to update pattern copy tags and references: {error:?}"),
+                    vec![args.source_range],
+                ))
+            })?;
+        let Some(new_solid) = new_geometry.into_solid() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "failed to extract patterned solid".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        *self = new_solid;
+        Ok(())
     }
 }
 

@@ -555,6 +555,24 @@ mod cube {
         super::execute(TEST_NAME, true).await
     }
 }
+mod fillet_patterned_body_crash {
+    const TEST_NAME: &str = "fillet_patterned_body_crash";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod cube_with_error {
     const TEST_NAME: &str = "cube_with_error";
 

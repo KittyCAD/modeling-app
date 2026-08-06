@@ -101,6 +101,7 @@ use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
 use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LiteralValue;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
 use crate::parsing::ast::types::Node;
@@ -114,6 +115,7 @@ use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::token::NumericSuffix;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -2819,6 +2821,66 @@ impl Node<Name> {
     }
 }
 
+fn static_property_name(expr: &Expr) -> Option<&str> {
+    let Expr::Name(name) = expr else {
+        return None;
+    };
+    name.local_ident().map(|name| name.inner)
+}
+
+fn indexed_local_name(expr: &Expr) -> Option<(&str, usize)> {
+    let Expr::MemberExpression(member) = expr else {
+        return None;
+    };
+    if !member.computed {
+        return None;
+    }
+    let Expr::Name(name) = &member.object else {
+        return None;
+    };
+    let name = name.local_ident()?.inner;
+    let Expr::Literal(literal) = &member.property else {
+        return None;
+    };
+    let LiteralValue::Number { value, suffix } = literal.value else {
+        return None;
+    };
+    if suffix != NumericSuffix::None || value < 0.0 || value.fract() != 0.0 || value > usize::MAX as f64 {
+        return None;
+    }
+    Some((name, value as usize))
+}
+
+fn indexed_solid_tag_access(member: &MemberExpression) -> Option<(&str, usize, &str, bool)> {
+    if member.computed {
+        return None;
+    }
+    let tag = static_property_name(&member.property)?;
+    let Expr::MemberExpression(container) = &member.object else {
+        return None;
+    };
+    if container.computed {
+        return None;
+    }
+    match static_property_name(&container.property)? {
+        "faces" => {
+            let (name, index) = indexed_local_name(&container.object)?;
+            Some((name, index, tag, false))
+        }
+        "tags" => {
+            let Expr::MemberExpression(sketch) = &container.object else {
+                return None;
+            };
+            if sketch.computed || static_property_name(&sketch.property)? != "sketch" {
+                return None;
+            }
+            let (name, index) = indexed_local_name(&sketch.object)?;
+            Some((name, index, tag, true))
+        }
+        _ => None,
+    }
+}
+
 impl Node<MemberExpression> {
     async fn get_result(
         &self,
@@ -2828,6 +2890,16 @@ impl Node<MemberExpression> {
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
+        // Tags are small values embedded in large solid graphs. Avoid cloning the
+        // entire graph for the common `solids[index].faces/tag` access forms.
+        if let Some((name, index, tag, from_sketch)) = indexed_solid_tag_access(self)
+            && let Some(value) =
+                exec_state
+                    .stack()
+                    .get_tag_from_indexed_solid(name, self.into(), index, tag, from_sketch)?
+        {
+            return Ok(value.continue_());
+        }
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
         let property_result = Property::try_from(
@@ -6222,6 +6294,23 @@ mod test {
     use crate::exec::UnitType;
     use crate::execution::ContextType;
     use crate::execution::parse_execute;
+
+    #[test]
+    fn recognizes_indexed_solid_tag_access() {
+        for (code, expected) in [
+            ("value = solids[1].faces.endCap", ("solids", 1, "endCap", false)),
+            ("value = solids[2].sketch.tags.bottom", ("solids", 2, "bottom", true)),
+        ] {
+            let program = crate::Program::parse_no_errs(code).expect("member expression should parse");
+            let BodyItem::VariableDeclaration(declaration) = &program.ast.inner.body[0] else {
+                panic!("expected a variable declaration");
+            };
+            let Expr::MemberExpression(member) = &declaration.declaration.init else {
+                panic!("expected a member expression");
+            };
+            assert_eq!(indexed_solid_tag_access(member), Some(expected));
+        }
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {

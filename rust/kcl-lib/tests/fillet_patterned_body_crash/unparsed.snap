@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing fillet_patterned_body_crash.kcl
+---
+// Regression for https://github.com/KittyCAD/modeling-app/issues/12715.
+// Applying a face-based fillet to a patterned body must succeed and leave the
+// WASM runtime usable for subsequent calls.
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [12, 0])
+  right = line(start = [12, 0], end = [12, 8])
+  top = line(start = [12, 8], end = [0, 8])
+  left = line(start = [0, 8], end = [0, 0])
+}
+region001 = region(point = [6, 4], sketch = sketch001)
+body001 = extrude(region001, length = 8, tagEnd = $endCap)
+linearBodies = patternLinear3d(
+  body001,
+  instances = 3,
+  distance = 22,
+  axis = X,
+)
+
+// This is the operation which triggered the failure in #12715.
+fillet001 = fillet(
+  linearBodies[1],
+  edges = [
+    {
+      sideFaces = [
+        linearBodies[1].faces.endCap,
+        linearBodies[1].sketch.tags.bottom
+      ]
+    }
+  ],
+  radius = 2,
+)

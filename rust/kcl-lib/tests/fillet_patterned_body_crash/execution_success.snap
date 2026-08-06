@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Execution success fillet_patterned_body_crash.kcl
+---
+null

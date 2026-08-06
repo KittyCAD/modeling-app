@@ -476,6 +476,31 @@ impl ProgramMemory {
         self.get_from(var, env_ref, source_range, owner)
     }
 
+    fn get_tag_from_indexed_solid(
+        &self,
+        var: &str,
+        mut env_ref: EnvironmentRef,
+        source_range: SourceRange,
+        owner: usize,
+        index: usize,
+        tag: &str,
+        from_sketch: bool,
+    ) -> Result<Option<KclValue>, KclError> {
+        loop {
+            let env_index = env_ref.index();
+            let env = self.get_env_checked(env_index, "looking up a solid tag")?;
+            let env = self.read_env(&env, env_index, "looking up a solid tag")?;
+            env.check_readable_by(owner, "looking up a solid tag")?;
+            if let Some(value) = env.get_tag_from_indexed_solid(var, env_ref.epoch(), index, tag, from_sketch) {
+                return Ok(value);
+            }
+            env_ref = match env.parent() {
+                Some(parent) => parent,
+                None => return Err(undefined_value(var, source_range)),
+            };
+        }
+    }
+
     /// Create a new environment, add it to the list of envs, and return its ref.
     fn new_env_checked(
         &self,
@@ -841,6 +866,18 @@ impl Stack {
         self.get(var, source_range)
     }
 
+    pub fn get_tag_from_indexed_solid(
+        &self,
+        var: &str,
+        source_range: SourceRange,
+        index: usize,
+        tag: &str,
+        from_sketch: bool,
+    ) -> Result<Option<KclValue>, KclError> {
+        self.memory
+            .get_tag_from_indexed_solid(var, self.current_env, source_range, self.id, index, tag, from_sketch)
+    }
+
     /// Whether the current frame of the stack contains a variable with the given name.
     pub fn cur_frame_contains(&self, var: &str) -> Result<bool, KclError> {
         let env_index = self.current_env.index();
@@ -989,6 +1026,32 @@ impl Stack {
 }
 
 impl Environment {
+    fn get_tag_from_indexed_solid(
+        &self,
+        key: &str,
+        epoch: usize,
+        index: usize,
+        tag: &str,
+        from_sketch: bool,
+    ) -> Option<Option<KclValue>> {
+        let (created_at, value) = self.bindings.get(key)?;
+        if *created_at > epoch {
+            return None;
+        }
+        let KclValue::HomArray { value, .. } = value else {
+            return Some(None);
+        };
+        let Some(KclValue::Solid { value: solid }) = value.get(index) else {
+            return Some(None);
+        };
+        let tag = if from_sketch {
+            solid.sketch().and_then(|sketch| sketch.tags.get(tag))
+        } else {
+            solid.faces.get(tag)
+        };
+        Some(tag.map(|tag| KclValue::TagIdentifier(Box::new(tag.clone()))))
+    }
+
     fn clone_readonly_checked(&self, index: usize, op: &str) -> Result<Self, KclError> {
         if self.owner != 0 {
             return Err(arena_invariant_failed(
