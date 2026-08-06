@@ -11,6 +11,14 @@ import type {
 } from '@src/registry/contracts/cloudSync'
 import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
 
+/**
+ * Inputs for the pure cloud-relationship derivation pass.
+ *
+ * projectLibraries contributes local realizations. cloudSync adds cloud-side
+ * project records, sync metadata, manifest comparisons, and remote artifacts.
+ * Callers must gather those observations before calling this module; derivation
+ * itself must not touch disk, network, or service methods.
+ */
 export type DeriveCloudProjectRelationshipsInput = {
   realizations: readonly ProjectLibraryRealization[]
   remoteProjects: readonly RemoteProjectSummary[]
@@ -26,6 +34,11 @@ export type DeriveCloudProjectRelationshipsInput = {
   ) => number | null
 }
 
+/**
+ * Facts used to classify cleanup risk for one local realization. Missing facts
+ * deliberately degrade to `unknown` instead of pretending a folder is safe to
+ * delete.
+ */
 export type ClassifyCloudProjectDuplicateRiskInput = {
   hasBaseManifest?: boolean
   hasPendingChanges?: boolean
@@ -37,11 +50,19 @@ export type ClassifyCloudProjectDuplicateRiskInput = {
   manifestReadable?: boolean
 }
 
+/**
+ * Result of comparing the current local project manifest against the clean base
+ * manifest stored for the cloud relationship.
+ */
 export type CloudProjectLocalManifestComparison = {
   localMatchesBase?: boolean
   manifestReadable?: boolean
 }
 
+/**
+ * Lookup tables built once per derivation so later helpers can operate on one
+ * remote project ID at a time without repeating grouping or path normalization.
+ */
 type RelationshipInputIndex = {
   getModifiedTime?: DeriveCloudProjectRelationshipsInput['getModifiedTime']
   localManifestComparisons: ReadonlyMap<
@@ -62,6 +83,7 @@ type RelationshipInputIndex = {
   remoteThumbnailUrls: ReadonlyMap<string, string>
 }
 
+/** The complete local, remote, and metadata context for one remote project ID. */
 type RelationshipContext = {
   metadata: readonly CloudSyncProjectMetadataIndexEntry[]
   remoteProject?: RemoteProjectSummary
@@ -159,6 +181,12 @@ function duplicateRiskIsClean(risk: CloudProjectDuplicateRisk) {
   return risk === 'exact' || risk === 'unknown'
 }
 
+/**
+ * Canonical selection policy:
+ * 1. Prefer a clean realization in a cloud library.
+ * 2. Otherwise prefer any clean synced realization.
+ * 3. Otherwise keep the newest local realization as a display-only fallback.
+ */
 function canonicalPreferenceKey(
   relationshipRealization: CloudProjectRelationshipRealization
 ) {
@@ -196,6 +224,10 @@ function groupedMapSet<K, V>(map: Map<K, V[]>, key: K, value: V) {
   map.set(key, values)
 }
 
+/**
+ * Metadata can preserve a relationship even without a listed remote project or
+ * readable local realization. This keeps conflicts and sync failures visible.
+ */
 function relationshipShouldExistForMetadata(
   metadata: CloudSyncProjectMetadataIndexEntry
 ) {
@@ -206,6 +238,7 @@ function relationshipShouldExistForMetadata(
   )
 }
 
+/** Groups every relationship input by normalized path and remote project ID. */
 function indexRelationshipInputs({
   getModifiedTime,
   localManifestComparisons = new Map(),
@@ -279,6 +312,11 @@ function relationshipContexts(
     }))
 }
 
+/**
+ * Converts one local realization into relationship state. It starts as a
+ * duplicate candidate; canonical selection happens only after all realizations
+ * for the remote project ID are visible.
+ */
 function relationshipRealizationFromLocal(
   index: RelationshipInputIndex,
   realization: ProjectLibraryRealization
@@ -304,6 +342,7 @@ function relationshipRealizationFromLocal(
   }
 }
 
+/** Marks one local realization canonical and leaves the rest as duplicates. */
 function localRealizationsFromContext(
   index: RelationshipInputIndex,
   context: RelationshipContext
@@ -362,6 +401,11 @@ function relationshipSyncFailure(context: RelationshipContext) {
     : undefined
 }
 
+/**
+ * Builds the public cloud relationship for one remote project ID. Display-only
+ * fields such as Home card name/title/default file are intentionally omitted;
+ * Home derives them from the relationship plus canonical realization.
+ */
 function relationshipFromContext(
   index: RelationshipInputIndex,
   context: RelationshipContext
@@ -393,6 +437,12 @@ function relationshipFromContext(
   }
 }
 
+/**
+ * Derives explicit remote-project-to-local-realization relationships. This is
+ * where cloud identity resolution, canonical selection, and duplicate
+ * classification happen; Home receives the result as already-resolved domain
+ * state.
+ */
 export function deriveCloudProjectRelationships(
   input: DeriveCloudProjectRelationshipsInput
 ): CloudProjectRelationship[] {

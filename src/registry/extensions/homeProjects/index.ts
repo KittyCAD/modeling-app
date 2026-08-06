@@ -74,6 +74,11 @@ function homeProjectStatusFromRealization(
   return 'local'
 }
 
+/**
+ * Delete semantics come from the operation-owning library type, not Home's
+ * identity model. Cloud-library realizations delete the remote project; directory
+ * realizations with cloud metadata delete only the local folder.
+ */
 function realizationDeletesRemoteOnDelete(
   realization: ProjectLibraryRealization | undefined
 ) {
@@ -114,6 +119,7 @@ function homeProjectEntryFromRealization(
   }
 }
 
+/** Local library membership is copied from relationship realizations. */
 function libraryIdsFromRelationship(
   relationship: CloudProjectRelationship
 ): readonly string[] {
@@ -167,6 +173,11 @@ function homeProjectDuplicateRealizationFromRelationship(
   }
 }
 
+/**
+ * Converts one explicit cloud relationship into one Home card. Home can choose
+ * display fallbacks, badges, and actions from the relationship, but it must not
+ * merge arbitrary provider entries or decide which local folders are duplicates.
+ */
 function homeProjectEntryFromCloudRelationship(
   relationship: CloudProjectRelationship
 ): HomeProjectEntryContribution {
@@ -221,6 +232,11 @@ function homeProjectEntryFromCloudRelationship(
   }
 }
 
+/**
+ * Builds Home project cards from explicit inputs:
+ * - one card for each cloud relationship;
+ * - one local-only card for each realization not claimed by a relationship.
+ */
 export function deriveHomeProjectEntryContributions({
   realizations,
   cloudRelationships,
@@ -247,6 +263,10 @@ export function deriveHomeProjectEntryContributions({
   return [...relationshipEntries, ...localOnlyEntries]
 }
 
+/**
+ * UI adapter for Home project commands. Storage behavior stays with project
+ * library operations, and cloud duplicate cleanup stays with cloudSync.
+ */
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const settings = ctx.services.signal(settingsService)
   const cloudSync = ctx.services.signal(cloudSyncService)
@@ -255,6 +275,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
 
+  /**
+   * Selects the first configured library containing the Home card that supports
+   * the requested operation. Multi-library membership is explicit on the card.
+   */
   const getProjectOperation = <
     OperationName extends keyof ProjectLibraryTypeOperations,
   >(
@@ -559,6 +583,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.actions')
 
+/**
+ * Sole Home entry producer for project cards. External extensions contribute
+ * local realizations or cloud relationships; Home derives view models from
+ * those explicit domain models.
+ */
 const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
   const projectLibraryRealizations = ctx.valueSpecs.signal(
     projectLibraryRealizationsValueSpec
