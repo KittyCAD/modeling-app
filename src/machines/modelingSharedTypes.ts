@@ -1,5 +1,5 @@
 import type {
-  EntityReference,
+  EntityReference as SdkEntityReference,
   EntityType,
   Point2d,
   RegionGetResolvableIntersectionInfo,
@@ -22,6 +22,11 @@ import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
+
+// Remove this extension once @kittycad/lib includes the Curve3d schema variant.
+export type EntityReference =
+  | SdkEntityReference
+  | { type: 'curve3d'; curve_id: string }
 
 export type DefaultPlaneSelection = {
   name: DefaultPlaneStr

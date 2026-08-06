@@ -69,7 +69,6 @@ import {
   subVec,
 } from '@src/lib/utils2d'
 
-import type { EntityReference } from '@kittycad/lib'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -80,6 +79,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
   EnginePrimitiveSelection,
+  EntityReference,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -1224,6 +1224,8 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
       return entityRef.solid2d_id
     case 'solid3d':
       return entityRef.solid3d_id
+    case 'curve3d':
+      return entityRef.curve_id
     case 'solid2d_edge':
       return entityRef.edge_id
     case 'segment':
@@ -1253,6 +1255,8 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
       return b.type === 'solid2d' && a.solid2d_id === b.solid2d_id
     case 'solid3d':
       return b.type === 'solid3d' && a.solid3d_id === b.solid3d_id
+    case 'curve3d':
+      return b.type === 'curve3d' && a.curve_id === b.curve_id
     case 'solid2d_edge':
       return b.type === 'solid2d_edge' && a.edge_id === b.edge_id
     case 'edge':
@@ -1682,6 +1686,8 @@ export function artifactToEntityRef(
     return { type: 'solid2d', solid2d_id: artifactId }
   if (artifactType === 'sweep' || artifactType === 'compositeSolid')
     return { type: 'solid3d', solid3d_id: artifactId }
+  if (artifactType === 'helix')
+    return { type: 'curve3d', curve_id: artifactId }
   if (artifactType === 'segment')
     return pathId != null
       ? { type: 'segment', path_id: pathId, segment_id: artifactId }

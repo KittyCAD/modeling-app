@@ -2000,6 +2000,41 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test('normalizes standalone 3D curve entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'curve3d',
+        curve_id: 'helix-1',
+      })
+    ).toEqual({
+      type: 'curve3d',
+      curve_id: 'helix-1',
+    })
+  })
+
+  test('labels a standalone 3D curve using its helix artifact', () => {
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'curve3d', curve_id: 'helix-1' } },
+      ],
+      otherSelections: [],
+    }
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          type: 'helix',
+          id: 'helix-1',
+          codeRef: { range: [0, 1, 0] },
+        },
+      ],
+    ]) as ArtifactGraph
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
   test('normalizes region entity references', () => {
     expect(
       normalizeEntityReference({
@@ -2287,29 +2322,6 @@ describe('getSelectionTypeDisplayText', () => {
     expect(
       getSelectionTypeDisplayText({} as any, selection, artifactGraph)
     ).toBe('1 sweep')
-  })
-
-  test('resolves solid2d edge refs to helix artifacts before display', () => {
-    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const artifactGraph = new Map([
-      [
-        'helix-1',
-        {
-          id: 'helix-1',
-          type: 'helix',
-        } as unknown as Artifact,
-      ],
-    ])
-    const selection: Selections = {
-      graphSelections: [
-        { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },
-      ],
-      otherSelections: [],
-    }
-
-    expect(
-      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
-    ).toBe('1 helix')
   })
 
   test('coalesces edge-like selections under edge', () => {

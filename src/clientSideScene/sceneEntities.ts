@@ -129,7 +129,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 
-import type { EntityReference } from '@kittycad/lib'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
