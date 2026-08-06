@@ -65,7 +65,7 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
     /// Extra artifact identity needed when an engine clone represents a KCL
     /// solid whose body artifact ID differs from its engine entity ID.
-    #[serde(skip)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(skip)]
     pub(crate) entity_clone_info: Option<EntityCloneInfo>,
     /// Whether this command should be omitted when deriving the semantic
@@ -75,7 +75,8 @@ pub struct ArtifactCommand {
     pub omit_from_graph: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub(crate) struct EntityCloneInfo {
     pub source_artifact_id: ArtifactId,
     pub result_artifact_id: ArtifactId,
