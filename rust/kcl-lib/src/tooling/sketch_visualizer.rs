@@ -228,7 +228,8 @@ pub struct SketchVisualizationSegmentData {
     pub endpoint_ids: Vec<usize>,
     pub construction: bool,
     pub component_id: usize,
-    pub rendered_color: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rendered_color: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -569,10 +570,12 @@ impl<'a> Extraction<'a> {
                 endpoint_ids: segment.endpoint_ids.clone(),
                 construction: segment.construction,
                 component_id,
-                rendered_color: rendered_colors
-                    .get(&segment.id)
-                    .cloned()
-                    .unwrap_or_else(|| FREE_COLOR.to_hex_string()),
+                rendered_color: (self.options.color_scheme != SketchVisualizationColorScheme::Ids).then(|| {
+                    rendered_colors
+                        .get(&segment.id)
+                        .cloned()
+                        .unwrap_or_else(|| FREE_COLOR.to_hex_string())
+                }),
             });
         }
 
@@ -1774,13 +1777,13 @@ mod tests {
         assert_eq!(visualization.data.id_color_map.len(), 2);
         assert_eq!(
             visualization.data.segments[0].rendered_color,
-            dof_color(Some(Freedom::Free), SketchVisualizationTheme::Dark).to_hex_string()
+            Some(dof_color(Some(Freedom::Free), SketchVisualizationTheme::Dark).to_hex_string())
         );
         assert!(visualization.png.starts_with(b"\x89PNG\r\n\x1a\n"));
     }
 
     #[test]
-    fn ids_color_scheme_uses_id_color_map_as_rendered_color() {
+    fn ids_color_scheme_omits_redundant_rendered_colors() {
         let outcome = simple_two_line_outcome(false);
         let visualization = outcome
             .visualize_sketch(
@@ -1793,10 +1796,8 @@ mod tests {
             .unwrap();
 
         for segment in &visualization.data.segments {
-            assert_eq!(
-                Some(&segment.rendered_color),
-                visualization.data.id_color_map.get(&segment.id)
-            );
+            assert!(segment.rendered_color.is_none());
+            assert!(visualization.data.id_color_map.contains_key(&segment.id));
         }
     }
 

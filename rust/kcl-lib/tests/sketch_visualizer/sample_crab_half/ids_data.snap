@@ -567,8 +567,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         3
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#ede855"
+      "componentId": 0
     },
     {
       "id": 7,
@@ -582,8 +581,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         6
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#d94e9a"
+      "componentId": 0
     },
     {
       "id": 11,
@@ -598,8 +596,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         9
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#8ee547"
+      "componentId": 0
     },
     {
       "id": 14,
@@ -613,8 +610,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         13
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#38eba9"
+      "componentId": 0
     },
     {
       "id": 17,
@@ -628,8 +624,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         16
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#70de35"
+      "componentId": 0
     },
     {
       "id": 20,
@@ -643,8 +638,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         19
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#ed5ab2"
+      "componentId": 0
     },
     {
       "id": 23,
@@ -658,8 +652,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         22
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#40d6b3"
+      "componentId": 0
     },
     {
       "id": 26,
@@ -673,8 +666,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         25
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#53e5a6"
+      "componentId": 0
     },
     {
       "id": 29,
@@ -688,8 +680,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         28
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#9cd42c"
+      "componentId": 0
     },
     {
       "id": 32,
@@ -703,8 +694,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         31
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#e84f4d"
+      "componentId": 0
     },
     {
       "id": 35,
@@ -718,8 +708,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         34
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#b9e041"
+      "componentId": 0
     },
     {
       "id": 38,
@@ -733,8 +722,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         37
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#51cae8"
+      "componentId": 0
     },
     {
       "id": 41,
@@ -748,8 +736,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         40
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#51e0a0"
+      "componentId": 0
     },
     {
       "id": 44,
@@ -763,8 +750,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         43
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#32e3c8"
+      "componentId": 0
     },
     {
       "id": 47,
@@ -778,8 +764,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         46
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#54ebc5"
+      "componentId": 0
     },
     {
       "id": 50,
@@ -793,8 +778,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         49
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#d64578"
+      "componentId": 0
     },
     {
       "id": 53,
@@ -808,8 +792,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         52
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#f08243"
+      "componentId": 0
     },
     {
       "id": 56,
@@ -823,8 +806,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         55
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#50e58a"
+      "componentId": 0
     },
     {
       "id": 59,
@@ -838,8 +820,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         58
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#4eedae"
+      "componentId": 0
     },
     {
       "id": 62,
@@ -853,8 +834,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         61
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#a539d4"
+      "componentId": 0
     },
     {
       "id": 65,
@@ -868,8 +848,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         64
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#de6752"
+      "componentId": 0
     },
     {
       "id": 68,
@@ -883,8 +862,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         67
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#5f41f2"
+      "componentId": 0
     },
     {
       "id": 71,
@@ -898,8 +876,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         70
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#eaf250"
+      "componentId": 0
     },
     {
       "id": 74,
@@ -913,8 +890,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         73
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#dbb146"
+      "componentId": 0
     },
     {
       "id": 78,
@@ -929,8 +905,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         76
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#b3db44"
+      "componentId": 0
     }
   ],
   "constraints": [
