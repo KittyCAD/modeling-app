@@ -12,6 +12,7 @@ use crate::frontend::api::Number;
 use crate::frontend::api::Object;
 use crate::frontend::api::ObjectId;
 use crate::frontend::api::ObjectKind;
+use crate::frontend::sketch::ArcDirection;
 use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
@@ -1063,9 +1064,29 @@ fn is_point_on_circle(point: Coords2d, center: Coords2d, radius: f64, epsilon: f
     (dist - radius).abs() <= epsilon
 }
 
+/// Like [`project_point_onto_ccw_arc`], but for an arc that sweeps in the given
+/// direction from its declared start to its declared end. Returns t where t=0
+/// at the declared start and t=1 at the declared end, increasing along the
+/// arc's direction of travel. Points off the arc clamp to the nearest
+/// endpoint, matching [`project_point_onto_ccw_arc`].
+pub fn project_point_onto_arc(
+    point: Coords2d,
+    arc_center: Coords2d,
+    arc_start: Coords2d,
+    arc_end: Coords2d,
+    direction: ArcDirection,
+) -> f64 {
+    let (sweep_start, sweep_end) = direction.ccw_order(arc_start, arc_end);
+    let t = project_point_onto_ccw_arc(point, arc_center, sweep_start, sweep_end);
+    // A point at clockwise-fraction f from the declared start is at
+    // counterclockwise-fraction 1-f from the declared end, so mirror the
+    // parameter back into declared-order space.
+    if direction.is_clockwise() { 1.0 - t } else { t }
+}
+
 /// Helper to calculate the parametric position of a point on an arc
 /// Returns t where t=0 at start, t=1 at end, based on CCW angle
-pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: Coords2d, arc_end: Coords2d) -> f64 {
+fn project_point_onto_ccw_arc(point: Coords2d, arc_center: Coords2d, arc_start: Coords2d, arc_end: Coords2d) -> f64 {
     // Calculate angles
     let start_angle = libm::atan2(arc_start.y - arc_center.y, arc_start.x - arc_center.x);
     let end_angle = libm::atan2(arc_end.y - arc_center.y, arc_end.x - arc_center.x);
@@ -1536,14 +1557,28 @@ struct CurveHandle {
     segment_id: ObjectId,
     kind: CurveKind,
     domain: CurveDomain,
+    /// The declared start of the segment. Parametric positions on the curve
+    /// are measured from here (t=0) along the curve's direction of travel.
     start: Coords2d,
+    /// The declared end of the segment (t=1 for lines and arcs).
     end: Coords2d,
     center: Option<Coords2d>,
     radius: Option<f64>,
+    /// The direction an open circular curve sweeps from start to end. Always
+    /// counterclockwise for non-arcs.
+    direction: ArcDirection,
     sampled_points: Option<Vec<SampledCurvePoint>>,
 }
 
 impl CurveHandle {
+    /// The curve's start and end in counterclockwise sweep order, for
+    /// geometry helpers that assume arcs sweep counterclockwise from the
+    /// first point to the second. For a clockwise arc, this is the declared
+    /// end and start, swapped.
+    fn sweep_start_end(&self) -> (Coords2d, Coords2d) {
+        self.direction.ccw_order(self.start, self.end)
+    }
+
     fn project_for_trim(&self, point: Coords2d) -> Result<f64, String> {
         match (self.kind, self.domain) {
             (CurveKind::Line, CurveDomain::Open) => Ok(project_point_onto_segment(point, self.start, self.end)),
@@ -1551,7 +1586,13 @@ impl CurveHandle {
                 let center = self
                     .center
                     .ok_or_else(|| format!("Curve {} missing center for arc projection", self.segment_id.0))?;
-                Ok(project_point_onto_arc(point, center, self.start, self.end))
+                Ok(project_point_onto_arc(
+                    point,
+                    center,
+                    self.start,
+                    self.end,
+                    self.direction,
+                ))
             }
             (CurveKind::Circular, CurveDomain::Closed) => {
                 let center = self
@@ -1801,10 +1842,11 @@ fn load_curve_handle(
                 end,
                 center: None,
                 radius: None,
+                direction: ArcDirection::Ccw,
                 sampled_points: None,
             })
         }
-        Segment::Arc(_) => {
+        Segment::Arc(arc) => {
             let start = get_position_coords_from_arc(segment_obj, ArcPoint::Start, objects, default_unit)
                 .ok_or_else(|| format!("Could not get arc start for segment {}", segment_obj.id.0))?;
             let end = get_position_coords_from_arc(segment_obj, ArcPoint::End, objects, default_unit)
@@ -1821,6 +1863,7 @@ fn load_curve_handle(
                 end,
                 center: Some(center),
                 radius: Some(radius),
+                direction: arc.direction,
                 sampled_points: None,
             })
         }
@@ -1840,6 +1883,7 @@ fn load_curve_handle(
                 end: start,
                 center: Some(center),
                 radius: Some(radius),
+                direction: ArcDirection::Ccw,
                 sampled_points: None,
             })
         }
@@ -1869,6 +1913,7 @@ fn load_curve_handle(
                 end,
                 center: None,
                 radius: None,
+                direction: ArcDirection::Ccw,
                 sampled_points: Some(sampled_points),
             })
         }
@@ -1885,9 +1930,10 @@ fn curve_contains_point(curve: &CurveHandle, point: Coords2d, epsilon: f64) -> b
             let t = project_point_onto_segment(point, curve.start, curve.end);
             (0.0..=1.0).contains(&t) && perpendicular_distance_to_segment(point, curve.start, curve.end) <= epsilon
         }
-        (CurveKind::Circular, CurveDomain::Open) => curve
-            .center
-            .is_some_and(|center| is_point_on_arc(point, center, curve.start, curve.end, epsilon)),
+        (CurveKind::Circular, CurveDomain::Open) => curve.center.is_some_and(|center| {
+            let (sweep_start, sweep_end) = curve.sweep_start_end();
+            is_point_on_arc(point, center, sweep_start, sweep_end, epsilon)
+        }),
         (CurveKind::Circular, CurveDomain::Closed) => curve.center.is_some_and(|center| {
             let radius = curve.radius.unwrap_or_else(|| {
                 ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
@@ -1950,7 +1996,10 @@ fn curve_line_segment_intersections(
         }
         (CurveKind::Circular, CurveDomain::Open) => curve
             .center
-            .map(|center| line_arc_intersections(line_start, line_end, center, curve.start, curve.end, epsilon))
+            .map(|center| {
+                let (sweep_start, sweep_end) = curve.sweep_start_end();
+                line_arc_intersections(line_start, line_end, center, sweep_start, sweep_end, epsilon)
+            })
             .unwrap_or_default(),
         (CurveKind::Circular, CurveDomain::Closed) => {
             let Some(center) = curve.center else {
@@ -2005,10 +2054,18 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
         (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => other
             .center
             .map(|other_center| {
-                line_arc_intersections(curve.start, curve.end, other_center, other.start, other.end, epsilon)
-                    .into_iter()
-                    .map(|(_, point)| point)
-                    .collect()
+                let (other_sweep_start, other_sweep_end) = other.sweep_start_end();
+                line_arc_intersections(
+                    curve.start,
+                    curve.end,
+                    other_center,
+                    other_sweep_start,
+                    other_sweep_end,
+                    epsilon,
+                )
+                .into_iter()
+                .map(|(_, point)| point)
+                .collect()
             })
             .unwrap_or_default(),
         (CurveKind::Line, CurveDomain::Open, CurveKind::Circular, CurveDomain::Closed) => {
@@ -2026,23 +2083,33 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
         (CurveKind::Circular, CurveDomain::Open, CurveKind::Line, CurveDomain::Open) => curve
             .center
             .map(|curve_center| {
-                line_arc_intersections(other.start, other.end, curve_center, curve.start, curve.end, epsilon)
-                    .into_iter()
-                    .map(|(_, point)| point)
-                    .collect()
+                let (curve_sweep_start, curve_sweep_end) = curve.sweep_start_end();
+                line_arc_intersections(
+                    other.start,
+                    other.end,
+                    curve_center,
+                    curve_sweep_start,
+                    curve_sweep_end,
+                    epsilon,
+                )
+                .into_iter()
+                .map(|(_, point)| point)
+                .collect()
             })
             .unwrap_or_default(),
         (CurveKind::Circular, CurveDomain::Open, CurveKind::Circular, CurveDomain::Open) => {
             let (Some(curve_center), Some(other_center)) = (curve.center, other.center) else {
                 return Vec::new();
             };
+            let (curve_sweep_start, curve_sweep_end) = curve.sweep_start_end();
+            let (other_sweep_start, other_sweep_end) = other.sweep_start_end();
             arc_arc_intersections(
                 curve_center,
-                curve.start,
-                curve.end,
+                curve_sweep_start,
+                curve_sweep_end,
                 other_center,
-                other.start,
-                other.end,
+                other_sweep_start,
+                other_sweep_end,
                 epsilon,
             )
         }
@@ -2053,12 +2120,13 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
             let other_radius = other.radius.unwrap_or_else(|| {
                 ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
+            let (curve_sweep_start, curve_sweep_end) = curve.sweep_start_end();
             circle_arc_intersections(
                 other_center,
                 other_radius,
                 curve_center,
-                curve.start,
-                curve.end,
+                curve_sweep_start,
+                curve_sweep_end,
                 epsilon,
             )
         }
@@ -2081,12 +2149,13 @@ fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: 
             let curve_radius = curve.radius.unwrap_or_else(|| {
                 ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
+            let (other_sweep_start, other_sweep_end) = other.sweep_start_end();
             circle_arc_intersections(
                 curve_center,
                 curve_radius,
                 other_center,
-                other.start,
-                other.end,
+                other_sweep_start,
+                other_sweep_end,
                 epsilon,
             )
         }
@@ -2124,9 +2193,10 @@ fn sampled_curve_curve_intersections(sampled_curve: &CurveHandle, other: &CurveH
                 }
             }
             (CurveKind::Circular, CurveDomain::Open) => {
+                let (other_sweep_start, other_sweep_end) = other.sweep_start_end();
                 if let Some(center) = other.center
                     && let Some(intersection) =
-                        line_arc_intersection(start, end, center, other.start, other.end, epsilon)
+                        line_arc_intersection(start, end, center, other_sweep_start, other_sweep_end, epsilon)
                 {
                     intersections.push(intersection);
                 }
@@ -4244,6 +4314,7 @@ pub(crate) fn build_trim_plan(
                         start: new_point,
                         end: arc_ctor.end.clone(),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction,
                         construction: arc_ctor.construction,
                     })
                 } else {
@@ -4251,6 +4322,7 @@ pub(crate) fn build_trim_plan(
                         start: arc_ctor.start.clone(),
                         end: new_point,
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction,
                         construction: arc_ctor.construction,
                     })
                 }
@@ -4870,8 +4942,8 @@ pub(crate) fn build_trim_plan(
             // Calculate split point parametric position
             let split_point_t_opt = match segment {
                 Segment::Line(_) => Some(project_point_onto_segment(split_point, start_coords, end_coords)),
-                Segment::Arc(_) => segment_center_coords
-                    .map(|center| project_point_onto_arc(split_point, center, start_coords, end_coords)),
+                Segment::Arc(arc) => segment_center_coords
+                    .map(|center| project_point_onto_arc(split_point, center, start_coords, end_coords, arc.direction)),
                 _ => None,
             };
 
@@ -4921,9 +4993,15 @@ pub(crate) fn build_trim_plan(
                             // Project the point onto the segment to get its parametric position
                             let point_t = match segment {
                                 Segment::Line(_) => project_point_onto_segment(point_coords, start_coords, end_coords),
-                                Segment::Arc(_) => {
+                                Segment::Arc(arc) => {
                                     if let Some(center) = segment_center_coords {
-                                        project_point_onto_arc(point_coords, center, start_coords, end_coords)
+                                        project_point_onto_arc(
+                                            point_coords,
+                                            center,
+                                            start_coords,
+                                            end_coords,
+                                            arc.direction,
+                                        )
                                     } else {
                                         continue; // Skip this constraint if no center
                                     }
@@ -5568,10 +5646,13 @@ pub(crate) async fn execute_trim_operations_simple(
                     y: crate::frontend::api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
                 };
 
+                // Circles always sweep counterclockwise, so the replacement
+                // arc does too.
                 let arc_ctor = SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
                     start: coords_to_point_expr(*arc_start_coords),
                     end: coords_to_point_expr(*arc_end_coords),
                     center: circle_ctor.center.clone(),
+                    direction: None,
                     construction: circle_ctor.construction,
                 });
 
@@ -5914,6 +5995,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         start: point_to_expr(coords_to_point(*right_trim_coords)),
                         end: point_to_expr(coords_to_point(*original_end_coords)),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction,
                         construction: arc_ctor.construction,
                     }),
                     _ => {
@@ -5976,6 +6058,7 @@ pub(crate) async fn execute_trim_operations_simple(
                         start: arc_ctor.start.clone(),
                         end: point_to_expr(coords_to_point(*left_trim_coords)),
                         center: arc_ctor.center.clone(),
+                        direction: arc_ctor.direction,
                         construction: arc_ctor.construction,
                     }),
                     _ => {

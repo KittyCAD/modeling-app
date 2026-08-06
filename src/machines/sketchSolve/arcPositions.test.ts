@@ -29,4 +29,24 @@ describe('createArcPositions', () => {
     const lastY = positions[positions.length - 2]
     expect(Math.hypot(firstX - lastX, firstY - lastY)).toBeLessThan(1e-9)
   })
+
+  it('sweeps the other side of the circle when ccw is false', () => {
+    const positions = createArcPositions({
+      center: [0, 0],
+      radius: 5,
+      startAngle: 0,
+      endAngle: Math.PI,
+      ccw: false,
+    })
+
+    // Both sweeps share endpoints (5, 0) and (-5, 0), but the clockwise
+    // sweep passes through the bottom of the circle.
+    expect(positions[0]).toBeCloseTo(5)
+    expect(positions[1]).toBeCloseTo(0)
+    expect(positions[positions.length - 3]).toBeCloseTo(-5)
+    expect(positions[positions.length - 2]).toBeCloseTo(0)
+
+    const midPointIndex = 3 * Math.floor(positions.length / 3 / 2)
+    expect(positions[midPointIndex + 1]).toBeCloseTo(-5)
+  })
 })
