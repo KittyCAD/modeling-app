@@ -107,6 +107,7 @@ export interface HomeProjectActionsService {
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
   canMoveToLibrary: (project: HomeProjectEntry) => boolean
+  canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
@@ -120,6 +121,10 @@ export interface HomeProjectActionsService {
     project: HomeProjectEntry,
     targetLibraryId: string
   ) => Promise<HomeProjectOpenResult | undefined>
+  deleteDuplicateRealizations: (
+    project: HomeProjectEntry,
+    duplicateProjectPaths: readonly string[]
+  ) => Promise<void>
 }
 
 function contributionStableId(entry: HomeProjectEntryContribution) {
