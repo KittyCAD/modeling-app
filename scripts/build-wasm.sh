@@ -6,7 +6,11 @@ mkdir -p rust/kcl-wasm-lib/pkg
 rm -rf rust/kcl-lib/bindings
 
 cd rust
-wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg --scope kittycad
+wasm_pack_args=(build kcl-wasm-lib --release --target web --out-dir pkg --scope kittycad)
+if [ "${VERCEL_ENV:-}" = "preview" ]; then
+  wasm_pack_args+=(--no-opt)
+fi
+wasm-pack "${wasm_pack_args[@]}"
 if [ -n "${VERCEL:-}" ]; then
   cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
 else
