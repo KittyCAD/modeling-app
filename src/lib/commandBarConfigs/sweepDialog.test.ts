@@ -82,6 +82,8 @@ describe('Sweep dialog modes', () => {
       const normalized = normalizeSweepDialogArguments(source)
 
       expect(hasLegacySweepAlignment(source)).toBe(true)
+      expect(getSweepProfilePosition(source)).toBeUndefined()
+      expect(getSweepProfileOrientation(source)).toBeUndefined()
       expect(normalized).toMatchObject({
         relativeTo,
         profilePosition: undefined,

@@ -36,6 +36,7 @@ import type {
   CommandArgumentOption,
   CommandDialogGroup,
 } from '@src/lib/commandTypes'
+import { hasModelingDialogValue } from '@src/lib/commandBarConfigs/modelingDialogShared'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
@@ -288,27 +289,8 @@ function getDraftOrSubmittedValue(
     : submittedValues[argName]
 }
 
-function hasMeaningfulDialogValue(value: unknown): boolean {
-  if (value === undefined || value === null || value === '') {
-    return false
-  }
-  if (typeof value === 'boolean') {
-    return true
-  }
-  if (isArray(value)) {
-    return value.length > 0
-  }
-  if (typeof value === 'object') {
-    if (isKclCommandValue(value)) {
-      return true
-    }
-    return !isSelectionValueEmpty(value)
-  }
-  return true
-}
-
 function hasOpenworthyDialogValue(value: unknown): boolean {
-  return typeof value === 'boolean' ? value : hasMeaningfulDialogValue(value)
+  return typeof value === 'boolean' ? value : hasModelingDialogValue(value)
 }
 
 function isMissingRequiredDialogValue(
@@ -317,7 +299,7 @@ function isMissingRequiredDialogValue(
 ): boolean {
   return isSelectionArgument(arg)
     ? isSelectionValueEmpty(value)
-    : !hasMeaningfulDialogValue(value)
+    : !hasModelingDialogValue(value)
 }
 
 function toTitleCase(value: string): string {

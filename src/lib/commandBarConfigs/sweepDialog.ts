@@ -1,5 +1,14 @@
-export type SweepProfilePosition = 'original' | 'path'
-export type SweepProfileOrientation = 'original' | 'perpendicular'
+import { createDialogModeAdapterFor } from '@src/lib/commandBarConfigs/dialogModeAdapter'
+import type {
+  SweepCommandArgs,
+  SweepProfileOrientation,
+  SweepProfilePosition,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+
+export type {
+  SweepProfileOrientation,
+  SweepProfilePosition,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
 function isEditingSweep(argumentsToSubmit: Record<string, unknown>): boolean {
   return Boolean(argumentsToSubmit.nodeToEdit)
@@ -14,27 +23,49 @@ export function hasLegacySweepAlignment(
   )
 }
 
+const createSweepModeAdapter = createDialogModeAdapterFor<SweepCommandArgs>()
+
+const sweepPositionAdapter = createSweepModeAdapter({
+  key: 'profilePosition',
+  modes: ['original', 'path'] as const,
+  infer: (argumentsToSubmit) => {
+    if (hasLegacySweepAlignment(argumentsToSubmit)) {
+      return undefined
+    }
+    if (typeof argumentsToSubmit.translateProfileToPath === 'boolean') {
+      return argumentsToSubmit.translateProfileToPath ? 'path' : 'original'
+    }
+    return isEditingSweep(argumentsToSubmit) ? undefined : 'original'
+  },
+  toRaw: (mode) => ({ translateProfileToPath: mode === 'path' }),
+})
+
+const sweepOrientationAdapter = createSweepModeAdapter({
+  key: 'profileOrientation',
+  modes: ['original', 'perpendicular'] as const,
+  infer: (argumentsToSubmit) => {
+    if (hasLegacySweepAlignment(argumentsToSubmit)) {
+      return undefined
+    }
+    if (typeof argumentsToSubmit.orientProfilePerpendicular === 'boolean') {
+      return argumentsToSubmit.orientProfilePerpendicular
+        ? 'perpendicular'
+        : 'original'
+    }
+    return isEditingSweep(argumentsToSubmit) ? undefined : 'original'
+  },
+  toRaw: (mode) => ({
+    orientProfilePerpendicular: mode === 'perpendicular',
+  }),
+})
+
 export function getSweepProfilePosition(
   argumentsToSubmit: Record<string, unknown>
 ): SweepProfilePosition | undefined {
   if (hasLegacySweepAlignment(argumentsToSubmit)) {
     return undefined
   }
-
-  if (
-    argumentsToSubmit.profilePosition === 'original' ||
-    argumentsToSubmit.profilePosition === 'path'
-  ) {
-    return argumentsToSubmit.profilePosition
-  }
-
-  if (typeof argumentsToSubmit.translateProfileToPath === 'boolean') {
-    return argumentsToSubmit.translateProfileToPath === true
-      ? 'path'
-      : 'original'
-  }
-
-  return isEditingSweep(argumentsToSubmit) ? undefined : 'original'
+  return sweepPositionAdapter.get(argumentsToSubmit)
 }
 
 export function getSweepProfileOrientation(
@@ -43,21 +74,7 @@ export function getSweepProfileOrientation(
   if (hasLegacySweepAlignment(argumentsToSubmit)) {
     return undefined
   }
-
-  if (
-    argumentsToSubmit.profileOrientation === 'original' ||
-    argumentsToSubmit.profileOrientation === 'perpendicular'
-  ) {
-    return argumentsToSubmit.profileOrientation
-  }
-
-  if (typeof argumentsToSubmit.orientProfilePerpendicular === 'boolean') {
-    return argumentsToSubmit.orientProfilePerpendicular === true
-      ? 'perpendicular'
-      : 'original'
-  }
-
-  return isEditingSweep(argumentsToSubmit) ? undefined : 'original'
+  return sweepOrientationAdapter.get(argumentsToSubmit)
 }
 
 /**
@@ -67,9 +84,8 @@ export function getSweepProfileOrientation(
 export function normalizeSweepDialogArguments(
   argumentsToSubmit: Record<string, unknown>
 ): Record<string, unknown> {
-  const normalized = { ...argumentsToSubmit }
-
   if (hasLegacySweepAlignment(argumentsToSubmit)) {
+    const normalized = { ...argumentsToSubmit }
     normalized.profilePosition = undefined
     normalized.profileOrientation = undefined
     normalized.translateProfileToPath = undefined
@@ -79,15 +95,19 @@ export function normalizeSweepDialogArguments(
 
   const profilePosition = getSweepProfilePosition(argumentsToSubmit)
   const profileOrientation = getSweepProfileOrientation(argumentsToSubmit)
-
-  normalized.profilePosition = profilePosition
-  normalized.profileOrientation = profileOrientation
-  normalized.translateProfileToPath =
-    profilePosition === undefined ? undefined : profilePosition === 'path'
-  normalized.orientProfilePerpendicular =
-    profileOrientation === undefined
-      ? undefined
-      : profileOrientation === 'perpendicular'
-
+  const withPosition = sweepPositionAdapter.normalize(
+    argumentsToSubmit,
+    profilePosition
+  )
+  const normalized = sweepOrientationAdapter.normalize(
+    withPosition,
+    profileOrientation
+  )
+  if (profilePosition === undefined) {
+    normalized.translateProfileToPath = undefined
+  }
+  if (profileOrientation === undefined) {
+    normalized.orientProfilePerpendicular = undefined
+  }
   return normalized
 }

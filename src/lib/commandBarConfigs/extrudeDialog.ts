@@ -1,69 +1,60 @@
-import { isArray } from '@src/lib/utils'
+import { createDialogModeAdapterFor } from '@src/lib/commandBarConfigs/dialogModeAdapter'
+import type {
+  ExtrudeCommandArgs,
+  ExtrudeDirectionMode,
+  ExtrudeExtentType,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import { hasModelingDialogValue } from '@src/lib/commandBarConfigs/modelingDialogShared'
 
-export type ExtrudeExtentType = 'distance' | 'toFace'
-export type ExtrudeDirectionMode = 'oneSide' | 'symmetric' | 'twoSides'
+export type {
+  ExtrudeDirectionMode,
+  ExtrudeExtentType,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
-function isSelectionValueEmpty(value: unknown): boolean {
-  if (!value || typeof value !== 'object') {
-    return false
-  }
+export const hasExtrudeDialogValue = hasModelingDialogValue
 
-  const selection = value as {
-    graphSelections?: unknown[]
-    otherSelections?: unknown[]
-  }
-  if (
-    !isArray(selection.graphSelections) ||
-    !isArray(selection.otherSelections)
-  ) {
-    return false
-  }
+const createExtrudeModeAdapter =
+  createDialogModeAdapterFor<ExtrudeCommandArgs>()
 
-  return (
-    selection.graphSelections.length === 0 &&
-    selection.otherSelections.length === 0
-  )
-}
+const extrudeExtentAdapter = createExtrudeModeAdapter({
+  key: 'extentType',
+  modes: ['distance', 'toFace'] as const,
+  infer: (argumentsToSubmit) =>
+    hasModelingDialogValue(argumentsToSubmit.to) ? 'toFace' : 'distance',
+})
 
-export function hasExtrudeDialogValue(value: unknown): boolean {
-  return (
-    value !== undefined &&
-    value !== null &&
-    value !== '' &&
-    !isSelectionValueEmpty(value)
-  )
-}
+const extrudeDirectionAdapter = createExtrudeModeAdapter({
+  key: 'directionMode',
+  modes: ['oneSide', 'symmetric', 'twoSides'] as const,
+  infer: (argumentsToSubmit) => {
+    if (argumentsToSubmit.symmetric === true) {
+      return 'symmetric'
+    }
+    return hasModelingDialogValue(argumentsToSubmit.bidirectionalLength)
+      ? 'twoSides'
+      : 'oneSide'
+  },
+  toRaw: (mode) => {
+    if (mode === 'symmetric') {
+      return { symmetric: true, bidirectionalLength: undefined }
+    }
+    if (mode === 'twoSides') {
+      return { symmetric: undefined }
+    }
+    return { symmetric: undefined, bidirectionalLength: undefined }
+  },
+})
 
 export function getExtrudeExtentType(
   argumentsToSubmit: Record<string, unknown>
 ): ExtrudeExtentType {
-  if (
-    argumentsToSubmit.extentType === 'distance' ||
-    argumentsToSubmit.extentType === 'toFace'
-  ) {
-    return argumentsToSubmit.extentType
-  }
-
-  return hasExtrudeDialogValue(argumentsToSubmit.to) ? 'toFace' : 'distance'
+  return extrudeExtentAdapter.get(argumentsToSubmit) ?? 'distance'
 }
 
 export function getExtrudeDirectionMode(
   argumentsToSubmit: Record<string, unknown>
 ): ExtrudeDirectionMode {
-  if (
-    argumentsToSubmit.directionMode === 'oneSide' ||
-    argumentsToSubmit.directionMode === 'symmetric' ||
-    argumentsToSubmit.directionMode === 'twoSides'
-  ) {
-    return argumentsToSubmit.directionMode
-  }
-  if (argumentsToSubmit.symmetric === true) {
-    return 'symmetric'
-  }
-  if (hasExtrudeDialogValue(argumentsToSubmit.bidirectionalLength)) {
-    return 'twoSides'
-  }
-  return 'oneSide'
+  return extrudeDirectionAdapter.get(argumentsToSubmit) ?? 'oneSide'
 }
 
 /**
@@ -73,15 +64,19 @@ export function getExtrudeDirectionMode(
 export function normalizeExtrudeDialogArguments(
   argumentsToSubmit: Record<string, unknown>
 ): Record<string, unknown> {
-  const normalized = { ...argumentsToSubmit }
   const extentType = getExtrudeExtentType(argumentsToSubmit)
   const directionMode =
     extentType === 'toFace'
       ? 'oneSide'
       : getExtrudeDirectionMode(argumentsToSubmit)
-
-  normalized.extentType = extentType
-  normalized.directionMode = directionMode
+  const withExtent = extrudeExtentAdapter.normalize(
+    argumentsToSubmit,
+    extentType
+  )
+  const normalized = extrudeDirectionAdapter.normalize(
+    withExtent,
+    directionMode
+  )
 
   if (extentType === 'toFace') {
     normalized.length = undefined
@@ -96,15 +91,5 @@ export function normalizeExtrudeDialogArguments(
   }
 
   normalized.to = undefined
-  if (directionMode === 'symmetric') {
-    normalized.symmetric = true
-    normalized.bidirectionalLength = undefined
-  } else if (directionMode === 'twoSides') {
-    normalized.symmetric = undefined
-  } else {
-    normalized.symmetric = undefined
-    normalized.bidirectionalLength = undefined
-  }
-
   return normalized
 }

@@ -1,27 +1,37 @@
-export type ChamferType = 'equalDistance' | 'twoDistances' | 'distanceAndAngle'
+import { createDialogModeAdapterFor } from '@src/lib/commandBarConfigs/dialogModeAdapter'
+import type {
+  ChamferCommandArgs,
+  ChamferType,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import { hasModelingDialogValue } from '@src/lib/commandBarConfigs/modelingDialogShared'
 
-function hasChamferDialogValue(value: unknown): boolean {
-  return value !== undefined && value !== null && value !== ''
-}
+export type { ChamferType } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+
+const chamferTypeAdapter = createDialogModeAdapterFor<ChamferCommandArgs>()({
+  key: 'chamferType',
+  modes: ['equalDistance', 'twoDistances', 'distanceAndAngle'] as const,
+  infer: (argumentsToSubmit) => {
+    if (hasModelingDialogValue(argumentsToSubmit.angle)) {
+      return 'distanceAndAngle'
+    }
+    return hasModelingDialogValue(argumentsToSubmit.secondLength)
+      ? 'twoDistances'
+      : 'equalDistance'
+  },
+  toRaw: (mode) => {
+    if (mode === 'equalDistance') {
+      return { secondLength: undefined, angle: undefined }
+    }
+    return mode === 'twoDistances'
+      ? { angle: undefined }
+      : { secondLength: undefined }
+  },
+})
 
 export function getChamferType(
   argumentsToSubmit: Record<string, unknown>
 ): ChamferType {
-  if (
-    argumentsToSubmit.chamferType === 'equalDistance' ||
-    argumentsToSubmit.chamferType === 'twoDistances' ||
-    argumentsToSubmit.chamferType === 'distanceAndAngle'
-  ) {
-    return argumentsToSubmit.chamferType
-  }
-
-  if (hasChamferDialogValue(argumentsToSubmit.angle)) {
-    return 'distanceAndAngle'
-  }
-  if (hasChamferDialogValue(argumentsToSubmit.secondLength)) {
-    return 'twoDistances'
-  }
-  return 'equalDistance'
+  return chamferTypeAdapter.get(argumentsToSubmit) ?? 'equalDistance'
 }
 
 /**
@@ -31,19 +41,6 @@ export function getChamferType(
 export function normalizeChamferDialogArguments(
   argumentsToSubmit: Record<string, unknown>
 ): Record<string, unknown> {
-  const normalized = { ...argumentsToSubmit }
   const chamferType = getChamferType(argumentsToSubmit)
-
-  normalized.chamferType = chamferType
-
-  if (chamferType === 'equalDistance') {
-    normalized.secondLength = undefined
-    normalized.angle = undefined
-  } else if (chamferType === 'twoDistances') {
-    normalized.angle = undefined
-  } else {
-    normalized.secondLength = undefined
-  }
-
-  return normalized
+  return chamferTypeAdapter.normalize(argumentsToSubmit, chamferType)
 }

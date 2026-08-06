@@ -49,15 +49,10 @@ import {
   type Program,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
-import { getChamferType } from '@src/lib/commandBarConfigs/chamferDialog'
 import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import {
-  getSweepProfileOrientation,
-  getSweepProfilePosition,
-} from '@src/lib/commandBarConfigs/sweepDialog'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
@@ -883,7 +878,6 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
     selection,
     length,
-    chamferType: getChamferType({ secondLength, angle }),
     secondLength,
     angle,
     tag,
@@ -1509,18 +1503,6 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     relativeTo,
     translateProfileToPath,
     orientProfilePerpendicular,
-    profilePosition: getSweepProfilePosition({
-      nodeToEdit: true,
-      relativeTo,
-      translateProfileToPath,
-      orientProfilePerpendicular,
-    }),
-    profileOrientation: getSweepProfileOrientation({
-      nodeToEdit: true,
-      relativeTo,
-      translateProfileToPath,
-      orientProfilePerpendicular,
-    }),
     tagStart,
     tagEnd,
     bodyType,

@@ -1,13 +1,13 @@
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   STD_LIB_COMMANDS,
   type StdLibCommandArg,
   type StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
-type ModelingCommandName = Extract<keyof ModelingCommandSchema, string>
+type ModelingCommandName = Extract<keyof StdLibModelingCommandSchema, string>
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -43,10 +43,16 @@ export type StdLibCommandDriftConfig = {
   flowArgOrder?: readonly string[]
 }
 
-type StdLibCommandArgOverride = Partial<
+export type StdLibCommandArgOverride = Partial<
   CommandArgumentConfig<unknown, ModelingMachineContext>
 > &
   Record<string, unknown>
+
+export type ModelingCommandArgOverrides<CommandArgs extends object> = Partial<{
+  [ArgName in keyof CommandArgs]: Partial<
+    CommandArgumentConfig<CommandArgs[ArgName], ModelingMachineContext>
+  >
+}>
 
 type StdLibCommandArgsOptions = {
   omitted?: readonly string[]

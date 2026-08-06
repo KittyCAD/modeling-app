@@ -1,23 +1,10 @@
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
-import type { ChamferType } from '@src/lib/commandBarConfigs/chamferDialog'
-import type {
-  ExtrudeDirectionMode,
-  ExtrudeExtentType,
-} from '@src/lib/commandBarConfigs/extrudeDialog'
 import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-import type {
-  RevolveDirectionMode,
-  RevolveExtentType,
-} from '@src/lib/commandBarConfigs/revolveDialog'
-import type {
-  SweepProfileOrientation,
-  SweepProfilePosition,
-} from '@src/lib/commandBarConfigs/sweepDialog'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type {
   KclPreludeBodyType,
@@ -70,6 +57,14 @@ type GdtObjectsCommandArgs<Name extends StdLibCommandName> = GdtObjectsArgs<
 >
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+export type ExtrudeExtentType = 'distance' | 'toFace'
+export type ExtrudeDirectionMode = 'oneSide' | 'symmetric' | 'twoSides'
+export type SweepProfilePosition = 'original' | 'path'
+export type SweepProfileOrientation = 'original' | 'perpendicular'
+export type RevolveExtentType = 'full' | 'angle'
+export type RevolveDirectionMode = 'oneSide' | 'symmetric' | 'twoSides'
+export type RevolveAxisMode = 'Axis' | 'Edge'
+export type ChamferType = 'equalDistance' | 'twoDistances' | 'distanceAndAngle'
 
 export type ExtrudeCommandArgs = Override<
   StdLibCommandArgs<'extrude'>,
@@ -102,7 +97,7 @@ export type LoftCommandArgs = Override<
 export type RevolveCommandArgs = Override<
   Omit<StdLibCommandArgs<'revolve'>, 'axis'>,
   {
-    axisOrEdge: 'Axis' | 'Edge'
+    axisOrEdge: RevolveAxisMode
     axis: string | undefined
     edge: Selections | undefined
     extentType?: RevolveExtentType

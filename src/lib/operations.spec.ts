@@ -719,6 +719,8 @@ describe('operations.test.ts', () => {
         version?: { valueText: string }
         translateProfileToPath?: boolean
         orientProfilePerpendicular?: boolean
+        profilePosition?: unknown
+        profileOrientation?: unknown
       }
       expect(result.data.name).toBe('Sweep')
       expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
@@ -731,6 +733,8 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.version?.valueText).toBe('2')
       expect(argDefaultValues.translateProfileToPath).toBe(false)
       expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
+      expect(argDefaultValues.profilePosition).toBeUndefined()
+      expect(argDefaultValues.profileOrientation).toBeUndefined()
     })
   })
 
