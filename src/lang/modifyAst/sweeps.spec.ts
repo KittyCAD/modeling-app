@@ -299,6 +299,38 @@ extrude002 = extrude(seg01, length = 3)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should preserve profile inputs when editing a multi-profile extrude', async () => {
+      const code = `${circleAndRectProfilesCode}
+extrude001 = extrude([profile001, profile002], length = 1)`
+      const { ast, sketches, artifactGraph } =
+        await getAstAndSketchSelectionsEngineless(
+          code,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit: createPathToNodeForLastVariable(ast, false),
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude([profile001, profile002], length = 2)`
+      )
+      expect(newCode).not.toContain('extrude001[0]')
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an extrude call from a sketch region selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
         triangleRegion,

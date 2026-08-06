@@ -1426,6 +1426,7 @@ export function getVariableExprsFromSelection(
       ast,
       wasmInstance,
       artifactGraph,
+      nodeToEdit,
       artifactTypeFilter
     )
     if (splitOutputExpr) {
@@ -1753,6 +1754,7 @@ function getSplitOutputExprFromSelection(
   ast: Node<Program>,
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph,
+  nodeToEdit?: PathToNode,
   artifactTypeFilter?: Array<Artifact['type']>
 ): Expr | null {
   if (
@@ -1784,6 +1786,16 @@ function getSplitOutputExprFromSelection(
       wasmInstance
     )
     if (inputExpr) {
+      const editedVariableName = nodeToEdit
+        ? getVariableNameFromNodePath(nodeToEdit, ast, wasmInstance)
+        : undefined
+      if (
+        inputExpr.type === 'MemberExpression' &&
+        inputExpr.object.type === 'Name' &&
+        inputExpr.object.name.name === editedVariableName
+      ) {
+        return null
+      }
       return inputExpr
     }
   }
