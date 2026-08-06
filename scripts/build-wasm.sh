@@ -7,7 +7,11 @@ rm -rf rust/kcl-lib/bindings
 
 cd rust
 wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg --scope kittycad
-cargo test -p kcl-lib --features artifact-graph export_bindings
+if [ -n "${VERCEL:-}" ]; then
+  cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
+else
+  cargo test -p kcl-lib --features artifact-graph export_bindings
+fi
 cd ..
 
 cp rust/kcl-wasm-lib/README.md rust/kcl-wasm-lib/pkg/README.md
