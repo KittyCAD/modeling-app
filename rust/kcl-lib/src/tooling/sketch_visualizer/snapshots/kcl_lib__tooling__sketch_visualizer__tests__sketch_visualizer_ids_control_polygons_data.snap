@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/tooling/sketch_visualizer.rs
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
 ---
 {
   "sketch": {
@@ -19,7 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
   "units": [
     "None"
   ],
-  "colorScheme": "dof",
+  "colorScheme": "ids",
   "constraintStatus": {
     "name": "sketch001",
     "status": "OverConstrained",
@@ -173,8 +173,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         2
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#3c73ff"
+      "componentId": 0
     },
     {
       "id": 7,
@@ -189,8 +188,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         5
       ],
       "construction": false,
-      "componentId": 1,
-      "renderedColor": "#ff5e5b"
+      "componentId": 1
     },
     {
       "id": 10,
@@ -201,8 +199,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ],
       "endpointIds": [],
       "construction": false,
-      "componentId": 2,
-      "renderedColor": "#ffffff"
+      "componentId": 2
     },
     {
       "id": 15,
@@ -218,8 +215,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         14
       ],
       "construction": false,
-      "componentId": 3,
-      "renderedColor": "#3c73ff"
+      "componentId": 3
     }
   ],
   "constraints": [],
