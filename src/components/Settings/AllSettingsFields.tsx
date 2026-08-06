@@ -1,10 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
 import { useSignals } from '@preact/signals-react/runtime'
-import {
-  PROJECT_DETAILS_CATEGORY_ID,
-  ProjectTitleSettingsSection,
-} from '@src/components/Settings/ProjectTitleSettingsSection'
+import { ProjectTitleSettingsSection } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -96,20 +93,6 @@ export const AllSettingsFields = forwardRef(
     return (
       <div className="relative overflow-y-auto">
         <div ref={scrollRef} className="flex flex-col gap-4 px-2">
-          {searchParamTab === 'project' && currentProject && (
-            <>
-              <h2
-                id={`category-${PROJECT_DETAILS_CATEGORY_ID}`}
-                className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
-              >
-                Project
-              </h2>
-              <ProjectTitleSettingsSection
-                project={currentProject}
-                service={settings.projectTitle}
-              />
-            </>
-          )}
           {Object.entries(context)
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
@@ -126,6 +109,14 @@ export const AllSettingsFields = forwardRef(
                 >
                   {formatSettingsLabel(category)}
                 </h2>
+                {category === 'meta' &&
+                  searchParamTab === 'project' &&
+                  currentProject && (
+                    <ProjectTitleSettingsSection
+                      project={currentProject}
+                      service={settings.projectTitle}
+                    />
+                  )}
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
                     shouldShowSettingInput(item[1], searchParamTab, hasFeature)

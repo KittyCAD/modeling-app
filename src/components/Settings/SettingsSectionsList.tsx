@@ -1,5 +1,4 @@
 import type { Feature } from '@kittycad/lib'
-import { PROJECT_DETAILS_CATEGORY_ID } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { useApp } from '@src/lib/boot'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import {
@@ -33,22 +32,6 @@ export function SettingsSectionsList({
 
   return (
     <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
-      {searchParamTab === 'project' && (
-        <button
-          type="button"
-          onClick={() =>
-            scrollRef.current
-              ?.querySelector(`#category-${PROJECT_DETAILS_CATEGORY_ID}`)
-              ?.scrollIntoView({
-                block: 'center',
-                behavior: 'smooth',
-              })
-          }
-          className="capitalize text-left border-none px-1"
-        >
-          Project
-        </button>
-      )}
       {visibleCategories.map(([category]) => (
         <button
           key={category}

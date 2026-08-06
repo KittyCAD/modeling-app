@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export const PROJECT_TITLE_SETTING_ID = 'projectTitle'
-export const PROJECT_DETAILS_CATEGORY_ID = 'project-details'
 
 interface ProjectTitleSettingsSectionProps {
   project: Project

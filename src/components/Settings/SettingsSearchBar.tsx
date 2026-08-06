@@ -83,7 +83,7 @@ export function SettingsSearchBar({
       ...(hasOpenProject
         ? [
             {
-              category: 'Project',
+              category: 'Meta',
               name: PROJECT_TITLE_SETTING_ID,
               description: 'The name shown for this project.',
               displayName: 'Title',
