@@ -44,7 +44,7 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::args::TyF64;
 use crate::std::axis_or_reference::Axis2dOrPoint2d;
-use crate::std::clone::fix_tags_and_references_with_child_ids;
+use crate::std::clone::fix_pattern_face_ids;
 use crate::std::shapes::POINT_ZERO_ZERO;
 use crate::std::utils::point_3d_to_mm;
 use crate::std::utils::point_to_mm;
@@ -475,9 +475,9 @@ pub trait GeometryTrait: Clone {
     #[allow(async_fn_in_trait)]
     async fn fix_pattern_tags_and_references(
         &mut self,
-        original: &Self,
+        _original: &Self,
         info: &kcmc::output::FaceEdgeInfo,
-        exec_state: &mut ExecState,
+        _exec_state: &mut ExecState,
         args: &Args,
     ) -> Result<(), KclError>;
 }
@@ -560,32 +560,15 @@ impl GeometryTrait for Solid {
 
     async fn fix_pattern_tags_and_references(
         &mut self,
-        original: &Self,
+        _original: &Self,
         info: &kcmc::output::FaceEdgeInfo,
-        exec_state: &mut ExecState,
+        _exec_state: &mut ExecState,
         args: &Args,
     ) -> Result<(), KclError> {
         if args.ctx.no_engine_commands().await {
             return Ok(());
         }
-        let mut old_geometry = crate::execution::GeometryWithImportedGeometry::Solid(original.clone());
-        let mut new_geometry = crate::execution::GeometryWithImportedGeometry::Solid(self.clone());
-        let child_ids = info.faces.iter().chain(&info.edges).copied().collect::<Vec<_>>();
-        fix_tags_and_references_with_child_ids(&mut new_geometry, &mut old_geometry, &child_ids, exec_state, args)
-            .await
-            .map_err(|error| {
-                KclError::new_internal(KclErrorDetails::new(
-                    format!("failed to update pattern copy tags and references: {error:?}"),
-                    vec![args.source_range],
-                ))
-            })?;
-        let Some(new_solid) = new_geometry.into_solid() else {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                "failed to extract patterned solid".to_owned(),
-                vec![args.source_range],
-            )));
-        };
-        *self = new_solid;
+        fix_pattern_face_ids(self, info);
         Ok(())
     }
 }

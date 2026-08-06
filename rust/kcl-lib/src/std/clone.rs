@@ -133,16 +133,6 @@ pub(super) async fn fix_tags_and_references(
     fix_tags_and_references_inner(new_geometry, old_geometry, exec_state, args, None).await
 }
 
-pub(super) async fn fix_tags_and_references_with_child_ids(
-    new_geometry: &mut GeometryWithImportedGeometry,
-    old_geometry: &mut GeometryWithImportedGeometry,
-    new_child_ids: &[uuid::Uuid],
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<()> {
-    fix_tags_and_references_inner(new_geometry, old_geometry, exec_state, args, Some(new_child_ids)).await
-}
-
 async fn fix_tags_and_references_inner(
     new_geometry: &mut GeometryWithImportedGeometry,
     old_geometry: &mut GeometryWithImportedGeometry,
@@ -344,15 +334,50 @@ async fn get_old_new_child_map(
     };
 
     // Create a map of old entity ids to new entity ids.
-    Ok((
-        HashMap::from_iter(
-            old_entity_ids
-                .iter()
-                .zip(new_entity_ids.iter())
-                .map(|(old_id, new_id)| (*old_id, *new_id)),
-        ),
-        source_topology_id,
-    ))
+    let entity_id_map = HashMap::from_iter(
+        old_entity_ids
+            .iter()
+            .zip(new_entity_ids.iter())
+            .map(|(old_id, new_id)| (*old_id, *new_id)),
+    );
+
+    Ok((entity_id_map, source_topology_id))
+}
+
+pub(super) fn fix_pattern_face_ids(solid: &mut Solid, info: &kcmc::output::FaceEdgeInfo) {
+    let mut face_id_map = HashMap::new();
+    for (surface, new_face_id) in solid.value.iter_mut().zip(&info.faces) {
+        face_id_map.insert(surface.face_id(), *new_face_id);
+        surface.set_face_id(*new_face_id);
+    }
+
+    let remap_tag = |tag: &mut TagIdentifier| {
+        for (_, engine_info) in &mut tag.info {
+            if let Some(surface) = &mut engine_info.surface
+                && let Some(new_face_id) = face_id_map.get(&surface.face_id())
+            {
+                surface.set_face_id(*new_face_id);
+            }
+        }
+    };
+
+    if let Some(sketch) = solid.sketch_mut() {
+        for tag in sketch.tags.values_mut() {
+            remap_tag(tag);
+        }
+    }
+    for tag in solid.faces.values_mut() {
+        remap_tag(tag);
+    }
+
+    if info.faces.len() >= 2 {
+        if solid.start_cap_id.is_some() {
+            solid.start_cap_id = info.faces.get(info.faces.len() - 2).copied();
+        }
+        if solid.end_cap_id.is_some() {
+            solid.end_cap_id = info.faces.last().copied();
+        }
+    }
 }
 
 fn geometry_references_any_child(geometry: &GeometryWithImportedGeometry, child_ids: &[uuid::Uuid]) -> bool {

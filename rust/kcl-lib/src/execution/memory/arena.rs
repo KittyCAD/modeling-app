@@ -215,6 +215,7 @@ use std::sync::atomic::Ordering;
 use indexmap::IndexMap;
 
 use super::EnvironmentRef;
+use super::IndexedSolidTagAccess;
 use super::MODULE_PREFIX;
 use super::MemoryStats;
 use super::TYPE_PREFIX;
@@ -482,16 +483,16 @@ impl ProgramMemory {
         mut env_ref: EnvironmentRef,
         source_range: SourceRange,
         owner: usize,
-        index: usize,
-        tag: &str,
-        from_sketch: bool,
+        access: IndexedSolidTagAccess<'_>,
     ) -> Result<Option<KclValue>, KclError> {
         loop {
             let env_index = env_ref.index();
             let env = self.get_env_checked(env_index, "looking up a solid tag")?;
             let env = self.read_env(&env, env_index, "looking up a solid tag")?;
             env.check_readable_by(owner, "looking up a solid tag")?;
-            if let Some(value) = env.get_tag_from_indexed_solid(var, env_ref.epoch(), index, tag, from_sketch) {
+            if let Some(value) =
+                env.get_tag_from_indexed_solid(var, env_ref.epoch(), access.index, access.tag, access.from_sketch)
+            {
                 return Ok(value);
             }
             env_ref = match env.parent() {
@@ -870,12 +871,10 @@ impl Stack {
         &self,
         var: &str,
         source_range: SourceRange,
-        index: usize,
-        tag: &str,
-        from_sketch: bool,
+        access: IndexedSolidTagAccess<'_>,
     ) -> Result<Option<KclValue>, KclError> {
         self.memory
-            .get_tag_from_indexed_solid(var, self.current_env, source_range, self.id, index, tag, from_sketch)
+            .get_tag_from_indexed_solid(var, self.current_env, source_range, self.id, access)
     }
 
     /// Whether the current frame of the stack contains a variable with the given name.

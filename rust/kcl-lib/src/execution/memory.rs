@@ -192,6 +192,12 @@ pub(crate) struct Stack {
     backend: StackBackend,
 }
 
+pub(crate) struct IndexedSolidTagAccess<'a> {
+    pub index: usize,
+    pub tag: &'a str,
+    pub from_sketch: bool,
+}
+
 impl fmt::Display for ProgramMemory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.backend {
@@ -315,12 +321,10 @@ impl Stack {
         &self,
         var: &str,
         source_range: SourceRange,
-        index: usize,
-        tag: &str,
-        from_sketch: bool,
+        access: IndexedSolidTagAccess<'_>,
     ) -> Result<Option<KclValue>, KclError> {
         match &self.backend {
-            StackBackend::Arena(stack) => stack.get_tag_from_indexed_solid(var, source_range, index, tag, from_sketch),
+            StackBackend::Arena(stack) => stack.get_tag_from_indexed_solid(var, source_range, access),
         }
     }
 

@@ -2895,10 +2895,15 @@ impl Node<MemberExpression> {
         // Tags are small values embedded in large solid graphs. Avoid cloning the
         // entire graph for the common `solids[index].faces/tag` access forms.
         if let Some((name, index, tag, from_sketch)) = indexed_solid_tag_access(self)
-            && let Some(value) =
-                exec_state
-                    .stack()
-                    .get_tag_from_indexed_solid(name, self.into(), index, tag, from_sketch)?
+            && let Some(value) = exec_state.stack().get_tag_from_indexed_solid(
+                name,
+                self.into(),
+                crate::execution::memory::IndexedSolidTagAccess {
+                    index,
+                    tag,
+                    from_sketch,
+                },
+            )?
         {
             return Ok(value.continue_());
         }
