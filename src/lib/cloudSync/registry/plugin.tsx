@@ -1021,9 +1021,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         return Promise.reject(wasmInstancePromise)
       }
 
+      const projectDirectoryPath =
+        await getCloudProjectLibraryMaterializationDirectoryPath(library)
       const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath:
-          await getCloudProjectLibraryMaterializationDirectoryPath(library),
+        projectDirectoryPath,
         wasmInstancePromise,
         signal,
       })
@@ -1038,6 +1039,8 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       return projects.map((project) => ({
         ...homeProjectEntryFromProject(project),
         libraryId: library.id,
+        libraryPath: projectDirectoryPath,
+        libraryType: library.type,
       }))
     },
   }

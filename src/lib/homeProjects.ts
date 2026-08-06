@@ -2,6 +2,7 @@ import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { DIRECTORY_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectEntry,
   HomeProjectEntryContribution,
@@ -10,6 +11,37 @@ import type {
 
 export function getHomeProjectDisplayName(project: HomeProjectEntry) {
   return (project.title || project.name).replace(FILE_EXT, '')
+}
+
+export function shouldPreserveRemoteOnHomeProjectDelete(
+  project: Pick<
+    HomeProjectEntry,
+    'libraryType' | 'localProjectPath' | 'remoteProjectId'
+  >
+): project is Pick<
+  HomeProjectEntry,
+  'libraryType' | 'localProjectPath' | 'remoteProjectId'
+> & {
+  libraryType: typeof DIRECTORY_PROJECT_LIBRARY_TYPE
+  localProjectPath: string
+  remoteProjectId: string
+} {
+  return Boolean(
+    project.localProjectPath &&
+      project.remoteProjectId &&
+      project.libraryType === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
+}
+
+export function getHomeProjectDeleteWarningMessage(
+  project: HomeProjectEntry,
+  projectDisplayName = getHomeProjectDisplayName(project)
+) {
+  if (shouldPreserveRemoteOnHomeProjectDelete(project)) {
+    return `This will delete the local copy of "${projectDisplayName}". The cloud version will not be deleted.`
+  }
+
+  return `This will permanently delete the project "${projectDisplayName}" and all its contents.`
 }
 
 function getLatestModifiedTime(entry: FileEntry): number | undefined {
@@ -53,6 +85,8 @@ export function homeProjectEntryFromProject(
     title: getProjectDisplayName(project),
     localProjectPath: project.path,
     localProjectName: project.name,
+    libraryPath: project.libraryPath,
+    libraryType: project.libraryType,
     remoteProjectId: project.cloudProjectId,
     modified,
     defaultFile: project.default_file,
