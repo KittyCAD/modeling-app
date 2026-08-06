@@ -154,13 +154,13 @@ pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
 mod geometry;
+#[cfg(test)]
+mod hide_id_contract_pins;
 mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
-#[cfg(test)]
-mod hide_id_contract_pins;
 mod memory;
 mod modeling;
 mod sketch_solve;
