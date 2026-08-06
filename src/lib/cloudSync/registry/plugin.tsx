@@ -44,6 +44,7 @@ import {
 import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import {
   type CloudProjectLocalManifestComparison,
+  classifyCloudProjectDuplicateRisk,
   deriveCloudProjectRelationships,
 } from '@src/lib/cloudSync/relationships'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -550,6 +551,79 @@ function firstCleanBaseManifest(
   )?.baseManifest
 }
 
+function realizationIsOnlyInCloudLibraries(
+  realization: ProjectLibraryRealization
+) {
+  return (
+    realization.libraryRefs.length > 0 &&
+    realization.libraryRefs.every(
+      (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+    )
+  )
+}
+
+function realizationIsInCloudLibrary(realization: ProjectLibraryRealization) {
+  return realization.libraryRefs.some(
+    (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+  )
+}
+
+function cheapDuplicateRiskIsClean(
+  realization: ProjectLibraryRealization,
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined
+) {
+  return (
+    classifyCloudProjectDuplicateRisk({
+      hasPendingChanges: metadata?.hasPendingChanges,
+      hasConflict: Boolean(metadata?.conflict || realization.conflict),
+      readWriteAccess: realization.readWriteAccess,
+      tombstone: metadata?.tombstone,
+      syncExcluded: Boolean(metadata?.syncExcluded),
+    }) === 'unknown'
+  )
+}
+
+function manifestComparisonCanonicalKey({
+  metadata,
+  realization,
+}: {
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined
+  realization: ProjectLibraryRealization
+}) {
+  const clean = cheapDuplicateRiskIsClean(realization, metadata)
+  const cloudLibrary = realizationIsInCloudLibrary(realization)
+  const modified = String(realization.modified ?? 0).padStart(16, '0')
+
+  return [
+    clean && cloudLibrary ? '2' : clean ? '1' : '0',
+    modified,
+    realization.localProjectPath,
+  ].join(':')
+}
+
+function selectManifestComparisonCanonical({
+  metadataByPath,
+  realizations,
+}: {
+  metadataByPath: ReadonlyMap<string, CloudSyncProjectMetadataIndexEntry>
+  realizations: readonly ProjectLibraryRealization[]
+}) {
+  return realizations.toSorted((left, right) => {
+    const leftKey = manifestComparisonCanonicalKey({
+      metadata: metadataByPath.get(normalizePathForSync(left.localProjectPath)),
+      realization: left,
+    })
+    const rightKey = manifestComparisonCanonicalKey({
+      metadata: metadataByPath.get(
+        normalizePathForSync(right.localProjectPath)
+      ),
+      realization: right,
+    })
+
+    return rightKey.localeCompare(leftKey)
+  })[0]
+}
+
 async function readLocalManifestComparisons({
   metadata,
   realizations,
@@ -589,12 +663,35 @@ async function readLocalManifestComparisons({
           return []
         }
 
+        const canonical = selectManifestComparisonCanonical({
+          metadataByPath,
+          realizations: remoteRealizations,
+        })
+        const canonicalPath = canonical
+          ? normalizePathForSync(canonical.localProjectPath)
+          : undefined
+
         return remoteRealizations.map(async (realization) => {
           const normalizedLocalProjectPath = normalizePathForSync(
             realization.localProjectPath
           )
+          const realizationMetadata = metadataByPath.get(
+            normalizedLocalProjectPath
+          )
+
+          // Manifest comparison walks and hashes project files. Only pay that
+          // cost for non-canonical cloud-library copies that could become
+          // exact, silently removable duplicates.
+          if (
+            normalizedLocalProjectPath === canonicalPath ||
+            !realizationIsOnlyInCloudLibraries(realization) ||
+            !cheapDuplicateRiskIsClean(realization, realizationMetadata)
+          ) {
+            return
+          }
+
           const baseManifest =
-            metadataByPath.get(normalizedLocalProjectPath)?.baseManifest ??
+            realizationMetadata?.baseManifest ??
             firstCleanBaseManifest(
               metadataByRemoteProjectId.get(remoteProjectId)
             )
