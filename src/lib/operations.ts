@@ -100,6 +100,7 @@ interface StdLibCallInfo {
   supportsAppearance?: boolean
   supportsTransform?: boolean
   supportsTranslate?: boolean
+  supportsRotate?: boolean
   supportsScale?: boolean
 }
 
@@ -3495,6 +3496,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'helix',
     prepareToEdit: prepareToEditHelix,
     supportsTranslate: true,
+    supportsRotate: true,
     supportsScale: true,
   },
   subtract2d: {
