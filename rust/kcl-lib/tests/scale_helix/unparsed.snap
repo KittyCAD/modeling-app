@@ -1,0 +1,46 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing scale_helix.kcl
+---
+// Scale helices.
+
+// A reference helix that is not scaled.
+helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+
+helix002 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+  ccw = true,
+)
+  |> translate(x = 20)
+
+helix003 = helix(
+  axis = Z,
+  radius = 3,
+  length = 15,
+  revolutions = 8,
+  angleStart = 0,
+)
+  |> translate(x = -20)
+
+// Scale an array of helices.
+scaledHelices = scale([helix002, helix003], factor = 2)
+
+// Scale a single helix, stretching it along the z axis.
+helix004 = helix(
+  axis = Z,
+  radius = 5,
+  length = 10,
+  revolutions = 5,
+  angleStart = 0,
+)
+  |> scale(z = 3)

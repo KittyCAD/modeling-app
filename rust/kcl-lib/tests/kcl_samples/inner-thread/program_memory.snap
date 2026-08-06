@@ -1301,7 +1301,7 @@ description: Variables in memory after executing inner-thread.kcl
             },
             "to": [
               3.7499999997,
-              0.24999999929999994
+              0.24999999929999997
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1313,7 +1313,7 @@ description: Variables in memory after executing inner-thread.kcl
             },
             "from": [
               3.7499999997,
-              0.24999999929999994
+              0.24999999929999997
             ],
             "tag": {
               "commentStart": 1341,
@@ -1682,7 +1682,7 @@ description: Variables in memory after executing inner-thread.kcl
                         }
                       },
                       {
-                        "n": 0.24999999939999995,
+                        "n": 0.24999999939999998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1700,7 +1700,7 @@ description: Variables in memory after executing inner-thread.kcl
                         }
                       },
                       {
-                        "n": 0.24999999929999994,
+                        "n": 0.24999999929999997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1802,7 +1802,7 @@ description: Variables in memory after executing inner-thread.kcl
                         }
                       },
                       {
-                        "n": 0.24999999924999994,
+                        "n": 0.24999999924999997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1978,7 +1978,7 @@ description: Variables in memory after executing inner-thread.kcl
                   },
                   "to": [
                     3.7499999997,
-                    0.24999999929999994
+                    0.24999999929999997
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1990,7 +1990,7 @@ description: Variables in memory after executing inner-thread.kcl
                   },
                   "from": [
                     3.7499999997,
-                    0.24999999929999994
+                    0.24999999929999997
                   ],
                   "tag": {
                     "commentStart": 1341,
@@ -2158,7 +2158,7 @@ description: Variables in memory after executing inner-thread.kcl
           },
           "to": [
             3.7499999997,
-            0.24999999929999994
+            0.24999999929999997
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2170,7 +2170,7 @@ description: Variables in memory after executing inner-thread.kcl
           },
           "from": [
             3.7499999997,
-            0.24999999929999994
+            0.24999999929999997
           ],
           "tag": {
             "commentStart": 1341,

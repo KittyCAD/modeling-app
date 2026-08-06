@@ -1279,17 +1279,13 @@ export function getVariableExprsFromSelection(
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
-    const patternCopyExpr = getPatternCopyExprFromSelection(
-      s,
-      ast,
-      wasmInstance
-    )
-    if (patternCopyExpr) {
-      const key = outputExprKey(patternCopyExpr)
+    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    if (patternExpr) {
+      const key = outputExprKey(patternExpr)
       if (pushedNames[key]) {
         continue
       }
-      exprs.push(patternCopyExpr)
+      exprs.push(patternExpr)
       pushedNames[key] = true
       continue
     }
@@ -1514,7 +1510,7 @@ export function getVariableExprsFromSelection(
   return { exprs, pathIfPipe }
 }
 
-function getPatternCopyExprFromSelection(
+function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
@@ -1528,8 +1524,8 @@ function getPatternCopyExprFromSelection(
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : -1)
-  if (patternIndex < 0) {
+      : undefined)
+  if (patternIndex !== undefined && patternIndex < 0) {
     return null
   }
 
@@ -1546,6 +1542,9 @@ function getPatternCopyExprFromSelection(
       wasmInstance
     )
     if (patternVariableName) {
+      if (patternIndex === undefined) {
+        return createLocalName(patternVariableName)
+      }
       return createMemberExpression(
         patternVariableName,
         createLiteral(patternIndex, wasmInstance),

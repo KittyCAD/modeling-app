@@ -65,7 +65,7 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
     /// Extra artifact identity needed when an engine clone represents a KCL
     /// solid whose body artifact ID differs from its engine entity ID.
-    #[serde(skip)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(skip)]
     pub(crate) entity_clone_info: Option<EntityCloneInfo>,
     /// Whether this command should be omitted when deriving the semantic
@@ -75,7 +75,8 @@ pub struct ArtifactCommand {
     pub omit_from_graph: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub(crate) struct EntityCloneInfo {
     pub source_artifact_id: ArtifactId,
     pub result_artifact_id: ArtifactId,
@@ -214,6 +215,8 @@ fn merge_path(old: &mut Path, new: Artifact) -> Option<Artifact> {
 
 fn merge_segment(old: &mut Segment, new: Artifact) -> Option<Artifact> {
     let Artifact::Segment(new) = new else { return Some(new) };
+    // Clone provenance is sticky across partial updates: unlike
+    // `merge_opt_id`, a missing new value preserves the existing source.
     old.source_segment_id = new.source_segment_id.or(old.source_segment_id);
     merge_opt_id(&mut old.original_seg_id, new.original_seg_id);
     merge_opt_id(&mut old.surface_id, new.surface_id);
@@ -227,6 +230,8 @@ fn merge_sweep(old: &mut Sweep, new: Artifact) -> Option<Artifact> {
     let Artifact::Sweep(new) = new else { return Some(new) };
     merge_ids(&mut old.surface_ids, new.surface_ids);
     merge_ids(&mut old.edge_ids, new.edge_ids);
+    // Clone provenance is sticky across partial updates: unlike
+    // `merge_opt_id`, a missing new value preserves the existing source.
     old.source_sweep_id = new.source_sweep_id.or(old.source_sweep_id);
     merge_opt_id(&mut old.trajectory_id, new.trajectory_id);
     merge_ids(&mut old.pattern_ids, new.pattern_ids);
@@ -1625,10 +1630,13 @@ fn artifacts_to_update(
                 .unwrap_or(source_entity_id);
             let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
-            let pattern_source_body_id = if artifacts.contains_key(&source_id) {
-                None
-            } else {
+            // Only solid clones provide this extra body identity. Without
+            // this gate, cloning a lazy 2D pattern copy can resolve through
+            // its source Path to a Sweep and fabricate a body artifact.
+            let pattern_source_body_id = if entity_clone_info.is_some() && !artifacts.contains_key(&source_id) {
                 pattern_source_body_id_for_copy(artifacts, source_id)
+            } else {
+                None
             };
             let source_artifact_id = pattern_source_body_id.unwrap_or(source_id);
             let Some(source_artifact) = artifacts.get(&source_artifact_id) else {
