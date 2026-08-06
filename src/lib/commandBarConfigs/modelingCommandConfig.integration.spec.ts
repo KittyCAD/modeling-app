@@ -13,8 +13,10 @@ import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
+  modelingStdLibCommandSummary,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
+  stdLibCommandArgMetadata,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -645,6 +647,9 @@ describe('Hole dialog arguments', () => {
     expect(evaluateHidden('countersinkDiameter', countersink)).toBe(false)
     expect(evaluateRequired('countersinkDiameter', countersink)).toBe(true)
     expect(evaluateHidden('countersinkHeadClearance', countersink)).toBe(false)
+    expect(holeConfig().args?.countersinkHeadClearance).toMatchObject({
+      defaultValue: '0',
+    })
     expect(evaluateHidden('counterboreDepth', countersink)).toBe(true)
   })
 
@@ -1010,6 +1015,7 @@ describe('Chamfer dialog arguments', () => {
       } as never)
     ).toBe('distanceAndAngle')
     expect(chamferConfig().args?.angle).toMatchObject({ defaultValue: '45deg' })
+    expect(chamferConfig().args?.version).toMatchObject({ defaultValue: '1' })
   })
 
   it('keeps UI-only size modes out of the legacy command bar', () => {
@@ -1044,6 +1050,104 @@ describe('Translate arguments', () => {
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
 describe('stdlib command arg derivation', () => {
+  const commandsUsingCanonicalSummary = [
+    'Sweep',
+    'Loft',
+    'Offset plane',
+    'Translate',
+    'Rotate',
+    'Scale',
+    'Clone',
+    'GDT Flatness',
+    'GDT Straightness',
+    'GDT Circularity',
+    'GDT Cylindricity',
+    'GDT Position',
+    'GDT Distance',
+    'GDT Perpendicularity',
+    'GDT Angularity',
+    'GDT Concentricity',
+    'GDT Symmetry',
+    'GDT Runout',
+    'GDT Parallelism',
+    'GDT Annotation',
+    'GDT Note',
+    'Boolean Subtract',
+    'Boolean Union',
+    'Boolean Intersect',
+    'Flip Surface',
+  ] as const satisfies readonly (keyof typeof modelingCommandStdLibDriftConfig)[]
+
+  const commandsUsingProductSummary = [
+    'Extrude',
+    'Revolve',
+    'Shell',
+    'Hole',
+    'Fillet',
+    'Chamfer',
+    'Helix',
+    'Helical Gear',
+    'Herringbone Gear',
+    'Spur Gear',
+    'Ring Gear',
+    'Appearance',
+    'Delete',
+    'Mirror 3D',
+    'Pattern Circular 3D',
+    'Pattern Linear 3D',
+    'GDT Datum',
+    'GDT Profile',
+    'Boolean Split',
+    'Delete Face',
+    'Blend',
+    'Join Surfaces',
+  ] as const satisfies readonly (keyof typeof modelingCommandStdLibDriftConfig)[]
+
+  it('routes every stdlib-backed command through its summary adapter', () => {
+    const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
+      keyof typeof modelingCommandStdLibDriftConfig
+    >
+
+    expect(
+      uniqueSorted([
+        ...commandsUsingCanonicalSummary,
+        ...commandsUsingProductSummary,
+      ])
+    ).toEqual(uniqueSorted(commandNames))
+
+    for (const commandName of commandNames) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const stdLibName =
+        modelingCommandStdLibDriftConfig[commandName].stdLibName
+      expect(STD_LIB_COMMANDS[stdLibName].summary).toBeTruthy()
+      expect(commandConfig.description).toBe(
+        modelingStdLibCommandSummary(commandName)
+      )
+    }
+  })
+
+  it('derives canonical summaries and keeps product copy as explicit exceptions', () => {
+    for (const commandName of commandsUsingCanonicalSummary) {
+      const stdLibName =
+        modelingCommandStdLibDriftConfig[commandName].stdLibName
+      const summary = modelingStdLibCommandSummary(commandName)
+      expect(summary).toBe(STD_LIB_COMMANDS[stdLibName].summary)
+      expect(summary).not.toMatch(/[\r\n]|\[[^\]]+\]\([^)]+\)/)
+    }
+
+    for (const commandName of commandsUsingProductSummary) {
+      const stdLibName =
+        modelingCommandStdLibDriftConfig[commandName].stdLibName
+      expect(modelingStdLibCommandSummary(commandName)).not.toBe(
+        STD_LIB_COMMANDS[stdLibName].summary
+      )
+    }
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -1126,6 +1230,16 @@ describe('stdlib command arg derivation', () => {
         version: parsedLength('2'),
       })
     ).toBe(false)
+  })
+
+  it('keeps the product-selected Sweep algorithm ahead of the KCL default', () => {
+    const sweepCommand = modelingMachineCommandConfig.Sweep
+    if (!sweepCommand || isArray(sweepCommand)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(stdLibCommandArgMetadata('sweep', 'version')?.defaultValue).toBe('0')
+    expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })
 

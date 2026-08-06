@@ -138,26 +138,20 @@ export const sweepDialogOverrides = {
     },
   },
   translateProfileToPath: {
-    inputType: 'boolean',
-    required: false,
     hidden: (context) => isUsingModelingDialog(context),
     dialog: {
       group: 'alignment',
     },
   },
   orientProfilePerpendicular: {
-    inputType: 'boolean',
-    required: false,
     hidden: (context) => isUsingModelingDialog(context),
     dialog: {
       group: 'alignment',
     },
   },
   sectional: {
-    inputType: 'boolean',
     displayName: 'Section by path segments',
     description: 'Split the sweep at each path segment.',
-    required: false,
     dialog: {
       group: 'advanced',
       order: 0,
@@ -189,12 +183,10 @@ export const sweepDialogOverrides = {
   },
   bodyType: bodyTypeResultArg(profileSelectionRequiresBodyType),
   version: {
-    inputType: 'kcl',
     displayName: 'Algorithm version',
     description:
       'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
     defaultValue: '2',
-    required: false,
     dialog: {
       group: 'advanced',
       order: 40,

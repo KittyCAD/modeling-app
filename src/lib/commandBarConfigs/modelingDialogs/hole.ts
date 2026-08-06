@@ -3,7 +3,10 @@ import {
   getHoleType,
   normalizeHoleDialogArguments,
 } from '@src/lib/commandBarConfigs/holeDialog'
-import type { ModelingCommandArgOverrides } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  type ModelingCommandArgOverrides,
+  stdLibCommandArgMetadata,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { HoleCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import {
   compactSelectionDialog,
@@ -12,6 +15,11 @@ import {
   modelingDialogLayout,
 } from '@src/lib/commandBarConfigs/modelingDialogShared'
 import { KCL_DEFAULT_ORIGIN_2D } from '@src/lib/constants'
+
+const countersinkHeadClearanceDefault = stdLibCommandArgMetadata(
+  'hole::countersink',
+  'headClearance'
+)?.defaultValue
 
 export const holeDialogLayout = modelingDialogLayout(
   [
@@ -43,7 +51,6 @@ export const holeDialogOverrides = {
     }),
   },
   cutAt: {
-    inputType: 'vector2d', // TODO: see if we can make the KCL arg Point2d
     displayName: 'Center',
     defaultValue: KCL_DEFAULT_ORIGIN_2D,
     dialog: {
@@ -53,7 +60,6 @@ export const holeDialogOverrides = {
   },
   holeBody: {
     inputType: 'options',
-    required: true,
     defaultValue: 'blind',
     hidden: (context) => isUsingModelingDialog(context),
     options: [{ name: 'Blind', value: 'blind' }],
@@ -87,7 +93,6 @@ export const holeDialogOverrides = {
   holeType: {
     inputType: 'options',
     displayName: 'Type',
-    required: true,
     defaultValue: 'simple',
     options: [
       { name: 'Simple', value: 'simple' },
@@ -162,7 +167,10 @@ export const holeDialogOverrides = {
     required: false,
     hidden: (context) =>
       getHoleType(context.argumentsToSubmit) !== 'countersink',
-    defaultValue: '0',
+    defaultValue:
+      typeof countersinkHeadClearanceDefault === 'string'
+        ? countersinkHeadClearanceDefault
+        : undefined,
     dialog: {
       group: 'advanced',
       order: 0,
@@ -171,7 +179,6 @@ export const holeDialogOverrides = {
   holeBottom: {
     inputType: 'options',
     displayName: 'Type',
-    required: true,
     defaultValue: 'flat',
     options: [
       { name: 'Flat', value: 'flat' },

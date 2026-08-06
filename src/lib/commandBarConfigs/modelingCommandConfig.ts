@@ -15,6 +15,7 @@ import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingComm
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
+  modelingStdLibCommandSummary,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import {
@@ -540,7 +541,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Extrude: {
-    description: 'Pull a sketch into 3D along its normal or perpendicular.',
+    description: modelingStdLibCommandSummary('Extrude'),
     icon: 'extrude',
     needsReview: true,
     dialogLayout: extrudeDialogLayout,
@@ -555,8 +556,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Sweep: {
-    description:
-      'Create a 3D body by moving a sketch region along an arbitrary path.',
+    description: modelingStdLibCommandSummary('Sweep'),
     icon: 'sweep',
     needsReview: true,
     dialogLayout: sweepDialogLayout,
@@ -568,7 +568,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Loft: {
-    description: 'Create a 3D body by blending between two or more sketches',
+    description: modelingStdLibCommandSummary('Loft'),
     icon: 'loft',
     needsReview: true,
     dialogLayout: loftDialogLayout,
@@ -580,7 +580,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Revolve: {
-    description: 'Create a 3D body by rotating a sketch region about an axis.',
+    description: modelingStdLibCommandSummary('Revolve'),
     icon: 'revolve',
     needsReview: true,
     dialogLayout: revolveDialogLayout,
@@ -595,7 +595,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Shell: {
-    description: 'Hollow out a 3D solid.',
+    description: modelingStdLibCommandSummary('Shell'),
     icon: 'shell',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -616,7 +616,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Hole: {
-    description: 'Standard holes that could be drilled or cut into a 3D solid.',
+    description: modelingStdLibCommandSummary('Hole'),
     icon: 'hole',
     needsReview: true,
     dialogLayout: holeDialogLayout,
@@ -630,7 +630,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Boolean Subtract': {
-    description: 'Subtract one solid from another.',
+    description: modelingStdLibCommandSummary('Boolean Subtract'),
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -658,7 +658,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Union': {
-    description: 'Union multiple solids into a single solid.',
+    description: modelingStdLibCommandSummary('Boolean Union'),
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -680,7 +680,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Intersect': {
-    description: 'Create a solid from the intersection of two solids.',
+    description: modelingStdLibCommandSummary('Boolean Intersect'),
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -702,8 +702,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Split': {
-    description:
-      "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+    description: modelingStdLibCommandSummary('Boolean Split'),
     icon: 'split',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -731,7 +730,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Offset plane': {
-    description: 'Offset a plane.',
+    description: modelingStdLibCommandSummary('Offset plane'),
     icon: 'plane',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -763,7 +762,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Helix: {
-    description: 'Create a helix or spiral in 3D about an axis.',
+    description: modelingStdLibCommandSummary('Helix'),
     icon: 'helix',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -840,7 +839,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Helical Gear': {
-    description: 'Create a helical gear.',
+    description: modelingStdLibCommandSummary('Helical Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Helical Gear'),
@@ -871,7 +870,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Herringbone Gear': {
-    description: 'Create a herringbone gear.',
+    description: modelingStdLibCommandSummary('Herringbone Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Herringbone Gear'),
@@ -902,7 +901,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Spur Gear': {
-    description: 'Create a spur gear.',
+    description: modelingStdLibCommandSummary('Spur Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Spur Gear'),
@@ -930,7 +929,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Ring Gear': {
-    description: 'Create a ring gear.',
+    description: modelingStdLibCommandSummary('Ring Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Ring Gear'),
@@ -961,7 +960,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Fillet: {
-    description: 'Fillet edge',
+    description: modelingStdLibCommandSummary('Fillet'),
     icon: 'fillet3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -994,7 +993,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Chamfer: {
-    description: 'Chamfer edge',
+    description: modelingStdLibCommandSummary('Chamfer'),
     icon: 'chamfer3d',
     needsReview: true,
     dialogLayout: chamferDialogLayout,
@@ -1004,6 +1003,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
       'Chamfer',
       {
+        stdLibFallbacks: {
+          version: { defaultValue: true },
+        },
         overrides: chamferDialogOverrides,
       }
     ),
@@ -1100,8 +1102,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Appearance: {
-    description:
-      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+    description: modelingStdLibCommandSummary('Appearance'),
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1127,7 +1128,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Delete: {
-    description: 'Delete selected bodies from the scene.',
+    description: modelingStdLibCommandSummary('Delete'),
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
@@ -1145,7 +1146,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: 'Set translation on a solid, sketch, or helix.',
+    description: modelingStdLibCommandSummary('Translate'),
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1180,7 +1181,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: 'Set rotation on solid or sketch.',
+    description: modelingStdLibCommandSummary('Rotate'),
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1219,7 +1220,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: 'Set scale on solid or sketch.',
+    description: modelingStdLibCommandSummary('Scale'),
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1249,7 +1250,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
-    description: 'Clone a solid or sketch.',
+    description: modelingStdLibCommandSummary('Clone'),
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1297,7 +1298,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Mirror 3D': {
-    description: 'Mirror solids across a plane or edge.',
+    description: modelingStdLibCommandSummary('Mirror 3D'),
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
@@ -1333,7 +1334,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
-    description: 'Create a circular pattern of 3D solids around an axis.',
+    description: modelingStdLibCommandSummary('Pattern Circular 3D'),
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1372,7 +1373,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
-    description: 'Create a linear pattern of 3D solids along an axis.',
+    description: modelingStdLibCommandSummary('Pattern Linear 3D'),
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1408,8 +1409,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Flatness': {
-    description:
-      'Add flatness geometric dimensioning & tolerancing annotation to faces.',
+    description: modelingStdLibCommandSummary('GDT Flatness'),
     icon: 'gdtFlatness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1432,8 +1432,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Straightness': {
-    description:
-      'Add straightness geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Straightness'),
     icon: 'gdtStraightness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1457,8 +1456,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Circularity': {
-    description:
-      'Add circularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Circularity'),
     icon: 'gdtCircularity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1482,8 +1480,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Cylindricity': {
-    description:
-      'Add cylindricity geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Cylindricity'),
     icon: 'gdtCylindricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1507,8 +1504,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Datum': {
-    description:
-      'Add datum geometric dimensioning & tolerancing annotation to a face.',
+    description: modelingStdLibCommandSummary('GDT Datum'),
     icon: 'gdtDatum',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1536,8 +1532,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Position': {
-    description:
-      'Add position geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Position'),
     icon: 'gdtPosition',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1562,8 +1557,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Profile': {
-    description:
-      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
+    description: modelingStdLibCommandSummary('GDT Profile'),
     icon: 'gdtProfile',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1588,8 +1582,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
-    description:
-      'Add an MBD distance annotation to an edge length or between two faces or edges.',
+    description: modelingStdLibCommandSummary('GDT Distance'),
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1613,8 +1606,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Perpendicularity': {
-    description:
-      'Add perpendicularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Perpendicularity'),
     icon: 'perpendicular',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1638,8 +1630,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'GDT Angularity': {
-    description:
-      'Add angularity geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Angularity'),
     icon: 'angle',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1664,8 +1655,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Concentricity': {
-    description:
-      'Add concentricity geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Concentricity'),
     icon: 'gdtConcentricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1693,8 +1683,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Symmetry': {
-    description:
-      'Add symmetry geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Symmetry'),
     icon: 'gdtSymmetry',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1722,8 +1711,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Runout': {
-    description:
-      'Add runout geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Runout'),
     icon: 'gdtRunout',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1751,8 +1739,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Parallelism': {
-    description:
-      'Add parallelism geometric dimensioning & tolerancing annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Parallelism'),
     icon: 'parallel',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1777,7 +1764,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    description: 'Add model-based definition annotation to faces and edges.',
+    description: modelingStdLibCommandSummary('GDT Annotation'),
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1804,7 +1791,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    description: 'Add a free-floating model-based definition note on a plane.',
+    description: modelingStdLibCommandSummary('GDT Note'),
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1826,8 +1813,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Flip Surface': {
-    description:
-      'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
+    description: modelingStdLibCommandSummary('Flip Surface'),
     icon: 'flipSurface',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1847,7 +1833,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Join Surfaces': {
-    description: 'Join selected surfaces into one polysurface.',
+    description: modelingStdLibCommandSummary('Join Surfaces'),
     icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1867,7 +1853,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Delete Face': {
-    description: 'Delete a face from a body, leaving an open surface.',
+    description: modelingStdLibCommandSummary('Delete Face'),
     icon: 'deleteFace',
     needsReview: true,
     status: 'experimental',
@@ -1895,7 +1881,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Blend: {
-    description: 'Blend two selected surface edges into a new surface.',
+    description: modelingStdLibCommandSummary('Blend'),
     icon: 'blend',
     needsReview: true,
     status: 'experimental',

@@ -42,10 +42,8 @@ export const loftDialogOverrides = {
     },
   },
   bezApproximateRational: {
-    inputType: 'boolean',
     displayName: 'Approximate rational curves',
     description: 'Reduce banding when lofting between arcs and non-arcs.',
-    required: false,
     dialog: {
       group: 'advanced',
       order: 10,

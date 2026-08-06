@@ -376,7 +376,12 @@ pub struct ConstData {
     pub preferred_name: String,
     /// The fully qualified name.
     pub qual_name: String,
+    /// The value shown in generated docs and completion details.
     pub value: Option<String>,
+    /// The literal exactly as it appears in KCL source, including when the
+    /// declaration has a type ascription.
+    #[allow(dead_code)] // Read by the test-driven TypeScript binding generator.
+    pub literal_value: Option<String>,
     pub ty: Option<String>,
     pub properties: Properties,
 
@@ -400,8 +405,9 @@ impl ConstData {
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
-        let (value, ty) = match &var.declaration.init {
+        let (value, literal_value, ty) = match &var.declaration.init {
             crate::parsing::ast::types::Expr::Literal(lit) => (
+                Some(lit.raw.clone()),
                 Some(lit.raw.clone()),
                 Some(match &lit.value {
                     crate::parsing::ast::types::LiteralValue::Number { suffix, .. } => {
@@ -415,8 +421,15 @@ impl ConstData {
                     crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
                 }),
             ),
-            crate::parsing::ast::types::Expr::AscribedExpression(e) => (None, Some(e.ty.to_string())),
-            _ => (None, None),
+            crate::parsing::ast::types::Expr::AscribedExpression(e) => (
+                None,
+                match &e.expr {
+                    crate::parsing::ast::types::Expr::Literal(lit) => Some(lit.raw.clone()),
+                    _ => None,
+                },
+                Some(e.ty.to_string()),
+            ),
+            _ => (None, None, None),
         };
 
         let name = var.declaration.id.name.clone();
@@ -426,6 +439,7 @@ impl ConstData {
             name,
             qual_name,
             value,
+            literal_value,
             // TODO use type decl when we have them.
             ty,
             properties: Properties {
@@ -877,6 +891,11 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// The KCL source for an explicit literal default value.
+    ///
+    /// Optional parameters without an explicit default evaluate to `none` and
+    /// are represented by `None` here.
+    pub default_value: Option<String>,
     /// Whether this argument is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
@@ -901,7 +920,6 @@ impl fmt::Display for ArgData {
 pub enum ArgKind {
     Special,
     // Parameter is whether the arg is optional.
-    // TODO should store default value if present
     Labelled(bool),
 }
 
@@ -914,6 +932,10 @@ impl ArgData {
             ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
+            default_value: match &arg.default_value {
+                Some(crate::parsing::ast::types::DefaultParamVal::Literal(literal)) => Some(literal.raw.clone()),
+                Some(crate::parsing::ast::types::DefaultParamVal::KclNone(_)) | None => None,
+            },
             kind: if arg.labeled {
                 ArgKind::Labelled(arg.optional())
             } else {

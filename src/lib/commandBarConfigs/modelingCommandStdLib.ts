@@ -54,11 +54,23 @@ export type ModelingCommandArgOverrides<CommandArgs extends object> = Partial<{
   >
 }>
 
-type StdLibCommandArgsOptions = {
+export type StdLibCommandArgFallback = {
+  /** Use the KCL argument docs when no command-bar description is provided. */
+  description?: boolean
+  /** Use the explicit KCL literal default when no command-bar default is provided. */
+  defaultValue?: boolean
+}
+
+export type StdLibCommandArgFallbacks<CommandArgs extends object> = Partial<
+  Record<Extract<keyof CommandArgs, string>, StdLibCommandArgFallback>
+>
+
+type StdLibCommandArgsOptions<CommandArgs extends object> = {
   omitted?: readonly string[]
   includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
   overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
+  stdLibFallbacks?: StdLibCommandArgFallbacks<CommandArgs>
   includeEditFlowArgs?: boolean
   flowArgOrder?: readonly string[]
 }
@@ -70,6 +82,10 @@ type CommandArgConfigs<CommandArgs extends object> = {
   >
 }
 
+type StdLibSemanticCommandArg = StdLibCommandArg & {
+  readonly defaultValue?: { readonly source: string }
+}
+
 const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'bool') {
     return 'boolean'
@@ -77,7 +93,7 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'TagDecl') {
     return 'tagDeclarator'
   }
-  if (ty === 'Point2d') {
+  if (ty === 'Point2d' || ty === '[number(Length); 2]') {
     return 'vector2d'
   }
   if (ty === 'Point3d') {
@@ -107,6 +123,100 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
     .join(' ')
 }
 
+function stdLibStringLiteralValue(source: string): string | undefined {
+  const quote = source[0]
+  if ((quote !== '"' && quote !== "'") || source.at(-1) !== quote) {
+    return undefined
+  }
+
+  if (quote === '"') {
+    try {
+      const value: unknown = JSON.parse(source)
+      return typeof value === 'string' ? value : undefined
+    } catch {
+      return undefined
+    }
+  }
+
+  return source.slice(1, -1).replaceAll("\\'", "'").replaceAll('\\\\', '\\')
+}
+
+export type StdLibCommandArgDefaultValue = boolean | string
+
+const stdLibArgDefaultValue = (
+  arg: StdLibSemanticCommandArg
+): StdLibCommandArgDefaultValue | undefined => {
+  const source = arg.defaultValue?.source.trim()
+  if (!source) {
+    return undefined
+  }
+
+  if (arg.ty === 'bool') {
+    if (source === 'true') {
+      return true
+    }
+    if (source === 'false') {
+      return false
+    }
+    return undefined
+  }
+
+  if (arg.ty === 'string') {
+    return stdLibStringLiteralValue(source)
+  }
+
+  return source
+}
+
+const stdLibArgDefaultConfig = (
+  arg: StdLibSemanticCommandArg,
+  enabled: boolean | undefined
+) => {
+  if (!enabled || !arg.defaultValue) {
+    return {}
+  }
+
+  const defaultValue = stdLibArgDefaultValue(arg)
+  return defaultValue === undefined ? {} : { defaultValue }
+}
+
+export type StdLibCommandArgMetadata = Readonly<{
+  name: string
+  ty: StdLibCommandArg['ty']
+  docs?: string
+  required: boolean
+  defaultValue?: StdLibCommandArgDefaultValue
+}>
+
+export type StdLibCommandArgName<Name extends StdLibCommandName> =
+  (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name']
+
+/**
+ * Returns UI-safe semantic metadata without constructing a command argument.
+ * Boolean and string defaults are decoded; KCL expression defaults keep their
+ * source text.
+ */
+export function stdLibCommandArgMetadata<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: StdLibCommandArgName<Name>
+): StdLibCommandArgMetadata | undefined {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (candidate) => candidate.name === argName
+  )
+  if (!arg) {
+    return undefined
+  }
+
+  const defaultValue = stdLibArgDefaultValue(arg)
+  return {
+    name: arg.name,
+    ty: arg.ty,
+    required: arg.required,
+    ...(arg.docs?.trim() ? { docs: arg.docs } : {}),
+    ...(defaultValue === undefined ? {} : { defaultValue }),
+  }
+}
+
 const hasExistingEditFlowArgument = (
   context: { argumentsToSubmit: Record<string, unknown> },
   argName: string
@@ -116,10 +226,15 @@ const hasExistingEditFlowArgument = (
 
 const stdLibArgBaseConfig = (
   arg: StdLibCommandArg,
-  commandArgName: string
+  commandArgName: string,
+  fallbacks: StdLibCommandArgFallback = {}
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
+  ...(fallbacks.description && arg.docs?.trim()
+    ? { description: arg.docs }
+    : {}),
+  ...stdLibArgDefaultConfig(arg, fallbacks.defaultValue),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
     : isDeprecatedStdLibArg(arg)
@@ -166,7 +281,7 @@ function orderCommandArgs(
 
 export function stdLibCommandArgs<CommandArgs extends object>(
   stdLibName: StdLibCommandName,
-  options: StdLibCommandArgsOptions = {}
+  options: StdLibCommandArgsOptions<CommandArgs> = {}
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
@@ -181,7 +296,13 @@ export function stdLibCommandArgs<CommandArgs extends object>(
         return [
           commandArgName,
           {
-            ...stdLibArgBaseConfig(arg, commandArgName),
+            ...stdLibArgBaseConfig(
+              arg,
+              commandArgName,
+              options.stdLibFallbacks?.[
+                commandArgName as Extract<keyof CommandArgs, string>
+              ]
+            ),
             ...(options.overrides?.[commandArgName] ?? {}),
           },
         ]
@@ -202,6 +323,13 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     args,
     options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
+}
+
+export function stdLibCommandSummary(
+  stdLibName: StdLibCommandName
+): string | undefined {
+  const summary: string | undefined = STD_LIB_COMMANDS[stdLibName].summary
+  return summary?.trim() ? summary : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -598,6 +726,43 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
+/**
+ * Command-palette copy that intentionally differs from the canonical KCL
+ * summary. Keep these exceptions here rather than changing public KCL docs to
+ * fit the command UI.
+ */
+const modelingCommandSummaryOverrides: Partial<
+  Record<ModelingStdLibCommandName, string>
+> = {
+  Extrude: 'Pull a sketch into 3D along its normal or perpendicular.',
+  Revolve: 'Create a 3D surface or solid by rotating a sketch around an axis.',
+  Shell: 'Hollow out a 3D solid.',
+  Hole: 'Cut a standard hole into a solid at a 2D position on one of its faces.',
+  Fillet: 'Fillet edge',
+  Chamfer: 'Create a straight bevel along one or more edges.',
+  Helix: 'Create a helix or spiral in 3D about an axis.',
+  'Helical Gear': 'Create a helical gear.',
+  'Herringbone Gear': 'Create a herringbone gear.',
+  'Spur Gear': 'Create a spur gear.',
+  'Ring Gear': 'Create a ring gear.',
+  Appearance:
+    'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+  Delete: 'Delete selected bodies from the scene.',
+  'Mirror 3D': 'Mirror solids across a plane or edge.',
+  'Pattern Circular 3D':
+    'Create a circular pattern of 3D solids around an axis.',
+  'Pattern Linear 3D': 'Create a linear pattern of 3D solids along an axis.',
+  'GDT Datum':
+    'Add datum geometric dimensioning & tolerancing annotation to a face.',
+  'GDT Profile':
+    'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
+  'Boolean Split':
+    "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
+  'Delete Face': 'Delete a face from a body, leaving an open surface.',
+  Blend: 'Blend two selected surface edges into a new surface.',
+  'Join Surfaces': 'Join selected surfaces into one polysurface.',
+}
+
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
 >(
@@ -616,9 +781,22 @@ export function modelingStdLibCall(
   return { name, path: parts }
 }
 
+/** Uses the concise KCL summary unless the command has product-specific copy. */
+export function modelingStdLibCommandSummary(
+  commandName: ModelingStdLibCommandName
+) {
+  return (
+    modelingCommandSummaryOverrides[commandName] ??
+    stdLibCommandSummary(modelingStdLibCommandName(commandName))
+  )
+}
+
 export function modelingStdLibCommandArgs<CommandArgs extends object>(
   commandName: keyof typeof modelingCommandStdLibDriftConfig,
-  options: Pick<StdLibCommandArgsOptions, 'overrides'> = {}
+  options: Pick<
+    StdLibCommandArgsOptions<CommandArgs>,
+    'overrides' | 'stdLibFallbacks'
+  > = {}
 ) {
   const driftConfig = modelingCommandStdLibDriftConfig[
     commandName
@@ -629,6 +807,7 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
     includeDeprecated: driftConfig.deprecatedStdLibArgs,
     argAliases: driftConfig.argAliases,
     overrides: options.overrides,
+    stdLibFallbacks: options.stdLibFallbacks,
     includeEditFlowArgs: driftConfig.editFlow,
     flowArgOrder: driftConfig.flowArgOrder,
   })

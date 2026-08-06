@@ -40,7 +40,6 @@ export const chamferDialogOverrides = {
     ],
     multiple: true,
     required: true,
-    skip: false,
     hidden: isEditingNodeSelection,
   },
   chamferType: {
@@ -113,7 +112,6 @@ export const chamferDialogOverrides = {
     displayName: 'Algorithm version',
     description:
       'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
-    defaultValue: '1',
     dialog: {
       group: 'advanced',
       order: 10,

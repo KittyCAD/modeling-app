@@ -1,6 +1,7 @@
 import type { Feature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import stdLibConstants from '@rust/kcl-lib/bindings/StdLibConstants'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
@@ -394,21 +395,26 @@ export const LAYOUT_SAVE_THROTTLE = 500
 // Default backface color
 export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
 
-/**
- * KCL constants defined in rust/kcl-lib/std/prelude.kcl
- * TODO: figure if how we could keep this in sync automatically
- */
-export type KclPreludeBodyType = 'SURFACE' | 'SOLID'
-export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType = 'SURFACE'
-export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType = 'SOLID'
+/** KCL identifiers defined in rust/kcl-lib/std/prelude.kcl. */
+export type KclPreludeBodyType =
+  | (typeof stdLibConstants)['SURFACE']['name']
+  | (typeof stdLibConstants)['SOLID']['name']
+export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType =
+  stdLibConstants.SURFACE.name
+export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType =
+  stdLibConstants.SOLID.name
 export const KCL_PRELUDE_BODY_TYPE_VALUES: KclPreludeBodyType[] = [
   KCL_PRELUDE_BODY_TYPE_SURFACE,
   KCL_PRELUDE_BODY_TYPE_SOLID,
 ]
 
-export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
-export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
-export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
+export type KclPreludeExtrudeMethod =
+  | (typeof stdLibConstants)['MERGE']['name']
+  | (typeof stdLibConstants)['NEW']['name']
+export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod =
+  stdLibConstants.MERGE.name
+export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod =
+  stdLibConstants.NEW.name
 export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
