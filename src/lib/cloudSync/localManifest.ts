@@ -11,6 +11,7 @@ import type {
   ProjectArchiveFile,
   ProjectManifest,
 } from '@src/lib/cloudSync/types'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import {
   appendGitignoreForDirectoryWithFs,
@@ -20,9 +21,15 @@ import {
 } from '@src/lib/gitignore'
 
 function statIsDirectory(stat: IStat) {
-  return Boolean(stat.mode & 0o040000)
+  return Boolean(stat.mode & fsZdsConstants.S_IFDIR)
 }
 
+/**
+ * Collects the files from `projectRoot` that cloud sync would include in an
+ * upload archive. The walk uses the caller's filesystem, skips cloud-sync
+ * internal paths, respects `.gitignore` rules, and returns normalized files in
+ * stable relative-path order.
+ */
 export async function collectLocalProjectFilesForCloudSync({
   localFs,
   projectRoot,
@@ -52,7 +59,7 @@ export async function collectLocalProjectFilesForCloudSync({
         continue
       }
 
-      if (statIsDirectory(stat)) {
+      if (isDirectory) {
         const childGitignoreStack = await appendGitignoreForDirectoryWithFs(
           localFs,
           gitignoreStack,
@@ -81,6 +88,11 @@ export async function collectLocalProjectFilesForCloudSync({
   )
 }
 
+/**
+ * Builds the current syncable manifest for a local project folder and compares
+ * it with a stored clean base manifest. Duplicate classification uses this to
+ * distinguish exact duplicate realizations from divergent local copies.
+ */
 export async function localProjectManifestMatchesBase({
   baseManifest,
   localFs,
