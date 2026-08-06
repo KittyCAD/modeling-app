@@ -23,7 +23,6 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
@@ -100,14 +99,6 @@ export function OpenedProject() {
   const projectPath = project?.path || null
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  useEffect(() => {
-    setCloudSyncProjectScope(projectPath ?? undefined)
-
-    return () => {
-      setCloudSyncProjectScope(undefined)
-    }
-  }, [projectPath])
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {

@@ -140,7 +140,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     configure: vi.fn(),
     installFileSystemObserver: vi.fn(),
     retry: vi.fn(),
-    setProjectScope: vi.fn(),
+    setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
