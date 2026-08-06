@@ -27,6 +27,24 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
     "conflict_count": 0,
     "total_count": 2
   },
+  "dof": {
+    "default": "Free",
+    "points": {
+      "fixed": [
+        2,
+        3,
+        4,
+        6,
+        7
+      ]
+    },
+    "segments": {
+      "fixed": [
+        5,
+        8
+      ]
+    }
+  },
   "points": [
     {
       "id": 2,
@@ -34,7 +52,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": -4.9999999995,
         "y": 0.0
       },
-      "freedom": "Fixed",
       "owner": 5,
       "contactGroup": null,
       "coincidentGroup": null
@@ -45,7 +62,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 4.9999999995,
         "y": 0.0
       },
-      "freedom": "Fixed",
       "owner": 5,
       "contactGroup": null,
       "coincidentGroup": null
@@ -56,7 +72,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.000000000000000000000000044408924466238024,
         "y": 0.0
       },
-      "freedom": "Fixed",
       "owner": 5,
       "contactGroup": null,
       "coincidentGroup": 0
@@ -67,7 +82,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 14.999999997,
         "y": 0.0
       },
-      "freedom": "Fixed",
       "owner": 8,
       "contactGroup": null,
       "coincidentGroup": null
@@ -78,7 +92,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 9.999999999,
         "y": 0.0
       },
-      "freedom": "Fixed",
       "owner": 8,
       "contactGroup": null,
       "coincidentGroup": null
@@ -98,7 +111,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         3
       ],
       "construction": false,
-      "freedom": "Fixed",
       "componentId": 0,
       "renderedColor": "#79d941"
     },
@@ -111,7 +123,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ],
       "endpointIds": [],
       "construction": false,
-      "freedom": "Fixed",
       "componentId": 1,
       "renderedColor": "#f2935c"
     }

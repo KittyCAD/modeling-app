@@ -134,6 +134,7 @@ pub struct SketchVisualizationData {
     pub units: Vec<String>,
     pub color_scheme: SketchVisualizationColorScheme,
     pub constraint_status: Option<SketchConstraintStatus>,
+    pub dof: SketchVisualizationDofData,
     pub points: Vec<SketchVisualizationPointData>,
     pub segments: Vec<SketchVisualizationSegmentData>,
     pub constraints: Vec<SketchVisualizationConstraintData>,
@@ -172,10 +173,40 @@ pub struct SketchVisualizationPoint {
 pub struct SketchVisualizationPointData {
     pub id: usize,
     pub position: SketchVisualizationPoint,
-    pub freedom: Freedom,
     pub owner: Option<usize>,
     pub contact_group: Option<usize>,
     pub coincident_group: Option<usize>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVisualizationDofData {
+    #[serde(rename = "default")]
+    pub default_state: Freedom,
+    pub points: SketchVisualizationDofBuckets,
+    pub segments: SketchVisualizationDofBuckets,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVisualizationDofBuckets {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fixed: Vec<usize>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conflict: Vec<usize>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub unknown: Vec<usize>,
+}
+
+impl SketchVisualizationDofBuckets {
+    fn insert(&mut self, id: usize, freedom: Option<Freedom>) {
+        match freedom {
+            Some(Freedom::Fixed) => self.fixed.push(id),
+            Some(Freedom::Conflict) => self.conflict.push(id),
+            Some(Freedom::Free) => {}
+            None => self.unknown.push(id),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -196,7 +227,6 @@ pub struct SketchVisualizationSegmentData {
     pub point_ids: Vec<usize>,
     pub endpoint_ids: Vec<usize>,
     pub construction: bool,
-    pub freedom: Option<Freedom>,
     pub component_id: usize,
     pub rendered_color: String,
 }
@@ -523,6 +553,7 @@ impl<'a> Extraction<'a> {
                 .collect::<Vec<_>>(),
         );
 
+        let dof = self.dof_data();
         let rendered_colors = self.rendered_colors(&id_color_map);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());
         for segment in self.primary_segments.values() {
@@ -537,7 +568,6 @@ impl<'a> Extraction<'a> {
                 point_ids: segment.point_ids.clone(),
                 endpoint_ids: segment.endpoint_ids.clone(),
                 construction: segment.construction,
-                freedom: segment.freedom,
                 component_id,
                 rendered_color: rendered_colors
                     .get(&segment.id)
@@ -551,7 +581,6 @@ impl<'a> Extraction<'a> {
             point_data.push(SketchVisualizationPointData {
                 id: point.id,
                 position: point.position,
-                freedom: point.freedom,
                 owner: point.owner,
                 contact_group: point_contact_group.get(&point.id).copied(),
                 coincident_group: point_coincident_group.get(&point.id).copied(),
@@ -568,6 +597,7 @@ impl<'a> Extraction<'a> {
             units: self.units.into_iter().collect(),
             color_scheme: self.options.color_scheme,
             constraint_status: sketch_constraint_status_for_sketch(self.scene_objects, self.sketch_object),
+            dof,
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
@@ -591,6 +621,24 @@ impl<'a> Extraction<'a> {
         )?;
 
         Ok(SketchVisualization { png, data })
+    }
+
+    fn dof_data(&self) -> SketchVisualizationDofData {
+        let mut points = SketchVisualizationDofBuckets::default();
+        for point in self.points.values() {
+            points.insert(point.id, Some(point.freedom));
+        }
+
+        let mut segments = SketchVisualizationDofBuckets::default();
+        for segment in self.primary_segments.values() {
+            segments.insert(segment.id, segment.freedom);
+        }
+
+        SketchVisualizationDofData {
+            default_state: Freedom::Free,
+            points,
+            segments,
+        }
     }
 
     fn insert_point(&mut self, id: ObjectId, point: &crate::front::Point) -> Result<(), SketchVisualizationError> {
