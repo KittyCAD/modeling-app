@@ -214,6 +214,8 @@ fn merge_path(old: &mut Path, new: Artifact) -> Option<Artifact> {
 
 fn merge_segment(old: &mut Segment, new: Artifact) -> Option<Artifact> {
     let Artifact::Segment(new) = new else { return Some(new) };
+    // Clone provenance is sticky across partial updates: unlike
+    // `merge_opt_id`, a missing new value preserves the existing source.
     old.source_segment_id = new.source_segment_id.or(old.source_segment_id);
     merge_opt_id(&mut old.original_seg_id, new.original_seg_id);
     merge_opt_id(&mut old.surface_id, new.surface_id);
@@ -227,6 +229,8 @@ fn merge_sweep(old: &mut Sweep, new: Artifact) -> Option<Artifact> {
     let Artifact::Sweep(new) = new else { return Some(new) };
     merge_ids(&mut old.surface_ids, new.surface_ids);
     merge_ids(&mut old.edge_ids, new.edge_ids);
+    // Clone provenance is sticky across partial updates: unlike
+    // `merge_opt_id`, a missing new value preserves the existing source.
     old.source_sweep_id = new.source_sweep_id.or(old.source_sweep_id);
     merge_opt_id(&mut old.trajectory_id, new.trajectory_id);
     merge_ids(&mut old.pattern_ids, new.pattern_ids);
