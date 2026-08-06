@@ -1,0 +1,57 @@
+[[cases]]
+name = "connected_profile"
+input = "connected_profile/input.kcl"
+sketch = "profile"
+
+[[cases.visualizations]]
+name = "dof"
+color-scheme = "dof"
+width = 320
+height = 240
+padding = 24
+
+[[cases.visualizations]]
+name = "ids"
+color-scheme = "ids"
+width = 320
+height = 240
+padding = 24
+
+[[cases]]
+name = "arc_circle_spline"
+input = "arc_circle_spline/input.kcl"
+sketch = "profile"
+
+[[cases.visualizations]]
+name = "dof"
+color-scheme = "dof"
+width = 320
+height = 240
+padding = 24
+
+[[cases.visualizations]]
+name = "ids_control_polygons"
+color-scheme = "ids"
+show-control-polygons = true
+width = 320
+height = 240
+padding = 24
+
+[[cases]]
+name = "coincident_lines"
+input = "coincident_lines/input.kcl"
+sketch = "profile"
+
+[[cases.visualizations]]
+name = "dof"
+color-scheme = "dof"
+width = 320
+height = 240
+padding = 24
+
+[[cases.visualizations]]
+name = "ids"
+color-scheme = "ids"
+width = 320
+height = 240
+padding = 24
