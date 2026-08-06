@@ -233,9 +233,14 @@ async fn send_pattern_transform<T: GeometryTrait>(
                     "faces": [],
                     "edges": [],
                 }))
-                .expect("mock face/edge info is valid")
+                .map_err(|err| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Could not create mock pattern face/edge info: {err}"),
+                        vec![args.source_range],
+                    ))
+                })
             })
-            .collect()
+            .collect::<Result<Vec<_>, _>>()?
     } else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!("EntityLinearPattern response was not as expected: {resp:?}"),
