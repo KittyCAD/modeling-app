@@ -6,7 +6,10 @@ import type {
   ProjectLibrarySetting,
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
-import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
+import {
+  mergeProjectLibrarySettings,
+  normalizeLibraryPath,
+} from '@src/lib/projectLibraries'
 import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
 import type {
@@ -37,6 +40,66 @@ export interface ProjectLibrarySettingDefaultPolicy {
 export type ProjectLibrarySettingDefaultPolicyContribution =
   | ProjectLibrarySettingDefaultPolicy
   | readonly ProjectLibrarySettingDefaultPolicy[]
+
+export type ProjectLibraryRealizationThumbnail = {
+  type: 'local'
+  path: string
+}
+
+export type ProjectLibraryRealizationSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
+export type ProjectLibraryRealizationLibraryRef = Pick<
+  ProjectLibrary,
+  'id' | 'title' | 'path' | 'type' | 'order'
+>
+
+/**
+ * A project library is a configured source that can discover and operate on
+ * project storage.
+ *
+ * A local realization is one concrete project folder on disk. The same local
+ * realization may be visible through multiple libraries when library paths
+ * overlap, but cloud identity is not resolved here. If two local realizations
+ * point at the same cloud project ID, they remain two realizations so cloudSync
+ * can classify and clean them up with full disk/metadata context.
+ */
+export interface ProjectLibraryRealization {
+  id: string
+  libraryIds: readonly string[]
+  libraryRefs: readonly ProjectLibraryRealizationLibraryRef[]
+  localProjectPath: string
+  localProjectName: string
+  name: string
+  title?: string
+  cloudProjectId?: string
+  modified?: number
+  defaultFile?: string
+  kclFileCount?: number
+  directoryCount?: number
+  readWriteAccess: boolean
+  thumbnail?: ProjectLibraryRealizationThumbnail
+  conflict?: unknown
+  syncFailure?: ProjectLibraryRealizationSyncFailure
+}
+
+export type ProjectLibraryRealizationContribution = Omit<
+  ProjectLibraryRealization,
+  'id' | 'libraryIds' | 'libraryRefs'
+> & {
+  id?: string
+  library?: ProjectLibrary
+  libraryId?: string
+  libraryIds?: readonly string[]
+  libraryRefs?: readonly ProjectLibraryRealizationLibraryRef[]
+}
+
+export type ProjectLibraryRealizationContributionGroup =
+  | ProjectLibraryRealizationContribution
+  | readonly ProjectLibraryRealizationContribution[]
 
 export interface ProjectLibraryOperation<
   Input extends { library: ProjectLibrary },
@@ -157,6 +220,19 @@ export interface ProjectLibraryTypeContribution {
     library: ProjectLibrary
     signal: AbortSignal
   }) => Promise<HomeProjectEntryContribution[]>
+  readRealizations?: (input: {
+    library: ProjectLibrary
+    signal: AbortSignal
+  }) => Promise<ProjectLibraryRealizationContribution[]>
+}
+
+export function getProjectLibraryRealizationsForLibrary(
+  realizations: readonly ProjectLibraryRealization[],
+  libraryId: string
+) {
+  return realizations.filter((realization) =>
+    realization.libraryIds.includes(libraryId)
+  )
 }
 
 export function getHomeProjectEntriesForLibrary(
@@ -253,6 +329,112 @@ export function resolveProjectLibrarySettingDefaults(
   return []
 }
 
+function projectLibraryRealizationStableId(
+  realization: ProjectLibraryRealizationContribution
+) {
+  return `local:${normalizeLibraryPath(realization.localProjectPath)}`
+}
+
+function projectLibraryRealizationLibraryIds(
+  realization: ProjectLibraryRealizationContribution
+) {
+  return Array.from(
+    new Set(
+      [
+        realization.library?.id,
+        realization.libraryId,
+        ...(realization.libraryIds ?? []),
+        ...(realization.libraryRefs?.map((library) => library.id) ?? []),
+      ].filter((libraryId): libraryId is string => Boolean(libraryId))
+    )
+  )
+}
+
+function projectLibraryRealizationLibraryRefs(
+  realization: ProjectLibraryRealizationContribution
+) {
+  const refsById = new Map<string, ProjectLibraryRealizationLibraryRef>()
+
+  for (const ref of realization.libraryRefs ?? []) {
+    refsById.set(ref.id, ref)
+  }
+  if (realization.library) {
+    refsById.set(realization.library.id, {
+      id: realization.library.id,
+      title: realization.library.title,
+      path: realization.library.path,
+      type: realization.library.type,
+      order: realization.library.order,
+    })
+  } else if (realization.libraryId) {
+    refsById.set(realization.libraryId, {
+      id: realization.libraryId,
+      title: realization.libraryId,
+      path: '',
+      type: '',
+    })
+  }
+
+  return Array.from(refsById.values())
+}
+
+function projectLibraryRealizationFromContribution(
+  contribution: ProjectLibraryRealizationContribution
+): ProjectLibraryRealization {
+  const {
+    id,
+    library: _library,
+    libraryId: _libraryId,
+    libraryIds: _libraryIds,
+    libraryRefs: _libraryRefs,
+    localProjectPath,
+    ...realization
+  } = contribution
+
+  return {
+    ...realization,
+    id: id ?? projectLibraryRealizationStableId(contribution),
+    libraryIds: projectLibraryRealizationLibraryIds(contribution),
+    libraryRefs: projectLibraryRealizationLibraryRefs(contribution),
+    localProjectPath: normalizeLibraryPath(localProjectPath),
+  }
+}
+
+export function combineProjectLibraryRealizationContributions(
+  contributionGroups: readonly ProjectLibraryRealizationContributionGroup[]
+) {
+  const realizationsByPath = new Map<string, ProjectLibraryRealization>()
+
+  for (const contribution of contributionGroups.flatMap((group) =>
+    isArray(group) ? group : [group]
+  )) {
+    const realization = projectLibraryRealizationFromContribution(contribution)
+    const pathKey = normalizeLibraryPath(realization.localProjectPath)
+    const existing = realizationsByPath.get(pathKey)
+    realizationsByPath.set(
+      pathKey,
+      existing
+        ? {
+            ...existing,
+            ...realization,
+            libraryIds: Array.from(
+              new Set([...existing.libraryIds, ...realization.libraryIds])
+            ),
+            libraryRefs: Array.from(
+              new Map(
+                [...existing.libraryRefs, ...realization.libraryRefs].map(
+                  (library) => [library.id, library]
+                )
+              ).values()
+            ),
+          }
+        : realization
+    )
+  }
+
+  return Array.from(realizationsByPath.values())
+}
+
 export const projectLibrariesContract = defineContract({
   projectLibraryTypesValueSpec: defineValueSpec<
     ProjectLibraryTypeContribution,
@@ -278,10 +460,19 @@ export const projectLibrariesContract = defineContract({
     defaultValue: [],
     combine: combineProjectLibrarySettingDefaultPolicies,
   }),
+  projectLibraryRealizationsValueSpec: defineValueSpec<
+    ProjectLibraryRealizationContributionGroup,
+    ProjectLibraryRealization[]
+  >({
+    name: 'project-library-realizations',
+    defaultValue: [],
+    combine: combineProjectLibraryRealizationContributions,
+  }),
 })
 
 export const {
   projectLibraryTypesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibraryRealizationsValueSpec,
 } = projectLibrariesContract
