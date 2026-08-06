@@ -1,0 +1,13 @@
+profile = sketch(on = XY) {
+  base = line(start = [var 0mm, var 0mm], end = [var 32mm, var 0mm])
+  arc1 = arc(start = [var 0mm, var 24mm], end = [var 24mm, var 0mm], center = [var 0mm, var 0mm])
+  circle1 = circle(start = [var 50mm, var 16mm], center = [var 38mm, var 16mm])
+  spline1 = controlPointSpline(
+    points = [
+      [var 2mm, var -28mm],
+      [var 16mm, var -8mm],
+      [var 30mm, var -30mm],
+      [var 48mm, var -10mm],
+    ],
+  )
+}

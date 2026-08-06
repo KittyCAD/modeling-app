@@ -1,0 +1,302 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "profile"
+  },
+  "bounds": {
+    "min": {
+      "x": -23.997039179559856,
+      "y": -30.0
+    },
+    "max": {
+      "x": 50.0,
+      "y": 28.0
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "colorScheme": "ids",
+  "constraintStatus": {
+    "name": "",
+    "status": "UnderConstrained",
+    "free_count": 7,
+    "conflict_count": 0,
+    "total_count": 7
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "freedom": "Free",
+      "owner": 4,
+      "contactGroup": 0,
+      "coincidentGroup": null
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 32.0,
+        "y": 0.0
+      },
+      "freedom": "Free",
+      "owner": 4,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.0,
+        "y": 24.0
+      },
+      "freedom": "Free",
+      "owner": 8,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 24.0,
+        "y": 0.0
+      },
+      "freedom": "Free",
+      "owner": 8,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "freedom": "Free",
+      "owner": 8,
+      "contactGroup": 0,
+      "coincidentGroup": null
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 50.0,
+        "y": 16.0
+      },
+      "freedom": "Free",
+      "owner": 11,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 38.0,
+        "y": 16.0
+      },
+      "freedom": "Free",
+      "owner": 11,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 2.0,
+        "y": -28.0
+      },
+      "freedom": "Free",
+      "owner": 19,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 16.0,
+        "y": -8.0
+      },
+      "freedom": "Free",
+      "owner": 19,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 30.0,
+        "y": -30.0
+      },
+      "freedom": "Free",
+      "owner": 19,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 48.0,
+        "y": -10.0
+      },
+      "freedom": "Free",
+      "owner": 19,
+      "contactGroup": null,
+      "coincidentGroup": null
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "freedom": "Free",
+      "componentId": 0,
+      "renderedColor": "#ede855"
+    },
+    {
+      "id": 8,
+      "kind": "arc",
+      "pointIds": [
+        5,
+        6,
+        7
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false,
+      "freedom": "Free",
+      "componentId": 1,
+      "renderedColor": "#f2935c"
+    },
+    {
+      "id": 11,
+      "kind": "circle",
+      "pointIds": [
+        9,
+        10
+      ],
+      "endpointIds": [],
+      "construction": false,
+      "freedom": "Free",
+      "componentId": 2,
+      "renderedColor": "#8ee547"
+    },
+    {
+      "id": 19,
+      "kind": "control_point_spline",
+      "pointIds": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "endpointIds": [
+        12,
+        15
+      ],
+      "construction": false,
+      "freedom": "Free",
+      "componentId": 3,
+      "renderedColor": "#e39e36"
+    }
+  ],
+  "constraints": [],
+  "idColorMap": {
+    "4": "#ede855",
+    "8": "#f2935c",
+    "11": "#8ee547",
+    "19": "#e39e36"
+  },
+  "contactGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        2,
+        7
+      ]
+    }
+  ],
+  "coincidentGroups": [],
+  "connectedComponents": [
+    {
+      "id": 0,
+      "segmentIds": [
+        4
+      ]
+    },
+    {
+      "id": 1,
+      "segmentIds": [
+        8
+      ]
+    },
+    {
+      "id": 2,
+      "segmentIds": [
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "segmentIds": [
+        19
+      ]
+    }
+  ],
+  "openEndpoints": [
+    2,
+    3,
+    5,
+    6,
+    12,
+    15
+  ],
+  "closednessHints": [
+    {
+      "componentId": 0,
+      "isClosed": false,
+      "openEndpointIds": [
+        2,
+        3
+      ]
+    },
+    {
+      "componentId": 1,
+      "isClosed": false,
+      "openEndpointIds": [
+        5,
+        6
+      ]
+    },
+    {
+      "componentId": 2,
+      "isClosed": true,
+      "openEndpointIds": []
+    },
+    {
+      "componentId": 3,
+      "isClosed": false,
+      "openEndpointIds": [
+        12,
+        15
+      ]
+    }
+  ],
+  "warnings": []
+}
