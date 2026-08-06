@@ -1,0 +1,13 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+fn shift(@index) {
+  return { translate = [index * 20mm, 0mm] }
+}
+
+first = patternTransform2d(sharedRegion, instances = 2, transform = shift)
+second = patternTransform2d(sharedRegion, instances = 2, transform = shift)
