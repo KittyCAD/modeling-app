@@ -5256,6 +5256,24 @@ mod face_api_fillet_edge_refs_variant_7 {
         super::execute(TEST_NAME, true).await
     }
 }
+mod face_api_fillet_edge_ref_requires_two_end_faces {
+    const TEST_NAME: &str = "face_api_fillet_edge_ref_requires_two_end_faces";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod face_api_fillet_chamfer_tags_and_edge_refs {
     const TEST_NAME: &str = "face_api_fillet_chamfer_tags_and_edge_refs";
 
