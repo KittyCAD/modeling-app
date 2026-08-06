@@ -1,8 +1,4 @@
-import {
-  defineContract,
-  defineService,
-  defineValueSpec,
-} from '@kittycad/registry'
+import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   CloudSyncConfig,
@@ -15,7 +11,6 @@ import type {
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { isArray } from '@src/lib/utils'
 import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
 
 export type CloudProjectDuplicateRisk =
@@ -64,9 +59,14 @@ export interface CloudProjectRelationship {
   }
 }
 
-export type CloudProjectRelationshipContribution =
-  | CloudProjectRelationship
-  | readonly CloudProjectRelationship[]
+export type CloudProjectRelationshipsRegistryService = {
+  /**
+   * cloudSync-owned relationship state. This is a singleton service signal,
+   * not a ValueSpec, because cloud identity resolution is not an extension
+   * contribution surface.
+   */
+  relationships: ReadonlySignal<CloudProjectRelationship[]>
+}
 
 export type CloudSyncRegistryService = {
   status: ReadonlySignal<CloudSyncStatus>
@@ -132,18 +132,11 @@ export type CloudSyncRegistryService = {
 export const cloudSyncContract = defineContract({
   cloudSyncService:
     defineService<CloudSyncRegistryService>('cloud-sync.service'),
-  cloudProjectRelationshipsValueSpec: defineValueSpec<
-    CloudProjectRelationshipContribution,
-    CloudProjectRelationship[]
-  >({
-    name: 'cloud-project-relationships',
-    defaultValue: [],
-    combine: (contributions) =>
-      contributions.flatMap((contribution) =>
-        isArray(contribution) ? contribution : [contribution]
-      ),
-  }),
+  cloudProjectRelationshipsService:
+    defineService<CloudProjectRelationshipsRegistryService>(
+      'cloud-project-relationships.service'
+    ),
 })
 
-export const { cloudSyncService, cloudProjectRelationshipsValueSpec } =
+export const { cloudSyncService, cloudProjectRelationshipsService } =
   cloudSyncContract

@@ -30,7 +30,7 @@ import {
 import { Themes } from '@src/lib/theme'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import {
-  cloudProjectRelationshipsValueSpec,
+  cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
@@ -986,7 +986,9 @@ describe('cloud sync project relationships', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([])
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([])
       )
     } finally {
       registry[Symbol.dispose]()
@@ -1022,7 +1024,9 @@ describe('cloud sync project relationships', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
             remoteProjectId: 'remote-123',
             remoteThumbnailUrl: 'https://example.test/remote-123-thumbnail.png',
@@ -1083,7 +1087,9 @@ describe('cloud sync project relationships', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
             remoteProjectId: 'remote-123',
             canonicalRealization: undefined,
@@ -1147,7 +1153,9 @@ describe('cloud sync project relationships', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
             remoteProjectId: 'remote-123',
             canonicalRealization: undefined,

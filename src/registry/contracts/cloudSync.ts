@@ -2,12 +2,12 @@ export type {
   CloudProjectDuplicateRisk,
   CloudProjectRealizationRole,
   CloudProjectRelationship,
-  CloudProjectRelationshipContribution,
   CloudProjectRelationshipRealization,
+  CloudProjectRelationshipsRegistryService,
   CloudSyncRegistryService,
 } from '@src/lib/cloudSync/registry/contract'
 export {
-  cloudProjectRelationshipsValueSpec,
+  cloudProjectRelationshipsService,
   cloudSyncContract,
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'

@@ -15,11 +15,10 @@ import {
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
-  cloudProjectRelationshipsValueSpec,
+  cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
@@ -585,20 +584,21 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
 /**
  * Sole Home entry producer for project cards. External extensions contribute
- * local realizations or cloud relationships; Home derives view models from
- * those explicit domain models.
+ * local realizations, and cloudSync publishes explicit relationships through
+ * its singleton service. Home derives view models from those domain models.
  */
 const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
   const projectLibraryRealizations = ctx.valueSpecs.signal(
     projectLibraryRealizationsValueSpec
   )
-  const cloudProjectRelationships = ctx.valueSpecs.signal(
-    cloudProjectRelationshipsValueSpec
+  const cloudProjectRelationships = ctx.services.signal(
+    cloudProjectRelationshipsService
   )
   const entries = computed(() =>
     deriveHomeProjectEntryContributions({
       realizations: projectLibraryRealizations.value,
-      cloudRelationships: cloudProjectRelationships.value,
+      cloudRelationships:
+        cloudProjectRelationships.value?.relationships.value ?? [],
     })
   )
 

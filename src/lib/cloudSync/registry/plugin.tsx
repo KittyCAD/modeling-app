@@ -4,6 +4,7 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import {
   computed,
@@ -72,7 +73,7 @@ import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
-  cloudProjectRelationshipsValueSpec,
+  cloudProjectRelationshipsService,
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import {
@@ -756,9 +757,9 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync.cloud-project-relationships',
-      provides: [
-        provide(cloudProjectRelationshipsValueSpec, cloudProjectRelationships, {
-          key: 'cloud-sync.cloud-project-relationships',
+      providesServices: [
+        provideService(cloudProjectRelationshipsService, {
+          relationships: cloudProjectRelationships,
         }),
       ],
       dispose: () => {
