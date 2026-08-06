@@ -1,10 +1,9 @@
+import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   STD_LIB_COMMANDS,
   type StdLibCommandArg,
   type StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
@@ -203,7 +202,17 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
-    flowArgOrder: ['sketches', 'length', 'bodyType', 'method'],
+    flowArgOrder: [
+      'sketches',
+      'extentType',
+      'directionMode',
+      'length',
+      'to',
+      'bidirectionalLength',
+      'bodyType',
+      'method',
+    ],
+    uiOnlyArgs: ['extentType', 'directionMode'],
   },
   Sweep: {
     stdLibName: 'sweep',
@@ -224,10 +233,13 @@ export const modelingCommandStdLibDriftConfig = {
       'axisOrEdge',
       'axis',
       'edge',
+      'extentType',
+      'directionMode',
       'angle',
+      'bidirectionalAngle',
       'bodyType',
     ],
-    uiOnlyArgs: ['axisOrEdge', 'edge'],
+    uiOnlyArgs: ['axisOrEdge', 'edge', 'extentType', 'directionMode'],
   },
   Shell: {
     stdLibName: 'shell',

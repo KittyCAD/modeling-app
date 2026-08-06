@@ -7,9 +7,9 @@ import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { provideCommand } from '@src/registry/contracts/commands'
 import {
-  type EngineSceneExtensionContext,
   defineEngineSceneStreamClassName,
   defineEngineSceneViewExtension,
+  type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
   engineSceneViewExtensionsValueSpec,
 } from '@src/registry/contracts/engineScene'
@@ -24,12 +24,13 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { createElement, lazy, Suspense } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
+  EngineSceneModelingDialogViewExtension,
   EngineSceneToolbarViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
@@ -193,6 +194,14 @@ const gizmoViewExtension = defineEngineSceneViewExtension({
   Component: EngineSceneGizmoViewExtension,
 })
 
+const modelingDialogViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.modeling-dialog',
+  zone: 'overlay',
+  order: 0,
+  Component: EngineSceneModelingDialogViewExtension,
+  wrapperClassName: 'h-full w-full !max-w-none !pointer-events-none',
+})
+
 const EngineSceneMeasurementStatusBarItem = () =>
   createElement(
     Suspense,
@@ -332,6 +341,13 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
           key: gizmoViewExtension.id,
         }),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          modelingDialogViewExtension,
+          {
+            key: modelingDialogViewExtension.id,
+          }
+        ),
       ],
       uses: [executionIndicator],
     }),

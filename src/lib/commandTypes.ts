@@ -1,15 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import type { ReactNode } from 'react'
-import type {
-  Actor,
-  ActorRefFrom,
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-} from 'xstate'
-
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
@@ -19,6 +9,14 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { ReactNode } from 'react'
+import type {
+  Actor,
+  ActorRefFrom,
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+} from 'xstate'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -57,6 +55,30 @@ type CommandArgumentStatus = Extract<
   CommandStatus,
   'experimental' | 'deprecated'
 >
+export type CommandDialogGroup = {
+  id: string
+  title: string
+  description?: string
+  collapsible?: boolean
+  defaultOpen?: boolean
+}
+export type CommandDialogLayout = {
+  groups: CommandDialogGroup[]
+  showCommandDescription?: boolean
+  normalizeArguments?: (
+    argumentsToSubmit: Record<string, unknown>
+  ) => Record<string, unknown>
+}
+export type CommandArgumentDialogConfig = {
+  group?: string
+  order?: number
+  controlStyle?: 'select' | 'segmented'
+  compactSelection?: boolean
+  hideLabel?: boolean
+  selectionHeading?: string
+  selectionEmptyLabel?: string
+  selectionHint?: string
+}
 type CommandArgumentRequired<C> =
   | boolean
   | ((
@@ -145,6 +167,9 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
+  useModelingDialog?: boolean
+  dialogLayout?: CommandDialogLayout
 }
 
 export type CommandConfig<
@@ -189,21 +214,22 @@ export type CommandArgumentConfig<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: 'options'
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
               machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       optionsFromContext?: (
         context: C
-      ) => ReadonlyArray<CommandArgumentOption<OutputType>>
+      ) => readonly CommandArgumentOption<OutputType>[]
       defaultValue?:
         | OutputType
         | ((
@@ -384,17 +410,18 @@ export type CommandArgument<
    *  the command bar's header
    */
   valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       defaultValue?:
         | OutputType
         | ((

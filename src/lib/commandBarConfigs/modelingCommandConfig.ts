@@ -7,14 +7,34 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import {
+  getExtrudeDirectionMode,
+  getExtrudeExtentType,
+  hasExtrudeDialogValue,
+  normalizeExtrudeDialogArguments,
+} from '@src/lib/commandBarConfigs/extrudeDialog'
+import {
+  getHoleBottom,
+  getHoleType,
+  normalizeHoleDialogArguments,
+} from '@src/lib/commandBarConfigs/holeDialog'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import {
+  getRevolveAxisMode,
+  getRevolveDirectionMode,
+  getRevolveExtentType,
+  hasRevolveDialogValue,
+  normalizeRevolveDialogArguments,
+} from '@src/lib/commandBarConfigs/revolveDialog'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -42,22 +62,20 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
-  KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
+  Selections,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
-
-import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -80,7 +98,9 @@ function isExportOptionalArgSupported(
   exportType: unknown,
   arg: ExportOptionalArg
 ): boolean {
-  if (typeof exportType !== 'string') return true
+  if (typeof exportType !== 'string') {
+    return true
+  }
   const supportByArg =
     exportOptionalArgSupportByType[exportType as OutputTypeKey]
   return supportByArg?.[arg] ?? true
@@ -145,7 +165,9 @@ export function profileSelectionRequiresBodyType({
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
+  if (!isSelections(sketches)) {
+    return false
+  }
 
   const hasOpenGraphSelection = sketches.graphSelections.some(
     (selection) =>
@@ -185,7 +207,9 @@ export function extrudeSelectionRequiresMethod({
   }
 
   const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
+  if (!isSelections(sketches)) {
+    return false
+  }
 
   return (
     sketches.graphSelections.some(
@@ -219,6 +243,44 @@ const isEditingNodeSelection = (context: {
   selectedCommand?: { useModelingDialog?: boolean }
 }) =>
   isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
+
+const isUsingModelingDialog = (context: {
+  argumentsToSubmit: Record<string, unknown>
+  selectedCommand?: { useModelingDialog?: boolean }
+}) => context.selectedCommand?.useModelingDialog === true
+
+function extrudeSelectionIncludesFace({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) {
+    return false
+  }
+
+  return (
+    sketches.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'cap' ||
+        selection.artifact?.type === 'wall'
+    ) ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'face'
+    )
+  )
+}
+
+function extrudeSelectionSupportsMethod(context: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  return (
+    extrudeSelectionIncludesFace(context) ||
+    extrudeSelectionRequiresMethod(context)
+  )
+}
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -592,13 +654,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               machine.hardware_configuration.config.filaments[0]
                 ? ` - ${
                     machine.hardware_configuration.config.filaments[0].name
-                  } #${
-                    machine.hardware_configuration.config &&
-                    machine.hardware_configuration.config.filaments[0].color?.slice(
-                      0,
-                      6
-                    )
-                  }`
+                  } #${machine.hardware_configuration.config?.filaments[0].color?.slice(
+                    0,
+                    6
+                  )}`
                 : ''),
             isCurrent: false,
             disabled: machine.state.state !== 'idle',
@@ -617,6 +676,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeExtrudeDialogArguments,
+      groups: [
+        {
+          id: 'selection',
+          title: 'Profile',
+        },
+        {
+          id: 'extent',
+          title: 'Extent',
+        },
+        {
+          id: 'result',
+          title: 'Result',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude
     ),
@@ -627,6 +709,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           sketches: {
             inputType: 'selection',
             displayName: 'Profiles',
+            dialog: {
+              group: 'selection',
+              selectionEmptyLabel: 'Select profiles or faces',
+              compactSelection: true,
+              hideLabel: true,
+            },
             selectionTypes: [
               'solid2d',
               'segment',
@@ -641,26 +729,180 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             multiple: true,
             hidden: isEditingNodeSelection,
           },
+          extentType: {
+            inputType: 'options',
+            displayName: 'Type',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getExtrudeExtentType(argumentsToSubmit),
+            hidden: (context) => !isUsingModelingDialog(context),
+            options: [
+              { name: 'Distance', value: 'distance' },
+              { name: 'To face', value: 'toFace' },
+            ],
+            dialog: {
+              group: 'extent',
+              order: -20,
+              controlStyle: 'segmented',
+            },
+          },
+          directionMode: {
+            inputType: 'options',
+            displayName: 'Direction',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getExtrudeDirectionMode(argumentsToSubmit),
+            hidden: (context) =>
+              !isUsingModelingDialog(context) ||
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            options: [
+              { name: 'One side', value: 'oneSide' },
+              { name: 'Symmetric', value: 'symmetric' },
+              { name: 'Two sides', value: 'twoSides' },
+            ],
+            dialog: {
+              group: 'extent',
+              order: -10,
+              controlStyle: 'segmented',
+            },
+          },
           length: {
+            displayName: 'Distance',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'distance',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) !== 'distance',
+            dialog: {
+              group: 'extent',
+              order: 0,
+            },
             defaultValue: KCL_DEFAULT_LENGTH,
             prepopulate: true,
           },
           to: {
             inputType: 'selection',
+            displayName: 'To face',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) !== 'toFace',
+            dialog: {
+              group: 'extent',
+              order: 0,
+              selectionEmptyLabel: 'Select a terminating face',
+              compactSelection: true,
+              hideLabel: true,
+            },
             // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
             selectionTypes: ['cap', 'wall'],
             clearSelectionFirst: true,
             multiple: false,
-            description: 'Only parallel faces are supported for now.',
+            description: 'Parallel faces only.',
+          },
+          symmetric: {
+            hidden: (context) => isUsingModelingDialog(context),
+            dialog: {
+              group: 'extent',
+            },
+          },
+          bidirectionalLength: {
+            displayName: 'Second distance',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'distance' &&
+              getExtrudeDirectionMode(context.argumentsToSubmit) === 'twoSides',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) !== 'distance' ||
+                getExtrudeDirectionMode(context.argumentsToSubmit) !==
+                  'twoSides'),
+            dialog: {
+              group: 'extent',
+              order: 10,
+            },
           },
           tagStart: {
+            displayName: 'Start face tag',
+            dialog: {
+              group: 'advanced',
+              order: 40,
+            },
             // TODO: add validation like for Clone command
           },
+          tagEnd: {
+            displayName: 'End face tag',
+            dialog: {
+              group: 'advanced',
+              order: 50,
+            },
+          },
+          draftAngle: {
+            displayName: 'Draft angle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            dialog: {
+              group: 'advanced',
+              order: 10,
+            },
+          },
+          twistAngle: {
+            displayName: 'Twist angle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            dialog: {
+              group: 'advanced',
+              order: 20,
+            },
+          },
+          twistAngleStep: {
+            displayName: 'Twist step',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
+                !hasExtrudeDialogValue(context.argumentsToSubmit.twistAngle)),
+            dialog: {
+              group: 'advanced',
+              order: 21,
+            },
+          },
           twistCenter: {
+            displayName: 'Twist center',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getExtrudeExtentType(context.argumentsToSubmit) === 'toFace' ||
+                !hasExtrudeDialogValue(context.argumentsToSubmit.twistAngle)),
+            dialog: {
+              group: 'advanced',
+              order: 22,
+            },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
             inputType: 'selection',
+            displayName: 'Direction reference',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getExtrudeExtentType(context.argumentsToSubmit) === 'toFace',
+            dialog: {
+              group: 'advanced',
+              order: 0,
+              selectionEmptyLabel: 'Select an edge',
+              compactSelection: true,
+            },
             selectionTypes: [
               'segment',
               'sweepEdge',
@@ -672,14 +914,54 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           method: {
             inputType: 'options',
+            displayName: 'Operation',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !extrudeSelectionSupportsMethod(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.method),
+            dialog: {
+              group: 'result',
+              order: 0,
+              controlStyle: 'segmented',
+            },
             required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
+            options: [
+              {
+                name: 'Merge',
+                value: KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+              },
+              {
+                name: 'New body',
+                value: KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+              },
+            ],
+          },
+          hideSeams: {
+            displayName: 'Hide seams',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.hideSeams) &&
+              (!extrudeSelectionIncludesFace(context) ||
+                context.argumentsToSubmit.method ===
+                  KCL_PRELUDE_EXTRUDE_METHOD_NEW),
+            dialog: {
+              group: 'advanced',
+              order: 30,
+              controlStyle: 'segmented',
+            },
           },
           bodyType: {
             inputType: 'options',
+            displayName: 'Output',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !extrudeSelectionRequiresBodyType(context) &&
+              !hasExtrudeDialogValue(context.argumentsToSubmit.bodyType),
+            dialog: {
+              group: 'result',
+              order: 10,
+              controlStyle: 'segmented',
+            },
             required: extrudeSelectionRequiresBodyType,
             options: kclBodyTypeOptions,
           },
@@ -776,6 +1058,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeRevolveDialogArguments,
+      groups: [
+        {
+          id: 'selection',
+          title: 'Profile',
+        },
+        {
+          id: 'axis',
+          title: 'Axis',
+        },
+        {
+          id: 'extent',
+          title: 'Extent',
+        },
+        {
+          id: 'result',
+          title: 'Result',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Revolve
     ),
@@ -786,6 +1095,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           sketches: {
             inputType: 'selection',
             displayName: 'Profiles',
+            dialog: {
+              group: 'selection',
+              selectionEmptyLabel: 'Select profiles',
+              compactSelection: true,
+              hideLabel: true,
+            },
             selectionTypes: [
               'solid2d',
               'segment',
@@ -797,44 +1112,178 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           axisOrEdge: {
             inputType: 'options',
+            displayName: 'Reference',
             required: true,
-            defaultValue: 'Axis',
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getRevolveAxisMode(argumentsToSubmit),
             options: [
-              { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
-              { name: 'Edge', isCurrent: false, value: 'Edge' },
+              { name: 'Sketch axis', value: 'Axis' },
+              { name: 'Selected edge', value: 'Edge' },
             ],
-            hidden: isEditingNodeSelection,
+            hidden: isEditingNode,
+            dialog: {
+              group: 'axis',
+              order: -10,
+              controlStyle: 'segmented',
+            },
           },
           axis: {
             required: (context) =>
-              ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
+              getRevolveAxisMode(context.argumentsToSubmit) === 'Axis',
             inputType: 'options',
-            displayName: 'Sketch Axis',
+            displayName: 'Sketch axis',
+            defaultValue: 'X',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getRevolveAxisMode(context.argumentsToSubmit) !== 'Axis',
             options: [
-              { name: 'X Axis', isCurrent: true, value: 'X' },
-              { name: 'Y Axis', isCurrent: false, value: 'Y' },
+              { name: 'X axis', value: 'X' },
+              { name: 'Y axis', value: 'Y' },
             ],
+            dialog: {
+              group: 'axis',
+              order: 0,
+              controlStyle: 'segmented',
+            },
           },
           edge: {
             required: (context) =>
-              ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
+              getRevolveAxisMode(context.argumentsToSubmit) === 'Edge',
             inputType: 'selection',
+            displayName: 'Axis edge',
             selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
             multiple: false,
             hidden: (context) =>
               isEditingNode(context) ||
-              !['Edge'].includes(
-                context.argumentsToSubmit.axisOrEdge as string
-              ),
+              getRevolveAxisMode(context.argumentsToSubmit) !== 'Edge',
+            dialog: {
+              group: 'axis',
+              order: 0,
+              selectionEmptyLabel: 'Select an axis edge',
+              compactSelection: true,
+              hideLabel: true,
+            },
+          },
+          extentType: {
+            inputType: 'options',
+            displayName: 'Type',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getRevolveExtentType(argumentsToSubmit),
+            hidden: (context) => !isUsingModelingDialog(context),
+            options: [
+              { name: 'Full', value: 'full' },
+              { name: 'Angle', value: 'angle' },
+            ],
+            dialog: {
+              group: 'extent',
+              order: -20,
+              controlStyle: 'segmented',
+            },
+          },
+          directionMode: {
+            inputType: 'options',
+            displayName: 'Direction',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getRevolveExtentType(context.argumentsToSubmit) === 'angle',
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getRevolveDirectionMode(argumentsToSubmit),
+            hidden: (context) =>
+              !isUsingModelingDialog(context) ||
+              getRevolveExtentType(context.argumentsToSubmit) === 'full',
+            options: [
+              { name: 'One side', value: 'oneSide' },
+              { name: 'Symmetric', value: 'symmetric' },
+              { name: 'Two sides', value: 'twoSides' },
+            ],
+            dialog: {
+              group: 'extent',
+              order: -10,
+              controlStyle: 'segmented',
+            },
           },
           angle: {
             defaultValue: KCL_DEFAULT_DEGREE,
-            required: true,
+            prepopulate: true,
+            required: (context) =>
+              !isUsingModelingDialog(context) ||
+              getRevolveExtentType(context.argumentsToSubmit) === 'angle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getRevolveExtentType(context.argumentsToSubmit) === 'full',
+            dialog: {
+              group: 'extent',
+              order: 0,
+            },
+          },
+          symmetric: {
+            hidden: (context) => isUsingModelingDialog(context),
+            dialog: {
+              group: 'extent',
+            },
+          },
+          bidirectionalAngle: {
+            displayName: 'Second angle',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getRevolveExtentType(context.argumentsToSubmit) === 'angle' &&
+              getRevolveDirectionMode(context.argumentsToSubmit) === 'twoSides',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              (getRevolveExtentType(context.argumentsToSubmit) !== 'angle' ||
+                getRevolveDirectionMode(context.argumentsToSubmit) !==
+                  'twoSides'),
+            dialog: {
+              group: 'extent',
+              order: 10,
+            },
+          },
+          tolerance: {
+            dialog: {
+              group: 'advanced',
+              order: 0,
+            },
+          },
+          tagStart: {
+            displayName: 'Start face tag',
+            dialog: {
+              group: 'advanced',
+              order: 10,
+            },
+          },
+          tagEnd: {
+            displayName: 'End face tag',
+            dialog: {
+              group: 'advanced',
+              order: 20,
+            },
           },
           bodyType: {
             inputType: 'options',
+            displayName: 'Output',
             required: profileSelectionRequiresBodyType,
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              !profileSelectionRequiresBodyType(context) &&
+              !hasRevolveDialogValue(context.argumentsToSubmit.bodyType),
             options: kclBodyTypeOptions,
+            dialog: {
+              group: 'result',
+              order: 0,
+              controlStyle: 'segmented',
+            },
           },
         },
       }
@@ -865,6 +1314,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeHoleDialogArguments,
+      groups: [
+        {
+          id: 'placement',
+          title: 'Placement',
+        },
+        {
+          id: 'hole',
+          title: 'Hole',
+        },
+        {
+          id: 'bottom',
+          title: 'Bottom',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
     reviewValidation: createModelingCodemodReviewValidation(
@@ -874,113 +1346,172 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         face: {
           inputType: 'selection',
+          displayName: 'Face',
           selectionTypes: ['cap', 'wall', 'edgeCut'],
           multiple: false,
           hidden: isEditingNodeSelection,
+          dialog: {
+            group: 'placement',
+            order: 0,
+            selectionEmptyLabel: 'Select a face',
+            compactSelection: true,
+            hideLabel: true,
+          },
         },
         cutAt: {
           inputType: 'vector2d', // TODO: see if we can make the KCL arg Point2d
+          displayName: 'Center',
           defaultValue: KCL_DEFAULT_ORIGIN_2D,
+          dialog: {
+            group: 'placement',
+            order: 10,
+          },
         },
         holeBody: {
           inputType: 'options',
-          options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
+          required: true,
+          defaultValue: 'blind',
+          hidden: (context) => isUsingModelingDialog(context),
+          options: [{ name: 'Blind', value: 'blind' }],
         },
         blindDepth: {
           inputType: 'kcl',
+          displayName: 'Depth',
           required: (context) =>
             ['blind'].includes(context.argumentsToSubmit.holeBody as string),
           hidden: (context) =>
             !['blind'].includes(context.argumentsToSubmit.holeBody as string),
           defaultValue: '2',
+          dialog: {
+            group: 'hole',
+            order: 20,
+          },
         },
         blindDiameter: {
           inputType: 'kcl',
+          displayName: 'Diameter',
           required: (context) =>
             ['blind'].includes(context.argumentsToSubmit.holeBody as string),
           hidden: (context) =>
             !['blind'].includes(context.argumentsToSubmit.holeBody as string),
           defaultValue: '1',
+          dialog: {
+            group: 'hole',
+            order: 10,
+          },
         },
         holeType: {
           inputType: 'options',
+          displayName: 'Type',
+          required: true,
+          defaultValue: 'simple',
           options: [
-            { name: 'Simple', isCurrent: true, value: 'simple' },
-            { name: 'Counterbore', isCurrent: true, value: 'counterbore' },
-            { name: 'Countersink', isCurrent: true, value: 'countersink' },
+            { name: 'Simple', value: 'simple' },
+            { name: 'Counterbore', value: 'counterbore' },
+            { name: 'Countersink', value: 'countersink' },
           ],
+          dialog: {
+            group: 'hole',
+            order: 0,
+            controlStyle: 'segmented',
+          },
         },
         counterboreDepth: {
           inputType: 'kcl',
+          displayName: 'Head depth',
           required: (context) =>
-            ['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) === 'counterbore',
           hidden: (context) =>
-            !['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) !== 'counterbore',
           defaultValue: '1',
+          prepopulate: true,
+          dialog: {
+            group: 'hole',
+            order: 40,
+          },
         },
         counterboreDiameter: {
           inputType: 'kcl',
+          displayName: 'Head diameter',
           required: (context) =>
-            ['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) === 'counterbore',
           hidden: (context) =>
-            !['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) !== 'counterbore',
           defaultValue: '2',
+          prepopulate: true,
+          dialog: {
+            group: 'hole',
+            order: 30,
+          },
         },
         countersinkAngle: {
           inputType: 'kcl',
+          displayName: 'Head angle',
           required: (context) =>
-            ['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) === 'countersink',
           hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) !== 'countersink',
           defaultValue: '90deg',
+          prepopulate: true,
+          dialog: {
+            group: 'hole',
+            order: 40,
+          },
         },
         countersinkDiameter: {
           inputType: 'kcl',
+          displayName: 'Head diameter',
           required: (context) =>
-            ['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) === 'countersink',
           hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) !== 'countersink',
           defaultValue: '2',
+          prepopulate: true,
+          dialog: {
+            group: 'hole',
+            order: 30,
+          },
         },
         countersinkHeadClearance: {
           inputType: 'kcl',
+          displayName: 'Head clearance',
           required: false,
           hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
+            getHoleType(context.argumentsToSubmit) !== 'countersink',
           defaultValue: '0',
+          dialog: {
+            group: 'advanced',
+            order: 0,
+          },
         },
         holeBottom: {
           inputType: 'options',
+          displayName: 'Type',
+          required: true,
+          defaultValue: 'flat',
           options: [
-            { name: 'Flat', isCurrent: true, value: 'flat' },
-            { name: 'Drill', isCurrent: false, value: 'drill' },
+            { name: 'Flat', value: 'flat' },
+            { name: 'Drill point', value: 'drill' },
           ],
+          dialog: {
+            group: 'bottom',
+            order: 0,
+            controlStyle: 'segmented',
+          },
         },
         drillPointAngle: {
           inputType: 'kcl',
+          displayName: 'Point angle',
           required: (context) =>
-            ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+            getHoleBottom(context.argumentsToSubmit) === 'drill',
           hidden: (context) =>
-            !['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+            getHoleBottom(context.argumentsToSubmit) !== 'drill',
           defaultValue: '110deg',
+          prepopulate: true,
+          dialog: {
+            group: 'bottom',
+            order: 10,
+          },
         },
       },
     }),
@@ -1408,14 +1939,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'byDefault',
         defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (!selectionRanges || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
             kclManager: machineContext.kclManager,
             wasmInstance,
           })
-          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (err(angleLength) || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { transforms } = angleLength
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
@@ -1427,7 +1962,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             referenceSegName: '',
             wasmInstance,
           })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          if (err(sketched)) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { valueUsedInTransform } = sketched
           return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
         },
@@ -1663,7 +2200,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             // Be conservative and error out if there is an item or module with the same name.
             const variableExists =
               modelingContext.kclManager.variables[data] ||
-              modelingContext.kclManager.variables['__mod_' + data]
+              modelingContext.kclManager.variables[`__mod_${data}`]
             if (variableExists) {
               return 'This variable name is already in use.'
             }

@@ -1,12 +1,4 @@
 import type {
-  Actor,
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-  StateFrom,
-} from 'xstate'
-
-import type {
   Command,
   CommandArgument,
   CommandArgumentConfig,
@@ -15,7 +7,15 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
+import { isArray } from '@src/lib/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import type {
+  Actor,
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+  StateFrom,
+} from 'xstate'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
@@ -24,6 +24,7 @@ interface CreateMachineCommandProps<
   type: EventFrom<T>['type']
   groupId: T['id']
   state: StateFrom<T>
+  // biome-ignore lint/complexity/noBannedTypes: XState's generic event union cannot express this callback without rejecting the constructed event variants below.
   send: Function
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
@@ -51,14 +52,14 @@ export function createMachineCommand<
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
   | null {
-  const commandConfig = commandBarConfig && commandBarConfig[type]
+  const commandConfig = commandBarConfig?.[type]
 
   // There may be no command config for this event type,
   // or the command may be inactive or hidden,
   // or there may be multiple commands to create.
   if (!commandConfig) {
     return null
-  } else if (commandConfig instanceof Array) {
+  } else if (isArray(commandConfig)) {
     return commandConfig
       .map((config) => {
         const recursiveCommandBarConfig: Partial<
@@ -85,14 +86,24 @@ export function createMachineCommand<
   // so the consumer can filter them out
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
-    if (hide === 'both') return null
-    else if (hide === 'desktop' && isDesktop()) return null
-    else if (hide === 'web' && !isDesktop()) return null
+    if (hide === 'both') {
+      return null
+    } else if (hide === 'desktop' && isDesktop()) {
+      return null
+    } else if (hide === 'web' && !isDesktop()) {
+      return null
+    }
   } else if ('status' in commandConfig) {
     const { status } = commandConfig
-    if (status === 'inactive') return null
-    if (status === 'development' && !IS_STAGING_OR_DEBUG) return null
-    if (status === 'experimental' && !showExperimentalCommands) return null
+    if (status === 'inactive') {
+      return null
+    }
+    if (status === 'development' && !IS_STAGING_OR_DEBUG) {
+      return null
+    }
+    if (status === 'experimental' && !showExperimentalCommands) {
+      return null
+    }
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -140,6 +151,9 @@ export function createMachineCommand<
   }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
+  }
+  if ('dialogLayout' in commandConfig) {
+    command.dialogLayout = commandConfig.dialogLayout
   }
 
   return command
@@ -204,6 +218,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

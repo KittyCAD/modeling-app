@@ -2495,6 +2495,27 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       )
     })
 
+    it('should add a full revolve call without an explicit angle', async () => {
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        circleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches,
+        axis: 'X',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `revolve001 = revolve(profile001, axis = X)`
+      )
+    })
+
     it('should add a revolve call from a sketch region selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
         triangleRegion,

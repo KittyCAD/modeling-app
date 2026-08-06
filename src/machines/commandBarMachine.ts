@@ -1,5 +1,4 @@
 import type { KclManager } from '@src/lang/KclManager'
-import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
   CommandArgument,
@@ -9,13 +8,13 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isErr } from '@src/lib/trap'
-import { reportRejection } from '@src/lib/trap'
+import type { MachineManager } from '@src/lib/MachineManager'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -33,7 +32,9 @@ function isCommandSubmitPromise(
 }
 
 function handleCommandSubmitResult(commandName: string, result: unknown) {
-  if (!result) return
+  if (!result) {
+    return
+  }
 
   if (isCommandSubmitPromise(result)) {
     Promise.resolve(result)
@@ -82,6 +83,10 @@ export type CommandBarMachineEvent =
   | {
       type: 'Submit command'
       output: { argumentsToSubmit: { [x: string]: unknown } }
+    }
+  | {
+      type: 'Submit command from dialog'
+      data: { argumentsToSubmit: { [x: string]: unknown } }
     }
   | {
       type: 'Add argument'
@@ -144,10 +149,14 @@ export const commandBarMachine = setup({
   actions: {
     enqueueValidArgsToSubmit: assign({
       argumentsToSubmit: ({ context, event }) => {
-        if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
+        if (event.type !== 'xstate.done.actor.validateSingleArgument') {
+          return {}
+        }
         const [argName, argData] = Object.entries(event.output)[0]
         const { currentArgument } = context
-        if (!currentArgument) return {}
+        if (!currentArgument) {
+          return {}
+        }
         return {
           ...context.argumentsToSubmit,
           [argName]: argData,
@@ -168,7 +177,9 @@ export const commandBarMachine = setup({
     }),
     'Execute command': ({ context, event }) => {
       const { selectedCommand } = context
-      if (!selectedCommand) return
+      if (!selectedCommand) {
+        return
+      }
       if (
         (selectedCommand?.args && event.type === 'Submit command') ||
         event.type === 'xstate.done.actor.validateArguments'
@@ -194,7 +205,9 @@ export const commandBarMachine = setup({
     'Set review validation error': assign({
       reviewValidationError: ({ context, event }) => {
         const { selectedCommand } = context
-        if (!selectedCommand) return undefined
+        if (!selectedCommand) {
+          return undefined
+        }
         if (event.type !== 'xstate.done.actor.validateArguments') {
           return undefined
         }
@@ -202,7 +215,9 @@ export const commandBarMachine = setup({
       },
       reviewValidationDetails: ({ context, event }) => {
         const { selectedCommand } = context
-        if (!selectedCommand) return undefined
+        if (!selectedCommand) {
+          return undefined
+        }
         if (event.type !== 'xstate.done.actor.validateArguments') {
           return undefined
         }
@@ -217,7 +232,9 @@ export const commandBarMachine = setup({
     'Set current argument to first non-skippable': assign({
       currentArgument: ({ context, event }) => {
         const { selectedCommand } = context
-        if (!(selectedCommand && selectedCommand.args)) return undefined
+        if (!selectedCommand?.args) {
+          return undefined
+        }
         const rejectedArg =
           'data' in event && 'arg' in event.data && event.data.arg
 
@@ -252,7 +269,7 @@ export const commandBarMachine = setup({
             (argIsRequired ||
               argConfig.prepopulate ||
               argConfig.skip === false) &&
-            (!context.argumentsToSubmit.hasOwnProperty(argName) ||
+            (!Object.hasOwn(context.argumentsToSubmit, argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
                 typeof rejectedArg === 'object' &&
@@ -292,7 +309,9 @@ export const commandBarMachine = setup({
     }),
     'Remove argument': assign({
       argumentsToSubmit: ({ context, event }) => {
-        if (event.type !== 'Remove argument') return context.argumentsToSubmit
+        if (event.type !== 'Remove argument') {
+          return context.argumentsToSubmit
+        }
         const argToRemove = Object.values(event.data)[0]
         // Extract all but the argument to remove and return it
         const { [argToRemove.name]: _, ...rest } = context.argumentsToSubmit
@@ -326,8 +345,9 @@ export const commandBarMachine = setup({
     }),
     'Find and select command': assign({
       selectedCommand: ({ context, event }) => {
-        if (event.type !== 'Find and select command')
+        if (event.type !== 'Find and select command') {
           return context.selectedCommand
+        }
         const found = context.commands.find(
           (cmd) =>
             cmd.name === event.data.name && cmd.groupId === event.data.groupId
@@ -366,6 +386,44 @@ export const commandBarMachine = setup({
         return args
       },
     }),
+    'Set arguments to submit': assign({
+      argumentsToSubmit: ({ context, event }) => {
+        if (event.type !== 'Submit command from dialog') {
+          return context.argumentsToSubmit
+        }
+        return {
+          ...context.argumentsToSubmit,
+          ...event.data.argumentsToSubmit,
+        }
+      },
+    }),
+    'Notify review validation error': ({ event }) => {
+      if (
+        event.type !== 'xstate.done.actor.validateArguments' ||
+        !event.output.reviewValidationError
+      ) {
+        return
+      }
+      toast.error(event.output.reviewValidationError)
+    },
+    'Notify argument validation error': ({ event }) => {
+      if (event.type !== 'xstate.error.actor.validateArguments') {
+        return
+      }
+      const argName =
+        event.error &&
+        typeof event.error === 'object' &&
+        'arg' in event.error &&
+        event.error.arg &&
+        typeof event.error.arg === 'object' &&
+        'name' in event.error.arg
+          ? String(event.error.arg.name)
+          : undefined
+      const message = argName
+        ? `Unable to validate "${argName}".`
+        : 'Unable to validate command arguments.'
+      toast.error(message)
+    },
   },
   guards: {
     'Command needs review': ({ context }) =>
@@ -394,32 +452,41 @@ export const commandBarMachine = setup({
     },
     // Only for add-kcl-file-to-project on web
     'All required arguments provided': ({ context }) => {
-      if (isDesktop()) return false
+      if (isDesktop()) {
+        return false
+      }
       const { selectedCommand, argumentsToSubmit } = context
       if (
         selectedCommand?.name !== 'add-kcl-file-to-project' ||
         !selectedCommand?.args
-      )
+      ) {
         return false
+      }
       return Object.entries(selectedCommand.args).every(
         ([argName, argConfig]) => {
           if (
             typeof argConfig.hidden === 'function'
               ? argConfig.hidden(context)
               : argConfig.hidden
-          )
+          ) {
             return true
+          }
           const isRequired =
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
               : argConfig.required
-          if (!isRequired) return true
+          if (!isRequired) {
+            return true
+          }
           const value = argumentsToSubmit[argName]
           return value !== undefined && value !== null && value !== ''
         }
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
+    'Has review validation error': ({ event }) =>
+      event.type === 'xstate.done.actor.validateArguments' &&
+      !!event.output.reviewValidationError,
   },
   actors: {
     'Validate argument': fromPromise(
@@ -496,8 +563,8 @@ export const commandBarMachine = setup({
         for (const [argName, argConfig] of Object.entries(
           input.selectedCommand!.args!
         )) {
-          let arg = input.argumentsToSubmit[argName]
-          let argValue = typeof arg === 'function' ? arg(input) : arg
+          const arg = input.argumentsToSubmit[argName]
+          const argValue = typeof arg === 'function' ? arg(input) : arg
 
           try {
             const isRequired =
@@ -689,8 +756,9 @@ export const commandBarMachine = setup({
             src: 'Validate argument',
             id: 'validateSingleArgument',
             input: ({ event, context }) => {
-              if (event.type !== 'Submit argument')
+              if (event.type !== 'Submit argument') {
                 return { event: undefined, context: undefined }
+              }
               return { event, context }
             },
             onDone: {
@@ -775,6 +843,37 @@ export const commandBarMachine = setup({
         ],
       },
     },
+
+    'Checking Arguments for Dialog': {
+      invoke: {
+        src: 'Validate all arguments',
+        id: 'validateArguments',
+        input: ({ context }) => context,
+        onDone: [
+          {
+            target: 'Gathering arguments',
+            guard: 'Has review validation error',
+            actions: [
+              'Set review validation error',
+              'Notify review validation error',
+            ],
+          },
+          {
+            target: 'Closed',
+            actions: ['Execute command', 'Clear selected command'],
+          },
+        ],
+        onError: [
+          {
+            target: 'Gathering arguments',
+            actions: [
+              'Set current argument to first non-skippable',
+              'Notify argument validation error',
+            ],
+          },
+        ],
+      },
+    },
   },
   on: {
     'Set kclManager': {
@@ -798,6 +897,11 @@ export const commandBarMachine = setup({
     'Find and select command': {
       target: '.Command selected',
       actions: ['Find and select command', 'Initialize arguments to submit'],
+    },
+
+    'Submit command from dialog': {
+      target: '.Checking Arguments for Dialog',
+      actions: ['Set arguments to submit', 'Clear current argument'],
     },
 
     'Add commands': {
@@ -826,9 +930,17 @@ export const commandBarMachine = setup({
 })
 
 function sortCommands(a: Command, b: Command) {
-  if (b.groupId === 'auth' && !(a.groupId === 'auth')) return -2
-  if (a.groupId === 'auth' && !(b.groupId === 'auth')) return 2
-  if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
-  if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
+  if (b.groupId === 'auth' && !(a.groupId === 'auth')) {
+    return -2
+  }
+  if (a.groupId === 'auth' && !(b.groupId === 'auth')) {
+    return 2
+  }
+  if (b.groupId === 'settings' && !(a.groupId === 'settings')) {
+    return -1
+  }
+  if (a.groupId === 'settings' && !(b.groupId === 'settings')) {
+    return 1
+  }
   return a.name.localeCompare(b.name)
 }

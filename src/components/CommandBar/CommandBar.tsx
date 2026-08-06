@@ -1,7 +1,4 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
@@ -11,8 +8,11 @@ import Loading from '@src/components/Loading'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { Fragment, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -30,6 +30,7 @@ export const CommandBar = () => {
       reviewValidationDetails,
     },
   } = commandBarState
+  const shouldUseModelingDialog = isModelingDialogCommand(selectedCommand)
   const showsCodemodReview =
     commandBarState.matches('Review') &&
     reviewValidationDetails?.type === 'codemod'
@@ -150,70 +151,76 @@ export const CommandBar = () => {
           cmd.send({ type: 'Close' })
         }}
         className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
-        data-testid="command-bar-wrapper"
+        data-testid={
+          shouldUseModelingDialog ? undefined : 'command-bar-wrapper'
+        }
       >
-        <Transition.Child
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-75 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <WrapperComponent.Panel
-            className={`relative z-50 pointer-events-auto w-full ${
-              showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
-            } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
-            as="div"
-            data-testid="command-bar"
+        {!shouldUseModelingDialog && (
+          <Transition.Child
+            enter="duration-100 ease-out"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="duration-75 ease-in"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
           >
-            {commandBarState.matches('Selecting command') ? (
-              <CommandComboBox
-                options={commands.filter((command: Command) => {
-                  return (
-                    // By default everything is undefined
-                    // If marked explicitly as false hide
-                    command.hideFromSearch === undefined ||
-                    command.hideFromSearch === false
-                  )
-                })}
-              />
-            ) : commandBarState.matches('Gathering arguments') ? (
-              <CommandBarArgument stepBack={stepBack} />
-            ) : (
-              <>
-                {commandBarState.matches('Review') && (
-                  <CommandBarReview stepBack={stepBack} />
-                )}
-                {commandBarState.matches('Checking Arguments') && (
-                  <div
-                    className="py-4"
-                    data-testid="command-bar-loading-checking-arguments"
-                  >
-                    <Loading isDummy={true}>Checking arguments...</Loading>
-                  </div>
-                )}
-              </>
-            )}
-            <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
-              <button
-                type="button"
-                data-testid="command-bar-close-button"
-                onClick={() => cmd.send({ type: 'Close' })}
-                className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
-              >
-                <CustomIcon
-                  name="close"
-                  className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+            <WrapperComponent.Panel
+              className={`relative z-50 pointer-events-auto w-full ${
+                showsCodemodReview ? 'max-w-3xl' : 'max-w-xl'
+              } pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70`}
+              as="div"
+              data-testid="command-bar"
+            >
+              {commandBarState.matches('Selecting command') ? (
+                <CommandComboBox
+                  options={commands.filter((command: Command) => {
+                    return (
+                      // By default everything is undefined
+                      // If marked explicitly as false hide
+                      command.hideFromSearch === undefined ||
+                      command.hideFromSearch === false
+                    )
+                  })}
                 />
-                <Tooltip position="bottom">
-                  Cancel{' '}
-                  <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
-                </Tooltip>
-              </button>
-            </div>
-          </WrapperComponent.Panel>
-        </Transition.Child>
+              ) : commandBarState.matches('Gathering arguments') ? (
+                <CommandBarArgument stepBack={stepBack} />
+              ) : (
+                <>
+                  {commandBarState.matches('Review') && (
+                    <CommandBarReview stepBack={stepBack} />
+                  )}
+                  {commandBarState.matches('Checking Arguments') && (
+                    <div
+                      className="py-4"
+                      data-testid="command-bar-loading-checking-arguments"
+                    >
+                      <Loading isDummy={true}>Checking arguments...</Loading>
+                    </div>
+                  )}
+                </>
+              )}
+              <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
+                <button
+                  type="button"
+                  data-testid="command-bar-close-button"
+                  onClick={() => cmd.send({ type: 'Close' })}
+                  className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+                >
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                  />
+                  <Tooltip position="bottom">
+                    Cancel{' '}
+                    <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">
+                      esc
+                    </kbd>
+                  </Tooltip>
+                </button>
+              </div>
+            </WrapperComponent.Panel>
+          </Transition.Child>
+        )}
       </WrapperComponent>
     </Transition.Root>
   )
