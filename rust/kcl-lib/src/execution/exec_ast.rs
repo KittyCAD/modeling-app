@@ -2133,14 +2133,12 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
-                if solved
-                    .final_values()
-                    .iter()
-                    .any(|number| number.is_infinite() || number.is_nan())
-                {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        "KCL's 2D constraint solver returned an invalid number".to_owned(),
-                        vec![SourceRange::from(self)],
+                let solved_vars = solved.final_values();
+                if solved_vars.iter().any(|number| number.is_infinite() || number.is_nan()) {
+                    return Err(KclError::new_internal(error_for_invalid_number(
+                        solved_vars.iter(),
+                        &variables,
+                        SourceRange::from(self),
                     )));
                 }
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
@@ -2576,6 +2574,144 @@ impl Node<SketchBlock> {
         properties.insert(SKETCH_OBJECT_META.to_owned(), meta_value);
 
         properties
+    }
+}
+
+fn error_for_invalid_number(
+    solved_values: std::slice::Iter<'_, f64>,
+    variables: &IndexMap<String, KclValue>,
+    sketch_block_range: SourceRange,
+) -> KclErrorDetails {
+    let invalid_ids = solved_values
+        .enumerate()
+        .filter_map(|(id, number)| (!number.is_finite()).then_some(id))
+        .collect::<Vec<_>>();
+
+    let mut named_vars = Vec::new();
+    for (name, value) in variables {
+        collect_named_solver_vars(value, name, &mut named_vars);
+    }
+
+    let mut variable_names = Vec::new();
+    let mut source_ranges = Vec::new();
+    for invalid_id in invalid_ids {
+        let mut found_name = false;
+        for (id, name, ranges) in &named_vars {
+            if *id != invalid_id || variable_names.iter().any(|message| message == name) {
+                continue;
+            }
+            found_name = true;
+            variable_names.push(name.clone());
+            for range in ranges {
+                if !source_ranges.contains(range) {
+                    source_ranges.push(*range);
+                }
+            }
+        }
+        if !found_name {
+            variable_names.push(format!("solver variable #{invalid_id}"));
+        }
+    }
+
+    match variable_names.len() {
+        0 => KclErrorDetails::new(
+            "KCL's 2D solver returned invalid numbers".to_owned(),
+            vec![sketch_block_range],
+        ),
+        1 => KclErrorDetails::new(
+            format!(
+                "KCL's 2D solver returned an invalid number for {}",
+                variable_names.join(", ")
+            ),
+            source_ranges,
+        ),
+        _multiple => KclErrorDetails::new(
+            format!(
+                "KCL's 2D solver returned invalid numbers for {}",
+                variable_names.join(", ")
+            ),
+            source_ranges,
+        ),
+    }
+}
+
+/// Collect the user-facing KCL paths which refer to each ezpz variable.
+///
+/// A solver variable can be reachable through more than one KCL name (for
+/// example both `point[0]` and `circle.center.x`), so retain every path.
+fn collect_named_solver_vars(value: &KclValue, path: &str, output: &mut Vec<(usize, String, Vec<SourceRange>)>) {
+    match value {
+        KclValue::SketchVar { value } => {
+            output.push((
+                value.id.0,
+                path.to_owned(),
+                value.meta.iter().map(|meta| meta.source_range).collect(),
+            ));
+        }
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+            for (index, value) in value.iter().enumerate() {
+                collect_named_solver_vars(value, &format!("{path}[{index}]"), output);
+            }
+        }
+        KclValue::Object { value, .. } => {
+            let mut fields = value.iter().collect::<Vec<_>>();
+            fields.sort_unstable_by_key(|(name, _)| name.as_str());
+            for (name, value) in fields {
+                collect_named_solver_vars(value, &format!("{path}.{name}"), output);
+            }
+        }
+        KclValue::Segment { value } => {
+            let SegmentRepr::Unsolved { segment } = &value.repr else {
+                return;
+            };
+            let source_ranges = value.meta.iter().map(|meta| meta.source_range).collect::<Vec<_>>();
+            collect_named_segment_vars(&segment.kind, path, &source_ranges, output);
+        }
+        _ => {}
+    }
+}
+
+fn collect_named_segment_vars(
+    segment: &UnsolvedSegmentKind,
+    path: &str,
+    source_ranges: &[SourceRange],
+    output: &mut Vec<(usize, String, Vec<SourceRange>)>,
+) {
+    match segment {
+        UnsolvedSegmentKind::Point { position, .. } => {
+            collect_named_point_vars(position, &format!("{path}.at"), source_ranges, output);
+        }
+        UnsolvedSegmentKind::Line { start, end, .. } => {
+            collect_named_point_vars(start, &format!("{path}.start"), source_ranges, output);
+            collect_named_point_vars(end, &format!("{path}.end"), source_ranges, output);
+        }
+        UnsolvedSegmentKind::Arc { start, end, center, .. } => {
+            collect_named_point_vars(start, &format!("{path}.start"), source_ranges, output);
+            collect_named_point_vars(end, &format!("{path}.end"), source_ranges, output);
+            collect_named_point_vars(center, &format!("{path}.center"), source_ranges, output);
+        }
+        UnsolvedSegmentKind::Circle { start, center, .. } => {
+            collect_named_point_vars(start, &format!("{path}.start"), source_ranges, output);
+            collect_named_point_vars(center, &format!("{path}.center"), source_ranges, output);
+        }
+        UnsolvedSegmentKind::ControlPointSpline { controls, .. } => {
+            for (index, control) in controls.iter().enumerate() {
+                collect_named_point_vars(control, &format!("{path}.controls[{index}]"), source_ranges, output);
+            }
+        }
+    }
+}
+
+fn collect_named_point_vars(
+    point: &[UnsolvedExpr; 2],
+    path: &str,
+    source_ranges: &[SourceRange],
+    output: &mut Vec<(usize, String, Vec<SourceRange>)>,
+) {
+    for (component, name) in point.iter().zip(["x", "y"]) {
+        if let UnsolvedExpr::Unknown(id) = component {
+            output.push((id.0, format!("{path}.{name}"), source_ranges.to_vec()));
+        }
     }
 }
 
@@ -6218,6 +6354,7 @@ mod test {
 
     use kcl_api::UnitLength;
     use tokio::io::AsyncWriteExt;
+    use uuid::Uuid;
 
     use super::*;
     use crate::ExecutorSettings;
@@ -6226,6 +6363,62 @@ mod test {
     use crate::exec::UnitType;
     use crate::execution::ContextType;
     use crate::execution::parse_execute;
+
+    #[test]
+    fn invalid_solver_number_names_circle_variable_and_uses_circle_range() {
+        let circle_range = SourceRange::new(10, 80, ModuleId::default());
+        let point_ctor = crate::front::Point2d {
+            x: crate::front::Expr::Variable("x".to_owned()),
+            y: crate::front::Expr::Variable("y".to_owned()),
+        };
+        let circle = KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Unsolved {
+                    segment: Box::new(UnsolvedSegment {
+                        id: Uuid::nil(),
+                        object_id: ObjectId(0),
+                        kind: UnsolvedSegmentKind::Circle {
+                            start: [
+                                UnsolvedExpr::Unknown(crate::execution::SketchVarId(0)),
+                                UnsolvedExpr::Unknown(crate::execution::SketchVarId(1)),
+                            ],
+                            center: [
+                                UnsolvedExpr::Unknown(crate::execution::SketchVarId(8)),
+                                UnsolvedExpr::Unknown(crate::execution::SketchVarId(3)),
+                            ],
+                            ctor: Box::new(crate::front::CircleCtor {
+                                start: point_ctor.clone(),
+                                center: point_ctor,
+                                construction: None,
+                            }),
+                            start_object_id: ObjectId(1),
+                            center_object_id: ObjectId(2),
+                            construction: false,
+                        },
+                        tag: None,
+                        node_path: None,
+                        meta: vec![circle_range.into()],
+                    }),
+                },
+                meta: vec![circle_range.into()],
+            }),
+        };
+        let variables = IndexMap::from([("circle".to_owned(), circle)]);
+        let mut solved_values = [0.0; 9];
+        solved_values[8] = f64::INFINITY;
+
+        let details = error_for_invalid_number(
+            solved_values.iter(),
+            &variables,
+            SourceRange::new(0, 100, ModuleId::default()),
+        );
+
+        assert_eq!(
+            details.message,
+            "KCL's 2D solver returned an invalid number for circle.center.x"
+        );
+        assert_eq!(details.source_ranges, vec![circle_range]);
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {
