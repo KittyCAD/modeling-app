@@ -159,6 +159,8 @@ mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
+#[cfg(test)]
+mod hide_id_contract_pins;
 mod memory;
 mod modeling;
 mod sketch_solve;
