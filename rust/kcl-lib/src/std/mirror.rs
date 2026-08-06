@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
@@ -149,9 +148,7 @@ async fn inner_mirror_3d(
         let old_id = mirrored_body.id;
         let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
-        mirrored_body.topology_id = info.object_id;
-        mirrored_body.pattern_source_artifact_id = None;
-        mirrored_body.artifact_id = ArtifactId::new(info.object_id);
+        mirrored_body.become_new_body(info.object_id, info.object_id.into());
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
         fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await

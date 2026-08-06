@@ -103,9 +103,7 @@ pub(crate) async fn inner_union(
 
     let mut solid = solids[0].clone();
     solid.set_id(solid_out_id);
-    solid.topology_id = solid_out_id;
-    solid.pattern_source_artifact_id = None;
-    solid.artifact_id = solid_out_id.into();
+    solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -159,9 +157,7 @@ pub(crate) async fn inner_union(
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = solid_out_id;
-        new_solid.topology_id = extra_solid_id;
-        new_solid.pattern_source_artifact_id = None;
-        new_solid.artifact_id = extra_solid_id.into();
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
         new_solids.push(new_solid);
     }
 
@@ -202,9 +198,7 @@ pub(crate) async fn inner_intersect(
 
     let mut solid = solids[0].clone();
     solid.set_id(solid_out_id);
-    solid.topology_id = solid_out_id;
-    solid.pattern_source_artifact_id = None;
-    solid.artifact_id = solid_out_id.into();
+    solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -257,9 +251,7 @@ pub(crate) async fn inner_intersect(
         let mut new_solid = solid.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = solid_out_id;
-        new_solid.topology_id = extra_solid_id;
-        new_solid.pattern_source_artifact_id = None;
-        new_solid.artifact_id = extra_solid_id.into();
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
         new_solids.push(new_solid);
     }
 
@@ -299,9 +291,7 @@ pub(crate) async fn inner_subtract(
     if args.ctx.no_engine_commands().await {
         let mut solid = solids[0].clone();
         solid.set_id(solid_out_id);
-        solid.topology_id = solid_out_id;
-        solid.pattern_source_artifact_id = None;
-        solid.artifact_id = solid_out_id.into();
+        solid.become_new_body(solid_out_id, solid_out_id.into());
         let new_solids = vec![solid];
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
         record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
@@ -354,9 +344,7 @@ pub(crate) async fn inner_subtract(
             let mut new_solid = solids[0].clone();
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
-            new_solid.topology_id = output_id;
-            new_solid.pattern_source_artifact_id = None;
-            new_solid.artifact_id = output_id.into();
+            new_solid.become_new_body(output_id, output_id.into());
             new_solid
         })
         .collect::<Vec<_>>();
@@ -422,9 +410,7 @@ pub(crate) async fn inner_imprint(
 
     let mut body = targets[0].clone();
     body.set_id(body_out_id);
-    body.topology_id = body_out_id;
-    body.pattern_source_artifact_id = None;
-    body.artifact_id = body_out_id.into();
+    body.become_new_body(body_out_id, body_out_id.into());
     let mut new_solids = vec![body.clone()];
     let separate_bodies = !merge;
 
@@ -434,9 +420,7 @@ pub(crate) async fn inner_imprint(
             let mut new_solid = body.clone();
             new_solid.set_id(extra_solid_id);
             new_solid.value_id = body_out_id;
-            new_solid.topology_id = extra_solid_id;
-            new_solid.pattern_source_artifact_id = None;
-            new_solid.artifact_id = extra_solid_id.into();
+            new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
             new_solids.push(new_solid);
         }
         record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
@@ -500,9 +484,7 @@ pub(crate) async fn inner_imprint(
         let mut new_solid = body.clone();
         new_solid.set_id(extra_solid_id);
         new_solid.value_id = body_out_id;
-        new_solid.topology_id = extra_solid_id;
-        new_solid.pattern_source_artifact_id = None;
-        new_solid.artifact_id = extra_solid_id.into();
+        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
         new_solids.push(new_solid);
     }
 

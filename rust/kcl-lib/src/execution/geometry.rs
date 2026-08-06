@@ -1394,6 +1394,23 @@ impl Solid {
         self.topology_id
     }
 
+    /// Make this solid a brand-new body produced by an operation. It now owns
+    /// the topology of `engine_id`, and any retained pattern provenance no
+    /// longer applies.
+    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+        self.topology_id = engine_id;
+        self.pattern_source_artifact_id = None;
+        self.artifact_id = artifact_id;
+    }
+
+    /// Make this solid a pattern copy. It gets a new top-level entity artifact
+    /// while retaining the source body's topology and semantic artifact
+    /// provenance.
+    pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
+        self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
+        self.artifact_id = ArtifactId::new(copy_engine_id);
+    }
+
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts
             .iter()
