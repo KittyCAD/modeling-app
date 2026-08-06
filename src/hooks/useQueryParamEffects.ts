@@ -1,13 +1,6 @@
-import { useEffect } from 'react'
-import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { waitFor } from 'xstate'
-
 import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
-import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
-import { getDefaultCloudProjectDirectoryPath } from '@src/lib/cloudSync/paths'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -28,7 +21,10 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
-import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  getDefaultDirectoryProjectLibraryPath,
+} from '@src/lib/projectLibraries'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -37,6 +33,11 @@ import {
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { waitFor } from 'xstate'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -72,6 +73,13 @@ export function useQueryParamEffects(kclManager: KclManager) {
     !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
+
+  function getCurrentCloudLibraryPath() {
+    const currentProject = app.project?.projectIORefSignal.value
+    return currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
+      ? currentProject.libraryPath
+      : undefined
+  }
 
   /**
    * Watches for legacy `?create-file` hook, which share links currently use.
@@ -128,10 +136,13 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const localCloudProject = await ensureCloudProjectLocallySynced(
-        projectId,
-        await getDefaultCloudProjectDirectoryPath()
-      ).catch(() => undefined)
+      const targetProjectDirectoryPath = getCurrentCloudLibraryPath()
+      const localCloudProject = targetProjectDirectoryPath
+        ? await app.registry
+            .get(cloudSyncService)
+            .ensureProjectLocallySynced(projectId, targetProjectDirectoryPath)
+            .catch(() => undefined)
+        : undefined
       if (cancelled) {
         return
       }
