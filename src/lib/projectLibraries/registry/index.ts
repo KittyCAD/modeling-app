@@ -718,11 +718,15 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           )
         }
 
-        await fsZds.rm(project.localProjectPath, {
-          recursive: true,
-        })
         if (project.remoteProjectId) {
-          await cloudSyncActions?.deleteRemoteProject(project.remoteProjectId)
+          await cloudSyncActions?.deleteLocalProjectRealizations(
+            project.remoteProjectId,
+            project.localProjectPath
+          )
+        } else {
+          await fsZds.rm(project.localProjectPath, {
+            recursive: true,
+          })
         }
         refreshLocalProjectRealizations(library)
       },
