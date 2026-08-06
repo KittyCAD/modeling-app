@@ -9,4 +9,5 @@ pub(crate) use ast_node::Node;
 pub(crate) use ast_node::NodeMut;
 pub(crate) use ast_visitor::Visitable;
 pub(crate) use ast_visitor::Visitor;
+pub(crate) use ast_walk::Walker;
 pub(crate) use ast_walk::walk;

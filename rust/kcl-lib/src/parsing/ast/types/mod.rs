@@ -852,6 +852,11 @@ impl Program {
             return;
         }
 
+        // It might be a declaration inside a sketch block, or a reference to one.
+        if self.rename_sketch_block_symbol(new_name, pos) {
+            return;
+        }
+
         // Okay so this was not a top level variable declaration.
         // But it might be a variable declaration inside a function or function params.
         // So we need to check that.
@@ -886,6 +891,168 @@ impl Program {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         rename_identifiers_in_body(&mut self.body, old_name, new_name);
+    }
+
+    /// Rename a symbol declared inside a top-level sketch block, if `pos` is on such a
+    /// declaration or on a reference to one: either a use inside the block, or the property of
+    /// a member reference like `mySketch.line1`. Renames the declaration, uses inside the
+    /// block, member references on the sketch variable, and `.tags` member references on
+    /// regions derived from the sketch. Returns false if `pos` doesn't resolve to a sketch
+    /// block symbol.
+    fn rename_sketch_block_symbol(&mut self, new_name: &str, pos: usize) -> bool {
+        let Some((sketch_name, old_name)) = self.find_sketch_block_symbol(pos) else {
+            return false;
+        };
+
+        // Rename the declaration and all uses inside the block.
+        if let Some(block) = self.top_level_sketch_block_mut(&sketch_name) {
+            for item in &mut block.items {
+                if let BodyItem::VariableDeclaration(decl) = item
+                    && decl.declaration.id.name == old_name
+                {
+                    decl.declaration.id.name = new_name.to_owned();
+                    break;
+                }
+            }
+            rename_identifiers_in_body(&mut block.items, &old_name, new_name);
+        }
+
+        // Rename references outside the block: the sketch value exposes the block's
+        // declarations as members (`mySketch.line1`), and regions derived from the sketch
+        // inherit them as tags (`myRegion.tags.line1`).
+        let region_names = self.region_vars_derived_from(&sketch_name);
+        visit_member_expressions_mut(&mut self.body, &mut |member| {
+            // Reborrow through the Node so that the object and property field borrows are
+            // disjoint.
+            let member = &mut **member;
+            if member.computed {
+                return;
+            }
+            let Expr::Name(property) = &mut member.property else {
+                return;
+            };
+            if property.local_ident().map(|ident| ident.inner) != Some(&old_name) {
+                return;
+            }
+            let object_is_sketch_or_region_tags = match &member.object {
+                Expr::Name(object) => object.local_ident().is_some_and(|ident| ident.inner == sketch_name),
+                Expr::MemberExpression(inner) => {
+                    !inner.computed
+                        && matches!(&inner.object, Expr::Name(o) if o.local_ident().is_some_and(|ident| region_names.iter().any(|r| r == ident.inner)))
+                        && matches!(&inner.property, Expr::Name(p) if p.local_ident().is_some_and(|ident| ident.inner == "tags"))
+                }
+                _ => false,
+            };
+            if object_is_sketch_or_region_tags {
+                property.name.name = new_name.to_owned();
+            }
+        });
+        true
+    }
+
+    /// If `pos` is on a declaration inside a top-level sketch block, or on a reference to one
+    /// (a use inside the block, or the property of a member reference like `mySketch.line1`),
+    /// return the sketch variable's name and the declaration's name.
+    fn find_sketch_block_symbol(&self, pos: usize) -> Option<(String, String)> {
+        use crate::walk::Node as WalkNode;
+        use crate::walk::Walker;
+
+        let ident_at_pos = std::cell::RefCell::new(None::<String>);
+        let member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
+        let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
+            match node {
+                WalkNode::Identifier(ident) => {
+                    if SourceRange::from(ident).contains(pos) {
+                        *ident_at_pos.borrow_mut() = Some(ident.name.clone());
+                    }
+                }
+                WalkNode::MemberExpression(member) => {
+                    if !member.computed
+                        && let (Expr::Name(object), Expr::Name(property)) = (&member.object, &member.property)
+                        && SourceRange::from(&**property).contains(pos)
+                        && let (Some(object), Some(property)) = (object.local_ident(), property.local_ident())
+                    {
+                        *member_at_pos.borrow_mut() = Some((object.inner.to_owned(), property.inner.to_owned()));
+                    }
+                }
+                _ => {}
+            }
+            Ok(true)
+        };
+        for item in &self.body {
+            let _ = finder.walk(WalkNode::from(item));
+        }
+
+        // A member reference like `mySketch.line1` where the property is declared in the
+        // sketch's block.
+        if let Some((object, property)) = member_at_pos.into_inner()
+            && self
+                .top_level_sketch_blocks()
+                .any(|(name, block)| name == object && block_declares_name(block, &property))
+        {
+            return Some((object, property));
+        }
+
+        // A declaration or use inside a sketch block's body.
+        if let Some(name) = ident_at_pos.into_inner() {
+            for (sketch_name, block) in self.top_level_sketch_blocks() {
+                if block.as_source_range().contains(pos) && block_declares_name(block, &name) {
+                    return Some((sketch_name.to_owned(), name));
+                }
+            }
+        }
+
+        None
+    }
+
+    /// Top-level variables whose value is a sketch block, e.g. `s = sketch(on = XY) {...}`.
+    fn top_level_sketch_blocks(&self) -> impl Iterator<Item = (&str, &Node<Block>)> {
+        self.body.iter().filter_map(|item| {
+            let BodyItem::VariableDeclaration(decl) = item else {
+                return None;
+            };
+            let Expr::SketchBlock(sketch) = &decl.declaration.init else {
+                return None;
+            };
+            Some((decl.declaration.id.name.as_str(), &sketch.body))
+        })
+    }
+
+    fn top_level_sketch_block_mut(&mut self, name: &str) -> Option<&mut Node<Block>> {
+        self.body.iter_mut().find_map(|item| {
+            let BodyItem::VariableDeclaration(decl) = item else {
+                return None;
+            };
+            if decl.declaration.id.name != name {
+                return None;
+            }
+            let Expr::SketchBlock(sketch) = &mut decl.declaration.init else {
+                return None;
+            };
+            Some(&mut sketch.body)
+        })
+    }
+
+    /// Names of top-level variables assigned from a `region(...)` call that references the
+    /// given sketch variable, e.g. `region(segments = [s.line1])`, `region(point = [0, 0],
+    /// sketch = s)`, or `region(point = s.point1)`. Such regions inherit the sketch block's
+    /// declared names as tags (`myRegion.tags.line1`).
+    fn region_vars_derived_from(&self, sketch_name: &str) -> Vec<String> {
+        self.body
+            .iter()
+            .filter_map(|item| {
+                let BodyItem::VariableDeclaration(decl) = item else {
+                    return None;
+                };
+                let Expr::CallExpressionKw(call) = &decl.declaration.init else {
+                    return None;
+                };
+                if call.callee.local_ident().map(|ident| ident.inner) != Some("region") {
+                    return None;
+                }
+                expr_references_name(&decl.declaration.init, sketch_name).then(|| decl.declaration.id.name.clone())
+            })
+            .collect()
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1140,6 +1307,161 @@ fn rename_identifiers_in_body(body: &mut [BodyItem], old_name: &str, new_name: &
         if body_item_binds_name(item, old_name) {
             return;
         }
+    }
+}
+
+/// Whether the block's body directly declares a variable with the given name.
+fn block_declares_name(block: &Block, name: &str) -> bool {
+    block
+        .items
+        .iter()
+        .any(|item| matches!(item, BodyItem::VariableDeclaration(decl) if decl.declaration.id.name == name))
+}
+
+/// Whether the expression contains any reference to the given name.
+fn expr_references_name(expr: &Expr, name: &str) -> bool {
+    use crate::walk::Node as WalkNode;
+    use crate::walk::Walker;
+
+    let found = std::cell::Cell::new(false);
+    let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
+        if let WalkNode::Name(n) = node
+            && n.local_ident().is_some_and(|ident| ident.inner == name)
+        {
+            found.set(true);
+            // Stop walking.
+            return Ok(false);
+        }
+        Ok(true)
+    };
+    let _ = finder.walk(WalkNode::from(expr));
+    found.get()
+}
+
+/// Call `f` on every member expression in the body items, including nested expressions and
+/// nested bodies (functions, sketch blocks, if expressions).
+fn visit_member_expressions_mut(body: &mut [BodyItem], f: &mut impl FnMut(&mut Node<MemberExpression>)) {
+    for item in body {
+        match item {
+            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+            BodyItem::ExpressionStatement(stmt) => visit_member_expressions_expr(&mut stmt.expression, f),
+            BodyItem::VariableDeclaration(decl) => visit_member_expressions_expr(&mut decl.declaration.init, f),
+            BodyItem::ReturnStatement(stmt) => visit_member_expressions_expr(&mut stmt.argument, f),
+        }
+    }
+}
+
+fn visit_member_expressions_expr(expr: &mut Expr, f: &mut impl FnMut(&mut Node<MemberExpression>)) {
+    match expr {
+        Expr::Literal(_)
+        | Expr::Name(_)
+        | Expr::TagDeclarator(_)
+        | Expr::PipeSubstitution(_)
+        | Expr::SketchVar(_)
+        | Expr::None(_) => {}
+        Expr::MemberExpression(member) => {
+            f(member);
+            visit_member_expressions_expr(&mut member.object, f);
+            visit_member_expressions_expr(&mut member.property, f);
+        }
+        Expr::BinaryExpression(bin_expr) => {
+            visit_member_expressions_binary_part(&mut bin_expr.left, f);
+            visit_member_expressions_binary_part(&mut bin_expr.right, f);
+        }
+        Expr::FunctionExpression(func) => visit_member_expressions_mut(&mut func.body.body, f),
+        Expr::CallExpressionKw(call) => {
+            if let Some(unlabeled) = &mut call.unlabeled {
+                visit_member_expressions_expr(unlabeled, f);
+            }
+            for arg in &mut call.arguments {
+                visit_member_expressions_expr(&mut arg.arg, f);
+            }
+        }
+        Expr::PipeExpression(pipe) => {
+            for e in &mut pipe.body {
+                visit_member_expressions_expr(e, f);
+            }
+        }
+        Expr::ArrayExpression(array) => {
+            for e in &mut array.elements {
+                visit_member_expressions_expr(e, f);
+            }
+        }
+        Expr::ArrayRangeExpression(range) => {
+            visit_member_expressions_expr(&mut range.start_element, f);
+            visit_member_expressions_expr(&mut range.end_element, f);
+        }
+        Expr::ObjectExpression(obj) => {
+            for property in &mut obj.properties {
+                visit_member_expressions_expr(&mut property.value, f);
+            }
+        }
+        Expr::UnaryExpression(unary_expr) => visit_member_expressions_binary_part(&mut unary_expr.argument, f),
+        Expr::IfExpression(if_expr) => {
+            visit_member_expressions_expr(&mut if_expr.cond, f);
+            visit_member_expressions_mut(&mut if_expr.then_val.body, f);
+            for else_if in &mut if_expr.else_ifs {
+                visit_member_expressions_expr(&mut else_if.cond, f);
+                visit_member_expressions_mut(&mut else_if.then_val.body, f);
+            }
+            visit_member_expressions_mut(&mut if_expr.final_else.body, f);
+        }
+        Expr::LabelledExpression(labeled) => visit_member_expressions_expr(&mut labeled.expr, f),
+        Expr::AscribedExpression(ascribed) => visit_member_expressions_expr(&mut ascribed.expr, f),
+        Expr::SketchBlock(sketch_block) => {
+            for arg in &mut sketch_block.arguments {
+                visit_member_expressions_expr(&mut arg.arg, f);
+            }
+            visit_member_expressions_mut(&mut sketch_block.body.items, f);
+        }
+    }
+}
+
+fn visit_member_expressions_binary_part(part: &mut BinaryPart, f: &mut impl FnMut(&mut Node<MemberExpression>)) {
+    match part {
+        BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => {}
+        BinaryPart::MemberExpression(member) => {
+            f(member);
+            visit_member_expressions_expr(&mut member.object, f);
+            visit_member_expressions_expr(&mut member.property, f);
+        }
+        BinaryPart::BinaryExpression(bin_expr) => {
+            visit_member_expressions_binary_part(&mut bin_expr.left, f);
+            visit_member_expressions_binary_part(&mut bin_expr.right, f);
+        }
+        BinaryPart::CallExpressionKw(call) => {
+            if let Some(unlabeled) = &mut call.unlabeled {
+                visit_member_expressions_expr(unlabeled, f);
+            }
+            for arg in &mut call.arguments {
+                visit_member_expressions_expr(&mut arg.arg, f);
+            }
+        }
+        BinaryPart::UnaryExpression(unary_expr) => visit_member_expressions_binary_part(&mut unary_expr.argument, f),
+        BinaryPart::ArrayExpression(array) => {
+            for e in &mut array.elements {
+                visit_member_expressions_expr(e, f);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(range) => {
+            visit_member_expressions_expr(&mut range.start_element, f);
+            visit_member_expressions_expr(&mut range.end_element, f);
+        }
+        BinaryPart::ObjectExpression(obj) => {
+            for property in &mut obj.properties {
+                visit_member_expressions_expr(&mut property.value, f);
+            }
+        }
+        BinaryPart::IfExpression(if_expr) => {
+            visit_member_expressions_expr(&mut if_expr.cond, f);
+            visit_member_expressions_mut(&mut if_expr.then_val.body, f);
+            for else_if in &mut if_expr.else_ifs {
+                visit_member_expressions_expr(&mut else_if.cond, f);
+                visit_member_expressions_mut(&mut else_if.then_val.body, f);
+            }
+            visit_member_expressions_mut(&mut if_expr.final_else.body, f);
+        }
+        BinaryPart::AscribedExpression(ascribed) => visit_member_expressions_expr(&mut ascribed.expr, f),
     }
 }
 
@@ -5544,6 +5866,261 @@ x = foo
             r#"import foo as bar from "m.kcl"
 
 x = bar
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+blockSketch = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+  coincident([edge1.end, edge2.start])
+}
+
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+"#;
+        let mut program = parse(code);
+        let pos = code.find("edge1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"@settings(kclVersion = 2.0)
+
+blockSketch = sketch(on = XY) {
+  edgeOne = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+  coincident([edgeOne.end, edge2.start])
+}
+
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_updates_member_references() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.line1, s.line2])
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("line1Prime", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1Prime = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.line1Prime, s.line2])
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_top_level_declaration_does_not_rename_shadowing_sketch_block_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.rfind("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("topLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+topLine = 99
+result = topLine
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_does_not_rename_same_named_top_level_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+r = region(segments = [s.line1])
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("sketchLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  sketchLine = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([sketchLine.end, sketchLine.start])
+}
+
+r = region(segments = [s.sketchLine])
+line1 = 99
+result = line1
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_symbol_from_references() {
+        let code = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1 = line(start = [var 8.34mm, var 12.78mm], end = [var 17.82mm, var 12.78mm])
+  line2 = line(start = [var 17.82mm, var 12.78mm], end = [var 17.82mm, var 6.3mm])
+  line3 = line(start = [var 17.82mm, var 6.3mm], end = [var 8.34mm, var 6.3mm])
+  line4 = line(start = [var 8.34mm, var 6.3mm], end = [var 8.34mm, var 12.78mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+r = region(segments = [s.line1, s.line2])
+extrude(r, length = 5)
+"#;
+        let expected = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line1Prime = line(start = [var 8.34mm, var 12.78mm], end = [var 17.82mm, var 12.78mm])
+  line2 = line(start = [var 17.82mm, var 12.78mm], end = [var 17.82mm, var 6.3mm])
+  line3 = line(start = [var 17.82mm, var 6.3mm], end = [var 8.34mm, var 6.3mm])
+  line4 = line(start = [var 8.34mm, var 6.3mm], end = [var 8.34mm, var 12.78mm])
+  coincident([line1Prime.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1Prime.start])
+  parallel([line2, line4])
+  parallel([line3, line1Prime])
+  perpendicular([line1Prime, line2])
+  horizontal(line3)
+}
+r = region(segments = [s.line1Prime, s.line2])
+extrude(r, length = 5)
+"#;
+
+        for pos in [
+            code.find("perpendicular([line1").unwrap() + "perpendicular([".len() + 1,
+            code.find("s.line1").unwrap() + "s.".len() + 1,
+        ] {
+            let mut program = parse(code);
+            program.rename_symbol("line1Prime", pos);
+
+            let formatted = program.recast_top(&Default::default(), 0);
+            assert_eq!(formatted, expected);
+        }
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_updates_region_tag_references() {
+        // Regions derived from a sketch inherit the sketch block's declared names as tags, so
+        // `.tags` member references on them are renamed too. `rOther` is derived from a
+        // different sketch, so its `.tags.line1` refers to that sketch's `line1` and is left
+        // alone.
+        let code = r#"s1 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  point1 = point(at = [var 5, var 5])
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r1 = region(segments = [s1.line1])
+r2 = region(point = [0, 0], sketch = s1)
+r3 = region(point = s1.point1)
+rOther = region(sketch = s2)
+a = r1.tags.line1
+b = r2.tags.line1
+c = r3.tags.line1
+d = rOther.tags.line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("coolLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  coolLine = line(start = [var 0, var 0], end = [var 10, var 0])
+  point1 = point(at = [var 5, var 5])
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r1 = region(segments = [s1.coolLine])
+r2 = region(point = [0, 0], sketch = s1)
+r3 = region(point = s1.point1)
+rOther = region(sketch = s2)
+a = r1.tags.coolLine
+b = r2.tags.coolLine
+c = r3.tags.coolLine
+d = rOther.tags.line1
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_top_level_declaration_does_not_rename_member_properties() {
+        // `s.line1` refers to the declaration inside the sketch block, not the top-level
+        // variable, so renaming the top-level `line1` must leave it alone.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(segments = [s.line1])
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("topLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(segments = [s.line1])
+topLine = 99
+result = topLine
 "#
         );
     }
