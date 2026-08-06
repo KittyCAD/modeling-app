@@ -10,6 +10,7 @@ import type { Command } from '@src/lib/commandTypes'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import {
   type CommandSystemService,
+  commandKey,
   commandSystemService,
   commandsValueSpec,
 } from '@src/registry/contracts/commands'
@@ -93,7 +94,7 @@ const toolbarCommandsItem = defineRegistryItem({
   id: 'toolbar-commands',
   provides: [...toolbarCommands, ...appCommands].map((command) =>
     provide(commandsValueSpec, command, {
-      key: command.id ?? `${command.groupId}:${String(command.name)}`,
+      key: commandKey(command),
     })
   ),
 })
