@@ -290,24 +290,30 @@ export function emptyOperationsByModule(): OperationsByModule {
   return { map: {} }
 }
 
-export function applyOperationCallbackToOperationsByModule(input: {
+export function applyOperationCallbacksToOperationsByModule(input: {
   operationsByModule: OperationsByModule
-  callback: OperationCallbackArgs
+  callbacks: readonly OperationCallbackArgs[]
 }): OperationsByModule {
-  const {
-    operationsByModule,
-    callback: { moduleId, operation, index },
-  } = input
-  const nextOperations = [
-    ...(operationsByModule.map[moduleId] ?? []),
-  ] as Operation[]
-  nextOperations[index] = operation
+  const { operationsByModule, callbacks } = input
+  if (callbacks.length === 0) {
+    return operationsByModule
+  }
+
+  const nextMap = { ...operationsByModule.map }
+  const touchedModules = new Map<number, Operation[]>()
+
+  for (const { moduleId, operation, index } of callbacks) {
+    let nextOperations = touchedModules.get(moduleId)
+    if (!nextOperations) {
+      nextOperations = [...(operationsByModule.map[moduleId] ?? [])]
+      touchedModules.set(moduleId, nextOperations)
+      nextMap[moduleId] = nextOperations
+    }
+    nextOperations[index] = operation
+  }
 
   return {
-    map: {
-      ...operationsByModule.map,
-      [moduleId]: nextOperations,
-    },
+    map: nextMap,
   }
 }
 

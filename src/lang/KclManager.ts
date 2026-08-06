@@ -27,7 +27,7 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import {
-  applyOperationCallbackToOperationsByModule,
+  applyOperationCallbacksToOperationsByModule,
   emptyExecState,
   emptyOperationsByModule,
   execStateFromRust,
@@ -112,7 +112,7 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { type Signal, computed, signal } from '@preact/signals-core'
+import { type Signal, batch, computed, signal } from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -745,6 +745,9 @@ export class File extends EventTarget {
   static encoder = new TextEncoder()
 }
 
+/** Cap live Feature Tree and CodeMirror publications at 20 updates per second. */
+const LIVE_OPERATION_FLUSH_INTERVAL_MS = 50
+
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
 
@@ -911,6 +914,8 @@ export class KclManager extends File {
   /** Operation key (from getOperationKey) of the most recent live operation. */
   private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
+  private pendingLiveOperationUpdates: OperationCallbackArgs[] = []
+  private liveOperationFlushTimer: ReturnType<typeof setTimeout> | null = null
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -1136,7 +1141,7 @@ export class KclManager extends File {
 
     // These belonged to the previous file
     this.lastSuccessfulOperations = emptyOperationsByModule()
-    this.endLiveOperationUpdates()
+    this.resetLiveOperationUpdates()
     this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
     this._hasEditsSinceLastExecution.value = false
@@ -1166,6 +1171,7 @@ export class KclManager extends File {
   }
 
   private beginLiveOperationUpdates(executionId: number) {
+    this.discardPendingLiveOperationUpdates()
     this.activeLiveOperationExecutionId = executionId
     this._liveOperationsByModule.value = emptyOperationsByModule()
     this._liveActiveModuleId.value = null
@@ -1174,12 +1180,66 @@ export class KclManager extends File {
     this.dispatchUpdateOperations([])
   }
 
-  private endLiveOperationUpdates() {
+  private endLiveOperationUpdates(executionId: number) {
+    if (this.activeLiveOperationExecutionId !== executionId) {
+      return
+    }
+
+    this.resetLiveOperationUpdates()
+  }
+
+  private resetLiveOperationUpdates() {
+    this.discardPendingLiveOperationUpdates()
     this.activeLiveOperationExecutionId = null
     this._showLiveOperationsByModule.value = false
     this._liveActiveModuleId.value = null
     this._liveLatestOperationKey.value = null
     this._liveOperationsByModule.value = emptyOperationsByModule()
+  }
+
+  private discardPendingLiveOperationUpdates() {
+    if (this.liveOperationFlushTimer !== null) {
+      clearTimeout(this.liveOperationFlushTimer)
+      this.liveOperationFlushTimer = null
+    }
+    this.pendingLiveOperationUpdates = []
+  }
+
+  private flushLiveOperationUpdates(executionId: number) {
+    if (this.activeLiveOperationExecutionId !== executionId) {
+      return
+    }
+    if (this._cancelTokens.get(executionId)) {
+      this.pendingLiveOperationUpdates = []
+      return
+    }
+
+    const callbacks = this.pendingLiveOperationUpdates
+    this.pendingLiveOperationUpdates = []
+    if (callbacks.length === 0) {
+      return
+    }
+
+    const operationsByModule = applyOperationCallbacksToOperationsByModule({
+      operationsByModule: this._liveOperationsByModule.value,
+      callbacks,
+    })
+    const latestCallback = callbacks[callbacks.length - 1]
+
+    batch(() => {
+      this._liveActiveModuleId.value = latestCallback.moduleId
+      this._liveLatestOperationKey.value = getOperationKey(
+        latestCallback.operation
+      )
+      this._liveOperationsByModule.value = operationsByModule
+    })
+    this.dispatchUpdateOperations(
+      getOperationsForCurrentFile({
+        operationsByModule,
+        filenames: this.execState.filenames,
+        currentPath: this.path,
+      })
+    )
   }
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
@@ -1192,21 +1252,14 @@ export class KclManager extends File {
           return
         }
 
-        this._liveActiveModuleId.value = callback.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
-
-        const operationsByModule = applyOperationCallbackToOperationsByModule({
-          operationsByModule: this._liveOperationsByModule.value,
-          callback,
-        })
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
+        this.pendingLiveOperationUpdates.push(callback)
+        if (this.liveOperationFlushTimer !== null) {
+          return
+        }
+        this.liveOperationFlushTimer = setTimeout(() => {
+          this.liveOperationFlushTimer = null
+          this.flushLiveOperationUpdates(executionId)
+        }, LIVE_OPERATION_FLUSH_INTERVAL_MS)
       },
     }
   }
@@ -2150,6 +2203,7 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    this.resetLiveOperationUpdates()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
@@ -2430,7 +2484,7 @@ export class KclManager extends File {
 
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
-      this.endLiveOperationUpdates()
+      this.endLiveOperationUpdates(currentExecutionId)
       this._cancelTokens.delete(currentExecutionId)
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('cancelled')
@@ -2468,7 +2522,7 @@ export class KclManager extends File {
       this.lastSuccessfulOperations = execState.operations
       this.lastSuccessfulCode = codeThatExecuted
     }
-    this.endLiveOperationUpdates()
+    this.endLiveOperationUpdates(currentExecutionId)
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
@@ -2514,7 +2568,7 @@ export class KclManager extends File {
    * to properly restore the TS application state.
    */
   executeAstCleanUp() {
-    this.endLiveOperationUpdates()
+    this.resetLiveOperationUpdates()
     this.isExecuting = false
     this.executeIsStale = null
     this.notifyExecutionCompletion('cleanup')
