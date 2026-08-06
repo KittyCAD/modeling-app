@@ -93,6 +93,8 @@ use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
+use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
@@ -6159,11 +6161,14 @@ fn is_constraint_call_name(name: &str) -> bool {
     )
 }
 
-fn constraint_supports_label_position(part: &ast::BinaryPart) -> bool {
-    matches!(
-        part,
-        ast::BinaryPart::CallExpressionKw(call) if is_constraint_call_name(call.callee.name.name.as_str())
-    )
+fn constraint_supports_label_position(part: &mut ast::BinaryPart) -> Option<&mut BoxNode<CallExpressionKw>> {
+    if let ast::BinaryPart::CallExpressionKw(call) = part
+        && is_constraint_call_name(call.callee.name.name.as_str())
+    {
+        Some(call)
+    } else {
+        None
+    }
 }
 
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
@@ -6541,15 +6546,9 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
         }
         AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                let call = if constraint_supports_label_position(&binary_expr.left) {
-                    let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
-                        unreachable!("constraint_supports_label_position already matched");
-                    };
+                let call = if let Some(call) = constraint_supports_label_position(&mut binary_expr.left) {
                     call
-                } else if constraint_supports_label_position(&binary_expr.right) {
-                    let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.right else {
-                        unreachable!("constraint_supports_label_position already matched");
-                    };
+                } else if let Some(call) = constraint_supports_label_position(&mut binary_expr.right) {
                     call
                 } else {
                     return TraversalReturn::new_continue(());
