@@ -16,15 +16,22 @@ import {
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
+import projectLibrariesExtension from '@src/lib/projectLibraries/registry'
+import type {
+  CloudProjectRelationship,
+  CloudSyncRegistryService,
+} from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
-  type HomeProjectEntryContribution,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import {
+  type ProjectLibraryRealization,
+  type ProjectLibraryRealizationContribution,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
@@ -32,9 +39,15 @@ import {
   systemIOService,
 } from '@src/registry/contracts/systemIO'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
-import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import homeProjectsExtension, {
+  deriveHomeProjectEntryContributions,
+} from '@src/registry/extensions/homeProjects'
 import { waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+function projectNameFromPath(projectPath: string) {
+  return projectPath.slice(projectPath.lastIndexOf('/') + 1)
+}
 
 const desktopMocks = vi.hoisted(() => ({
   getProjectInfo: vi.fn(),
@@ -234,6 +247,196 @@ function createCloudSyncService(
   }
 }
 
+function realization(
+  overrides: Partial<ProjectLibraryRealization> & { localProjectPath: string }
+): ProjectLibraryRealization {
+  const { localProjectPath, ...rest } = overrides
+  const localProjectName = projectNameFromPath(localProjectPath)
+
+  return {
+    id: `local:${localProjectPath}`,
+    libraryIds: ['default-project-directory'],
+    libraryRefs: [
+      {
+        id: 'default-project-directory',
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+    ],
+    localProjectPath,
+    localProjectName,
+    name: localProjectName,
+    readWriteAccess: true,
+    ...rest,
+  }
+}
+
+function cloudRelationship(
+  overrides: Partial<CloudProjectRelationship> & { remoteProjectId: string }
+): CloudProjectRelationship {
+  const { remoteProjectId, ...rest } = overrides
+  return {
+    id: `cloud:${remoteProjectId}`,
+    remoteProjectId,
+    duplicateRealizations: [],
+    localRealizations: [],
+    name: remoteProjectId,
+    ...rest,
+  }
+}
+
+describe('deriveHomeProjectEntryContributions', () => {
+  it('derives local-only realization cards', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [
+          realization({
+            localProjectPath: '/projects/local-project',
+            title: 'Local Project',
+          }),
+        ],
+        cloudRelationships: [],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        source: 'local',
+        status: 'local',
+        name: 'local-project',
+        title: 'Local Project',
+        localProjectPath: '/projects/local-project',
+      }),
+    ])
+  })
+
+  it('derives remote-only cloud relationship cards', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [],
+        cloudRelationships: [
+          cloudRelationship({
+            remoteProjectId: 'remote-123',
+            name: 'Remote Project',
+            title: 'Remote Project',
+          }),
+        ],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        id: 'cloud:remote-123',
+        source: 'remote',
+        status: 'cloud-only',
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+
+  it('derives one canonical relationship card with duplicate metadata attached', () => {
+    const canonical = realization({
+      localProjectPath: '/cloud/bracket',
+      cloudProjectId: 'remote-123',
+      libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+      libraryRefs: [
+        {
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Personal Cloud',
+          path: '/cloud',
+          type: CLOUD_PROJECT_LIBRARY_TYPE,
+        },
+      ],
+    })
+    const duplicate = realization({
+      localProjectPath: '/projects/bracket-copy',
+      cloudProjectId: 'remote-123',
+    })
+
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [canonical, duplicate],
+        cloudRelationships: [
+          cloudRelationship({
+            remoteProjectId: 'remote-123',
+            canonicalRealization: {
+              role: 'canonical',
+              realization: canonical,
+              duplicateRisk: 'exact',
+              autoCleanupEligible: false,
+            },
+            duplicateRealizations: [
+              {
+                role: 'duplicate',
+                realization: duplicate,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+            ],
+            localRealizations: [
+              {
+                role: 'canonical',
+                realization: canonical,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+              {
+                role: 'duplicate',
+                realization: duplicate,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+            ],
+          }),
+        ],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        id: 'cloud:remote-123',
+        source: 'local',
+        status: 'synced',
+        libraryIds: [
+          PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          DEFAULT_PROJECT_LIBRARY_ID,
+        ],
+        localProjectPath: '/cloud/bracket',
+        remoteProjectId: 'remote-123',
+        duplicateRealizations: [
+          expect.objectContaining({
+            localProjectPath: '/projects/bracket-copy',
+            duplicateRisk: 'exact',
+          }),
+        ],
+      }),
+    ])
+  })
+
+  it('keeps duplicate realizations as separate cards without an explicit cloud relationship', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [
+          realization({
+            localProjectPath: '/projects/bracket',
+            cloudProjectId: 'remote-123',
+          }),
+          realization({
+            localProjectPath: '/cloud/bracket',
+            cloudProjectId: 'remote-123',
+          }),
+        ],
+        cloudRelationships: [],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        localProjectPath: '/projects/bracket',
+        remoteProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
+        localProjectPath: '/cloud/bracket',
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+})
+
 describe('home project actions', () => {
   let registry: Registry | undefined
 
@@ -287,6 +490,7 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -449,17 +653,15 @@ describe('home project actions', () => {
     })
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
-    const readEntries = vi.fn(({ library }: { library: ProjectLibrary }) =>
+    const readRealizations = vi.fn(({ library }: { library: ProjectLibrary }) =>
       Promise.resolve([
         {
-          source: 'local',
-          status: 'synced',
-          libraryId: library.id,
+          library,
           name: 'untitled-43',
           title: 'untitled-43',
           localProjectPath: '/custom-cloud/untitled-43',
           localProjectName: 'untitled-43',
-          remoteProjectId: 'remote-123',
+          cloudProjectId: 'remote-123',
           defaultFile: '/custom-cloud/untitled-43/main.kcl',
           readWriteAccess: true,
           thumbnail: {
@@ -467,7 +669,7 @@ describe('home project actions', () => {
             path: '/custom-cloud/untitled-43/thumbnail.png',
           },
         },
-      ] satisfies HomeProjectEntryContribution[])
+      ] satisfies ProjectLibraryRealizationContribution[])
     )
 
     registry = new Registry()
@@ -490,10 +692,11 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: 'custom-cloud',
             title: 'Custom Cloud',
-            readEntries,
+            readRealizations,
           }),
         ],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -509,7 +712,7 @@ describe('home project actions', () => {
       ])
     )
 
-    readEntries.mockClear()
+    readRealizations.mockClear()
     settings.current.value = {
       ...settings.current.value,
       unrelated: {
@@ -519,7 +722,7 @@ describe('home project actions', () => {
     await Promise.resolve()
     await Promise.resolve()
 
-    expect(readEntries).not.toHaveBeenCalled()
+    expect(readRealizations).not.toHaveBeenCalled()
     expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
       expect.objectContaining({
         name: 'untitled-43',
@@ -589,7 +792,7 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: CLOUD_PROJECT_LIBRARY_TYPE,
             title: 'Cloud',
-            readEntries: async () => [],
+            readRealizations: async () => [],
             operations: {
               openProject: {
                 run: ({ project }) => {
@@ -630,7 +833,7 @@ describe('home project actions', () => {
     const cloudSync = createCloudSyncService()
     const localCloudProject = {
       id: 'remote:remote-123',
-      source: 'both',
+      source: 'local',
       status: 'synced',
       libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
       name: 'remote-title',
@@ -673,7 +876,7 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: CLOUD_PROJECT_LIBRARY_TYPE,
             title: 'Cloud',
-            readEntries: async () => [],
+            readRealizations: async () => [],
             operations: {
               openProject: {
                 run: ({ project }) => {
@@ -735,6 +938,7 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 

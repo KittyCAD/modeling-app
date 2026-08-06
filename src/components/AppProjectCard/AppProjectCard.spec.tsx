@@ -1,6 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import fsZds from '@src/lib/fs-zds'
-import { DIRECTORY_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -251,17 +250,6 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('does not show status badges for cards with both local and remote sources', () => {
-    renderProjectCard({
-      project: {
-        ...cloudProject,
-        source: 'both',
-      },
-    })
-
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
-  })
-
   test('hides cloud sync project chips when cloud sync UI is disabled', () => {
     renderProjectCard({
       showCloudSyncUi: false,
@@ -318,8 +306,7 @@ describe('ProjectCard', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        libraryPath: '/projects',
-        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        deleteRemoteOnDelete: false,
       },
     })
 
@@ -354,7 +341,6 @@ describe('ProjectCard', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        source: 'both',
         syncFailure: {
           kind: 'remote-upload-forbidden',
           message: 'Cloud sync cannot upload local changes.',
@@ -366,14 +352,15 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
       'Cloud sync blocked'
     )
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Synced'
+    )
   })
 
   test('shows cloud sync blocked badge for upload permission failures', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        source: 'both',
         syncFailure: {
           kind: 'remote-upload-forbidden',
           message: 'Cloud sync cannot upload local changes.',
@@ -385,7 +372,9 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
       'Cloud sync blocked'
     )
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Synced'
+    )
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {

@@ -1,10 +1,7 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
-import {
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
-  type ProjectLibrary,
-} from '@src/lib/projectLibraries'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -539,11 +536,10 @@ describe('project command config', () => {
         localProjectPath: '/client-projects/bracket',
         libraryIds: ['client-projects'],
       }),
-      source: 'both',
+      source: 'local',
       status: 'synced',
-      libraryPath: '/client-projects',
-      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
       remoteProjectId: 'remote-123',
+      deleteRemoteOnDelete: false,
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),

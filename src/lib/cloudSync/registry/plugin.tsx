@@ -26,9 +26,11 @@ import Tooltip from '@src/components/Tooltip'
 import {
   type CloudSyncProjectMetadataIndexEntry,
   type CloudSyncStatus,
+  type ProjectManifest,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
   duplicateRemoteCloudProject,
+  getCloudSyncProjectModifiedTime,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
@@ -38,26 +40,29 @@ import {
   getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
+import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
+import {
+  type CloudProjectLocalManifestComparison,
+  deriveCloudProjectRelationships,
+} from '@src/lib/cloudSync/relationships'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import {
-  getHomeProjectDisplayName,
-  homeProjectEntryFromProject,
-} from '@src/lib/homeProjects'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import {
   createProjectInLocalDirectory,
   moveProjectIntoLocalDirectory,
 } from '@src/lib/projectLibraries/operations'
+import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
   canRevealInFileExplorer,
   revealInFileExplorer,
@@ -66,18 +71,19 @@ import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
-  type HomeProjectEntryContribution,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
+  cloudProjectRelationshipsValueSpec,
+  cloudSyncService,
+} from '@src/registry/contracts/cloudSync'
 import {
   type ProjectExplorerProjectMenuItemComponentProps,
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
   type ProjectLibrarySettingsDetailsProps,
+  type ProjectLibraryRealization,
   type ProjectLibraryTypeContribution,
+  projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -90,7 +96,6 @@ import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { invalidateConfiguredProjectLibraryEntries } from '@src/registry/extensions/homeProjects'
 import { Fragment, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -133,16 +138,6 @@ export function preserveCloudProjectDefaultFile({
   const nextDefaultFiles = new Map(preservedCloudProjectDefaultFiles.value)
   nextDefaultFiles.set(normalizePathForSync(localProjectPath), defaultFile)
   preservedCloudProjectDefaultFiles.value = nextDefaultFiles
-}
-
-function getPreservedCloudProjectDefaultFile(
-  metadata: CloudSyncProjectMetadataIndexEntry | undefined
-) {
-  return metadata
-    ? preservedCloudProjectDefaultFiles.value.get(
-        normalizePathForSync(metadata.localProjectPath)
-      )
-    : undefined
 }
 
 function CloudProjectLibrarySettingsDetails({
@@ -500,65 +495,6 @@ const cloudConflictProjectMenuItem = defineRegistryItemFactory(() => {
   }
 }, 'cloud-sync.conflict-project-menu-item')
 
-function getCloudSyncHomeProjectModifiedTime(
-  project: { updated_at?: string },
-  metadata?: CloudSyncProjectMetadataIndexEntry
-) {
-  const modified = metadata?.remoteUpdatedAt
-    ? Date.parse(metadata.remoteUpdatedAt)
-    : project.updated_at
-      ? Date.parse(project.updated_at)
-      : NaN
-
-  return Number.isNaN(modified) ? undefined : modified
-}
-
-function homeProjectEntryCloudSyncFields(
-  metadata: CloudSyncProjectMetadataIndexEntry | undefined
-): Pick<
-  HomeProjectEntryContribution,
-  | 'conflict'
-  | 'libraryId'
-  | 'libraryType'
-  | 'localProjectPath'
-  | 'status'
-  | 'syncFailure'
-> {
-  const syncFailure =
-    metadata?.lastFailure?.kind === 'remote-upload-forbidden'
-      ? metadata.lastFailure
-      : undefined
-  if (!metadata?.conflict) {
-    return {
-      libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
-      status: 'cloud-only',
-      ...(syncFailure
-        ? { syncFailure, localProjectPath: metadata?.localProjectPath }
-        : {}),
-    }
-  }
-
-  return {
-    libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-    libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
-    status: 'conflicted',
-    conflict: metadata.conflict,
-    localProjectPath: metadata.localProjectPath,
-    ...(syncFailure ? { syncFailure } : {}),
-  }
-}
-
-function shouldContributeCloudSyncMetadata(
-  metadata: CloudSyncProjectMetadataIndexEntry
-) {
-  return (
-    Boolean(metadata.conflict) ||
-    metadata.lastFailure?.kind === 'remote-upload-forbidden' ||
-    Boolean(getPreservedCloudProjectDefaultFile(metadata))
-  )
-}
-
 function remoteThumbnailCacheKey(project: RemoteProjectSummary) {
   return [
     project.id,
@@ -606,185 +542,251 @@ function pruneRemoteThumbnailState({
   }
 }
 
-const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
-  (ctx) => {
-    const cloudSync = ctx.services.signal(cloudSyncService)
-    const cloudSyncMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
-    const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
-    const requestedThumbnailKeys = new Map<string, string>()
-    let disposed = false
-    let disposeEffect: (() => void) | undefined
-    let loadId = 0
+function groupedMetadataByRemoteProjectId(
+  metadata: readonly CloudSyncProjectMetadataIndexEntry[]
+) {
+  const groups = new Map<string, CloudSyncProjectMetadataIndexEntry[]>()
+  for (const entry of metadata) {
+    if (!entry.remoteProjectId) {
+      continue
+    }
 
-    const cloudSyncHomeProjectEntries = computed<
-      HomeProjectEntryContribution[]
-    >(() => {
-      if (!cloudSyncStatus.value.enabled) {
-        return []
-      }
+    groups.set(entry.remoteProjectId, [
+      ...(groups.get(entry.remoteProjectId) ?? []),
+      entry,
+    ])
+  }
+  return groups
+}
 
-      const cloudSyncMetadataByRemoteProjectId = new Map(
-        cloudSyncMetadata.value.flatMap((metadata) =>
-          metadata.remoteProjectId
-            ? ([[metadata.remoteProjectId, metadata]] as const)
-            : []
-        )
-      )
-      const remoteProjectIds = new Set(
-        cloudSyncRemoteProjects.value.map((project) => project.id)
-      )
-      const remoteProjectEntries = cloudSyncRemoteProjects.value.map(
-        (project) => {
-          const metadata = cloudSyncMetadataByRemoteProjectId.get(project.id)
-          const name = metadata?.projectName || project.title || project.id
-          const thumbnailUrl = remoteThumbnailUrls.value.get(project.id)
-          const defaultFile = getPreservedCloudProjectDefaultFile(metadata)
+function firstCleanBaseManifest(
+  metadataEntries: readonly CloudSyncProjectMetadataIndexEntry[] | undefined
+): ProjectManifest | undefined {
+  return metadataEntries?.find(
+    (entry) => entry.baseManifest && !entry.tombstone && !entry.syncExcluded
+  )?.baseManifest
+}
 
-          return {
-            source: 'remote',
-            ...homeProjectEntryCloudSyncFields(metadata),
-            name,
-            title: metadata?.projectName || project.title,
-            remoteProjectId: project.id,
-            modified: getCloudSyncHomeProjectModifiedTime(project, metadata),
-            readWriteAccess: true,
-            ...(defaultFile ? { defaultFile } : {}),
-            ...(thumbnailUrl
-              ? {
-                  thumbnail: {
-                    type: 'remote',
-                    url: thumbnailUrl,
-                  },
-                }
-              : {}),
-          } satisfies HomeProjectEntryContribution
+async function readLocalManifestComparisons({
+  metadata,
+  realizations,
+}: {
+  metadata: readonly CloudSyncProjectMetadataIndexEntry[]
+  realizations: readonly ProjectLibraryRealization[]
+}) {
+  const comparisons = new Map<string, CloudProjectLocalManifestComparison>()
+  const metadataByPath = new Map(
+    metadata.map((entry) => [
+      normalizePathForSync(entry.localProjectPath),
+      entry,
+    ])
+  )
+  const metadataByRemoteProjectId = groupedMetadataByRemoteProjectId(metadata)
+  const realizationsByRemoteProjectId = new Map<
+    string,
+    ProjectLibraryRealization[]
+  >()
+
+  for (const realization of realizations) {
+    const remoteProjectId = realization.cloudProjectId?.trim()
+    if (!remoteProjectId) {
+      continue
+    }
+
+    realizationsByRemoteProjectId.set(remoteProjectId, [
+      ...(realizationsByRemoteProjectId.get(remoteProjectId) ?? []),
+      realization,
+    ])
+  }
+
+  await Promise.all(
+    Array.from(realizationsByRemoteProjectId.entries()).flatMap(
+      ([remoteProjectId, remoteRealizations]) => {
+        if (remoteRealizations.length < 2) {
+          return []
         }
-      )
-      const localOnlyCloudSyncEntries = cloudSyncMetadata.value
-        .filter(
-          (metadata) =>
-            !metadata.remoteProjectId ||
-            !remoteProjectIds.has(metadata.remoteProjectId)
-        )
-        .map((metadata) => {
-          const defaultFile = getPreservedCloudProjectDefaultFile(metadata)
 
-          return {
-            source: 'remote',
-            ...homeProjectEntryCloudSyncFields(metadata),
-            name: metadata.projectName,
-            title: metadata.projectName,
-            localProjectPath: metadata.localProjectPath,
-            remoteProjectId: metadata.remoteProjectId,
-            modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
-            readWriteAccess: true,
-            ...(defaultFile ? { defaultFile } : {}),
-          } satisfies HomeProjectEntryContribution
+        return remoteRealizations.map(async (realization) => {
+          const normalizedLocalProjectPath = normalizePathForSync(
+            realization.localProjectPath
+          )
+          const baseManifest =
+            metadataByPath.get(normalizedLocalProjectPath)?.baseManifest ??
+            firstCleanBaseManifest(
+              metadataByRemoteProjectId.get(remoteProjectId)
+            )
+
+          if (!baseManifest) {
+            return
+          }
+
+          try {
+            comparisons.set(normalizedLocalProjectPath, {
+              localMatchesBase: await localProjectManifestMatchesBase({
+                baseManifest,
+                localFs: fsZds,
+                projectRoot: realization.localProjectPath,
+              }),
+            })
+          } catch {
+            comparisons.set(normalizedLocalProjectPath, {
+              manifestReadable: false,
+            })
+          }
         })
+      }
+    )
+  )
 
-      return [...remoteProjectEntries, ...localOnlyCloudSyncEntries]
+  return comparisons
+}
+
+const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
+  const cloudSync = ctx.services.signal(cloudSyncService)
+  const projectLibraryRealizations = ctx.valueSpecs.signal(
+    projectLibraryRealizationsValueSpec
+  )
+  const cloudSyncMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
+  const localManifestComparisons = signal<
+    Map<string, CloudProjectLocalManifestComparison>
+  >(new Map())
+  const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
+  const requestedThumbnailKeys = new Map<string, string>()
+  let disposed = false
+  let disposeEffect: (() => void) | undefined
+  let loadId = 0
+
+  const cloudProjectRelationships = computed(() => {
+    if (!cloudSyncStatus.value.enabled) {
+      return []
+    }
+
+    return deriveCloudProjectRelationships({
+      realizations: projectLibraryRealizations.value,
+      remoteProjects: cloudSyncRemoteProjects.value,
+      metadata: cloudSyncMetadata.value,
+      localManifestComparisons: localManifestComparisons.value,
+      remoteThumbnailUrls: remoteThumbnailUrls.value,
+      preservedDefaultFiles: preservedCloudProjectDefaultFiles.value,
+      getModifiedTime: getCloudSyncProjectModifiedTime,
     })
+  })
 
-    // Defer because `effect` runs immediately, and service reads are blocked
-    // while the registry graph is still being built.
-    queueMicrotask(() => {
-      if (disposed) {
+  // Defer because `effect` runs immediately, and service reads are blocked
+  // while the registry graph is still being built.
+  queueMicrotask(() => {
+    if (disposed) {
+      return
+    }
+
+    // Keep Home cloud sync badges in sync with cloud sync metadata, even
+    // before System IO rereads local project folders.
+    disposeEffect = effect(() => {
+      const service = cloudSync.value
+      const status = cloudSyncStatus.value
+      const nextLoadId = ++loadId
+
+      if (!service || !status.enabled) {
+        cloudSyncMetadata.value = []
+        localManifestComparisons.value = new Map()
+        remoteThumbnailUrls.value = new Map()
+        requestedThumbnailKeys.clear()
         return
       }
 
-      // Keep Home cloud sync badges in sync with cloud sync metadata, even
-      // before System IO rereads local project folders.
-      disposeEffect = effect(() => {
-        const service = cloudSync.value
-        const status = cloudSyncStatus.value
-        const nextLoadId = ++loadId
+      const remoteProjects = cloudSyncRemoteProjects.value
+      const realizations = projectLibraryRealizations.value
+      pruneRemoteThumbnailState({
+        remoteProjects,
+        requestedThumbnailKeys,
+        thumbnailUrls: remoteThumbnailUrls,
+      })
 
-        if (!service || !status.enabled) {
-          cloudSyncMetadata.value = []
-          remoteThumbnailUrls.value = new Map()
-          requestedThumbnailKeys.clear()
-          return
+      for (const remoteProject of remoteProjects) {
+        const cacheKey = remoteThumbnailCacheKey(remoteProject)
+        if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
+          continue
         }
 
-        const remoteProjects = cloudSyncRemoteProjects.value
-        pruneRemoteThumbnailState({
-          remoteProjects,
-          requestedThumbnailKeys,
-          thumbnailUrls: remoteThumbnailUrls,
-        })
-
-        for (const remoteProject of remoteProjects) {
-          const cacheKey = remoteThumbnailCacheKey(remoteProject)
-          if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
-            continue
-          }
-
-          requestedThumbnailKeys.set(remoteProject.id, cacheKey)
-          service
-            .getRemoteProjectThumbnailUrl(remoteProject)
-            .then((thumbnailUrl) => {
-              if (
-                disposed ||
-                requestedThumbnailKeys.get(remoteProject.id) !== cacheKey ||
-                !thumbnailUrl
-              ) {
-                return
-              }
-
-              setRemoteThumbnailUrl(
-                remoteThumbnailUrls,
-                remoteProject.id,
-                thumbnailUrl
-              )
-            })
-            .catch((error: unknown) => {
-              if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
-                requestedThumbnailKeys.delete(remoteProject.id)
-              }
-              reportRejection(error)
-            })
-        }
-
+        requestedThumbnailKeys.set(remoteProject.id, cacheKey)
         service
-          .getProjectMetadataIndex()
-          .then((metadataIndex) => {
-            if (disposed || nextLoadId !== loadId) {
+          .getRemoteProjectThumbnailUrl(remoteProject)
+          .then((thumbnailUrl) => {
+            if (
+              disposed ||
+              requestedThumbnailKeys.get(remoteProject.id) !== cacheKey ||
+              !thumbnailUrl
+            ) {
               return
             }
 
-            cloudSyncMetadata.value = Array.from(metadataIndex.values()).filter(
-              (metadata) =>
-                shouldContributeCloudSyncMetadata(metadata) &&
-                !metadata.tombstone &&
-                !metadata.syncExcluded
+            setRemoteThumbnailUrl(
+              remoteThumbnailUrls,
+              remoteProject.id,
+              thumbnailUrl
             )
           })
           .catch((error: unknown) => {
-            if (!disposed && nextLoadId === loadId) {
-              cloudSyncMetadata.value = []
+            if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
+              requestedThumbnailKeys.delete(remoteProject.id)
             }
             reportRejection(error)
           })
-      })
-    })
+      }
 
-    return {
-      item: defineRuntimeRegistryItem({
-        id: 'cloud-sync.remote-home-project-entries',
-        provides: [
-          provide(homeProjectEntriesValueSpec, cloudSyncHomeProjectEntries, {
-            key: 'cloud-sync.remote-home-project-entries',
-          }),
-        ],
-        dispose: () => {
-          disposed = true
-          disposeEffect?.()
-        },
-      }),
-    }
-  },
-  'cloud-sync.remote-home-project-entries'
-)
+      service
+        .getProjectMetadataIndex()
+        .then((metadataIndex) => {
+          if (disposed || nextLoadId !== loadId) {
+            return
+          }
+
+          const metadata = Array.from(metadataIndex.values())
+          cloudSyncMetadata.value = metadata
+
+          readLocalManifestComparisons({
+            metadata,
+            realizations,
+          })
+            .then((comparisons) => {
+              if (disposed || nextLoadId !== loadId) {
+                return
+              }
+
+              localManifestComparisons.value = comparisons
+            })
+            .catch((error: unknown) => {
+              if (!disposed && nextLoadId === loadId) {
+                localManifestComparisons.value = new Map()
+              }
+              reportRejection(error)
+            })
+        })
+        .catch((error: unknown) => {
+          if (!disposed && nextLoadId === loadId) {
+            cloudSyncMetadata.value = []
+            localManifestComparisons.value = new Map()
+          }
+          reportRejection(error)
+        })
+    })
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.cloud-project-relationships',
+      provides: [
+        provide(cloudProjectRelationshipsValueSpec, cloudProjectRelationships, {
+          key: 'cloud-sync.cloud-project-relationships',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        disposeEffect?.()
+      },
+    }),
+  }
+}, 'cloud-sync.cloud-project-relationships')
 
 /**
  * The `cloud` project-library *type* handler (browse/create in the local
@@ -809,7 +811,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
-    invalidateConfiguredProjectLibraryEntries()
+    invalidateProjectLibraryRealizations()
   }
 
   const cloudLibraryType: ProjectLibraryTypeContribution = {
@@ -1022,33 +1024,28 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         },
       },
     },
-    readEntries: async ({ library, signal }) => {
+    readRealizations: async ({ library, signal }) => {
       const wasmInstancePromise = getWasmPromise()
       if (wasmInstancePromise instanceof Error) {
         return Promise.reject(wasmInstancePromise)
       }
 
-      const projectDirectoryPath =
-        await getCloudProjectLibraryMaterializationDirectoryPath(library)
       const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath,
+        projectDirectoryPath:
+          await getCloudProjectLibraryMaterializationDirectoryPath(library),
         wasmInstancePromise,
         signal,
       })
       if (!signal.aborted) {
         scheduleCloudProjectDirectoryNameSyncFromTitles({
           projects,
-          onProjectDirectoriesRenamed:
-            invalidateConfiguredProjectLibraryEntries,
+          onProjectDirectoriesRenamed: invalidateProjectLibraryRealizations,
         })
       }
 
-      return projects.map((project) => ({
-        ...homeProjectEntryFromProject(project),
-        libraryId: library.id,
-        libraryPath: projectDirectoryPath,
-        libraryType: library.type,
-      }))
+      return projects.map((project) =>
+        projectLibraryRealizationFromProject(project, library)
+      )
     },
   }
 
@@ -1085,7 +1082,7 @@ export const cloudSyncPlugin = createZdsPlugin({
   items: [
     cloudConflictProjectMenuItem,
     cloudSyncStatusBarItemContribution,
-    cloudSyncRemoteHomeProjectEntryContribution,
+    cloudSyncCloudProjectRelationships,
   ],
   defaultSetting: 'off',
   // On web, cloud sync is the project storage layer rather than an optional

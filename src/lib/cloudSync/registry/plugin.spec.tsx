@@ -30,11 +30,11 @@ import {
 } from '@src/lib/projectLibraries'
 import { Themes } from '@src/lib/theme'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
-  type HomeProjectEntry,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
+  cloudProjectRelationshipsValueSpec,
+  cloudSyncService,
+} from '@src/registry/contracts/cloudSync'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
   projectLibrarySettingDefaultPoliciesValueSpec,
@@ -624,9 +624,9 @@ describe('cloud sync project library', () => {
         ...getDefaultCloudProjectLibrarySetting(),
         id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
       }
-      // readEntries and createProject stay available even though cloud sync is
+      // readRealizations and createProject stay available even though cloud sync is
       // off, so a web user who is not actively syncing can still list/create.
-      expect(cloudLibraryType.readEntries).toBeDefined()
+      expect(cloudLibraryType.readRealizations).toBeDefined()
       expect(
         getProjectLibraryCreateProjectOperation(cloudLibraryType, cloudLibrary)
       ).toBeDefined()
@@ -743,7 +743,7 @@ describe('cloud sync project library', () => {
         },
         project: {
           id: 'local:/cloud/bracket',
-          source: 'both',
+          source: 'local',
           status: 'synced',
           libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
           name: 'bracket',
@@ -807,7 +807,7 @@ describe('cloud sync project library', () => {
           },
           project: {
             id: 'local:/cloud/bracket',
-            source: 'both',
+            source: 'local',
             status: 'synced',
             libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
             name: 'bracket',
@@ -954,8 +954,8 @@ describe('cloud sync project library', () => {
   })
 })
 
-describe('cloud sync home project entries', () => {
-  test('preserves the moved local default file while waiting for a remote id', async () => {
+describe('cloud sync project relationships', () => {
+  test('does not manufacture a relationship while waiting for a remote id', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'idle',
@@ -992,25 +992,14 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
-          expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
-            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-            name: 'Moved project',
-            title: 'Moved project',
-            localProjectPath: movedProjectPath,
-            defaultFile: movedDefaultFile,
-            readWriteAccess: true,
-          }),
-        ])
+        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([])
       )
     } finally {
       registry[Symbol.dispose]()
     }
   })
 
-  test('contributes remote thumbnails for cloud-only home entries', async () => {
+  test('contributes remote thumbnails for remote-only cloud relationships', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'idle',
@@ -1039,18 +1028,14 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
-            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
             name: 'Remote title',
             title: 'Remote title',
             remoteProjectId: 'remote-123',
-            thumbnail: {
-              type: 'remote',
-              url: 'https://example.test/remote-123-thumbnail.png',
-            },
+            remoteThumbnailUrl: 'https://example.test/remote-123-thumbnail.png',
+            canonicalRealization: undefined,
+            duplicateRealizations: [],
           }),
         ])
       )
@@ -1059,7 +1044,7 @@ describe('cloud sync home project entries', () => {
     }
   })
 
-  test('marks home entries with both sources as conflicted from cloud sync metadata', async () => {
+  test('marks cloud relationships as conflicted from cloud sync metadata', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'conflict',
@@ -1106,14 +1091,12 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'conflicted',
             name: 'Local project',
             title: 'Local project',
             remoteProjectId: 'remote-123',
-            localProjectPath: '/some/path/local-project',
+            canonicalRealization: undefined,
             conflict: expect.objectContaining({
               conflictProjectPath: '/some/path/local-project (cloud conflict)',
             }),
@@ -1174,14 +1157,12 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
             name: 'Local project',
             title: 'Local project',
             remoteProjectId: 'remote-123',
-            localProjectPath: '/some/path/local-project',
+            canonicalRealization: undefined,
             syncFailure: expect.objectContaining({
               kind: 'remote-upload-forbidden',
               message: 'Cloud sync cannot upload local changes.',

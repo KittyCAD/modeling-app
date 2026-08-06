@@ -18,7 +18,6 @@ import type { HideOnPlatformValue } from '@src/lib/settings/settingsTypes'
 import { isArray } from '@src/lib/utils'
 import type {
   HomeProjectEntry,
-  HomeProjectEntryContribution,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
 import type { ComponentType } from 'react'
@@ -244,10 +243,6 @@ export interface ProjectLibraryTypeContribution {
   /** Hide this type from creation/editing UI while keeping runtime support. */
   hideInSettingsOnPlatform?: HideOnPlatformValue
   operations?: ProjectLibraryTypeOperations
-  readEntries?: (input: {
-    library: ProjectLibrary
-    signal: AbortSignal
-  }) => Promise<HomeProjectEntryContribution[]>
   /**
    * Discover local project folders for one configured library. Implementations
    * return observations only; identity resolution across cloud project IDs is not
