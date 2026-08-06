@@ -89,6 +89,7 @@ export const settingsMachine = setup({
           }
         }
       | { type: 'load.project'; project: Project }
+      | { type: 'sync.project'; project: Project }
       | { type: 'reload.settings' }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -333,6 +334,10 @@ export const settingsMachine = setup({
     clearCurrentProject: assign(({ context }) => {
       return { ...context, currentProject: undefined }
     }),
+    syncCurrentProject: assign(({ context, event }) => ({
+      currentProject:
+        event.type === 'sync.project' ? event.project : context.currentProject,
+    })),
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
 
@@ -419,6 +424,11 @@ export const settingsMachine = setup({
       }),
     },
   ],
+  on: {
+    'sync.project': {
+      actions: ['syncCurrentProject'],
+    },
+  },
   states: {
     idle: {
       entry: ['setThemeClass', 'sendThemeToWatcher'],

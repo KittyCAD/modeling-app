@@ -806,6 +806,9 @@ describe('project system', () => {
       ])
 
       expect(project.projectIORefSignal.value.title).toBe('Updated bracket')
+      expect(
+        app.settings.actor.getSnapshot().context.currentProject?.title
+      ).toBe('Updated bracket')
     } finally {
       app.dispose()
     }

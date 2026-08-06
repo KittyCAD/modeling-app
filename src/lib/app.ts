@@ -428,14 +428,22 @@ export class App implements AppSubsystems {
           candidate.localProjectPath === projectIORefSignal.value.path
       )
       const title = entry ? getHomeProjectDisplayName(entry) : undefined
-      if (!title || title === syncedProjectTitle) {
-        return
+      if (title && title !== syncedProjectTitle) {
+        syncedProjectTitle = title
+        projectIORefSignal.value = {
+          ...projectIORefSignal.value,
+          title,
+        }
       }
-
-      syncedProjectTitle = title
-      projectIORefSignal.value = {
-        ...projectIORefSignal.value,
-        title,
+      const currentProject = projectIORefSignal.value
+      if (
+        this.settings.actor.getSnapshot().context.currentProject !==
+        currentProject
+      ) {
+        this.settings.actor.send({
+          type: 'sync.project',
+          project: currentProject,
+        })
       }
     })
 
