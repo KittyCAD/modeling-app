@@ -16,29 +16,39 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 export const defaultGlobalStatusBarItems = ({
+  appVersion = APP_VERSION,
   autoUpdateDownloadProgress,
   autoUpdateReady,
+  hasCloudSyncFeature,
   onRestartToUpdate,
 }: {
+  appVersion?: string
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
   autoUpdateReady?: AutoUpdateReady | null
+  hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
-  isDesktop()
-    ? {
-        id: 'version',
-        element: 'externalLink',
-        label: `v${APP_VERSION}`,
-        href: getReleaseUrl(),
-        toolTip: {
-          children: 'View the release notes on GitHub',
+  ...(appVersion && isDesktop()
+    ? [
+        {
+          id: 'version',
+          element: 'externalLink' as const,
+          label: `v${appVersion}`,
+          href: getReleaseUrl(appVersion),
+          toolTip: {
+            children: 'View this version on GitHub',
+          },
         },
-      }
-    : {
-        id: 'download-desktop-app',
-        'data-testid': 'download-desktop-app',
-        component: DownloadDesktopApp,
-      },
+      ]
+    : !isDesktop() && !hasCloudSyncFeature
+      ? [
+          {
+            id: 'download-desktop-app',
+            'data-testid': 'download-desktop-app',
+            component: DownloadDesktopApp,
+          },
+        ]
+      : []),
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {

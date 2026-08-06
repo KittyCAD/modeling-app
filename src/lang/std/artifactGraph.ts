@@ -954,12 +954,10 @@ export function coerceSelectionsToBody(
       selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
-      if (!seenBodyIds.has(selection.artifact.id)) {
-        seenBodyIds.add(selection.artifact.id)
-        bodySelections.push({
-          artifact: selection.artifact,
-          codeRef: selection.codeRef,
-        })
+      const bodyId = selection.engineEntityId ?? selection.artifact.id
+      if (!seenBodyIds.has(bodyId)) {
+        seenBodyIds.add(bodyId)
+        bodySelections.push(selection)
       }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts

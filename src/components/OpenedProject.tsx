@@ -27,6 +27,7 @@ import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
+  OPFS_CLOUD_FEATURE_FLAG,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -68,8 +69,9 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
+  const app = useApp()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    useApp()
+    app
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -86,6 +88,10 @@ export function OpenedProject() {
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+  const hasCloudSyncFeature = app.userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -368,6 +374,7 @@ export function OpenedProject() {
             ...defaultGlobalStatusBarItems({
               autoUpdateDownloadProgress,
               autoUpdateReady,
+              hasCloudSyncFeature,
               onRestartToUpdate: () => {
                 window.electron?.appRestart()
               },

@@ -325,6 +325,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            direction,
             construction,
         } => {
             let (start_x, start_x_freedom) =
@@ -356,6 +357,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    direction: *direction,
                     construction: *construction,
                 },
                 surface: surface.clone(),
@@ -693,6 +695,7 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                direction,
                 construction,
             } => {
                 let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
@@ -787,6 +790,7 @@ pub(super) fn create_segment_scene_objects(
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
+                            direction: *direction,
                         }),
                     },
                     label: Default::default(),

@@ -40,6 +40,7 @@ use crate::execution::SegmentKind;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchSurface;
+use crate::execution::SolverArc;
 use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
 use crate::execution::UnsolvedExpr;
@@ -77,6 +78,7 @@ use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -5120,6 +5122,7 @@ impl Node<BinaryExpression> {
                                 Arc {
                                     object_id: ObjectId,
                                     end: [crate::execution::SketchVarId; 2],
+                                    direction: ArcDirection,
                                 },
                                 Circle {
                                     object_id: ObjectId,
@@ -5185,6 +5188,7 @@ impl Node<BinaryExpression> {
                                         center_object_id,
                                         start_object_id,
                                         end,
+                                        direction,
                                         ..
                                     } if *center_object_id == center.object_id
                                         && *start_object_id == start.object_id =>
@@ -5198,6 +5202,7 @@ impl Node<BinaryExpression> {
                                         Some(CircularSegmentConstraintTarget::Arc {
                                             object_id: seg.object_id,
                                             end: [end_x_var, end_y_var],
+                                            direction: *direction,
                                         })
                                     }
                                     UnsolvedSegmentKind::Circle {
@@ -5229,16 +5234,15 @@ impl Node<BinaryExpression> {
                                 start.vars.y.to_constraint_id(range)?,
                             );
                             let solver_constraint = match target_segment {
-                                CircularSegmentConstraintTarget::Arc { end, .. } => {
-                                    let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
-                                        center: center_point,
-                                        start: start_point,
-                                        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                            end[0].to_constraint_id(range)?,
-                                            end[1].to_constraint_id(range)?,
-                                        ),
-                                    };
-                                    Constraint::ArcRadius(solver_arc, radius_value)
+                                CircularSegmentConstraintTarget::Arc { end, direction, .. } => {
+                                    let solver_arc = SolverArc::new(
+                                        [center.vars.x, center.vars.y],
+                                        [start.vars.x, start.vars.y],
+                                        end,
+                                        direction,
+                                        range,
+                                    )?;
+                                    solver_arc.radius_constraint(radius_value)
                                 }
                                 CircularSegmentConstraintTarget::Circle { .. } => {
                                     let sketch_var_ty = solver_numeric_type(exec_state);
