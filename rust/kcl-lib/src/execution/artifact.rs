@@ -1625,10 +1625,13 @@ fn artifacts_to_update(
                 .unwrap_or(source_entity_id);
             let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
-            let pattern_source_body_id = if artifacts.contains_key(&source_id) {
-                None
-            } else {
+            // Only solid clones provide this extra body identity. Without
+            // this gate, cloning a lazy 2D pattern copy can resolve through
+            // its source Path to a Sweep and fabricate a body artifact.
+            let pattern_source_body_id = if entity_clone_info.is_some() && !artifacts.contains_key(&source_id) {
                 pattern_source_body_id_for_copy(artifacts, source_id)
+            } else {
+                None
             };
             let source_artifact_id = pattern_source_body_id.unwrap_or(source_id);
             let Some(source_artifact) = artifacts.get(&source_artifact_id) else {

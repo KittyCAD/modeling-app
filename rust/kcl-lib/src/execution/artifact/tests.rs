@@ -1321,6 +1321,93 @@ fn entity_clone_resolves_pattern_copy_lazily() {
 }
 
 #[test]
+fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
+    let source_path_id = ArtifactId::new(Uuid::new_v4());
+    let source_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let clone_id = Uuid::new_v4();
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_path_id,
+        Artifact::Path(Path {
+            id: source_path_id,
+            sub_type: PathSubType::Sketch,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: vec![pattern_id],
+        }),
+    );
+    artifacts.insert(
+        source_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: source_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: source_path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: code_ref.clone(),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: ArtifactSweepMethod::New,
+            consumed: false,
+            pattern_ids: vec![pattern_id],
+        }),
+    );
+    artifacts.insert(
+        pattern_id,
+        Artifact::Pattern(Pattern {
+            id: pattern_id,
+            sub_type: PatternSubType::Linear,
+            source_id: source_path_id,
+            copy_ids: vec![ArtifactId::new(copy_id)],
+            copy_face_ids: Vec::new(),
+            copy_edge_ids: Vec::new(),
+            code_ref,
+        }),
+    );
+
+    let artifact_command = ArtifactCommand {
+        cmd_id: clone_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(copy_id).build()),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert!(
+        updated.is_empty(),
+        "Expected a cloned 2D pattern copy not to create body artifacts, got: {updated:?}"
+    );
+}
+
+#[test]
 fn primitive_edge_does_not_replace_existing_segment_artifact() {
     let shared_id = ArtifactId::new(Uuid::new_v4());
     let path_id = ArtifactId::new(Uuid::new_v4());
