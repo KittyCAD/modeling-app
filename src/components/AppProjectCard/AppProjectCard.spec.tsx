@@ -314,7 +314,7 @@ describe('ProjectCard', () => {
     expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
   })
 
-  test('clarifies that deleting a cloud-backed directory project keeps the cloud version', () => {
+  test('clarifies that deleting a cloud-backed non-cloud library project keeps the cloud version', () => {
     renderProjectCard({
       project: {
         ...cloudProject,

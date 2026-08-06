@@ -2,7 +2,7 @@ import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { DIRECTORY_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectEntry,
   HomeProjectEntryContribution,
@@ -13,23 +13,25 @@ export function getHomeProjectDisplayName(project: HomeProjectEntry) {
   return (project.title || project.name).replace(FILE_EXT, '')
 }
 
+export function shouldDeleteRemoteOnHomeProjectDelete(
+  project: Pick<HomeProjectEntry, 'libraryType' | 'remoteProjectId'>
+) {
+  return Boolean(
+    project.remoteProjectId &&
+      project.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
+  )
+}
+
 export function shouldPreserveRemoteOnHomeProjectDelete(
   project: Pick<
     HomeProjectEntry,
     'libraryType' | 'localProjectPath' | 'remoteProjectId'
   >
-): project is Pick<
-  HomeProjectEntry,
-  'libraryType' | 'localProjectPath' | 'remoteProjectId'
-> & {
-  libraryType: typeof DIRECTORY_PROJECT_LIBRARY_TYPE
-  localProjectPath: string
-  remoteProjectId: string
-} {
+): boolean {
   return Boolean(
     project.localProjectPath &&
       project.remoteProjectId &&
-      project.libraryType === DIRECTORY_PROJECT_LIBRARY_TYPE
+      !shouldDeleteRemoteOnHomeProjectDelete(project)
   )
 }
 

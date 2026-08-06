@@ -567,7 +567,7 @@ describe('home project actions', () => {
     expect(systemIO.send).not.toHaveBeenCalled()
   })
 
-  it('deletes only local state for a cloud-backed directory project', async () => {
+  it('deletes only local state for a cloud-backed project outside a cloud-type library', async () => {
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const removeProjectDirectory = vi

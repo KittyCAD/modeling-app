@@ -530,7 +530,7 @@ describe('project command config', () => {
     }
   })
 
-  it('clarifies command-bar deletion for cloud-backed directory projects', () => {
+  it('clarifies command-bar deletion for cloud-backed non-cloud library projects', () => {
     const homeProject = {
       ...createHomeProject({
         id: 'remote:remote-123',
