@@ -1,4 +1,5 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
+import CommandBarAxis3DInput from '@src/components/CommandBar/CommandBarAxis3DInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
@@ -10,7 +11,7 @@ import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextar
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import { useApp } from '@src/lib/boot'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import type { Axis3DCommandValue, CommandArgument } from '@src/lib/commandTypes'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -133,6 +134,22 @@ function ArgumentInput({
       return executingEditor ? (
         <CommandBarKclInput
           arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+          executingEditor={executingEditor}
+        />
+      ) : (
+        <NoExecutingEditorWarning />
+      )
+    case 'axis3d':
+      return executingEditor ? (
+        <CommandBarAxis3DInput
+          arg={
+            arg as CommandArgument<Axis3DCommandValue> & {
+              inputType: 'axis3d'
+              name: string
+            }
+          }
           stepBack={stepBack}
           onSubmit={onSubmit}
           executingEditor={executingEditor}

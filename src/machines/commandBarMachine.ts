@@ -522,6 +522,7 @@ export const commandBarMachine = setup({
               typeof argValue !== typeof resolvedDefaultValue &&
               !(
                 argConfig.inputType === 'kcl' ||
+                argConfig.inputType === 'axis3d' ||
                 argConfig.inputType === 'vector3d' ||
                 argConfig.inputType === 'vector2d' ||
                 argConfig.skip
@@ -532,6 +533,7 @@ export const commandBarMachine = setup({
               !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
             const hasInvalidOptionsValue =
               isRequired &&
+              argConfig.inputType !== 'axis3d' &&
               'options' in argConfig &&
               !(
                 typeof argConfig.options === 'function'

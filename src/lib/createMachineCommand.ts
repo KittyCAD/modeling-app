@@ -252,6 +252,15 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'axis3d') {
+    return {
+      inputType: arg.inputType,
+      options: arg.options,
+      defaultValue: arg.defaultValue,
+      vectorDefaultValue: arg.vectorDefaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'axis3d' }
   } else if (arg.inputType === 'vector3d') {
     return {
       inputType: arg.inputType,
