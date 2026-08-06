@@ -99,8 +99,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         3
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#ede855"
+      "componentId": 0
     },
     {
       "id": 7,
@@ -111,8 +110,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ],
       "endpointIds": [],
       "construction": false,
-      "componentId": 1,
-      "renderedColor": "#d94e9a"
+      "componentId": 1
     }
   ],
   "constraints": [

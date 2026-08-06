@@ -173,8 +173,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         2
       ],
       "construction": false,
-      "componentId": 0,
-      "renderedColor": "#eb599b"
+      "componentId": 0
     },
     {
       "id": 7,
@@ -189,8 +188,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         5
       ],
       "construction": false,
-      "componentId": 1,
-      "renderedColor": "#d94e9a"
+      "componentId": 1
     },
     {
       "id": 10,
@@ -201,8 +199,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ],
       "endpointIds": [],
       "construction": false,
-      "componentId": 2,
-      "renderedColor": "#4f6ed1"
+      "componentId": 2
     },
     {
       "id": 15,
@@ -218,8 +215,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         14
       ],
       "construction": false,
-      "componentId": 3,
-      "renderedColor": "#6ded32"
+      "componentId": 3
     }
   ],
   "constraints": [],
