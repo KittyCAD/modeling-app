@@ -17,7 +17,7 @@ import {
 
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isErr } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
@@ -61,7 +61,16 @@ type MlCopilotUserRequest = Omit<
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
   active_file?: string
+  turn_id?: string
+  engine_api_call_id?: string
 }
+
+export const createZookeeperTurnCorrelation = (
+  engineApiCallId: string | undefined
+) => ({
+  turn_id: uuidv4(),
+  ...(engineApiCallId ? { engine_api_call_id: engineApiCallId } : {}),
+})
 
 type MlCopilotProjectContextRequest = Extract<
   MlCopilotClientMessage,
@@ -1281,6 +1290,7 @@ export const mlEphantManagerMachine = setup({
 
       const request: MlCopilotUserRequest = {
         type: 'user',
+        ...createZookeeperTurnCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
         ...(requestData.body.source_ranges !== undefined

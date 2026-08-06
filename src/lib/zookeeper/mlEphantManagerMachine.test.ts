@@ -3,6 +3,7 @@ import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperTurnCorrelation,
   type MlCopilotModeOption,
   MlEphantConversationToMarkdown,
   type MlEphantManagerContext,
@@ -113,6 +114,26 @@ type SetupActorInput = {
 }
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
+
+describe('createZookeeperTurnCorrelation', () => {
+  it('creates a unique turn ID and includes the Engine API call ID', () => {
+    const first = createZookeeperTurnCorrelation('engine-api-call-id')
+    const second = createZookeeperTurnCorrelation('engine-api-call-id')
+
+    expect(first.turn_id).not.toBe(second.turn_id)
+    expect(first.turn_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    )
+    expect(first.engine_api_call_id).toBe('engine-api-call-id')
+  })
+
+  it('omits the Engine API call ID before an Engine session exists', () => {
+    expect(createZookeeperTurnCorrelation(undefined)).not.toHaveProperty(
+      'engine_api_call_id'
+    )
+  })
+})
+
 const completedConversation: Conversation = {
   exchanges: [
     {
