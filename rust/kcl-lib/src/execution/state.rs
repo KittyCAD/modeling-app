@@ -592,6 +592,7 @@ impl ExecState {
             .unwrap_or(&self.mod_local.settings.kcl_version)
     }
 
+    #[cfg(test)]
     pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
         self.global.deprecation_version_override = version.map(str::to_owned);
     }

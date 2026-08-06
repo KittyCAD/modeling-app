@@ -143,10 +143,11 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute(
     ctx: &ExecutorContext,
     program: Program,
-    deprecation_version_override: Option<&str>,
+    _deprecation_version_override: Option<&str>,
 ) -> Result<(ExecState, EnvironmentRef), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
-    exec_state.set_deprecation_version_override(deprecation_version_override);
+    #[cfg(test)]
+    exec_state.set_deprecation_version_override(_deprecation_version_override);
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
         #[cfg(feature = "snapshot-engine-responses")]
