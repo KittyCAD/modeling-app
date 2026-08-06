@@ -46,8 +46,7 @@ export type CloudSyncRegistryService = {
   /**
    * Materialize a remote cloud project into the local library directory the
    * caller is opening it from. `targetProjectDirectoryPath` is the resolved
-   * local path of that library; when omitted the engine falls back to the
-   * configured project directory.
+   * local path of that owning cloud library.
    */
   ensureProjectLocallySynced: (
     remoteProjectId: string,
