@@ -45,9 +45,11 @@ export type ArgumentFieldProps<Item extends SelectionListItem> = {
   controlStyle?: 'select' | 'segmented'
   compactSelection?: boolean
   hideLabel?: boolean
+  orderedSelection?: boolean
   onChange: (value: unknown) => void
   onStartSelecting?: () => void
   onRemoveSelection?: (item: Item) => void
+  onMoveSelection?: (item: Item, direction: 'up' | 'down') => void
   onClearSelection?: () => void
 }
 
@@ -99,9 +101,11 @@ export function ArgumentField<Item extends SelectionListItem>({
   controlStyle = 'select',
   compactSelection = false,
   hideLabel = false,
+  orderedSelection = false,
   onChange,
   onStartSelecting,
   onRemoveSelection,
+  onMoveSelection,
   onClearSelection,
 }: ArgumentFieldProps<Item>) {
   const fieldClassName = 'flex flex-col gap-1'
@@ -256,6 +260,12 @@ export function ArgumentField<Item extends SelectionListItem>({
               isActive={isSelecting}
               onClear={disabled ? undefined : onClearSelection}
               compact={compactSelection}
+              ordered={orderedSelection}
+              onMove={
+                disabled
+                  ? undefined
+                  : (item, direction) => onMoveSelection?.(item, direction)
+              }
             />
             {!compactSelection && !disabled && !isSelecting && (
               <p className="mt-1.5 mb-0 border-chalkboard-20 border-t pt-1.5 text-[10px] leading-tight text-chalkboard-60 dark:border-chalkboard-70 dark:text-chalkboard-40">

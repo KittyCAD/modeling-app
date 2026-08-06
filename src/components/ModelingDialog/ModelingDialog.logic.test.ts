@@ -3,8 +3,12 @@ import {
   invalidReviewValidationState,
   isBodyOnlySelectionArgument,
   type ModelingDialogSelectionField,
+  moveSelectionInSequence,
   type SelectionCommandArgument,
+  shouldResolveDialogDefaultValue,
 } from '@src/components/ModelingDialog/ModelingDialog.logic'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
 const selectionArg = {
@@ -65,6 +69,57 @@ describe('modeling dialog body selection coercion', () => {
     } as SelectionCommandArgument
 
     expect(isBodyOnlySelectionArgument(arg)).toBe(false)
+  })
+})
+
+describe('modeling dialog defaults', () => {
+  it('can prepopulate a hidden conditional field only in the dialog', () => {
+    const arg = {
+      inputType: 'kcl',
+      required: false,
+      defaultValue: '45deg',
+      dialog: { prepopulate: true },
+    } as CommandArgument<unknown>
+
+    expect(shouldResolveDialogDefaultValue(arg, false)).toBe(true)
+    expect(arg.prepopulate).toBeUndefined()
+  })
+})
+
+describe('ordered dialog selections', () => {
+  it('moves a selection without mutating the captured value', () => {
+    const source = {
+      graphSelections: [{ id: 'first' }, { id: 'second' }, { id: 'third' }],
+      otherSelections: [],
+    } as unknown as Selections
+
+    const moved = moveSelectionInSequence(source, 'graphSelections', 1, 'up')
+
+    expect(moved?.graphSelections).toEqual([
+      source.graphSelections[1],
+      source.graphSelections[0],
+      source.graphSelections[2],
+    ])
+    expect(source.graphSelections).toEqual([
+      { id: 'first' },
+      { id: 'second' },
+      { id: 'third' },
+    ])
+  })
+
+  it('does not cross the graph and engine selection sequences', () => {
+    const source = {
+      graphSelections: [{ id: 'graph' }],
+      otherSelections: [{ id: 'engine-1' }, { id: 'engine-2' }],
+    } as unknown as Selections
+
+    const moved = moveSelectionInSequence(source, 'otherSelections', 1, 'up')
+
+    expect(moved?.graphSelections).toEqual(source.graphSelections)
+    expect(moved?.otherSelections).toEqual([
+      source.otherSelections[1],
+      source.otherSelections[0],
+    ])
   })
 })
 

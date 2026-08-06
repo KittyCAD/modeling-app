@@ -78,6 +78,10 @@ export type CommandArgumentDialogConfig = {
   selectionHeading?: string
   selectionEmptyLabel?: string
   selectionHint?: string
+  /** Show Start/End roles and allow the selection sequence to be reordered. */
+  orderedSelection?: boolean
+  /** Resolve this field's default into the dialog draft while it is hidden. */
+  prepopulate?: boolean
 }
 type CommandArgumentRequired<C> =
   | boolean

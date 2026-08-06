@@ -3,6 +3,8 @@ import type {
   CommandReviewValidationDetails,
   CommandReviewValidationError,
 } from '@src/lib/commandTypes'
+import { isArray } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type SelectionCommandArgument = Extract<
   CommandArgument<unknown>,
@@ -43,6 +45,58 @@ export function isBodyOnlySelectionArgument(
         type === 'helix'
     )
   )
+}
+
+export function shouldResolveDialogDefaultValue(
+  arg: CommandArgument<unknown>,
+  isRequired: boolean
+): boolean {
+  return (
+    isRequired || !!arg.prepopulate || !!arg.skip || !!arg.dialog?.prepopulate
+  )
+}
+
+export function moveSelectionInSequence(
+  value: unknown,
+  source: 'graphSelections' | 'otherSelections',
+  selectionIndex: number,
+  direction: 'up' | 'down'
+): Selections | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined
+  }
+
+  const partialSelection = value as Partial<Selections>
+  const graphSelections = isArray(partialSelection.graphSelections)
+    ? partialSelection.graphSelections
+    : []
+  const otherSelections = isArray(partialSelection.otherSelections)
+    ? partialSelection.otherSelections
+    : []
+  const selectionsToMove = [
+    ...(source === 'graphSelections' ? graphSelections : otherSelections),
+  ]
+  const targetIndex = selectionIndex + (direction === 'up' ? -1 : 1)
+
+  if (
+    selectionIndex < 0 ||
+    selectionIndex >= selectionsToMove.length ||
+    targetIndex < 0 ||
+    targetIndex >= selectionsToMove.length
+  ) {
+    return value as Selections
+  }
+
+  const selectionToMove = selectionsToMove[selectionIndex]
+  selectionsToMove[selectionIndex] = selectionsToMove[targetIndex]
+  selectionsToMove[targetIndex] = selectionToMove
+
+  return {
+    graphSelections:
+      source === 'graphSelections' ? selectionsToMove : graphSelections,
+    otherSelections:
+      source === 'otherSelections' ? selectionsToMove : otherSelections,
+  } as Selections
 }
 
 export function getActiveSelectionFieldName(

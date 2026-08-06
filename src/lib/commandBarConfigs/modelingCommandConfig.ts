@@ -12,6 +12,10 @@ import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/model
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import {
+  getChamferType,
+  normalizeChamferDialogArguments,
+} from '@src/lib/commandBarConfigs/chamferDialog'
+import {
   getExtrudeDirectionMode,
   getExtrudeExtentType,
   hasExtrudeDialogValue,
@@ -35,6 +39,12 @@ import {
   hasRevolveDialogValue,
   normalizeRevolveDialogArguments,
 } from '@src/lib/commandBarConfigs/revolveDialog'
+import {
+  getSweepProfileOrientation,
+  getSweepProfilePosition,
+  hasLegacySweepAlignment,
+  normalizeSweepDialogArguments,
+} from '@src/lib/commandBarConfigs/sweepDialog'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -974,6 +984,35 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeSweepDialogArguments,
+      groups: [
+        {
+          id: 'profile',
+          title: 'Profile',
+        },
+        {
+          id: 'path',
+          title: 'Path',
+        },
+        {
+          id: 'alignment',
+          title: 'Alignment',
+          description:
+            'Position and orient the profile at the start of the path.',
+        },
+        {
+          id: 'result',
+          title: 'Result',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Sweep
     ),
@@ -982,6 +1021,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         sketches: {
           inputType: 'selection',
           displayName: 'Profiles',
+          dialog: {
+            group: 'profile',
+            selectionEmptyLabel: 'Select profiles',
+            compactSelection: true,
+            hideLabel: true,
+          },
           selectionTypes: [
             'solid2d',
             'segment',
@@ -995,6 +1040,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         path: {
           inputType: 'selection',
+          displayName: 'Path',
+          dialog: {
+            group: 'path',
+            selectionEmptyLabel: 'Select a path',
+            compactSelection: true,
+            hideLabel: true,
+          },
           selectionTypes: ['segment', 'path', 'helix'],
           clearSelectionFirst: true,
           multiple: true,
@@ -1002,30 +1054,154 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         relativeTo: {
           inputType: 'options',
+          displayName: 'Legacy alignment',
+          hidden: (context) =>
+            isUsingModelingDialog(context)
+              ? !hasLegacySweepAlignment(context.argumentsToSubmit)
+              : !isEditingNode(context) ||
+                context.argumentsToSubmit.relativeTo === undefined,
           options: [
-            { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
-            { name: 'Trajectory Curve', value: 'TRAJECTORY' },
+            { name: 'Sketch plane', value: 'SKETCH_PLANE' },
+            { name: 'Trajectory curve', value: 'TRAJECTORY' },
           ],
+          dialog: {
+            group: 'alignment',
+            order: -20,
+            controlStyle: 'segmented',
+          },
+        },
+        profilePosition: {
+          inputType: 'options',
+          displayName: 'Position',
+          required: (context) =>
+            isUsingModelingDialog(context) &&
+            !hasLegacySweepAlignment(context.argumentsToSubmit) &&
+            (!isEditingNode(context) ||
+              typeof context.argumentsToSubmit.translateProfileToPath ===
+                'boolean'),
+          skip: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => getSweepProfilePosition(argumentsToSubmit),
+          hidden: (context) =>
+            !isUsingModelingDialog(context) ||
+            hasLegacySweepAlignment(context.argumentsToSubmit),
+          options: [
+            { name: 'Original', value: 'original' },
+            { name: 'Move to path', value: 'path' },
+          ],
+          dialog: {
+            group: 'alignment',
+            order: -10,
+            controlStyle: 'segmented',
+          },
+        },
+        profileOrientation: {
+          inputType: 'options',
+          displayName: 'Orientation',
+          required: (context) =>
+            isUsingModelingDialog(context) &&
+            !hasLegacySweepAlignment(context.argumentsToSubmit) &&
+            (!isEditingNode(context) ||
+              typeof context.argumentsToSubmit.orientProfilePerpendicular ===
+                'boolean'),
+          skip: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => getSweepProfileOrientation(argumentsToSubmit),
+          hidden: (context) =>
+            !isUsingModelingDialog(context) ||
+            hasLegacySweepAlignment(context.argumentsToSubmit),
+          options: [
+            { name: 'Original', value: 'original' },
+            { name: 'Perpendicular', value: 'perpendicular' },
+          ],
+          dialog: {
+            group: 'alignment',
+            order: 0,
+            controlStyle: 'segmented',
+          },
         },
         translateProfileToPath: {
           inputType: 'boolean',
           required: false,
+          hidden: (context) => isUsingModelingDialog(context),
+          dialog: {
+            group: 'alignment',
+          },
         },
         orientProfilePerpendicular: {
           inputType: 'boolean',
           required: false,
+          hidden: (context) => isUsingModelingDialog(context),
+          dialog: {
+            group: 'alignment',
+          },
+        },
+        sectional: {
+          inputType: 'boolean',
+          displayName: 'Section by path segments',
+          description: 'Split the sweep at each path segment.',
+          required: false,
+          dialog: {
+            group: 'advanced',
+            order: 0,
+            controlStyle: 'segmented',
+          },
+        },
+        tolerance: {
+          displayName: 'Tolerance',
+          description:
+            'Leave unchanged unless the sweep needs a custom geometric tolerance.',
+          dialog: {
+            group: 'advanced',
+            order: 10,
+          },
+        },
+        tagStart: {
+          displayName: 'Start face tag',
+          dialog: {
+            group: 'advanced',
+            order: 20,
+          },
+        },
+        tagEnd: {
+          displayName: 'End face tag',
+          dialog: {
+            group: 'advanced',
+            order: 30,
+          },
         },
         bodyType: {
           inputType: 'options',
+          displayName: 'Output',
           required: profileSelectionRequiresBodyType,
+          hidden: (context) =>
+            isUsingModelingDialog(context) &&
+            !profileSelectionRequiresBodyType(context) &&
+            !hasExtrudeDialogValue(context.argumentsToSubmit.bodyType),
           options: kclBodyTypeOptions,
+          dialog: {
+            group: 'result',
+            order: 0,
+            controlStyle: 'segmented',
+          },
         },
         version: {
           inputType: 'kcl',
+          displayName: 'Algorithm version',
           description:
             'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
           defaultValue: '2',
           required: false,
+          dialog: {
+            group: 'advanced',
+            order: 40,
+          },
         },
       },
     }),
@@ -1034,6 +1210,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      groups: [
+        {
+          id: 'profiles',
+          title: 'Profiles',
+        },
+        {
+          id: 'result',
+          title: 'Result',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Loft
     ),
@@ -1042,14 +1236,83 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         sketches: {
           inputType: 'selection',
           displayName: 'Profiles',
+          description:
+            'Select profiles from start to end. Their order defines the loft.',
+          dialog: {
+            group: 'profiles',
+            selectionEmptyLabel: 'Select at least two profiles',
+            compactSelection: true,
+            hideLabel: true,
+            orderedSelection: true,
+          },
           selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
         bodyType: {
           inputType: 'options',
+          displayName: 'Output',
           required: profileSelectionRequiresBodyType,
+          hidden: (context) =>
+            isUsingModelingDialog(context) &&
+            !profileSelectionRequiresBodyType(context) &&
+            !hasExtrudeDialogValue(context.argumentsToSubmit.bodyType),
           options: kclBodyTypeOptions,
+          dialog: {
+            group: 'result',
+            order: 0,
+            controlStyle: 'segmented',
+          },
+        },
+        vDegree: {
+          displayName: 'Interpolation degree',
+          description: 'Interpolation degree in the loft direction.',
+          dialog: {
+            group: 'advanced',
+            order: 0,
+          },
+        },
+        bezApproximateRational: {
+          inputType: 'boolean',
+          displayName: 'Approximate rational curves',
+          description: 'Reduce banding when lofting between arcs and non-arcs.',
+          required: false,
+          dialog: {
+            group: 'advanced',
+            order: 10,
+            controlStyle: 'segmented',
+          },
+        },
+        baseCurveIndex: {
+          displayName: 'Base profile index',
+          description: 'Override the automatically chosen base profile.',
+          dialog: {
+            group: 'advanced',
+            order: 20,
+          },
+        },
+        tolerance: {
+          displayName: 'Tolerance',
+          description:
+            'Leave unchanged unless the loft needs a custom geometric tolerance.',
+          dialog: {
+            group: 'advanced',
+            order: 30,
+          },
+        },
+        tagStart: {
+          displayName: 'Start face tag',
+          dialog: {
+            group: 'advanced',
+            order: 40,
+          },
+        },
+        tagEnd: {
+          displayName: 'End face tag',
+          dialog: {
+            group: 'advanced',
+            order: 50,
+          },
         },
       },
     }),
@@ -1884,6 +2147,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
+    dialogLayout: {
+      showCommandDescription: false,
+      normalizeArguments: normalizeChamferDialogArguments,
+      groups: [
+        {
+          id: 'selection',
+          title: 'Edges',
+        },
+        {
+          id: 'size',
+          title: 'Size',
+        },
+        {
+          id: 'advanced',
+          title: 'More options',
+          collapsible: true,
+        },
+      ],
+    },
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Chamfer
     ),
@@ -1893,6 +2175,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           selection: {
             inputType: 'selection',
+            displayName: 'Edges',
+            dialog: {
+              group: 'selection',
+              selectionEmptyLabel: 'Select edges',
+              compactSelection: true,
+              hideLabel: true,
+            },
             selectionTypes: [
               'segment',
               'sweepEdge',
@@ -1904,19 +2193,85 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             skip: false,
             hidden: isEditingNodeSelection,
           },
+          chamferType: {
+            inputType: 'options',
+            displayName: 'Type',
+            required: isUsingModelingDialog,
+            skip: true,
+            defaultValue: ({
+              argumentsToSubmit,
+            }: {
+              argumentsToSubmit: Record<string, unknown>
+            }) => getChamferType(argumentsToSubmit),
+            hidden: (context) => !isUsingModelingDialog(context),
+            options: [
+              { name: 'Equal distance', value: 'equalDistance' },
+              { name: 'Two distances', value: 'twoDistances' },
+              { name: 'Distance + angle', value: 'distanceAndAngle' },
+            ],
+            dialog: {
+              group: 'size',
+              order: -10,
+              controlStyle: 'select',
+            },
+          },
           length: {
+            displayName: 'Distance',
+            description: 'Primary chamfer distance.',
             defaultValue: KCL_DEFAULT_LENGTH,
+            dialog: {
+              group: 'size',
+              order: 0,
+            },
           },
           secondLength: {
+            displayName: 'Second distance',
+            description: 'Distance cut from the second face.',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getChamferType(context.argumentsToSubmit) === 'twoDistances',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getChamferType(context.argumentsToSubmit) !== 'twoDistances',
             defaultValue: KCL_DEFAULT_LENGTH,
+            dialog: {
+              group: 'size',
+              order: 10,
+              prepopulate: true,
+            },
           },
           angle: {
-            defaultValue: KCL_DEFAULT_DEGREE,
+            displayName: 'Angle',
+            description: 'Greater than 0deg and less than 90deg.',
+            required: (context) =>
+              isUsingModelingDialog(context) &&
+              getChamferType(context.argumentsToSubmit) === 'distanceAndAngle',
+            hidden: (context) =>
+              isUsingModelingDialog(context) &&
+              getChamferType(context.argumentsToSubmit) !== 'distanceAndAngle',
+            defaultValue: '45deg',
+            dialog: {
+              group: 'size',
+              order: 10,
+              prepopulate: true,
+            },
+          },
+          tag: {
+            displayName: 'Chamfer tag',
+            dialog: {
+              group: 'advanced',
+              order: 0,
+            },
           },
           version: {
+            displayName: 'Algorithm version',
             description:
               'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
             defaultValue: '1',
+            dialog: {
+              group: 'advanced',
+              order: 10,
+            },
           },
         },
       }

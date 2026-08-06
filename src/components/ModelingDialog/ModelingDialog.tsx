@@ -15,8 +15,10 @@ import {
   invalidReviewValidationState,
   isBodyOnlySelectionArgument,
   isSelectionArgument,
+  moveSelectionInSequence,
   type ReviewValidationState,
   type SelectionCommandArgument,
+  shouldResolveDialogDefaultValue,
 } from '@src/components/ModelingDialog/ModelingDialog.logic'
 import {
   getKclInputValue,
@@ -383,13 +385,6 @@ function resolveDialogGroups(
     }))
 }
 
-function shouldResolveDefaultValue(
-  arg: CommandArgument<unknown>,
-  isRequired: boolean
-): boolean {
-  return isRequired || !!arg.prepopulate || !!arg.skip
-}
-
 function resolveContextValue(
   value: unknown,
   context: CommandBarContext
@@ -477,12 +472,17 @@ function getSelectionListItems(
   }
 
   const items: CapturedSelectionListItem[] = []
+  const canReorder =
+    selection.graphSelections.length === 0 ||
+    selection.otherSelections.length === 0
 
   selection.graphSelections.forEach((graphSelection, index) => {
     items.push({
       id: `graph-${index}`,
       source: 'graphSelections',
       index,
+      canMoveUp: canReorder && index > 0,
+      canMoveDown: canReorder && index < selection.graphSelections.length - 1,
       label: getSelectionItemLabel(ast, {
         graphSelections: [graphSelection],
         otherSelections: [],
@@ -495,6 +495,8 @@ function getSelectionListItems(
       id: `other-${index}`,
       source: 'otherSelections',
       index,
+      canMoveUp: canReorder && index > 0,
+      canMoveDown: canReorder && index < selection.otherSelections.length - 1,
       label: getSelectionItemLabel(ast, {
         graphSelections: [],
         otherSelections: [otherSelection],
@@ -686,7 +688,7 @@ export function ModelingDialog() {
         )
         const defaultValue =
           existingValue === undefined &&
-          shouldResolveDefaultValue(arg, isRequired)
+          shouldResolveDialogDefaultValue(arg, isRequired)
             ? await resolveDefaultValue(
                 arg,
                 contextWithDraft,
@@ -962,6 +964,37 @@ export function ModelingDialog() {
     [markArgumentDirty, modelingSend, selectionRanges]
   )
 
+  const moveSceneSelection = useCallback(
+    (
+      argName: string,
+      source: CapturedSelectionListItem['source'],
+      selectionIndex: number,
+      direction: 'up' | 'down',
+      selection: Selections | undefined = selectionRanges
+    ) => {
+      const nextSelection = moveSelectionInSequence(
+        selection,
+        source,
+        selectionIndex,
+        direction
+      )
+      if (!nextSelection) {
+        return
+      }
+
+      markArgumentDirty(argName)
+      setActiveSelectionArgName(argName)
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: nextSelection,
+        },
+      })
+    },
+    [markArgumentDirty, modelingSend, selectionRanges]
+  )
+
   const clearSceneSelection = useCallback(
     (argName: string) => {
       markArgumentDirty(argName)
@@ -1161,7 +1194,7 @@ export function ModelingDialog() {
 
         if (
           (value === undefined || value === '') &&
-          shouldResolveDefaultValue(arg, isRequired)
+          shouldResolveDialogDefaultValue(arg, isRequired)
         ) {
           const defaultValue = await resolveDefaultValue(
             arg,
@@ -1541,6 +1574,7 @@ export function ModelingDialog() {
         selectionHint={arg.dialog?.selectionHint}
         compactSelection={arg.dialog?.compactSelection}
         hideLabel={arg.dialog?.hideLabel}
+        orderedSelection={arg.dialog?.orderedSelection}
         isSelecting={isActivelySelecting}
         currentSelectionLabel={selectionSummary(
           kclManager.astSignal.value,
@@ -1563,6 +1597,16 @@ export function ModelingDialog() {
             argName,
             item.source,
             item.index,
+            capturedSelection
+          )
+        }}
+        onMoveSelection={(item, direction) => {
+          startSelectingArgument(argName, arg)
+          moveSceneSelection(
+            argName,
+            item.source,
+            item.index,
+            direction,
             capturedSelection
           )
         }}

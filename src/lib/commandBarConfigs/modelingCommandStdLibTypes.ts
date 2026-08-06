@@ -1,18 +1,23 @@
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
+import type { ChamferType } from '@src/lib/commandBarConfigs/chamferDialog'
 import type {
   ExtrudeDirectionMode,
   ExtrudeExtentType,
 } from '@src/lib/commandBarConfigs/extrudeDialog'
 import type {
+  STD_LIB_COMMANDS,
+  StdLibCommandName,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import type {
   RevolveDirectionMode,
   RevolveExtentType,
 } from '@src/lib/commandBarConfigs/revolveDialog'
 import type {
-  STD_LIB_COMMANDS,
-  StdLibCommandName,
-} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+  SweepProfileOrientation,
+  SweepProfilePosition,
+} from '@src/lib/commandBarConfigs/sweepDialog'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type {
   KclPreludeBodyType,
@@ -81,6 +86,8 @@ export type SweepCommandArgs = Override<
   StdLibCommandArgs<'sweep'>,
   {
     relativeTo?: SweepRelativeTo
+    profilePosition?: SweepProfilePosition
+    profileOrientation?: SweepProfileOrientation
     bodyType?: KclPreludeBodyType
   }
 >
@@ -139,6 +146,7 @@ export type ChamferCommandArgs = Override<
   {
     selection: Selections
     length: KclCommandValue
+    chamferType?: ChamferType
     secondLength?: KclCommandValue
     angle?: KclCommandValue
     tag?: string

@@ -217,7 +217,14 @@ export const modelingCommandStdLibDriftConfig = {
   Sweep: {
     stdLibName: 'sweep',
     editFlow: true,
-    flowArgOrder: ['sketches', 'path', 'bodyType'],
+    flowArgOrder: [
+      'sketches',
+      'path',
+      'profilePosition',
+      'profileOrientation',
+      'bodyType',
+    ],
+    uiOnlyArgs: ['profilePosition', 'profileOrientation'],
     deprecatedStdLibArgs: ['relativeTo'],
   },
   Loft: {
@@ -288,7 +295,14 @@ export const modelingCommandStdLibDriftConfig = {
   Chamfer: {
     stdLibName: 'chamfer',
     editFlow: true,
-    flowArgOrder: ['selection', 'length'],
+    flowArgOrder: [
+      'selection',
+      'chamferType',
+      'length',
+      'secondLength',
+      'angle',
+    ],
+    uiOnlyArgs: ['chamferType'],
     omittedStdLibArgs: ['solid', 'edges'],
     argAliases: {
       tags: 'selection',

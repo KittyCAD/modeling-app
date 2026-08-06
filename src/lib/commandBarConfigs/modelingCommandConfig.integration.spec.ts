@@ -737,6 +737,288 @@ describe('Sweep-like bodyType argument', () => {
   })
 })
 
+describe('Sweep dialog arguments', () => {
+  function sweepConfig() {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Sweep'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = sweepConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  it('groups the primary geometry, alignment, result, and advanced controls', () => {
+    expect(sweepConfig().dialogLayout?.groups.map((group) => group.id)).toEqual(
+      ['profile', 'path', 'alignment', 'result', 'advanced']
+    )
+    expect(sweepConfig().dialogLayout).toMatchObject({
+      showCommandDescription: false,
+    })
+    expect(sweepConfig().args?.sketches.dialog).toMatchObject({
+      group: 'profile',
+      compactSelection: true,
+      hideLabel: true,
+    })
+    expect(sweepConfig().args?.path.dialog).toMatchObject({
+      group: 'path',
+      compactSelection: true,
+      hideLabel: true,
+    })
+    expect(sweepConfig().args?.profilePosition?.dialog).toMatchObject({
+      group: 'alignment',
+      controlStyle: 'segmented',
+    })
+    expect(sweepConfig().args?.sectional?.dialog).toMatchObject({
+      group: 'advanced',
+      controlStyle: 'segmented',
+    })
+  })
+
+  it('derives independent position and orientation modes', () => {
+    const position = sweepConfig().args?.profilePosition
+    const orientation = sweepConfig().args?.profileOrientation
+    if (
+      position?.inputType !== 'options' ||
+      typeof position.defaultValue !== 'function' ||
+      orientation?.inputType !== 'options' ||
+      typeof orientation.defaultValue !== 'function'
+    ) {
+      throw new Error('Sweep alignment modes should have derived defaults')
+    }
+
+    expect(
+      position.defaultValue({
+        argumentsToSubmit: { translateProfileToPath: true },
+      } as never)
+    ).toBe('path')
+    expect(
+      orientation.defaultValue({
+        argumentsToSubmit: { orientProfilePerpendicular: true },
+      } as never)
+    ).toBe('perpendicular')
+    expect(
+      position.defaultValue({ argumentsToSubmit: { nodeToEdit: [] } } as never)
+    ).toBeUndefined()
+  })
+
+  it('shows legacy alignment by itself when editing an old sweep', () => {
+    const legacy = { nodeToEdit: [], relativeTo: 'TRAJECTORY' }
+    expect(evaluateHidden('relativeTo', legacy)).toBe(false)
+    expect(evaluateHidden('profilePosition', legacy)).toBe(true)
+    expect(evaluateHidden('profileOrientation', legacy)).toBe(true)
+
+    expect(evaluateHidden('relativeTo', {})).toBe(true)
+    expect(evaluateHidden('translateProfileToPath', {})).toBe(true)
+    expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(true)
+    expect(evaluateHidden('profilePosition', {}, false)).toBe(true)
+  })
+
+  it('shows Output only when an open profile needs it or it was authored', () => {
+    const bodyType = sweepConfig().args?.bodyType
+    if (typeof bodyType?.hidden !== 'function') {
+      throw new Error('Sweep bodyType should be contextually hidden')
+    }
+
+    expect(
+      bodyType.hidden({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+        },
+        selectedCommand: { useModelingDialog: true },
+      } as never)
+    ).toBe(true)
+    expect(
+      bodyType.hidden({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+        },
+        selectedCommand: { useModelingDialog: true },
+      } as never)
+    ).toBe(false)
+  })
+})
+
+describe('Loft dialog arguments', () => {
+  function loftConfig() {
+    const commandConfig = modelingMachineCommandConfig.Loft
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Loft should have a single command config')
+    }
+    return commandConfig
+  }
+
+  it('makes ordered profiles the primary workflow', () => {
+    expect(loftConfig().dialogLayout?.groups.map((group) => group.id)).toEqual([
+      'profiles',
+      'result',
+      'advanced',
+    ])
+    expect(loftConfig().dialogLayout).toMatchObject({
+      showCommandDescription: false,
+    })
+    expect(loftConfig().args?.sketches.dialog).toMatchObject({
+      group: 'profiles',
+      selectionEmptyLabel: 'Select at least two profiles',
+      compactSelection: true,
+      hideLabel: true,
+      orderedSelection: true,
+    })
+  })
+
+  it('keeps interpolation controls in More options', () => {
+    for (const argName of [
+      'vDegree',
+      'bezApproximateRational',
+      'baseCurveIndex',
+      'tolerance',
+      'tagStart',
+      'tagEnd',
+    ] as const) {
+      expect(loftConfig().args?.[argName]?.dialog?.group).toBe('advanced')
+    }
+    expect(
+      loftConfig().args?.bezApproximateRational?.dialog?.controlStyle
+    ).toBe('segmented')
+  })
+
+  it('keeps Output contextual for surface lofts', () => {
+    const bodyType = loftConfig().args?.bodyType
+    if (typeof bodyType?.hidden !== 'function') {
+      throw new Error('Loft bodyType should be contextually hidden')
+    }
+
+    expect(
+      bodyType.hidden({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+        },
+        selectedCommand: { useModelingDialog: true },
+      } as never)
+    ).toBe(true)
+    expect(
+      bodyType.hidden({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+        },
+        selectedCommand: { useModelingDialog: true },
+      } as never)
+    ).toBe(false)
+  })
+})
+
+describe('Chamfer dialog arguments', () => {
+  function chamferConfig() {
+    const commandConfig = modelingMachineCommandConfig.Chamfer
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Chamfer should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Chamfer'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = chamferConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Chamfer'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const required = chamferConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('uses compact edges, explicit size modes, and More options', () => {
+    expect(
+      chamferConfig().dialogLayout?.groups.map((group) => group.id)
+    ).toEqual(['selection', 'size', 'advanced'])
+    expect(chamferConfig().args?.selection.dialog).toMatchObject({
+      group: 'selection',
+      compactSelection: true,
+      hideLabel: true,
+    })
+    expect(chamferConfig().args?.chamferType?.dialog).toMatchObject({
+      group: 'size',
+      controlStyle: 'select',
+    })
+    expect(chamferConfig().args?.version?.dialog?.group).toBe('advanced')
+  })
+
+  it('shows only dimensions for the selected chamfer type', () => {
+    const equal = { chamferType: 'equalDistance' }
+    expect(evaluateHidden('secondLength', equal)).toBe(true)
+    expect(evaluateHidden('angle', equal)).toBe(true)
+
+    const twoDistances = { chamferType: 'twoDistances' }
+    expect(evaluateHidden('secondLength', twoDistances)).toBe(false)
+    expect(evaluateRequired('secondLength', twoDistances)).toBe(true)
+    expect(evaluateHidden('angle', twoDistances)).toBe(true)
+
+    const distanceAndAngle = { chamferType: 'distanceAndAngle' }
+    expect(evaluateHidden('secondLength', distanceAndAngle)).toBe(true)
+    expect(evaluateHidden('angle', distanceAndAngle)).toBe(false)
+    expect(evaluateRequired('angle', distanceAndAngle)).toBe(true)
+    expect(chamferConfig().args?.secondLength?.dialog?.prepopulate).toBe(true)
+    expect(chamferConfig().args?.angle?.dialog?.prepopulate).toBe(true)
+  })
+
+  it('hydrates authored dimensions and uses a valid angle default', () => {
+    const chamferType = chamferConfig().args?.chamferType
+    if (
+      chamferType?.inputType !== 'options' ||
+      typeof chamferType.defaultValue !== 'function'
+    ) {
+      throw new Error('Chamfer type should have a derived default')
+    }
+
+    expect(
+      chamferType.defaultValue({
+        argumentsToSubmit: { secondLength: parsedLength('3') },
+      } as never)
+    ).toBe('twoDistances')
+    expect(
+      chamferType.defaultValue({
+        argumentsToSubmit: { angle: parsedLength('45deg') },
+      } as never)
+    ).toBe('distanceAndAngle')
+    expect(chamferConfig().args?.angle).toMatchObject({ defaultValue: '45deg' })
+  })
+
+  it('keeps UI-only size modes out of the legacy command bar', () => {
+    expect(evaluateHidden('chamferType', {}, false)).toBe(true)
+    expect(evaluateRequired('secondLength', {}, false)).toBe(false)
+    expect(evaluateRequired('angle', {}, false)).toBe(false)
+  })
+})
+
 describe('Translate arguments', () => {
   it('accepts helices without enabling them for other transforms', () => {
     for (const commandName of ['Translate', 'Rotate', 'Scale'] as const) {

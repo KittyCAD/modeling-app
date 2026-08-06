@@ -92,4 +92,43 @@ describe('ArgumentField', () => {
       screen.getByRole('button', { name: 'Select Profiles' })
     ).toBeVisible()
   })
+
+  test('labels and reorders an ordered selection', () => {
+    const onMoveSelection = vi.fn()
+    render(
+      <ArgumentField
+        name="profiles"
+        inputType="selection"
+        label="Profiles"
+        isRequired
+        compactSelection
+        orderedSelection
+        value={undefined}
+        selectionItems={[
+          {
+            id: 'profile-1',
+            label: 'Profile 1',
+            canMoveUp: false,
+            canMoveDown: true,
+          },
+          {
+            id: 'profile-2',
+            label: 'Profile 2',
+            canMoveUp: true,
+            canMoveDown: false,
+          },
+        ]}
+        onChange={vi.fn()}
+        onMoveSelection={onMoveSelection}
+      />
+    )
+
+    expect(screen.getByText('Start')).toBeVisible()
+    expect(screen.getByText('End')).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Move selection 2 up' }))
+    expect(onMoveSelection).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'profile-2' }),
+      'up'
+    )
+  })
 })
