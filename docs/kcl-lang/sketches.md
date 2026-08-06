@@ -42,12 +42,15 @@ A value introduced with `var` is a coordinate or size that the solver may
 change. It is an initial guess, not a fixed dimension. Initial guesses must be
 numeric literals, with a unit where applicable:
 
-```kcl,norun
-// Valid initial guesses
-start = [var 0mm, var -3mm]
+```kcl
+exampleSketch = sketch(on = XY) {
+  // Valid initial guesses
+  samplePoint = point(at = [var 0mm, var -3mm])
+  coincident([samplePoint, [0mm, -3mm]])
 
-// Invalid: identifiers and expressions cannot follow `var`
-// start = [var width, var (height / 2)]
+  // Invalid: identifiers and expressions cannot follow `var`
+  // samplePoint = point(at = [var width, var (height / 2)])
+}
 ```
 
 Put identifiers and expressions in constraints when they must drive the solved
@@ -102,8 +105,16 @@ boundary.
 If segment tracing cannot identify the intended boundary, use a point strictly
 inside the region and provide its sketch:
 
-```kcl,norun
-profileRegion = region(point = [20mm, 12mm], sketch = profile)
+```kcl
+fallbackProfile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([perimeter.center, ORIGIN])
+  radius(perimeter) == 10mm
+  horizontal([perimeter.center, perimeter.start])
+}
+
+fallbackRegion = region(point = [0mm, 0mm], sketch = fallbackProfile)
+fallbackBody = extrude(fallbackRegion, length = 5mm)
 ```
 
 ## Control arc direction
