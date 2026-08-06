@@ -1624,7 +1624,8 @@ impl SketchApi for FrontendState {
             }
         ) {
             return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object is not an angle constraint: {constraint_id:?}"
+                "Object should be an angle constraint but it was {}",
+                object.kind.human_friendly_kind_with_article(),
             ))));
         }
 
