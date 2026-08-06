@@ -301,16 +301,34 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
+    let definition = if let Some(t) = ty.alias.as_ref() {
+        Some(format!("type {} = {t}", ty.preferred_name))
+    } else if !ty.variants.is_empty() {
+        let arms = ty
+            .variants
+            .iter()
+            .map(|v| format!("  | {}", v.name))
+            .collect::<Vec<_>>()
+            .join("\n");
+        Some(format!("type {} {{\n{arms}\n}}", ty.name))
+    } else {
+        None
+    };
+
     let data = json!({
         "name": ty.preferred_name,
         "module": mod_name_std(&ty.module_name),
-        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
+        "definition": definition,
         "summary": ty.summary.clone(),
         "description": ty.description.clone(),
         "deprecated": ty.properties.deprecated,
         "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
         "examples": examples,
+        "variants": ty.variants.iter().map(|v| json!({
+            "name": v.name,
+            "docs": v.docs,
+        })).collect::<Vec<_>>(),
     });
 
     let output = hbs.render("kclType", &data)?;
