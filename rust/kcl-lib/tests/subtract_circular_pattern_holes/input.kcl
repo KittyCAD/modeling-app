@@ -1,0 +1,21 @@
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 2.7mm, var 20.21mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = 5, symmetric = true)
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [var -8.45mm, var 2.46mm], center = [var -8.2mm, var 0mm])
+  horizontal([circle1.center, ORIGIN])
+}
+hidden003 = hide(sketch002)
+region002 = region(segments = [sketch002.circle1])
+extrude002 = extrude(region002, length = 10, symmetric = true)
+pattern001 = patternCircular3d(
+  extrude002,
+  instances = 3,
+  axis = Y,
+  center = [0, 0, 0],
+)
+solid001 = subtract(extrude001, tools = pattern001)

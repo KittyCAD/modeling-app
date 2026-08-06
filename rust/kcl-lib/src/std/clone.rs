@@ -61,8 +61,9 @@ async fn inner_clone(
     args: Args,
 ) -> Result<Vec<GeometryWithImportedGeometry>> {
     let mut res = vec![];
+    let geometry_count = geometries.len();
 
-    for g in geometries {
+    for (output_index, g) in geometries.into_iter().enumerate() {
         let new_id = exec_state.next_uuid();
         let mut geometry = g.clone();
         let old_id = geometry.id(&args.ctx).await?;
@@ -114,6 +115,7 @@ async fn inner_clone(
                 entity_clone_info = Some(EntityCloneInfo {
                     source_artifact_id,
                     result_artifact_id,
+                    output_index: (geometry_count > 1).then_some(output_index),
                     source_topology_id: source_topology_id.into(),
                 });
                 new_solid.id = new_id;
@@ -630,6 +632,69 @@ clonedComposite = clone(composite)
         assert_eq!(cloned_composite.topology_id(), cloned_composite.id);
 
         assert_cloned_composite_topology(&result.artifact_graph, cloned_composite);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_patterned_subtract_outputs_uses_clone_indices() {
+        let code = r#"target = startSketchOn(XY)
+  |> startProfile(at = [2.65, 12.2])
+  |> xLine(length = 23.49)
+  |> yLine(length = -22.68)
+  |> xLine(length = -24.2)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 500)
+
+tool = startSketchOn(XZ)
+  |> circle(center = [17.5, 42.02], radius = 30.16)
+  |> extrude(length = 50)
+  |> translate(y = 30)
+
+tools = patternLinear3d(
+  tool,
+  instances = 5,
+  distance = 80,
+  axis = [0, 0, 1],
+)
+
+results = subtract([target], tools = [tools])
+singleClone = clone(results[1])
+allClones = clone(results)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::HomArray { value: results } = result.variables.get("results").unwrap() else {
+            panic!("Expected results to contain the disconnected subtraction bodies");
+        };
+        assert_eq!(results.len(), 6);
+
+        let KclValueView::Solid { value: single_clone } = result.variables.get("singleClone").unwrap() else {
+            panic!("Expected a scalar clone");
+        };
+        let Some(Artifact::CompositeSolid(single_clone_artifact)) =
+            result.artifact_graph.get(&single_clone.artifact_id)
+        else {
+            panic!("Expected the scalar clone to have a CompositeSolid artifact");
+        };
+        assert_eq!(single_clone_artifact.output_index, None);
+
+        let KclValueView::HomArray { value: all_clones } = result.variables.get("allClones").unwrap() else {
+            panic!("Expected cloning all results to return an array");
+        };
+        assert_eq!(all_clones.len(), results.len());
+        for (output_index, clone) in all_clones.iter().enumerate() {
+            let KclValueView::Solid { value: clone } = clone else {
+                panic!("Expected all cloned results to be solids");
+            };
+            let Some(Artifact::CompositeSolid(clone_artifact)) = result.artifact_graph.get(&clone.artifact_id) else {
+                panic!("Expected each cloned result to have a CompositeSolid artifact");
+            };
+            assert_eq!(clone_artifact.output_index, Some(output_index));
+        }
 
         ctx.close().await;
     }

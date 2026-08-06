@@ -824,7 +824,7 @@ description: Artifact commands subtract_regression10.kcl
         "tool_ids": [
           "[uuid]"
         ],
-        "separate_bodies": false,
+        "separate_bodies": true,
         "tolerance": 0.0000001
       }
     },

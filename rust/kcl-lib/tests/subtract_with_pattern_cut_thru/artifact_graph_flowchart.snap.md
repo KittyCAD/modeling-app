@@ -60,7 +60,19 @@ flowchart LR
   33["SweepEdge Adjacent"]
   34["Pattern Transform<br>[505, 674, 0]<br>Copies: 4<br>Faces: 12<br>Edges: 12"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+  35["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  36["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  37["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  38["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  39["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  40["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  41["CompositeSolid Subtract<br>[686, 730, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -136,4 +148,10 @@ flowchart LR
   29 --- 32
   29 --- 33
   32 <--x 31
+  35 <--x 36
+  35 <--x 37
+  35 <--x 38
+  35 <--x 39
+  35 <--x 40
+  35 --- 41
 ```

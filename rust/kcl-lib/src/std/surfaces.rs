@@ -353,6 +353,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         pending_edge_cut_ids: vec![],
         units: exec_state.length_unit(),
         sectional: false,
+        contains_patterned_components: false,
         meta: vec![crate::execution::Metadata {
             source_range: args.source_range,
         }],
@@ -422,6 +423,7 @@ async fn inner_join(
             pending_edge_cut_ids: vec![],
             units: exec_state.length_unit(),
             sectional: false,
+            contains_patterned_components: false,
             meta: vec![args.source_range.into()],
         };
         record_consumed_solids(

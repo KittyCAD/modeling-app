@@ -1012,6 +1012,19 @@ export function coerceSelectionsToBody(
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
+  const consumedBodyIds = new Set<ArtifactId>()
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'compositeSolid') {
+      continue
+    }
+    // Split always consumes targets, but it can preserve tools
+    // (`keepTools = true`). That choice is not represented on the artifact.
+    artifact.solidIds.forEach((id) => consumedBodyIds.add(id))
+    if (artifact.subType !== 'split') {
+      artifact.toolIds.forEach((id) => consumedBodyIds.add(id))
+    }
+  }
+
   const artifacts: Map<
     ArtifactId,
     Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
@@ -1041,11 +1054,13 @@ export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
               (source.type === 'sweep' || source.type === 'compositeSolid') &&
               (source.patternIds || []).includes(artifact.id)
           )
-    if (sourceBody) {
+    if (sourceBody && !consumedBodyIds.has(sourceBody.id)) {
       artifacts.set(sourceBody.id, artifact)
     }
     artifact.copyIds.forEach((copyId) => {
-      artifacts.set(copyId, artifact)
+      if (!consumedBodyIds.has(copyId)) {
+        artifacts.set(copyId, artifact)
+      }
     })
   }
 

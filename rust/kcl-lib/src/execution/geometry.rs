@@ -1323,6 +1323,10 @@ pub struct Solid {
     pub units: UnitLength,
     /// Is this a sectional solid?
     pub sectional: bool,
+    /// Whether this solid contains body components derived from a 3D pattern.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub contains_patterned_components: bool,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,

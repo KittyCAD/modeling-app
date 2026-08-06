@@ -2,6 +2,49 @@
 
 use super::*;
 
+fn boolean_subtract_artifact_updates(extra_solid_ids: &[Uuid]) -> (Uuid, Vec<Artifact>) {
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::BooleanSubtract::builder()
+            .target_ids(vec![Uuid::new_v4()])
+            .tool_ids(vec![Uuid::new_v4()])
+            .separate_bodies(true)
+            .tolerance(kcmc::length_unit::LengthUnit(0.0000001))
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+        omit_from_graph: false,
+        entity_clone_info: None,
+    };
+    let response: kcmc::output::BooleanSubtract = serde_json::from_value(serde_json::json!({
+        "extra_solid_ids": extra_solid_ids,
+        "any_intersections": true,
+    }))
+    .expect("valid boolean subtract response");
+    let mut responses = AHashMap::default();
+    responses.insert(cmd_id, OkModelingCmdResponse::BooleanSubtract(response));
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updates = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &responses,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    (cmd_id, updates)
+}
+
 #[test]
 fn gdt_annotation_artifacts_get_node_paths() {
     let code = r#"gdt::annotation(annotation = "NOTE", faces = [], edges = [])"#;
@@ -20,6 +63,44 @@ fn gdt_annotation_artifacts_get_node_paths() {
     };
     assert_eq!(annotation.code_ref.range, source_range);
     assert!(!annotation.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn boolean_subtract_artifacts_index_multiple_outputs() {
+    let extra_solid_ids = (0..5).map(|_| Uuid::new_v4()).collect::<Vec<_>>();
+    let (cmd_id, updates) = boolean_subtract_artifact_updates(&extra_solid_ids);
+    let composite_solids = updates
+        .iter()
+        .filter_map(|artifact| match artifact {
+            Artifact::CompositeSolid(composite_solid) => Some(composite_solid),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    let expected_ids = std::iter::once(ArtifactId::new(cmd_id))
+        .chain(extra_solid_ids.iter().copied().map(ArtifactId::new))
+        .collect::<Vec<_>>();
+
+    assert_eq!(composite_solids.len(), 6);
+    for (output_index, (composite_solid, expected_id)) in composite_solids.iter().zip(expected_ids).enumerate() {
+        assert_eq!(composite_solid.id, expected_id);
+        assert_eq!(composite_solid.output_index, Some(output_index));
+    }
+}
+
+#[test]
+fn boolean_subtract_artifact_does_not_index_single_output() {
+    let (cmd_id, updates) = boolean_subtract_artifact_updates(&[]);
+    let composite_solids = updates
+        .iter()
+        .filter_map(|artifact| match artifact {
+            Artifact::CompositeSolid(composite_solid) => Some(composite_solid),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    assert_eq!(composite_solids.len(), 1);
+    assert_eq!(composite_solids[0].id, ArtifactId::new(cmd_id));
+    assert_eq!(composite_solids[0].output_index, None);
 }
 
 #[test]
@@ -247,6 +328,7 @@ fn entity_clone_remaps_composite_solid_ids() {
         entity_clone_info: Some(EntityCloneInfo {
             source_artifact_id: source_id,
             result_artifact_id: ArtifactId::new(cmd_id),
+            output_index: None,
             source_topology_id: source_id,
         }),
         omit_from_graph: false,
@@ -273,11 +355,23 @@ fn entity_clone_remaps_composite_solid_ids() {
     };
     assert_eq!(clone_solid.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_solid.sub_type, CompositeSolidSubType::Subtract);
-    assert_eq!(clone_solid.output_index, Some(1));
+    assert_eq!(clone_solid.output_index, None);
     assert_eq!(clone_solid.solid_ids, vec![cloned_solid_id]);
     assert_eq!(clone_solid.tool_ids, vec![cloned_tool_id]);
     assert_eq!(clone_solid.composite_solid_id, Some(cloned_parent_composite_id));
     assert!(!clone_solid.consumed);
+
+    let Artifact::CompositeSolid(indexed_clone_solid) = remap_artifact_for_clone(
+        artifacts.get(&source_id).unwrap(),
+        &AHashMap::default(),
+        &CodeRef::placeholder(SourceRange::synthetic()),
+        cmd_id,
+        source_id,
+        Some(0),
+    ) else {
+        panic!("Expected indexed EntityClone to preserve composite solid type");
+    };
+    assert_eq!(indexed_clone_solid.output_index, Some(0));
 }
 
 #[test]
@@ -589,6 +683,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         entity_clone_info: Some(EntityCloneInfo {
             source_artifact_id: source_sweep_id,
             result_artifact_id: cloned_sweep_id,
+            output_index: None,
             source_topology_id: source_path_id,
         }),
         omit_from_graph: false,
@@ -637,6 +732,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         &CodeRef::placeholder(SourceRange::synthetic()),
         Uuid::new_v4(),
         cloned_sweep_id,
+        None,
     ) else {
         panic!("Expected second cloned sweep artifact");
     };
@@ -683,6 +779,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
             entity_clone_info: Some(EntityCloneInfo {
                 source_artifact_id: ArtifactId::new(source_id),
                 result_artifact_id: ArtifactId::new(clone_cmd_id),
+                output_index: None,
                 source_topology_id: ArtifactId::new(source_topology_id),
             }),
             omit_from_graph: false,
@@ -1251,6 +1348,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         entity_clone_info: Some(EntityCloneInfo {
             source_artifact_id: ArtifactId::new(copy_id),
             result_artifact_id: cloned_sweep_id,
+            output_index: None,
             source_topology_id: source_path_id,
         }),
         omit_from_graph: false,

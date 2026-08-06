@@ -60,7 +60,9 @@ flowchart LR
   33["SweepEdge Adjacent"]
   34["Pattern Transform<br>[469, 639, 0]<br>Copies: 9<br>Faces: 27<br>Edges: 27"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  35["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
+  35["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  36["CompositeSolid Subtract<br>[641, 685, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -136,4 +138,5 @@ flowchart LR
   29 --- 32
   29 --- 33
   32 <--x 31
+  35 --- 36
 ```
