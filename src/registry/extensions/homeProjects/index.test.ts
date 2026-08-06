@@ -281,7 +281,6 @@ function cloudRelationship(
     remoteProjectId,
     duplicateRealizations: [],
     localRealizations: [],
-    name: remoteProjectId,
     ...rest,
   }
 }
@@ -316,8 +315,10 @@ describe('deriveHomeProjectEntryContributions', () => {
         cloudRelationships: [
           cloudRelationship({
             remoteProjectId: 'remote-123',
-            name: 'Remote Project',
-            title: 'Remote Project',
+            remoteProject: {
+              id: 'remote-123',
+              title: 'Remote Project',
+            },
           }),
         ],
       })
@@ -326,6 +327,8 @@ describe('deriveHomeProjectEntryContributions', () => {
         id: 'cloud:remote-123',
         source: 'remote',
         status: 'cloud-only',
+        name: 'Remote Project',
+        title: 'Remote Project',
         libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
         remoteProjectId: 'remote-123',
       }),

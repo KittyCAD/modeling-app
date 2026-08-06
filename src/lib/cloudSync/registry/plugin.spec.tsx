@@ -14,7 +14,6 @@ import {
   cloudSyncPlugin,
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
-  preserveCloudProjectDefaultFile,
 } from '@src/lib/cloudSync/registry/plugin'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -962,11 +961,6 @@ describe('cloud sync project relationships', () => {
       pendingCount: 1,
     }
     const movedProjectPath = '/some/path/moved-project'
-    const movedDefaultFile = `${movedProjectPath}/main.kcl`
-    preserveCloudProjectDefaultFile({
-      localProjectPath: movedProjectPath,
-      defaultFile: movedDefaultFile,
-    })
     const cloudSync = createCloudSyncService()
     vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
       new Map([
@@ -1030,8 +1024,6 @@ describe('cloud sync project relationships', () => {
       await waitFor(() =>
         expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            name: 'Remote title',
-            title: 'Remote title',
             remoteProjectId: 'remote-123',
             remoteThumbnailUrl: 'https://example.test/remote-123-thumbnail.png',
             canonicalRealization: undefined,
@@ -1093,8 +1085,6 @@ describe('cloud sync project relationships', () => {
       await waitFor(() =>
         expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            name: 'Local project',
-            title: 'Local project',
             remoteProjectId: 'remote-123',
             canonicalRealization: undefined,
             conflict: expect.objectContaining({
@@ -1159,8 +1149,6 @@ describe('cloud sync project relationships', () => {
       await waitFor(() =>
         expect(registry.get(cloudProjectRelationshipsValueSpec)).toEqual([
           expect.objectContaining({
-            name: 'Local project',
-            title: 'Local project',
             remoteProjectId: 'remote-123',
             canonicalRealization: undefined,
             syncFailure: expect.objectContaining({

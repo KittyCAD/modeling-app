@@ -202,7 +202,6 @@ describe('deriveCloudProjectRelationships', () => {
     ).toEqual([
       expect.objectContaining({
         remoteProjectId: 'remote-only',
-        name: 'Remote Only',
         canonicalRealization: undefined,
         duplicateRealizations: [],
         localRealizations: [],

@@ -123,6 +123,30 @@ function libraryIdsFromRelationship(
   return Array.from(new Set(libraryIds))
 }
 
+function homeProjectNameFromCloudRelationship({
+  canonical,
+  relationship,
+}: {
+  canonical?: ProjectLibraryRealization
+  relationship: CloudProjectRelationship
+}) {
+  return (
+    canonical?.name ??
+    relationship.remoteProject?.title ??
+    relationship.remoteProjectId
+  )
+}
+
+function homeProjectTitleFromCloudRelationship({
+  canonical,
+  relationship,
+}: {
+  canonical?: ProjectLibraryRealization
+  relationship: CloudProjectRelationship
+}) {
+  return canonical?.title ?? relationship.remoteProject?.title
+}
+
 function homeProjectDuplicateRealizationFromRelationship(
   relationship: CloudProjectRelationship,
   duplicate: CloudProjectRelationshipRealization
@@ -175,8 +199,8 @@ function homeProjectEntryFromCloudRelationship(
       relationshipLibraryIds.length > 0
         ? relationshipLibraryIds
         : [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-    name: canonical?.name ?? relationship.name,
-    title: canonical?.title ?? relationship.title,
+    name: homeProjectNameFromCloudRelationship({ canonical, relationship }),
+    title: homeProjectTitleFromCloudRelationship({ canonical, relationship }),
     localProjectPath: canonical?.localProjectPath,
     localProjectName: canonical?.localProjectName,
     remoteProjectId: relationship.remoteProjectId,
@@ -185,7 +209,7 @@ function homeProjectEntryFromCloudRelationship(
         (!canonical || realizationDeletesRemoteOnDelete(canonical))
     ),
     modified: relationship.modified ?? canonical?.modified,
-    defaultFile: relationship.defaultFile ?? canonical?.defaultFile,
+    defaultFile: canonical?.defaultFile,
     kclFileCount: canonical?.kclFileCount,
     directoryCount: canonical?.directoryCount,
     readWriteAccess: canonical?.readWriteAccess ?? true,

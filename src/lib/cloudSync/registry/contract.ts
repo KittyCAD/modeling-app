@@ -54,11 +54,8 @@ export interface CloudProjectRelationship {
   canonicalRealization?: CloudProjectRelationshipRealization
   duplicateRealizations: readonly CloudProjectRelationshipRealization[]
   localRealizations: readonly CloudProjectRelationshipRealization[]
-  title?: string
-  name: string
   modified?: number
   remoteThumbnailUrl?: string
-  defaultFile?: string
   conflict?: unknown
   syncFailure?: {
     message: string

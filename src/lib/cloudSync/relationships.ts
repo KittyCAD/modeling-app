@@ -20,7 +20,6 @@ export type DeriveCloudProjectRelationshipsInput = {
     CloudProjectLocalManifestComparison
   >
   remoteThumbnailUrls?: ReadonlyMap<string, string>
-  preservedDefaultFiles?: ReadonlyMap<string, string>
   getModifiedTime?: (
     metadata: CloudSyncProjectMetadataIndexEntry | undefined,
     localModified: number | null | undefined
@@ -41,6 +40,33 @@ export type ClassifyCloudProjectDuplicateRiskInput = {
 export type CloudProjectLocalManifestComparison = {
   localMatchesBase?: boolean
   manifestReadable?: boolean
+}
+
+type RelationshipInputIndex = {
+  getModifiedTime?: DeriveCloudProjectRelationshipsInput['getModifiedTime']
+  localManifestComparisons: ReadonlyMap<
+    string,
+    CloudProjectLocalManifestComparison
+  >
+  metadataByPath: ReadonlyMap<string, CloudSyncProjectMetadataIndexEntry>
+  metadataByRemoteProjectId: ReadonlyMap<
+    string,
+    readonly CloudSyncProjectMetadataIndexEntry[]
+  >
+  realizationsByRemoteProjectId: ReadonlyMap<
+    string,
+    readonly ProjectLibraryRealization[]
+  >
+  remoteProjectIds: ReadonlySet<string>
+  remoteProjectsById: ReadonlyMap<string, RemoteProjectSummary>
+  remoteThumbnailUrls: ReadonlyMap<string, string>
+}
+
+type RelationshipContext = {
+  metadata: readonly CloudSyncProjectMetadataIndexEntry[]
+  remoteProject?: RemoteProjectSummary
+  remoteProjectId: string
+  realizations: readonly ProjectLibraryRealization[]
 }
 
 function cloudProjectRelationshipId(remoteProjectId: string) {
@@ -156,42 +182,6 @@ function selectCanonicalRealization(
   )[0]
 }
 
-function relationshipTitle({
-  canonical,
-  remoteProject,
-  metadata,
-}: {
-  canonical: CloudProjectRelationshipRealization | undefined
-  remoteProject: RemoteProjectSummary | undefined
-  metadata: CloudSyncProjectMetadataIndexEntry | undefined
-}) {
-  return (
-    canonical?.realization.title ||
-    metadata?.projectName ||
-    remoteProject?.title ||
-    remoteProject?.id
-  )
-}
-
-function relationshipName({
-  canonical,
-  remoteProject,
-  metadata,
-  remoteProjectId,
-}: {
-  canonical: CloudProjectRelationshipRealization | undefined
-  remoteProject: RemoteProjectSummary | undefined
-  metadata: CloudSyncProjectMetadataIndexEntry | undefined
-  remoteProjectId: string
-}) {
-  return (
-    canonical?.realization.name ||
-    metadata?.projectName ||
-    remoteProject?.title ||
-    remoteProjectId
-  )
-}
-
 function remoteModifiedTime(remoteProject: RemoteProjectSummary | undefined) {
   const modified = remoteProject?.updated_at
     ? Date.parse(remoteProject.updated_at)
@@ -200,15 +190,30 @@ function remoteModifiedTime(remoteProject: RemoteProjectSummary | undefined) {
   return Number.isNaN(modified) ? undefined : modified
 }
 
-export function deriveCloudProjectRelationships({
+function groupedMapSet<K, V>(map: Map<K, V[]>, key: K, value: V) {
+  const values = map.get(key) ?? []
+  values.push(value)
+  map.set(key, values)
+}
+
+function relationshipShouldExistForMetadata(
+  metadata: CloudSyncProjectMetadataIndexEntry
+) {
+  return (
+    !metadata.tombstone &&
+    !metadata.syncExcluded &&
+    (metadata.conflict || metadata.lastFailure)
+  )
+}
+
+function indexRelationshipInputs({
+  getModifiedTime,
   localManifestComparisons = new Map(),
   realizations,
   remoteProjects,
   metadata,
   remoteThumbnailUrls = new Map(),
-  preservedDefaultFiles = new Map(),
-  getModifiedTime,
-}: DeriveCloudProjectRelationshipsInput): CloudProjectRelationship[] {
+}: DeriveCloudProjectRelationshipsInput): RelationshipInputIndex {
   const remoteProjectsById = new Map(
     remoteProjects.map((project) => [project.id, project])
   )
@@ -232,16 +237,11 @@ export function deriveCloudProjectRelationships({
     if (!entry.remoteProjectId) {
       continue
     }
-    if (
-      !entry.tombstone &&
-      !entry.syncExcluded &&
-      (entry.conflict || entry.lastFailure)
-    ) {
+
+    if (relationshipShouldExistForMetadata(entry)) {
       remoteProjectIds.add(entry.remoteProjectId)
     }
-    const entries = metadataByRemoteProjectId.get(entry.remoteProjectId) ?? []
-    entries.push(entry)
-    metadataByRemoteProjectId.set(entry.remoteProjectId, entries)
+    groupedMapSet(metadataByRemoteProjectId, entry.remoteProjectId, entry)
   }
 
   for (const realization of realizations) {
@@ -250,101 +250,154 @@ export function deriveCloudProjectRelationships({
       continue
     }
     remoteProjectIds.add(remoteProjectId)
-    const groupedRealizations =
-      realizationsByRemoteProjectId.get(remoteProjectId) ?? []
-    groupedRealizations.push(realization)
-    realizationsByRemoteProjectId.set(remoteProjectId, groupedRealizations)
+    groupedMapSet(realizationsByRemoteProjectId, remoteProjectId, realization)
   }
 
-  return Array.from(remoteProjectIds)
+  return {
+    getModifiedTime,
+    localManifestComparisons,
+    metadataByPath,
+    metadataByRemoteProjectId,
+    realizationsByRemoteProjectId,
+    remoteProjectIds,
+    remoteProjectsById,
+    remoteThumbnailUrls,
+  }
+}
+
+function relationshipContexts(
+  index: RelationshipInputIndex
+): RelationshipContext[] {
+  return Array.from(index.remoteProjectIds)
     .toSorted((a, b) => a.localeCompare(b))
-    .map((remoteProjectId) => {
-      const remoteProject = remoteProjectsById.get(remoteProjectId)
-      const relationshipMetadata =
-        metadataByRemoteProjectId.get(remoteProjectId) ?? []
-      const firstMetadata = relationshipMetadata[0]
-      const relationshipRealizations = (
-        realizationsByRemoteProjectId.get(remoteProjectId) ?? []
-      ).map((realization): CloudProjectRelationshipRealization => {
-        const localMetadata = metadataByPath.get(
-          normalizePathForSync(realization.localProjectPath)
-        )
-        const localManifestComparison = localManifestComparisons.get(
-          normalizePathForSync(realization.localProjectPath)
-        )
-        const duplicateRisk = classifyDuplicateRisk({
-          localManifestComparison,
-          realization,
-          metadata: localMetadata,
-        })
+    .map((remoteProjectId) => ({
+      metadata: index.metadataByRemoteProjectId.get(remoteProjectId) ?? [],
+      remoteProject: index.remoteProjectsById.get(remoteProjectId),
+      remoteProjectId,
+      realizations:
+        index.realizationsByRemoteProjectId.get(remoteProjectId) ?? [],
+    }))
+}
 
-        return {
-          role: 'duplicate',
-          realization,
-          duplicateRisk,
-          autoCleanupEligible:
-            duplicateRisk === 'exact' &&
-            realizationIsOnlyInCloudLibraries(realization),
+function relationshipRealizationFromLocal(
+  index: RelationshipInputIndex,
+  realization: ProjectLibraryRealization
+): CloudProjectRelationshipRealization {
+  const normalizedProjectPath = normalizePathForSync(
+    realization.localProjectPath
+  )
+  const duplicateRisk = classifyDuplicateRisk({
+    localManifestComparison: index.localManifestComparisons.get(
+      normalizedProjectPath
+    ),
+    realization,
+    metadata: index.metadataByPath.get(normalizedProjectPath),
+  })
+
+  return {
+    role: 'duplicate',
+    realization,
+    duplicateRisk,
+    autoCleanupEligible:
+      duplicateRisk === 'exact' &&
+      realizationIsOnlyInCloudLibraries(realization),
+  }
+}
+
+function localRealizationsFromContext(
+  index: RelationshipInputIndex,
+  context: RelationshipContext
+) {
+  const relationshipRealizations = context.realizations.map((realization) =>
+    relationshipRealizationFromLocal(index, realization)
+  )
+  const canonical = selectCanonicalRealization(relationshipRealizations)
+
+  return relationshipRealizations.map((entry) =>
+    entry === canonical
+      ? {
+          ...entry,
+          role: 'canonical' as const,
+          autoCleanupEligible: false,
         }
-      })
-      const canonical = selectCanonicalRealization(relationshipRealizations)
-      const localRealizations = relationshipRealizations.map((entry) =>
-        entry === canonical
-          ? {
-              ...entry,
-              role: 'canonical' as const,
-              autoCleanupEligible: false,
-            }
-          : entry
-      )
-      const canonicalRealization = localRealizations.find(
-        (entry) => entry.role === 'canonical'
-      )
-      const duplicateRealizations = localRealizations.filter(
-        (entry) => entry.role === 'duplicate'
-      )
-      const preservedDefaultFile = firstMetadata
-        ? preservedDefaultFiles.get(
-            normalizePathForSync(firstMetadata.localProjectPath)
-          )
-        : undefined
-      const modified =
-        getModifiedTime?.(
-          firstMetadata,
-          canonicalRealization?.realization.modified ??
-            remoteModifiedTime(remoteProject)
-        ) ??
-        canonicalRealization?.realization.modified ??
-        remoteModifiedTime(remoteProject)
+      : entry
+  )
+}
 
-      return {
-        id: cloudProjectRelationshipId(remoteProjectId),
-        remoteProjectId,
-        remoteProject,
-        canonicalRealization,
-        duplicateRealizations,
-        localRealizations,
-        name: relationshipName({
-          canonical: canonicalRealization,
-          remoteProject,
-          metadata: firstMetadata,
-          remoteProjectId,
-        }),
-        title: relationshipTitle({
-          canonical: canonicalRealization,
-          remoteProject,
-          metadata: firstMetadata,
-        }),
-        modified: modified ?? undefined,
-        remoteThumbnailUrl: remoteThumbnailUrls.get(remoteProjectId),
-        defaultFile:
-          canonicalRealization?.realization.defaultFile ?? preservedDefaultFile,
-        conflict:
-          canonicalRealization?.realization.conflict ?? firstMetadata?.conflict,
-        syncFailure:
-          firstMetadata?.lastFailure?.kind === 'remote-upload-forbidden'
-            ? firstMetadata.lastFailure
-            : undefined,
-      }
-    })
+function relationshipModifiedTime({
+  canonicalRealization,
+  context,
+  index,
+}: {
+  canonicalRealization?: CloudProjectRelationshipRealization
+  context: RelationshipContext
+  index: RelationshipInputIndex
+}) {
+  const localOrRemoteModified =
+    canonicalRealization?.realization.modified ??
+    remoteModifiedTime(context.remoteProject)
+
+  return (
+    index.getModifiedTime?.(context.metadata[0], localOrRemoteModified) ??
+    localOrRemoteModified
+  )
+}
+
+function relationshipConflict({
+  canonicalRealization,
+  context,
+}: {
+  canonicalRealization?: CloudProjectRelationshipRealization
+  context: RelationshipContext
+}) {
+  return (
+    canonicalRealization?.realization.conflict ?? context.metadata[0]?.conflict
+  )
+}
+
+function relationshipSyncFailure(context: RelationshipContext) {
+  const lastFailure = context.metadata[0]?.lastFailure
+  return lastFailure?.kind === 'remote-upload-forbidden'
+    ? lastFailure
+    : undefined
+}
+
+function relationshipFromContext(
+  index: RelationshipInputIndex,
+  context: RelationshipContext
+): CloudProjectRelationship {
+  const localRealizations = localRealizationsFromContext(index, context)
+  const canonicalRealization = localRealizations.find(
+    (entry) => entry.role === 'canonical'
+  )
+  const duplicateRealizations = localRealizations.filter(
+    (entry) => entry.role === 'duplicate'
+  )
+  const modified = relationshipModifiedTime({
+    canonicalRealization,
+    context,
+    index,
+  })
+
+  return {
+    id: cloudProjectRelationshipId(context.remoteProjectId),
+    remoteProjectId: context.remoteProjectId,
+    remoteProject: context.remoteProject,
+    canonicalRealization,
+    duplicateRealizations,
+    localRealizations,
+    modified: modified ?? undefined,
+    remoteThumbnailUrl: index.remoteThumbnailUrls.get(context.remoteProjectId),
+    conflict: relationshipConflict({ canonicalRealization, context }),
+    syncFailure: relationshipSyncFailure(context),
+  }
+}
+
+export function deriveCloudProjectRelationships(
+  input: DeriveCloudProjectRelationshipsInput
+): CloudProjectRelationship[] {
+  const index = indexRelationshipInputs(input)
+  return relationshipContexts(index).map((context) =>
+    relationshipFromContext(index, context)
+  )
 }

@@ -122,24 +122,6 @@ function openCloudConflictDialog(request: CloudConflictDialogRequest) {
   cloudConflictDialogRequest.value = request
 }
 
-const preservedCloudProjectDefaultFiles = signal<Map<string, string>>(new Map())
-
-export function preserveCloudProjectDefaultFile({
-  localProjectPath,
-  defaultFile,
-}: {
-  localProjectPath?: string
-  defaultFile?: string
-}) {
-  if (!localProjectPath || !defaultFile) {
-    return
-  }
-
-  const nextDefaultFiles = new Map(preservedCloudProjectDefaultFiles.value)
-  nextDefaultFiles.set(normalizePathForSync(localProjectPath), defaultFile)
-  preservedCloudProjectDefaultFiles.value = nextDefaultFiles
-}
-
 function CloudProjectLibrarySettingsDetails({
   library,
 }: ProjectLibrarySettingsDetailsProps) {
@@ -667,7 +649,6 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
       metadata: cloudSyncMetadata.value,
       localManifestComparisons: localManifestComparisons.value,
       remoteThumbnailUrls: remoteThumbnailUrls.value,
-      preservedDefaultFiles: preservedCloudProjectDefaultFiles.value,
       getModifiedTime: getCloudSyncProjectModifiedTime,
     })
   })
@@ -1005,11 +986,6 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             sourceProjectPath: source.localProjectPath,
             sourceProjectName: source.localProjectName,
             defaultFile: source.defaultFile,
-          })
-
-          preserveCloudProjectDefaultFile({
-            localProjectPath: result.localProjectPath,
-            defaultFile: result.defaultFile,
           })
 
           if (cloudSyncStatus.value.enabled) {
