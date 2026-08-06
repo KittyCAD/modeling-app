@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart named_views_module_requires_opt_in.kcl
+extension: md
+snapshot_kind: binary
+---
