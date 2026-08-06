@@ -15,6 +15,7 @@ things in a more tutorial fashion. See also our documentation of the [standard l
 * [Numeric types and units](/docs/kcl-lang/numeric)
 * [Functions](/docs/kcl-lang/functions)
 * [Arrays and ranges](/docs/kcl-lang/arrays)
+* [Enums](/docs/kcl-lang/enums)
 * [Sketch on Face](/docs/kcl-lang/sketch-on-face)
 * [Projects and modules](/docs/kcl-lang/modules)
 * [Attributes](/docs/kcl-lang/attributes)

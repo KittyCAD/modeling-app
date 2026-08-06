@@ -94,7 +94,7 @@ function configureCloudSyncTestFs(
     enabled: true,
     baseUrl,
     environmentName: 'dev.zoo.dev',
-    projectDirectoryPath: projectDirectory,
+    cloudProjectDirectoryPaths: [projectDirectory],
     autoEnrollCloudLibraryProjects: false,
   })
 }

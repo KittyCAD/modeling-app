@@ -1,0 +1,7 @@
+@settings(experimentalFeatures = allow)
+
+// The direction must be one of the builtin constants CCW or CW, not a string.
+// This should produce a helpful error message.
+profile = sketch(on = XY) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm], direction = "CW")
+}

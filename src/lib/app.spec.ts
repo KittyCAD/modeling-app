@@ -282,6 +282,41 @@ describe('project system', () => {
     }
   })
 
+  it('annotates opened projects with their owning library path', async () => {
+    const app = createAppForTest()
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const library = app.settings
+        .get()
+        .app.libraries.current.find(
+          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+        )
+      expect(library).toBeDefined()
+      if (!library) {
+        return
+      }
+
+      const projectPath = fsZds.join(library.path, 'bracket')
+      const openedProject = await app.openProject({
+        ...mockProject,
+        name: 'bracket',
+        path: projectPath,
+        default_file: fsZds.join(projectPath, 'main.kcl'),
+      })
+
+      expect(openedProject.projectIORefSignal.value).toEqual(
+        expect.objectContaining({
+          libraryPath: library.path,
+          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        })
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('sets KCL runtime flags when the app wasm instance becomes active', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
     const wasmInstance = createRuntimeFlagsWasmInstance()
@@ -516,8 +551,20 @@ describe('project system', () => {
 
   it('respects an explicit cloud sync opt-out on desktop', async () => {
     const previousElectron = window.electron
+    const userAgentSpy = vi
+      .spyOn(navigator, 'userAgent', 'get')
+      .mockReturnValue('Electron')
     window.electron = {
-      os: { isMac: false },
+      os: {
+        isLinux: true,
+        isMac: false,
+        isWindows: false,
+        name: 'Linux',
+      },
+      packageJson: {
+        name: 'zoo-modeling-app',
+      },
+      getAppTestProperty: vi.fn().mockResolvedValue(undefined),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),
@@ -531,8 +578,17 @@ describe('project system', () => {
     try {
       // Cloud sync auto-enables for the flag on desktop too.
       await expect
-        .poll(() => getPluginToggle(app, 'cloud-sync').active.value)
-        .toBe(true)
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasDefaultDirectoryLibrarySetting:
+            hasDefaultDirectoryLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          hasPersonalCloudLibrarySetting: true,
+          hasDefaultDirectoryLibrarySetting: true,
+        })
 
       // Unlike web (where the disable attempt is overridden), desktop keeps
       // cloud sync optional and honors the opt-out.
@@ -552,6 +608,7 @@ describe('project system', () => {
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
     } finally {
       app.dispose()
+      userAgentSpy.mockRestore()
       window.electron = previousElectron
     }
   })

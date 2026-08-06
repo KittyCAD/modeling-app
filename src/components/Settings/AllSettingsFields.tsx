@@ -260,19 +260,17 @@ export const AllSettingsFields = forwardRef(
             About Design Studio
           </h2>
           <div className="text-sm mb-12">
-            <p>
-              {/* This uses a Vite plugin, set in vite.config.ts
-                  to inject the version from package.json */}
-              App version {APP_VERSION}.{' '}
-            </p>
+            {APP_VERSION && <p>App version {APP_VERSION}. </p>}
             <div className="flex gap-2 flex-wrap my-4">
-              <ActionButton
-                Element="externalLink"
-                to={getReleaseUrl()}
-                iconStart={{ icon: 'file', className: 'p-1' }}
-              >
-                View Release on GitHub
-              </ActionButton>
+              {APP_VERSION && (
+                <ActionButton
+                  Element="externalLink"
+                  to={getReleaseUrl()}
+                  iconStart={{ icon: 'file', className: 'p-1' }}
+                >
+                  View version on GitHub
+                </ActionButton>
+              )}
               <ActionButton
                 Element="button"
                 onClick={() => {

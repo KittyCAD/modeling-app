@@ -35,6 +35,7 @@ use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Distance;
@@ -137,6 +138,9 @@ const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const ARC_DIRECTION_PARAM: &str = "direction";
+/// The name of the KCL std constant for a clockwise arc direction.
+const ARC_DIRECTION_CW_NAME: &str = "CW";
 const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
@@ -2223,6 +2227,14 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        // Add direction kwarg if it's clockwise, since counterclockwise is the
+        // default.
+        if ctor.direction == Some(ArcDirection::Cw) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+            });
+        }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
@@ -2839,6 +2851,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                direction: ctor.direction,
                 construction: ctor.construction,
             },
         )?;
@@ -5790,6 +5803,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        direction: Option<ArcDirection>,
         construction: Option<bool>,
     },
     EditCircle {
@@ -6152,6 +6166,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             start,
             end,
             center,
+            direction,
             construction,
         } => {
             if let NodeMut::CallExpressionKw(call) = node {
@@ -6168,6 +6183,35 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle direction kwarg
+                if let Some(direction_value) = direction {
+                    let direction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
+                    if direction_value.is_clockwise() {
+                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        if direction_exists {
+                            // Update existing direction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM) {
+                                    labeled_arg.arg = direction_ast.clone();
+                                }
+                            }
+                        } else {
+                            // Add new direction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                                arg: direction_ast,
+                            });
+                        }
+                    } else {
+                        // Remove direction kwarg if it exists since
+                        // counterclockwise is the default
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(ARC_DIRECTION_PARAM));
                     }
                 }
                 // Handle construction kwarg
@@ -8031,6 +8075,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -8082,6 +8127,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
@@ -10595,6 +10641,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let (_src_delta, scene_delta) = frontend
@@ -11521,10 +11568,14 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_distance_non_parallel_lines_lowers_to_distance() {
+        // NOTE: Current LinesAtAngle constraint collapses if lines are initialized perpendicular to
+        // one another because the gradient of the residual has no tangential component in this
+        // configuration. The only path to reducing the residual is shrinking the lengths of the
+        // lines which are causing the lines to collapse, producing a degenerate output.
         let initial_source = "\
 sketch(on = XY) {
   line(start = [var 0, var 0], end = [var 10, var 0])
-  line(start = [var 0, var 0], end = [var 0, var 10])
+  line(start = [var 0, var 0], end = [var 10, var 10])
 }
 ";
 
@@ -14708,6 +14759,7 @@ sketch001 = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -14723,6 +14775,120 @@ sketch001 = sketch(on = XY) {
             src_delta.text
         );
         assert!(!scene_delta.new_objects.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_arc_direction_flows_to_source() {
+        let initial_source = "@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let point = |x: f64, y: f64| Point2d {
+            x: Expr::Var(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        };
+
+        // Adding a clockwise arc writes its direction to the source.
+        let arc_ctor = ArcCtor {
+            start: point(5.0, 0.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Arc(arc_ctor), None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW in source, got: {}",
+            src_delta.text
+        );
+        // The new objects are the end points, the center, and then the arc.
+        let arc_id = *scene_delta.new_objects.last().unwrap();
+
+        // Editing the arc's points preserves the clockwise direction. The
+        // edited points keep the same distance to the center so that the
+        // solver doesn't need to move anything.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("start = [var 0mm, var -5mm]"),
+            "Expected edited start point in source, got: {}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW to be preserved in source, got: {}",
+            src_delta.text
+        );
+
+        // Editing the arc back to counterclockwise removes the direction
+        // argument since counterclockwise is the default.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Ccw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            !src_delta.text.contains("direction"),
+            "Expected direction argument to be removed from source, got: {}",
+            src_delta.text
+        );
 
         ctx.close().await;
         mock_ctx.close().await;

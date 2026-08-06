@@ -30,7 +30,6 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -63,6 +62,7 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
 import {
   findKeymapItemForCommand,
   HOME_KEYMAP_SCOPE,
@@ -148,6 +148,7 @@ const Home = () => {
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
     projectLibraryTypesValueSpec
@@ -228,10 +229,6 @@ const Home = () => {
       }
     }
   }, [app, selectedProjectLibraryId])
-
-  useEffect(() => {
-    setCloudSyncProjectScope(undefined)
-  }, [])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -500,6 +497,13 @@ const Home = () => {
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
+            {homeSidebarItems
+              .filter((item) => item.isVisible?.() ?? true)
+              .map(({ id, Component }) => (
+                <li key={id} className="contents">
+                  <Component className={sidebarButtonClasses} />
+                </li>
+              ))}
             <li className="contents">
               <ActionButton
                 Element="externalLink"
@@ -571,6 +575,7 @@ const Home = () => {
           ...defaultGlobalStatusBarItems({
             autoUpdateDownloadProgress,
             autoUpdateReady,
+            hasCloudSyncFeature,
             onRestartToUpdate: () => {
               window.electron?.appRestart()
             },

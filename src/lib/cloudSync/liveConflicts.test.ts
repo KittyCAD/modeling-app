@@ -194,7 +194,7 @@ describe('cloud sync live conflicts', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 
@@ -243,7 +243,7 @@ describe('cloud sync live conflicts', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 
@@ -330,7 +330,7 @@ describe('cloud sync live conflicts', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
     })
 
     await vi.waitFor(async () => {
@@ -373,7 +373,7 @@ describe('cloud sync live conflicts', () => {
       enabled: false,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 

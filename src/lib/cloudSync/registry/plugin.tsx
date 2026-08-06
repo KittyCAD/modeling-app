@@ -76,8 +76,9 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
-  type ProjectLibraryTypeContribution,
   type ProjectLibrarySettingsDetailsProps,
+  type ProjectLibraryTypeContribution,
+  projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
@@ -788,6 +789,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const systemIO = ctx.services.signal(systemIOService)
+  const userFeatures = ctx.services.signal(userFeaturesService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
@@ -1044,6 +1046,20 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync.project-library-type',
       provides: [
+        provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+          id: 'cloud-sync.personal-cloud-library-default-policy',
+          priority: 10,
+          getDefaultLibraries: ({ isDesktop }) =>
+            !isDesktop &&
+            userFeatures.value &&
+            userFeaturesContextHas(
+              userFeatures.value.context.value,
+              OPFS_CLOUD_FEATURE_FLAG,
+              false
+            )
+              ? [getDefaultCloudProjectLibrarySetting()]
+              : undefined,
+        }),
         provide(projectLibraryTypesValueSpec, cloudLibraryType, {
           key: 'cloud-sync.project-library-type',
         }),

@@ -68,8 +68,8 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000000016300003011170318,
-          "y": -0.00000000000000022100005282802792,
+          "x": -0.00000000000000001629999928885756,
+          "y": -0.00000000000000002210001769051198,
           "z": 0.0
         }
       }
@@ -90,7 +90,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000003120000581344484,
+            "x": -0.00000000000000003119999787251096,
             "y": 70.0,
             "z": 0.0
           },
@@ -107,7 +107,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.9999999999999996,
+            "x": 4.0,
             "y": 70.0,
             "z": 0.0
           },
@@ -124,8 +124,8 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.999999999999999,
-            "y": 3.9999999999999956,
+            "x": 4.0,
+            "y": 3.9999999999999982,
             "z": 0.0
           },
           "relative": false
@@ -142,7 +142,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 170.0,
-            "y": 3.999999999999997,
+            "y": 3.999999999999999,
             "z": 0.0
           },
           "relative": false
@@ -159,7 +159,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 170.0,
-            "y": -0.0000000000000023738792748382393,
+            "y": -0.0000000000000009368284684010028,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000000001730000324309966,
-            "y": -0.0000000000000009575153555484475,
+            "x": -0.000000000000000017299999438068843,
+            "y": -0.0000000000000003288983902475901,
             "z": 0.0
           },
           "relative": false
@@ -570,7 +570,7 @@ description: Artifact commands bracket-with-slot.kcl
         "path": "[uuid]",
         "to": {
           "x": 56.0,
-          "y": -0.000000000000000024000005235431982,
+          "y": -0.0000000000000000024000000272348307,
           "z": 0.0
         }
       }
@@ -592,12 +592,12 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 50.0,
-            "y": -0.00000000000000005300000997614945
+            "y": -0.000000000000000005300000542665608
           },
           "radius": 6.0,
           "start": {
             "unit": "radians",
-            "value": 0.000000000000000004833334123452912
+            "value": 0.00000000000000000048333341923846295
           },
           "end": {
             "unit": "radians",
@@ -615,7 +615,7 @@ description: Artifact commands bracket-with-slot.kcl
         "path": "[uuid]",
         "to": {
           "x": 61.0,
-          "y": -0.0000000000000002330000430380347,
+          "y": -0.000000000000000023300000333336532,
           "z": 0.0
         }
       }
@@ -630,12 +630,12 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 50.0,
-            "y": -0.00000000000000011400002114598916
+            "y": -0.000000000000000011400001370136364
           },
           "radius": 11.0,
           "start": {
             "unit": "radians",
-            "value": -0.000000000000000010818183808367778
+            "value": -0.0000000000000000010818180875636515
           },
           "end": {
             "unit": "radians",
@@ -731,7 +731,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006000000466442222,
+            "x": 0.0000000006000000770526624,
             "y": 0.0
           },
           "radius": 11.2000000004,
@@ -833,7 +833,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000040000003109614805,
+            "x": 0.0000000004000000121161302,
             "y": 0.0
           },
           "radius": 6.8000000006,
@@ -1022,7 +1022,7 @@ description: Artifact commands bracket-with-slot.kcl
         "path": "[uuid]",
         "to": {
           "x": 150.0,
-          "y": -6.00000000000001,
+          "y": -6.0,
           "z": 0.0
         }
       }
@@ -1044,7 +1044,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 114.0,
-            "y": -6.0000000000000115,
+            "y": -6.0,
             "z": 0.0
           },
           "relative": false
@@ -1061,9 +1061,9 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 114.0,
-            "y": -0.0000000000000017763568394002505
+            "y": -0.0
           },
-          "radius": 6.00000000000001,
+          "radius": 6.0,
           "start": {
             "unit": "degrees",
             "value": -90.0
@@ -1086,7 +1086,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 150.0,
-            "y": 6.00000000000001,
+            "y": 6.0,
             "z": 0.0
           },
           "relative": false
@@ -1103,9 +1103,9 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 150.0,
-            "y": 0.000000000000003552713678800501
+            "y": -0.0
           },
-          "radius": 6.000000000000006,
+          "radius": 6.0,
           "start": {
             "unit": "degrees",
             "value": 90.0
