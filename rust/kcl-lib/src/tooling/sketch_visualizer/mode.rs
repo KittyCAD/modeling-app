@@ -12,7 +12,6 @@ use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::render::FREE_COLOR;
 use super::render::dof_color;
-use super::render::id_color;
 use super::types::SketchVisualizationCoincidentGroup;
 use super::types::SketchVisualizationData;
 use super::types::SketchVisualizationDofBuckets;
@@ -30,7 +29,6 @@ pub(super) struct ModeSidecarContext<'a> {
     pub(super) sketch_object: &'a Object,
     pub(super) points: &'a BTreeMap<usize, InternalPoint>,
     pub(super) segments: &'a BTreeMap<usize, InternalSegment>,
-    pub(super) id_color_map: &'a BTreeMap<usize, String>,
     pub(super) contact_groups: &'a [SketchVisualizationPointGroup],
     pub(super) coincident_groups: &'a [SketchVisualizationCoincidentGroup],
     pub(super) component_result: &'a ComponentResult,
@@ -41,7 +39,6 @@ pub(super) trait ModeBehavior {
     fn rendered_colors(
         self,
         segments: &BTreeMap<usize, InternalSegment>,
-        id_color_map: &BTreeMap<usize, String>,
         theme: SketchVisualizationTheme,
     ) -> BTreeMap<usize, String>;
 
@@ -60,17 +57,12 @@ impl ModeBehavior for SketchVisualizationMode {
     fn rendered_colors(
         self,
         segments: &BTreeMap<usize, InternalSegment>,
-        id_color_map: &BTreeMap<usize, String>,
         theme: SketchVisualizationTheme,
     ) -> BTreeMap<usize, String> {
         segments
             .values()
             .map(|segment| {
                 let color = match self {
-                    SketchVisualizationMode::Ids => id_color_map
-                        .get(&segment.id)
-                        .cloned()
-                        .unwrap_or_else(|| id_color(segment.id).to_hex_string()),
                     SketchVisualizationMode::Dof => dof_color(segment.freedom, theme).to_hex_string(),
                 };
                 (segment.id, color)
@@ -86,7 +78,6 @@ impl ModeBehavior for SketchVisualizationMode {
                     .cloned()
                     .unwrap_or_else(|| FREE_COLOR.to_hex_string()),
             ),
-            SketchVisualizationMode::Ids => None,
         }
     }
 
@@ -99,30 +90,24 @@ impl ModeBehavior for SketchVisualizationMode {
                     .copied()
                     .unwrap_or_default(),
             ),
-            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn point_contact_group(self, point_id: usize, point_contact_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_contact_group.get(&point_id).copied(),
-            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn point_coincident_group(self, point_id: usize, point_coincident_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_coincident_group.get(&point_id).copied(),
-            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn attach_sidecar(self, data: &mut SketchVisualizationData, context: ModeSidecarContext<'_>) {
         match self {
             SketchVisualizationMode::Dof => attach_dof_sidecar(data, context),
-            SketchVisualizationMode::Ids => {
-                data.id_color_map = Some(context.id_color_map.clone());
-            }
         }
     }
 }

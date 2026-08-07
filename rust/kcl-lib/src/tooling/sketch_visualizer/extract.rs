@@ -18,7 +18,6 @@ use super::mode::ModeSidecarContext;
 use super::model::InternalPoint;
 use super::model::InternalPolyline;
 use super::model::InternalSegment;
-use super::render::id_color;
 use super::render::render_png;
 use super::sampling::ARC_SAMPLE_COUNT;
 use super::sampling::BoundsBuilder;
@@ -262,7 +261,6 @@ impl<'a> Extraction<'a> {
 
     pub(super) fn finish(self) -> Result<SketchVisualization, SketchVisualizationError> {
         let mode = self.options.mode;
-        let id_color_map = self.id_color_map();
         let contact_groups = contact_groups(&self.points, self.options.contact_tolerance);
         let coincident_groups = coincident_groups(&self.constraints, &self.points);
         let component_result = connected_components(&self.primary_segments, &contact_groups, &coincident_groups);
@@ -281,7 +279,7 @@ impl<'a> Extraction<'a> {
         // Build all machine-readable sidecar facts before rendering. The PNG and
         // JSON must agree on colors and bounds, so both are derived from the same
         // internal point/segment maps in this finalization step.
-        let rendered_colors = mode.rendered_colors(&self.primary_segments, &id_color_map, self.options.theme);
+        let rendered_colors = mode.rendered_colors(&self.primary_segments, self.options.theme);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());
         for segment in self.primary_segments.values() {
             segment_data.push(SketchVisualizationSegmentData {
@@ -320,7 +318,6 @@ impl<'a> Extraction<'a> {
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
-            id_color_map: None,
             contact_groups: None,
             coincident_groups: None,
             connected_components: None,
@@ -335,7 +332,6 @@ impl<'a> Extraction<'a> {
                 sketch_object: self.sketch_object,
                 points: &self.points,
                 segments: &self.primary_segments,
-                id_color_map: &id_color_map,
                 contact_groups: &contact_groups,
                 coincident_groups: &coincident_groups,
                 component_result: &component_result,
@@ -398,13 +394,6 @@ impl<'a> Extraction<'a> {
         let center = self.points.get(&center_id.0)?.position;
         let radius = distance(start, center);
         Some(sample_circle(center, radius, ARC_SAMPLE_COUNT))
-    }
-
-    fn id_color_map(&self) -> BTreeMap<usize, String> {
-        self.primary_segments
-            .keys()
-            .map(|id| (*id, id_color(*id).to_hex_string()))
-            .collect()
     }
 
     fn bounds(&self) -> SketchVisualizationBounds {
