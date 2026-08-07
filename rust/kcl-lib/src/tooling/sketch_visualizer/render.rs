@@ -38,6 +38,10 @@ const LIGHT_BACKGROUND: Color = Color::rgb(0xfa, 0xfa, 0xfa);
 const CONTROL_POLYGON_COLOR: Color = Color::rgb(0x8a, 0x8a, 0x8a);
 const POINT_OUTLINE_DARK: Color = Color::rgb(0x18, 0x1a, 0x1f);
 const POINT_OUTLINE_LIGHT: Color = Color::rgb(0xfa, 0xfa, 0xfa);
+const NO_SHARP_TANGENT_DARK_COLOR: Color = Color::rgb(0xd4, 0xd4, 0xd8);
+const NO_SHARP_TANGENT_LIGHT_COLOR: Color = Color::rgb(0x33, 0x33, 0x3a);
+const SHARP_TANGENT_RED: Color = Color::rgb(0xff, 0x5e, 0x5b);
+const SHARP_TANGENT_PURPLE: Color = Color::rgb(0x7c, 0x3a, 0xff);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Color {
@@ -82,6 +86,22 @@ pub(super) fn id_color(id: usize) -> Color {
     hsv_to_rgb(hue, saturation, value)
 }
 
+pub(super) fn sharp_tangent_color(count: usize, theme: SketchVisualizationTheme) -> Color {
+    if count == 0 {
+        return match theme {
+            SketchVisualizationTheme::Dark => NO_SHARP_TANGENT_DARK_COLOR,
+            SketchVisualizationTheme::Light => NO_SHARP_TANGENT_LIGHT_COLOR,
+        };
+    }
+
+    let t = libm::fmin((count.saturating_sub(1)) as f64 / 3.0, 1.0);
+    Color::rgb(
+        lerp_channel(SHARP_TANGENT_RED.r, SHARP_TANGENT_PURPLE.r, t),
+        lerp_channel(SHARP_TANGENT_RED.g, SHARP_TANGENT_PURPLE.g, t),
+        lerp_channel(SHARP_TANGENT_RED.b, SHARP_TANGENT_PURPLE.b, t),
+    )
+}
+
 fn stable_id_hash(mut value: u64) -> u64 {
     value = value.wrapping_add(0x9e37_79b9_7f4a_7c15);
     value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
@@ -108,6 +128,10 @@ fn hsv_to_rgb(h: f64, s: f64, v: f64) -> Color {
 
 fn float_channel(value: f64) -> u8 {
     (value.clamp(0.0, 1.0) * 255.0).round() as u8
+}
+
+fn lerp_channel(from: u8, to: u8, t: f64) -> u8 {
+    (from as f64 + (to as f64 - from as f64) * t).round().clamp(0.0, 255.0) as u8
 }
 
 pub(super) fn render_png(

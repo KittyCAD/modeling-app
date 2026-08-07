@@ -36,6 +36,25 @@ width = 360
 height = 300
 padding = 24
 
+[[cases.visualizations]]
+name = "sharp_tangents"
+mode = "sharp_tangents"
+width = 360
+height = 300
+padding = 24
+
+[[cases]]
+name = "sharp_tangent_nightmare"
+input = "sharp_tangent_nightmare/input.kcl"
+sketch = "sketch001"
+
+[[cases.visualizations]]
+name = "sharp_tangents"
+mode = "sharp_tangents"
+width = 420
+height = 420
+padding = 24
+
 [[cases]]
 name = "sample_tangent_line_circle"
 input = "../tangent_line_circle/input.kcl"

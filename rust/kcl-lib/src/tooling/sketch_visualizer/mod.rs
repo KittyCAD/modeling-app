@@ -23,6 +23,7 @@ mod model;
 mod render;
 mod sampling;
 mod scene;
+mod sharp_tangents;
 mod types;
 
 #[cfg(test)]
@@ -48,5 +49,7 @@ pub use types::SketchVisualizationPointData;
 pub use types::SketchVisualizationPointGroup;
 pub use types::SketchVisualizationSegmentData;
 pub use types::SketchVisualizationSegmentKind;
+pub use types::SketchVisualizationSharpTangentData;
+pub use types::SketchVisualizationSharpTangentIncident;
 pub use types::SketchVisualizationSketchInfo;
 pub use types::SketchVisualizationTheme;
