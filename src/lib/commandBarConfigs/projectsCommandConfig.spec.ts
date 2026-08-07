@@ -94,6 +94,7 @@ function createHomeProjectActions(
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
     canMoveToLibrary: vi.fn(() => false),
+    canReviewDuplicateRealizations: vi.fn(() => false),
     open: vi.fn(async (project) => ({
       defaultFile: project.defaultFile ?? '',
     })),
@@ -102,6 +103,7 @@ function createHomeProjectActions(
     delete: vi.fn(async () => undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn(async () => undefined),
+    deleteDuplicateRealizations: vi.fn(async () => undefined),
     ...overrides,
   }
 }

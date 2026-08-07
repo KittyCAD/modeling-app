@@ -1499,6 +1499,53 @@ export async function deleteCloudSyncLocalProjectRealizations(
   await refreshPendingCount()
 }
 
+export async function deleteCloudSyncDuplicateProjectRealizations({
+  remoteProjectId,
+  canonicalProjectPath,
+  duplicateProjectPaths,
+}: {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  duplicateProjectPaths: readonly string[]
+}) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const normalizedCanonicalProjectPath = canonicalProjectPath
+    ? normalizePathForSync(canonicalProjectPath)
+    : undefined
+  if (!projectId) {
+    return
+  }
+
+  const selectedProjectPaths = Array.from(
+    new Set(duplicateProjectPaths.map(normalizePathForSync).filter(Boolean))
+  )
+
+  for (const projectPath of selectedProjectPaths) {
+    if (projectPath === normalizedCanonicalProjectPath) {
+      continue
+    }
+
+    const metadata = await getProjectMetadata(projectPath)
+    const projectTomlCloudProjectId = await readProjectTomlCloudProjectId(
+      projectPath
+    ).catch(() => undefined)
+    if (
+      metadata?.remoteProjectId !== projectId &&
+      projectTomlCloudProjectId !== projectId
+    ) {
+      continue
+    }
+
+    await deleteLocalProjectRealization(projectPath)
+  }
+
+  await refreshPendingCount()
+}
+
 async function cloneRemoteProjectToLocal(
   remoteProject: RemoteProject,
   projectDirectory: string,

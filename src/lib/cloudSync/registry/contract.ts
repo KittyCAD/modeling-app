@@ -25,6 +25,12 @@ export type CloudProjectDuplicateRisk =
 
 export type CloudProjectRealizationRole = 'canonical' | 'duplicate'
 
+export type CloudProjectDuplicateCleanupInput = {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  duplicateProjectPaths: readonly string[]
+}
+
 export interface CloudProjectRelationshipRealization {
   role: CloudProjectRealizationRole
   realization: ProjectLibraryRealization
@@ -98,6 +104,14 @@ export type CloudSyncRegistryService = {
   deleteLocalProjectRealizations: (
     remoteProjectId: string,
     selectedProjectPath: string
+  ) => Promise<void>
+  /**
+   * Delete user-confirmed duplicate local realizations for a cloud
+   * relationship. Implementations must ignore the canonical realization even if
+   * a caller includes it in the selected duplicate paths.
+   */
+  deleteDuplicateProjectRealizations: (
+    input: CloudProjectDuplicateCleanupInput
   ) => Promise<void>
   /**
    * Materialize a remote cloud project into the local library directory the

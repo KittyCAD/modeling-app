@@ -15,6 +15,7 @@ import {
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import {
   type CloudProjectRelationship,
   type CloudProjectRelationshipRealization,
@@ -428,6 +429,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project.readWriteAccess && getProjectOperation(project, 'deleteProject')
       ),
     canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
+    canReviewDuplicateRealizations: (project) =>
+      Boolean(project.duplicateRealizations?.length),
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')
       if (openProject && project.readWriteAccess && project.defaultFile) {
@@ -569,6 +572,19 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
             defaultFile: result.defaultFile,
           }
         : undefined
+    },
+    deleteDuplicateRealizations: async (project, duplicateProjectPaths) => {
+      if (!project.remoteProjectId || duplicateProjectPaths.length === 0) {
+        return
+      }
+
+      await cloudSync.value?.deleteDuplicateProjectRealizations({
+        remoteProjectId: project.remoteProjectId,
+        canonicalProjectPath: project.localProjectPath,
+        duplicateProjectPaths,
+      })
+      invalidateProjectLibraryRealizations()
+      toast.success('Deleted duplicate project copies.')
     },
   }
 
