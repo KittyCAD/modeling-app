@@ -839,10 +839,17 @@ describe('project system', () => {
     })
 
     try {
-      const project = await app.openProject({
+      const projectIORef = {
         ...mockProject,
         title: 'Bracket',
-      })
+      }
+      await waitForSettingsIdle(app)
+      app.settings.send({ type: 'load.project', project: projectIORef })
+      await waitForSettingsIdle(app)
+
+      const project = await app.openProject(projectIORef)
+
+      expect(app.settings.actor.getSnapshot().matches('idle')).toBe(true)
 
       app.registry.reconfigure(homeEntriesSlot, [
         defineRegistryItem({
@@ -866,6 +873,7 @@ describe('project system', () => {
       expect(
         app.settings.actor.getSnapshot().context.currentProject?.title
       ).toBe('Updated bracket')
+      expect(app.settings.actor.getSnapshot().matches('idle')).toBe(true)
     } finally {
       app.dispose()
     }

@@ -434,6 +434,10 @@ export const settingsMachine = setup({
       entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
+        'sync.project': {
+          actions: ['syncCurrentProject'],
+        },
+
         '*': {
           target: 'persisting settings',
           actions: ['setSettingAtLevel', 'toastSuccess'],
