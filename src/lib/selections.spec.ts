@@ -2000,6 +2000,72 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test('preserves the clicked pattern copy identity in viewport selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `body001 = 0
+bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
+    const ast = assertParse(code, instance)
+    const patternRange = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ] as SourceRange
+    const codeRef = {
+      range: patternRange,
+      pathToNode: getNodePathFromSourceRange(ast, patternRange),
+      nodePath: { steps: [] },
+    }
+    const patternArtifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: [],
+      codeRef,
+    } as unknown as Artifact
+    const artifactGraph: ArtifactGraph = new Map([
+      [patternArtifact.id, patternArtifact],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async () => ({
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'empty' } },
+        },
+      })),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'copy-face-1',
+          reference: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          artifact: patternArtifact,
+          codeRef,
+          engineEntityId: 'copy-face-1',
+          entityRef: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+          patternIndex: 1,
+        },
+      },
+    })
+  })
+
   test('normalizes standalone helix entity references', () => {
     expect(
       normalizeEntityReference({

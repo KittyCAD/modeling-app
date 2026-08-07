@@ -1681,7 +1681,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  const _artifactByEventId = clickEntityId
+  const artifactByEventId = clickEntityId
     ? (artifactGraph.get(clickEntityId) ??
       getPatternArtifactForCopyId(clickEntityId, artifactGraph))
     : undefined
@@ -1737,7 +1737,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 
   if (
-    !_artifactByEventId &&
+    !artifactByEventId &&
     clickEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
@@ -1772,11 +1772,14 @@ export async function getEventForQueryEntityTypeWithPoint(
       codeRefs = refs
     }
   } else if (entityId) {
-    const _artifact =
+    const artifact =
       artifactGraph.get(entityId) ??
       getPatternArtifactForCopyId(entityId, artifactGraph)
-    if (_artifact) {
-      const refs = getCodeRefsByArtifactId(entityId, artifactGraph)
+    if (artifact) {
+      const refs =
+        artifact.type === 'pattern'
+          ? [artifact.codeRef]
+          : getCodeRefsByArtifactId(entityId, artifactGraph)
       codeRefs = refs || undefined
     }
   }
@@ -1784,9 +1787,22 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Prefer engine primitive index for solid edge picks when the API supports it.
   // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
   // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
+  const patternArtifact = entityId
+    ? getPatternArtifactForCopyId(entityId, artifactGraph)
+    : undefined
+  const patternCopyIndex =
+    patternArtifact?.type === 'pattern' && entityId
+      ? patternArtifact.copyIds.indexOf(entityId) + 1
+      : 0
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
+    ...(patternArtifact && patternCopyIndex > 0
+      ? {
+          artifact: patternArtifact,
+          patternIndex: patternCopyIndex,
+        }
+      : {}),
     ...(clickEntityId ? { engineEntityId: clickEntityId } : {}),
     ...(engineTopologyFallbackResolved
       ? { engineTopologyFallback: engineTopologyFallbackResolved }

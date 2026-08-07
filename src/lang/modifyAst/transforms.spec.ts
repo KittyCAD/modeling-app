@@ -64,6 +64,41 @@ afterAll(() => {
 })
 
 describe('transforms.test.ts', () => {
+  function getPatternFixture() {
+    const code = `extrude001 = 0
+pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0, 0, 1])`
+    const ast = assertParse(code, instanceInThisFile)
+    const patternRange: [number, number, number] = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ]
+    const patternPathToNode = getNodePathFromSourceRange(ast, patternRange)
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: patternRange,
+        pathToNode: patternPathToNode,
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+
+    return {
+      artifactGraph,
+      ast,
+      pattern,
+      patternPathToNode,
+      patternRange,
+    }
+  }
+
   describe('Testing addDelete', () => {
     function getSweepFixture() {
       const code = `extrude001 = extrude(profile001, length = 1)`
@@ -95,41 +130,6 @@ describe('transforms.test.ts', () => {
         sourcePathToNode,
         sourceRange,
         sweep,
-      }
-    }
-
-    function getPatternFixture() {
-      const code = `extrude001 = 0
-pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0, 0, 1])`
-      const ast = assertParse(code, instanceInThisFile)
-      const patternRange: [number, number, number] = [
-        code.indexOf('patternLinear3d'),
-        code.length,
-        0,
-      ]
-      const patternPathToNode = getNodePathFromSourceRange(ast, patternRange)
-      const pattern: Artifact = {
-        type: 'pattern',
-        id: 'pattern-command-id',
-        subType: 'linear',
-        sourceId: 'source-body-id',
-        copyIds: ['copy-body-1', 'copy-body-2'],
-        copyFaceIds: [],
-        copyEdgeIds: [],
-        codeRef: {
-          range: patternRange,
-          pathToNode: patternPathToNode,
-          nodePath: { steps: [] },
-        },
-      }
-      const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
-
-      return {
-        artifactGraph,
-        ast,
-        pattern,
-        patternPathToNode,
-        patternRange,
       }
     }
 
@@ -323,6 +323,40 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should translate only the selected pattern copy', async () => {
+      const { artifactGraph, ast, pattern, patternPathToNode, patternRange } =
+        getPatternFixture()
+      const result = addTranslate({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              artifact: pattern,
+              codeRef: {
+                range: patternRange,
+                pathToNode: patternPathToNode,
+              },
+              engineEntityId: 'copy-body-1',
+              patternIndex: 1,
+            },
+          ],
+          otherSelections: [],
+        },
+        x: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'translate(pattern001[1], x = 5)'
+      )
     })
 
     it('should add a standalone translate call on helix selection', async () => {
