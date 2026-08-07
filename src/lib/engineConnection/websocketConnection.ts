@@ -96,6 +96,7 @@ export const createOnWebSocketMessage = ({
   webrtcStatsCollector,
   sdpAnswerResolve,
   sdpAnswerReject,
+  setApiCallId,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -110,6 +111,7 @@ export const createOnWebSocketMessage = ({
   webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
+  setApiCallId: (apiCallId: string) => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -180,6 +182,7 @@ export const createOnWebSocketMessage = ({
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
+        setApiCallId(apiCallId)
         mark('code/apiCallId', {
           name: 'code/apiCallId',
           startTime: performance.now(),

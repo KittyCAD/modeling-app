@@ -274,7 +274,7 @@ lidLipHoleOffset = innerOffset - wallThickness
 lidLipClearanceRadius = holeDia + wallThickness
 
 // Define lid inner and sealing surfaces
-lidLipSketch = sketch(on = startSketchOn(lidPlate, face = END)) {
+lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   line1 = line(start = [var 153mm, var 3mm], end = [var 272mm, var 3mm])
   line2 = line(start = [var 272mm, var 3mm], end = [var 272mm, var 172mm])
   coincident([line1.end, line2.start])

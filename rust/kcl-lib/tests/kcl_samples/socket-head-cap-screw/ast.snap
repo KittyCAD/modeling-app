@@ -1096,7 +1096,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -3185,7 +3185,7 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },

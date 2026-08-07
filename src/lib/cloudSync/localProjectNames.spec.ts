@@ -11,7 +11,6 @@ import {
   normalizeProjectArchiveFilesForCloudSync,
   projectManifestFromFiles,
 } from '@src/lib/cloudSync/projectArchive'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import {
   getAllOutboxEntries,
   putProjectMetadata,
@@ -23,6 +22,7 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
+import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type * as TrapModule from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
@@ -94,7 +94,7 @@ function configureCloudSyncTestFs(
     enabled: true,
     baseUrl,
     environmentName: 'dev.zoo.dev',
-    projectDirectoryPath: projectDirectory,
+    cloudProjectDirectoryPaths: [projectDirectory],
     autoEnrollCloudLibraryProjects: false,
   })
 }
@@ -300,6 +300,28 @@ describe('cloud sync local project names', () => {
     expect(
       await getCloudSyncProjectMetadata(dirtyTitleProjectPath)
     ).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('deletes the selected local realization even when project.toml lookup cannot rediscover it', async () => {
+    const files = new Map([[`${titleProjectPath}/main.kcl`, 'x = 1']])
+    configureCloudSyncTestFs(files)
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: titleProjectPath,
+      projectName: expectedProjectName,
+      remoteProjectId,
+      remoteRevision: 'rev-1',
+      baseManifest: await cleanCloudProjectManifest(),
+    })
+
+    await deleteCloudSyncLocalProjectRealizations(
+      remoteProjectId,
+      titleProjectPath
+    )
+
+    expect(files.has(`${titleProjectPath}/main.kcl`)).toBe(false)
+    expect(await getCloudSyncProjectMetadata(titleProjectPath)).toBeUndefined()
     expect(await getAllOutboxEntries()).toEqual([])
   })
 
