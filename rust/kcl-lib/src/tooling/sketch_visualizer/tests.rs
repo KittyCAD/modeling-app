@@ -1,9 +1,16 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
+
+use serde::Deserialize;
 
 use super::render::dof_color;
 use super::*;
 use crate::ExecOutcome;
+use crate::ExecutorContext;
+use crate::ExecutorSettings;
+use crate::Program;
 use crate::SourceRange;
+use crate::TypedPath;
 use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::front::Arc;
@@ -15,6 +22,7 @@ use crate::front::Coincident;
 use crate::front::Constraint;
 use crate::front::ControlPointSpline;
 use crate::front::ControlPointSplineCtor;
+use crate::front::Expr;
 use crate::front::Freedom;
 use crate::front::Line;
 use crate::front::LineCtor;
@@ -22,6 +30,7 @@ use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
 use crate::front::ObjectKind;
+use crate::front::Plane;
 use crate::front::Point;
 use crate::front::Point2d;
 use crate::front::PointCtor;
@@ -30,11 +39,8 @@ use crate::front::SegmentCtor;
 use crate::front::Sketch;
 use crate::front::SketchCtor;
 use crate::front::SourceRef;
-use crate::front::{Expr, Plane};
 use crate::frontend::sketch::ConstraintSegment;
 use crate::pretty::NumericSuffix;
-use crate::{ExecutorContext, ExecutorSettings, Program, TypedPath};
-use serde::Deserialize;
 
 #[test]
 fn dof_is_default_and_id_color_map_is_always_emitted() {

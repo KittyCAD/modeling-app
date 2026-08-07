@@ -1,10 +1,5 @@
 use indexmap::IndexMap;
 
-use crate::ExecOutcome;
-use crate::KclValueView;
-use crate::front::Object;
-use crate::front::ObjectKind;
-
 use super::extract::Extraction;
 use super::scene::object_kind_name;
 use super::scene::select_sketch;
@@ -13,6 +8,10 @@ use super::types::SketchSelector;
 use super::types::SketchVisualization;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationOptions;
+use crate::ExecOutcome;
+use crate::KclValueView;
+use crate::front::Object;
+use crate::front::ObjectKind;
 
 impl ExecOutcome {
     /// Render one sketch from this execution result into a PNG plus sidecar data.
