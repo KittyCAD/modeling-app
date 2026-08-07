@@ -46,6 +46,45 @@ const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
     conflicted: 'Conflicted',
   }
 
+type AquariumStatusBadge = {
+  label: string
+  className: string
+  testId: string
+}
+
+const aquariumStatusBadges = {
+  private: undefined,
+  draft: undefined,
+  pending_review: {
+    label: 'Pending Review',
+    className:
+      'bg-river-20 text-chalkboard-100 ring-river-60/40 dark:bg-river-80 dark:text-chalkboard-10 dark:ring-river-30/40',
+    testId: 'pending-review-badge',
+  },
+  published: {
+    label: 'Published',
+    className:
+      'bg-succeed-20 text-chalkboard-100 ring-succeed-60/40 dark:bg-succeed-80 dark:text-chalkboard-10 dark:ring-succeed-30/40',
+    testId: 'published-badge',
+  },
+  rejected: {
+    label: 'Rejected',
+    className:
+      'bg-destroy-20 text-chalkboard-100 ring-destroy-60/40 dark:bg-destroy-80 dark:text-chalkboard-10 dark:ring-destroy-30/40',
+    testId: 'rejected-badge',
+  },
+  deleted: undefined,
+  changes_requested: {
+    label: 'Changes requested',
+    className:
+      'bg-warn-20 text-chalkboard-100 ring-warn-60/40 dark:bg-warn-80 dark:text-chalkboard-10 dark:ring-warn-30/40',
+    testId: 'changes-requested-badge',
+  },
+} satisfies Record<
+  ProjectStatus['publicationStatus'],
+  AquariumStatusBadge | undefined
+>
+
 const compactProjectCardClassNames: ProjectCardClassNames = {
   thumbnailFrame:
     'h-24 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
@@ -149,8 +188,9 @@ function AppProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
+  const aquariumStatusBadge = projectStatus
+    ? aquariumStatusBadges[projectStatus.publicationStatus]
+    : undefined
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
@@ -266,7 +306,7 @@ function AppProjectCard({
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
     hasCloudSyncFailure ||
-    hasChangesRequested) && (
+    aquariumStatusBadge) && (
     <>
       {statusBadgeLabel && (
         <span
@@ -293,12 +333,13 @@ function AppProjectCard({
           <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
-      {hasChangesRequested && (
+      {aquariumStatusBadge && (
         <span
-          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
-          data-testid="changes-requested-badge"
+          className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset ${aquariumStatusBadge.className}`}
+          data-testid={aquariumStatusBadge.testId}
         >
-          Changes requested
+          <span className="sr-only">Aquarium status: </span>
+          {aquariumStatusBadge.label}
         </span>
       )}
     </>
