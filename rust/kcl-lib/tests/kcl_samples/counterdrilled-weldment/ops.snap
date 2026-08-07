@@ -4899,13 +4899,6 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -4968,13 +4961,6 @@ description: Operations executed counterdrilled-weldment.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",

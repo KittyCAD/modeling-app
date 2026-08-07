@@ -303,6 +303,28 @@ describe('cloud sync local project names', () => {
     expect(await getAllOutboxEntries()).toEqual([])
   })
 
+  it('deletes the selected local realization even when project.toml lookup cannot rediscover it', async () => {
+    const files = new Map([[`${titleProjectPath}/main.kcl`, 'x = 1']])
+    configureCloudSyncTestFs(files)
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: titleProjectPath,
+      projectName: expectedProjectName,
+      remoteProjectId,
+      remoteRevision: 'rev-1',
+      baseManifest: await cleanCloudProjectManifest(),
+    })
+
+    await deleteCloudSyncLocalProjectRealizations(
+      remoteProjectId,
+      titleProjectPath
+    )
+
+    expect(files.has(`${titleProjectPath}/main.kcl`)).toBe(false)
+    expect(await getCloudSyncProjectMetadata(titleProjectPath)).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
+  })
+
   it('leaves data and metadata in place when a cloud project directory rename fails', async () => {
     const files = createIdBasedCloudProjectFiles()
     configureCloudSyncTestFs(files, { failRenames: true })

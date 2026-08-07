@@ -797,7 +797,6 @@ description: Artifact commands field-monitor-stand.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     },

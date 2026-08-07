@@ -5452,6 +5452,12 @@ fn solid_output_index_for_sweep(
     sweep_id: ArtifactId,
     sweep_code_ref: &CodeRef,
 ) -> Option<usize> {
+    // Constituent sweeps are implementation details of one composite body,
+    // even when cloning gives them the same CodeRef as the composite root.
+    if downstream_composite_id_for_solid_source(artifact_graph, sweep_id).is_some() {
+        return None;
+    }
+
     let sibling_sweeps = artifact_graph
         .values()
         .filter_map(|artifact| match artifact {
@@ -7251,6 +7257,73 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn composite_constituent_sweeps_are_not_solid_outputs() {
+        use kcl_api::artifact::ArtifactSweepMethod;
+        use kcl_api::artifact::CompositeSolid;
+        use kcl_api::artifact::CompositeSolidSubType;
+        use kcl_api::artifact::Sweep;
+        use kcl_api::artifact::SweepSubType;
+
+        let first_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let second_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let composite_id = ArtifactId::new(Uuid::new_v4());
+        let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+        let sweep = |id| {
+            Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Extrusion,
+                path_id: ArtifactId::new(Uuid::new_v4()),
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref: code_ref.clone(),
+                source_sweep_id: None,
+                trajectory_id: None,
+                method: ArtifactSweepMethod::New,
+                consumed: false,
+                pattern_ids: Vec::new(),
+            })
+        };
+        let mut artifacts = IndexMap::from([
+            (first_sweep_id, sweep(first_sweep_id)),
+            (second_sweep_id, sweep(second_sweep_id)),
+        ]);
+
+        let top_level_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, first_sweep_id, &code_ref),
+            Some(0)
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, second_sweep_id, &code_ref),
+            Some(1)
+        );
+
+        artifacts.insert(
+            composite_id,
+            Artifact::CompositeSolid(CompositeSolid {
+                id: composite_id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Union,
+                output_index: None,
+                solid_ids: vec![first_sweep_id, second_sweep_id],
+                tool_ids: Vec::new(),
+                code_ref,
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+        let composite_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, first_sweep_id, &CodeRef::default()),
+            None
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, second_sweep_id, &CodeRef::default()),
+            None
+        );
     }
 
     #[test]
