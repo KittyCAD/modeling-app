@@ -1150,7 +1150,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       {
         label: 'wall',
         findFace: (artifact: Artifact) => artifact.type === 'wall',
-        expectedFace: /faces = \[\s*cube2\.sketch\.tags\.line[14]\s*\]/,
+        expectedFace: /faces = \[\s*cube2\.sketch\.tags\.line2\s*\]/,
       },
     ])(
       'should qualify a directly selected cloned $label face',
