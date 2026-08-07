@@ -13,12 +13,16 @@ use super::model::InternalSegment;
 use super::render::FREE_COLOR;
 use super::render::dof_color;
 use super::render::id_color;
+use super::render::sharp_tangent_color;
+use super::sharp_tangents::sharp_tangents;
 use super::types::SketchVisualizationCoincidentGroup;
+use super::types::SketchVisualizationConstraintData;
 use super::types::SketchVisualizationData;
 use super::types::SketchVisualizationDofBuckets;
 use super::types::SketchVisualizationDofData;
 use super::types::SketchVisualizationMode;
 use super::types::SketchVisualizationPointGroup;
+use super::types::SketchVisualizationSharpTangentData;
 use super::types::SketchVisualizationTheme;
 use crate::execution::sketch_constraint_status_for_sketch;
 use crate::front::Freedom;
@@ -30,6 +34,7 @@ pub(super) struct ModeSidecarContext<'a> {
     pub(super) sketch_object: &'a Object,
     pub(super) points: &'a BTreeMap<usize, InternalPoint>,
     pub(super) segments: &'a BTreeMap<usize, InternalSegment>,
+    pub(super) constraints: &'a [SketchVisualizationConstraintData],
     pub(super) contact_groups: &'a [SketchVisualizationPointGroup],
     pub(super) coincident_groups: &'a [SketchVisualizationCoincidentGroup],
     pub(super) component_result: &'a ComponentResult,
@@ -39,7 +44,7 @@ pub(super) struct ModeSidecarContext<'a> {
 pub(super) trait ModeBehavior {
     fn rendered_colors(
         self,
-        segments: &BTreeMap<usize, InternalSegment>,
+        context: &ModeSidecarContext<'_>,
         theme: SketchVisualizationTheme,
     ) -> BTreeMap<usize, String>;
 
@@ -57,15 +62,26 @@ pub(super) trait ModeBehavior {
 impl ModeBehavior for SketchVisualizationMode {
     fn rendered_colors(
         self,
-        segments: &BTreeMap<usize, InternalSegment>,
+        context: &ModeSidecarContext<'_>,
         theme: SketchVisualizationTheme,
     ) -> BTreeMap<usize, String> {
-        segments
+        let sharp_tangents = (self == SketchVisualizationMode::SharpTangents).then(|| sharp_tangent_data(context));
+        context
+            .segments
             .values()
             .map(|segment| {
                 let color = match self {
                     SketchVisualizationMode::Ids => id_color(segment.id).to_hex_string(),
                     SketchVisualizationMode::Dof => dof_color(segment.freedom, theme).to_hex_string(),
+                    SketchVisualizationMode::SharpTangents => sharp_tangent_color(
+                        sharp_tangents
+                            .as_ref()
+                            .and_then(|data| data.segment_counts.get(&segment.id))
+                            .copied()
+                            .unwrap_or_default(),
+                        theme,
+                    )
+                    .to_hex_string(),
                 };
                 (segment.id, color)
             })
@@ -74,7 +90,7 @@ impl ModeBehavior for SketchVisualizationMode {
 
     fn segment_rendered_color(self, segment_id: usize, rendered_colors: &BTreeMap<usize, String>) -> Option<String> {
         match self {
-            SketchVisualizationMode::Dof => Some(
+            SketchVisualizationMode::Dof | SketchVisualizationMode::SharpTangents => Some(
                 rendered_colors
                     .get(&segment_id)
                     .cloned()
@@ -93,21 +109,21 @@ impl ModeBehavior for SketchVisualizationMode {
                     .copied()
                     .unwrap_or_default(),
             ),
-            SketchVisualizationMode::Ids => None,
+            SketchVisualizationMode::Ids | SketchVisualizationMode::SharpTangents => None,
         }
     }
 
     fn point_contact_group(self, point_id: usize, point_contact_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_contact_group.get(&point_id).copied(),
-            SketchVisualizationMode::Ids => None,
+            SketchVisualizationMode::Ids | SketchVisualizationMode::SharpTangents => None,
         }
     }
 
     fn point_coincident_group(self, point_id: usize, point_coincident_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_coincident_group.get(&point_id).copied(),
-            SketchVisualizationMode::Ids => None,
+            SketchVisualizationMode::Ids | SketchVisualizationMode::SharpTangents => None,
         }
     }
 
@@ -116,6 +132,9 @@ impl ModeBehavior for SketchVisualizationMode {
             SketchVisualizationMode::Dof => attach_dof_sidecar(data, context),
             SketchVisualizationMode::Ids => {
                 data.id_color_map = Some(id_color_map(context.segments));
+            }
+            SketchVisualizationMode::SharpTangents => {
+                data.sharp_tangents = Some(sharp_tangent_data(&context));
             }
         }
     }
@@ -154,4 +173,13 @@ fn dof_data(
         points: point_buckets,
         segments: segment_buckets,
     }
+}
+
+fn sharp_tangent_data(context: &ModeSidecarContext<'_>) -> SketchVisualizationSharpTangentData {
+    sharp_tangents(
+        context.segments,
+        context.constraints,
+        context.contact_groups,
+        context.coincident_groups,
+    )
 }
