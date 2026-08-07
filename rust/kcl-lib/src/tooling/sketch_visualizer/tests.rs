@@ -12,7 +12,7 @@ use crate::Program;
 use crate::SourceRange;
 use crate::TypedPath;
 use crate::execution::ArtifactId;
-use crate::execution::ExecState;
+use crate::execution::MockConfig;
 use crate::front::Arc;
 use crate::front::ArcCtor;
 use crate::front::ArcDirection;
@@ -334,15 +334,16 @@ async fn execute_visualizer_kcl(input_path: &Path) -> ExecOutcome {
     settings.with_current_file(TypedPath(input_path.to_path_buf()));
     settings.project_directory = input_path.parent().map(|path| TypedPath(path.to_path_buf()));
     let ctx = ExecutorContext::new_mock(Some(settings)).await;
-    let mut exec_state = ExecState::new(&ctx);
-    let (env_ref, _) = ctx
-        .run(&program, &mut exec_state)
+    let outcome = ctx
+        .run_mock(
+            &program,
+            &MockConfig {
+                use_prev_memory: false,
+                ..Default::default()
+            },
+        )
         .await
         .unwrap_or_else(|err| panic!("failed to execute `{}`: {err:?}", input_path.display()));
-    let outcome = exec_state
-        .into_exec_outcome(env_ref, &ctx)
-        .await
-        .unwrap_or_else(|err| panic!("failed to build exec outcome for `{}`: {err:?}", input_path.display()));
     ctx.close().await;
     outcome
 }
