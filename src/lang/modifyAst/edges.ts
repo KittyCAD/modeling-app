@@ -169,8 +169,24 @@ export function addFillet({
   let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
 
   if (!err(edgeRefsBodyData)) {
-    useEdgeRefs = true
+    useEdgeRefs = edgeRefsBodyData.bodies.size > 0
     modifiedAst = edgeRefsBodyData.modifiedAst
+    const unhandledSelections = edgeRefsBodyData.unhandledSelections
+    if (
+      unhandledSelections.graphSelections.length > 0 ||
+      unhandledSelections.otherSelections.length > 0
+    ) {
+      bodyData = groupSelectionsByBodyAndAddTags(
+        unhandledSelections,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit,
+        { includePrimitiveEdgeIndices: true }
+      )
+      if (err(bodyData)) return bodyData
+      modifiedAst = bodyData.modifiedAst
+    }
   } else {
     bodyData = groupSelectionsByBodyAndAddTags(
       selection,
@@ -196,8 +212,10 @@ export function addFillet({
 
   const pathToNodes: PathToNode[] = []
 
-  if (useEdgeRefs && !err(edgeRefsBodyData)) {
-    for (const data of edgeRefsBodyData.bodies.values()) {
+  // Primitive indices describe the topology at selection time, so apply
+  // legacy-only selections before face references mutate that topology.
+  if (bodyData) {
+    for (const data of bodyData.bodies.values()) {
       const tagArgs = tag
         ? [createLabeledArg('tag', createTagDeclarator(tag))]
         : []
@@ -211,7 +229,7 @@ export function addFillet({
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
-          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg('tags', data.tagsExpr),
           createLabeledArg('radius', valueOrVariable(radius)),
           ...toleranceArgs,
           ...tagArgs,
@@ -230,8 +248,10 @@ export function addFillet({
       if (err(pathToNode)) return pathToNode
       pathToNodes.push(pathToNode)
     }
-  } else if (bodyData) {
-    for (const data of bodyData.bodies.values()) {
+  }
+
+  if (useEdgeRefs && !err(edgeRefsBodyData)) {
+    for (const data of edgeRefsBodyData.bodies.values()) {
       const tagArgs = tag
         ? [createLabeledArg('tag', createTagDeclarator(tag))]
         : []
@@ -245,7 +265,7 @@ export function addFillet({
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
-          createLabeledArg('tags', data.tagsExpr),
+          createLabeledArg('edges', data.edgeRefsExpr),
           createLabeledArg('radius', valueOrVariable(radius)),
           ...toleranceArgs,
           ...tagArgs,
@@ -2628,6 +2648,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 ):
   | {
       modifiedAst: Node<Program>
+      unhandledSelections: Selections
       bodies: Map<
         string,
         {
@@ -2647,6 +2668,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       pathIfPipe?: PathToNode
     }
   >()
+  const handledSelections = new Set<Selection>()
 
   const v2Selections = selections.graphSelections || []
   const hasV2Selections = v2Selections.length > 0
@@ -2657,7 +2679,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       string,
       {
         sweepArtifact: SweepArtifact
-        edgeEntityRefs: Array<Extract<EntityReference, { type: 'edge' }>>
+        edgeEntityRefs: Array<{
+          selection: Selection
+          reference: Extract<EntityReference, { type: 'edge' }>
+        }>
       }
     >()
 
@@ -2717,7 +2742,10 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           edgeEntityRefs: [],
         })
       }
-      bodyToV2Selections.get(bodyKey)!.edgeEntityRefs.push(edgeEntityRef)
+      bodyToV2Selections.get(bodyKey)!.edgeEntityRefs.push({
+        selection: v2Sel,
+        reference: edgeEntityRef,
+      })
     }
 
     // Process each body
@@ -2725,8 +2753,8 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       const bodyEdgeRefs: Expr[] = []
 
       // Create edgeRefs from V2 selections
-      for (const edgeEntityRef of bodyData.edgeEntityRefs) {
-        const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
+      for (const { selection, reference } of bodyData.edgeEntityRefs) {
+        const payload = entityReferenceToEdgeRefPayload(reference)
         const result = createEdgeRefObjectExpression(
           payload,
           wasmInstance,
@@ -2738,6 +2766,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           continue
         }
         bodyEdgeRefs.push(result.expr)
+        handledSelections.add(selection)
         modifiedAst = result.modifiedAst
       }
 
@@ -2885,7 +2914,16 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     return new Error('No edge selections found')
   }
 
-  return { modifiedAst, bodies }
+  return {
+    modifiedAst,
+    bodies,
+    unhandledSelections: {
+      graphSelections: selections.graphSelections.filter(
+        (selection) => !handledSelections.has(selection)
+      ),
+      otherSelections: selections.otherSelections,
+    },
+  }
 }
 
 type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection

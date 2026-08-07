@@ -238,6 +238,161 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should split mixed primitive and face-reference edges without dropping either selection', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(sweep).toBeDefined()
+      expect(segment).toBeDefined()
+      if (!sweep || !segment || segment.type !== 'segment') return
+
+      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+      if (err(commonFaces)) throw commonFaces
+      const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
+      expect(codeRefs?.length).toBeGreaterThan(0)
+
+      const selection: Selections = {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: commonFaces.slice(0, 2).map((face) => face.id),
+            },
+            codeRef: codeRefs![0],
+          },
+        ],
+        otherSelections: [
+          {
+            entityId: 'primitive-edge-id',
+            parentEntityId: sweep.id,
+            primitiveIndex: 2,
+            primitiveType: 'edge',
+            type: 'enginePrimitive',
+          },
+        ],
+      }
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('edge001 = edgeId(extrude001, index = 2)')
+      expect(newCode).toContain(
+        'fillet001 = fillet(extrude001, tags = edge001, radius = 1)'
+      )
+      expect(newCode).toContain('fillet002 = fillet(extrude001')
+      expect(newCode).toContain('edges = [{')
+      expect(newCode.indexOf('fillet001')).toBeLessThan(
+        newCode.indexOf('fillet002')
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should preserve a shell-style graph edge through its primitive topology fallback', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(sweep).toBeDefined()
+      expect(segment).toBeDefined()
+      if (!sweep || !segment || segment.type !== 'segment') return
+
+      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+      if (err(commonFaces)) throw commonFaces
+      const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
+      expect(codeRefs?.length).toBeGreaterThan(0)
+
+      const selection: Selections = {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: commonFaces.slice(0, 2).map((face) => face.id),
+            },
+            codeRef: codeRefs![0],
+          },
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [
+                '00000000-0000-0000-0000-000000000001',
+                '00000000-0000-0000-0000-000000000002',
+              ],
+            },
+            engineTopologyFallback: {
+              parentId: sweep.id,
+              primitiveIndex: 2,
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('edge001 = edgeId(extrude001, index = 2)')
+      expect(newCode).toContain(
+        'fillet001 = fillet(extrude001, tags = edge001, radius = 1)'
+      )
+      expect(newCode).toContain('fillet002 = fillet(extrude001')
+      expect(newCode).toContain('edges = [{')
+      expect(newCode.indexOf('fillet001')).toBeLessThan(
+        newCode.indexOf('fillet002')
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a fillet call with edge selection on end cap (selectionV2)', async () => {
       const codeWithoutTagEnd = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
