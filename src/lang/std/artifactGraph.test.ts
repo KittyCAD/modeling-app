@@ -449,6 +449,179 @@ describe('getBodiesFromArtifactGraph', () => {
     expect(result.get('copy-1')).toBe(pattern)
     expect(result.get('copy-2')).toBe(pattern)
   })
+
+  it('excludes patterned tools consumed by a subtraction', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const codeRef = {
+      range: [0, 100, 0] as [number, number, number],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const tool: Artifact = {
+      type: 'sweep',
+      id: 'tool',
+      codeRef,
+      pathId: 'tool-path',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: true,
+      patternIds: ['pattern'],
+    }
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern',
+      subType: 'circular',
+      sourceId: tool.id,
+      copyIds: ['tool-copy-1', 'tool-copy-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef,
+    }
+    const result: Artifact = {
+      type: 'compositeSolid',
+      id: 'result',
+      consumed: false,
+      subType: 'subtract',
+      solidIds: ['target'],
+      toolIds: [tool.id, ...pattern.copyIds],
+      codeRef,
+    }
+
+    artifactGraph.set(tool.id, tool)
+    artifactGraph.set(pattern.id, pattern)
+    artifactGraph.set(result.id, result)
+
+    expect([...getBodiesFromArtifactGraph(artifactGraph).keys()]).toEqual([
+      result.id,
+    ])
+  })
+
+  it('keeps disconnected subtraction outputs while excluding patterned tools', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const codeRef = {
+      range: [0, 100, 0] as [number, number, number],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const tool: Artifact = {
+      type: 'sweep',
+      id: 'tool',
+      codeRef,
+      pathId: 'tool-path',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: true,
+      patternIds: ['pattern'],
+    }
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern',
+      subType: 'linear',
+      sourceId: tool.id,
+      copyIds: ['tool-copy-1', 'tool-copy-2', 'tool-copy-3', 'tool-copy-4'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef,
+    }
+    const resultIds = Array.from({ length: 6 }, (_, index) => `result-${index}`)
+
+    artifactGraph.set(tool.id, tool)
+    artifactGraph.set(pattern.id, pattern)
+    resultIds.forEach((id, outputIndex) => {
+      artifactGraph.set(id, {
+        type: 'compositeSolid',
+        id,
+        consumed: false,
+        subType: 'subtract',
+        outputIndex,
+        solidIds: ['target'],
+        toolIds: [tool.id, ...pattern.copyIds],
+        codeRef,
+      })
+    })
+
+    const bodies = getBodiesFromArtifactGraph(artifactGraph)
+
+    expect([...bodies.keys()]).toEqual(resultIds)
+    expect(
+      [...bodies.values()].every(({ type }) => type === 'compositeSolid')
+    ).toBe(true)
+  })
+
+  it('keeps patterned split tools while excluding patterned targets', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const codeRef = {
+      range: [0, 100, 0] as [number, number, number],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    }
+    const tool: Artifact = {
+      type: 'sweep',
+      id: 'tool',
+      codeRef,
+      pathId: 'tool-path',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      // Split artifacts currently mark tool sweeps consumed even when
+      // `keepTools = true`; the pattern relationship is the only way to
+      // recover the retained bodies here.
+      consumed: true,
+      patternIds: ['pattern'],
+    }
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern',
+      subType: 'linear',
+      sourceId: tool.id,
+      copyIds: ['tool-copy-1', 'tool-copy-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef,
+    }
+    const target: Artifact = {
+      ...tool,
+      id: 'target',
+      pathId: 'target-path',
+      patternIds: ['target-pattern'],
+    }
+    const targetPattern: Artifact = {
+      ...pattern,
+      id: 'target-pattern',
+      sourceId: target.id,
+      copyIds: ['target-copy-1', 'target-copy-2'],
+    }
+    const result: Artifact = {
+      type: 'compositeSolid',
+      id: 'split-result',
+      consumed: false,
+      subType: 'split',
+      outputIndex: 0,
+      solidIds: [target.id, ...targetPattern.copyIds],
+      toolIds: [tool.id, ...pattern.copyIds],
+      codeRef,
+    }
+
+    artifactGraph.set(tool.id, tool)
+    artifactGraph.set(pattern.id, pattern)
+    artifactGraph.set(target.id, target)
+    artifactGraph.set(targetPattern.id, targetPattern)
+    artifactGraph.set(result.id, result)
+
+    expect([...getBodiesFromArtifactGraph(artifactGraph).keys()]).toEqual([
+      result.id,
+      tool.id,
+      ...pattern.copyIds,
+    ])
+  })
 })
 
 describe('isFaceFromLegacySketch', () => {

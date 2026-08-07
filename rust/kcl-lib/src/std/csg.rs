@@ -102,6 +102,7 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    solid.contains_patterned_components = solids.iter().any(|solid| solid.contains_patterned_components);
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -197,6 +198,7 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    solid.contains_patterned_components = solids.iter().any(|solid| solid.contains_patterned_components);
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -281,7 +283,14 @@ pub(crate) async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    // Pattern instances need to remain independently addressable when a
+    // subtraction leaves multiple disconnected result bodies. Other subtracts
+    // retain the existing compound-solid behavior for KCL compatibility.
+    let separate_bodies = solids.len() == 1 && tools.iter().any(|tool| tool.contains_patterned_components);
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
+    // Cutters do not survive a subtraction. Only pattern-derived target
+    // components can remain in, and should be propagated to, its outputs.
+    let contains_patterned_components = solids.iter().any(|solid| solid.contains_patterned_components);
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
@@ -290,6 +299,7 @@ pub(crate) async fn inner_subtract(
 
     if args.ctx.no_engine_commands().await {
         let mut solid = solids[0].clone();
+        solid.contains_patterned_components = contains_patterned_components;
         solid.set_id(solid_out_id);
         solid.become_new_body(solid_out_id, solid_out_id.into());
         let new_solids = vec![solid];
@@ -303,6 +313,132 @@ pub(crate) async fn inner_subtract(
         .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &combined_solids)
         .await?;
 
+    // `BooleanSubtract` currently only keeps the first split when several
+    // tools are passed with `separate_bodies`. Preserve the intermediate cuts
+    // as a compound, then let the final tool split the complete result.
+    if separate_bodies && solids.len() == 1 && tools.len() > 1 {
+        let intermediate_out_id = solid_out_id;
+        let final_out_id = exec_state.next_uuid();
+        let Some((final_tool, intermediate_tools)) = tools.split_last() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Expected at least two subtraction tools.".to_string(),
+                vec![args.source_range],
+            )));
+        };
+        let intermediate_tool_ids = intermediate_tools.iter().map(|tool| tool.id).collect::<Vec<_>>();
+
+        let intermediate_result = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, &args, intermediate_out_id),
+                ModelingCmd::from(
+                    mcmd::BooleanSubtract::builder()
+                        .use_legacy(csg_algorithm.is_legacy())
+                        .target_ids(target_ids.clone())
+                        .tool_ids(intermediate_tool_ids)
+                        .separate_bodies(false)
+                        .tolerance(LengthUnit(
+                            tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        ))
+                        .build(),
+                ),
+            )
+            .await?;
+
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BooleanSubtract(intermediate_response),
+        } = intermediate_result
+        else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Failed to get the intermediate result of the subtract operation.".to_string(),
+                vec![args.source_range],
+            )));
+        };
+
+        let mut intermediate_solid = solids[0].clone();
+        intermediate_solid.contains_patterned_components = contains_patterned_components;
+        intermediate_solid.set_id(intermediate_out_id);
+        intermediate_solid.become_new_body(intermediate_out_id, intermediate_out_id.into());
+
+        let final_target_ids = vec![intermediate_out_id];
+        let final_tool_ids = vec![final_tool.id];
+        let final_result = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, &args, final_out_id),
+                ModelingCmd::from(
+                    mcmd::BooleanSubtract::builder()
+                        .use_legacy(csg_algorithm.is_legacy())
+                        .target_ids(final_target_ids.clone())
+                        .tool_ids(final_tool_ids.clone())
+                        .separate_bodies(true)
+                        .tolerance(LengthUnit(
+                            tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        ))
+                        .build(),
+                ),
+            )
+            .await?;
+
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BooleanSubtract(final_response),
+        } = final_result
+        else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Failed to get the final result of the subtract operation.".to_string(),
+                vec![args.source_range],
+            )));
+        };
+
+        if !intermediate_response.any_intersections && !final_response.any_intersections {
+            exec_state.warn(
+                CompilationIssue::err(
+                    args.source_range,
+                    "The bodies in this subtraction had no overlap. This usually indicates a problem in your model, these bodies were probably intended to intersect somewhere.".to_string(),
+                ),
+                annotations::WARN_CSG_NO_INTERSECTION,
+            );
+        }
+
+        let output_ids = subtract_output_ids(
+            final_out_id,
+            &final_target_ids,
+            &final_tool_ids,
+            &final_response.extra_solid_ids,
+        );
+        let new_solids = output_ids
+            .into_iter()
+            .map(|output_id| {
+                let mut new_solid = solids[0].clone();
+                new_solid.contains_patterned_components = contains_patterned_components;
+                new_solid.set_id(output_id);
+                new_solid.value_id = final_out_id;
+                new_solid.become_new_body(output_id, output_id.into());
+                new_solid
+            })
+            .collect::<Vec<_>>();
+
+        record_consumed_solids(
+            exec_state,
+            &solids,
+            ConsumedSolidOperation::Subtract,
+            std::slice::from_ref(&intermediate_solid),
+        );
+        record_consumed_solids(exec_state, intermediate_tools, ConsumedSolidOperation::Subtract, &[]);
+        record_consumed_solids(
+            exec_state,
+            &[intermediate_solid],
+            ConsumedSolidOperation::Subtract,
+            &new_solids,
+        );
+        record_consumed_solids(
+            exec_state,
+            std::slice::from_ref(final_tool),
+            ConsumedSolidOperation::Subtract,
+            &[],
+        );
+
+        return Ok(new_solids);
+    }
+
     let result = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
@@ -311,6 +447,7 @@ pub(crate) async fn inner_subtract(
                     .use_legacy(csg_algorithm.is_legacy())
                     .target_ids(target_ids.clone())
                     .tool_ids(tool_ids.clone())
+                    .separate_bodies(separate_bodies)
                     .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
                     .build(),
             ),
@@ -342,6 +479,7 @@ pub(crate) async fn inner_subtract(
         .into_iter()
         .map(|output_id| {
             let mut new_solid = solids[0].clone();
+            new_solid.contains_patterned_components = contains_patterned_components;
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
             new_solid.become_new_body(output_id, output_id.into());

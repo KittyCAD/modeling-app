@@ -80,6 +80,10 @@ pub struct ArtifactCommand {
 pub(crate) struct EntityCloneInfo {
     pub source_artifact_id: ArtifactId,
     pub result_artifact_id: ArtifactId,
+    /// Index of this body in the clone call's output, when cloning multiple
+    /// geometries. A clone of one indexed source is scalar again.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub output_index: Option<usize>,
     /// The engine entity whose children describe the source body's topology.
     /// Pattern copies have their own root and child IDs, but retain the
     /// topology of the body from which they were patterned.
@@ -699,6 +703,7 @@ fn remap_artifact_for_clone(
     clone_code_ref: &CodeRef,
     clone_cmd_id: Uuid,
     source_root_id: ArtifactId,
+    clone_output_index: Option<usize>,
 ) -> Artifact {
     match artifact {
         Artifact::CompositeSolid(source) => Artifact::CompositeSolid(CompositeSolid {
@@ -709,7 +714,11 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
             sub_type: source.sub_type,
-            output_index: source.output_index,
+            output_index: if source.id == source_root_id {
+                clone_output_index
+            } else {
+                source.output_index
+            },
             solid_ids: remap_ids_for_clone(&source.solid_ids, entity_id_map),
             tool_ids: remap_ids_for_clone(&source.tool_ids, entity_id_map),
             pattern_ids: remap_mapped_ids_for_clone(&source.pattern_ids, entity_id_map),
@@ -1629,6 +1638,7 @@ fn artifacts_to_update(
                 .map(|info| info.source_artifact_id)
                 .unwrap_or(source_entity_id);
             let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
+            let clone_output_index = entity_clone_info.and_then(|info| info.output_index);
 
             // Only solid clones provide this extra body identity. Without
             // this gate, cloning a lazy 2D pattern copy can resolve through
@@ -1661,6 +1671,7 @@ fn artifacts_to_update(
                 &code_ref,
                 artifact_command.cmd_id,
                 source_artifact_id,
+                clone_output_index,
             ));
 
             for artifact in artifacts.values() {
@@ -1674,6 +1685,7 @@ fn artifacts_to_update(
                     &code_ref,
                     artifact_command.cmd_id,
                     source_artifact_id,
+                    clone_output_index,
                 ));
             }
 
@@ -2371,13 +2383,14 @@ fn artifacts_to_update(
             }
 
             // Create the new composite solids and update their linked artifacts
-            for solid_id in &new_solid_ids {
+            let has_multiple_outputs = new_solid_ids.len() > 1;
+            for (output_index, solid_id) in new_solid_ids.iter().enumerate() {
                 // Create the composite solid
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
                     consumed: false,
                     sub_type,
-                    output_index: None,
+                    output_index: has_multiple_outputs.then_some(output_index),
                     solid_ids: solid_ids.clone(),
                     tool_ids: tool_ids.clone(),
                     code_ref: code_ref.clone(),

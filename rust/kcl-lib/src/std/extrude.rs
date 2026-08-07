@@ -1030,6 +1030,7 @@ pub(crate) async fn after_surface_creation(
         // doesn't have units. We also don't seem to use this field anywhere.
         units: kcl_api::UnitLength::Millimeters,
         sectional: false,
+        contains_patterned_components: false,
         creator: SolidCreator::Edge(CreatorEdge { edge_id, body_id }),
         start_cap_id: None,
         end_cap_id: None,
@@ -1341,6 +1342,7 @@ pub(crate) async fn do_post_extrude<'a>(
         meta,
         units,
         sectional,
+        contains_patterned_components: false,
         creator,
         start_cap_id,
         end_cap_id,

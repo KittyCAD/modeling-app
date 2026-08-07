@@ -662,10 +662,24 @@ description: Artifact commands subtract_with_pattern.kcl
           "[uuid]",
           "[uuid]",
           "[uuid]",
-          "[uuid]",
           "[uuid]"
         ],
         "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": true,
         "tolerance": 0.0000001
       }
     },

@@ -238,11 +238,16 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )));
     };
 
-    let mut geometries = vec![solid.clone()];
+    let mut original = solid.clone();
+    if !entity_ids.is_empty() {
+        original.mark_as_pattern_component();
+    }
+    let mut geometries = vec![original];
     for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         new_solid.set_artifact_id(id);
+        new_solid.mark_as_pattern_component();
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -457,6 +462,7 @@ pub trait GeometryTrait: Clone {
     fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    fn mark_as_pattern_component(&mut self) {}
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -474,6 +480,7 @@ impl GeometryTrait for Sketch {
     fn set_artifact_id(&mut self, id: Uuid) {
         self.artifact_id = ArtifactId::new(id);
     }
+
     fn id(&self) -> Uuid {
         self.id
     }
@@ -508,6 +515,10 @@ impl GeometryTrait for Solid {
 
     fn set_artifact_id(&mut self, id: Uuid) {
         self.become_pattern_copy(id);
+    }
+
+    fn mark_as_pattern_component(&mut self) {
+        self.contains_patterned_components = true;
     }
 
     fn id(&self) -> Uuid {
@@ -1079,11 +1090,16 @@ async fn pattern_circular(
             Geometries::Sketches(geometries)
         }
         Geometry::Solid(solid) => {
-            let mut geometries = vec![solid.clone()];
+            let mut original = solid.clone();
+            if !entity_ids.is_empty() {
+                original.contains_patterned_components = true;
+            }
+            let mut geometries = vec![original];
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
                 new_solid.become_pattern_copy(id);
+                new_solid.contains_patterned_components = true;
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)
