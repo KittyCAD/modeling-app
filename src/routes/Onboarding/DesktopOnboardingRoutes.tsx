@@ -11,18 +11,19 @@ import {
   desktopOnboardingPaths,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { engineSceneModelTreeHudService } from '@src/registry/contracts/engineScene'
 import {
+  isModelingCmdGroupReady,
   OnboardingButtons,
   OnboardingCard,
-  isModelingCmdGroupReady,
   useAdvanceOnboardingOnFormSubmit,
-  useOnModelingCmdGroupReadyOnce,
   useOnboardingHighlight,
   useOnboardingPanes,
+  useOnModelingCmdGroupReadyOnce,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useSearchParams } from 'react-router-dom'
@@ -236,16 +237,17 @@ function TextToCadPrompt() {
 }
 
 function FeatureTreePane() {
-  const { systemIOActor } = useApp()
+  const { registry, systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
 
-  // Highlight the feature tree pane button if it's present
-  useOnboardingHighlight('feature-tree-pane-button')
+  // Highlight the model tree HUD if it's present
+  useOnboardingHighlight('engine-scene-model-tree-hud')
 
-  // Open the feature tree pane on mount, close on unmount
-  useOnboardingPanes([DefaultLayoutPaneID.FeatureTree])
+  useEffect(() => {
+    registry.optional(engineSceneModelTreeHudService)?.focus()
+  }, [registry])
 
   // navigate to the "generated" file
   useEffect(() => {
@@ -604,16 +606,8 @@ function OnboardingConclusion() {
   useOnboardingHighlight('app-logo')
   // Close the panes on mount, close on unmount
   useOnboardingPanes(
-    [
-      DefaultLayoutPaneID.FeatureTree,
-      DefaultLayoutPaneID.Code,
-      DefaultLayoutPaneID.Files,
-    ],
-    [
-      DefaultLayoutPaneID.FeatureTree,
-      DefaultLayoutPaneID.Code,
-      DefaultLayoutPaneID.Files,
-    ]
+    [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files],
+    [DefaultLayoutPaneID.Code, DefaultLayoutPaneID.Files]
   )
 
   return (

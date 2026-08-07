@@ -32,13 +32,6 @@ export const textToCADFocusConfig: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: DefaultLayoutPaneID.FeatureTree,
-          label: 'Feature Tree',
-          type: LayoutType.Simple,
-          areaType: AreaType.FeatureTree,
-          icon: 'model',
-        },
-        {
           id: DefaultLayoutPaneID.Code,
           label: 'Code Editor',
           type: LayoutType.Simple,

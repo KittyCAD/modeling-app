@@ -1,11 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
-import {
-  type NavigateFunction,
-  type useLocation,
-  useNavigate,
-} from 'react-router-dom'
-import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
-
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
 import { ActionButton } from '@src/components/ActionButton'
@@ -27,14 +19,14 @@ import {
   setOpenPanes,
 } from '@src/lib/layout'
 import {
+  isOnboardingPath,
   type OnboardingPath,
   type OnboardingStatus,
-  isOnboardingPath,
   onboardingPaths,
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -43,7 +35,14 @@ import {
   type SystemIOActor,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import {
+  type NavigateFunction,
+  type useLocation,
+  useNavigate,
+} from 'react-router-dom'
+import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -65,7 +64,7 @@ const preferredWorkflowPaneMap: Record<
     DefaultLayoutPaneID.Files,
     DefaultLayoutPaneID.Variables,
   ],
-  sketch: [DefaultLayoutPaneID.FeatureTree],
+  sketch: [],
 }
 
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =

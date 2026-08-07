@@ -414,7 +414,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v3')
+    expect(parsedPayload.layout?.configs?.default.version).toBe('v4')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
