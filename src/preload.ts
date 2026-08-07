@@ -10,6 +10,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import {
+  ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL,
+  ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+  type ElectronLifecycleReport,
+} from '@src/lib/electronLifecycle'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
@@ -89,6 +94,22 @@ const getMachineApiRunning = (): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.get-state')
 const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.set-state', signal)
+const drainElectronLifecycleReports = (): Promise<ElectronLifecycleReport[]> =>
+  ipcRenderer.invoke(ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL)
+const onElectronLifecycleReportAvailable = (callback: () => void) => {
+  const subscription = () => callback()
+  typeSafeIpcRendererOn(
+    ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+    subscription
+  )
+
+  return () => {
+    ipcRenderer.removeListener(
+      ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+      subscription
+    )
+  }
+}
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -312,6 +333,8 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 }
 
 contextBridge.exposeInMainWorld('electron', {
+  drainElectronLifecycleReports,
+  onElectronLifecycleReportAvailable,
   startDeviceFlow,
   loginWithDeviceFlow,
   cancelDeviceFlow,

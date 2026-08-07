@@ -412,7 +412,11 @@ describe('Transform arguments', () => {
         throw new Error(`${commandName}.objects should be a selection argument`)
       }
       const selectionTypes = objectsArg.selectionTypes
-      if (commandName === 'Translate' || commandName === 'Scale') {
+      if (
+        commandName === 'Translate' ||
+        commandName === 'Scale' ||
+        commandName === 'Rotate'
+      ) {
         expect(selectionTypes).toContain('helix')
       } else {
         expect(selectionTypes).not.toContain('helix')

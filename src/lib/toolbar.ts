@@ -1199,7 +1199,7 @@ export function buildToolbarConfig(
               icon: 'rotate',
               status: 'available',
               title: 'Rotate',
-              description: 'Apply a rotation to a solid or sketch.',
+              description: 'Apply a rotation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',

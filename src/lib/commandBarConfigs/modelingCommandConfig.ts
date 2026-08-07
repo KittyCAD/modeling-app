@@ -1558,7 +1558,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: 'Set rotation on solid or sketch.',
+    description: 'Set rotation on a solid, sketch, or helix.',
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1568,6 +1568,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,

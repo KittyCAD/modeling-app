@@ -1371,7 +1371,8 @@ const OperationItem = ({
                 disabled={
                   item.type !== 'GroupBegin' &&
                   item.type !== 'ModuleInstance' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsRotate
                 }
               >
                 Rotate
