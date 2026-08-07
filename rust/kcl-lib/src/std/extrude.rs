@@ -174,7 +174,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     .await?;
 
     if let [tag] = direct_target_edges.as_slice() {
-        edge::record_refactor_meta_for_direct_tag(exec_state, tag, target_argument_source_range, &args).await;
+        edge::record_refactor_meta_for_direct_tag(exec_state, tag, target_argument_source_range, &args).await?;
     }
 
     let result = inner_extrude(
@@ -497,7 +497,7 @@ async fn inner_extrude(
             .get("direction")
             .map(|arg| arg.source_range)
             .unwrap_or(args.source_range);
-        edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await;
+        edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await?;
     }
 
     for extrudable in &extrudables {
