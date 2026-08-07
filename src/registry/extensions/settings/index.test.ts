@@ -60,6 +60,10 @@ describe('settings extension', () => {
     await service.updateTitle(project, 'Updated bracket')
 
     expect(renameLocalProject).toHaveBeenCalledWith(project, 'Updated bracket')
+    expect(service.updates.value).toEqual({
+      projectPath: project.path,
+      title: 'Updated bracket',
+    })
 
     registry[Symbol.dispose]()
   })

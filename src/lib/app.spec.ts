@@ -5,7 +5,7 @@ import {
   provide,
   Slot,
 } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
+import { type Signal, signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
@@ -19,6 +19,7 @@ import {
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import type { ProjectTitleUpdate } from '@src/lib/projectTitle'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -874,6 +875,37 @@ describe('project system', () => {
         app.settings.actor.getSnapshot().context.currentProject?.title
       ).toBe('Updated bracket')
       expect(app.settings.actor.getSnapshot().matches('idle')).toBe(true)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('updates an open project title without a Home entry', async () => {
+    const app = createAppForTest()
+
+    try {
+      const project = await app.openProject({
+        ...mockProject,
+        path: '/outside-configured-libraries/test',
+      })
+      const updates = app.settings.projectTitle.updates as Signal<
+        ProjectTitleUpdate | undefined
+      >
+      const previousProject = project.projectIORefSignal.value
+      previousProject.title = 'Updated external project'
+
+      updates.value = {
+        projectPath: project.projectIORefSignal.value.path,
+        title: 'Updated external project',
+      }
+
+      expect(project.projectIORefSignal.value).not.toBe(previousProject)
+      expect(project.projectIORefSignal.value.title).toBe(
+        'Updated external project'
+      )
+      expect(
+        app.settings.actor.getSnapshot().context.currentProject?.title
+      ).toBe('Updated external project')
     } finally {
       app.dispose()
     }

@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import { ProjectTitleSettingsSection } from '@src/components/Settings/ProjectTitleSettingsSection'
 import type { Project } from '@src/lib/project'
 import type { ProjectTitleService } from '@src/lib/projectTitle'
@@ -21,6 +22,7 @@ function createProjectTitleService(
   updateTitle = vi.fn().mockResolvedValue(undefined)
 ): ProjectTitleService {
   return {
+    updates: signal(undefined),
     canUpdateTitle: () => true,
     updateTitle,
   }

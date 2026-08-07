@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals-core'
 import {
   createProjectTitleCommand,
   PROJECT_TITLE_COMMAND_NAME,
@@ -21,6 +22,7 @@ const project = {
 
 function createService(): ProjectTitleService {
   return {
+    updates: signal(undefined),
     canUpdateTitle: vi.fn(() => true),
     updateTitle: vi.fn().mockResolvedValue(undefined),
   }

@@ -7,7 +7,10 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
-import type { ProjectTitleService } from '@src/lib/projectTitle'
+import type {
+  ProjectTitleService,
+  ProjectTitleUpdate,
+} from '@src/lib/projectTitle'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -33,6 +36,7 @@ import { createActor } from 'xstate'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
+  const projectTitleUpdates = signal<ProjectTitleUpdate | undefined>(undefined)
   let settingsActor: SettingsActorType | undefined
   let settingsSubscription: { unsubscribe: () => void } | undefined
 
@@ -41,6 +45,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
     Promise.reject(new Error('Missing WASM promise registry value.'))
 
   const projectTitle: ProjectTitleService = {
+    updates: projectTitleUpdates,
     canUpdateTitle: (project) =>
       project.readWriteAccess &&
       Boolean(ctx.services.optional(homeProjectActionsService)),
@@ -55,6 +60,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       }
 
       await actions.renameLocalProject(project, title)
+      projectTitleUpdates.value = { projectPath: project.path, title }
     },
   }
 
