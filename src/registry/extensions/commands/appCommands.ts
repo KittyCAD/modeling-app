@@ -70,10 +70,16 @@ function sendModelingEvent(
 function createAppCommand({
   id,
   displayName,
+  description,
+  icon,
+  hideFromSearch = true,
   onSubmit,
 }: {
   id: string
   displayName: string
+  description?: Command['description']
+  icon?: Command['icon']
+  hideFromSearch?: boolean
   onSubmit: Command['onSubmit']
 }): Command {
   return {
@@ -81,7 +87,9 @@ function createAppCommand({
     name: id,
     groupId: APP_COMMAND_GROUP_ID,
     displayName,
-    hideFromSearch: true,
+    description,
+    icon,
+    hideFromSearch,
     needsReview: false,
     onSubmit,
   }
@@ -220,6 +228,9 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
     displayName: 'Center camera on selection',
+    description: 'Center the camera on the current selection.',
+    icon: 'camera',
+    hideFromSearch: false,
     onSubmit: (input) =>
       sendModelingEvent(input, { type: 'Center camera on selection' }),
   }),
@@ -236,6 +247,9 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.view.reset,
     displayName: 'Reset view',
+    description: 'Restore the default camera position and view.',
+    icon: 'refresh',
+    hideFromSearch: false,
     onSubmit: resetView,
   }),
   createAppCommand({

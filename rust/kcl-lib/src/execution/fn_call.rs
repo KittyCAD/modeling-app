@@ -34,6 +34,12 @@ use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
+use crate::std::RegionBehavior;
+use crate::std::StaleRegionPolicy;
+use crate::std::region_consumption::prepare_region_consumption;
+use crate::std::region_consumption::record_consumed_regions;
+use crate::std::region_consumption::validate_region_args_not_consumed;
+use crate::std::region_consumption::warn_if_region_args_consumed;
 use crate::std::solid_consumption::validate_value_not_consumed;
 use crate::std::solid_consumption::warn_if_value_consumed_for_deprecated_call;
 
@@ -311,7 +317,7 @@ impl FunctionSource {
                     None => format!("{subject} is deprecated, see the docs for a recommended replacement"),
                 })
             } else if let Some(since) = &self.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(match migration_help(self) {
                     Some(help) => format!("{subject} is deprecated as of KCL {since}. {help}"),
@@ -342,6 +348,13 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
         let face_tag_names = face_tag_names_for_call(self, &args);
+        let pending_region_consumption = prepare_region_consumption(
+            self.std_props
+                .as_ref()
+                .map_or(RegionBehavior::WarnOnConsumed, |props| props.region_behavior),
+            &args,
+            exec_state,
+        )?;
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -364,7 +377,7 @@ impl FunctionSource {
             } else if param.deprecated {
                 Some("is deprecated, see the docs for a recommended replacement".to_owned())
             } else if let Some(since) = &param.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(format!(
                     "is deprecated as of KCL {since}. See the docs for a recommended replacement."
@@ -501,6 +514,12 @@ impl FunctionSource {
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
         exec_state.mut_stack().pop_env()?;
+
+        if result.is_ok()
+            && let Some(pending_region_consumption) = pending_region_consumption
+        {
+            record_consumed_regions(exec_state, pending_region_consumption);
+        }
 
         if should_track_operation {
             if let Some(mut op) = op {
@@ -1107,6 +1126,17 @@ fn type_check_params_kw(
         .std_props
         .as_ref()
         .map_or(ConsumedSolidArgCheck::Error, |props| props.consumed_solid_arg_check);
+    if matches!(fn_def.body, FunctionBody::Rust(_))
+        && let Some(props) = fn_def.std_props.as_ref()
+    {
+        match props.region_behavior.stale_region_policy() {
+            Some(StaleRegionPolicy::Error) => validate_region_args_not_consumed(&result, exec_state)?,
+            Some(StaleRegionPolicy::Warning) => {
+                warn_if_region_args_consumed(&result, exec_state, &props.name)?;
+            }
+            None => {}
+        }
+    }
     match consumed_solid_arg_check {
         ConsumedSolidArgCheck::Error => {
             result
@@ -2247,6 +2277,36 @@ plane = startSketchOn(XY)
             warnings[0].message
         );
         assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecation_version_override_does_not_change_program_version() {
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 1.0)
+plane = startSketchOn(XY)
+"#,
+        )
+        .unwrap();
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: crate::engine::EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+        exec_state.set_deprecation_version_override(Some("2.0"));
+
+        exec_ctxt.run(&program, &mut exec_state).await.unwrap();
+
+        assert_eq!(exec_state.mod_local.settings.kcl_version, "1.0");
+        let warnings = exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.tag == crate::errors::Tag::Deprecated)
+            .collect::<Vec<_>>();
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]

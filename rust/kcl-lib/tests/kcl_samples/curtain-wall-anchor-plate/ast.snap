@@ -15069,7 +15069,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -18928,7 +18928,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },

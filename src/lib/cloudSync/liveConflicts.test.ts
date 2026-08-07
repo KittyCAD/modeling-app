@@ -9,7 +9,10 @@ import {
   type ProjectArchiveFile,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
-import { projectManifestFromFiles } from '@src/lib/cloudSync/projectArchive'
+import {
+  normalizeProjectArchiveFilesForCloudSync,
+  projectManifestFromFiles,
+} from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry,
   putProjectMetadata,
@@ -66,9 +69,17 @@ function remoteProjectPayload(revision = 'rev-2') {
   }
 }
 
-function remoteArchivePayload(contents = 'remote = 2\n') {
+type RemoteArchivePayloadFile = {
+  relativePath: string
+  contents: string
+}
+
+function remoteArchivePayload(
+  contents = 'remote = 2\n',
+  files?: RemoteArchivePayloadFile[]
+) {
   return {
-    files: [
+    files: files ?? [
       { relativePath: 'main.kcl', contents },
       {
         relativePath: PROJECT_SETTINGS_FILE_NAME,
@@ -82,9 +93,18 @@ function remoteArchivePayload(contents = 'remote = 2\n') {
 function installFetchMock({
   remoteRevision = 'rev-2',
   remoteContents = 'remote = 2\n',
+  remoteFiles,
+  updatedRevision = 'rev-3',
+  onUpdate,
 }: {
   remoteRevision?: string
   remoteContents?: string
+  remoteFiles?: RemoteArchivePayloadFile[]
+  updatedRevision?: string
+  onUpdate?: (
+    input: Parameters<typeof fetch>[0],
+    init?: Parameters<typeof fetch>[1]
+  ) => void | Promise<void>
 } = {}) {
   fetchMock.mockImplementation(async (input, init) => {
     const url = getFetchUrl(input)
@@ -99,7 +119,12 @@ function installFetchMock({
     }
 
     if (url === remoteDownloadUrl && method === 'GET') {
-      return jsonResponse(remoteArchivePayload(remoteContents))
+      return jsonResponse(remoteArchivePayload(remoteContents, remoteFiles))
+    }
+
+    if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
+      await onUpdate?.(input, init)
+      return jsonResponse(remoteProjectPayload(updatedRevision))
     }
 
     return jsonResponse({ message: `Unexpected fetch: ${method} ${url}` }, 500)
@@ -169,7 +194,7 @@ describe('cloud sync live conflicts', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 
@@ -218,7 +243,7 @@ describe('cloud sync live conflicts', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 
@@ -246,6 +271,94 @@ describe('cloud sync live conflicts', () => {
     )
   })
 
+  it('auto-reconciles independent local and remote archive changes', async () => {
+    const projectToml =
+      'title = "Demo"\ndefault_file = "main.kcl"\n\n[cloud."dev.zoo.dev"]\nproject_id = "remote-123"\n'
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'local = 2\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    const updatePayloads: Array<{
+      expectedRevision?: string
+      main?: string
+      remote?: string
+    }> = []
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: projectPath,
+      projectName: 'demo',
+      remoteProjectId,
+      remoteRevision: 'rev-1',
+      baseManifest: await projectManifestFromFiles(
+        normalizeProjectArchiveFilesForCloudSync([
+          projectFile('main.kcl', 'base = 1\n'),
+          projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+        ])
+      ),
+    })
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: `${projectPath}/main.kcl`,
+      createdAt: '2026-07-17T12:02:00.000Z',
+    })
+    installFetchMock({
+      remoteFiles: [
+        { relativePath: 'main.kcl', contents: 'base = 1\n' },
+        { relativePath: 'remote.kcl', contents: 'cloud = 2\n' },
+        {
+          relativePath: PROJECT_SETTINGS_FILE_NAME,
+          contents: 'title = "Demo"\n',
+        },
+      ],
+      onUpdate: async (_input, init) => {
+        const formData = init?.body as FormData
+        const body = JSON.parse(
+          await (formData.get('body') as Blob).text()
+        ) as { expected_revision?: string }
+        updatePayloads.push({
+          expectedRevision: body.expected_revision,
+          main: await (formData.get('main.kcl') as Blob).text(),
+          remote: await (formData.get('remote.kcl') as Blob).text(),
+        })
+      },
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+    })
+
+    await vi.waitFor(async () => {
+      await expect(
+        getCloudSyncProjectMetadata(projectPath)
+      ).resolves.toMatchObject({
+        remoteRevision: 'rev-3',
+        conflict: undefined,
+        lastFailure: undefined,
+      })
+    })
+
+    expect(updatePayloads).toEqual([
+      {
+        expectedRevision: 'rev-2',
+        main: 'local = 2\n',
+        remote: 'cloud = 2\n',
+      },
+    ])
+    expect(files.get(`${projectPath}/main.kcl`)).toBe('local = 2\n')
+    expect(files.get(`${projectPath}/remote.kcl`)).toBe('cloud = 2\n')
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'cloud_sync_conflict_copy_detected',
+      })
+    )
+  })
+
   it('rejects conflict resolution when the reviewed cloud revision is stale', async () => {
     const files = new Map([
       [`${projectPath}/main.kcl`, 'local = 2\n'],
@@ -260,7 +373,7 @@ describe('cloud sync live conflicts', () => {
       enabled: false,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: projectDirectory,
+      cloudProjectDirectoryPaths: [projectDirectory],
       autoEnrollCloudLibraryProjects: false,
     })
 

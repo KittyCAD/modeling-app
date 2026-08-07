@@ -1,0 +1,12 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+axisSketch = sketch(on = XY) {
+  axisLine = line(start = [var 0mm, var -20mm], end = [var 0mm, var 20mm])
+}
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 15mm, var 0mm], center = [var 10mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+first = mirror2d(sharedRegion, axis = axisSketch.axisLine)
+second = mirror2d(sharedRegion, axis = axisSketch.axisLine)

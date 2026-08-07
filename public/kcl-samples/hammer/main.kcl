@@ -42,7 +42,7 @@ hidden001 = hide(sketch001)
 headSideProfile = extrude(region001, length = 3, symmetric = true)
 
 // Sketch the top profile of the hammer head
-headTopProfile = startSketchOn(offsetPlane(XY, offset = 13))
+headTopProfile = offsetPlane(XY, offset = 13)
 sketch002 = sketch(on = headTopProfile) {
   line1 = line(start = [var -4in, var -1.6in], end = [var -1.97in, var -0.56in])
   arc2 = arc(start = [var -1.97in, var -0.56in], end = [var -1.92in, var -0.61in], center = [var -1.92in, var -0.56in])

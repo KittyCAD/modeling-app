@@ -15,6 +15,7 @@
   pointer-events: none;
   user-select: none;
   position: absolute;
+  position-anchor: auto;
   inset: unset;
   background-color: transparent;
   border: none;

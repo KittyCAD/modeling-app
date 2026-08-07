@@ -6,10 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import {
-  getCloudProjectLibraryMaterializationDirectoryPath,
-  getDefaultCloudProjectDirectoryPath,
-} from '@src/lib/cloudSync/paths'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -189,12 +186,18 @@ function readConfiguredProjectLibraryEntriesInvalidation() {
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined,
-  libraryId?: string
+  library?: Pick<ProjectLibrary, 'id' | 'path' | 'type'>
 ): HomeProjectEntryContribution[] {
   return (
     projects?.map((project) => ({
       ...homeProjectEntryFromProject(project),
-      libraryId,
+      ...(library
+        ? {
+            libraryId: library.id,
+            libraryPath: library.path,
+            libraryType: library.type,
+          }
+        : {}),
     })) ?? []
   )
 }
@@ -255,7 +258,24 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     }
 
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    for (const library of getConfiguredProjectLibraries()) {
+    const configuredLibraries = getConfiguredProjectLibraries()
+    const orderedLibraries =
+      project.libraryType !== undefined
+        ? [
+            ...configuredLibraries.filter(
+              (library) =>
+                projectLibraryIds.has(library.id) &&
+                library.type === project.libraryType
+            ),
+            ...configuredLibraries.filter(
+              (library) =>
+                projectLibraryIds.has(library.id) &&
+                library.type !== project.libraryType
+            ),
+          ]
+        : configuredLibraries
+
+    for (const library of orderedLibraries) {
       if (!projectLibraryIds.has(library.id)) {
         continue
       }
@@ -401,11 +421,14 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
-      const targetProjectDirectoryPath = openProject
-        ? await getCloudProjectLibraryMaterializationDirectoryPath(
-            openProject.library
-          )
-        : await getDefaultCloudProjectDirectoryPath()
+      if (!openProject) {
+        return undefined
+      }
+
+      const targetProjectDirectoryPath =
+        await getCloudProjectLibraryMaterializationDirectoryPath(
+          openProject.library
+        )
       const syncedProject = await cloudSync.value?.ensureProjectLocallySynced(
         project.remoteProjectId,
         targetProjectDirectoryPath
@@ -566,10 +589,11 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         const context = snapshot.context
         const projects = context.folders
         if (projects !== undefined) {
-          entries.value = localHomeProjectEntriesFromProjects(
-            projects,
-            DEFAULT_PROJECT_LIBRARY_ID
-          )
+          entries.value = localHomeProjectEntriesFromProjects(projects, {
+            id: DEFAULT_PROJECT_LIBRARY_ID,
+            path: context.projectDirectoryPath,
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          })
         }
 
         if (
@@ -688,7 +712,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   })
                 }
 
-                return localHomeProjectEntriesFromProjects(projects, library.id)
+                return localHomeProjectEntriesFromProjects(projects, library)
               },
             })
           },
@@ -786,15 +810,15 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   )
                 }
 
-                await fsZds.rm(project.localProjectPath, {
-                  recursive: true,
-                })
-                // Individually synced directory projects follow the same
-                // delete-everywhere policy as cloud-library projects.
                 if (project.remoteProjectId) {
-                  await cloudSyncActions?.deleteRemoteProject(
-                    project.remoteProjectId
+                  await cloudSyncActions?.deleteLocalProjectRealizations(
+                    project.remoteProjectId,
+                    project.localProjectPath
                   )
+                } else {
+                  await fsZds.rm(project.localProjectPath, {
+                    recursive: true,
+                  })
                 }
                 refreshLocalProjectEntries()
               },

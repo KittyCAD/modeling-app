@@ -6679,7 +6679,7 @@ export default {
     "preferredName": "rotate",
     "qualName": "std::transform::rotate",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6687,8 +6687,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to rotate.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to rotate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -6785,7 +6785,7 @@ export default {
     "preferredName": "scale",
     "qualName": "std::transform::scale",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6793,8 +6793,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to scale.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to scale.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7205,6 +7205,16 @@ export default {
         "ty": "Point2d",
         "docs": "The center of the circle the arc lies on.",
         "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "direction",
+        "ty": "string",
+        "docs": "The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`.",
+        "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,

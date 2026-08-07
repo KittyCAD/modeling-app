@@ -1,0 +1,8 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+delete(sharedRegion)

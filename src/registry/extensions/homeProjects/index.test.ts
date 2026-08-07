@@ -41,7 +41,9 @@ const desktopMocks = vi.hoisted(() => ({
 }))
 
 const cloudSyncPathMocks = vi.hoisted(() => ({
-  getDefaultCloudProjectDirectoryPath: vi.fn(),
+  getCloudProjectLibraryMaterializationDirectoryPath: vi.fn(
+    async (library: { path: string }) => library.path
+  ),
 }))
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -77,8 +79,8 @@ vi.mock('@src/lib/desktop', () => {
 })
 
 vi.mock('@src/lib/cloudSync/paths', () => ({
-  getDefaultCloudProjectDirectoryPath:
-    cloudSyncPathMocks.getDefaultCloudProjectDirectoryPath,
+  getCloudProjectLibraryMaterializationDirectoryPath:
+    cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath,
 }))
 
 function createSettingsService(): SettingsRegistryService {
@@ -217,7 +219,7 @@ function createCloudSyncService(
     configure: vi.fn(),
     installFileSystemObserver: vi.fn(),
     retry: vi.fn(),
-    setProjectScope: vi.fn(),
+    setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
@@ -542,9 +544,6 @@ describe('home project actions', () => {
         remoteProjectId: 'remote-123',
       }),
     })
-    cloudSyncPathMocks.getDefaultCloudProjectDirectoryPath.mockResolvedValue(
-      '/cloud-projects'
-    )
     desktopMocks.getProjectInfo.mockResolvedValue({
       default_file: '/cloud-projects/remote-title/main.kcl',
     })
@@ -552,6 +551,7 @@ describe('home project actions', () => {
       id: 'remote:remote-123',
       source: 'remote',
       status: 'cloud-only',
+      libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
       name: 'remote-title',
       title: 'Remote title',
       remoteProjectId: 'remote-123',
@@ -563,7 +563,14 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                getDefaultCloudProjectLibrarySetting('/cloud-projects'),
+              ],
+            }).service
+          ),
         ],
       }),
       defineRegistryItem({
@@ -577,6 +584,27 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.wasm',
         provides: [provideWasmPromise(wasmPromise)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: CLOUD_PROJECT_LIBRARY_TYPE,
+            title: 'Cloud',
+            readEntries: async () => [],
+            operations: {
+              openProject: {
+                run: ({ project }) => {
+                  if (!project.defaultFile) {
+                    return undefined
+                  }
+
+                  return { defaultFile: project.defaultFile }
+                },
+              },
+            },
+          }),
+        ],
       }),
       homeProjectsExtension,
     ])
@@ -673,5 +701,158 @@ describe('home project actions', () => {
     expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
     expect(desktopMocks.getProjectInfo).not.toHaveBeenCalled()
     expect(systemIO.send).not.toHaveBeenCalled()
+  })
+
+  it('deletes only local state for a cloud-backed project outside a cloud-type library', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const removeProjectDirectory = vi
+      .spyOn(fsZds, 'rm')
+      .mockResolvedValue(undefined)
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                {
+                  title: 'Projects',
+                  path: '/projects',
+                  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+                },
+              ],
+            }).service
+          ),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const directoryLibraryType = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(DIRECTORY_PROJECT_LIBRARY_TYPE)
+    const deleteProject = directoryLibraryType?.operations?.deleteProject
+    expect(deleteProject).toBeDefined()
+    if (!deleteProject) {
+      return
+    }
+
+    await deleteProject.run({
+      library: {
+        id: DEFAULT_PROJECT_LIBRARY_ID,
+        title: 'Projects',
+        path: '/projects',
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      },
+      project: {
+        id: 'local:/projects/bracket',
+        source: 'both',
+        status: 'synced',
+        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+        name: 'bracket',
+        localProjectPath: '/projects/bracket',
+        localProjectName: 'bracket',
+        remoteProjectId: 'remote-123',
+        defaultFile: '/projects/bracket/main.kcl',
+        readWriteAccess: true,
+      },
+    })
+
+    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+      'remote-123',
+      '/projects/bracket'
+    )
+    expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
+    expect(removeProjectDirectory).not.toHaveBeenCalled()
+  })
+
+  it('uses the owning directory library when a local project is merged with its cloud entry', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const deleteCloudProject = vi.fn().mockResolvedValue(undefined)
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                getDefaultCloudProjectLibrarySetting('/cloud-projects'),
+                {
+                  title: 'Projects',
+                  path: '/projects',
+                  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+                },
+              ],
+            }).service
+          ),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: CLOUD_PROJECT_LIBRARY_TYPE,
+            title: 'Cloud',
+            readEntries: async () => [],
+            operations: {
+              deleteProject: {
+                run: deleteCloudProject,
+              },
+            },
+          }),
+        ],
+      }),
+      homeProjectsExtension,
+    ])
+
+    await registry.get(homeProjectActionsService).delete({
+      id: 'remote:remote-123',
+      source: 'both',
+      status: 'synced',
+      libraryIds: [
+        PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        DEFAULT_PROJECT_LIBRARY_ID,
+      ],
+      name: 'bracket',
+      title: 'Bracket',
+      localProjectPath: '/projects/bracket',
+      localProjectName: 'bracket',
+      libraryPath: '/projects',
+      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      remoteProjectId: 'remote-123',
+      defaultFile: '/projects/bracket/main.kcl',
+      readWriteAccess: true,
+    })
+
+    expect(deleteCloudProject).not.toHaveBeenCalled()
+    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+      'remote-123',
+      '/projects/bracket'
+    )
+    expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
   })
 })

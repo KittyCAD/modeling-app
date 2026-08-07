@@ -1,7 +1,10 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDeleteWarningMessage,
+  getHomeProjectDisplayName,
+} from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -491,14 +494,23 @@ export function createProjectCommands({
         })
       }
     },
-    reviewMessage: ({ argumentsToSubmit }) =>
-      CommandBarOverwriteWarning({
+    reviewMessage: ({ argumentsToSubmit }) => {
+      const target = selectedHomeProjectTarget(argumentsToSubmit.name, 'delete')
+      const projectDisplayName = projectDisplayNameFromCommandValue(
+        argumentsToSubmit.name,
+        'delete'
+      )
+
+      return CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
-        message: `This will permanently delete the project "${projectDisplayNameFromCommandValue(
-          argumentsToSubmit.name,
-          'delete'
-        )}" and all its contents.`,
-      }),
+        message: target
+          ? getHomeProjectDeleteWarningMessage(
+              target.project,
+              projectDisplayName
+            )
+          : `This will permanently delete the project "${projectDisplayName}" and all its contents.`,
+      })
+    },
     args: {
       name: {
         inputType: 'options',
