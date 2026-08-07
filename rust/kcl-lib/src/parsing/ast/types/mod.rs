@@ -6619,6 +6619,129 @@ top = s.edgeOne
         assert_eq!(formatted, code);
     }
 
+    #[test]
+    fn test_rename_sketch_member_refs_stop_after_local_shadows_sketch_var() {
+        // Inside `f`, the local `s = 5` shadows the sketch variable from its statement on.
+        // The reference before it refers to the sketch and is renamed; the reference after it
+        // refers to the local and is not.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  a = s.line1
+  s = 5
+  b = s.line1
+  return [a, b]
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  a = s.edgeOne
+  s = 5
+  b = s.line1
+  return [a, b]
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_via_member_ref_targets_only_that_sketch() {
+        // Two sketches declare the same name. Renaming via `s2.line1` renames s2's
+        // declaration and references; s1's are left alone.
+        let code = r#"s1 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+a = s1.line1
+b = s2.line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("s2.line1").unwrap() + "s2.".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+s2 = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+a = s1.line1
+b = s2.edgeOne
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_member_ref_inside_another_sketch_block() {
+        // A member reference to one sketch's declaration from inside another sketch block,
+        // including as the head of a longer member chain (`s1.line1.end`).
+        let code = r#"s1 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+s2 = sketch(on = XY) {
+  line2 = line(start = s1.line1.end, end = [var 9, var 9])
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+s2 = sketch(on = XY) {
+  line2 = line(start = s1.edgeOne.end, end = [var 9, var 9])
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_aliased_import() {
+        let code = r#"import foo as bar from "m.kcl"
+
+x = bar
+"#;
+        let mut program = parse(code);
+        let pos = code.find("bar").unwrap() + 1;
+
+        program.rename_symbol("baz", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"import foo as baz from "m.kcl"
+
+x = baz
+"#
+        );
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
