@@ -1,14 +1,18 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import {
+  ENGINE_SCENE_HUD_AREA_TOGGLE_COMMAND_ID,
+  ENGINE_SCENE_MODEL_TREE_HUD_KEYMAP_SCOPE,
   type EngineSceneExtensionContext,
+  engineSceneHudAreasValueSpec,
+  engineSceneModelTreeHudService,
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
   engineSceneViewExtensionsValueSpec,
@@ -18,8 +22,9 @@ import {
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
-  MODE_MODELING_KEYMAP_SCOPE,
+  keymapScopesValueSpec,
   keymapValueSpec,
+  MODE_MODELING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
@@ -187,6 +192,107 @@ describe('engineScene extension', () => {
       onSubmit: saveViewportScreenshot,
     })
     expect(command?.hideFromSearch).not.toBe(true)
+  })
+
+  it('contributes the model tree HUD focus command, keybinding, service, and areas', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const service = registry.get(engineSceneModelTreeHudService)
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.focusModelTreeHud
+      )
+    const keymapItem = registry
+      .get(keymapValueSpec)
+      .items.find((item) => item.id === 'engine-scene.model-tree-hud.focus')
+    const hudToggleKeymapItems = registry
+      .get(keymapValueSpec)
+      .items.filter(
+        (item) => item.command === ENGINE_SCENE_HUD_AREA_TOGGLE_COMMAND_ID
+      )
+    const toggleAreaCommand = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.toggleModelTreeHudArea
+      )
+
+    expect(
+      registry.get(engineSceneHudAreasValueSpec).map((area) => ({
+        id: area.id,
+        keystrokes: area.toggleKeymap.keystrokes,
+      }))
+    ).toEqual([
+      { id: 'engine-scene.feature-tree', keystrokes: ['f'] },
+      { id: 'engine-scene.bodies', keystrokes: ['b'] },
+    ])
+    expect(command).toMatchObject({
+      displayName: 'Focus model tree',
+      icon: 'model',
+      needsReview: false,
+    })
+    expect(keymapItem).toMatchObject({
+      title: 'Focus model tree',
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      keystrokes: ['shift+t'],
+      command: ENGINE_SCENE_COMMAND_IDS.focusModelTreeHud,
+    })
+    expect(registry.get(keymapScopesValueSpec)).toContainEqual({
+      id: ENGINE_SCENE_MODEL_TREE_HUD_KEYMAP_SCOPE,
+      displayName: 'Model tree HUD focused',
+      priority: 1200,
+      userEditable: false,
+    })
+    expect(hudToggleKeymapItems).toMatchObject([
+      {
+        id: 'engine-scene.model-tree-hud.features.toggle',
+        title: 'Toggle features',
+        scopes: [ENGINE_SCENE_MODEL_TREE_HUD_KEYMAP_SCOPE],
+        keystrokes: ['f'],
+        command: ENGINE_SCENE_COMMAND_IDS.toggleModelTreeHudArea,
+        arguments: {
+          areaId: 'engine-scene.feature-tree',
+        },
+      },
+      {
+        id: 'engine-scene.model-tree-hud.bodies.toggle',
+        title: 'Toggle bodies',
+        scopes: [ENGINE_SCENE_MODEL_TREE_HUD_KEYMAP_SCOPE],
+        keystrokes: ['b'],
+        command: ENGINE_SCENE_COMMAND_IDS.toggleModelTreeHudArea,
+        arguments: {
+          areaId: 'engine-scene.bodies',
+        },
+      },
+    ])
+    expect(toggleAreaCommand).toMatchObject({
+      displayName: 'Toggle model tree section',
+      hideFromSearch: true,
+      needsReview: false,
+    })
+
+    expect(service.expanded.value).toBe(true)
+    service.collapse()
+    expect(service.focused.value).toBe(false)
+    expect(service.expanded.value).toBe(false)
+    command?.onSubmit()
+    expect(service.expanded.value).toBe(true)
+    expect(service.focusRequest.value).toBe(1)
+    service.setFocused(true)
+    command?.onSubmit()
+    expect(service.expanded.value).toBe(false)
+    expect(service.focused.value).toBe(false)
+
+    expect(service.areaToggleRequest.value).toBeNull()
+    toggleAreaCommand?.onSubmit({ areaId: 'engine-scene.bodies' } as never)
+    expect(service.expanded.value).toBe(true)
+    expect(service.areaToggleRequest.value).toEqual({
+      areaId: 'engine-scene.bodies',
+      requestId: 1,
+    })
   })
 
   it('hides the experimental features item when file settings deny it', () => {

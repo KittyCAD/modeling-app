@@ -27,7 +27,7 @@ import {
 } from '@src/lib/operations'
 import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -1149,6 +1149,30 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBeUndefined()
+    })
+    it('does not log when a variable name lookup points at a non-call node', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const op = stdlib('flatten')
+      if (op.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      const code = `grandActionAssembly = flatten([
+  keyInputSubassembly,
+])
+`
+      op.nodePath = await buildNodePath(code, 'grandActionAssembly', instance)
+      const program = assertParse(code, instance)
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+
+      try {
+        const variableName = getOperationVariableName(op, program, instance)
+        expect(variableName).toBeUndefined()
+        expect(consoleError).not.toHaveBeenCalled()
+      } finally {
+        consoleError.mockRestore()
+      }
     })
     it('finds variable names for operations inside a sketch block', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
