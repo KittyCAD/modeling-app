@@ -43,13 +43,14 @@ use crate::frontend::sketch::ConstraintSegment;
 use crate::pretty::NumericSuffix;
 
 #[test]
-fn dof_is_default() {
+fn dof_is_default_and_omits_id_color_map() {
     let outcome = simple_two_line_outcome(false);
     let visualization = outcome
         .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
         .unwrap();
 
     assert_eq!(visualization.data.mode, SketchVisualizationMode::Dof);
+    assert!(visualization.data.id_color_map.is_none());
     assert!(visualization.data.dof.is_some());
     assert!(visualization.data.contact_groups.is_some());
     assert_eq!(
@@ -57,6 +58,58 @@ fn dof_is_default() {
         Some(dof_color(Some(Freedom::Free), SketchVisualizationTheme::Dark).to_hex_string())
     );
     assert!(visualization.png.starts_with(b"\x89PNG\r\n\x1a\n"));
+}
+
+#[test]
+fn ids_mode_omits_redundant_rendered_colors() {
+    let outcome = simple_two_line_outcome(false);
+    let visualization = outcome
+        .visualize_sketch(
+            SketchSelector::First,
+            SketchVisualizationOptions {
+                mode: SketchVisualizationMode::Ids,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+    let id_color_map = visualization.data.id_color_map.as_ref().unwrap();
+    assert!(visualization.data.dof.is_none());
+    assert!(visualization.data.connected_components.is_none());
+    for segment in &visualization.data.segments {
+        assert!(segment.rendered_color.is_none());
+        assert!(id_color_map.contains_key(&segment.id));
+    }
+}
+
+#[test]
+fn id_color_map_is_deterministic_in_ids_mode() {
+    let outcome = simple_two_line_outcome(false);
+    let ids_visualization = outcome
+        .visualize_sketch(
+            SketchSelector::First,
+            SketchVisualizationOptions {
+                mode: SketchVisualizationMode::Ids,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    let resized_ids_visualization = outcome
+        .visualize_sketch(
+            SketchSelector::First,
+            SketchVisualizationOptions {
+                mode: SketchVisualizationMode::Ids,
+                width: 512,
+                height: 512,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+    assert_eq!(
+        ids_visualization.data.id_color_map,
+        resized_ids_visualization.data.id_color_map
+    );
 }
 
 #[test]
@@ -179,7 +232,7 @@ fn invalid_canvas_returns_error() {
 }
 
 #[test]
-fn snapshots_data_and_png_for_dof_mode() {
+fn snapshots_data_and_png_for_dof_and_ids_modes() {
     let outcome = snapshot_visualizer_outcome();
 
     assert_visualization_snapshots(
@@ -189,6 +242,18 @@ fn snapshots_data_and_png_for_dof_mode() {
             width: 240,
             height: 180,
             padding: 20,
+            ..Default::default()
+        },
+    );
+    assert_visualization_snapshots(
+        "sketch_visualizer_ids_control_polygons",
+        &outcome,
+        SketchVisualizationOptions {
+            width: 240,
+            height: 180,
+            padding: 20,
+            mode: SketchVisualizationMode::Ids,
+            show_control_polygons: true,
             ..Default::default()
         },
     );

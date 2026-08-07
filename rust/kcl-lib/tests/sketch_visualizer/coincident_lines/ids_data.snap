@@ -1,0 +1,106 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "profile"
+  },
+  "bounds": {
+    "min": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "max": {
+      "x": 70.0,
+      "y": 18.0
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "mode": "ids",
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 4
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 40.999999990999996,
+        "y": 8.999999991
+      },
+      "owner": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 41.0,
+        "y": 9.0
+      },
+      "owner": 7
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 70.0,
+        "y": 18.0
+      },
+      "owner": 7
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false
+    },
+    {
+      "id": 7,
+      "kind": "line",
+      "pointIds": [
+        5,
+        6
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false
+    }
+  ],
+  "constraints": [
+    {
+      "id": 8,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 5
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    }
+  ],
+  "idColorMap": {
+    "4": "#ede855",
+    "7": "#d94e9a"
+  },
+  "warnings": []
+}

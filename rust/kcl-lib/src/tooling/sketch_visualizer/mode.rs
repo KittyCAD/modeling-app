@@ -12,6 +12,7 @@ use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::render::FREE_COLOR;
 use super::render::dof_color;
+use super::render::id_color;
 use super::types::SketchVisualizationCoincidentGroup;
 use super::types::SketchVisualizationData;
 use super::types::SketchVisualizationDofBuckets;
@@ -63,6 +64,7 @@ impl ModeBehavior for SketchVisualizationMode {
             .values()
             .map(|segment| {
                 let color = match self {
+                    SketchVisualizationMode::Ids => id_color(segment.id).to_hex_string(),
                     SketchVisualizationMode::Dof => dof_color(segment.freedom, theme).to_hex_string(),
                 };
                 (segment.id, color)
@@ -78,6 +80,7 @@ impl ModeBehavior for SketchVisualizationMode {
                     .cloned()
                     .unwrap_or_else(|| FREE_COLOR.to_hex_string()),
             ),
+            SketchVisualizationMode::Ids => None,
         }
     }
 
@@ -90,26 +93,36 @@ impl ModeBehavior for SketchVisualizationMode {
                     .copied()
                     .unwrap_or_default(),
             ),
+            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn point_contact_group(self, point_id: usize, point_contact_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_contact_group.get(&point_id).copied(),
+            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn point_coincident_group(self, point_id: usize, point_coincident_group: &BTreeMap<usize, usize>) -> Option<usize> {
         match self {
             SketchVisualizationMode::Dof => point_coincident_group.get(&point_id).copied(),
+            SketchVisualizationMode::Ids => None,
         }
     }
 
     fn attach_sidecar(self, data: &mut SketchVisualizationData, context: ModeSidecarContext<'_>) {
         match self {
             SketchVisualizationMode::Dof => attach_dof_sidecar(data, context),
+            SketchVisualizationMode::Ids => {
+                data.id_color_map = Some(id_color_map(context.segments));
+            }
         }
     }
+}
+
+fn id_color_map(segments: &BTreeMap<usize, InternalSegment>) -> BTreeMap<usize, String> {
+    segments.keys().map(|id| (*id, id_color(*id).to_hex_string())).collect()
 }
 
 fn attach_dof_sidecar(data: &mut SketchVisualizationData, context: ModeSidecarContext<'_>) {
