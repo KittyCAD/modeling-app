@@ -2995,7 +2995,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
             currentArgKey: 'axis',
-            currentArgValue: '',
+            currentArgValue: 'Z',
             headerArguments: {
               Solids: '1 sweep',
               Instances: '8',
@@ -3004,7 +3004,6 @@ solid001 = extrude(region001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          // Select Y-axis and auto-progress
           await cmdBar.selectOption({ name: 'Y-axis' }).click()
         })
 
@@ -3262,7 +3261,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
             currentArgKey: 'axis',
-            currentArgValue: '',
+            currentArgValue: 'Y',
             headerArguments: {
               Instances: '12',
               Axis: 'Y',
@@ -3273,7 +3272,7 @@ solid001 = extrude(region001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          // Update axis from Y-axis to Z-axis and auto-progress
+          // Update axis from Y to Z and auto-progress
           await cmdBar.selectOption({ name: 'Z-axis' }).click()
           // Review changes to axis
           await cmdBar.expectState({
@@ -3531,7 +3530,7 @@ solid001 = extrude(region001, length = 5)`
             stage: 'arguments',
             commandName: 'Pattern Linear 3D',
             currentArgKey: 'axis',
-            currentArgValue: '',
+            currentArgValue: 'X',
             headerArguments: {
               Solids: '1 sweep',
               Instances: '6',
@@ -3540,7 +3539,6 @@ solid001 = extrude(region001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          // Select Y-axis and auto-progress
           await cmdBar.selectOption({ name: 'Y-axis' }).click()
         })
 
@@ -3616,7 +3614,7 @@ solid001 = extrude(region001, length = 5)`
           stage: 'arguments',
           commandName: 'Pattern Linear 3D',
           currentArgKey: 'axis',
-          currentArgValue: '',
+          currentArgValue: 'Y',
           headerArguments: {
             Instances: '6',
             Distance: '8',
@@ -3629,7 +3627,7 @@ solid001 = extrude(region001, length = 5)`
 
       await test.step('Edit parameters', async () => {
         await test.step('Edit axis parameter', async () => {
-          // Select Z-axis and auto-progress
+          // Update axis from Y to Z and auto-progress
           await cmdBar.selectOption({ name: 'Z-axis' }).click()
           // Review changes to axis
           await cmdBar.expectState({

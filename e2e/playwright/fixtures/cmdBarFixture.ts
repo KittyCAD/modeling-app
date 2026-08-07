@@ -73,6 +73,15 @@ export class CmdBarFixture {
     }
     const getCommandName = () =>
       this.page.getByTestId('command-name').textContent()
+    const getCurrentArgValue = async () => {
+      const argValue = this.page.getByTestId('cmd-bar-arg-value')
+      const isAxis3DInput = await this.page
+        .getByTestId('axis-3d-input-mode')
+        .isVisible()
+        .catch(() => false)
+
+      return isAxis3DInput ? argValue.inputValue() : argValue.textContent()
+    }
     const getReviewValidationError = async () => {
       const locator = this.page.getByTestId('cmd-bar-review-validation-error')
       if (!(await locator.isVisible())) return undefined
@@ -194,7 +203,7 @@ export class CmdBarFixture {
       commandName,
     ] = await Promise.all([
       this.page.getByTestId('cmd-bar-arg-name').textContent(),
-      this.page.getByTestId('cmd-bar-arg-value').textContent(),
+      getCurrentArgValue(),
       getHeaderArgs(),
       this.page
         .locator('[data-is-current-arg="true"]')
