@@ -4,6 +4,7 @@ import type { Stats } from 'fs'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type { ElectronLifecycleReport } from '@src/lib/electronLifecycle'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
@@ -24,6 +25,8 @@ export type DeviceFlowAuthorization = {
 }
 
 export interface IElectronAPI {
+  drainElectronLifecycleReports: () => Promise<ElectronLifecycleReport[]>
+  onElectronLifecycleReportAvailable: (callback: () => void) => () => void
   resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog

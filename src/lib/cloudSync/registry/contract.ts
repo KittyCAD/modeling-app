@@ -4,6 +4,7 @@ import type {
   CloudSyncConfig,
   CloudSyncConflictResolution,
   CloudSyncLocalProject,
+  CloudSyncOpenedProject,
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
@@ -16,7 +17,7 @@ export type CloudSyncRegistryService = {
   configure: (config: CloudSyncConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
-  setProjectScope: (projectPath?: string) => void
+  setOpenedProject: (project?: CloudSyncOpenedProject) => void
   /**
    * Explicitly enroll a local-only project in cloud sync, even when the global
    * policy is not auto-enrolling existing local projects.

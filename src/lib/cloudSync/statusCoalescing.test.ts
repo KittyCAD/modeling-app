@@ -172,7 +172,7 @@ describe('cloud sync status coalescing', () => {
         enabled: true,
         baseUrl,
         environmentName,
-        projectDirectoryPath: projectDirectory,
+        cloudProjectDirectoryPaths: [projectDirectory],
         autoEnrollCloudLibraryProjects: false,
       })
 
