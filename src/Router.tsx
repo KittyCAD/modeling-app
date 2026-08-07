@@ -138,6 +138,39 @@ export const Router = () => {
               ],
             },
             {
+              path: PATHS.LIBRARY + '/:libraryId',
+              errorElement: <ErrorPage />,
+              element: (
+                <>
+                  <Outlet />
+                  <Home />
+                  <CommandBar />
+                </>
+              ),
+              id: PATHS.LIBRARY,
+              loader: homeLoader({ app }),
+              children: [
+                {
+                  index: true,
+                  element: <></>,
+                  id: PATHS.LIBRARY + 'INDEX',
+                },
+                {
+                  path: makeUrlPathRelative(PATHS.SETTINGS),
+                  element: <Settings />,
+                },
+                {
+                  id: PATHS.LIBRARY + 'TELEMETRY',
+                  children: [
+                    {
+                      path: makeUrlPathRelative(PATHS.TELEMETRY),
+                      element: <Telemetry />,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               path: PATHS.SIGN_IN,
               errorElement: <ErrorPage />,
               element: <SignIn />,

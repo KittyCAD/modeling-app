@@ -40,6 +40,7 @@ import {
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -111,7 +112,7 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
@@ -519,6 +520,13 @@ function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
 
   if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
     return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
+  }
+
+  if (
+    artifact.type === 'sweepEdge' &&
+    artifact.subType === 'previousAdjacent'
+  ) {
+    return createCallExpressionStdLibKw('getPreviousAdjacentEdge', tag, [])
   }
 
   return tag
@@ -1109,15 +1117,7 @@ export function removeReferenceFromSelections(
   }
 }
 
-export function isEnginePrimitiveSelection(
-  selection: Selections['otherSelections'][number]
-): selection is EnginePrimitiveSelection {
-  return (
-    typeof selection === 'object' &&
-    'type' in selection &&
-    selection.type === 'enginePrimitive'
-  )
-}
+export { isEnginePrimitiveSelection }
 
 export function isEngineRegionSelection(
   selection: Selections['otherSelections'][number]

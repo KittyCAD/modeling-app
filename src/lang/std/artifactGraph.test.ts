@@ -251,8 +251,49 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
-  it('preserves metadata and distinct selections for pattern copies', () => {
-    const artifactGraph: ArtifactGraph = new Map()
+  it('should preserve the identity of pattern body selections', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-1',
+          patternIndex: 1,
+        },
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-2',
+          patternIndex: 2,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toEqual(selections.graphSelections)
+    }
+  })
+
+  it('preserves metadata while deduplicating pattern copies', () => {
     const pattern: Artifact = {
       type: 'pattern',
       id: 'pattern-1',
@@ -267,7 +308,7 @@ describe('coerceSelectionsToBody', () => {
         nodePath: { steps: [] },
       },
     }
-    artifactGraph.set(pattern.id, pattern)
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
 
     const firstCopy: Selection = {
       artifact: pattern,
@@ -453,24 +494,8 @@ describe('getBodiesFromArtifactGraph', () => {
       copyEdgeIds: ['copy-edge-1'],
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
     }
-    const copySweep1: Artifact = {
-      ...sourceSweep,
-      id: 'copy-1',
-      surfaceIds: ['copy-face-1'],
-      edgeIds: ['copy-edge-1'],
-      patternIds: [],
-    }
-    const copySweep2: Artifact = {
-      ...sourceSweep,
-      id: 'copy-2',
-      surfaceIds: [],
-      edgeIds: [],
-      patternIds: [],
-    }
 
     artifactGraph.set(sourceSweep.id, sourceSweep)
-    artifactGraph.set(copySweep1.id, copySweep1)
-    artifactGraph.set(copySweep2.id, copySweep2)
     artifactGraph.set(pattern.id, pattern)
 
     const result = getBodiesFromArtifactGraph(artifactGraph)

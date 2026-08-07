@@ -20,7 +20,7 @@ sketch017 = sketch(on = plane002) {
 region001 = region(point = [-10.7000292in, 37.454302in], sketch = sketch017)
 extrude017 = extrude(region001, length = axisJ3CArmThickness)
 
-sketch018 = sketch(on = startSketchOn(extrude017, face = END)) {
+sketch018 = sketch(on = faceOf(extrude017, face = END)) {
   circle1 = circle(start = [var -7in, var 37.13in], center = [var -8.85in, var 37.13in])
 }
 
@@ -28,13 +28,13 @@ region002 = region(segments = [sketch018.circle1])
 extrude018 = extrude(region002, length = 0.15)
 
 // On the J3 Robot Arm Body, Create Mounting Clevis for Grabber Claw
-sketch020 = sketch(on = startSketchOn(extrude017, face = START)) {
+sketch020 = sketch(on = faceOf(extrude017, face = START)) {
   circle1 = circle(start = [var -8.97in, var 33.66in], center = [var -10.84in, var 33.66in])
 }
 region003 = region(segments = [sketch020.circle1])
 extrude020 = extrude(region003, length = -0.5, method = NEW)
 
-sketch021 = sketch(on = startSketchOn(extrude017, face = END)) {
+sketch021 = sketch(on = faceOf(extrude017, face = END)) {
   circle1 = circle(start = [var 12.71in, var 33.66in], center = [var 10.84in, var 33.66in])
 }
 
@@ -44,7 +44,7 @@ extrude021 = extrude(region004, length = -0.5, method = NEW)
 // Define Grabber Claw Constants
 grabberLength = 7
 
-sketch022 = sketch(on = startSketchOn(extrude021, face = START)) {
+sketch022 = sketch(on = faceOf(extrude021, face = START)) {
   circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
 }
 
@@ -52,7 +52,7 @@ region005 = region(segments = [sketch022.circle1])
 extrude022 = extrude(region005, length = -0.01)
 
 // Build Upper Claw Finger
-sketch023 = sketch(on = startSketchOn(extrude022, face = START)) {
+sketch023 = sketch(on = faceOf(extrude022, face = START)) {
   line1 = line(start = [var 10.84in, var 33.66in], end = [var 12.57in, var 33.35in])
   arc2 = arc(start = [var 16.55in, var 32.65in], end = [var 12.57in, var 33.35in], center = [var 14.35in, var 31.85in])
   coincident([line1.end, arc2.end])
@@ -72,7 +72,7 @@ region006 = region(segments = [sketch023.line1, sketch023.arc2])
 extrude023 = extrude(region006, length = -1.5, method = NEW)
 
 // Build Lower Claw Finger
-sketch024 = sketch(on = startSketchOn(extrude022, face = START)) {
+sketch024 = sketch(on = faceOf(extrude022, face = START)) {
   line1 = line(start = [var 10.84in, var 33.66in], end = [var 12.57in, var 33.35in])
   arc2 = arc(start = [var 12.57in, var 33.35in], end = [var 16.55in, var 32.65in], center = [var 14.76in, var 34.15in])
   coincident([line1.end, arc2.start])

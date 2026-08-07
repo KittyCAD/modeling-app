@@ -13,6 +13,8 @@ export enum Themes {
   System = 'system',
 }
 
+export type ResolvedTheme = Themes.Light | Themes.Dark
+
 export function appThemeToTheme(
   theme: AppTheme | undefined
 ): Themes | undefined {
@@ -29,7 +31,7 @@ export function appThemeToTheme(
 }
 
 // Get the theme from the system settings manually
-export function getSystemTheme(): Exclude<Themes, 'system'> {
+export function getSystemTheme(): ResolvedTheme {
   return typeof globalThis.window !== 'undefined' &&
     'matchMedia' in globalThis.window
     ? darkModeMatcher?.matches
@@ -48,7 +50,7 @@ export function setThemeClass(theme: Themes) {
 }
 
 // Returns the resolved theme in use (Dark || Light)
-export function getResolvedTheme(theme: Themes) {
+export function getResolvedTheme(theme: Themes): ResolvedTheme {
   return theme === Themes.System ? getSystemTheme() : theme
 }
 

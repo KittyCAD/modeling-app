@@ -30,7 +30,6 @@ export const FILE_EXT = '.kcl'
  */
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const DEFAULT_KCL_VERSION = '2.0'
-export const BODIES_PANE_FEATURE_FLAG: Feature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
@@ -167,11 +166,17 @@ export const KCL_DEFAULT_FONT_SIZE = `10mm`
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const DUPLICATE_PROJECT_TEMPORARY_PREFIX = '.zds-duplicate-'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
+
+/** Predefined Zoo environment base domains */
+export const ZOO_DOMAIN_STAGING = 'dev.zoo.dev'
+export const ZOO_DOMAIN_PRODUCTION = 'zoo.dev'
+export const ZOO_DOMAIN_REGULATED = 'zoogov.dev'
 
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted

@@ -440,77 +440,6 @@ description: Result of parsing shaft-grommet.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "grommetProfileSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "YZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// Create a sketch for the grommet profile on the YZ plane"
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "grommetProfile",
             "start": 0,
             "type": "Identifier"
@@ -536,7 +465,7 @@ description: Result of parsing shaft-grommet.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "grommetProfileSketch",
+                    "name": "YZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3335,6 +3264,7 @@ description: Result of parsing shaft-grommet.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
+          "// Create a sketch for the grommet profile on the YZ plane",
           "// Define the profile of the grommet"
         ],
         "start": 0,
@@ -3673,18 +3603,6 @@ description: Result of parsing shaft-grommet.kcl
           }
         ],
         "7": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "8": [
           {
             "commentStart": 0,
             "end": 0,

@@ -7,8 +7,6 @@ import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
-import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
@@ -18,6 +16,7 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
@@ -29,9 +28,8 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
-import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
 
 /**
@@ -45,6 +43,8 @@ export class Setting<T = unknown> {
   public current: T
   public hideOnLevel: SettingProps<T>['hideOnLevel']
   public hideOnPlatform: SettingProps<T>['hideOnPlatform']
+  public hideWithoutFeature: SettingProps<T>['hideWithoutFeature']
+  public hideWithoutFeatureOnPlatform: SettingProps<T>['hideWithoutFeatureOnPlatform']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   public description?: string
@@ -62,6 +62,8 @@ export class Setting<T = unknown> {
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
+    this.hideWithoutFeature = props.hideWithoutFeature
+    this.hideWithoutFeatureOnPlatform = props.hideWithoutFeatureOnPlatform
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
@@ -247,53 +249,9 @@ function createCoreSettings() {
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'web',
+        hideOnPlatform: 'both',
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
-        Component: ({ value, updateValue }) => {
-          const inputRef = useRef<HTMLInputElement>(null)
-          return (
-            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
-              <input
-                className="flex-grow text-xs px-2 bg-transparent"
-                value={value}
-                disabled
-                data-testid="project-directory-input"
-                ref={inputRef}
-              />
-              <button
-                onClick={toSync(async () => {
-                  // In desktop end-to-end tests we can't control the file picker,
-                  // so we seed the new directory value in the element's dataset
-                  const inputRefVal = inputRef.current?.dataset.testValue
-                  if (
-                    inputRef.current &&
-                    inputRefVal &&
-                    !isArray(inputRefVal)
-                  ) {
-                    updateValue(inputRefVal)
-                  } else {
-                    if (!window.electron) {
-                      return Promise.reject(new Error("Can't open file dialog"))
-                    }
-                    const newPath = await window.electron.open({
-                      properties: ['openDirectory', 'createDirectory'],
-                      defaultPath: value,
-                      title: 'Choose a new project directory',
-                    })
-                    if (newPath.canceled) return
-                    updateValue(newPath.filePaths[0])
-                  }
-                }, reportRejection)}
-                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
-                data-testid="project-directory-button"
-              >
-                <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="top-right">Choose a folder</Tooltip>
-              </button>
-            </div>
-          )
-        },
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
@@ -854,6 +812,9 @@ function instantiateExtensionSettings(
 type CoreSettingsType = ReturnType<typeof createCoreSettings>
 
 export type SettingsType = CoreSettingsType & {
+  app: CoreSettingsType['app'] & {
+    libraries: Setting<ProjectLibrarySetting[]>
+  }
   plugins: Record<string, Setting<boolean>>
 }
 

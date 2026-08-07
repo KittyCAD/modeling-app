@@ -38,6 +38,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
@@ -88,13 +89,12 @@ impl Geometry {
         }
     }
 
-    /// If this geometry is the result of a pattern, then return the ID of
-    /// the original sketch which was patterned.
-    /// Equivalent to the `id()` method if this isn't a pattern.
-    pub fn original_id(&self) -> uuid::Uuid {
+    /// Return the topology root to target when a pattern requests its
+    /// original geometry.
+    pub fn pattern_source_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.original_id(),
+            Geometry::Solid(e) => e.topology_id(),
         }
     }
 }
@@ -322,6 +322,7 @@ pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
     SketchSet(Vec<Sketch>),
+    HelixSet(Vec<Helix>),
 }
 
 impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
@@ -358,6 +359,21 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            SolidOrSketchOrImportedGeometry::HelixSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Helix { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Helix { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::helices(),
+                    }
+                }
+            }
         }
     }
 }
@@ -372,6 +388,7 @@ impl SolidOrSketchOrImportedGeometry {
             }
             SolidOrSketchOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             SolidOrSketchOrImportedGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            SolidOrSketchOrImportedGeometry::HelixSet(s) => Ok(s.iter().map(|s| s.value).collect()),
         }
     }
 }
@@ -1069,6 +1086,8 @@ pub enum Extrudable {
     EdgeTag(Box<TagIdentifier>),
     /// Edge.
     Edge(Uuid),
+    /// Edge specifier payload.
+    EdgeSpecifier(UnresolvedEdgeSpecifier),
 }
 
 impl Extrudable {
@@ -1091,6 +1110,10 @@ impl Extrudable {
                 ))),
             },
             Extrudable::Edge(edge) => Ok(*edge),
+            Extrudable::EdgeSpecifier(_) => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find a legacy id for edge specifier".to_owned(),
+                vec![args.source_range],
+            ))),
         }
     }
 
@@ -1109,6 +1132,7 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Edge(_) => None,
+            Extrudable::EdgeSpecifier(_) => None,
         }
     }
 
@@ -1136,6 +1160,7 @@ impl Extrudable {
                 _ => ProfileClosed::Maybe,
             },
             Extrudable::Edge(_) => ProfileClosed::Maybe,
+            Extrudable::EdgeSpecifier(_) => ProfileClosed::Maybe,
         }
     }
 }
@@ -1261,6 +1286,18 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub value_id: uuid::Uuid,
+    /// The engine entity whose children correspond to the topology references
+    /// stored on this solid. Pattern copies retain their source topology,
+    /// while consuming operations and clones replace it with their output.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) topology_id: uuid::Uuid,
+    /// The semantic body artifact from which a pattern copy was created.
+    /// Pattern commands replace `artifact_id` with the copy's engine entity
+    /// ID, so retain this to distinguish Sweep-backed bodies from composites.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -1352,6 +1389,27 @@ impl Solid {
 
     pub fn original_id(&self) -> uuid::Uuid {
         self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
+    pub(crate) fn topology_id(&self) -> uuid::Uuid {
+        self.topology_id
+    }
+
+    /// Make this solid a brand-new body produced by an operation. It now owns
+    /// the topology of `engine_id`, and any retained pattern provenance no
+    /// longer applies.
+    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+        self.topology_id = engine_id;
+        self.pattern_source_artifact_id = None;
+        self.artifact_id = artifact_id;
+    }
+
+    /// Make this solid a pattern copy. It gets a new top-level entity artifact
+    /// while retaining the source body's topology and semantic artifact
+    /// provenance.
+    pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
+        self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
+        self.artifact_id = ArtifactId::new(copy_engine_id);
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
@@ -2332,6 +2390,15 @@ pub enum UnsolvedSegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
+        /// The direction that the arc sweeps from its declared start to its
+        /// declared end. The solver and engine only understand
+        /// counterclockwise arcs, so code sending them the arc must use
+        /// [`ArcDirection::ccw_order`] to resolve which points to treat as the
+        /// sweep's start and end.
+        #[serde(default, skip_serializing_if = "ArcDirection::is_ccw")]
+        #[ts(as = "Option<ArcDirection>")]
+        #[ts(optional)]
+        direction: ArcDirection,
         construction: bool,
     },
     Circle {
@@ -2436,6 +2503,12 @@ pub enum SegmentKind {
         end_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        /// The direction that the arc sweeps from its declared start to its
+        /// declared end.
+        #[serde(default, skip_serializing_if = "ArcDirection::is_ccw")]
+        #[ts(as = "Option<ArcDirection>")]
+        #[ts(optional)]
+        direction: ArcDirection,
         construction: bool,
     },
     Circle {

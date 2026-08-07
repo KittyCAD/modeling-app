@@ -26,9 +26,7 @@ import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
-  enforceFileEXT,
   fileNameHasExtension,
-  getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
@@ -195,7 +193,7 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, settings, systemIOActor } = useApp()
+  const { commands, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -214,9 +212,8 @@ export const ProjectExplorer = ({
     (state) => state.context.lastRecursiveMoveTarget
   )
   const errors = kclManager.errorsSignal.value
-  const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
-    settingsValues.app.projectDirectory.current
+    overrideApplicationProjectDirectory || getParentAbsolutePath(project.path)
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -224,7 +221,7 @@ export const ProjectExplorer = ({
    */
   const defaultFileKey = parentPathRelativeToApplicationDirectory(
     file?.path || project.default_file,
-    overrideApplicationProjectDirectory || applicationProjectDirectory
+    applicationProjectDirectory
   )
   const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)
@@ -250,8 +247,6 @@ export const ProjectExplorer = ({
   const [isCopying, setIsCopying] = useState<boolean>(false)
   const [isFileTreeMutationPending, setIsFileTreeMutationPending] =
     useState<boolean>(false)
-  const lastIndexBeforeNothing = useRef<number>(-2)
-
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
 
@@ -316,6 +311,18 @@ export const ProjectExplorer = ({
     isFile: boolean
   } | null>(null)
 
+  const startCreatingEntry = useCallback(
+    (entry: FileExplorerEntry | null, isFile: boolean) => {
+      setFakeRow({ entry, isFile })
+      if (entry && entry.children !== null) {
+        const newOpenedRows = { ...openedRowsRef.current }
+        newOpenedRows[entry.key] = true
+        setOpenedRows(newOpenedRows)
+      }
+    },
+    []
+  )
+
   /**
    * External state handlers since the callback logic lives here.
    * If code wants to externall trigger creating a file pass in a new timestamp.
@@ -329,19 +336,10 @@ export const ProjectExplorer = ({
       return
     }
 
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
-    setFakeRow({ entry: row, isFile: true })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    const row = selectedRowRef.current
+    startCreatingEntry(row, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFilePressed])
+  }, [createFilePressed, startCreatingEntry])
 
   useEffect(() => {
     if (
@@ -351,19 +349,10 @@ export const ProjectExplorer = ({
     ) {
       return
     }
-    const row =
-      rowsToRenderRef.current[activeIndexRef.current] ||
-      rowsToRenderRef.current[lastIndexBeforeNothing.current] ||
-      null
-    setFakeRow({ entry: row, isFile: false })
-    if (row?.key) {
-      // If the file tree had the folder opened make the new one open.
-      const newOpenedRows = { ...openedRowsRef.current }
-      newOpenedRows[row?.key] = true
-      setOpenedRows(newOpenedRows)
-    }
+    const row = selectedRowRef.current
+    startCreatingEntry(row, false)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [createFolderPressed])
+  }, [createFolderPressed, startCreatingEntry])
 
   useEffect(() => {
     if (refreshExplorerPressed <= 0) {
@@ -536,13 +525,14 @@ export const ProjectExplorer = ({
       return
     }
 
+    setSelectedRowWrapper(focusedEntry)
     const newOpenedRows = { ...openedRowsRef.current }
     const key = focusedEntry.key
     const value = openedRowsRef.current[key]
     newOpenedRows[key] = !value
     setOpenedRowsWrapper(newOpenedRows)
     onRowEnterRef.current(focusedEntry, activeIndexRef.current)
-  }, [setOpenedRowsWrapper])
+  }, [setOpenedRowsWrapper, setSelectedRowWrapper])
 
   const handleRenameCommand = useCallback(() => {
     if (
@@ -860,7 +850,7 @@ export const ProjectExplorer = ({
     const didProjectChange = previousProject.current.name !== project.name
     if (didProjectChange) {
       setOpenedRows({})
-      setSelectedRow(null)
+      setSelectedRowWrapper(null)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
       setRowsToRender([])
       setContextMenuRow(null)
@@ -1034,6 +1024,17 @@ export const ProjectExplorer = ({
             focusProjectExplorer()
             setActiveIndexWrapper(domIndex)
             setContextMenuRow(child)
+          },
+          onCreateFile: () => {
+            if (
+              readOnly ||
+              isFileTreeInteractionDisabledRef.current ||
+              child.children === null
+            ) {
+              return
+            }
+            setSelectedRowWrapper(child)
+            startCreatingEntry(child, true)
           },
           isFake: false,
           activeIndex: activeIndex,
@@ -1240,8 +1241,7 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        overrideApplicationProjectDirectory ||
-                          applicationProjectDirectory
+                        applicationProjectDirectory
                       )
                     sendFileTreeMutationEvent({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -1292,8 +1292,7 @@ export const ProjectExplorer = ({
                 // Create the KCL file and navigate to (open) it in the editor.
                 const pathRelativeToParent = parentPathRelativeToProject(
                   requestedAbsolutePath,
-                  overrideApplicationProjectDirectory ||
-                    applicationProjectDirectory
+                  applicationProjectDirectory
                 )
                 sendFileTreeMutationEvent({
                   type: SystemIOMachineEvents.importFileFromURL,
@@ -1315,16 +1314,12 @@ export const ProjectExplorer = ({
                 })
               }
             } else {
-              // rename a file
-              const originalExt = getEXTWithPeriod(name)
-              const fileNameForcedWithOriginalExt = enforceFileEXT(
-                requestedName,
-                originalExt
-              )
-              if (!fileNameForcedWithOriginalExt) {
-                // TODO: OH NO!
-                return
-              }
+              // Respect a user-typed extension otherwise assume the file is KCL.
+              const fileName =
+                fileNameHasExtension(requestedName) ||
+                requestedName.startsWith('.')
+                  ? requestedName
+                  : requestedName + FILE_EXT
 
               const requestedAbsoluteFilePathWithExtension = joinOSPaths(
                 getParentAbsolutePath(row.path),
@@ -1340,7 +1335,7 @@ export const ProjectExplorer = ({
                   ? SystemIOMachineEvents.renameFileAndNavigateToFile
                   : SystemIOMachineEvents.renameFile,
                 data: {
-                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
+                  requestedFileNameWithExtension: fileName,
                   fileNameWithExtension: name,
                   absolutePathToParentDirectory: getParentAbsolutePath(
                     row.path
@@ -1448,9 +1443,6 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
-        if (activeIndexRef.current > 0) {
-          lastIndexBeforeNothing.current = activeIndexRef.current
-        }
         keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         setActiveIndexWrapper(NOTHING_IS_SELECTED)

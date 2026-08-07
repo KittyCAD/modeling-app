@@ -10,7 +10,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -173,63 +173,6 @@ extrude003 = extrude(profile003, length = -1)`
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
-    it('should support a whole pattern as a subtract tool', async () => {
-      const code = `targetSketch = startSketchOn(XY)
-targetProfile = circle(targetSketch, center = [0, 0], radius = 5)
-targetBody = extrude(targetProfile, length = 1)
-
-toolSketch = startSketchOn(XY)
-toolProfile = circle(toolSketch, center = [3, 0], radius = 0.5)
-toolBody = extrude(toolProfile, length = 1)
-toolPattern = patternCircular3d(
-  toolBody,
-  instances = 3,
-  axis = Z,
-  center = [0, 0, 0],
-)`
-      const { ast, artifactGraph, solids } = await getSolidsAndTools(
-        code,
-        [0],
-        [],
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const pattern = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'pattern'
-      )
-      if (!pattern) {
-        throw new Error('Pattern artifact not found')
-      }
-
-      const result = addSubtract({
-        ast,
-        artifactGraph,
-        solids,
-        tools: {
-          graphSelections: [
-            {
-              artifact: pattern,
-              codeRef: pattern.codeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) {
-        throw result
-      }
-
-      const execState = await enginelessExecutor(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-      expect(execState.issues).toEqual([])
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `${code}\nsolid001 = subtract(targetBody, tools = toolPattern)`
-      )
-    })
     it('should support multi-solid selection for subtract', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile002 = circle(sketch001, center = [0, 0], radius = 4.98)
@@ -254,6 +197,61 @@ extrude003 = extrude(profile004, length = 20)`
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
+
+    it('should support a whole 3D pattern selected from the feature tree as tools', async () => {
+      const code = `toolSketch = startSketchOn(XY)
+toolProfile = circle(toolSketch, center = [0, 0], radius = 1)
+toolSolid = extrude(toolProfile, length = 2)
+pattern001 = patternLinear3d(
+  toolSolid,
+  instances = 2,
+  distance = 5,
+  axis = X,
+)
+targetSketch = startSketchOn(XY)
+targetProfile = circle(targetSketch, center = [0, 0], radius = 2)
+targetSolid = extrude(targetProfile, length = 2)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const target = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'path')
+        .at(-1)
+      const pattern = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'pattern'
+      )
+      if (!target) {
+        throw new Error('Target path artifact not found in graph')
+      }
+      if (!pattern) {
+        throw new Error('Pattern artifact not found in graph')
+      }
+
+      const result = addSubtract({
+        ast,
+        artifactGraph,
+        solids: createSelectionFromArtifacts([target], artifactGraph),
+        tools: {
+          graphSelections: [{ artifact: pattern, codeRef: pattern.codeRef }],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\nsolid001 = subtract(targetSolid, tools = pattern001)`
+      )
+      expect(
+        (await enginelessExecutor(result.modifiedAst, rustContextInThisFile))
+          .issues
+      ).toEqual([])
+    })
+
     it('should support find the first sweep in case of a method=NEW extrude on face', async () => {
       const carRotorWithExtraBody = `rotorDiameter = 12
 rotorInnerDiameter = 6

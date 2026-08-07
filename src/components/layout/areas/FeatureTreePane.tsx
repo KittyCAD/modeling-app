@@ -80,7 +80,7 @@ import {
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -123,6 +123,7 @@ const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
   'extrude',
   'revolve',
   'helix',
+  // 'mirror3d', add in when edit from feature tree is supported
   'gdt::flatness',
   'gdt::straightness',
   'gdt::circularity',
@@ -1342,7 +1343,8 @@ const OperationItem = ({
                 data-testid="context-menu-set-translate"
                 disabled={
                   item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsTranslate
                 }
               >
                 Translate
@@ -1352,7 +1354,8 @@ const OperationItem = ({
                 data-testid="context-menu-set-rotate"
                 disabled={
                   item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsRotate
                 }
               >
                 Rotate
@@ -1362,7 +1365,8 @@ const OperationItem = ({
                 data-testid="context-menu-set-scale"
                 disabled={
                   item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
+                  !stdLibMap[item.name]?.supportsTransform &&
+                  !stdLibMap[item.name]?.supportsScale
                 }
               >
                 Scale

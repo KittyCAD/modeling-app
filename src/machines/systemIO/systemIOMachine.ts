@@ -6,6 +6,7 @@ import {
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type {
   RequestedKCLFile,
   RequestedKCLFileDelete,
@@ -85,6 +86,14 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             /** Human-facing project title to write to project.toml. */
             requestedProjectTitle?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: {
+            projectName: string
+            projectPath: string
+            requestedProjectName: string
           }
         }
       | {
@@ -417,7 +426,8 @@ export const systemIOMachine = setup({
         toastId ? { id: toastId } : undefined
       )
     },
-    [SystemIOMachineActions.toastError]: ({ event }) => {
+    [SystemIOMachineActions.toastError]: ({ context, event }) => {
+      reportSystemIOMachineError({ context, event })
       toast.error(
         ('data' in event && typeof event.data === 'string' && event.data) ||
           ('output' in event &&
@@ -432,7 +442,11 @@ export const systemIOMachine = setup({
     // Zookeeper streams several bulk writes per edit; a failing edit can reject
     // each one back-to-back. Share a stable toast id so those errors collapse
     // into a single toast instead of stacking duplicates.
-    [SystemIOMachineActions.toastErrorZookeeperFileWrite]: ({ event }) => {
+    [SystemIOMachineActions.toastErrorZookeeperFileWrite]: ({
+      context,
+      event,
+    }) => {
+      reportSystemIOMachineError({ context, event })
       toast.error(
         ('error' in event &&
           event.error instanceof Error &&
@@ -441,6 +455,7 @@ export const systemIOMachine = setup({
         { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
       )
     },
+    [SystemIOMachineActions.reportError]: reportSystemIOMachineError,
     [SystemIOMachineActions.setReadWriteProjectDirectory]: assign({
       canReadWriteProjectDirectory: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.done_checkReadWrite)
@@ -496,6 +511,20 @@ export const systemIOMachine = setup({
         }
       }) => {
         return { message: '', name: '' }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName, projectPath, requestedProjectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          projectPath: string
+          requestedProjectName: string
+        }
+      }) => {
+        return { message: '', name: '', title: '', projectPath: '' }
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -878,6 +907,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -986,6 +1018,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1092,6 +1127,7 @@ export const systemIOMachine = setup({
         onError: {
           target: SystemIOMachineStates.idle,
           actions: [
+            SystemIOMachineActions.reportError,
             assign({
               folders: ({ context }) => context.folders ?? [],
               hasListedProjects: true,
@@ -1120,6 +1156,45 @@ export const systemIOMachine = setup({
               requestedProjectName: ({ event }) => {
                 return {
                   name: (event as { output: { name: string } }).output.name,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+            projectPath: event.data.projectPath,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
+              requestedProjectName: ({ event }) => {
+                const output = (
+                  event as {
+                    output: { name: string; projectPath: string }
+                  }
+                ).output
+                return {
+                  name: output.name,
+                  path: output.projectPath,
                 }
               },
             }),
@@ -1319,6 +1394,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,

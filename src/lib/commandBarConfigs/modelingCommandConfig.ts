@@ -1527,7 +1527,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: 'Set translation on solid or sketch.',
+    description: 'Set translation on a solid, sketch, or helix.',
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1539,6 +1539,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectsTypesAndFilters,
+            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
             inputType: 'selectionMixed',
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1561,7 +1562,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: 'Set rotation on solid or sketch.',
+    description: 'Set rotation on a solid, sketch, or helix.',
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1571,6 +1572,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1600,7 +1602,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: 'Set scale on solid or sketch.',
+    description: 'Set scale on a solid, sketch, or helix.',
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1610,6 +1612,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectsTypesAndFilters,
+          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,

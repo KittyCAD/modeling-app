@@ -21,6 +21,7 @@ import {
   getNodeFromPath,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
+  getSelectedSketchTarget,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -55,7 +56,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -1154,6 +1155,25 @@ plane001 = offsetPlane(YZ, offset = 10)
   })
 })
 
+describe('Testing getSelectedSketchTarget', () => {
+  it('returns an engine primitive face entity', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'primitive-face-entity',
+          parentEntityId: 'solid-entity',
+          primitiveIndex: 6,
+          primitiveType: 'face',
+        },
+      ],
+    }
+
+    expect(getSelectedSketchTarget(selections)).toBe('primitive-face-entity')
+  })
+})
+
 describe('Testing getVariableExprsFromSelection', () => {
   it('should use the input solid for an unassigned edge cut', () => {
     const code = `extrude001 = extrude(profile001, length = 5)
@@ -1754,7 +1774,15 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)`
         nodePath: defaultNodePath(),
       },
     }
-    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const materializedCopy = {
+      type: 'sweep',
+      id: 'copy-body-1',
+      codeRef: pattern.codeRef,
+    } as unknown as Artifact
+    const artifactGraph: ArtifactGraph = new Map([
+      [pattern.id, pattern],
+      [materializedCopy.id, materializedCopy],
+    ])
     const opArg = {
       value: {
         type: 'Solid',
@@ -1775,6 +1803,49 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)`
         : undefined
     )
     expect(selection.patternIndex).toBe(1)
+  })
+
+  it('preserves a whole pattern identity from an operation argument', async () => {
+    const code = `extrude001 = 0
+pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)`
+    const ast = assertParse(code, instanceInThisFile)
+    const patternRange: SourceRange = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ]
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: patternRange,
+        pathToNode: getNodePathFromSourceRange(ast, patternRange),
+        nodePath: defaultNodePath(),
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const opArg = {
+      value: {
+        type: 'Solid',
+        value: { artifactId: pattern.id },
+      },
+      sourceRange: patternRange,
+    } as unknown as OpArg
+
+    const selections = retrieveSelectionsFromOpArg(opArg, artifactGraph)
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toEqual([
+      {
+        artifact: pattern,
+        codeRef: pattern.codeRef,
+      },
+    ])
   })
 
   it('maps a segment tag to a wall selection when a wall exists', async () => {

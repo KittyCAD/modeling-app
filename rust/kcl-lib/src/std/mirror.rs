@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
@@ -22,6 +21,7 @@ use crate::execution::Solid;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::MirrorAcross3d;
 use crate::std::clone::fix_tags_and_references;
@@ -29,16 +29,17 @@ use crate::std::clone::fix_tags_and_references;
 /// Mirror a solid.
 pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let bodies = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
-    let across = args.get_kw_arg(
-        "across",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis3d),
-            RuntimeType::Primitive(PrimitiveType::Plane),
-            RuntimeType::segment(),
-        ]),
-        exec_state,
-    )?;
+    let across_value: KclValue = args.get_kw_arg("across", &RuntimeType::any(), exec_state)?;
+    let across = if crate::std::edge::is_edge_specifier_object(&across_value) {
+        MirrorAcross3d::EdgeSpecifier(crate::std::edge::parse_edge_specifier_value(&across_value, &args)?)
+    } else {
+        MirrorAcross3d::from_kcl_val(&across_value).ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                "across must be an Edge, Plane, Axis3d, Segment, or an edge specifier object".to_owned(),
+                vec![args.source_range],
+            ))
+        })?
+    };
 
     let bodies = inner_mirror_3d(bodies, across, exec_state, args).await?;
     Ok(bodies.into())
@@ -74,8 +75,21 @@ async fn inner_mirror_3d(
                 z: LengthUnit(origin[2].to_mm()),
             },
         },
-        MirrorAcross3d::Edge(edge) => MirrorAcross::Edge {
-            id: edge.get_engine_id(exec_state, &args)?,
+        MirrorAcross3d::Edge(edge) => {
+            let edge_id = edge.get_engine_id(exec_state, &args)?;
+            let source_range = args
+                .labeled
+                .get("across")
+                .map(|arg| arg.source_range)
+                .unwrap_or(args.source_range);
+            crate::std::edge::record_refactor_meta_for_consumed_edge(exec_state, edge_id, source_range, &args).await;
+            MirrorAcross::Edge { id: edge_id }
+        }
+        MirrorAcross3d::EdgeSpecifier(specifier) => MirrorAcross::EdgeReference {
+            reference: crate::std::edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
+                &specifier, exec_state, &args,
+            )
+            .await?,
         },
         MirrorAcross3d::Plane(mut plane) => {
             if plane.is_uninitialized() {
@@ -127,15 +141,16 @@ async fn inner_mirror_3d(
     }
 
     let mut mirrored_bodies = Vec::with_capacity(unmapped_mirrored_bodies.len());
-    for ((mut mirrored_body, old_id), info) in unmapped_mirrored_bodies
+    for (mut mirrored_body, info) in unmapped_mirrored_bodies
         .into_iter()
-        .zip(old_body_ids)
         .zip(mirror_info.entity_face_edge_ids.iter())
     {
+        let old_id = mirrored_body.id;
+        let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
-        mirrored_body.artifact_id = ArtifactId::new(info.object_id);
+        mirrored_body.become_new_body(info.object_id, info.object_id.into());
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
-        fix_tags_and_references(&mut new_geometry, old_id, old_id, exec_state, &args)
+        fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await
             .map_err(|e| {
                 KclError::new_internal(KclErrorDetails::new(

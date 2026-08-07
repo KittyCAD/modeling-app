@@ -84,6 +84,10 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub issues: Vec<CompilationIssue>,
+    /// If set, use this version only when deciding whether to emit
+    /// `deprecated_since` warnings. Runtime behavior still uses the version
+    /// declared by the KCL program.
+    pub deprecation_version_override: Option<String>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -304,6 +308,45 @@ pub(super) struct ModuleState {
     /// the exact key lookup misses, this map lets us reject that solid by
     /// `engine_id`, unless the key is a recorded operation output.
     pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+    /// Region engine UUIDs consumed by successful modeling operations. Regions
+    /// use the KCL `Sketch` representation, so this state keeps stale Region
+    /// values from reaching an engine object that has become something else.
+    pub(super) consumed_regions: AHashMap<Uuid, ConsumedRegionInfo>,
+}
+
+/// Information about the operation that consumed a Region.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct ConsumedRegionInfo {
+    operation: ConsumedRegionOperation,
+}
+
+impl ConsumedRegionInfo {
+    pub(crate) fn new(operation: ConsumedRegionOperation) -> Self {
+        Self { operation }
+    }
+
+    pub(crate) fn operation(self) -> ConsumedRegionOperation {
+        self.operation
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConsumedRegionOperation {
+    Extrude,
+    Revolve,
+    Sweep,
+    Delete,
+}
+
+impl std::fmt::Display for ConsumedRegionOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Extrude => f.write_str("extrude"),
+            Self::Revolve => f.write_str("revolve"),
+            Self::Sweep => f.write_str("sweep"),
+            Self::Delete => f.write_str("delete"),
+        }
+    }
 }
 
 /// Internal identity for one runtime KCL solid value.
@@ -365,10 +408,6 @@ impl ConsumedSolidInfo {
 
     pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
         !self.returned_solid_keys.contains(&key)
-    }
-
-    pub(crate) fn contains_returned_solid(&self, key: &ConsumedSolidKey) -> bool {
-        self.returned_solid_keys.contains(key)
     }
 }
 
@@ -544,6 +583,18 @@ impl ExecState {
 
     pub fn issues(&self) -> &[CompilationIssue] {
         &self.global.issues
+    }
+
+    pub(crate) fn deprecation_version(&self) -> &str {
+        self.global
+            .deprecation_version_override
+            .as_deref()
+            .unwrap_or(&self.mod_local.settings.kcl_version)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
+        self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -774,14 +825,32 @@ impl ExecState {
         self.mod_local.consumed_solid_ids.get(id)
     }
 
-    /// Check whether a solid value was produced by an operation that consumed
-    /// its input bodies. These outputs own engine topology that is distinct
-    /// from the source sketch topology retained in program memory.
-    pub(crate) fn is_consuming_operation_output(&self, key: &ConsumedSolidKey) -> bool {
+    pub(crate) fn mark_region_consumed(&mut self, id: Uuid, info: ConsumedRegionInfo) {
+        self.mod_local.consumed_regions.insert(id, info);
+    }
+
+    pub(crate) fn check_region_consumed(&self, id: &Uuid) -> Option<ConsumedRegionInfo> {
+        self.mod_local.consumed_regions.get(id).copied()
+    }
+
+    /// Find the current variable containing a Region engine UUID. This runs
+    /// only while constructing a diagnostic, so recursively searching arrays
+    /// and objects is preferable to storing variable names in liveness state.
+    pub(crate) fn find_var_name_for_region_id(&self, target_id: Uuid) -> Result<Option<String>, KclError> {
+        fn contains_region_id(value: &KclValue, target_id: Uuid) -> bool {
+            match value {
+                KclValue::Sketch { value } => value.origin_sketch_id.is_some() && value.id == target_id,
+                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => {
+                    value.iter().any(|value| contains_region_id(value, target_id))
+                }
+                KclValue::Object { value, .. } => value.values().any(|value| contains_region_id(value, target_id)),
+                _ => false,
+            }
+        }
+
         self.mod_local
-            .consumed_solids
-            .values()
-            .any(|info| info.contains_returned_solid(key))
+            .stack
+            .find_var_name_in_all_envs(|value| contains_region_id(value, target_id))
     }
 
     /// Follow direct replacement links until we find the latest known output.
@@ -923,6 +992,33 @@ impl ExecState {
 
     pub(crate) fn record_pending_edge_refactor_meta(&mut self, meta: PendingEdgeRefactorMeta) {
         self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
+    }
+
+    pub(crate) fn pending_edge_refactor_meta(
+        &self,
+        edge_id: Uuid,
+        argument_source_range: SourceRange,
+    ) -> Option<PendingEdgeRefactorMeta> {
+        if let Some(pending) = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && argument_source_range.contains_range(&meta.source_range))
+        {
+            return Some(pending.clone());
+        }
+
+        // A helper assigned to a variable is outside the argument's source
+        // range. Fall back to the edge ID only when it identifies one helper.
+        let mut matches = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .filter(|meta| meta.edge_id == edge_id);
+        let pending = matches.next()?.clone();
+        matches.next().is_none().then_some(pending)
     }
 
     pub(crate) fn record_edge_refactor_meta_from_pending(
@@ -1187,6 +1283,7 @@ impl GlobalState {
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
+            deprecation_version_override: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
@@ -1227,7 +1324,7 @@ impl GlobalState {
 
 impl ArtifactState {
     pub fn cached_body_items(&self) -> usize {
-        self.graph.item_count
+        self.graph.item_count()
     }
 
     pub(crate) fn clear(&mut self) {
@@ -1364,6 +1461,7 @@ impl ModuleState {
             denied_warnings: Vec::new(),
             consumed_solids: AHashMap::default(),
             consumed_solid_ids: AHashMap::default(),
+            consumed_regions: AHashMap::default(),
             inside_stdlib: false,
         }
     }

@@ -14,6 +14,7 @@ export type MenuLabels =
   | 'Edit.Edit parameter'
   | 'Edit.Format code'
   | 'File.Create project'
+  | 'File.Duplicate project'
   | 'File.Open project'
   | 'File.Import file from URL'
   | 'File.Preferences.User settings'

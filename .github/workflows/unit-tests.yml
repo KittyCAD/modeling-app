@@ -21,7 +21,7 @@ jobs:
   track-setup:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
 
       - name: Track setup
         run: .github/ci-cd-scripts/track-step.sh
@@ -42,9 +42,9 @@ jobs:
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -73,9 +73,9 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: build-wasm
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-node@v6.4.0
+      - uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm

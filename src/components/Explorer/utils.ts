@@ -64,6 +64,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onDoubleClick?: (domIndex: number) => void
   onOpen: () => void
   onContextMenuOpen: (domIndex: number) => void
+  onCreateFile: () => void
   onOpenInNewWindow: () => void
   onDelete: () => void
   onCopy: () => void

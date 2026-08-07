@@ -40,6 +40,11 @@ pub enum KclValueView {
     String {
         value: String,
     },
+    /// Exposed by nominal identity, not by the variant's representation.
+    Enum {
+        enum_name: String,
+        variant: String,
+    },
     SketchVar {
         value: Box<SketchVar>,
     },
@@ -107,6 +112,10 @@ impl From<KclValue> for KclValueView {
             KclValue::Bool { value, .. } => KclValueView::Bool { value },
             KclValue::Number { value, ty, .. } => KclValueView::Number { value, ty },
             KclValue::String { value, .. } => KclValueView::String { value },
+            KclValue::Enum { value } => KclValueView::Enum {
+                enum_name: value.enum_id().declared_name().to_owned(),
+                variant: value.variant().to_owned(),
+            },
             KclValue::SketchVar { value } => KclValueView::SketchVar { value },
             KclValue::SketchConstraint { value } => KclValueView::SketchConstraint { value },
             KclValue::Tuple { value, .. } => KclValueView::Tuple {

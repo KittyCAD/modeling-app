@@ -48,9 +48,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
       - name: Install Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
       - name: Install dependencies
@@ -105,7 +105,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -120,7 +120,7 @@ jobs:
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
       - name: Update apt repositories
@@ -221,7 +221,7 @@ jobs:
             nodejs \
             npm
       - name: Checkout repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -271,11 +271,11 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV

@@ -1,0 +1,10 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+// The Rust contract tests send raw engine commands that use sharedRegion as
+// both operands. Keeping those commands out of KCL ensures no interpreter or
+// artifact-graph behavior can mask the engine response under test.

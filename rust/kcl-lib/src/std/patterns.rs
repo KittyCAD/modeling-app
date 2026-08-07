@@ -23,18 +23,21 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
-use crate::execution::ControlFlowKind;
+use crate::execution::EarlyReturn;
 use crate::execution::ExecState;
 use crate::execution::Geometries;
 use crate::execution::Geometry;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
+use crate::execution::KclValueControlFlow;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
@@ -62,25 +65,35 @@ pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
 /// Repeat some 3D solid, changing each repetition slightly.
-pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
     let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
-    let solids = inner_pattern_transform(solids, instances, transform, use_original, exec_state, &args).await?;
-    Ok(solids.into())
+    match inner_pattern_transform(solids, instances, transform, use_original, exec_state, &args).await {
+        Ok(solids) => Ok(KclValue::continue_(solids.into())),
+        // The callback exited, e.g. by calling exit(). Propagate the exit so
+        // that it terminates the enclosing module.
+        Err(EarlyReturn::Value(cf)) => Ok(cf),
+        Err(EarlyReturn::Error(err)) => Err(err),
+    }
 }
 
 /// Repeat some 2D sketch, changing each repetition slightly.
-pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
-    let sketches = inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await?;
-    Ok(sketches.into())
+    match inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await {
+        Ok(sketches) => Ok(KclValue::continue_(sketches.into())),
+        // The callback exited, e.g. by calling exit(). Propagate the exit so
+        // that it terminates the enclosing module.
+        Err(EarlyReturn::Value(cf)) => Ok(cf),
+        Err(EarlyReturn::Error(err)) => Err(err),
+    }
 }
 
 async fn inner_pattern_transform(
@@ -90,14 +103,15 @@ async fn inner_pattern_transform(
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<Solid>, KclError> {
+) -> Result<Vec<Solid>, EarlyReturn> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
     if instances < 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             MUST_HAVE_ONE_INSTANCE.to_owned(),
             vec![args.source_range],
-        )));
+        ))
+        .into());
     }
     for i in 1..instances {
         let t = make_transform::<Solid>(
@@ -111,14 +125,14 @@ async fn inner_pattern_transform(
         .await?;
         transform_vec.push(t);
     }
-    execute_pattern_transform(
+    Ok(execute_pattern_transform(
         transform_vec,
         solids,
         use_original.unwrap_or_default(),
         exec_state,
         args,
     )
-    .await
+    .await?)
 }
 
 async fn inner_pattern_transform_2d(
@@ -128,14 +142,15 @@ async fn inner_pattern_transform_2d(
     use_original: Option<bool>,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<Vec<Sketch>, KclError> {
+) -> Result<Vec<Sketch>, EarlyReturn> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
     if instances < 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             MUST_HAVE_ONE_INSTANCE.to_owned(),
             vec![args.source_range],
-        )));
+        ))
+        .into());
     }
     for i in 1..instances {
         let t = make_transform::<Sketch>(
@@ -149,14 +164,14 @@ async fn inner_pattern_transform_2d(
         .await?;
         transform_vec.push(t);
     }
-    execute_pattern_transform(
+    Ok(execute_pattern_transform(
         transform_vec,
         sketches,
         use_original.unwrap_or_default(),
         exec_state,
         args,
     )
-    .await
+    .await?)
 }
 
 async fn execute_pattern_transform<T: GeometryTrait>(
@@ -196,7 +211,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityLinearPatternTransform::builder()
-                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .entity_id(if use_original { solid.topology_id() } else { solid.id() })
                     .transform(Default::default())
                     .transforms(transforms)
                     .build(),
@@ -225,11 +240,9 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
     let mut geometries = vec![solid.clone()];
     for id in entity_ids.iter().copied() {
-        let pattern_source_id = solid.pattern_source_id();
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
         new_solid.set_artifact_id(id);
-        new_solid.set_pattern_source_id(pattern_source_id);
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -242,7 +255,7 @@ async fn make_transform<T: GeometryTrait>(
     node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
-) -> Result<Vec<Transform>, KclError> {
+) -> Result<Vec<Transform>, EarlyReturn> {
     // Call the transform fn for this repetition.
     let repetition_num = KclValue::Number {
         value: i.into(),
@@ -271,17 +284,10 @@ async fn make_transform<T: GeometryTrait>(
         ))
     })?;
 
-    let transform_fn_return = match transform_fn_return.control {
-        ControlFlowKind::Continue => transform_fn_return.into_value(),
-        ControlFlowKind::Exit => {
-            let message = "Early return inside pattern transform function is currently not supported".to_owned();
-            debug_assert!(false, "{}", &message);
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                message,
-                vec![source_range],
-            )));
-        }
-    };
+    // If the callback exited, e.g. by calling exit(), skip building the
+    // pattern, and propagate the exit so that it terminates the enclosing
+    // module.
+    let transform_fn_return = early_return!(transform_fn_return);
 
     let transforms = match transform_fn_return {
         KclValue::Object { value, .. } => vec![value],
@@ -294,21 +300,23 @@ async fn make_transform<T: GeometryTrait>(
                         source_ranges.clone(),
                     )))
                 })
-                .collect::<Result<_, _>>()?;
+                .collect::<Result<_, KclError>>()?;
             transforms
         }
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
                 source_ranges,
-            )));
+            ))
+            .into());
         }
     };
 
-    transforms
+    let transforms = transforms
         .into_iter()
         .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone(), exec_state))
-        .collect()
+        .collect::<Result<_, KclError>>()?;
+    Ok(transforms)
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
@@ -408,7 +416,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), true, exec_state)
+    val.coerce(&RuntimeType::point3d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -428,7 +436,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), true, exec_state)
+    val.coerce(&RuntimeType::point2d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -446,11 +454,9 @@ fn array_to_point2d(
 pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
-    fn original_id(&self) -> Uuid;
+    fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
-    fn pattern_source_id(&self) -> Uuid;
-    fn set_pattern_source_id(&mut self, id: Uuid);
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -468,16 +474,10 @@ impl GeometryTrait for Sketch {
     fn set_artifact_id(&mut self, id: Uuid) {
         self.artifact_id = ArtifactId::new(id);
     }
-    fn pattern_source_id(&self) -> Uuid {
-        self.original_id
-    }
-    fn set_pattern_source_id(&mut self, id: Uuid) {
-        self.original_id = id;
-    }
     fn id(&self) -> Uuid {
         self.id
     }
-    fn original_id(&self) -> Uuid {
+    fn topology_id(&self) -> Uuid {
         self.original_id
     }
     fn array_to_point3d(
@@ -507,23 +507,15 @@ impl GeometryTrait for Solid {
     }
 
     fn set_artifact_id(&mut self, id: Uuid) {
-        self.artifact_id = ArtifactId::new(id);
-    }
-    fn pattern_source_id(&self) -> Uuid {
-        self.original_id()
-    }
-    fn set_pattern_source_id(&mut self, id: Uuid) {
-        if let Some(sketch) = self.sketch_mut() {
-            sketch.original_id = id;
-        }
+        self.become_pattern_copy(id);
     }
 
     fn id(&self) -> Uuid {
         self.id
     }
 
-    fn original_id(&self) -> Uuid {
-        Solid::original_id(self)
+    fn topology_id(&self) -> Uuid {
+        Solid::topology_id(self)
     }
 
     fn array_to_point3d(
@@ -1037,7 +1029,7 @@ async fn pattern_circular(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
                     .entity_id(if data.use_original() {
-                        geometry.original_id()
+                        geometry.pattern_source_id()
                     } else {
                         geometry.id()
                     })
@@ -1091,10 +1083,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
-                new_solid.artifact_id = ArtifactId::new(id);
-                if let Some(sketch) = new_solid.sketch_mut() {
-                    sketch.original_id = solid.original_id();
-                }
+                new_solid.become_pattern_copy(id);
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

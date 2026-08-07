@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_exit.kcl
+---
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  exit()
+
+  line1 = line(start = [var 0mm, var 0.06mm], end = [var 0.04mm, var 0.06mm])
+}
+
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var 2.47mm, var 2.99mm], center = [var 1.65mm, var 1.52mm])
+}

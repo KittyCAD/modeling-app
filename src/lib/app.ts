@@ -8,22 +8,34 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  buildZookeeperHistoryExtension,
-  type PreparedZookeeperPatchFileReplay,
-} from '@src/lib/zookeeper/editorPlugin'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isDesktop } from '@src/lib/isDesktop'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import RustContext from '@src/lib/rustContext'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  areProjectLibrarySettingsEqual,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  getDefaultCloudProjectLibrarySetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
+  isPersonalCloudProjectLibrarySetting,
+  mergeProjectLibrarySettings,
+  projectLibrariesFromSettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -33,11 +45,10 @@ import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import {
-  BILLING_CONTEXT_DEFAULTS,
-  billingMachine,
-} from '@src/machines/billingMachine'
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
@@ -49,7 +60,6 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
 import {
   type AuthRegistryService,
   authService,
@@ -60,10 +70,19 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -80,15 +99,10 @@ import {
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import { useSelector } from '@xstate/react'
-import type {
-  ActorRefFrom,
-  ContextFrom,
-  SnapshotFrom,
-  Subscription,
-} from 'xstate'
+import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
 
+const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
@@ -117,6 +131,10 @@ function getZookeeperReplayFallbackFilePath(
   return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
+function normalizeProjectLibrarySettingPath(path: string) {
+  return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
@@ -139,11 +157,7 @@ export type AppCommandSystem = CommandSystemService
 
 export type AppSettingsSystem = SettingsRegistryService
 
-export type AppBillingSystem = {
-  actor: ActorRefFrom<typeof billingMachine>
-  send: ActorRefFrom<typeof billingMachine>['send']
-  useContext: () => ContextFrom<typeof billingMachine>
-}
+export type AppBillingSystem = BillingRegistryService
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
@@ -172,6 +186,8 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public currentProjectLibraryIdSignal: Signal<string | undefined> =
+    signal(undefined)
   public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
@@ -248,6 +264,7 @@ export class App implements AppSubsystems {
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.userFeatures.actor.subscribe(this.syncPluginSettingsFromCurrent)
     this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
       this.setActiveWasmInstance
     )
@@ -261,8 +278,9 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.settings.actor.subscribe(this.syncPluginSettings)
-    this.syncPluginSettings(this.settings.actor.getSnapshot())
+    this.syncPluginSettingsFromCurrent()
   }
 
   /**
@@ -288,29 +306,13 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
-    const settingsActor = settings.actor
+    const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
-    const engineCommandManager = new ConnectionManager({
-      settingsActor,
-    })
-    const rustContext = new RustContext(
-      wasmPromise,
-      engineCommandManager,
-      settingsActor
-    )
-
-    const billingActor = createActor(billingMachine, {
-      input: {
-        ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: () => withAPIBaseURL(''),
-      },
-    }).start()
-    const billing: AppBillingSystem = {
-      actor: billingActor,
-      send: billingActor.send.bind(App),
-      useContext: () => useSelector(billingActor, ({ context }) => context),
-    }
+    const engineCommandManager = appRegistry.get(
+      engineConnectionService
+    ).manager
+    const rustContext = appRegistry.get(rustContextService).context
 
     return {
       wasmPromise,
@@ -347,10 +349,31 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
+  private setCloudSyncOpenedProject(project?: Project) {
+    this.registry.get(cloudSyncService).setOpenedProject(
+      project
+        ? {
+            projectPath: project.path,
+            ...(project.libraryPath
+              ? { libraryPath: project.libraryPath }
+              : {}),
+            ...(project.libraryType
+              ? { libraryType: project.libraryType }
+              : {}),
+          }
+        : undefined
+    )
+  }
+
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(projectIORef)
+    const ownedProject = await projectWithLibraryOwnership(
+      projectIORef,
+      this.settings.get().app.libraries.current
+    )
+    const projectIORefSignal = signal(ownedProject)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -413,7 +436,15 @@ export class App implements AppSubsystems {
           p.path === projectIORefSignal.value.path
       )
       if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
+        projectIORefSignal.value = {
+          ...foundProject,
+          ...(projectIORefSignal.value.libraryPath
+            ? { libraryPath: projectIORefSignal.value.libraryPath }
+            : {}),
+          ...(projectIORefSignal.value.libraryType
+            ? { libraryType: projectIORefSignal.value.libraryType }
+            : {}),
+        }
       }
     })
 
@@ -443,6 +474,7 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }
@@ -474,6 +506,7 @@ export class App implements AppSubsystems {
       : undefined
     const enabled =
       Boolean(token) &&
+      this.cloudSyncPluginSettingEnabled() &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
@@ -483,8 +516,19 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      syncExistingLocalProjects: !window.electron,
+      autoEnrollCloudLibraryProjects: true,
     })
+  }
+
+  private cloudSyncPluginSettingEnabled = () => {
+    const cloudSyncSetting = (
+      this.settings.actor.getSnapshot().context as unknown as Record<
+        string,
+        Record<string, { current?: unknown } | undefined> | undefined
+      >
+    ).plugins?.[CLOUD_SYNC_PLUGIN_ID]
+
+    return cloudSyncSetting?.current === true
   }
 
   setActiveWasmInstance = (wasmInstance: ModuleType) => {
@@ -498,6 +542,35 @@ export class App implements AppSubsystems {
     }
 
     setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
+  }
+
+  getCreateProjectLibraryTargets = () => {
+    const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
+    const settings = getOnlySettingsFromContext(
+      this.settings.actor.getSnapshot().context
+    )
+    const libraries = projectLibrariesFromSettings(
+      settings.app.libraries.current
+    )
+    const targets = libraries.flatMap((library) => {
+      const createProject = getProjectLibraryCreateProjectOperation(
+        libraryTypes.get(library.type),
+        library
+      )
+
+      return createProject ? [{ library, createProject }] : []
+    })
+
+    // Configured libraries exist but none can create a project — the user would
+    // see an actionless Home. This should not happen (the cloud and directory
+    // types are always-on); surface it rather than silently returning nothing.
+    if (targets.length === 0 && libraries.length > 0) {
+      console.warn(
+        'No project library can create projects; the configured libraries have no available createProject handler.'
+      )
+    }
+
+    return targets
   }
 
   syncAppCommands = () => {
@@ -522,19 +595,199 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectLibraryId: () =>
+              this.currentProjectLibraryIdSignal.value,
+            getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getHomeProjectActions: () =>
+              this.registry.get(homeProjectActionsService),
+            getHomeProjectEntries: () =>
+              this.registry.get(homeProjectEntriesValueSpec),
           }).map(provideCommand),
         ],
       }),
     ])
   }
 
+  syncPluginSettingsFromCurrent = () => {
+    this.syncPluginSettings(this.settings.actor.getSnapshot())
+  }
+
+  private getPluginActivationSettingValue = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    activationSetting: {
+      category: string
+      settingName: string
+    }
+  ) => {
+    return (
+      snapshot.context as unknown as Record<
+        string,
+        | Record<string, { current?: unknown; user?: unknown } | undefined>
+        | undefined
+      >
+    )[activationSetting.category]?.[activationSetting.settingName]
+  }
+
+  /**
+   * Product policy: Cloud sync is feature-gated, but feature-flagged users
+   * should get the plugin enabled by default.
+   *
+   * Keep the plugin's static default off so registry startup stays
+   * deterministic. Once settings and user features are both settled in the app
+   * runtime, this writes the user-level enablement.
+   *
+   * Desktop is opt-in: only write when there is no existing user preference, so
+   * an explicit opt-out is respected. Web treats cloud sync as the project
+   * storage layer rather than an optional feature, so it is mandatory for
+   * eligible users regardless of any prior opt-out (the toggle is also hidden
+   * on web via the plugin activation setting). This makes the setting the
+   * single source of truth that everything downstream follows.
+   */
+  private maybeEnableCloudSyncPluginForFeature = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    pluginActivationSettings: Map<
+      string,
+      {
+        category: string
+        settingName: string
+      }
+    >
+  ) => {
+    if (!snapshot.matches('idle')) {
+      return false
+    }
+
+    const activationSetting = pluginActivationSettings.get(CLOUD_SYNC_PLUGIN_ID)
+    if (!activationSetting) {
+      return false
+    }
+
+    const settingValue = this.getPluginActivationSettingValue(
+      snapshot,
+      activationSetting
+    )
+    if (!settingValue || settingValue.current === true) {
+      return false
+    }
+
+    const isWeb = typeof window !== 'undefined' && !window.electron
+    if (!isWeb && settingValue.user !== undefined) {
+      return false
+    }
+
+    if (
+      !userFeaturesContextHas(
+        this.userFeatures.actor.getSnapshot().context,
+        OPFS_CLOUD_FEATURE_FLAG,
+        false
+      )
+    ) {
+      return false
+    }
+
+    this.settings.actor.send({
+      type: `set.${activationSetting.category}.${activationSetting.settingName}`,
+      data: {
+        level: 'user',
+        value: true,
+      },
+    } as never)
+    return true
+  }
+
+  /**
+   * Product policy: enabling Cloud sync materializes the explicit Personal
+   * Cloud library row in user settings.
+   *
+   * This is intentionally tied to the plugin activation lifecycle instead of a
+   * plugin-side startup reconciliation pass. Desktop keeps directory and cloud
+   * libraries side by side; web treats Personal Cloud as the canonical project
+   * library and replaces only the recognized default directory row.
+   */
+  private materializePersonalCloudLibraryOnEnable = async (
+    snapshot: SnapshotFrom<typeof this.settings.actor>
+  ) => {
+    if (!snapshot.matches('idle')) {
+      return false
+    }
+
+    const currentLibraries = snapshot.context.app.libraries?.current ?? []
+    const defaultDirectoryLibraryPaths = new Set(
+      [
+        snapshot.context.app.projectDirectory?.current,
+        snapshot.context.app.projectDirectory?.default,
+        ...(snapshot.context.app.libraries?.default ?? [])
+          .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
+          .map((library) => library.path),
+      ]
+        .filter((path): path is string => Boolean(path?.trim()))
+        .map(normalizeProjectLibrarySettingPath)
+    )
+    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+    const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
+      isPersonalCloudProjectLibrarySetting(library)
+    const shouldReplaceDirectoryLibraryOnWeb = (
+      library: ProjectLibrarySetting
+    ) =>
+      !isDesktop() &&
+      library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
+      defaultDirectoryLibraryPaths.has(
+        normalizeProjectLibrarySettingPath(library.path)
+      )
+
+    let hasPersonalCloudLibrary = false
+    const nextLibraries = mergeProjectLibrarySettings(
+      currentLibraries.flatMap((library) => {
+        if (isDefaultCloudLibrary(library)) {
+          hasPersonalCloudLibrary = true
+          return [
+            isLegacyPersonalCloudProjectLibraryPathSetting(library)
+              ? {
+                  ...library,
+                  path: defaultCloudLibrary.path,
+                  ...(defaultCloudLibrary.source
+                    ? { source: defaultCloudLibrary.source }
+                    : {}),
+                }
+              : library,
+          ]
+        }
+
+        if (shouldReplaceDirectoryLibraryOnWeb(library)) {
+          if (hasPersonalCloudLibrary) {
+            return []
+          }
+
+          hasPersonalCloudLibrary = true
+          return [defaultCloudLibrary]
+        }
+
+        return [library]
+      }),
+      hasPersonalCloudLibrary ? [] : [defaultCloudLibrary]
+    )
+
+    if (areProjectLibrarySettingsEqual(nextLibraries, currentLibraries)) {
+      return false
+    }
+
+    this.settings.actor.send({
+      type: 'set.app.libraries',
+      data: {
+        level: 'user',
+        value: nextLibraries,
+      },
+    })
+    return true
+  }
+
   /**
    * Keep plugin runtime state aligned with the persisted settings model.
    *
-   * For now the settings actor is the source of truth and plugin toggle
-   * services are an imperative projection of that state. A narrower follow-up
-   * can invert this by deriving both the UI and persistence model directly from
-   * extension-owned settings state.
+   * Settings stay the source of truth. Plugin toggle services are an imperative
+   * projection of settled settings, and cloud-sync's feature-flag auto-enable
+   * policy is applied here so plugins do not mutate settings while the registry
+   * graph is being built.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
     const pluginActivationSettings = new Map(
@@ -542,7 +795,22 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+
+    if (!snapshot.matches('idle')) {
+      return
+    }
+
+    if (
+      this.maybeEnableCloudSyncPluginForFeature(
+        snapshot,
+        pluginActivationSettings
+      )
+    ) {
+      return
+    }
+
     const activePluginIds: string[] = []
+    let shouldMaterializePersonalCloudLibrary = false
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -550,26 +818,37 @@ export class App implements AppSubsystems {
         continue
       }
 
-      const desiredActive = (
-        snapshot.context as unknown as Record<
-          string,
-          Record<string, { current: unknown } | undefined> | undefined
-        >
-      )[activationSetting.category]?.[activationSetting.settingName]?.current
-      if (typeof desiredActive !== 'boolean') {
+      const settingValue = this.getPluginActivationSettingValue(
+        snapshot,
+        activationSetting
+      )
+      const settingDesiredActive = settingValue?.current
+      if (typeof settingDesiredActive !== 'boolean') {
         continue
       }
+      const featureAllowsCloudSyncPlugin =
+        plugin.id !== CLOUD_SYNC_PLUGIN_ID ||
+        userFeaturesContextHas(
+          this.userFeatures.actor.getSnapshot().context,
+          OPFS_CLOUD_FEATURE_FLAG,
+          false
+        )
+      const desiredActive = settingDesiredActive && featureAllowsCloudSyncPlugin
       if (desiredActive) {
         activePluginIds.push(plugin.id)
       }
 
       const toggle = this.registry.get(plugin.service)
+      const wasActive = toggle.active.value
       if (toggle.active.value === desiredActive) {
         continue
       }
 
       if (desiredActive) {
         toggle.enable()
+        if (plugin.id === CLOUD_SYNC_PLUGIN_ID && !wasActive) {
+          shouldMaterializePersonalCloudLibrary = true
+        }
         continue
       }
 
@@ -582,6 +861,12 @@ export class App implements AppSubsystems {
         : undefined
     if (syncActivePlugins) {
       void syncActivePlugins(activePluginIds).catch(reportRejection)
+    }
+
+    if (shouldMaterializePersonalCloudLibrary) {
+      void this.materializePersonalCloudLibraryOnEnable(snapshot).catch(
+        reportRejection
+      )
     }
   }
 
@@ -615,6 +900,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    this.registry.get(lspService).attachKclManager(kclManager)
 
     if (typeof window !== 'undefined') {
       window.engineCommandManager = kclManager.engineCommandManager

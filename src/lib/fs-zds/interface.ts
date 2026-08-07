@@ -35,7 +35,9 @@ export interface IZooDesignStudioFS {
   sep: string
   basename: (...strs: string[]) => string
   dirname: (str: string) => string
-  getPath: (type: 'appData' | 'documents' | 'userData') => Promise<string>
+  getPath: (
+    type: 'appData' | 'documents' | 'home' | 'userData'
+  ) => Promise<string>
   access: (path: string, bitflags: number) => Promise<void>
   cp: (
     src: string,

@@ -12,7 +12,7 @@ import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
-import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
+import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/utils'
 
 export interface ExecutionResultMock {
   logs: string[]

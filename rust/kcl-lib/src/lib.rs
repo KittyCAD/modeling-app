@@ -226,10 +226,11 @@ pub mod front {
             Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ControlPointSpline,
-            ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal,
-            Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
+            Angle, Arc, ArcCtor, ArcDirection, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
+            ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
+            Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
+            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,
+            Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
@@ -358,6 +359,10 @@ impl Program {
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
+    }
+
+    pub fn lint_all_with_options(&self, options: lint::LintOptions) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint_all_with_options(options)
     }
 
     pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {

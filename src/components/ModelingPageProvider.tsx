@@ -199,11 +199,13 @@ export const ModelingPageProvider = ({
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
     commandBarActor: commands.actor,
+    currentProject: projectIORef?.value,
     filePath,
     kclManager,
     navigate,
     settings: settingsValues,
     settingsActor,
+    systemIOActor,
   })
   useMenuListener(cb)
 

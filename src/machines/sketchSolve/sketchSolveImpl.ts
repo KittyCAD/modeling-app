@@ -352,6 +352,7 @@ export function buildSegmentCtorFromObject(
       center: centerPoint,
       start: startPoint,
       end: endPoint,
+      direction: obj.kind.segment.direction,
     }
   } else if (isCircleSegment(obj)) {
     const centerPoint = getLinkedPoint({
@@ -585,7 +586,7 @@ export function updateSceneGraphFromDelta({
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
-    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // hackSetProgram in `src/lang/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
     const invalidateScene = sketchSolveGroup?.children.some((child) => {
       const childId = Number(child.name)

@@ -161,8 +161,8 @@ description: Variables in memory after executing golf-tee.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000000018249802648491673,
-              -0.0000000000050000155831651546
+              0.00000000000000000000181841984734925,
+              -0.00000000000000008146231795298792
             ],
             "tag": {
               "commentStart": 577,
@@ -174,7 +174,7 @@ description: Variables in memory after executing golf-tee.kcl
             },
             "to": [
               2.25,
-              9.999999999995
+              10.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -186,7 +186,7 @@ description: Variables in memory after executing golf-tee.kcl
             },
             "from": [
               2.25,
-              9.999999999995
+              10.0
             ],
             "tag": {
               "commentStart": 691,
@@ -198,7 +198,7 @@ description: Variables in memory after executing golf-tee.kcl
             },
             "to": [
               2.25,
-              55.399999999985
+              55.39999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -210,7 +210,7 @@ description: Variables in memory after executing golf-tee.kcl
             },
             "from": [
               2.25,
-              55.399999999985
+              55.39999999999999
             ],
             "tag": {
               "commentStart": 820,
@@ -221,8 +221,8 @@ description: Variables in memory after executing golf-tee.kcl
               "value": "flareEdge"
             },
             "to": [
-              7.2999999999817495,
-              69.999999999985
+              7.3,
+              70.0
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -234,14 +234,14 @@ description: Variables in memory after executing golf-tee.kcl
             },
             "ccw": false,
             "center": [
-              0.000000000036498803979156946,
-              82.32249999901586
+              0.0000000000000017763568394002505,
+              82.32249999999995
             ],
             "from": [
-              7.2999999999817495,
-              69.999999999985
+              7.3,
+              70.0
             ],
-            "radius": 14.322499999138293,
+            "radius": 14.322499999999955,
             "tag": {
               "commentStart": 950,
               "end": 959,
@@ -251,8 +251,8 @@ description: Variables in memory after executing golf-tee.kcl
               "value": "cupLipArc"
             },
             "to": [
-              0.00000000000000013703873905389682,
-              67.99999999987757
+              -0.0000000000000005268768255991053,
+              68.0
             ],
             "type": "Arc",
             "units": "mm"
@@ -263,8 +263,8 @@ description: Variables in memory after executing golf-tee.kcl
               "sourceRange": []
             },
             "from": [
-              0.00000000000000013703873905389682,
-              67.99999999987757
+              -0.0000000000000005268768255991053,
+              68.0
             ],
             "tag": {
               "commentStart": 1105,
@@ -275,8 +275,8 @@ description: Variables in memory after executing golf-tee.kcl
               "value": "axisEdge"
             },
             "to": [
-              -0.00000000000000000003649960531523315,
-              -0.000000000010000031181330357
+              0.000000000000000000003636839697167271,
+              -0.00000000000000016292313617582649
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -315,12 +315,12 @@ description: Variables in memory after executing golf-tee.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000000018249802648491673,
-            -0.0000000000050000155831651546
+            0.00000000000000000000181841984734925,
+            -0.00000000000000008146231795298792
           ],
           "to": [
-            -0.000000000000000000018249802648491673,
-            -0.0000000000050000155831651546
+            0.00000000000000000000181841984734925,
+            -0.00000000000000008146231795298792
           ],
           "units": "mm",
           "tag": null,
@@ -409,7 +409,7 @@ description: Variables in memory after executing golf-tee.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000000005474940816447267,
+                        "n": 0.000000000000000000005455259571673045,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -417,7 +417,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 67.9999999999134,
+                        "n": 67.99999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -427,7 +427,7 @@ description: Variables in memory after executing golf-tee.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000000000003649960531523315,
+                        "n": 0.000000000000000000003636839697167271,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -435,7 +435,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": -0.000000000010000031181330357,
+                        "n": -0.00000000000000016292313617582649,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -529,7 +529,7 @@ description: Variables in memory after executing golf-tee.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000000007299921112321102,
+                        "n": 0.000000000000000000007273682310089934,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -537,7 +537,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 67.9999999999492,
+                        "n": 68.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -547,7 +547,7 @@ description: Variables in memory after executing golf-tee.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000018249996621951535,
+                        "n": 0.00000000000000029722437374624574,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -555,7 +555,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 82.32249999901336,
+                        "n": 82.32249999999995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -650,7 +650,7 @@ description: Variables in memory after executing golf-tee.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.00000000000000000005474940810972326,
+                        "n": 0.0000000000000000000054552567151682616,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -658,7 +658,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 67.9999999998776,
+                        "n": 67.99999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -668,7 +668,7 @@ description: Variables in memory after executing golf-tee.kcl
                     ],
                     "end": [
                       {
-                        "n": 7.2999999999817495,
+                        "n": 7.3,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -676,7 +676,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 69.999999999985,
+                        "n": 70.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -686,7 +686,7 @@ description: Variables in memory after executing golf-tee.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000003649999333515228,
+                        "n": 0.0000000000000005944396494492563,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -694,7 +694,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 82.32249999901586,
+                        "n": 82.32249999999995,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -810,7 +810,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 55.399999999985,
+                        "n": 55.39999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -820,7 +820,7 @@ description: Variables in memory after executing golf-tee.kcl
                     ],
                     "end": [
                       {
-                        "n": 7.2999999999817495,
+                        "n": 7.3,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -828,7 +828,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 69.999999999985,
+                        "n": 70.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -925,8 +925,8 @@ description: Variables in memory after executing golf-tee.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000000000018249802648491673,
-                    -0.0000000000050000155831651546
+                    0.00000000000000000000181841984734925,
+                    -0.00000000000000008146231795298792
                   ],
                   "tag": {
                     "commentStart": 577,
@@ -938,7 +938,7 @@ description: Variables in memory after executing golf-tee.kcl
                   },
                   "to": [
                     2.25,
-                    9.999999999995
+                    10.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -950,7 +950,7 @@ description: Variables in memory after executing golf-tee.kcl
                   },
                   "from": [
                     2.25,
-                    9.999999999995
+                    10.0
                   ],
                   "tag": {
                     "commentStart": 691,
@@ -962,7 +962,7 @@ description: Variables in memory after executing golf-tee.kcl
                   },
                   "to": [
                     2.25,
-                    55.399999999985
+                    55.39999999999999
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -974,7 +974,7 @@ description: Variables in memory after executing golf-tee.kcl
                   },
                   "from": [
                     2.25,
-                    55.399999999985
+                    55.39999999999999
                   ],
                   "tag": {
                     "commentStart": 820,
@@ -985,8 +985,8 @@ description: Variables in memory after executing golf-tee.kcl
                     "value": "flareEdge"
                   },
                   "to": [
-                    7.2999999999817495,
-                    69.999999999985
+                    7.3,
+                    70.0
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -998,14 +998,14 @@ description: Variables in memory after executing golf-tee.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.000000000036498803979156946,
-                    82.32249999901586
+                    0.0000000000000017763568394002505,
+                    82.32249999999995
                   ],
                   "from": [
-                    7.2999999999817495,
-                    69.999999999985
+                    7.3,
+                    70.0
                   ],
-                  "radius": 14.322499999138293,
+                  "radius": 14.322499999999955,
                   "tag": {
                     "commentStart": 950,
                     "end": 959,
@@ -1015,8 +1015,8 @@ description: Variables in memory after executing golf-tee.kcl
                     "value": "cupLipArc"
                   },
                   "to": [
-                    0.00000000000000013703873905389682,
-                    67.99999999987757
+                    -0.0000000000000005268768255991053,
+                    68.0
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1027,8 +1027,8 @@ description: Variables in memory after executing golf-tee.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.00000000000000013703873905389682,
-                    67.99999999987757
+                    -0.0000000000000005268768255991053,
+                    68.0
                   ],
                   "tag": {
                     "commentStart": 1105,
@@ -1039,8 +1039,8 @@ description: Variables in memory after executing golf-tee.kcl
                     "value": "axisEdge"
                   },
                   "to": [
-                    -0.00000000000000000003649960531523315,
-                    -0.000000000010000031181330357
+                    0.000000000000000000003636839697167271,
+                    -0.00000000000000016292313617582649
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1079,12 +1079,12 @@ description: Variables in memory after executing golf-tee.kcl
               },
               "start": {
                 "from": [
-                  -0.000000000000000000018249802648491673,
-                  -0.0000000000050000155831651546
+                  0.00000000000000000000181841984734925,
+                  -0.00000000000000008146231795298792
                 ],
                 "to": [
-                  -0.000000000000000000018249802648491673,
-                  -0.0000000000050000155831651546
+                  0.00000000000000000000181841984734925,
+                  -0.00000000000000008146231795298792
                 ],
                 "units": "mm",
                 "tag": null,
@@ -1144,7 +1144,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 9.999999999995,
+                        "n": 10.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1162,7 +1162,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 55.399999999985,
+                        "n": 55.39999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1256,7 +1256,7 @@ description: Variables in memory after executing golf-tee.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000000018249802648491673,
+                        "n": 0.00000000000000000000181841984734925,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1264,7 +1264,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000050000155831651546,
+                        "n": -0.00000000000000008146231795298792,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1282,7 +1282,7 @@ description: Variables in memory after executing golf-tee.kcl
                         }
                       },
                       {
-                        "n": 9.999999999995,
+                        "n": 10.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1379,8 +1379,8 @@ description: Variables in memory after executing golf-tee.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000000018249802648491673,
-            -0.0000000000050000155831651546
+            0.00000000000000000000181841984734925,
+            -0.00000000000000008146231795298792
           ],
           "tag": {
             "commentStart": 577,
@@ -1392,7 +1392,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           "to": [
             2.25,
-            9.999999999995
+            10.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1404,7 +1404,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           "from": [
             2.25,
-            9.999999999995
+            10.0
           ],
           "tag": {
             "commentStart": 691,
@@ -1416,7 +1416,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           "to": [
             2.25,
-            55.399999999985
+            55.39999999999999
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1428,7 +1428,7 @@ description: Variables in memory after executing golf-tee.kcl
           },
           "from": [
             2.25,
-            55.399999999985
+            55.39999999999999
           ],
           "tag": {
             "commentStart": 820,
@@ -1439,8 +1439,8 @@ description: Variables in memory after executing golf-tee.kcl
             "value": "flareEdge"
           },
           "to": [
-            7.2999999999817495,
-            69.999999999985
+            7.3,
+            70.0
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1452,14 +1452,14 @@ description: Variables in memory after executing golf-tee.kcl
           },
           "ccw": false,
           "center": [
-            0.000000000036498803979156946,
-            82.32249999901586
+            0.0000000000000017763568394002505,
+            82.32249999999995
           ],
           "from": [
-            7.2999999999817495,
-            69.999999999985
+            7.3,
+            70.0
           ],
-          "radius": 14.322499999138293,
+          "radius": 14.322499999999955,
           "tag": {
             "commentStart": 950,
             "end": 959,
@@ -1469,8 +1469,8 @@ description: Variables in memory after executing golf-tee.kcl
             "value": "cupLipArc"
           },
           "to": [
-            0.00000000000000013703873905389682,
-            67.99999999987757
+            -0.0000000000000005268768255991053,
+            68.0
           ],
           "type": "Arc",
           "units": "mm"
@@ -1481,8 +1481,8 @@ description: Variables in memory after executing golf-tee.kcl
             "sourceRange": []
           },
           "from": [
-            0.00000000000000013703873905389682,
-            67.99999999987757
+            -0.0000000000000005268768255991053,
+            68.0
           ],
           "tag": {
             "commentStart": 1105,
@@ -1493,8 +1493,8 @@ description: Variables in memory after executing golf-tee.kcl
             "value": "axisEdge"
           },
           "to": [
-            -0.00000000000000000003649960531523315,
-            -0.000000000010000031181330357
+            0.000000000000000000003636839697167271,
+            -0.00000000000000016292313617582649
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1533,12 +1533,12 @@ description: Variables in memory after executing golf-tee.kcl
       },
       "start": {
         "from": [
-          -0.000000000000000000018249802648491673,
-          -0.0000000000050000155831651546
+          0.00000000000000000000181841984734925,
+          -0.00000000000000008146231795298792
         ],
         "to": [
-          -0.000000000000000000018249802648491673,
-          -0.0000000000050000155831651546
+          0.00000000000000000000181841984734925,
+          -0.00000000000000008146231795298792
         ],
         "units": "mm",
         "tag": null,

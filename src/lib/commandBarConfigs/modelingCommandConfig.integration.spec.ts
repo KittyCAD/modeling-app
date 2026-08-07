@@ -269,18 +269,6 @@ describe('Extrude surface arguments', () => {
     ).toBe(false)
   })
 
-  it('uses experimental features for explicit direction selections', () => {
-    expect(
-      modelingStdLibCommandUsesExperimentalFeatures('Extrude', {
-        direction: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-      })
-    ).toBe(true)
-
-    expect(modelingStdLibCommandUsesExperimentalFeatures('Extrude', {})).toBe(
-      false
-    )
-  })
-
   it('keeps bodyType optional for sketch segments before length is confirmed', () => {
     expect(
       extrudeSelectionRequiresBodyType({
@@ -386,6 +374,66 @@ describe('Sweep-like bodyType argument', () => {
   })
 })
 
+describe('Transform arguments', () => {
+  it('accepts helices only for supported transforms', () => {
+    for (const commandName of [
+      'Translate',
+      'Rotate',
+      'Scale',
+      'Clone',
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const objectsArg = commandConfig.args?.objects
+      if (!objectsArg || !('selectionTypes' in objectsArg)) {
+        throw new Error(`${commandName}.objects should be a selection argument`)
+      }
+      const selectionTypes = objectsArg.selectionTypes
+      if (
+        commandName === 'Translate' ||
+        commandName === 'Scale' ||
+        commandName === 'Rotate'
+      ) {
+        expect(selectionTypes).toContain('helix')
+      } else {
+        expect(selectionTypes).not.toContain('helix')
+      }
+    }
+  })
+})
+
+describe('Pattern body arguments', () => {
+  it('accepts patterns for booleans but not as a helix cylinder', () => {
+    const subtractConfig = modelingMachineCommandConfig['Boolean Subtract']
+    const helixConfig = modelingMachineCommandConfig.Helix
+    if (
+      !subtractConfig ||
+      isArray(subtractConfig) ||
+      !helixConfig ||
+      isArray(helixConfig)
+    ) {
+      throw new Error('Expected single Boolean Subtract and Helix configs')
+    }
+
+    const toolsArg = subtractConfig.args?.tools
+    const cylinderArg = helixConfig.args?.cylinder
+    if (
+      !toolsArg ||
+      !('selectionTypes' in toolsArg) ||
+      !cylinderArg ||
+      !('selectionTypes' in cylinderArg)
+    ) {
+      throw new Error('Expected body selection arguments')
+    }
+
+    expect(toolsArg.selectionTypes).toContain('pattern')
+    expect(cylinderArg.selectionTypes).not.toContain('pattern')
+  })
+})
+
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
 describe('stdlib command arg derivation', () => {
@@ -427,8 +475,8 @@ describe('stdlib command arg derivation', () => {
     })
     expect(args.direction).toMatchObject({
       required: false,
-      status: 'experimental',
     })
+    expect(args.direction.status).toBeUndefined()
   })
 
   it('derives command status from KCL stdlib metadata', () => {
@@ -445,7 +493,7 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
-      ['Extrude', { direction: selectionsForArtifact() }, true],
+      ['Extrude', { direction: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
       ['Helical Gear', {}, true],

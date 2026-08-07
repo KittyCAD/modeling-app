@@ -1,3 +1,6 @@
+import { useSelector } from '@xstate/react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+
 import type { KclManager } from '@src/lang/KclManager'
 import {
   coerceSelectionsToBody,
@@ -18,8 +21,6 @@ import {
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -62,7 +63,9 @@ export default function CommandBarSelectionMixedInput({
 
     // Check if this argument only accepts body types
     // These are the artifact types that represent 3D bodies/objects
-    const onlyAcceptsBodies = arg.selectionTypes?.every(isBodyArtifactType)
+    const onlyAcceptsBodies = arg.selectionTypes?.every(
+      (type) => isBodyArtifactType(type) || type === 'helix'
+    )
 
     if (!onlyAcceptsBodies) return // Command accepts non-body types
     if (!arg.machineActor) return // No state machine to update

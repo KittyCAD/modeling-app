@@ -1,3 +1,5 @@
+import type { ProjectLibraryType } from '@src/lib/projectLibraries'
+
 /** Cloud API project revision token used for guarded updates. */
 export type Revision = string
 
@@ -30,8 +32,14 @@ export type ProjectMetadata = {
   tombstone?: boolean
   conflict?: {
     remoteRevision?: Revision
-    conflictProjectPath: string
+    remoteUpdatedAt?: string
     createdAt: string
+    /**
+     * Legacy conflict copies were persisted as sibling project folders. New
+     * conflicts fetch the cloud version on demand instead; this path is retained
+     * only so resolving old conflicts can clean up the stale folder.
+     */
+    conflictProjectPath?: string
   }
   syncExcluded?: {
     reason: 'conflict-copy' | 'user-disconnected'
@@ -39,11 +47,16 @@ export type ProjectMetadata = {
     remoteProjectId?: string
     createdAt: string
   }
-  lastFailure?: {
-    message: string
-    at: string
-  }
+  lastFailure?: ProjectSyncFailure
   lastSyncedAt?: string
+}
+
+export type ProjectSyncFailureKind = 'remote-upload-forbidden'
+
+export type ProjectSyncFailure = {
+  message: string
+  at: string
+  kind?: ProjectSyncFailureKind
 }
 
 /** Durable queued local mutation that should be replicated to the cloud later. */
@@ -84,8 +97,16 @@ export type CloudSyncConfig = {
   token?: string
   baseUrl?: string
   environmentName?: string
-  projectDirectoryPath?: string
-  syncExistingLocalProjects?: boolean
+  /** Local materialization paths for configured cloud-type project libraries. */
+  cloudProjectDirectoryPaths?: string[]
+  autoEnrollCloudLibraryProjects?: boolean
+}
+
+/** Currently opened project context used to scope status and retry behavior. */
+export type CloudSyncOpenedProject = {
+  projectPath: string
+  libraryPath?: string
+  libraryType?: ProjectLibraryType
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */
@@ -101,8 +122,11 @@ export type CloudSyncStatus = {
   enabled: boolean
   state: CloudSyncState
   pendingCount: number
+  scopedProjectPath?: string
+  scopedProjectCloudProjectId?: string
   activeProjectPath?: string
   lastFailure?: string
+  lastFailureKind?: ProjectSyncFailureKind
   lastFailureAt?: string
   lastSyncedAt?: string
 }

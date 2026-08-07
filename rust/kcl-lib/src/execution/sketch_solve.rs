@@ -24,6 +24,7 @@ use crate::execution::SketchSurface;
 use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::Freedom;
@@ -68,17 +69,19 @@ pub(crate) fn normalize_to_solver_distance_unit(
     description: &str,
 ) -> Result<KclValue, KclError> {
     let length_ty = RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state)));
-    value.coerce(&length_ty, true, exec_state).map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "{} must be a length coercible to the module length unit {}, but found {}",
-                description,
-                length_ty.human_friendly_type(),
-                value.human_friendly_type(),
-            ),
-            vec![source_range],
-        ))
-    })
+    value
+        .coerce(&length_ty, CoercionMode::implicit(), exec_state)
+        .map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{} must be a length coercible to the module length unit {}, but found {}",
+                    description,
+                    length_ty.human_friendly_type(),
+                    value.human_friendly_type(),
+                ),
+                vec![source_range],
+            ))
+        })
 }
 
 /// When giving input to the solver, all numbers must be given in the same
@@ -90,17 +93,19 @@ pub(crate) fn normalize_to_solver_angle_unit(
     description: &str,
 ) -> Result<KclValue, KclError> {
     let angle_ty = RuntimeType::angle();
-    value.coerce(&angle_ty, true, exec_state).map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "{} must be coercible to an angle unit {}, but found {}",
-                description,
-                angle_ty.human_friendly_type(),
-                value.human_friendly_type(),
-            ),
-            vec![source_range],
-        ))
-    })
+    value
+        .coerce(&angle_ty, CoercionMode::implicit(), exec_state)
+        .map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{} must be coercible to an angle unit {}, but found {}",
+                    description,
+                    angle_ty.human_friendly_type(),
+                    value.human_friendly_type(),
+                ),
+                vec![source_range],
+            ))
+        })
 }
 
 pub(super) fn substitute_sketch_vars(
@@ -236,6 +241,7 @@ fn substitute_sketch_var(
         KclValue::Type { .. } => Ok(value),
         KclValue::KclNone { .. } => Ok(value),
         KclValue::BoundedEdge { .. } => Ok(value),
+        KclValue::Enum { .. } => Ok(value),
     }
 }
 
@@ -319,6 +325,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            direction,
             construction,
         } => {
             let (start_x, start_x_freedom) =
@@ -350,6 +357,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    direction: *direction,
                     construction: *construction,
                 },
                 surface: surface.clone(),
@@ -687,6 +695,7 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                direction,
                 construction,
             } => {
                 let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
@@ -781,6 +790,7 @@ pub(super) fn create_segment_scene_objects(
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
+                            direction: *direction,
                         }),
                     },
                     label: Default::default(),
