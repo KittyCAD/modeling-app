@@ -37,7 +37,9 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
+  clearLegacyConflictCopyReferences,
   clearOutboxEntriesForProject as clearSyncDbOutboxEntriesForProject,
+  clearOutboxEntriesTouchingProject as clearSyncDbOutboxEntriesTouchingProject,
   deleteProjectMetadata,
   getAllOutboxEntries,
   getAllProjectMetadata,
@@ -1060,6 +1062,11 @@ async function clearOutboxEntriesForProject(projectPath: string) {
   await refreshPendingCount()
 }
 
+async function clearOutboxEntriesTouchingProject(projectPath: string) {
+  await clearSyncDbOutboxEntriesTouchingProject(projectPath)
+  await refreshPendingCount()
+}
+
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
@@ -2002,7 +2009,8 @@ async function deleteLegacyConflictCopy(
     return
   }
 
-  await clearOutboxEntriesForProject(conflictProjectPath)
+  await clearOutboxEntriesTouchingProject(conflictProjectPath)
+  await clearLegacyConflictCopyReferences(conflictProjectPath)
   await deleteProjectMetadata(conflictProjectPath)
   if (await exists(conflictProjectPath)) {
     await localFs.rm(conflictProjectPath, { recursive: true })
