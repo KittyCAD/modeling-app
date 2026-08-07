@@ -81,6 +81,11 @@ export function modifyAstWithTagsForSelection(
   if (!selection.artifact) {
     return new Error('Selection does not have an artifact')
   }
+  const options: ModifyAstWithTagsOptions | undefined = isArray(
+    optionsOrTagMethods
+  )
+    ? { tagMethods: optionsOrTagMethods }
+    : optionsOrTagMethods
 
   // ----------------------------------------
   // 2D Entities
@@ -108,9 +113,6 @@ export function modifyAstWithTagsForSelection(
     selection.artifact.type === 'segment' //||
     // TODO: selection.artifact.type === 'edgeCutEdge'
   ) {
-    const options = isArray(optionsOrTagMethods)
-      ? { tagMethods: optionsOrTagMethods }
-      : optionsOrTagMethods
     return modifyAstWithTagsForEdgeSelection(
       ast,
       selection,
@@ -132,10 +134,24 @@ export function modifyAstWithTagsForSelection(
       artifactGraph,
       wasmInstance
     )
-    if (err(result)) return result
+    if (err(result)) {
+      return result
+    }
+
+    const qualifiedExpr = qualifyClonedFaceTag(
+      ast,
+      selection,
+      result.expr,
+      artifactGraph,
+      wasmInstance,
+      options?.nodeToEdit
+    )
+    if (err(qualifiedExpr)) {
+      return qualifiedExpr
+    }
     return {
       modifiedAst: result.modifiedAst,
-      exprs: [result.expr],
+      exprs: [qualifiedExpr],
     }
   }
 
@@ -205,38 +221,23 @@ function getEdgeBodyKey(selectedBodyExpr: Expr, pathIfPipe?: PathToNode) {
   return JSON.stringify([selectedBodyExpr, pathIfPipe])
 }
 
-export function resolveEdgeSelectionContext(
+function resolveSweepSelectionContext(
   ast: Node<Program>,
-  selection: Selection,
+  selectedSweep: Extract<Artifact, { type: 'sweep' }>,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   lastChildLookup = true
 ): EdgeSelectionContext | Error {
-  if (
-    selection.artifact?.type !== 'sweepEdge' &&
-    selection.artifact?.type !== 'segment'
-  ) {
-    return new Error('Selection artifact is not a valid edge type')
-  }
-
-  const selectedSweepResult = getSweepArtifactFromSelection(
-    selection,
-    artifactGraph
-  )
-  if (err(selectedSweepResult)) return selectedSweepResult
-  const selectedSweep = selectedSweepResult as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
-
   const sourceSweep = selectedSweep.sourceSweepId
     ? getArtifactOfTypes(
         { key: selectedSweep.sourceSweepId, types: ['sweep'] },
         artifactGraph
       )
     : selectedSweep
-  if (err(sourceSweep)) return sourceSweep
+  if (err(sourceSweep)) {
+    return sourceSweep
+  }
 
   const body = getVariableExprsFromSelection(
     {
@@ -257,9 +258,11 @@ export function resolveEdgeSelectionContext(
       artifactTypeFilter: ['compositeSolid', 'sweep'],
     }
   )
-  if (err(body)) return body
+  if (err(body)) {
+    return body
+  }
   if (body.exprs.length !== 1) {
-    return new Error('Could not resolve the selected edge body')
+    return new Error('Could not resolve the selected body')
   }
 
   return {
@@ -270,6 +273,43 @@ export function resolveEdgeSelectionContext(
     pathIfPipe: body.pathIfPipe,
     isClone: selectedSweep.id !== sourceSweep.id,
   }
+}
+
+export function resolveEdgeSelectionContext(
+  ast: Node<Program>,
+  selection: Selection,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode,
+  lastChildLookup = true
+): EdgeSelectionContext | Error {
+  if (
+    selection.artifact?.type !== 'sweepEdge' &&
+    selection.artifact?.type !== 'segment'
+  ) {
+    return new Error('Selection artifact is not a valid edge type')
+  }
+
+  const selectedSweepResult = getSweepArtifactFromSelection(
+    selection,
+    artifactGraph
+  )
+  if (err(selectedSweepResult)) {
+    return selectedSweepResult
+  }
+  const selectedSweep = selectedSweepResult as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
+
+  return resolveSweepSelectionContext(
+    ast,
+    selectedSweep,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit,
+    lastChildLookup
+  )
 }
 
 /**
@@ -391,6 +431,56 @@ function getExprName(expr: Expr): string | null {
     return expr.property.name.name
   }
   return null
+}
+
+function qualifyClonedFaceTag(
+  ast: Node<Program>,
+  selection: Selection,
+  expr: Expr,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
+): Expr | Error {
+  const face = selection.artifact
+  if (face?.type !== 'wall' && face?.type !== 'cap') {
+    return expr
+  }
+
+  const selectedSweep = artifactGraph.get(face.sweepId)
+  if (selectedSweep?.type !== 'sweep' || !selectedSweep.sourceSweepId) {
+    return expr
+  }
+
+  const context = resolveSweepSelectionContext(
+    ast,
+    selectedSweep,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit
+  )
+  if (err(context)) {
+    return context
+  }
+
+  const tagName = getExprName(expr)
+  if (!tagName) {
+    return new Error('Could not resolve the source face tag')
+  }
+
+  if (face.type === 'cap') {
+    return createMemberExpression(
+      createMemberExpression(
+        structuredClone(context.selectedBodyExpr),
+        'faces'
+      ),
+      tagName
+    )
+  }
+
+  return createSketchTagMemberExpression(
+    structuredClone(context.selectedBodyExpr),
+    tagName
+  )
 }
 
 /**
