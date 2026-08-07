@@ -1,7 +1,7 @@
 ---
 title: "solver::angleDimension"
 subtitle: "Function in std::solver"
-excerpt: "Constrain a specific angle dimension sector between two lines."
+excerpt: "Constrain the angle in the selected sector between two lines."
 layout: manual
 ---
 
