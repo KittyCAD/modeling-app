@@ -91,6 +91,8 @@ function isProjectMenuBreak(
 
 const noopProjectClose: ProjectCloseHandler = () => undefined
 const noopHomeNavigate = () => undefined
+const projectMenuItemLabelClassName = 'min-w-0 flex-1 truncate'
+const projectMenuItemHotkeyClassName = 'hotkey shrink-0'
 
 export function canNavigateHome({
   isDesktopApp,
@@ -277,11 +279,16 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1" data-testid="project-settings">
+              <span
+                className={projectMenuItemLabelClassName}
+                data-testid="project-settings"
+              >
                 Project settings
               </span>
               {projectSettingsKeybinding && (
-                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+                <kbd className={projectMenuItemHotkeyClassName}>
+                  {projectSettingsKeybinding}
+                </kbd>
               )}
             </>
           ),
@@ -300,7 +307,7 @@ function ProjectMenuPopover({
               Element: 'button' as const,
               children: (
                 <span
-                  className="flex-1"
+                  className={projectMenuItemLabelClassName}
                   data-testid="project-sidebar-duplicate-project"
                 >
                   Duplicate project
@@ -353,7 +360,10 @@ function ProjectMenuPopover({
               Element: 'button' as const,
               className,
               children: (
-                <span className="flex-1" data-testid={dataTestId}>
+                <span
+                  className={projectMenuItemLabelClassName}
+                  data-testid={dataTestId}
+                >
                   {label}
                 </span>
               ),
@@ -367,8 +377,10 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1">Add file to project</span>
-              <kbd className="hotkey">
+              <span className={projectMenuItemLabelClassName}>
+                Add file to project
+              </span>
+              <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('mod+alt+l', platform)}
               </kbd>
             </>
@@ -384,8 +396,10 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1">Export current part</span>
-              <kbd className="hotkey">
+              <span className={projectMenuItemLabelClassName}>
+                Export current part
+              </span>
+              <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
               {!findCommand(exportCommandInfo) && (
@@ -411,7 +425,9 @@ function ProjectMenuPopover({
           className: isDesktop() ? 'hidden' : '',
           children: (
             <>
-              <span className="flex-1">Download project files</span>
+              <span className={projectMenuItemLabelClassName}>
+                Download project files
+              </span>
               {!findCommand(exportProjectZipCommandInfo) && (
                 <Tooltip
                   position="right"
@@ -435,7 +451,9 @@ function ProjectMenuPopover({
           className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
-              <span>Make current part</span>
+              <span className={projectMenuItemLabelClassName}>
+                Make current part
+              </span>
               {!findCommand(makeCommandInfo) && (
                 <Tooltip
                   position="right"
@@ -458,7 +476,9 @@ function ProjectMenuPopover({
         {
           id: 'go-home',
           Element: 'button' as const,
-          children: 'Go to Home',
+          children: (
+            <span className={projectMenuItemLabelClassName}>Go to Home</span>
+          ),
           className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
@@ -535,7 +555,7 @@ function ProjectMenuPopover({
   }, [contributedProjectBreadcrumbBadges, project, projectPath])
 
   const menuItemClassName =
-    'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left '
+    'relative !font-sans flex min-h-8 w-full items-center justify-start gap-2 rounded-sm px-2 py-1 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left text-sm leading-5 text-chalkboard-100 dark:text-chalkboard-10 '
 
   return (
     <Popover className="relative min-w-0">
@@ -562,7 +582,7 @@ function ProjectMenuPopover({
                 if (isProjectMenuBreak(props)) {
                   return index !== projectMenuItems.length - 1 ? (
                     <li key={props.id} className="contents">
-                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+                      <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
                   ) : null
                 }

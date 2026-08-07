@@ -444,7 +444,7 @@ function CloudSyncProjectMenuItem({
     ? 'bg-warn-10/60 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30'
     : isError
       ? 'bg-destroy-10/60 text-destroy-80 hover:!bg-destroy-10 focus:!bg-destroy-10 dark:bg-destroy-80/20 dark:text-destroy-20 dark:hover:!bg-destroy-80/30 dark:focus:!bg-destroy-80/30'
-      : 'text-chalkboard-80 hover:!bg-chalkboard-20 focus:!bg-chalkboard-20 dark:text-chalkboard-30 dark:hover:!bg-chalkboard-80 dark:focus:!bg-chalkboard-80'
+      : 'hover:!bg-chalkboard-20 focus:!bg-chalkboard-20 dark:hover:!bg-chalkboard-80 dark:focus:!bg-chalkboard-80'
   const dataTestId = isConflict
     ? 'project-sidebar-inspect-cloud-conflicts'
     : isError
@@ -486,7 +486,7 @@ function CloudSyncProjectMenuItem({
           close()
         }}
       >
-        <span className="flex-1" data-testid={dataTestId}>
+        <span className="min-w-0 flex-1 truncate" data-testid={dataTestId}>
           {label}
         </span>
       </ActionButton>
