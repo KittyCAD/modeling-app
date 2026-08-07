@@ -2,6 +2,7 @@ import type { Feature } from '@kittycad/lib'
 import {
   defineRegistryItem,
   pluginsValueSpec,
+  provide,
   provideService,
   Registry,
 } from '@kittycad/registry'
@@ -14,11 +15,11 @@ import {
   cloudSyncPlugin,
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
-  preserveCloudProjectDefaultFile,
 } from '@src/lib/cloudSync/registry/plugin'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -30,15 +31,17 @@ import {
 } from '@src/lib/projectLibraries'
 import { Themes } from '@src/lib/theme'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
-  type HomeProjectEntry,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
+  cloudProjectRelationshipsService,
+  cloudSyncService,
+} from '@src/registry/contracts/cloudSync'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
+  projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
+  type ProjectLibraryRealization,
 } from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
@@ -73,6 +76,10 @@ vi.mock('@src/components/CloudConflictDialog', () => ({
 
 vi.mock('@src/lib/desktop', () => ({
   writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@src/lib/cloudSync/localManifest', () => ({
+  localProjectManifestMatchesBase: vi.fn().mockResolvedValue(true),
 }))
 
 vi.mock('react-hot-toast', () => ({
@@ -145,12 +152,46 @@ function createCloudSyncService(): CloudSyncRegistryService {
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
+    deleteDuplicateProjectRealizations: vi.fn().mockResolvedValue(undefined),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
     getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),
     getProjectMetadataIndex: vi.fn().mockResolvedValue(new Map()),
     getProjectModifiedTime: vi.fn((_metadata, localModified) => localModified),
     resolveProjectConflict: vi.fn().mockResolvedValue(undefined),
+  }
+}
+
+function projectLibraryRealization({
+  libraryType,
+  localProjectPath,
+  modified = 1,
+}: {
+  libraryType: string
+  localProjectPath: string
+  modified?: number
+}): ProjectLibraryRealization {
+  const localProjectName = localProjectPath.slice(
+    localProjectPath.lastIndexOf('/') + 1
+  )
+
+  return {
+    id: `local:${localProjectPath}`,
+    libraryIds: [`${libraryType}-library`],
+    libraryRefs: [
+      {
+        id: `${libraryType}-library`,
+        title: libraryType === CLOUD_PROJECT_LIBRARY_TYPE ? 'Cloud' : 'Folder',
+        path: libraryType === CLOUD_PROJECT_LIBRARY_TYPE ? '/cloud' : '/files',
+        type: libraryType,
+      },
+    ],
+    localProjectPath,
+    localProjectName,
+    name: localProjectName,
+    cloudProjectId: 'remote-123',
+    modified,
+    readWriteAccess: true,
   }
 }
 
@@ -624,9 +665,9 @@ describe('cloud sync project library', () => {
         ...getDefaultCloudProjectLibrarySetting(),
         id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
       }
-      // readEntries and createProject stay available even though cloud sync is
+      // readRealizations and createProject stay available even though cloud sync is
       // off, so a web user who is not actively syncing can still list/create.
-      expect(cloudLibraryType.readEntries).toBeDefined()
+      expect(cloudLibraryType.readRealizations).toBeDefined()
       expect(
         getProjectLibraryCreateProjectOperation(cloudLibraryType, cloudLibrary)
       ).toBeDefined()
@@ -743,7 +784,7 @@ describe('cloud sync project library', () => {
         },
         project: {
           id: 'local:/cloud/bracket',
-          source: 'both',
+          source: 'local',
           status: 'synced',
           libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
           name: 'bracket',
@@ -807,7 +848,7 @@ describe('cloud sync project library', () => {
           },
           project: {
             id: 'local:/cloud/bracket',
-            source: 'both',
+            source: 'local',
             status: 'synced',
             libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
             name: 'bracket',
@@ -954,19 +995,14 @@ describe('cloud sync project library', () => {
   })
 })
 
-describe('cloud sync home project entries', () => {
-  test('preserves the moved local default file while waiting for a remote id', async () => {
+describe('cloud sync project relationships', () => {
+  test('does not manufacture a relationship while waiting for a remote id', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'idle',
       pendingCount: 1,
     }
     const movedProjectPath = '/some/path/moved-project'
-    const movedDefaultFile = `${movedProjectPath}/main.kcl`
-    preserveCloudProjectDefaultFile({
-      localProjectPath: movedProjectPath,
-      defaultFile: movedDefaultFile,
-    })
     const cloudSync = createCloudSyncService()
     vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
       new Map([
@@ -992,25 +1028,16 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
-          expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
-            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-            name: 'Moved project',
-            title: 'Moved project',
-            localProjectPath: movedProjectPath,
-            defaultFile: movedDefaultFile,
-            readWriteAccess: true,
-          }),
-        ])
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([])
       )
     } finally {
       registry[Symbol.dispose]()
     }
   })
 
-  test('contributes remote thumbnails for cloud-only home entries', async () => {
+  test('contributes remote thumbnails for remote-only cloud relationships', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'idle',
@@ -1039,18 +1066,14 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
-            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-            name: 'Remote title',
-            title: 'Remote title',
             remoteProjectId: 'remote-123',
-            thumbnail: {
-              type: 'remote',
-              url: 'https://example.test/remote-123-thumbnail.png',
-            },
+            remoteThumbnailUrl: 'https://example.test/remote-123-thumbnail.png',
+            canonicalRealization: undefined,
+            duplicateRealizations: [],
           }),
         ])
       )
@@ -1059,7 +1082,200 @@ describe('cloud sync home project entries', () => {
     }
   })
 
-  test('marks home entries with both sources as conflicted from cloud sync metadata', async () => {
+  test('compares manifests for cloud-library duplicate cleanup candidates', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    vi.mocked(localProjectManifestMatchesBase).mockClear()
+    vi.mocked(localProjectManifestMatchesBase).mockResolvedValue(true)
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          '/cloud/bracket',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/cloud/bracket',
+            projectName: 'bracket',
+            remoteProjectId: 'remote-123',
+            hasPendingChanges: false,
+            baseManifest: { files: {} },
+          },
+        ],
+        [
+          '/cloud/bracket-copy',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/cloud/bracket-copy',
+            projectName: 'bracket-copy',
+            remoteProjectId: 'remote-123',
+            hasPendingChanges: false,
+            baseManifest: { files: {} },
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+    const projectRealizationsExtension = defineRegistryItem({
+      id: 'test-project-library-realizations',
+      provides: [
+        provide(projectLibraryRealizationsValueSpec, [
+          projectLibraryRealization({
+            libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+            localProjectPath: '/cloud/bracket',
+            modified: 20,
+          }),
+          projectLibraryRealization({
+            libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+            localProjectPath: '/cloud/bracket-copy',
+            modified: 10,
+          }),
+        ]),
+      ],
+    })
+
+    registry.configure([
+      cloudSyncServiceExtension,
+      projectRealizationsExtension,
+      cloudSyncPlugin,
+    ])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      await waitFor(() =>
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value[0]
+            ?.duplicateRealizations
+        ).toEqual([
+          expect.objectContaining({
+            autoCleanupEligible: true,
+            duplicateRisk: 'exact',
+            realization: expect.objectContaining({
+              localProjectPath: '/cloud/bracket-copy',
+            }),
+          }),
+        ])
+      )
+      expect(localProjectManifestMatchesBase).toHaveBeenCalledTimes(1)
+      expect(localProjectManifestMatchesBase).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectRoot: '/cloud/bracket-copy',
+        })
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not eagerly compare directory-library duplicate manifests', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    cloudSyncRemoteProjects.value = [
+      {
+        id: 'remote-123',
+        title: 'Remote title',
+        revision: 'remote-rev-1',
+      },
+    ]
+    vi.mocked(localProjectManifestMatchesBase).mockClear()
+    vi.mocked(localProjectManifestMatchesBase).mockResolvedValue(true)
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getRemoteProjectThumbnailUrl).mockResolvedValue(
+      'https://example.test/remote-123-thumbnail.png'
+    )
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          '/cloud/bracket',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/cloud/bracket',
+            projectName: 'bracket',
+            remoteProjectId: 'remote-123',
+            hasPendingChanges: false,
+            baseManifest: { files: {} },
+          },
+        ],
+        [
+          '/files/bracket-copy',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/files/bracket-copy',
+            projectName: 'bracket-copy',
+            remoteProjectId: 'remote-123',
+            hasPendingChanges: false,
+            baseManifest: { files: {} },
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+    const projectRealizationsExtension = defineRegistryItem({
+      id: 'test-project-library-realizations',
+      provides: [
+        provide(projectLibraryRealizationsValueSpec, [
+          projectLibraryRealization({
+            libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+            localProjectPath: '/cloud/bracket',
+            modified: 20,
+          }),
+          projectLibraryRealization({
+            libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+            localProjectPath: '/files/bracket-copy',
+            modified: 10,
+          }),
+        ]),
+      ],
+    })
+
+    registry.configure([
+      cloudSyncServiceExtension,
+      projectRealizationsExtension,
+      cloudSyncPlugin,
+    ])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      await waitFor(() =>
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value[0]
+            ?.remoteThumbnailUrl
+        ).toBe('https://example.test/remote-123-thumbnail.png')
+      )
+      await Promise.resolve()
+      await Promise.resolve()
+      expect(
+        registry.get(cloudProjectRelationshipsService).relationships.value[0]
+          ?.duplicateRealizations
+      ).toEqual([
+        expect.objectContaining({
+          autoCleanupEligible: false,
+          duplicateRisk: 'unknown',
+          realization: expect.objectContaining({
+            localProjectPath: '/files/bracket-copy',
+          }),
+        }),
+      ])
+      expect(localProjectManifestMatchesBase).not.toHaveBeenCalled()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('marks cloud relationships as conflicted from cloud sync metadata', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'conflict',
@@ -1106,14 +1322,12 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'conflicted',
-            name: 'Local project',
-            title: 'Local project',
             remoteProjectId: 'remote-123',
-            localProjectPath: '/some/path/local-project',
+            canonicalRealization: undefined,
             conflict: expect.objectContaining({
               conflictProjectPath: '/some/path/local-project (cloud conflict)',
             }),
@@ -1174,14 +1388,12 @@ describe('cloud sync home project entries', () => {
 
     try {
       await waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+        expect(
+          registry.get(cloudProjectRelationshipsService).relationships.value
+        ).toEqual([
           expect.objectContaining({
-            source: 'remote',
-            status: 'cloud-only',
-            name: 'Local project',
-            title: 'Local project',
             remoteProjectId: 'remote-123',
-            localProjectPath: '/some/path/local-project',
+            canonicalRealization: undefined,
             syncFailure: expect.objectContaining({
               kind: 'remote-upload-forbidden',
               message: 'Cloud sync cannot upload local changes.',

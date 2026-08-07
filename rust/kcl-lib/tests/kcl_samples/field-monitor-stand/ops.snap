@@ -1842,22 +1842,61 @@ description: Operations executed field-monitor-stand.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "angle",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
+      "name": "angleDimension",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "labelPosition": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 3.15,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 3.38,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "lines": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "KclNone"
+              },
+              {
+                "type": "KclNone"
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "sector": {
+          "value": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {

@@ -112,6 +112,7 @@ pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
+pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -215,6 +216,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditAngleConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
