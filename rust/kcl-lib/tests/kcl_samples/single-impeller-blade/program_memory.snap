@@ -8,8 +8,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -233,7 +232,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -353,7 +352,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -473,7 +472,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -593,7 +592,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XY",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -650,10 +649,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 624,
-                    "end": 629,
+                    "commentStart": 585,
+                    "end": 590,
                     "moduleId": 0,
-                    "start": 624,
+                    "start": 585,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -674,10 +673,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 693,
-                    "end": 698,
+                    "commentStart": 654,
+                    "end": 659,
                     "moduleId": 0,
-                    "start": 693,
+                    "start": 654,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -698,10 +697,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 802,
-                    "end": 807,
+                    "commentStart": 763,
+                    "end": 768,
                     "moduleId": 0,
-                    "start": 802,
+                    "start": 763,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -722,10 +721,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 912,
-                    "end": 917,
+                    "commentStart": 873,
+                    "end": 878,
                     "moduleId": 0,
-                    "start": 912,
+                    "start": 873,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -740,7 +739,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XY",
+                "kind": "Custom",
                 "objectId": 0,
                 "origin": {
                   "x": 0.0,
@@ -813,39 +812,6 @@ description: Variables in memory after executing single-impeller-blade.kcl
       }
     },
     "constrainable": false
-  },
-  "rootSketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XY",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
   },
   "tipPlane": {
     "type": "Plane",
@@ -1382,10 +1348,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1244,
-                    "end": 1249,
+                    "commentStart": 1168,
+                    "end": 1173,
                     "moduleId": 0,
-                    "start": 1244,
+                    "start": 1168,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1406,10 +1372,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1313,
-                    "end": 1318,
+                    "commentStart": 1237,
+                    "end": 1242,
                     "moduleId": 0,
-                    "start": 1313,
+                    "start": 1237,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1430,10 +1396,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1422,
-                    "end": 1427,
+                    "commentStart": 1346,
+                    "end": 1351,
                     "moduleId": 0,
-                    "start": 1422,
+                    "start": 1346,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1454,10 +1420,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1532,
-                    "end": 1537,
+                    "commentStart": 1456,
+                    "end": 1461,
                     "moduleId": 0,
-                    "start": 1532,
+                    "start": 1456,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1546,39 +1512,6 @@ description: Variables in memory after executing single-impeller-blade.kcl
     },
     "constrainable": false
   },
-  "tipSketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "Custom",
-      "objectId": 20,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 60.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      }
-    }
-  },
   "twistAngle": {
     "type": "Number",
     "value": 30.0,
@@ -1600,10 +1533,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 624,
-            "end": 629,
+            "commentStart": 585,
+            "end": 590,
             "moduleId": 0,
-            "start": 624,
+            "start": 585,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1614,10 +1547,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 693,
-            "end": 698,
+            "commentStart": 654,
+            "end": 659,
             "moduleId": 0,
-            "start": 693,
+            "start": 654,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1628,10 +1561,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 802,
-            "end": 807,
+            "commentStart": 763,
+            "end": 768,
             "moduleId": 0,
-            "start": 802,
+            "start": 763,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1642,10 +1575,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 912,
-            "end": 917,
+            "commentStart": 873,
+            "end": 878,
             "moduleId": 0,
-            "start": 912,
+            "start": 873,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1667,10 +1600,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 624,
-              "end": 629,
+              "commentStart": 585,
+              "end": 590,
               "moduleId": 0,
-              "start": 624,
+              "start": 585,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1691,10 +1624,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 693,
-              "end": 698,
+              "commentStart": 654,
+              "end": 659,
               "moduleId": 0,
-              "start": 693,
+              "start": 654,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1715,10 +1648,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 802,
-              "end": 807,
+              "commentStart": 763,
+              "end": 768,
               "moduleId": 0,
-              "start": 802,
+              "start": 763,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1739,10 +1672,10 @@ description: Variables in memory after executing single-impeller-blade.kcl
               40.0
             ],
             "tag": {
-              "commentStart": 912,
-              "end": 917,
+              "commentStart": 873,
+              "end": 878,
               "moduleId": 0,
-              "start": 912,
+              "start": 873,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1757,7 +1690,7 @@ description: Variables in memory after executing single-impeller-blade.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,
