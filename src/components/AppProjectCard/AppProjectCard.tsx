@@ -259,7 +259,7 @@ function AppProjectCard({
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    !showCloudSyncUi || !showSourceStatusBadges || project.source === 'both'
+    !showCloudSyncUi || !showSourceStatusBadges
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 

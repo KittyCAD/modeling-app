@@ -7,24 +7,33 @@ import {
 import { signal } from '@preact/signals-core'
 import type * as ClientErrors from '@src/lib/clientErrors'
 import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_ID,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
+  getDefaultProjectLibrarySettings,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
+import projectLibrariesExtension from '@src/lib/projectLibraries/registry'
+import type {
+  CloudProjectRelationship,
+  CloudSyncRegistryService,
+} from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectEntry,
-  type HomeProjectEntryContribution,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import {
+  type ProjectLibraryRealization,
+  type ProjectLibraryRealizationContribution,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import {
@@ -32,9 +41,15 @@ import {
   systemIOService,
 } from '@src/registry/contracts/systemIO'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
-import homeProjectsExtension from '@src/registry/extensions/homeProjects'
+import homeProjectsExtension, {
+  deriveHomeProjectEntryContributions,
+} from '@src/registry/extensions/homeProjects'
 import { waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+function projectNameFromPath(projectPath: string) {
+  return projectPath.slice(projectPath.lastIndexOf('/') + 1)
+}
 
 const desktopMocks = vi.hoisted(() => ({
   getProjectInfo: vi.fn(),
@@ -55,6 +70,48 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
   return {
     ...original,
     reportClientError: clientErrorMocks.reportClientError,
+  }
+})
+
+const fsZdsMocks = vi.hoisted(() => {
+  const join = (...parts: string[]) => {
+    let joinedPath = ''
+    for (const part of parts) {
+      if (!part) {
+        continue
+      }
+      if (!joinedPath) {
+        joinedPath = part
+        continue
+      }
+      joinedPath = `${joinedPath.replace(/\/+$/g, '')}/${part.replace(
+        /^\/+/g,
+        ''
+      )}`
+    }
+
+    return joinedPath.replace(/\/$/g, '')
+  }
+  const dirname = (path: string) => {
+    const normalizedPath = path.replace(/\/+$/g, '')
+    const lastSeparatorIndex = normalizedPath.lastIndexOf('/')
+
+    if (lastSeparatorIndex <= 0) {
+      return '/'
+    }
+
+    return normalizedPath.slice(0, lastSeparatorIndex)
+  }
+
+  return {
+    basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
+    dirname: vi.fn(dirname),
+    join: vi.fn(join),
+    readdir: vi.fn(),
+    rename: vi.fn(),
+    rm: vi.fn(),
+    sep: '/',
+    stat: vi.fn(),
   }
 })
 
@@ -83,27 +140,9 @@ vi.mock('@src/lib/cloudSync/paths', () => ({
     cloudSyncPathMocks.getCloudProjectLibraryMaterializationDirectoryPath,
 }))
 
-function createSettingsService(): SettingsRegistryService {
-  const current = signal({
-    app: {
-      libraries: {
-        current: [],
-      },
-    },
-  })
-
-  return {
-    actor: {
-      getSnapshot: () => ({
-        matches: (state: string) => state === 'idle',
-      }),
-    },
-    current,
-    get: () => current.value,
-    send: vi.fn(),
-    useSettings: () => current.value,
-  } as unknown as SettingsRegistryService
-}
+vi.mock('@src/lib/fs-zds', () => ({
+  default: fsZdsMocks,
+}))
 
 function createMutableSettingsService({
   libraries,
@@ -159,54 +198,6 @@ function createSystemIOService() {
   }
 }
 
-function createMutableSystemIOService({
-  folders,
-}: {
-  folders: Project[] | undefined
-}) {
-  const send = vi.fn()
-  const subscribers = new Set<() => void>()
-  let snapshot = {
-    context: {
-      folders,
-      requestedProjectName: {
-        name: 'active-project',
-      },
-    },
-    matches: (state: string) => state === 'idle',
-  }
-
-  return {
-    service: {
-      actor: {
-        send,
-        getSnapshot: () => snapshot,
-        subscribe: vi.fn((callback: () => void) => {
-          subscribers.add(callback)
-          return {
-            unsubscribe: () => {
-              subscribers.delete(callback)
-            },
-          }
-        }),
-      },
-    } as unknown as SystemIORegistryService,
-    send,
-    setFolders: (foldersNext: Project[] | undefined) => {
-      snapshot = {
-        ...snapshot,
-        context: {
-          ...snapshot.context,
-          folders: foldersNext,
-        },
-      }
-      for (const subscriber of subscribers) {
-        subscriber()
-      }
-    },
-  }
-}
-
 function createCloudSyncService(
   overrides: Partial<CloudSyncRegistryService> = {}
 ): CloudSyncRegistryService {
@@ -234,6 +225,199 @@ function createCloudSyncService(
   }
 }
 
+function realization(
+  overrides: Partial<ProjectLibraryRealization> & { localProjectPath: string }
+): ProjectLibraryRealization {
+  const { localProjectPath, ...rest } = overrides
+  const localProjectName = projectNameFromPath(localProjectPath)
+
+  return {
+    id: `local:${localProjectPath}`,
+    libraryIds: ['default-project-directory'],
+    libraryRefs: [
+      {
+        id: 'default-project-directory',
+        title: 'Projects',
+        path: '/projects',
+        type: 'directory',
+      },
+    ],
+    localProjectPath,
+    localProjectName,
+    name: localProjectName,
+    readWriteAccess: true,
+    ...rest,
+  }
+}
+
+function cloudRelationship(
+  overrides: Partial<CloudProjectRelationship> & { remoteProjectId: string }
+): CloudProjectRelationship {
+  const { remoteProjectId, ...rest } = overrides
+  return {
+    id: `cloud:${remoteProjectId}`,
+    remoteProjectId,
+    duplicateRealizations: [],
+    localRealizations: [],
+    ...rest,
+  }
+}
+
+describe('deriveHomeProjectEntryContributions', () => {
+  it('derives local-only realization cards', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [
+          realization({
+            localProjectPath: '/projects/local-project',
+            title: 'Local Project',
+          }),
+        ],
+        cloudRelationships: [],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        source: 'local',
+        status: 'local',
+        name: 'local-project',
+        title: 'Local Project',
+        localProjectPath: '/projects/local-project',
+      }),
+    ])
+  })
+
+  it('derives remote-only cloud relationship cards', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [],
+        cloudRelationships: [
+          cloudRelationship({
+            remoteProjectId: 'remote-123',
+            remoteProject: {
+              id: 'remote-123',
+              title: 'Remote Project',
+            },
+          }),
+        ],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        id: 'cloud:remote-123',
+        source: 'remote',
+        status: 'cloud-only',
+        name: 'Remote Project',
+        title: 'Remote Project',
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+
+  it('derives one canonical relationship card with duplicate metadata attached', () => {
+    const canonical = realization({
+      localProjectPath: '/cloud/bracket',
+      cloudProjectId: 'remote-123',
+      libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+      libraryRefs: [
+        {
+          id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Personal Cloud',
+          path: '/cloud',
+          type: CLOUD_PROJECT_LIBRARY_TYPE,
+        },
+      ],
+    })
+    const duplicate = realization({
+      localProjectPath: '/projects/bracket-copy',
+      cloudProjectId: 'remote-123',
+    })
+
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [canonical, duplicate],
+        cloudRelationships: [
+          cloudRelationship({
+            remoteProjectId: 'remote-123',
+            canonicalRealization: {
+              role: 'canonical',
+              realization: canonical,
+              duplicateRisk: 'exact',
+              autoCleanupEligible: false,
+            },
+            duplicateRealizations: [
+              {
+                role: 'duplicate',
+                realization: duplicate,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+            ],
+            localRealizations: [
+              {
+                role: 'canonical',
+                realization: canonical,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+              {
+                role: 'duplicate',
+                realization: duplicate,
+                duplicateRisk: 'exact',
+                autoCleanupEligible: false,
+              },
+            ],
+          }),
+        ],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        id: 'cloud:remote-123',
+        source: 'local',
+        status: 'synced',
+        libraryIds: [
+          PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          DEFAULT_PROJECT_LIBRARY_ID,
+        ],
+        localProjectPath: '/cloud/bracket',
+        remoteProjectId: 'remote-123',
+        duplicateRealizations: [
+          expect.objectContaining({
+            localProjectPath: '/projects/bracket-copy',
+            duplicateRisk: 'exact',
+          }),
+        ],
+      }),
+    ])
+  })
+
+  it('keeps duplicate realizations as separate cards without an explicit cloud relationship', () => {
+    expect(
+      deriveHomeProjectEntryContributions({
+        realizations: [
+          realization({
+            localProjectPath: '/projects/bracket',
+            cloudProjectId: 'remote-123',
+          }),
+          realization({
+            localProjectPath: '/cloud/bracket',
+            cloudProjectId: 'remote-123',
+          }),
+        ],
+        cloudRelationships: [],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        localProjectPath: '/projects/bracket',
+        remoteProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
+        localProjectPath: '/cloud/bracket',
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+})
+
 describe('home project actions', () => {
   let registry: Registry | undefined
 
@@ -247,7 +431,8 @@ describe('home project actions', () => {
     vi.restoreAllMocks()
   })
 
-  it('keeps default directory entries while System IO folders are temporarily unset', async () => {
+  it('discovers default directory entries through project library scanning', async () => {
+    const wasmPromise = Promise.resolve({} as never)
     const project = {
       name: 'local-project',
       title: 'Local Project',
@@ -266,18 +451,23 @@ describe('home project actions', () => {
       directory_count: 0,
       readWriteAccess: true,
     } satisfies Project
-    const systemIO = createMutableSystemIOService({
-      folders: [project],
+    const settings = createMutableSettingsService({
+      libraries: getDefaultProjectLibrarySettings('/projects'),
     })
+    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
+    fsZdsMocks.readdir.mockResolvedValue(['local-project'])
+    fsZdsMocks.stat.mockResolvedValue({
+      mode: fsZdsConstants.S_IFDIR,
+      mtimeMs: 100,
+    })
+    desktopMocks.getProjectInfo.mockResolvedValue(project)
 
     registry = new Registry()
     registry.configure([
       defineRegistryItem({
         id: 'test.settings',
-        providesServices: [
-          provideService(settingsService, createSettingsService()),
-        ],
+        providesServices: [provideService(settingsService, settings.service)],
       }),
       defineRegistryItem({
         id: 'test.system-io',
@@ -287,6 +477,11 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(wasmPromise)],
+      }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -298,21 +493,9 @@ describe('home project actions', () => {
         }),
       ])
     )
-
-    systemIO.setFolders(undefined)
-    await Promise.resolve()
-    await Promise.resolve()
-
-    expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
-      expect.objectContaining({
-        name: 'local-project',
-        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
-      }),
-    ])
-
-    systemIO.setFolders([])
-    await waitFor(() =>
-      expect(registry?.get(homeProjectEntriesValueSpec)).toEqual([])
+    expect(desktopMocks.getProjectInfo).toHaveBeenCalledWith(
+      '/projects/local-project',
+      await wasmPromise
     )
   })
 
@@ -344,7 +527,18 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                {
+                  title: library.title,
+                  path: library.path,
+                  type: library.type,
+                },
+              ],
+            }).service
+          ),
         ],
       }),
       defineRegistryItem({
@@ -359,6 +553,7 @@ describe('home project actions', () => {
         id: 'test.wasm',
         provides: [provideWasmPromise(Promise.resolve({} as never))],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -406,7 +601,18 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                {
+                  title: library.title,
+                  path: library.path,
+                  type: library.type,
+                },
+              ],
+            }).service
+          ),
         ],
       }),
       defineRegistryItem({
@@ -417,6 +623,7 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -449,17 +656,15 @@ describe('home project actions', () => {
     })
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
-    const readEntries = vi.fn(({ library }: { library: ProjectLibrary }) =>
+    const readRealizations = vi.fn(({ library }: { library: ProjectLibrary }) =>
       Promise.resolve([
         {
-          source: 'local',
-          status: 'synced',
-          libraryId: library.id,
+          library,
           name: 'untitled-43',
           title: 'untitled-43',
           localProjectPath: '/custom-cloud/untitled-43',
           localProjectName: 'untitled-43',
-          remoteProjectId: 'remote-123',
+          cloudProjectId: 'remote-123',
           defaultFile: '/custom-cloud/untitled-43/main.kcl',
           readWriteAccess: true,
           thumbnail: {
@@ -467,7 +672,7 @@ describe('home project actions', () => {
             path: '/custom-cloud/untitled-43/thumbnail.png',
           },
         },
-      ] satisfies HomeProjectEntryContribution[])
+      ] satisfies ProjectLibraryRealizationContribution[])
     )
 
     registry = new Registry()
@@ -490,10 +695,11 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: 'custom-cloud',
             title: 'Custom Cloud',
-            readEntries,
+            readRealizations,
           }),
         ],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -509,7 +715,7 @@ describe('home project actions', () => {
       ])
     )
 
-    readEntries.mockClear()
+    readRealizations.mockClear()
     settings.current.value = {
       ...settings.current.value,
       unrelated: {
@@ -519,7 +725,7 @@ describe('home project actions', () => {
     await Promise.resolve()
     await Promise.resolve()
 
-    expect(readEntries).not.toHaveBeenCalled()
+    expect(readRealizations).not.toHaveBeenCalled()
     expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
       expect.objectContaining({
         name: 'untitled-43',
@@ -589,7 +795,7 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: CLOUD_PROJECT_LIBRARY_TYPE,
             title: 'Cloud',
-            readEntries: async () => [],
+            readRealizations: async () => [],
             operations: {
               openProject: {
                 run: ({ project }) => {
@@ -630,7 +836,7 @@ describe('home project actions', () => {
     const cloudSync = createCloudSyncService()
     const localCloudProject = {
       id: 'remote:remote-123',
-      source: 'both',
+      source: 'local',
       status: 'synced',
       libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
       name: 'remote-title',
@@ -673,7 +879,7 @@ describe('home project actions', () => {
           provide(projectLibraryTypesValueSpec, {
             type: CLOUD_PROJECT_LIBRARY_TYPE,
             title: 'Cloud',
-            readEntries: async () => [],
+            readRealizations: async () => [],
             operations: {
               openProject: {
                 run: ({ project }) => {
@@ -735,6 +941,7 @@ describe('home project actions', () => {
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
       }),
+      projectLibrariesExtension,
       homeProjectsExtension,
     ])
 
@@ -756,7 +963,7 @@ describe('home project actions', () => {
       },
       project: {
         id: 'local:/projects/bracket',
-        source: 'both',
+        source: 'local',
         status: 'synced',
         libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
         name: 'bracket',
@@ -774,83 +981,5 @@ describe('home project actions', () => {
     )
     expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
     expect(removeProjectDirectory).not.toHaveBeenCalled()
-  })
-
-  it('uses the owning directory library when a local project is merged with its cloud entry', async () => {
-    const systemIO = createSystemIOService()
-    const cloudSync = createCloudSyncService()
-    const deleteCloudProject = vi.fn().mockResolvedValue(undefined)
-
-    registry = new Registry()
-    registry.configure([
-      defineRegistryItem({
-        id: 'test.settings',
-        providesServices: [
-          provideService(
-            settingsService,
-            createMutableSettingsService({
-              libraries: [
-                getDefaultCloudProjectLibrarySetting('/cloud-projects'),
-                {
-                  title: 'Projects',
-                  path: '/projects',
-                  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-                },
-              ],
-            }).service
-          ),
-        ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
-      }),
-      defineRegistryItem({
-        id: 'test.cloud-sync',
-        providesServices: [provideService(cloudSyncService, cloudSync)],
-      }),
-      defineRegistryItem({
-        id: 'test.cloud-library-type',
-        provides: [
-          provide(projectLibraryTypesValueSpec, {
-            type: CLOUD_PROJECT_LIBRARY_TYPE,
-            title: 'Cloud',
-            readEntries: async () => [],
-            operations: {
-              deleteProject: {
-                run: deleteCloudProject,
-              },
-            },
-          }),
-        ],
-      }),
-      homeProjectsExtension,
-    ])
-
-    await registry.get(homeProjectActionsService).delete({
-      id: 'remote:remote-123',
-      source: 'both',
-      status: 'synced',
-      libraryIds: [
-        PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        DEFAULT_PROJECT_LIBRARY_ID,
-      ],
-      name: 'bracket',
-      title: 'Bracket',
-      localProjectPath: '/projects/bracket',
-      localProjectName: 'bracket',
-      libraryPath: '/projects',
-      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
-      remoteProjectId: 'remote-123',
-      defaultFile: '/projects/bracket/main.kcl',
-      readWriteAccess: true,
-    })
-
-    expect(deleteCloudProject).not.toHaveBeenCalled()
-    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
-      'remote-123',
-      '/projects/bracket'
-    )
-    expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
   })
 })

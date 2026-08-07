@@ -11,6 +11,62 @@ import type {
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import type { ProjectLibraryRealization } from '@src/registry/contracts/projectLibraries'
+
+export type CloudProjectDuplicateRisk =
+  | 'exact'
+  | 'divergent'
+  | 'pending'
+  | 'conflicted'
+  | 'unreadable'
+  | 'tombstoned'
+  | 'sync-excluded'
+  | 'unknown'
+
+export type CloudProjectRealizationRole = 'canonical' | 'duplicate'
+
+export interface CloudProjectRelationshipRealization {
+  role: CloudProjectRealizationRole
+  realization: ProjectLibraryRealization
+  duplicateRisk: CloudProjectDuplicateRisk
+  autoCleanupEligible: boolean
+}
+
+/**
+ * A remote project is the cloud-side project record identified by cloud project
+ * ID. A cloud relationship explicitly binds that remote project to zero or
+ * more local realizations.
+ *
+ * The canonical realization is the preferred local folder for the
+ * relationship. Duplicate realizations are non-canonical local folders bound to
+ * the same remote project. Home renders these relationships; it does not infer
+ * them from provider entries.
+ */
+export interface CloudProjectRelationship {
+  id: string
+  remoteProjectId: string
+  remoteProject?: RemoteProjectSummary
+  canonicalRealization?: CloudProjectRelationshipRealization
+  duplicateRealizations: readonly CloudProjectRelationshipRealization[]
+  localRealizations: readonly CloudProjectRelationshipRealization[]
+  modified?: number
+  remoteThumbnailUrl?: string
+  conflict?: unknown
+  syncFailure?: {
+    message: string
+    at?: string
+    kind?: string
+  }
+}
+
+export type CloudProjectRelationshipsRegistryService = {
+  /**
+   * cloudSync-owned relationship state. This is a singleton service signal,
+   * not a ValueSpec, because cloud identity resolution is not an extension
+   * contribution surface.
+   */
+  relationships: ReadonlySignal<CloudProjectRelationship[]>
+}
 
 export type CloudSyncRegistryService = {
   status: ReadonlySignal<CloudSyncStatus>
@@ -76,6 +132,11 @@ export type CloudSyncRegistryService = {
 export const cloudSyncContract = defineContract({
   cloudSyncService:
     defineService<CloudSyncRegistryService>('cloud-sync.service'),
+  cloudProjectRelationshipsService:
+    defineService<CloudProjectRelationshipsRegistryService>(
+      'cloud-project-relationships.service'
+    ),
 })
 
-export const { cloudSyncService } = cloudSyncContract
+export const { cloudSyncService, cloudProjectRelationshipsService } =
+  cloudSyncContract
