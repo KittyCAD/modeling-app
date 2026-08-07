@@ -1,7 +1,7 @@
 import {
   reportSystemIOError,
   type SystemIOErrorRisk,
-} from '@src/lib/systemIOErrorReporting'
+} from '@src/machines/systemIO/errorReporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
@@ -30,37 +30,19 @@ const destructiveOperations = new Set<SystemIOMachineActors>([
   SystemIOMachineActors.moveRecursiveAndNavigate,
 ])
 
-const dataLossWriteOperations = new Set<SystemIOMachineActors>([
-  SystemIOMachineActors.renameProject,
-  SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject,
-  SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile,
-  SystemIOMachineActors.copyRecursive,
-])
-
 function operationFromErrorEvent(eventType: string) {
   return eventType.startsWith(XSTATE_ACTOR_ERROR_PREFIX)
     ? eventType.slice(XSTATE_ACTOR_ERROR_PREFIX.length)
     : eventType
 }
 
-function operationMetadata(operation: string): {
-  risk: SystemIOErrorRisk
-  partialMutationPossible?: boolean
-  dataLossPossible?: boolean
-} {
+function operationRisk(operation: string): SystemIOErrorRisk {
   const actor = operation as SystemIOMachineActors
   if (readOperations.has(actor)) {
-    return { risk: 'read' }
+    return 'read'
   }
 
-  const destructive = destructiveOperations.has(actor)
-  return {
-    risk: destructive ? 'destructive' : 'write',
-    partialMutationPossible: true,
-    ...(destructive || dataLossWriteOperations.has(actor)
-      ? { dataLossPossible: true }
-      : {}),
-  }
+  return destructiveOperations.has(actor) ? 'destructive' : 'write'
 }
 
 export function reportSystemIOMachineError({
@@ -76,16 +58,14 @@ export function reportSystemIOMachineError({
   }
 }) {
   const operation = operationFromErrorEvent(event.type)
-  const { risk, ...extra } = operationMetadata(operation)
 
   reportSystemIOError({
     error: xstateEventError(event),
     operation,
-    risk,
+    risk: operationRisk(operation),
     source: 'SystemIOMachine',
     eventType: event.type,
     extra: {
-      ...extra,
       hasProjectDirectory:
         context.projectDirectoryPath !== NO_PROJECT_DIRECTORY,
       hasListedProjects: context.hasListedProjects,

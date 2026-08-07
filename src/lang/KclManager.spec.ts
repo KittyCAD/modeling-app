@@ -11,7 +11,7 @@ const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
 }))
 
-vi.mock('@src/lib/systemIOErrorReporting', () => ({
+vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 
@@ -916,8 +916,6 @@ describe('KclManager diagnostics', () => {
       source: 'KclManager',
       extra: {
         phase: 'write',
-        partialMutationPossible: true,
-        dataLossPossible: true,
         hasUnsavedChanges: true,
         contentLength: newCode.length,
       },

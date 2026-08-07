@@ -46,7 +46,6 @@ import {
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import fsZds from '@src/lib/fs-zds'
-import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -71,6 +70,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -3723,7 +3723,6 @@ export class KclManager extends File {
           source: 'KclManager',
           extra: {
             phase: 'read_before_write',
-            dataLossPossible: true,
             hasUnsavedChanges: this.hasUnsavedLocalChanges(),
             contentLength: newCode.length,
           },
@@ -3779,8 +3778,6 @@ export class KclManager extends File {
           source: 'KclManager',
           extra: {
             phase: 'write',
-            partialMutationPossible: true,
-            dataLossPossible: true,
             hasUnsavedChanges: this.hasUnsavedLocalChanges(),
             contentLength: newCode.length,
           },

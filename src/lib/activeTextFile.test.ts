@@ -24,7 +24,7 @@ vi.mock('@src/lib/desktop', () => ({
       (error as { code?: string }).code === 'ENOENT'),
 }))
 
-vi.mock('@src/lib/systemIOErrorReporting', () => ({
+vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: mocks.reportSystemIOError,
 }))
 
@@ -209,8 +209,6 @@ describe('scheduleActiveTextFileWrite', () => {
       source: 'ActiveTextFile',
       extra: {
         phase: 'write',
-        partialMutationPossible: true,
-        dataLossPossible: true,
         contentLength: 16,
       },
     })

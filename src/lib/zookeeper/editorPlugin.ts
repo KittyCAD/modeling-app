@@ -7,8 +7,8 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { isErr } from '@src/lib/trap'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
@@ -757,8 +757,6 @@ async function writeZookeeperPatchReplay(
         completedCount: writtenFiles.length,
         rollbackAttemptedCount: attemptedFiles.length,
         rollbackFailureCount: rollbackErrors.length,
-        partialMutationPossible: true,
-        dataLossPossible: true,
       },
     })
 

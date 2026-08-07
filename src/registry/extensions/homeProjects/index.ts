@@ -36,12 +36,12 @@ import {
   moveProjectIntoLocalDirectory,
 } from '@src/lib/projectLibraries/operations'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
+import { reportRejection } from '@src/lib/trap'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
   type SystemIOErrorRisk,
-} from '@src/lib/systemIOErrorReporting'
-import { reportRejection } from '@src/lib/trap'
+} from '@src/machines/systemIO/errorReporting'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
@@ -76,7 +76,6 @@ const configuredProjectLibraryEntriesInvalidation = signal(0)
 type DirectoryProjectOperationReport = {
   operation: string
   risk: SystemIOErrorRisk
-  extra?: Record<string, unknown>
 }
 
 async function runReportedDirectoryProjectOperation<T>({
@@ -130,27 +129,22 @@ function withReportedDirectoryProjectOperations(
     createProject: report(operations.createProject, {
       operation: SystemIOMachineActors.createProject,
       risk: 'write',
-      extra: { partialMutationPossible: true, dataLossPossible: false },
     }),
     duplicateProject: report(operations.duplicateProject, {
       operation: SystemIOMachineActors.duplicateProject,
       risk: 'write',
-      extra: { partialMutationPossible: true, dataLossPossible: false },
     }),
     renameProject: report(operations.renameProject, {
       operation: SystemIOMachineActors.renameProject,
       risk: 'write',
-      extra: { partialMutationPossible: true, dataLossPossible: true },
     }),
     deleteProject: report(operations.deleteProject, {
       operation: SystemIOMachineActors.deleteProject,
       risk: 'destructive',
-      extra: { partialMutationPossible: true, dataLossPossible: true },
     }),
     moveProjectTo: report(operations.moveProjectTo, {
       operation: SystemIOMachineActors.moveRecursive,
       risk: 'destructive',
-      extra: { partialMutationPossible: true, dataLossPossible: true },
     }),
   }
 }

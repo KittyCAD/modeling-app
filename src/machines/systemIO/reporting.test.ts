@@ -1,5 +1,5 @@
 import type * as ClientErrors from '@src/lib/clientErrors'
-import { ExpectedSystemIOError } from '@src/lib/systemIOErrorReporting'
+import { ExpectedSystemIOError } from '@src/machines/systemIO/errorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
@@ -29,26 +29,18 @@ const operationCases = [
   {
     operation: SystemIOMachineActors.deleteProject,
     risk: 'destructive',
-    partialMutationPossible: true,
-    dataLossPossible: true,
   },
   {
     operation: SystemIOMachineActors.duplicateProject,
     risk: 'write',
-    partialMutationPossible: true,
-    dataLossPossible: undefined,
   },
   {
     operation: SystemIOMachineActors.createBlankFolder,
     risk: 'write',
-    partialMutationPossible: true,
-    dataLossPossible: undefined,
   },
   {
     operation: SystemIOMachineActors.renameFile,
     risk: 'destructive',
-    partialMutationPossible: true,
-    dataLossPossible: true,
   },
 ] as const
 
@@ -59,7 +51,7 @@ describe('SystemIO client error reporting', () => {
 
   it.each(operationCases)(
     'classifies $operation failures',
-    ({ operation, risk, partialMutationPossible, dataLossPossible }) => {
+    ({ operation, risk }) => {
       const error = new Error('operation failed')
 
       reportSystemIOMachineError({
@@ -79,8 +71,6 @@ describe('SystemIO client error reporting', () => {
             operation,
             risk,
             errorType: 'Error',
-            partialMutationPossible,
-            ...(dataLossPossible === undefined ? {} : { dataLossPossible }),
             hasProjectDirectory: true,
             hasListedProjects: true,
             projectCount: 2,

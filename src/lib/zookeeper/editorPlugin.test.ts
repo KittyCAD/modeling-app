@@ -12,7 +12,7 @@ const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
 }))
 
-vi.mock('@src/lib/systemIOErrorReporting', () => ({
+vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 
@@ -652,8 +652,6 @@ describe('Zookeeper history patch replay', () => {
           completedCount: 1,
           rollbackAttemptedCount: 2,
           rollbackFailureCount: 0,
-          partialMutationPossible: true,
-          dataLossPossible: true,
         },
       })
     } finally {

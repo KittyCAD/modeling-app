@@ -30,12 +30,12 @@ import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
+import { err, isErr } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-} from '@src/lib/systemIOErrorReporting'
-import { err, isErr } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+} from '@src/machines/systemIO/errorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,

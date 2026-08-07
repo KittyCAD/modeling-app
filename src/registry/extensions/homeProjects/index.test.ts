@@ -383,8 +383,6 @@ describe('home project actions', () => {
           operation: 'delete project',
           risk: 'destructive',
           errorType: 'Error',
-          partialMutationPossible: true,
-          dataLossPossible: true,
         }),
       })
     )

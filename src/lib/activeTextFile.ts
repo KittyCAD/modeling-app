@@ -3,8 +3,8 @@ import { signal } from '@preact/signals-core'
 import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { reportRejection } from '@src/lib/trap'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the
@@ -81,8 +81,6 @@ async function performWrite(path: string, text: string): Promise<void> {
       source: 'ActiveTextFile',
       extra: {
         phase: 'write',
-        partialMutationPossible: true,
-        dataLossPossible: true,
         contentLength: text.length,
       },
     })
