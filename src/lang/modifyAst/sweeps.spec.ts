@@ -11,7 +11,10 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
-import { resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  resolveToCodeRef,
+  retrieveSelectionsFromOpArg,
+} from '@src/lang/queryAst'
 import {
   type ArtifactGraph,
   type Name,
@@ -297,6 +300,58 @@ extrude002 = extrude(seg01, length = 3)`)
         `extrude001 = extrude([profile001, profile002], length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should edit an extrude call with multiple region profiles', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [-3mm, 0mm], center = [-5mm, 0mm])
+  circle2 = circle(start = [7mm, 0mm], center = [5mm, 0mm])
+}
+profile001 = region(segments = [sketch001.circle1])
+profile002 = region(segments = [sketch001.circle2])
+extrude001 = extrude([profile001, profile002], length = 5)`
+      const ast = assertParse(code, instanceInThisFile)
+      if (err(ast)) throw ast
+      const { artifactGraph, operations } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const extrudeOperation = getAllOperations(operations).find(
+        (operation) =>
+          operation.type === 'StdLibCall' && operation.name === 'extrude'
+      )
+      if (
+        !extrudeOperation ||
+        extrudeOperation.type !== 'StdLibCall' ||
+        !extrudeOperation.unlabeledArg
+      ) {
+        throw new Error('Extrude operation not found')
+      }
+      const sketches = retrieveSelectionsFromOpArg(
+        extrudeOperation.unlabeledArg,
+        artifactGraph
+      )
+      if (err(sketches)) throw sketches
+      const length = await getKclCommandValue(
+        '6',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'extrude001 = extrude([profile001, profile002], length = 6)'
+      )
     })
 
     it('should add an extrude call from a sketch region selection', async () => {

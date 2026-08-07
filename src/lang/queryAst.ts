@@ -1386,6 +1386,9 @@ type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
   preferDirectSegment?: boolean
+  // Editing an operation must retain its original path variables instead of
+  // resolving those paths to indexed outputs of that same operation.
+  preservePathInput?: boolean
 }
 
 // Go from a selection to a list of KCL expressions that
@@ -1403,6 +1406,7 @@ export function getVariableExprsFromSelection(
     lastChildLookup = false,
     artifactTypeFilter,
     preferDirectSegment = false,
+    preservePathInput = false,
   } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
@@ -1426,7 +1430,8 @@ export function getVariableExprsFromSelection(
       ast,
       wasmInstance,
       artifactGraph,
-      artifactTypeFilter
+      artifactTypeFilter,
+      preservePathInput
     )
     if (splitOutputExpr) {
       const key = splitOutputExprKey(splitOutputExpr)
@@ -1753,13 +1758,17 @@ function getSplitOutputExprFromSelection(
   ast: Node<Program>,
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph,
-  artifactTypeFilter?: Array<Artifact['type']>
+  artifactTypeFilter?: Array<Artifact['type']>,
+  preservePathInput = false
 ): Expr | null {
   if (
     artifactTypeFilter &&
     !artifactTypeFilter.includes('compositeSolid') &&
     !artifactTypeFilter.includes('sweep')
   ) {
+    return null
+  }
+  if (preservePathInput && resolvedSelection?.artifact?.type === 'path') {
     return null
   }
   type SplitOutputArtifact = Artifact & {

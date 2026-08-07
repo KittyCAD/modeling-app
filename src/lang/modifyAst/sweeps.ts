@@ -196,7 +196,8 @@ export function addExtrude({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      { preservePathInput: mNodeToEdit !== undefined }
     )
     if (err(res)) {
       return res
@@ -215,7 +216,8 @@ export function addExtrude({
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit
+      mNodeToEdit,
+      { preservePathInput: mNodeToEdit !== undefined }
     )
     if (err(res)) {
       return res
