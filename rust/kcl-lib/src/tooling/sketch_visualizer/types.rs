@@ -71,6 +71,10 @@ impl Default for SketchVisualizationOptions {
 }
 
 /// A rendered sketch PNG plus machine-readable sidecar data.
+///
+/// The PNG is optimized for quick visual inspection. The sidecar data carries
+/// the exact IDs, grouping, colors, and freedom facts needed by Zookeeper, CLI,
+/// and MCP consumers that need to reason about the sketch without reading pixels.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualization {
@@ -79,24 +83,44 @@ pub struct SketchVisualization {
 }
 
 /// JSON-friendly facts used to interpret the visualization.
+///
+/// This is intentionally more graph-like than UI-like. It describes the source
+/// sketch entities, how they were colored, which points are near or constrained
+/// together, and which primary segments form connected components.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationData {
+    /// The selected sketch object and best-effort display name.
     pub sketch: SketchVisualizationSketchInfo,
+    /// World-space bounds used to fit the PNG camera.
     pub bounds: SketchVisualizationBounds,
+    /// Unit suffixes discovered while extracting point positions.
     pub units: Vec<String>,
+    /// The selected render color scheme.
     pub color_scheme: SketchVisualizationColorScheme,
+    /// Solver-level constraint summary for the whole sketch, when available.
     pub constraint_status: Option<SketchConstraintStatus>,
+    /// Compact degree-of-freedom facts, keyed by point and primary-segment IDs.
     pub dof: SketchVisualizationDofData,
+    /// All owned sketch points, including control points.
     pub points: Vec<SketchVisualizationPointData>,
+    /// Primary sketch geometry, excluding helper/control-polygon geometry.
     pub segments: Vec<SketchVisualizationSegmentData>,
+    /// Constraint sidecar data attached to the selected sketch.
     pub constraints: Vec<SketchVisualizationConstraintData>,
+    /// Stable per-segment colors emitted for every primary segment in every mode.
     pub id_color_map: BTreeMap<usize, String>,
+    /// Groups of points whose coordinates are within `contact_tolerance`.
     pub contact_groups: Vec<SketchVisualizationPointGroup>,
+    /// Groups of points joined by explicit coincident constraints.
     pub coincident_groups: Vec<SketchVisualizationCoincidentGroup>,
+    /// Connected sets of primary segments after contact and coincidence are applied.
     pub connected_components: Vec<SketchVisualizationConnectedComponent>,
+    /// Endpoint point IDs that are not connected to any other endpoint.
     pub open_endpoints: Vec<usize>,
+    /// Per-component closedness hints derived from `open_endpoints`.
     pub closedness_hints: Vec<SketchVisualizationClosednessHint>,
+    /// Recoverable extraction problems that did not prevent rendering.
     pub warnings: Vec<String>,
 }
 
@@ -134,12 +158,20 @@ pub struct SketchVisualizationPointData {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationDofData {
+    /// The implicit state for IDs that do not appear in any bucket.
     #[serde(rename = "default")]
     pub default_state: Freedom,
+    /// Non-default point DoF buckets.
     pub points: SketchVisualizationDofBuckets,
+    /// Non-default primary-segment DoF buckets.
     pub segments: SketchVisualizationDofBuckets,
 }
 
+/// Compact DoF representation.
+///
+/// Free is the default state and is intentionally omitted to keep large sketches
+/// readable. `unknown` is reserved for entities where the source data did not
+/// provide a freedom value.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationDofBuckets {
@@ -181,6 +213,8 @@ pub struct SketchVisualizationSegmentData {
     pub endpoint_ids: Vec<usize>,
     pub construction: bool,
     pub component_id: usize,
+    /// Actual render color in DoF mode. In IDs mode this is omitted because it
+    /// would duplicate `id_color_map[id]`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rendered_color: Option<String>,
 }
@@ -200,6 +234,10 @@ pub enum SketchVisualizationConstraintTarget {
     Origin,
 }
 
+/// A coordinate-contact group.
+///
+/// These groups are geometric: points are grouped when their positions are equal
+/// within the configured tolerance, even if no constraint backs that contact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationPointGroup {
@@ -207,6 +245,10 @@ pub struct SketchVisualizationPointGroup {
     pub point_ids: Vec<usize>,
 }
 
+/// A group backed by coincident constraints.
+///
+/// This stays separate from contact groups so callers can tell inferred touching
+/// geometry apart from explicit sketch intent.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationCoincidentGroup {

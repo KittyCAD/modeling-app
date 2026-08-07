@@ -15,6 +15,11 @@ use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationOptions;
 
 impl ExecOutcome {
+    /// Render one sketch from this execution result into a PNG plus sidecar data.
+    ///
+    /// Callers choose the sketch with `selector` and tune the image/data presentation
+    /// with `options`. The source of truth remains the `scene_objects` emitted by
+    /// execution; this does not re-run KCL or ask the engine for a snapshot.
     pub fn visualize_sketch(
         &self,
         selector: SketchSelector,
@@ -24,6 +29,12 @@ impl ExecOutcome {
     }
 }
 
+/// Render one sketch from a raw frontend scene-object list.
+///
+/// This is mostly useful for tests and lower-level consumers that already have
+/// scene objects but not a full `ExecOutcome`. Name selection is only available
+/// through `ExecOutcome::visualize_sketch`, because KCL variable names live in
+/// the execution variables map rather than on every sketch object.
 pub fn visualize_scene_objects(
     scene_objects: &[Object],
     selector: SketchSelector,

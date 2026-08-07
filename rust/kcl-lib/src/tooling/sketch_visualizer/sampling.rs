@@ -1,3 +1,10 @@
+//! Curve sampling and world-space bounds helpers.
+//!
+//! Rendering is intentionally polyline-based: extraction samples arcs, circles,
+//! and splines here, then `render` only has to draw straight segments. This keeps
+//! the PNG path deterministic and keeps sidecar bounds aligned with the rendered
+//! geometry.
+
 use std::f64::consts::TAU;
 
 use super::types::SketchVisualizationBounds;
@@ -6,6 +13,7 @@ use super::types::SketchVisualizationPoint;
 pub(super) const ARC_SAMPLE_COUNT: usize = 100;
 const SPLINE_SAMPLES_PER_SPAN: usize = 24;
 
+/// Incrementally computes finite world-space bounds for sampled geometry.
 #[derive(Default)]
 pub(super) struct BoundsBuilder {
     min_x: Option<f64>,
@@ -61,6 +69,8 @@ pub(super) fn sample_arc(
         -positive_angle_delta(start_angle - end_angle)
     };
     if sweep.abs() <= 1.0e-12 {
+        // Matching the frontend convention: equal start/end angles represent a
+        // full arc sweep rather than an empty curve.
         sweep = if ccw { TAU } else { -TAU };
     }
     (0..=samples)
@@ -112,6 +122,9 @@ pub(super) fn sample_control_point_spline(
         return points.to_vec();
     }
 
+    // The frontend uses an open-uniform B-spline for control point splines. We
+    // evaluate the same knot layout with de Boor so the static PNG resembles the
+    // interactive sketch.
     let knots = build_open_uniform_knot_vector(points.len(), effective_degree);
     let span_count = (points.len() - effective_degree).max(1);
     let sample_count = (span_count * SPLINE_SAMPLES_PER_SPAN).max(2);
@@ -180,6 +193,8 @@ fn de_boor_point(
         .map(|offset| points[span - degree + offset])
         .collect::<Vec<_>>();
 
+    // de Boor repeatedly interpolates the local control points for this knot
+    // span until one point on the curve remains.
     for r in 1..=degree {
         for j in (r..=degree).rev() {
             let knot_index = span - degree + j;
