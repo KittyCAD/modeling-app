@@ -95,8 +95,7 @@ baseBlock = extrude(region001, length = baseHeight)
 
 // --- First Shelf Board ---
 firstShelfPlane = offsetPlane(XY, offset = shelfStartZ)
-firstShelfSketch = startSketchOn(firstShelfPlane)
-firstShelfProfile = sketch(on = firstShelfSketch) {
+firstShelfProfile = sketch(on = firstShelfPlane) {
   line1 = line(start = [var -0.48m, var 0m], end = [var -0.48m, var -0.4m])
   line2 = line(start = [var -0.48m, var -0.4m], end = [var 0.48m, var -0.4m])
   coincident([line1.end, line2.start])

@@ -72,8 +72,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
-      "objectId": 36,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -124,10 +123,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -155,10 +154,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -173,7 +172,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -246,10 +245,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -277,10 +276,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -295,7 +294,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -368,10 +367,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -399,10 +398,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -417,7 +416,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -490,10 +489,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -521,10 +520,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -539,7 +538,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -612,10 +611,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -643,10 +642,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -661,7 +660,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -734,10 +733,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -765,10 +764,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -783,7 +782,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -856,10 +855,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -887,10 +886,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -905,7 +904,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -978,10 +977,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1009,10 +1008,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1027,7 +1026,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1100,10 +1099,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1131,10 +1130,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1149,7 +1148,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1222,10 +1221,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1253,10 +1252,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1271,7 +1270,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1344,10 +1343,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1375,10 +1374,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1393,7 +1392,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1466,10 +1465,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1497,10 +1496,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1515,7 +1514,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1588,10 +1587,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1619,10 +1618,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1637,7 +1636,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1710,10 +1709,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1741,10 +1740,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1759,7 +1758,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1832,10 +1831,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1863,10 +1862,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -1881,7 +1880,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -1954,10 +1953,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2678,
-                "end": 2692,
+                "commentStart": 2621,
+                "end": 2635,
                 "moduleId": 0,
-                "start": 2678,
+                "start": 2621,
                 "type": "TagDeclarator",
                 "value": "boltHoleCircle"
               },
@@ -1985,10 +1984,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 ],
                 "radius": 6.000000002405851,
                 "tag": {
-                  "commentStart": 2678,
-                  "end": 2692,
+                  "commentStart": 2621,
+                  "end": 2635,
                   "moduleId": 0,
-                  "start": 2678,
+                  "start": 2621,
                   "type": "TagDeclarator",
                   "value": "boltHoleCircle"
                 },
@@ -2003,7 +2002,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "YZ",
+              "kind": "Custom",
               "objectId": 36,
               "origin": {
                 "x": 0.0,
@@ -2078,10 +2077,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2678,
-            "end": 2692,
+            "commentStart": 2621,
+            "end": 2635,
             "moduleId": 0,
-            "start": 2678,
+            "start": 2621,
             "type": "TagDeclarator",
             "value": "boltHoleCircle"
           },
@@ -2109,10 +2108,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "radius": 6.000000002405851,
             "tag": {
-              "commentStart": 2678,
-              "end": 2692,
+              "commentStart": 2621,
+              "end": 2635,
               "moduleId": 0,
-              "start": 2678,
+              "start": 2621,
               "type": "TagDeclarator",
               "value": "boltHoleCircle"
             },
@@ -2127,7 +2126,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
+          "kind": "Custom",
           "objectId": 36,
           "origin": {
             "x": 0.0,
@@ -2228,10 +2227,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           ],
           "radius": 6.000000002405851,
           "tag": {
-            "commentStart": 2678,
-            "end": 2692,
+            "commentStart": 2621,
+            "end": 2635,
             "moduleId": 0,
-            "start": 2678,
+            "start": 2621,
             "type": "TagDeclarator",
             "value": "boltHoleCircle"
           },
@@ -2246,7 +2245,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
+        "kind": "Custom",
         "objectId": 36,
         "origin": {
           "x": 0.0,
@@ -2388,7 +2387,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "YZ",
+                  "kind": "Custom",
                   "objectId": 36,
                   "origin": {
                     "x": 0.0,
@@ -2508,7 +2507,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "YZ",
+                  "kind": "Custom",
                   "objectId": 36,
                   "origin": {
                     "x": 0.0,
@@ -2629,7 +2628,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "YZ",
+                  "kind": "Custom",
                   "objectId": 36,
                   "origin": {
                     "x": 0.0,
@@ -2692,10 +2691,10 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
                   ],
                   "radius": 6.000000002405851,
                   "tag": {
-                    "commentStart": 2678,
-                    "end": 2692,
+                    "commentStart": 2621,
+                    "end": 2635,
                     "moduleId": 0,
-                    "start": 2678,
+                    "start": 2621,
                     "type": "TagDeclarator",
                     "value": "boltHoleCircle"
                   },
@@ -2710,7 +2709,7 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "YZ",
+                "kind": "Custom",
                 "objectId": 36,
                 "origin": {
                   "x": 0.0,
@@ -2771,39 +2770,6 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
       }
     },
     "constrainable": false
-  },
-  "boltHoleSketchPlane": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "YZ",
-      "objectId": 36,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
   },
   "elbowBendAngleDegrees": {
     "type": "Number",

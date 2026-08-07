@@ -172,6 +172,38 @@ describe('directory project scanner', () => {
     mocks.fsZds.rm.mockResolvedValue(undefined)
   })
 
+  it('aggregates non-missing project stat failures', async () => {
+    const statFailure = Object.assign(new Error('Permission denied'), {
+      code: 'EACCES',
+    })
+    const onProjectStatFailures = vi.fn()
+
+    mocks.fsZds.readdir.mockResolvedValue([
+      'missing-project',
+      'blocked-project-one',
+      'blocked-project-two',
+    ])
+    mocks.fsZds.stat.mockImplementation(async (path: string) => {
+      if (path === '/projects/missing-project') {
+        throw mocks.pathNotFound()
+      }
+      throw statFailure
+    })
+
+    const projects = await readProjectsFromProjectDirectory({
+      projectDirectoryPath: '/projects',
+      wasmInstancePromise: Promise.resolve({} as ModuleType),
+      onProjectStatFailures,
+    })
+
+    expect(projects).toEqual([])
+    expect(onProjectStatFailures).toHaveBeenCalledOnce()
+    expect(onProjectStatFailures).toHaveBeenCalledWith({
+      error: statFailure,
+      count: 2,
+    })
+  })
+
   it('schedules stale project directory name syncs after the scan returns', async () => {
     const project = createProject()
     let finishRename: () => void = () => undefined

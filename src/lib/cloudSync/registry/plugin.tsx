@@ -517,7 +517,12 @@ function homeProjectEntryCloudSyncFields(
   metadata: CloudSyncProjectMetadataIndexEntry | undefined
 ): Pick<
   HomeProjectEntryContribution,
-  'conflict' | 'libraryId' | 'localProjectPath' | 'status' | 'syncFailure'
+  | 'conflict'
+  | 'libraryId'
+  | 'libraryType'
+  | 'localProjectPath'
+  | 'status'
+  | 'syncFailure'
 > {
   const syncFailure =
     metadata?.lastFailure?.kind === 'remote-upload-forbidden'
@@ -526,6 +531,7 @@ function homeProjectEntryCloudSyncFields(
   if (!metadata?.conflict) {
     return {
       libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
       status: 'cloud-only',
       ...(syncFailure
         ? { syncFailure, localProjectPath: metadata?.localProjectPath }
@@ -535,6 +541,7 @@ function homeProjectEntryCloudSyncFields(
 
   return {
     libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+    libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
     status: 'conflicted',
     conflict: metadata.conflict,
     localProjectPath: metadata.localProjectPath,
@@ -1021,9 +1028,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
         return Promise.reject(wasmInstancePromise)
       }
 
+      const projectDirectoryPath =
+        await getCloudProjectLibraryMaterializationDirectoryPath(library)
       const projects = await readProjectsFromProjectDirectory({
-        projectDirectoryPath:
-          await getCloudProjectLibraryMaterializationDirectoryPath(library),
+        projectDirectoryPath,
         wasmInstancePromise,
         signal,
       })
@@ -1038,6 +1046,8 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       return projects.map((project) => ({
         ...homeProjectEntryFromProject(project),
         libraryId: library.id,
+        libraryPath: projectDirectoryPath,
+        libraryType: library.type,
       }))
     },
   }

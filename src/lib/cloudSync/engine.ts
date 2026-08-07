@@ -74,12 +74,12 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   getProjectDirectoryNameFromTitle,
   getUniqueDuplicateProjectName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
-import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
@@ -1327,6 +1327,18 @@ type LocalProjectRealizationCandidate = {
   manifest?: ProjectManifest
 }
 
+async function localProjectRealizationCandidate(
+  projectPath: string
+): Promise<LocalProjectRealizationCandidate> {
+  return {
+    projectPath,
+    metadata: await getProjectMetadata(projectPath),
+    manifest: await collectLocalProjectFiles(projectPath)
+      .then(projectManifestFromFiles)
+      .catch(() => undefined),
+  }
+}
+
 async function getLocalProjectRealizationCandidatesByRemoteProjectId(
   projectDirectory: string,
   remoteProjectId: string,
@@ -1338,15 +1350,7 @@ async function getLocalProjectRealizationCandidatesByRemoteProjectId(
     preferredProjectName
   )
 
-  return Promise.all(
-    paths.map(async (projectPath) => ({
-      projectPath,
-      metadata: await getProjectMetadata(projectPath),
-      manifest: await collectLocalProjectFiles(projectPath)
-        .then(projectManifestFromFiles)
-        .catch(() => undefined),
-    }))
-  )
+  return Promise.all(paths.map(localProjectRealizationCandidate))
 }
 
 function canDeleteDuplicateLocalRealization({
@@ -1470,11 +1474,20 @@ export async function deleteCloudSyncLocalProjectRealizations(
       projectDirectory,
       projectId
     )
-  const selectedCandidate = candidates.find(
+  let selectedCandidate = candidates.find(
     (candidate) =>
       normalizePathForSync(candidate.projectPath) ===
       normalizedSelectedProjectPath
   )
+  if (
+    !selectedCandidate &&
+    (await exists(normalizedSelectedProjectPath).catch(() => false))
+  ) {
+    selectedCandidate = await localProjectRealizationCandidate(
+      normalizedSelectedProjectPath
+    )
+    candidates.unshift(selectedCandidate)
+  }
   const selectedManifest = selectedCandidate?.manifest
 
   for (const candidate of candidates) {
