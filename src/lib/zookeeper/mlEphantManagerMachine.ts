@@ -61,14 +61,14 @@ type MlCopilotUserRequest = Omit<
   // but mode discovery intentionally treats the backend-provided id as opaque.
   mode?: MlCopilotModeId
   active_file?: string
-  turn_id?: string
+  correlation_id?: string
   engine_api_call_id?: string
 }
 
-export const createZookeeperTurnCorrelation = (
+export const createZookeeperCorrelation = (
   engineApiCallId: string | undefined
 ) => ({
-  turn_id: uuidv4(),
+  correlation_id: uuidv4(),
   ...(engineApiCallId ? { engine_api_call_id: engineApiCallId } : {}),
 })
 
@@ -1290,7 +1290,7 @@ export const mlEphantManagerMachine = setup({
 
       const request: MlCopilotUserRequest = {
         type: 'user',
-        ...createZookeeperTurnCorrelation(event.engineCommandManager.apiCallId),
+        ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
         ...(requestData.body.source_ranges !== undefined
