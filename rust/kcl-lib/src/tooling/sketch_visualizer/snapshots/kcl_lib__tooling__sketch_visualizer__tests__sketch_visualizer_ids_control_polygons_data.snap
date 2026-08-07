@@ -1,0 +1,175 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 0,
+    "name": "sketch001"
+  },
+  "bounds": {
+    "min": {
+      "x": -23.997039179559856,
+      "y": -30.0
+    },
+    "max": {
+      "x": 46.0,
+      "y": 26.0
+    }
+  },
+  "units": [
+    "None"
+  ],
+  "mode": "ids",
+  "points": [
+    {
+      "id": 1,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 3
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 36.0,
+        "y": 0.0
+      },
+      "owner": 3
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": 0.0,
+        "y": 24.0
+      },
+      "owner": 7
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 24.0,
+        "y": 0.0
+      },
+      "owner": 7
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 7
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 46.0,
+        "y": 16.0
+      },
+      "owner": 10
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 36.0,
+        "y": 16.0
+      },
+      "owner": 10
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 4.0,
+        "y": -28.0
+      },
+      "owner": 15
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 16.0,
+        "y": -8.0
+      },
+      "owner": 15
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 28.0,
+        "y": -30.0
+      },
+      "owner": 15
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 44.0,
+        "y": -10.0
+      },
+      "owner": 15
+    }
+  ],
+  "segments": [
+    {
+      "id": 3,
+      "kind": "line",
+      "pointIds": [
+        1,
+        2
+      ],
+      "endpointIds": [
+        1,
+        2
+      ],
+      "construction": false
+    },
+    {
+      "id": 7,
+      "kind": "arc",
+      "pointIds": [
+        4,
+        5,
+        6
+      ],
+      "endpointIds": [
+        4,
+        5
+      ],
+      "construction": false
+    },
+    {
+      "id": 10,
+      "kind": "circle",
+      "pointIds": [
+        8,
+        9
+      ],
+      "endpointIds": [],
+      "construction": false
+    },
+    {
+      "id": 15,
+      "kind": "control_point_spline",
+      "pointIds": [
+        11,
+        12,
+        13,
+        14
+      ],
+      "endpointIds": [
+        11,
+        14
+      ],
+      "construction": false
+    }
+  ],
+  "constraints": [],
+  "idColorMap": {
+    "3": "#eb599b",
+    "7": "#d94e9a",
+    "10": "#4f6ed1",
+    "15": "#6ded32"
+  },
+  "warnings": []
+}
