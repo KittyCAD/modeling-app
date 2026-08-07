@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/tooling/sketch_visualizer.rs
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
 ---
 {
   "sketch": {
@@ -19,7 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
   "units": [
     "Inch"
   ],
-  "colorScheme": "dof",
+  "mode": "dof",
   "constraintStatus": {
     "name": "",
     "status": "UnderConstrained",
@@ -39,9 +39,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.0,
         "y": 1.75
       },
-      "owner": 4,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 4
     },
     {
       "id": 3,
@@ -99,9 +97,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.67,
         "y": 3.26
       },
-      "owner": 11,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 11
     },
     {
       "id": 12,
@@ -539,9 +535,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": -0.07604392031568925,
         "y": -2.6114163875126164
       },
-      "owner": 78,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 78
     },
     {
       "id": 77,
@@ -549,9 +543,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.8575619696760547,
         "y": -3.1025641840410274
       },
-      "owner": 78,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 78
     }
   ],
   "segments": [
@@ -1271,33 +1263,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ]
     }
   ],
-  "idColorMap": {
-    "4": "#ede855",
-    "7": "#d94e9a",
-    "11": "#8ee547",
-    "14": "#38eba9",
-    "17": "#70de35",
-    "20": "#ed5ab2",
-    "23": "#40d6b3",
-    "26": "#53e5a6",
-    "29": "#9cd42c",
-    "32": "#e84f4d",
-    "35": "#b9e041",
-    "38": "#51cae8",
-    "41": "#51e0a0",
-    "44": "#32e3c8",
-    "47": "#54ebc5",
-    "50": "#d64578",
-    "53": "#f08243",
-    "56": "#50e58a",
-    "59": "#4eedae",
-    "62": "#a539d4",
-    "65": "#de6752",
-    "68": "#5f41f2",
-    "71": "#eaf250",
-    "74": "#dbb146",
-    "78": "#b3db44"
-  },
   "contactGroups": [
     {
       "id": 0,

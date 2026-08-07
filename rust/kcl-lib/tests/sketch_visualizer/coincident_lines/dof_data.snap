@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/tooling/sketch_visualizer.rs
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
 ---
 {
   "sketch": {
@@ -19,7 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
   "units": [
     "Mm"
   ],
-  "colorScheme": "dof",
+  "mode": "dof",
   "constraintStatus": {
     "name": "",
     "status": "UnderConstrained",
@@ -39,9 +39,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.0,
         "y": 0.0
       },
-      "owner": 4,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 4
     },
     {
       "id": 3,
@@ -69,9 +67,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 70.0,
         "y": 18.0
       },
-      "owner": 7,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 7
     }
   ],
   "segments": [
@@ -122,10 +118,6 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
       ]
     }
   ],
-  "idColorMap": {
-    "4": "#ede855",
-    "7": "#d94e9a"
-  },
   "contactGroups": [
     {
       "id": 0,

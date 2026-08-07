@@ -19,48 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
   "units": [
     "Mm"
   ],
-  "colorScheme": "ids",
-  "constraintStatus": {
-    "name": "",
-    "status": "FullyConstrained",
-    "free_count": 0,
-    "conflict_count": 0,
-    "total_count": 7
-  },
-  "dof": {
-    "default": "Free",
-    "points": {
-      "fixed": [
-        2,
-        3,
-        5,
-        6,
-        8,
-        9,
-        11,
-        12,
-        19,
-        20,
-        21,
-        27,
-        28,
-        29,
-        44,
-        45
-      ]
-    },
-    "segments": {
-      "fixed": [
-        4,
-        7,
-        10,
-        13,
-        22,
-        30,
-        46
-      ]
-    }
-  },
+  "mode": "ids",
   "points": [
     {
       "id": 2,
@@ -68,9 +27,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.94,
         "y": 3.48
       },
-      "owner": 4,
-      "contactGroup": 0,
-      "coincidentGroup": 0
+      "owner": 4
     },
     {
       "id": 3,
@@ -78,9 +35,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 5.62,
         "y": 3.48
       },
-      "owner": 4,
-      "contactGroup": 1,
-      "coincidentGroup": 1
+      "owner": 4
     },
     {
       "id": 5,
@@ -88,9 +43,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 6.56,
         "y": 2.54
       },
-      "owner": 7,
-      "contactGroup": 2,
-      "coincidentGroup": 2
+      "owner": 7
     },
     {
       "id": 6,
@@ -98,9 +51,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 6.56,
         "y": 0.0
       },
-      "owner": 7,
-      "contactGroup": 3,
-      "coincidentGroup": 3
+      "owner": 7
     },
     {
       "id": 8,
@@ -108,9 +59,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 6.56,
         "y": 0.0
       },
-      "owner": 10,
-      "contactGroup": 3,
-      "coincidentGroup": 3
+      "owner": 10
     },
     {
       "id": 9,
@@ -118,9 +67,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.0,
         "y": 0.0
       },
-      "owner": 10,
-      "contactGroup": 4,
-      "coincidentGroup": 4
+      "owner": 10
     },
     {
       "id": 11,
@@ -128,9 +75,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.0,
         "y": 0.0
       },
-      "owner": 13,
-      "contactGroup": 4,
-      "coincidentGroup": 4
+      "owner": 13
     },
     {
       "id": 12,
@@ -138,9 +83,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.0,
         "y": 2.54
       },
-      "owner": 13,
-      "contactGroup": 5,
-      "coincidentGroup": 5
+      "owner": 13
     },
     {
       "id": 19,
@@ -148,9 +91,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.94,
         "y": 3.48
       },
-      "owner": 22,
-      "contactGroup": 0,
-      "coincidentGroup": 0
+      "owner": 22
     },
     {
       "id": 20,
@@ -158,9 +99,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.0,
         "y": 2.54
       },
-      "owner": 22,
-      "contactGroup": 5,
-      "coincidentGroup": 5
+      "owner": 22
     },
     {
       "id": 21,
@@ -168,9 +107,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.94,
         "y": 2.54
       },
-      "owner": 22,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 22
     },
     {
       "id": 27,
@@ -178,9 +115,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 5.62,
         "y": 3.48
       },
-      "owner": 30,
-      "contactGroup": 1,
-      "coincidentGroup": 1
+      "owner": 30
     },
     {
       "id": 28,
@@ -188,9 +123,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 6.56,
         "y": 2.54
       },
-      "owner": 30,
-      "contactGroup": 2,
-      "coincidentGroup": 2
+      "owner": 30
     },
     {
       "id": 29,
@@ -198,9 +131,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 5.62,
         "y": 2.54
       },
-      "owner": 30,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 30
     },
     {
       "id": 44,
@@ -208,9 +139,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 3.28,
         "y": 3.48
       },
-      "owner": 46,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 46
     },
     {
       "id": 45,
@@ -218,9 +147,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 3.28,
         "y": 0.0
       },
-      "owner": 46,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 46
     }
   ],
   "segments": [
@@ -235,8 +162,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         2,
         3
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 7,
@@ -249,8 +175,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         5,
         6
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 10,
@@ -263,8 +188,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         8,
         9
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 13,
@@ -277,8 +201,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         11,
         12
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 22,
@@ -292,8 +215,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         19,
         20
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 30,
@@ -307,8 +229,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         27,
         28
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 46,
@@ -321,8 +242,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         44,
         45
       ],
-      "construction": true,
-      "componentId": 1
+      "construction": true
     }
   ],
   "constraints": [
@@ -721,137 +641,5 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     "30": "#69d952",
     "46": "#eb44e2"
   },
-  "contactGroups": [
-    {
-      "id": 0,
-      "pointIds": [
-        2,
-        19
-      ]
-    },
-    {
-      "id": 1,
-      "pointIds": [
-        3,
-        27
-      ]
-    },
-    {
-      "id": 2,
-      "pointIds": [
-        5,
-        28
-      ]
-    },
-    {
-      "id": 3,
-      "pointIds": [
-        6,
-        8
-      ]
-    },
-    {
-      "id": 4,
-      "pointIds": [
-        9,
-        11
-      ]
-    },
-    {
-      "id": 5,
-      "pointIds": [
-        12,
-        20
-      ]
-    }
-  ],
-  "coincidentGroups": [
-    {
-      "id": 0,
-      "pointIds": [
-        2,
-        19
-      ],
-      "includesOrigin": false
-    },
-    {
-      "id": 1,
-      "pointIds": [
-        3,
-        27
-      ],
-      "includesOrigin": false
-    },
-    {
-      "id": 2,
-      "pointIds": [
-        5,
-        28
-      ],
-      "includesOrigin": false
-    },
-    {
-      "id": 3,
-      "pointIds": [
-        6,
-        8
-      ],
-      "includesOrigin": false
-    },
-    {
-      "id": 4,
-      "pointIds": [
-        9,
-        11
-      ],
-      "includesOrigin": true
-    },
-    {
-      "id": 5,
-      "pointIds": [
-        12,
-        20
-      ],
-      "includesOrigin": false
-    }
-  ],
-  "connectedComponents": [
-    {
-      "id": 0,
-      "segmentIds": [
-        4,
-        7,
-        10,
-        13,
-        22,
-        30
-      ]
-    },
-    {
-      "id": 1,
-      "segmentIds": [
-        46
-      ]
-    }
-  ],
-  "openEndpoints": [
-    44,
-    45
-  ],
-  "closednessHints": [
-    {
-      "componentId": 0,
-      "isClosed": true,
-      "openEndpointIds": []
-    },
-    {
-      "componentId": 1,
-      "isClosed": false,
-      "openEndpointIds": [
-        44,
-        45
-      ]
-    }
-  ],
   "warnings": []
 }

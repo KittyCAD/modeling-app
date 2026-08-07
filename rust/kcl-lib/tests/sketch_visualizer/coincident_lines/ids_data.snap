@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/tooling/sketch_visualizer.rs
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
 ---
 {
   "sketch": {
@@ -19,19 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
   "units": [
     "Mm"
   ],
-  "colorScheme": "ids",
-  "constraintStatus": {
-    "name": "",
-    "status": "UnderConstrained",
-    "free_count": 2,
-    "conflict_count": 0,
-    "total_count": 2
-  },
-  "dof": {
-    "default": "Free",
-    "points": {},
-    "segments": {}
-  },
+  "mode": "ids",
   "points": [
     {
       "id": 2,
@@ -39,9 +27,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.0,
         "y": 0.0
       },
-      "owner": 4,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 4
     },
     {
       "id": 3,
@@ -49,9 +35,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 40.999999990999996,
         "y": 8.999999991
       },
-      "owner": 4,
-      "contactGroup": 0,
-      "coincidentGroup": 0
+      "owner": 4
     },
     {
       "id": 5,
@@ -59,9 +43,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 41.0,
         "y": 9.0
       },
-      "owner": 7,
-      "contactGroup": 0,
-      "coincidentGroup": 0
+      "owner": 7
     },
     {
       "id": 6,
@@ -69,9 +51,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 70.0,
         "y": 18.0
       },
-      "owner": 7,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 7
     }
   ],
   "segments": [
@@ -86,8 +66,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         2,
         3
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 7,
@@ -100,8 +79,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         5,
         6
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     }
   ],
   "constraints": [
@@ -124,47 +102,5 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
     "4": "#ede855",
     "7": "#d94e9a"
   },
-  "contactGroups": [
-    {
-      "id": 0,
-      "pointIds": [
-        3,
-        5
-      ]
-    }
-  ],
-  "coincidentGroups": [
-    {
-      "id": 0,
-      "pointIds": [
-        3,
-        5
-      ],
-      "includesOrigin": false
-    }
-  ],
-  "connectedComponents": [
-    {
-      "id": 0,
-      "segmentIds": [
-        4,
-        7
-      ]
-    }
-  ],
-  "openEndpoints": [
-    2,
-    6
-  ],
-  "closednessHints": [
-    {
-      "componentId": 0,
-      "isClosed": false,
-      "openEndpointIds": [
-        2,
-        6
-      ]
-    }
-  ],
   "warnings": []
 }
