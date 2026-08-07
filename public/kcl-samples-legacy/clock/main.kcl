@@ -42,12 +42,7 @@ profile001 = circle(
 )
 
 clockBody = extrude(profile001, length = clockThickness, tagStart = $capStart001)
-  |> fillet(
-       radius = filletRadius,
-       tags = [
-         getCommonEdge(faces = [seg02, capStart001])
-       ],
-     )
+  |> fillet(radius = filletRadius, edges = [{ sideFaces = [seg02, capStart001] }])
 
 // Create the ridge on the top face of the body
 clockRidgeSketch = startSketchOn(clockBody, face = END)
@@ -60,12 +55,7 @@ profile002 = circle(
 profile003 = circle(clockRidgeSketch, center = [0, 0], diameter = ridgeDiameter)
 subtract2d(profile002, tool = profile003)
 clockRidge = extrude(profile002, length = ridgeThickness, tagEnd = $capEnd001)
-  |> fillet(
-       radius = filletRadius,
-       tags = [
-         getCommonEdge(faces = [seg01, capEnd001])
-       ],
-     )
+  |> fillet(radius = filletRadius, edges = [{ sideFaces = [seg01, capEnd001] }])
   |> appearance(color = "#ab4321")
 
 // Create an object that has all of the x and y starting positions of every number
@@ -323,12 +313,12 @@ startSketchOn(clockBody, face = END)
 // Create the hour hand
 sketch005 = startSketchOn(offsetPlane(XY, offset = 55))
 profile007 = startProfile(
-       sketch005,
-       at = [
-         nubDiameter / 2 * 1.375 * cos(hourHandAngle + 20deg),
-         nubDiameter / 2 * 1.375 * sin(hourHandAngle + 20deg)
-       ],
-     )
+  sketch005,
+  at = [
+    nubDiameter / 2 * 1.375 * cos(hourHandAngle + 20deg),
+    nubDiameter / 2 * 1.375 * sin(hourHandAngle + 20deg)
+  ],
+)
   |> arc(
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(hourHandAngle + 180deg),
@@ -361,12 +351,12 @@ subtract2d(profile007, tool = profile008)
 // create the minute hand
 sketch006 = startSketchOn(offsetPlane(XY, offset = 50))
 profile009 = startProfile(
-       sketch006,
-       at = [
-         nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 20deg),
-         nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 20deg)
-       ],
-     )
+  sketch006,
+  at = [
+    nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 20deg),
+    nubDiameter / 2 * 1.375 * sin(minuteHandAngle + 20deg)
+  ],
+)
   |> arc(
        interiorAbsolute = [
          nubDiameter / 2 * 1.375 * cos(minuteHandAngle + 180deg),

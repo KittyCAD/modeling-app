@@ -70,9 +70,9 @@ angleBracket = startSketchOn(offsetPlane(XY, offset = 120))
   |> extrude(length = 40, tagEnd = $capEnd001)
   |> fillet(
        radius = 8,
-       tags = [
-         getCommonEdge(faces = [seg03, capEnd001]),
-         getCommonEdge(faces = [seg04, capEnd001])
+       edges = [
+         { sideFaces = [seg03, capEnd001] },
+         { sideFaces = [seg04, capEnd001] }
        ],
      )
 
@@ -134,57 +134,57 @@ gripBaseBracket = startSketchOn(offsetPlane(XY, offset = 129 + linkLength * sin(
 // Use subtract operations to remove excess material from the gripper, as well as model the mounting holes
 gripperCuts = startSketchOn(XZ)
 cutOuter = circle(
-       gripperCuts,
-       center = [
-         140 + linkLength * cos(linkAngle),
-         290 + linkLength * sin(linkAngle)
-       ],
-       radius = 150,
-     )
+  gripperCuts,
+  center = [
+    140 + linkLength * cos(linkAngle),
+    290 + linkLength * sin(linkAngle)
+  ],
+  radius = 150,
+)
   |> extrude(length = 40, symmetric = true)
 cutInner = circle(
-       gripperCuts,
-       center = [
-         -14 + linkLength * cos(linkAngle),
-         120 + linkLength * sin(linkAngle)
-       ],
-       radius = 35,
-     )
+  gripperCuts,
+  center = [
+    -14 + linkLength * cos(linkAngle),
+    120 + linkLength * sin(linkAngle)
+  ],
+  radius = 35,
+)
   |> extrude(length = 40, symmetric = true)
 
 mountingHole01 = circle(
-       gripperCuts,
-       center = [
-         30 + linkLength * cos(linkAngle),
-         140 + linkLength * sin(linkAngle)
-       ],
-       radius = 4.5,
-     )
+  gripperCuts,
+  center = [
+    30 + linkLength * cos(linkAngle),
+    140 + linkLength * sin(linkAngle)
+  ],
+  radius = 4.5,
+)
   |> extrude(length = 40, symmetric = true)
 mountingHole02 = circle(
-       gripperCuts,
-       center = [
-         70 + linkLength * cos(linkAngle),
-         140 + linkLength * sin(linkAngle)
-       ],
-       radius = 4.5,
-     )
+  gripperCuts,
+  center = [
+    70 + linkLength * cos(linkAngle),
+    140 + linkLength * sin(linkAngle)
+  ],
+  radius = 4.5,
+)
   |> extrude(length = 40, symmetric = true)
 
 // Remove all identified material from the gripper
 gripper = subtract(
-       [gripBaseBracket],
-       tolerance = TOL,
-       tools = [
-         union(
-           [
-             union([mountingHole01, mountingHole02], tolerance = TOL),
-             union([cutOuter, cutInner], tolerance = TOL)
-           ],
-           tolerance = TOL,
-         )
-       ],
-     )
+  [gripBaseBracket],
+  tolerance = TOL,
+  tools = [
+    union(
+      [
+        union([mountingHole01, mountingHole02], tolerance = TOL),
+        union([cutOuter, cutInner], tolerance = TOL)
+      ],
+      tolerance = TOL,
+    )
+  ],
+)
   |> appearance(color = "#0f0f0f")
 
 // Create a cotter pin to secure the linkages to the base
@@ -232,12 +232,12 @@ gripperPins = startSketchOn(offsetPlane(YZ, offset = 30 + linkLength * cos(linkA
 
 // Pattern 3 each item around the center so that the hand has 3 fingers
 [
-       bracket,
-       linkageBar,
-       gripper,
-       basePins,
-       gripperPins
-     ]
+  bracket,
+  linkageBar,
+  gripper,
+  basePins,
+  gripperPins
+]
   |> patternCircular3d(
        instances = 3,
        axis = [0, 0, 1],

@@ -202,10 +202,15 @@ export fn mirror2d(
 /// }
 /// hidden002 = hide(sketch002)
 /// region002 = region(point = [0.21mm, 1.0075mm], sketch = sketch002)
-/// extrude001 = extrude(region002, length = 1)
+/// extrude001 = extrude(region002, length = 1, tagEnd = $capEnd001)
 /// 
 /// // Do the mirroring, across an edge of some solid.
-/// shape2 = mirror3d([shape1], across = getOppositeEdge(extrude001.sketch.tags.line1))
+/// shape2 = mirror3d(
+///   [shape1],
+///   across = {
+///     sideFaces = [region002.tags.line1, capEnd001]
+///   },
+/// )
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn mirror3d(

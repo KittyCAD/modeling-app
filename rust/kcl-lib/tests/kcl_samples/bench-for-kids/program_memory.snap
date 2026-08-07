@@ -279,22 +279,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 4.32,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -441,22 +425,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 4.32,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -603,22 +571,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 4.32,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -765,22 +717,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 4.32,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -845,10 +781,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3536,
-            "end": 3543,
+            "commentStart": 3559,
+            "end": 3566,
             "moduleId": 0,
-            "start": 3536,
+            "start": 3559,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -859,10 +795,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3743,
-            "end": 3753,
+            "commentStart": 3766,
+            "end": 3776,
             "moduleId": 0,
-            "start": 3743,
+            "start": 3766,
             "type": "TagDeclarator",
             "value": "earCapEnd"
           },
@@ -896,10 +832,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 4.32,
             "tag": {
-              "commentStart": 3536,
-              "end": 3543,
+              "commentStart": 3559,
+              "end": 3566,
               "moduleId": 0,
-              "start": 3536,
+              "start": 3559,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -975,22 +911,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.8880000000000003,
-            "ty": {
-              "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "cm",
       "sectional": false
     }
@@ -1226,10 +1146,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                   ],
                   "radius": 4.32,
                   "tag": {
-                    "commentStart": 3536,
-                    "end": 3543,
+                    "commentStart": 3559,
+                    "end": 3566,
                     "moduleId": 0,
-                    "start": 3536,
+                    "start": 3559,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1337,10 +1257,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 4.32,
           "tag": {
-            "commentStart": 3536,
-            "end": 3543,
+            "commentStart": 3559,
+            "end": 3566,
             "moduleId": 0,
-            "start": 3536,
+            "start": 3559,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1439,10 +1359,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3536,
-                "end": 3543,
+                "commentStart": 3559,
+                "end": 3566,
                 "moduleId": 0,
-                "start": 3536,
+                "start": 3559,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1453,10 +1373,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3743,
-                "end": 3753,
+                "commentStart": 3766,
+                "end": 3776,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3766,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1490,10 +1410,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 3536,
-                  "end": 3543,
+                  "commentStart": 3559,
+                  "end": 3566,
                   "moduleId": 0,
-                  "start": 3536,
+                  "start": 3559,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1569,22 +1489,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.8880000000000003,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -1601,10 +1505,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3536,
-                "end": 3543,
+                "commentStart": 3559,
+                "end": 3566,
                 "moduleId": 0,
-                "start": 3536,
+                "start": 3559,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1615,10 +1519,10 @@ description: Variables in memory after executing bench-for-kids.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3743,
-                "end": 3753,
+                "commentStart": 3766,
+                "end": 3776,
                 "moduleId": 0,
-                "start": 3743,
+                "start": 3766,
                 "type": "TagDeclarator",
                 "value": "earCapEnd"
               },
@@ -1652,10 +1556,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                 ],
                 "radius": 4.32,
                 "tag": {
-                  "commentStart": 3536,
-                  "end": 3543,
+                  "commentStart": 3559,
+                  "end": 3566,
                   "moduleId": 0,
-                  "start": 3536,
+                  "start": 3559,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1731,22 +1635,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 3.8880000000000003,
-                "ty": {
-                  "type": "Default",
-                  "len": "cm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "cm",
           "sectional": false
         }
@@ -1895,22 +1783,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 4.32,
-            "ty": {
-              "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "cm",
       "sectional": false
     }
@@ -2057,22 +1929,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 4.32,
-            "ty": {
-              "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "cm",
       "sectional": false
     }
@@ -3598,10 +3454,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4549,
-            "end": 4556,
+            "commentStart": 4628,
+            "end": 4635,
             "moduleId": 0,
-            "start": 4549,
+            "start": 4628,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3612,10 +3468,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4765,
-            "end": 4778,
+            "commentStart": 4844,
+            "end": 4857,
             "moduleId": 0,
-            "start": 4765,
+            "start": 4844,
             "type": "TagDeclarator",
             "value": "tailCapStart"
           },
@@ -3649,10 +3505,10 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "radius": 3.89,
             "tag": {
-              "commentStart": 4549,
-              "end": 4556,
+              "commentStart": 4628,
+              "end": 4635,
               "moduleId": 0,
-              "start": 4549,
+              "start": 4628,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3728,22 +3584,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.4992000000000005,
-            "ty": {
-              "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "cm",
       "sectional": false
     }
@@ -3961,10 +3801,10 @@ description: Variables in memory after executing bench-for-kids.kcl
                   ],
                   "radius": 3.89,
                   "tag": {
-                    "commentStart": 4549,
-                    "end": 4556,
+                    "commentStart": 4628,
+                    "end": 4635,
                     "moduleId": 0,
-                    "start": 4549,
+                    "start": 4628,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4072,10 +3912,10 @@ description: Variables in memory after executing bench-for-kids.kcl
           ],
           "radius": 3.89,
           "tag": {
-            "commentStart": 4549,
-            "end": 4556,
+            "commentStart": 4628,
+            "end": 4635,
             "moduleId": 0,
-            "start": 4549,
+            "start": 4628,
             "type": "TagDeclarator",
             "value": "circle1"
           },

@@ -19,7 +19,14 @@ headSketch = sketch(on = XZ) {
 }
 boltProfile = region(segments = [headSketch.circle1])
 boltHead = extrude(boltProfile, length = -boltHeadLength, tagStart = $capStart001)
-  |> fillet(tags = getCommonEdge(faces = [boltProfile.tags.circle1, capStart001]), radius = 0.020)
+  |> fillet(
+       radius = 0.020,
+       edges = [
+         {
+           sideFaces = [boltProfile.tags.circle1, capStart001]
+         }
+       ],
+     )
 
 // Define the sketch of the hex pattern on the screw head
 hexSketch = sketch(on = startSketchOn(boltHead, face = START)) {

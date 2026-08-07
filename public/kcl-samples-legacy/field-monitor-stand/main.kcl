@@ -89,11 +89,11 @@ subtract = subtract(body, tools = holeExtrusions)
 // Fillet the exterior edges
 fillet(
   subtract,
-  tags = [
-    getCommonEdge(faces = [seg02, capStart001]),
-    getCommonEdge(faces = [seg02, capEnd001]),
-    getCommonEdge(faces = [seg05, capStart001]),
-    getCommonEdge(faces = [seg05, capEnd001])
-  ],
   radius = 5,
+  edges = [
+    { sideFaces = [seg02, capStart001] },
+    { sideFaces = [seg02, capEnd001] },
+    { sideFaces = [seg05, capStart001] },
+    { sideFaces = [seg05, capEnd001] }
+  ],
 )

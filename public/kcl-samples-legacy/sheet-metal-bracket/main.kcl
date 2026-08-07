@@ -58,14 +58,14 @@ bracketProfile = startSketchOn(XZ)
   |> xLine(length = -flangeLength, tag = $seg06)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
   |> close()
-  |> extrude(length = flangeExtrusion)
+  |> extrude(length = flangeExtrusion, tagStart = $capStart001, tagEnd = $capEnd001)
   |> fillet(
        radius = flangeLength / 3,
-       tags = [
-         seg03,
-         getOppositeEdge(seg03),
-         seg07,
-         getOppositeEdge(seg07)
+       edges = [
+         { sideFaces = [seg03, capStart001] },
+         { sideFaces = [seg03, capEnd001] },
+         { sideFaces = [seg07, capStart001] },
+         { sideFaces = [seg07, capEnd001] }
        ],
      )
 

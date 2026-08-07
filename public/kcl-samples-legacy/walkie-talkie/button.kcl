@@ -21,9 +21,9 @@ export fn button() {
   button = extrude(buttonSketch, length = buttonThickness)
     |> chamfer(
          length = .050,
-         tags = [
-           getNextAdjacentEdge(tag1),
-           getNextAdjacentEdge(tag2)
+         edges = [
+           { sideFaces = [tag1, tag2] },
+           { sideFaces = [tag2, tag3] }
          ],
        )
     |> appearance(color = "#ff0000")

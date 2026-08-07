@@ -62,7 +62,7 @@ startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-profileEdge = getCommonEdge(faces = [side1, top])
+profileEdge = { sideFaces = [side1, top] }
 
 gdt::profile(
   edges = [profileEdge],

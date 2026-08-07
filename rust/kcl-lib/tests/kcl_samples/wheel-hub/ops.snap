@@ -8172,6 +8172,34 @@ description: Operations executed wheel-hub.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "outerCircle",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
@@ -8181,13 +8209,6 @@ description: Operations executed wheel-hub.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Uuid",
-            "value": "[uuid]"
           },
           "sourceRange": []
         }
@@ -8221,6 +8242,34 @@ description: Operations executed wheel-hub.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "outerCircle",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capEnd001",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
@@ -8230,13 +8279,6 @@ description: Operations executed wheel-hub.kcl
               "type": "Known",
               "type": "Length"
             }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Uuid",
-            "value": "[uuid]"
           },
           "sourceRange": []
         }

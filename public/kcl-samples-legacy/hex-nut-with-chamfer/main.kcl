@@ -66,13 +66,15 @@ chamferSourceSolid = extrude(
 // Apply chamfers to both circular end edges of the auxiliary solid
 chamferedCircularSolid = chamfer(
   chamferSourceSolid,
-  tags = [
-    getCommonEdge(faces = [chamferCircleTag, chamferStartFace]),
-    // Edge at start face perimeter
-    getCommonEdge(faces = [chamferCircleTag, chamferEndFace]),
-    // Edge at end face perimeter
-  ],
   length = chamferLength,
+  edges = [
+    {
+      sideFaces = [chamferCircleTag, chamferStartFace]
+    },
+    {
+      sideFaces = [chamferCircleTag, chamferEndFace]
+    }
+  ],
 )
 
 // Through-hole solid created from the center circle (used as subtraction tool)

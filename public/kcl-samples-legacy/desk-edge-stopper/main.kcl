@@ -128,18 +128,24 @@ applyHoleCutouts = extrude(holeArray, length = -materialThickness)
 fillets = fillet(
   guardBody,
   radius = 1,
-  tags = [
-    getCommonEdge(faces = [
-      innerFaceOfTheUprofileBottom,
-      innerFaceOfTheUProfileLeftSide
-    ]),
-    getCommonEdge(faces = [
-      innerFaceOfTheUprofileRightSide,
-      innerFaceOfTheUprofileBottom
-    ]),
-    getCommonEdge(faces = [
-      innerFaceOfTheWall,
-      upperFaceOfTheUprofile
-    ])
+  edges = [
+    {
+      sideFaces = [
+        innerFaceOfTheUprofileBottom,
+        innerFaceOfTheUProfileLeftSide
+      ]
+    },
+    {
+      sideFaces = [
+        innerFaceOfTheUprofileRightSide,
+        innerFaceOfTheUprofileBottom
+      ]
+    },
+    {
+      sideFaces = [
+        innerFaceOfTheWall,
+        upperFaceOfTheUprofile
+      ]
+    }
   ],
 )

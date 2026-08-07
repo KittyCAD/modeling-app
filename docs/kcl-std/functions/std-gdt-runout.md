@@ -75,10 +75,12 @@ controlledShaft = extrude(
   tagEnd = $controlledFreeEnd,
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
-  controlledShaft.sketch.tags.upperPerimeter,
-  controlledShoulder
-])
+controlledUpperShoulderEdge = {
+  sideFaces = [
+    controlledShaft.sketch.tags.upperPerimeter,
+    controlledShoulder
+  ]
+}
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])

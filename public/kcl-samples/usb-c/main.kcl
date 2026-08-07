@@ -52,25 +52,33 @@ shellBody = extrude(
   tagStart = $capStart001,
 )
   |> fillet(
-       tags = [
-         getCommonEdge(faces = [
-           region001.tags.line3,
-           region001.tags.line4
-         ]),
-         getCommonEdge(faces = [
-           region001.tags.line3,
-           region001.tags.line1
-         ]),
-         getCommonEdge(faces = [
-           region001.tags.line2,
-           region001.tags.line1
-         ]),
-         getCommonEdge(faces = [
-           region001.tags.line4,
-           region001.tags.line2
-         ])
-       ],
        radius = shellCornerRadius,
+       edges = [
+         {
+           sideFaces = [
+             region001.tags.line3,
+             region001.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line3,
+             region001.tags.line1
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line2,
+             region001.tags.line1
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line4,
+             region001.tags.line2
+           ]
+         }
+       ],
      )
 
 // Subtract cavity from shell and set shell appearance

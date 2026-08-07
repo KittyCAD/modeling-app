@@ -144,11 +144,19 @@ bodyCut = subtract(body, tools = holeCutters, legacyMethod = true)
 // Fillet the exterior edges
 bodyFinal = fillet(
   bodyCut,
-  tags = [
-    getCommonEdge(faces = [bodyRegion.tags.line4, capStart001]),
-    getCommonEdge(faces = [bodyRegion.tags.line4, capEnd001]),
-    getCommonEdge(faces = [bodyRegion.tags.line2, capStart001]),
-    getCommonEdge(faces = [bodyRegion.tags.line2, capEnd001])
-  ],
   radius = filletRadius,
+  edges = [
+    {
+      sideFaces = [bodyRegion.tags.line4, capStart001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line4, capEnd001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line2, capStart001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line2, capEnd001]
+    }
+  ],
 )

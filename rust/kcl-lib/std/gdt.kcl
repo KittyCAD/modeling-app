@@ -239,7 +239,7 @@ export fn flatness(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// sideEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 /// gdt::straightness(edges = [sideEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -314,7 +314,7 @@ export fn straightness(
 /// }
 ///
 /// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-/// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+/// topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 /// gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -390,7 +390,7 @@ export fn circularity(
 /// }
 ///
 /// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-/// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+/// topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 /// gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -474,7 +474,7 @@ export fn cylindricity(
 /// }
 ///
 /// controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
-/// topEdge = getCommonEdge(faces = [controlledCylinder.sketch.tags.perimeter, top])
+/// topEdge = { sideFaces = [controlledCylinder.sketch.tags.perimeter, top] }
 ///
 /// gdt::datum(face = datumCylinder.sketch.tags.perimeter, name = "A", framePosition = [-14mm, 8mm], framePlane = XZ)
 /// gdt::concentricity(edges = [topEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
@@ -597,7 +597,7 @@ export fn concentricity(
 ///
 /// latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 /// latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-/// grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+/// grooveFloorFrontEdge = { sideFaces = [latchBlock.sketch.tags.grooveFloor, frontFace] }
 ///
 /// gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
 /// gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
@@ -661,10 +661,10 @@ export fn symmetry(
 ///   tagEnd = $controlledFreeEnd
 /// )
 ///
-/// controlledUpperShoulderEdge = getCommonEdge(faces = [
+/// controlledUpperShoulderEdge = { sideFaces = [
 ///   controlledShaft.sketch.tags.upperPerimeter,
 ///   controlledShoulder
-/// ])
+/// ] }
 ///
 /// datumSketch = sketch(on = YZ) {
 ///   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
@@ -904,7 +904,7 @@ export fn angularity(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+/// sideEdge = { sideFaces = [block.sketch.tags.edge2, top] }
 /// gdt::perpendicularity(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -974,7 +974,7 @@ export fn perpendicularity(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// sideEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 /// gdt::parallelism(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1044,7 +1044,7 @@ export fn parallelism(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+/// sideEdge = { sideFaces = [block.sketch.tags.edge2, top] }
 /// gdt::position(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1113,7 +1113,7 @@ export fn position(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// sideEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 /// gdt::annotation(edges = [sideEdge], annotation = "Deburr edge", framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1223,7 +1223,7 @@ export fn note(
 ///   |> close()
 ///   |> extrude(length = 5, tagEnd = $top)
 ///
-/// lengthEdge = getCommonEdge(faces = [side1, top])
+/// lengthEdge = { sideFaces = [side1, top] }
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 ///
@@ -1245,7 +1245,7 @@ export fn note(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// lengthEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1299,7 +1299,7 @@ export fn distance(
 ///   |> close()
 ///   |> extrude(length = 5, tagEnd = $top)
 ///
-/// profileEdge = getCommonEdge(faces = [side1, top])
+/// profileEdge = { sideFaces = [side1, top] }
 ///
 /// gdt::profile(
 ///   edges = [profileEdge],
@@ -1365,7 +1365,7 @@ export fn profile(
 ///   |> close()
 ///   |> extrude(length = 5, tagEnd = $top)
 ///
-/// profileEdge = getCommonEdge(faces = [side1, top])
+/// profileEdge = { sideFaces = [side1, top] }
 ///
 /// gdt::profileLine(
 ///   edges = [profileEdge],
@@ -1394,7 +1394,7 @@ export fn profile(
 /// }
 ///
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-/// profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 /// gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 @(impl = std_rust, feature_tree = true)

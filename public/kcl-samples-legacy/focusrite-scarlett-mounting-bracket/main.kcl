@@ -45,11 +45,19 @@ bracketBody = bs
   |> extrude(length = length + 2 * thk)
   |> fillet(
        radius = radius,
-       tags = [
-         getPreviousAdjacentEdge(bs.tags.edge7),
-         getPreviousAdjacentEdge(bs.tags.edge2),
-         getPreviousAdjacentEdge(bs.tags.edge3),
-         getPreviousAdjacentEdge(bs.tags.edge6)
+       edges = [
+         {
+           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+         },
+         {
+           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+         },
+         {
+           sideFaces = [bs.tags.edge2, bs.tags.edge3]
+         },
+         {
+           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+         }
        ],
      )
 
@@ -78,9 +86,9 @@ tabsR = startSketchOn(tabPlane)
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
-       tags = [
-         getNextAdjacentEdge(edge11),
-         getNextAdjacentEdge(edge12)
+       edges = [
+         { sideFaces = [edge12, edge11] },
+         { sideFaces = [edge13, edge12] }
        ],
      )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
@@ -102,9 +110,9 @@ tabsL = startSketchOn(tabPlane)
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
-       tags = [
-         getNextAdjacentEdge(edge21),
-         getNextAdjacentEdge(edge22)
+       edges = [
+         { sideFaces = [edge21, edge22] },
+         { sideFaces = [edge22, edge23] }
        ],
      )
   |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))

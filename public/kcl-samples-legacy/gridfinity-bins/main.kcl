@@ -95,11 +95,11 @@ singleBinFill = startSketchOn(XY)
   |> extrude(length = height)
   |> fillet(
        radius = firstStep,
-       tags = [
-         getNextAdjacentEdge(line000),
-         getPreviousAdjacentEdge(line000),
-         getNextAdjacentEdge(line002),
-         getPreviousAdjacentEdge(line002)
+       edges = [
+         { sideFaces = [line000, line001] },
+         { sideFaces = [line000, line003] },
+         { sideFaces = [line002, line003] },
+         { sideFaces = [line001, line002] }
        ],
      )
 
@@ -124,29 +124,29 @@ magCutout000 = startSketchOn(singleBinFill, face = START)
 
 // Create the baseplate by patterning sides
 binSides = patternLinear3d(
-       sides,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  sides,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // Create the corners of the baseplate by patterning the corners
 binCorners = patternLinear3d(
-       corners,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  corners,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // Create the fill of the bin by patterning the corners
 binFill = patternLinear3d(
-       singleBinFill,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength + binTol * 2,
-     )
+  singleBinFill,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength + binTol * 2,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // Create the top of the bin
@@ -159,11 +159,11 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
   |> extrude(length = binHeight * countBinHeight)
   |> fillet(
        radius = cornerRadius,
-       tags = [
-         getNextAdjacentEdge(line010),
-         getPreviousAdjacentEdge(line010),
-         getNextAdjacentEdge(line012),
-         getPreviousAdjacentEdge(line012)
+       edges = [
+         { sideFaces = [line010, line011] },
+         { sideFaces = [line010, line013] },
+         { sideFaces = [line012, line013] },
+         { sideFaces = [line011, line012] }
        ],
      )
   |> shell(faces = [END], thickness = binThk)

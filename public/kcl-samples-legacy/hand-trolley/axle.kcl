@@ -26,11 +26,11 @@ grate = startSketchOn(-YZ)
      )
   |> fillet(
        radius = 1,
-       tags = [
-         getCommonEdge(faces = [seg10, capStart001]),
-         getCommonEdge(faces = [seg11, capEnd001]),
-         getCommonEdge(faces = [seg10, capEnd001]),
-         getCommonEdge(faces = [seg11, capStart001])
+       edges = [
+         { sideFaces = [seg10, capStart001] },
+         { sideFaces = [seg11, capEnd001] },
+         { sideFaces = [seg10, capEnd001] },
+         { sideFaces = [seg11, capStart001] }
        ],
      )
 

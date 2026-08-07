@@ -58,10 +58,18 @@ part = rectShape
   |> extrude(length = plateThickness)
   |> fillet(
        radius = filletRadius,
-       tags = [
-         getCommonEdge(faces = [basePlateEdge3, basePlateEdge2]),
-         getCommonEdge(faces = [basePlateEdge4, basePlateEdge3]),
-         getCommonEdge(faces = [basePlateEdge4, basePlateEdge1]),
-         getCommonEdge(faces = [basePlateEdge2, basePlateEdge1])
+       edges = [
+         {
+           sideFaces = [basePlateEdge3, basePlateEdge2]
+         },
+         {
+           sideFaces = [basePlateEdge4, basePlateEdge3]
+         },
+         {
+           sideFaces = [basePlateEdge4, basePlateEdge1]
+         },
+         {
+           sideFaces = [basePlateEdge2, basePlateEdge1]
+         }
        ],
      )

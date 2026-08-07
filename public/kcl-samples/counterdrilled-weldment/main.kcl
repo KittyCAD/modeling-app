@@ -77,11 +77,31 @@ hide(plateSketch)
 plateChamfered = chamfer(
   plateTopExtrude,
   length = boltDiameter * 2,
-  tags = [
-    getNextAdjacentEdge(plateTopExtrude.sketch.tags.rightEdge),
-    getNextAdjacentEdge(plateTopExtrude.sketch.tags.bottomEdge),
-    getNextAdjacentEdge(plateTopExtrude.sketch.tags.topEdge),
-    getNextAdjacentEdge(plateTopExtrude.sketch.tags.leftEdge)
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.leftEdge,
+        plateRegion.tags.rightEdge
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.rightEdge,
+        plateRegion.tags.bottomEdge
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.topEdge,
+        plateRegion.tags.bottomEdge
+      ]
+    },
+    {
+      sideFaces = [
+        plateRegion.tags.topEdge,
+        plateRegion.tags.leftEdge
+      ]
+    }
   ],
 )
 

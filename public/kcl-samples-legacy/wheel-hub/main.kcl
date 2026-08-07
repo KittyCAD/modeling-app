@@ -54,8 +54,8 @@ mountingFlange = startSketchOn(offsetPlane(XZ, offset = hubSpacing * 3 / 4))
   |> extrude(length = hubSpacing / 4, tagStart = $capStart001, tagEnd = $capEnd001)
 
 // Chamfer the edges of the mounting flange
-chamfer001 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capStart001]), length = lugSpacing / 30)
-chamfer002 = chamfer(mountingFlange, tags = getCommonEdge(faces = [seg02, capEnd001]), length = lugSpacing / 20)
+chamfer001 = chamfer(mountingFlange, length = lugSpacing / 30, edges = [{ sideFaces = [seg02, capStart001] }])
+chamfer002 = chamfer(mountingFlange, length = lugSpacing / 20, edges = [{ sideFaces = [seg02, capEnd001] }])
 
 // Model welded bolts to secure the wheel components to the hub
 boltHead = startSketchOn(mountingFlange, face = START)

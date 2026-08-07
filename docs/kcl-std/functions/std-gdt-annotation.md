@@ -79,7 +79,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+sideEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::annotation(
   edges = [sideEdge],
   annotation = "Deburr edge",

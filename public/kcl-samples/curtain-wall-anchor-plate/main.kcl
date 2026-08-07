@@ -72,20 +72,28 @@ anchorPlateBody = extrude(anchorPlateRegion, length = slabPlateWidth)
 // Includes fillets at internal and external corners for strength and safety
 insideBendFillRegion = fillet(
   anchorPlateBody,
-  tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line5,
-    anchorPlateRegion.tags.line4
-  ]),
   radius = insideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        anchorPlateRegion.tags.line5,
+        anchorPlateRegion.tags.line4
+      ]
+    }
+  ],
 )
 
 anchorPlateOutsideFillet = fillet(
   anchorPlateBody,
-  tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line1,
-    anchorPlateRegion.tags.line2
-  ]),
   radius = outsideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        anchorPlateRegion.tags.line1,
+        anchorPlateRegion.tags.line2
+      ]
+    }
+  ],
 )
 
 // Define oblong holes for bolts, allowing positional adjustment

@@ -38,12 +38,7 @@ fn nest(cubeFace, xPos, yPos, nestSize) {
   nestFn = startSketchOn(cubeExtrude, face = cubeFace)
     |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
     |> extrude(length = -nestSize, tagStart = $capStart001)
-    |> fillet(
-         radius = nestSize * .99,
-         tags = [
-           getCommonEdge(faces = [seg01, capStart001])
-         ],
-       )
+    |> fillet(radius = nestSize * .99, edges = [{ sideFaces = [seg01, capStart001] }])
   return {  }
 }
 
