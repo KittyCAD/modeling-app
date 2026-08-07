@@ -63,6 +63,7 @@ export class Connection extends EventTarget {
   unreliableDataChannel: RTCDataChannel | undefined
   mediaStream: MediaStream | undefined
   websocket: WebSocket | undefined
+  apiCallId: string | undefined
   sdpAnswer: RTCSessionDescriptionInit | undefined
 
   // Promises to write sync code and await the multiple levels of
@@ -619,6 +620,9 @@ export class Connection extends EventTarget {
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
       sdpAnswerResolve: this.deferredSdpAnswer.resolve,
       sdpAnswerReject: this.deferredSdpAnswer.reject,
+      setApiCallId: (apiCallId) => {
+        this.apiCallId = apiCallId
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
