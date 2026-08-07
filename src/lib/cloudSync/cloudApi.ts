@@ -4,6 +4,7 @@ import {
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudSync/projectArchive'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CloudSyncConfig,
   ProjectArchiveFile,
@@ -45,7 +46,7 @@ async function cloudFetch(
     headers.set('Authorization', `Bearer ${config.token}`)
   }
 
-  const response = await fetch(`${baseUrl}${targetPath}`, {
+  const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {
     ...init,
     headers,
     credentials: 'include',
