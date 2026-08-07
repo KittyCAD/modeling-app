@@ -76,12 +76,18 @@ function readConfiguredProjectLibraryEntriesInvalidation() {
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined,
-  libraryId?: string
+  library?: Pick<ProjectLibrary, 'id' | 'path' | 'type'>
 ): HomeProjectEntryContribution[] {
   return (
     projects?.map((project) => ({
       ...homeProjectEntryFromProject(project),
-      libraryId,
+      ...(library
+        ? {
+            libraryId: library.id,
+            libraryPath: library.path,
+            libraryType: library.type,
+          }
+        : {}),
     })) ?? []
   )
 }
@@ -142,7 +148,24 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     }
 
     const libraryTypes = ctx.valueSpecs.get(projectLibraryTypesValueSpec)
-    for (const library of getConfiguredProjectLibraries()) {
+    const configuredLibraries = getConfiguredProjectLibraries()
+    const orderedLibraries =
+      project.libraryType !== undefined
+        ? [
+            ...configuredLibraries.filter(
+              (library) =>
+                projectLibraryIds.has(library.id) &&
+                library.type === project.libraryType
+            ),
+            ...configuredLibraries.filter(
+              (library) =>
+                projectLibraryIds.has(library.id) &&
+                library.type !== project.libraryType
+            ),
+          ]
+        : configuredLibraries
+
+    for (const library of orderedLibraries) {
       if (!projectLibraryIds.has(library.id)) {
         continue
       }
@@ -456,10 +479,11 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         const context = snapshot.context
         const projects = context.folders
         if (projects !== undefined) {
-          entries.value = localHomeProjectEntriesFromProjects(
-            projects,
-            DEFAULT_PROJECT_LIBRARY_ID
-          )
+          entries.value = localHomeProjectEntriesFromProjects(projects, {
+            id: DEFAULT_PROJECT_LIBRARY_ID,
+            path: context.projectDirectoryPath,
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          })
         }
 
         if (
@@ -573,7 +597,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               })
             }
 
-            return localHomeProjectEntriesFromProjects(projects, library.id)
+            return localHomeProjectEntriesFromProjects(projects, library)
           },
           operations: {
             createProject: {
@@ -667,15 +691,15 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   return Promise.reject(new Error('Cloud sync is not enabled.'))
                 }
 
-                await fsZds.rm(project.localProjectPath, {
-                  recursive: true,
-                })
-                // Individually synced directory projects follow the same
-                // delete-everywhere policy as cloud-library projects.
                 if (project.remoteProjectId) {
-                  await cloudSyncActions?.deleteRemoteProject(
-                    project.remoteProjectId
+                  await cloudSyncActions?.deleteLocalProjectRealizations(
+                    project.remoteProjectId,
+                    project.localProjectPath
                   )
+                } else {
+                  await fsZds.rm(project.localProjectPath, {
+                    recursive: true,
+                  })
                 }
                 refreshLocalProjectEntries()
               },
