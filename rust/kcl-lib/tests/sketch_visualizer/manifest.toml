@@ -18,6 +18,25 @@ height = 240
 padding = 24
 
 [[cases]]
+name = "tangential_fillet_direction"
+input = "tangential_fillet_direction/input.kcl"
+sketch = "profile"
+
+[[cases.visualizations]]
+name = "dof"
+color-scheme = "dof"
+width = 360
+height = 300
+padding = 24
+
+[[cases.visualizations]]
+name = "ids"
+color-scheme = "ids"
+width = 360
+height = 300
+padding = 24
+
+[[cases]]
 name = "sample_tangent_line_circle"
 input = "../tangent_line_circle/input.kcl"
 sketch = "s"

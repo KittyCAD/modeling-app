@@ -1,0 +1,656 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "profile"
+  },
+  "bounds": {
+    "min": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "max": {
+      "x": 7.0,
+      "y": 4.0
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "colorScheme": "ids",
+  "constraintStatus": {
+    "name": "",
+    "status": "UnderConstrained",
+    "free_count": 6,
+    "conflict_count": 0,
+    "total_count": 6
+  },
+  "dof": {
+    "default": "Free",
+    "points": {
+      "fixed": [
+        12,
+        17
+      ]
+    },
+    "segments": {}
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 1.0,
+        "y": 4.0
+      },
+      "owner": 4,
+      "contactGroup": 0,
+      "coincidentGroup": 0
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 6.0,
+        "y": 4.0
+      },
+      "owner": 4,
+      "contactGroup": 1,
+      "coincidentGroup": 1
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 7.0,
+        "y": 3.0
+      },
+      "owner": 7,
+      "contactGroup": 2,
+      "coincidentGroup": 2
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 7.0,
+        "y": 0.0
+      },
+      "owner": 7,
+      "contactGroup": 3,
+      "coincidentGroup": 3
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 7.0,
+        "y": 0.0
+      },
+      "owner": 10,
+      "contactGroup": 3,
+      "coincidentGroup": 3
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 10,
+      "contactGroup": 4,
+      "coincidentGroup": 4
+    },
+    {
+      "id": 11,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 13,
+      "contactGroup": 4,
+      "coincidentGroup": 4
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 0.0,
+        "y": 3.0
+      },
+      "owner": 13,
+      "contactGroup": 5,
+      "coincidentGroup": 5
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 1.0,
+        "y": 4.0
+      },
+      "owner": 19,
+      "contactGroup": 0,
+      "coincidentGroup": 0
+    },
+    {
+      "id": 17,
+      "position": {
+        "x": 0.0,
+        "y": 3.0
+      },
+      "owner": 19,
+      "contactGroup": 5,
+      "coincidentGroup": 5
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 1.0,
+        "y": 3.0
+      },
+      "owner": 19,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 6.0,
+        "y": 4.0
+      },
+      "owner": 27,
+      "contactGroup": 1,
+      "coincidentGroup": 1
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 7.0,
+        "y": 3.0
+      },
+      "owner": 27,
+      "contactGroup": 2,
+      "coincidentGroup": 2
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 6.0,
+        "y": 3.0
+      },
+      "owner": 27,
+      "contactGroup": null,
+      "coincidentGroup": null
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "componentId": 0
+    },
+    {
+      "id": 7,
+      "kind": "line",
+      "pointIds": [
+        5,
+        6
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false,
+      "componentId": 0
+    },
+    {
+      "id": 10,
+      "kind": "line",
+      "pointIds": [
+        8,
+        9
+      ],
+      "endpointIds": [
+        8,
+        9
+      ],
+      "construction": false,
+      "componentId": 0
+    },
+    {
+      "id": 13,
+      "kind": "line",
+      "pointIds": [
+        11,
+        12
+      ],
+      "endpointIds": [
+        11,
+        12
+      ],
+      "construction": false,
+      "componentId": 0
+    },
+    {
+      "id": 19,
+      "kind": "arc",
+      "pointIds": [
+        16,
+        17,
+        18
+      ],
+      "endpointIds": [
+        16,
+        17
+      ],
+      "construction": false,
+      "componentId": 0
+    },
+    {
+      "id": 27,
+      "kind": "arc",
+      "pointIds": [
+        24,
+        25,
+        26
+      ],
+      "endpointIds": [
+        24,
+        25
+      ],
+      "construction": false,
+      "componentId": 0
+    }
+  ],
+  "constraints": [
+    {
+      "id": 14,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 6
+        },
+        {
+          "type": "object",
+          "id": 8
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 9
+        },
+        {
+          "type": "object",
+          "id": 11
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 16
+        },
+        {
+          "type": "object",
+          "id": 2
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 17
+        },
+        {
+          "type": "object",
+          "id": 12
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 19
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 13
+        },
+        {
+          "type": "object",
+          "id": 19
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 24
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 25
+        },
+        {
+          "type": "object",
+          "id": 5
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 27
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 27
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 10
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 10
+        },
+        {
+          "type": "object",
+          "id": 13
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "kind": "horizontal",
+      "targets": [
+        {
+          "type": "object",
+          "id": 9
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "kind": "vertical",
+      "targets": [
+        {
+          "type": "object",
+          "id": 12
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "kind": "equal_radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 19
+        },
+        {
+          "type": "object",
+          "id": 27
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "kind": "radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 19
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 8
+        },
+        {
+          "type": "object",
+          "id": 9
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 10
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 11
+        },
+        {
+          "type": "object",
+          "id": 12
+        }
+      ]
+    }
+  ],
+  "idColorMap": {
+    "4": "#ede855",
+    "7": "#d94e9a",
+    "10": "#4f6ed1",
+    "13": "#35e8d9",
+    "19": "#e39e36",
+    "27": "#9c38e8"
+  },
+  "contactGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        2,
+        16
+      ]
+    },
+    {
+      "id": 1,
+      "pointIds": [
+        3,
+        24
+      ]
+    },
+    {
+      "id": 2,
+      "pointIds": [
+        5,
+        25
+      ]
+    },
+    {
+      "id": 3,
+      "pointIds": [
+        6,
+        8
+      ]
+    },
+    {
+      "id": 4,
+      "pointIds": [
+        9,
+        11
+      ]
+    },
+    {
+      "id": 5,
+      "pointIds": [
+        12,
+        17
+      ]
+    }
+  ],
+  "coincidentGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        2,
+        16
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 1,
+      "pointIds": [
+        3,
+        24
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 2,
+      "pointIds": [
+        5,
+        25
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 3,
+      "pointIds": [
+        6,
+        8
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 4,
+      "pointIds": [
+        9,
+        11
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 5,
+      "pointIds": [
+        12,
+        17
+      ],
+      "includesOrigin": false
+    }
+  ],
+  "connectedComponents": [
+    {
+      "id": 0,
+      "segmentIds": [
+        4,
+        7,
+        10,
+        13,
+        19,
+        27
+      ]
+    }
+  ],
+  "openEndpoints": [],
+  "closednessHints": [
+    {
+      "componentId": 0,
+      "isClosed": true,
+      "openEndpointIds": []
+    }
+  ],
+  "warnings": []
+}

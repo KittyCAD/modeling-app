@@ -1,0 +1,35 @@
+profile = sketch(on = XY) {
+  top = line(start = [var 1mm, var 4mm], end = [var 6mm, var 4mm])
+  right = line(start = [var 7mm, var 3mm], end = [var 7mm, var 0mm])
+  bottom = line(start = [var 7mm, var 0mm], end = [var 0mm, var 0mm])
+  left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
+
+  coincident([right.end, bottom.start])
+  coincident([bottom.end, left.start])
+
+  // This is the usual tangential fillet: the default CCW arc is the short,
+  // smooth quarter turn between the top edge and the left wall.
+  left_fillet = arc(start = [var 1mm, var 4mm], end = [var 0mm, var 3mm], center = [var 1mm, var 3mm])
+  coincident([left_fillet.start, top.start])
+  coincident([left_fillet.end, left.end])
+  tangent([top, left_fillet])
+  tangent([left, left_fillet])
+
+  // Same tangent intent, but this start/end/center ordering makes the default
+  // CCW arc go the long way around the circle, producing the spiky right corner.
+  right_fillet_wrong_way = arc(start = [var 6mm, var 4mm], end = [var 7mm, var 3mm], center = [var 6mm, var 3mm])
+  coincident([right_fillet_wrong_way.start, top.end])
+  coincident([right_fillet_wrong_way.end, right.start])
+  tangent([top, right_fillet_wrong_way])
+  tangent([right, right_fillet_wrong_way])
+
+  perpendicular([right, bottom])
+  perpendicular([bottom, left])
+  horizontal([bottom.end, ORIGIN])
+  vertical([left.end, ORIGIN])
+  equalRadius([left_fillet, right_fillet_wrong_way])
+  radius(left_fillet) == 1mm
+  distance([bottom.start, bottom.end]) == 7mm
+  distance([bottom, top]) == 4mm
+  distance([left.start, left.end]) == 3mm
+}
