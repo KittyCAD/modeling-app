@@ -13,11 +13,11 @@ use super::connectivity::contact_groups;
 use super::connectivity::point_group_index;
 use super::constraints::constraint_kind_name;
 use super::constraints::constraint_targets;
+use super::mode::ModeBehavior;
+use super::mode::ModeSidecarContext;
 use super::model::InternalPoint;
 use super::model::InternalPolyline;
 use super::model::InternalSegment;
-use super::render::FREE_COLOR;
-use super::render::dof_color;
 use super::render::id_color;
 use super::render::render_png;
 use super::sampling::ARC_SAMPLE_COUNT;
@@ -35,10 +35,7 @@ use super::types::SketchVisualization;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationConstraintData;
 use super::types::SketchVisualizationData;
-use super::types::SketchVisualizationDofBuckets;
-use super::types::SketchVisualizationDofData;
 use super::types::SketchVisualizationError;
-use super::types::SketchVisualizationMode;
 use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
 use super::types::SketchVisualizationPointData;
@@ -46,7 +43,6 @@ use super::types::SketchVisualizationPointGroup;
 use super::types::SketchVisualizationSegmentData;
 use super::types::SketchVisualizationSegmentKind;
 use super::types::SketchVisualizationSketchInfo;
-use crate::execution::sketch_constraint_status_for_sketch;
 use crate::front::ArcDirection;
 use crate::front::Freedom;
 use crate::front::Object;
@@ -266,8 +262,6 @@ impl<'a> Extraction<'a> {
 
     pub(super) fn finish(self) -> Result<SketchVisualization, SketchVisualizationError> {
         let mode = self.options.mode;
-        let include_dof_sidecar = mode.emits_dof_sidecar();
-        let include_ids_sidecar = mode.emits_id_sidecar();
         let id_color_map = self.id_color_map();
         let contact_groups = contact_groups(&self.points, self.options.contact_tolerance);
         let coincident_groups = coincident_groups(&self.constraints, &self.points);
@@ -287,27 +281,17 @@ impl<'a> Extraction<'a> {
         // Build all machine-readable sidecar facts before rendering. The PNG and
         // JSON must agree on colors and bounds, so both are derived from the same
         // internal point/segment maps in this finalization step.
-        let rendered_colors = self.rendered_colors(&id_color_map);
+        let rendered_colors = mode.rendered_colors(&self.primary_segments, &id_color_map, self.options.theme);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());
         for segment in self.primary_segments.values() {
-            let component_id = component_result
-                .segment_to_component
-                .get(&segment.id)
-                .copied()
-                .unwrap_or_default();
             segment_data.push(SketchVisualizationSegmentData {
                 id: segment.id,
                 kind: segment.kind,
                 point_ids: segment.point_ids.clone(),
                 endpoint_ids: segment.endpoint_ids.clone(),
                 construction: segment.construction,
-                component_id: include_dof_sidecar.then_some(component_id),
-                rendered_color: mode.emits_segment_render_colors().then(|| {
-                    rendered_colors
-                        .get(&segment.id)
-                        .cloned()
-                        .unwrap_or_else(|| FREE_COLOR.to_hex_string())
-                }),
+                component_id: mode.segment_component_id(segment.id, &component_result),
+                rendered_color: mode.segment_rendered_color(segment.id, &rendered_colors),
             });
         }
 
@@ -317,42 +301,46 @@ impl<'a> Extraction<'a> {
                 id: point.id,
                 position: point.position,
                 owner: point.owner,
-                contact_group: include_dof_sidecar
-                    .then(|| point_contact_group.get(&point.id).copied())
-                    .flatten(),
-                coincident_group: include_dof_sidecar
-                    .then(|| point_coincident_group.get(&point.id).copied())
-                    .flatten(),
+                contact_group: mode.point_contact_group(point.id, &point_contact_group),
+                coincident_group: mode.point_coincident_group(point.id, &point_coincident_group),
             });
         }
 
         let bounds = self.bounds();
-        let constraint_status = include_dof_sidecar
-            .then(|| sketch_constraint_status_for_sketch(self.scene_objects, self.sketch_object))
-            .flatten();
-        let dof = include_dof_sidecar.then(|| self.dof_data());
-        let id_color_map = include_ids_sidecar.then_some(id_color_map);
-        let data = SketchVisualizationData {
+        let mut data = SketchVisualizationData {
             sketch: SketchVisualizationSketchInfo {
                 id: self.sketch_object.id.0,
                 name: non_empty_name(&self.sketch_object.label).or(self.selected_name),
             },
             bounds,
-            units: self.units.into_iter().collect(),
+            units: self.units.iter().cloned().collect(),
             mode,
-            constraint_status,
-            dof,
+            constraint_status: None,
+            dof: None,
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
-            id_color_map,
-            contact_groups: include_dof_sidecar.then_some(contact_groups),
-            coincident_groups: include_dof_sidecar.then_some(coincident_groups),
-            connected_components: include_dof_sidecar.then_some(component_result.components),
-            open_endpoints: include_dof_sidecar.then_some(component_result.open_endpoints),
-            closedness_hints: include_dof_sidecar.then_some(component_result.closedness_hints),
+            id_color_map: None,
+            contact_groups: None,
+            coincident_groups: None,
+            connected_components: None,
+            open_endpoints: None,
+            closedness_hints: None,
             warnings: self.warnings.clone(),
         };
+        mode.attach_sidecar(
+            &mut data,
+            ModeSidecarContext {
+                scene_objects: self.scene_objects,
+                sketch_object: self.sketch_object,
+                points: &self.points,
+                segments: &self.primary_segments,
+                id_color_map: &id_color_map,
+                contact_groups: &contact_groups,
+                coincident_groups: &coincident_groups,
+                component_result: &component_result,
+            },
+        );
 
         let png = render_png(
             &self.primary_segments,
@@ -365,24 +353,6 @@ impl<'a> Extraction<'a> {
         )?;
 
         Ok(SketchVisualization { png, data })
-    }
-
-    fn dof_data(&self) -> SketchVisualizationDofData {
-        let mut points = SketchVisualizationDofBuckets::default();
-        for point in self.points.values() {
-            points.insert(point.id, Some(point.freedom));
-        }
-
-        let mut segments = SketchVisualizationDofBuckets::default();
-        for segment in self.primary_segments.values() {
-            segments.insert(segment.id, segment.freedom);
-        }
-
-        SketchVisualizationDofData {
-            default_state: Freedom::Free,
-            points,
-            segments,
-        }
     }
 
     fn insert_point(&mut self, id: ObjectId, point: &crate::front::Point) -> Result<(), SketchVisualizationError> {
@@ -434,22 +404,6 @@ impl<'a> Extraction<'a> {
         self.primary_segments
             .keys()
             .map(|id| (*id, id_color(*id).to_hex_string()))
-            .collect()
-    }
-
-    fn rendered_colors(&self, id_color_map: &BTreeMap<usize, String>) -> BTreeMap<usize, String> {
-        self.primary_segments
-            .values()
-            .map(|segment| {
-                let color = match self.options.mode {
-                    SketchVisualizationMode::Ids => id_color_map
-                        .get(&segment.id)
-                        .cloned()
-                        .unwrap_or_else(|| id_color(segment.id).to_hex_string()),
-                    SketchVisualizationMode::Dof => dof_color(segment.freedom, self.options.theme).to_hex_string(),
-                };
-                (segment.id, color)
-            })
             .collect()
     }
 

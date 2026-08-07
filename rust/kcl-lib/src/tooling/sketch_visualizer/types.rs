@@ -37,20 +37,6 @@ pub enum SketchVisualizationMode {
     Ids,
 }
 
-impl SketchVisualizationMode {
-    pub(super) fn emits_dof_sidecar(self) -> bool {
-        self == Self::Dof
-    }
-
-    pub(super) fn emits_id_sidecar(self) -> bool {
-        self == Self::Ids
-    }
-
-    pub(super) fn emits_segment_render_colors(self) -> bool {
-        self != Self::Ids
-    }
-}
-
 /// The static visualization theme.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
