@@ -108,10 +108,12 @@ export function addShell({
   let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
 
-  const enginePrimitives =
-    facesExprs.length === 0
-      ? getPrimitiveFaceSelectionsFromSelection(faces)
-      : []
+  const enginePrimitives = getPrimitiveFaceSelectionsFromSelection({
+    graphSelections: faces.graphSelections.filter(
+      (selection) => !resolveToCodeRef(selection, artifactGraph)
+    ),
+    otherSelections: faces.otherSelections,
+  })
   if (enginePrimitives.length > 0) {
     const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
       enginePrimitives,
@@ -120,7 +122,7 @@ export function addShell({
       wasmInstance,
     })
     if (err(result)) return result
-    solidsExprs = deduplicateFaceExprs(result.solidsExprs)
+    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
     facesExprs.push(...result.faceExprs)
   }
 
