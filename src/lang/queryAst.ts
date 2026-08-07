@@ -22,6 +22,7 @@ import {
   getPatternArtifactForCopyId,
   getPatternSelectionIndex,
 } from '@src/lang/std/artifactGraph'
+import { toUtf16 } from '@src/lang/errors'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
@@ -1743,9 +1744,41 @@ export function getSketchVariableNameForSegment(
 // Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
+function getPatternSourceFromOpArg(
+  artifactId: string,
+  opArg: OpArg,
+  artifactGraph: ArtifactGraph,
+  code?: string
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  if (!code) return undefined
+
+  const argText = code.slice(
+    ...opArg.sourceRange.map((offset) => toUtf16(offset, code))
+  )
+  return [...artifactGraph.values()].findLast(
+    (candidate): candidate is Extract<Artifact, { type: 'pattern' }> => {
+      if (candidate.type !== 'pattern' || candidate.sourceId !== artifactId) {
+        return false
+      }
+
+      const callStart = toUtf16(candidate.codeRef.range[0], code)
+      const declarationPrefix = code.slice(0, callStart)
+      const declaredName = declarationPrefix.match(
+        /([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/
+      )?.[1]
+      return declaredName
+        ? new RegExp(
+            `(?:^|[^A-Za-z0-9_])${declaredName}\\s*\\[\\s*0\\s*\\]`
+          ).test(argText)
+        : false
+    }
+  )
+}
+
 export function retrieveSelectionsFromOpArg(
   opArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code?: string
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
@@ -1785,7 +1818,14 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
+    const sourcePattern = getPatternSourceFromOpArg(
+      artifactId,
+      opArg,
+      artifactGraph,
+      code
+    )
     let artifact =
+      sourcePattern ??
       getPatternArtifactForCopyId(artifactId, artifactGraph) ??
       artifactGraph.get(artifactId)
     if (!artifact) {

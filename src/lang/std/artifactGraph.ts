@@ -195,6 +195,74 @@ export function getPatternSelectionIndex(
   return copyIndex + 1
 }
 
+function getPatternCopyBodyId(
+  selection: Selection & { artifact: Artifact },
+  artifactGraph: ArtifactGraph
+): ArtifactId | undefined {
+  const { artifact } = selection
+
+  if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+    return artifact.id
+  }
+  if (artifact.type === 'path') {
+    return artifact.sweepId ?? artifact.id
+  }
+  if (
+    artifact.type === 'wall' ||
+    artifact.type === 'cap' ||
+    artifact.type === 'sweepEdge'
+  ) {
+    return artifact.sweepId
+  }
+  if (artifact.type === 'primitiveFace' || artifact.type === 'primitiveEdge') {
+    return artifact.solidId
+  }
+  if (artifact.type === 'segment') {
+    const path = artifactGraph.get(artifact.pathId)
+    return path?.type === 'path' ? (path.sweepId ?? path.id) : undefined
+  }
+  if (artifact.type === 'edgeCut') {
+    const sweep = getSweepArtifactFromSelection(selection, artifactGraph)
+    return err(sweep) ? undefined : sweep.id
+  }
+
+  return selection.engineEntityId ?? artifact.id
+}
+
+function getPatternBodySelection(
+  selection: Selection & { artifact: Artifact },
+  artifactGraph: ArtifactGraph
+): Selection | undefined | Error {
+  if (selection.artifact.type === 'pattern') {
+    return selection
+  }
+
+  const bodyId = getPatternCopyBodyId(selection, artifactGraph)
+  if (!bodyId) return undefined
+
+  const pattern = getPatternArtifactForCopyId(bodyId, artifactGraph)
+  if (!pattern || !pattern.copyIds.includes(bodyId)) return undefined
+
+  const patternIndex = getPatternSelectionIndex({
+    artifact: pattern,
+    codeRef: pattern.codeRef,
+    engineEntityId: bodyId,
+  })
+  if (patternIndex instanceof Error || patternIndex === undefined) {
+    return patternIndex instanceof Error
+      ? patternIndex
+      : new Error('Could not resolve the selected pattern instance')
+  }
+
+  return {
+    ...selection,
+    artifact: pattern,
+    codeRef: pattern.codeRef,
+    engineEntityId: bodyId,
+    patternIndex,
+  }
+}
+
 export function expandPlane(
   plane: PlaneArtifact,
   artifactGraph: ArtifactGraph
@@ -992,24 +1060,36 @@ export function coerceSelectionsToBody(
       continue
     }
 
+    const patternBodySelection = getPatternBodySelection(
+      selection as Selection & { artifact: Artifact },
+      artifactGraph
+    )
+    if (patternBodySelection instanceof Error) {
+      return patternBodySelection
+    }
+    const bodySelection = patternBodySelection ?? selection
+
     // If it's already a body type, use it directly
-    if (isBodyArtifactType(selection.artifact.type)) {
-      let bodyKey = selection.artifact.id
-      if (selection.artifact.type === 'pattern') {
+    if (
+      bodySelection.artifact &&
+      isBodyArtifactType(bodySelection.artifact.type)
+    ) {
+      let bodyKey = bodySelection.artifact.id
+      if (bodySelection.artifact.type === 'pattern') {
         const patternIndex = getPatternSelectionIndex({
-          ...selection,
-          artifact: selection.artifact,
+          ...bodySelection,
+          artifact: bodySelection.artifact,
         })
         if (patternIndex instanceof Error) {
           return patternIndex
         }
-        bodyKey = `pattern:${selection.artifact.id}:${
+        bodyKey = `pattern:${bodySelection.artifact.id}:${
           patternIndex === undefined ? 'all' : `index:${patternIndex}`
         }`
       }
       if (!seenBodyKeys.has(bodyKey)) {
         seenBodyKeys.add(bodyKey)
-        bodySelections.push(selection)
+        bodySelections.push(bodySelection)
       }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts
