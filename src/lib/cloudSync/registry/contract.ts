@@ -4,6 +4,7 @@ import type {
   CloudSyncConfig,
   CloudSyncConflictResolution,
   CloudSyncLocalProject,
+  CloudSyncOpenedProject,
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
@@ -16,7 +17,7 @@ export type CloudSyncRegistryService = {
   configure: (config: CloudSyncConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
-  setProjectScope: (projectPath?: string) => void
+  setOpenedProject: (project?: CloudSyncOpenedProject) => void
   /**
    * Explicitly enroll a local-only project in cloud sync, even when the global
    * policy is not auto-enrolling existing local projects.
@@ -27,6 +28,21 @@ export type CloudSyncRegistryService = {
    * The local project is marked excluded so later edits do not recreate it.
    */
   disconnectProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Delete the remote cloud project identified by `remoteProjectId`.
+   * Library delete operations with local materializations must remove their
+   * local project directory as well before reporting success.
+   */
+  deleteRemoteProject: (remoteProjectId: string) => Promise<void>
+  /**
+   * Remove the selected local materialization of a cloud project plus exact
+   * duplicate local copies. Divergent local copies are detached from the cloud
+   * project instead of being silently deleted.
+   */
+  deleteLocalProjectRealizations: (
+    remoteProjectId: string,
+    selectedProjectPath: string
+  ) => Promise<void>
   /**
    * Materialize a remote cloud project into the local library directory the
    * caller is opening it from. `targetProjectDirectoryPath` is the resolved
@@ -52,7 +68,8 @@ export type CloudSyncRegistryService = {
   ) => number | null
   resolveProjectConflict: (
     projectPath: string,
-    resolution: CloudSyncConflictResolution
+    resolution: CloudSyncConflictResolution,
+    reviewedRemoteRevision?: CloudSyncProjectMetadata['remoteRevision']
   ) => Promise<void>
 }
 

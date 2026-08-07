@@ -1,6 +1,22 @@
 enum-variant-size-threshold = 48
 
+disallowed-types = [
+  { path = "ezpz::datatypes::inputs::DatumCircularArc", reason = "The solver sweeps arcs counterclockwise from start to end, and KCL arcs must have their declared point order resolved first. Build arc constraints through crate::execution::SolverArc instead." },
+]
+
 disallowed-methods = [
+  # All of the solver's arc constraint constructors are banned outside
+  # crate::execution::SolverArc. A DatumCircularArc can still be constructed
+  # fully-qualified without tripping the disallowed-types lint above (that
+  # lint only sees imports and type positions), but it's useless without
+  # these constructors, which close the loop.
+  { path = "ezpz::constraints::Constraint::Arc", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::ArcRadius", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::PointArcCoincident", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::ArcLength", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::ArcAngle", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::point_bisects_arc", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
+  { path = "ezpz::constraints::Constraint::circle_arc_coincident", reason = "Build arc constraints through crate::execution::SolverArc so the arc's declared point order is resolved to the solver's counterclockwise convention." },
   { path = "f64::hypot", reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f64::min",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},
   { path = "f64::max",   reason = "Use trig functions from libm crate instead, to ensure FP math works the same across OSs and platforms."},

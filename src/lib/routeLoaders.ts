@@ -5,17 +5,13 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import {
-  getInitialDefaultDir,
-  getProjectInfo,
-  readAppSettingsFile,
-} from '@src/lib/desktop'
+import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
   getParentAbsolutePath,
-  getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
   PATHS,
+  parseProjectRoute,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
@@ -199,30 +195,27 @@ export const fileLoader =
       return redirect(PATHS.HOME)
     }
 
-    const heuristicProjectFilePath = params.id
-      ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
-      : undefined
-
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    const settings = await loadRouteSettings(
-      app,
-      wasmInstance,
-      heuristicProjectFilePath
-    )
-
-    const projectPathData = await getProjectMetaByRouteId(
-      readAppSettingsFile,
-      wasmInstance,
-      params.id,
-      settings.configuration
-    )
+    // Resolve the project root before loading project settings. Loading project
+    // settings from a selected file's parent folder creates project.toml in
+    // nested folders and makes them look like project roots.
+    const appSettings = await loadRouteSettings(app, wasmInstance)
+    const projectPathData = params.id
+      ? parseProjectRoute(appSettings.configuration, params.id)
+      : undefined
 
     if (!projectPathData) {
       return Promise.reject(
         new Error('bug: projectPathData undefined, early return')
       )
     }
+
+    const settings = await loadRouteSettings(
+      app,
+      wasmInstance,
+      projectPathData.projectPath
+    )
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData

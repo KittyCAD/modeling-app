@@ -5,7 +5,7 @@ export const kclHighlight = styleTags({
   ImportItemAs: t.definitionKeyword,
   ImportFrom: t.moduleKeyword,
   sketch: t.function(t.variableName),
-  'fn var let const': t.definitionKeyword,
+  'fn var let const type': t.definitionKeyword,
   'if else': t.controlKeyword,
   return: t.controlKeyword,
   'true false': t.bool,
@@ -33,6 +33,10 @@ export const kclHighlight = styleTags({
   'LabeledArgument/ArgumentLabel': t.attributeName,
   TagDeclarator: t.tagName,
   PrimitiveType: t.typeName,
+  // An enum variant is a value, not a type: `Color::Red` appears where values
+  // appear. Modifying `variableName` rather than using a tag of its own means it
+  // inherits the theme's variable colour instead of rendering unstyled.
+  EnumVariant: t.constant(t.variableName),
   '( )': t.paren,
   '{ }': t.brace,
   '[ ]': t.bracket,

@@ -58,6 +58,7 @@ export function BillingDialog(props: BillingDialogProps) {
   const hasUnlimited = props.balance === Number.POSITIVE_INFINITY
   const totalDue = props.userPaymentBalance?.total_due ?? 0
   const hasTotalDue = Number(totalDue) > 0
+  const totalDueString = Number(totalDue).toFixed(2)
 
   if (!hasUnlimited && hasTotalDue) {
     return (
@@ -76,7 +77,7 @@ export function BillingDialog(props: BillingDialogProps) {
             </div>
             <div className="text-chalkboard-90">
               To continue using Zoo's services, you must clear an unpaid total
-              of <span className="font-bold">${totalDue}</span>.
+              of <span className="font-bold">${totalDueString}</span>.
             </div>
           </div>
           <a

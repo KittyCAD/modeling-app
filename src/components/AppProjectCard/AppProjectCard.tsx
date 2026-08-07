@@ -1,15 +1,16 @@
 import {
-  ProjectCard as UiProjectCard,
   type ProjectCardClassNames,
+  ProjectCard as UiProjectCard,
 } from '@kittycad/ui-components'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type {
   HomeProjectActionsService,
@@ -20,7 +21,6 @@ import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
-import Tooltip from '@src/components/Tooltip'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -30,6 +30,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   showCloudSyncUi?: boolean
   showDetails?: boolean
   showSourceStatusBadges?: boolean
+  onMoveToLibrary?: (project: HomeProjectEntry) => void
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -137,6 +138,7 @@ function AppProjectCard({
   showCloudSyncUi = true,
   showDetails = true,
   showSourceStatusBadges = true,
+  onMoveToLibrary,
   ...props
 }: AppProjectCardProps) {
   const navigate = useNavigate()
@@ -231,9 +233,13 @@ function AppProjectCard({
   }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
+  const canDuplicate = projectActions.canDuplicate(project)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project)
+  const canMoveToLibrary = Boolean(
+    onMoveToLibrary && projectActions.canMoveToLibrary(project)
+  )
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
@@ -351,6 +357,17 @@ function AppProjectCard({
           menuTargetElement={menuTargetElement}
           items={[
             <ContextMenuItem
+              key="duplicate"
+              icon="clone"
+              disabled={!canDuplicate}
+              data-testid="project-card-context-duplicate"
+              onClick={() => {
+                void projectActions.duplicate(project).catch(trap)
+              }}
+            >
+              Duplicate project
+            </ContextMenuItem>,
+            <ContextMenuItem
               key="rename"
               icon="sketch"
               disabled={!canRename}
@@ -358,6 +375,15 @@ function AppProjectCard({
               onClick={() => setIsEditing(true)}
             >
               Rename project
+            </ContextMenuItem>,
+            <ContextMenuItem
+              key="move-to-library"
+              icon="folder"
+              disabled={!canMoveToLibrary}
+              data-testid="project-card-context-move-to-library"
+              onClick={() => onMoveToLibrary?.(project)}
+            >
+              Move to library
             </ContextMenuItem>,
             <ContextMenuItem
               key="delete"

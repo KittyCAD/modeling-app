@@ -1,0 +1,20 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+pathSketch = sketch(on = XZ) {
+  path = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
+}
+
+sweep(
+  // The harness resends this raw command to model the second profile in
+  // sweep([sharedRegion, sharedRegion], ...) below KCL's liveness check.
+  sharedRegion,
+  path = [pathSketch.path],
+  translateProfileToPath = true,
+  orientProfilePerpendicular = true,
+  version = 2,
+)

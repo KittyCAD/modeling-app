@@ -37,7 +37,7 @@ import Axis3d from "std::types"
 /// example = extrude(sketch001, length = 10)
 /// ```
 ///
-/// ```kcl,legacySketch
+/// ```kcl,no3d,legacySketch
 /// // Mirror a un-closed sketch across an edge.
 /// helper001 = startSketchOn(XZ)
 ///  |> startProfile(at = [0, 0])
@@ -216,7 +216,7 @@ export fn mirror3d(
   across: Edge | Plane | Axis3d | Segment | any,
 ): [Solid; 1+] {}
 
-/// Move a solid or a sketch.
+/// Move a solid, a sketch, or a helix.
 ///
 /// This is really useful for assembling parts together. You can create a part
 /// and then move it to the correct location.
@@ -384,8 +384,8 @@ export fn mirror3d(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn translate(
-  /// The solid, sketch, or set of solids or sketches to move.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The solid, sketch, helix, or set of solids, sketches, or helices to move.
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The amount to move the solid or sketch along the x axis.
   @(includeInSnippet = true)
   x?: number(Length) = 0,
@@ -399,9 +399,9 @@ export fn translate(
   global?: bool = false,  
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
-/// Rotate a solid or a sketch.
+/// Rotate a solid, a sketch, or a helix.
 ///
 /// This is really useful for assembling parts together. You can create a part
 /// and then rotate it to the correct orientation.
@@ -627,8 +627,8 @@ export fn translate(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn rotate(
-  /// The solid, sketch, or set of solids or sketches to rotate.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The solid, sketch, helix, or set of solids, sketches, or helices to rotate.
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The roll angle. Must be between -360deg and 360deg.
   @(includeInSnippet = true)
   roll?: number(Angle),
@@ -643,10 +643,10 @@ export fn rotate(
   /// The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+  global?: bool = false,
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
-/// Scale a solid or a sketch.
+/// Scale a solid, a sketch, or a helix.
 ///
 /// This is really useful for resizing parts. You can create a part and then scale it to the
 /// correct size.
@@ -750,8 +750,8 @@ export fn rotate(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn scale(
-  /// The solid, sketch, or set of solids or sketches to scale.
-  @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
+  /// The solid, sketch, helix, or set of solids, sketches, or helices to scale.
+  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The scale factor for the x axis.
   @(includeInSnippet = true)
   x?: number(Count) = 1,
@@ -767,7 +767,7 @@ export fn scale(
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
-): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
+): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
 /// Hide solids, planes, sketches, helices, or imported objects.
 ///

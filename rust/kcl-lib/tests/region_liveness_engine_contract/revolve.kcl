@@ -1,0 +1,8 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 25mm, var 0mm], center = [var 20mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+first = revolve(sharedRegion, axis = Y, angle = 180deg)

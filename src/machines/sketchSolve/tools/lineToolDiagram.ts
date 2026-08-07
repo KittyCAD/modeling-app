@@ -30,8 +30,13 @@ import {
   applyConstraintsForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
+import type {
+  DraftEntities,
+  DraftLineConstraintPlan,
+} from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import {
   type CONFIRMING_DIMENSIONS,
+  type CONSTRAINING_DRAFT_LINE,
   type TOOL_ID,
   type ToolContext,
   type ToolEvents,
@@ -39,6 +44,7 @@ import {
   addPointListener,
   animateDraftSegmentListener,
   removePointListener,
+  sendDraftConstraintOutcomeToParent,
   sendResultToParent,
   sendStoredResultToParent,
   storePendingSketchOutcome,
@@ -50,6 +56,9 @@ export const toolId: typeof TOOL_ID = 'Line tool'
 
 export const confirmingDimensions: typeof CONFIRMING_DIMENSIONS =
   'Confirming dimensions'
+
+export const constrainingDraftLine: typeof CONSTRAINING_DRAFT_LINE =
+  'Constraining draft line'
 
 export const machine = setup({
   types: {
@@ -67,6 +76,8 @@ export const machine = setup({
     'add next draft line listener': addNextDraftLineListener,
     'remove point listener': removePointListener,
     'send result to parent': assign(sendResultToParent),
+    'send draft constraint outcome to parent':
+      sendDraftConstraintOutcomeToParent,
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
     },
@@ -332,6 +343,83 @@ export const machine = setup({
           }
         } catch (error) {
           console.error('Failed to add point segment:', error)
+          return {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          }
+        }
+      }
+    ),
+    constrainDraftLine: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          plan: DraftLineConstraintPlan
+          draftEntities: DraftEntities
+          rustContext: RustContext
+          sketchId: number
+        }
+      }): Promise<
+        | {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
+            draftEntities: DraftEntities
+          }
+        | {
+            error: string
+          }
+      > => {
+        const { plan, draftEntities, rustContext, sketchId } = input
+        const settings = jsAppSettings(rustContext.settingsActor)
+
+        try {
+          let result = null
+          if (plan.deleteConstraintIds.length > 0) {
+            result = await rustContext.deleteObjects(
+              0,
+              sketchId,
+              plan.deleteConstraintIds,
+              [],
+              settings
+            )
+          }
+
+          let addedConstraintId: number | undefined
+          if (plan.constraint) {
+            const addResult = await rustContext.addConstraint(
+              0,
+              sketchId,
+              plan.constraint,
+              settings
+            )
+            addedConstraintId = addResult.sceneGraphDelta.new_objects.find(
+              (objId) =>
+                isConstraint(addResult.sceneGraphDelta.new_graph.objects[objId])
+            )
+            result = addResult
+          }
+
+          if (!result) {
+            return { error: 'No constraint change to apply to draft line.' }
+          }
+
+          const constraintIds = draftEntities.constraintIds.filter(
+            (id) => !plan.deleteConstraintIds.includes(id)
+          )
+          if (addedConstraintId !== undefined) {
+            constraintIds.push(addedConstraintId)
+          }
+
+          return {
+            kclSource: result.kclSource,
+            sceneGraphDelta: result.sceneGraphDelta,
+            draftEntities: {
+              segmentIds: draftEntities.segmentIds,
+              constraintIds,
+            },
+          }
+        } catch (error) {
+          console.error('Failed to constrain draft line:', error)
           return {
             error: error instanceof Error ? error.message : 'Unknown error',
           }
@@ -681,6 +769,7 @@ export const machine = setup({
     ShowDraftLine: {
       on: {
         'add point': 'Confirming dimensions',
+        'constrain draft segment': constrainingDraftLine,
         unequip: {
           target: 'delete draft entities on unequip',
           actions: assign({
@@ -699,6 +788,37 @@ export const machine = setup({
 
       entry: 'animate draft segment listener',
       exit: 'remove point listener', // Stop the onMove listener when leaving this state
+    },
+    [constrainingDraftLine]: {
+      invoke: {
+        src: 'constrainDraftLine',
+        input: ({ event, context }) => {
+          assertEvent(event, 'constrain draft segment')
+          return {
+            plan: event.data.plan,
+            draftEntities: event.data.draftEntities,
+            rustContext: context.rustContext,
+            sketchId: context.sketchId,
+          }
+        },
+        onDone: [
+          {
+            guard: 'invoke output has error',
+            target: 'ShowDraftLine',
+            actions: 'toast sketch solve error',
+          },
+          {
+            target: 'ShowDraftLine',
+            actions: 'send draft constraint outcome to parent',
+          },
+        ],
+        onError: {
+          target: 'ShowDraftLine',
+          actions: 'toast sketch solve error',
+        },
+      },
+      description:
+        'Applies, swaps, or removes a horizontal/vertical constraint on the draft line, then returns to rubber-banding.',
     },
     'delete draft entities on unequip': {
       entry: ({ self }) => {

@@ -1,0 +1,186 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands translate_helix.kcl
+---
+{
+  "rust/kcl-lib/tests/translate_helix/input.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_make_helix_from_params",
+        "radius": 5.0,
+        "length": 10.0,
+        "revolutions": 5.0,
+        "start_angle": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "is_clockwise": true,
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_make_helix_from_params",
+        "radius": 5.0,
+        "length": 10.0,
+        "revolutions": 5.0,
+        "start_angle": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "is_clockwise": false,
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_make_helix_from_params",
+        "radius": 3.0,
+        "length": 15.0,
+        "revolutions": 8.0,
+        "start_angle": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "is_clockwise": true,
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 20.0,
+                "y": 0.0,
+                "z": 5.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": 20.0,
+                "y": 0.0,
+                "z": 5.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_make_helix_from_params",
+        "radius": 5.0,
+        "length": 10.0,
+        "revolutions": 5.0,
+        "start_angle": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "is_clockwise": true,
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "set_object_transform",
+        "object_id": "[uuid]",
+        "transforms": [
+          {
+            "translate": {
+              "property": {
+                "x": -20.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "set": false,
+              "origin": {
+                "type": "local"
+              }
+            },
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": null
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -99,6 +99,9 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+  supportsTranslate?: boolean
+  supportsRotate?: boolean
+  supportsScale?: boolean
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -3492,6 +3495,9 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Helix',
     icon: 'helix',
     prepareToEdit: prepareToEditHelix,
+    supportsTranslate: true,
+    supportsRotate: true,
+    supportsScale: true,
   },
   subtract2d: {
     label: 'Subtract 2D',
@@ -3864,6 +3870,10 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
       return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'String':
       return op.value
+    case 'Enum':
+      // Shown by nominal identity, the way the user writes it and the way the
+      // variables pane shows it. A variant's representation never appears here.
+      return `${op.enum_name}::${op.variant}`
     case 'Bool':
       return String(op.value)
     case 'Number':

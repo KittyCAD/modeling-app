@@ -17,18 +17,23 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { isDesktop } from '@src/lib/isDesktop'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
+  isLegacyPersonalCloudProjectLibraryPathSetting,
+  isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
+  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -76,7 +81,6 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   getProjectLibraryCreateProjectOperation,
-  projectLibrariesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -345,10 +349,31 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
+  private setCloudSyncOpenedProject(project?: Project) {
+    this.registry.get(cloudSyncService).setOpenedProject(
+      project
+        ? {
+            projectPath: project.path,
+            ...(project.libraryPath
+              ? { libraryPath: project.libraryPath }
+              : {}),
+            ...(project.libraryType
+              ? { libraryType: project.libraryType }
+              : {}),
+          }
+        : undefined
+    )
+  }
+
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(projectIORef)
+    const ownedProject = await projectWithLibraryOwnership(
+      projectIORef,
+      this.settings.get().app.libraries.current
+    )
+    const projectIORefSignal = signal(ownedProject)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -411,7 +436,15 @@ export class App implements AppSubsystems {
           p.path === projectIORefSignal.value.path
       )
       if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
+        projectIORefSignal.value = {
+          ...foundProject,
+          ...(projectIORefSignal.value.libraryPath
+            ? { libraryPath: projectIORefSignal.value.libraryPath }
+            : {}),
+          ...(projectIORefSignal.value.libraryType
+            ? { libraryType: projectIORefSignal.value.libraryType }
+            : {}),
+        }
       }
     })
 
@@ -441,6 +474,7 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }
@@ -482,7 +516,7 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      syncExistingLocalProjects: !window.electron,
+      autoEnrollCloudLibraryProjects: true,
     })
   }
 
@@ -512,7 +546,12 @@ export class App implements AppSubsystems {
 
   getCreateProjectLibraryTargets = () => {
     const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
-    const libraries = this.registry.get(projectLibrariesValueSpec)
+    const settings = getOnlySettingsFromContext(
+      this.settings.actor.getSnapshot().context
+    )
+    const libraries = projectLibrariesFromSettings(
+      settings.app.libraries.current
+    )
     const targets = libraries.flatMap((library) => {
       const createProject = getProjectLibraryCreateProjectOperation(
         libraryTypes.get(library.type),
@@ -665,7 +704,7 @@ export class App implements AppSubsystems {
    * libraries side by side; web treats Personal Cloud as the canonical project
    * library and replaces only the recognized default directory row.
    */
-  private materializePersonalCloudLibraryOnEnable = (
+  private materializePersonalCloudLibraryOnEnable = async (
     snapshot: SnapshotFrom<typeof this.settings.actor>
   ) => {
     if (!snapshot.matches('idle')) {
@@ -686,13 +725,11 @@ export class App implements AppSubsystems {
     )
     const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
     const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
-      library.type === defaultCloudLibrary.type &&
-      library.path === defaultCloudLibrary.path
+      isPersonalCloudProjectLibrarySetting(library)
     const shouldReplaceDirectoryLibraryOnWeb = (
       library: ProjectLibrarySetting
     ) =>
-      typeof window !== 'undefined' &&
-      !window.electron &&
+      !isDesktop() &&
       library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
       defaultDirectoryLibraryPaths.has(
         normalizeProjectLibrarySettingPath(library.path)
@@ -703,7 +740,17 @@ export class App implements AppSubsystems {
       currentLibraries.flatMap((library) => {
         if (isDefaultCloudLibrary(library)) {
           hasPersonalCloudLibrary = true
-          return [library]
+          return [
+            isLegacyPersonalCloudProjectLibraryPathSetting(library)
+              ? {
+                  ...library,
+                  path: defaultCloudLibrary.path,
+                  ...(defaultCloudLibrary.source
+                    ? { source: defaultCloudLibrary.source }
+                    : {}),
+                }
+              : library,
+          ]
         }
 
         if (shouldReplaceDirectoryLibraryOnWeb(library)) {
@@ -817,7 +864,9 @@ export class App implements AppSubsystems {
     }
 
     if (shouldMaterializePersonalCloudLibrary) {
-      this.materializePersonalCloudLibraryOnEnable(snapshot)
+      void this.materializePersonalCloudLibraryOnEnable(snapshot).catch(
+        reportRejection
+      )
     }
   }
 

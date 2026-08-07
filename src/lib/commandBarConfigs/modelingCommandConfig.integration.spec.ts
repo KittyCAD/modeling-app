@@ -374,6 +374,37 @@ describe('Sweep-like bodyType argument', () => {
   })
 })
 
+describe('Transform arguments', () => {
+  it('accepts helices only for supported transforms', () => {
+    for (const commandName of [
+      'Translate',
+      'Rotate',
+      'Scale',
+      'Clone',
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const objectsArg = commandConfig.args?.objects
+      if (!objectsArg || !('selectionTypes' in objectsArg)) {
+        throw new Error(`${commandName}.objects should be a selection argument`)
+      }
+      const selectionTypes = objectsArg.selectionTypes
+      if (
+        commandName === 'Translate' ||
+        commandName === 'Scale' ||
+        commandName === 'Rotate'
+      ) {
+        expect(selectionTypes).toContain('helix')
+      } else {
+        expect(selectionTypes).not.toContain('helix')
+      }
+    }
+  })
+})
+
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
 describe('stdlib command arg derivation', () => {

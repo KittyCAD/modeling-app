@@ -1,0 +1,9 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+first = region(point = [0mm, 0mm], sketch = sharedRegion)
+second = region(point = [0mm, 0mm], sketch = sharedRegion)

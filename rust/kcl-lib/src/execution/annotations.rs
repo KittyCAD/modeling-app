@@ -77,7 +77,8 @@ pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "notYetSupported";
 pub(crate) const WARN_OVER_CONSTRAINED_SKETCH: &str = "overConstrainedSketch";
-pub(super) const WARN_VALUES: [&str; 13] = [
+pub(crate) const WARN_REGION_LIVENESS: &str = "regionLiveness";
+pub(super) const WARN_VALUES: [&str; 14] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -91,6 +92,7 @@ pub(super) const WARN_VALUES: [&str; 13] = [
     WARN_NOT_YET_SUPPORTED,
     WARN_CSG_NO_INTERSECTION,
     WARN_OVER_CONSTRAINED_SKETCH,
+    WARN_REGION_LIVENESS,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]

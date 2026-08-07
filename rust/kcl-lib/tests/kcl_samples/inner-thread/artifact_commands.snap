@@ -495,7 +495,7 @@ description: Artifact commands inner-thread.kcl
           "type": "line",
           "end": {
             "x": 3.7499999997,
-            "y": 0.24999999929999994,
+            "y": 0.24999999929999997,
             "z": 0.0
           },
           "relative": false

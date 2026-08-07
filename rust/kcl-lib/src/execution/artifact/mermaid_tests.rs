@@ -186,10 +186,15 @@ fn canonicalize_duplicate_edge_pairings(
     }
 }
 
-impl Artifact {
+trait ArtifactMermaidExt {
+    fn back_edges(&self) -> Vec<ArtifactId>;
+    fn child_ids(&self) -> Vec<ArtifactId>;
+}
+
+impl ArtifactMermaidExt for Artifact {
     /// The IDs pointing back to prior nodes in a depth-first traversal of
     /// the graph.  This should be disjoint with `child_ids`.
-    pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
+    fn back_edges(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::CompositeSolid(a) => {
                 let mut ids = a.solid_ids.clone();
@@ -248,7 +253,7 @@ impl Artifact {
 
     /// The child IDs of this artifact, used to do a depth-first traversal of
     /// the graph.
-    pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
+    fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::CompositeSolid(a) => {
                 // Note: Don't include these since they're parents: solid_ids,
@@ -395,9 +400,34 @@ impl Artifact {
     }
 }
 
-impl ArtifactGraph {
+pub(crate) trait ArtifactGraphMermaidExt {
+    fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error>;
+    fn flowchart_nodes<W: Write>(
+        &self,
+        output: &mut W,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
+        prefix: &str,
+    ) -> std::fmt::Result;
+    fn flowchart_node<W: Write>(
+        &self,
+        output: &mut W,
+        artifact: &Artifact,
+        id: NodeId,
+        prefix: &str,
+    ) -> std::fmt::Result;
+    fn flowchart_duplicate_segment_key(artifact: &Artifact) -> Option<String>;
+    fn flowchart_basic_sort_key(artifact: &Artifact) -> String;
+    fn flowchart_edges<W: Write>(
+        &self,
+        output: &mut W,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
+        prefix: &str,
+    ) -> Result<(), std::fmt::Error>;
+}
+
+impl ArtifactGraphMermaidExt for ArtifactGraph {
     /// Output the Mermaid flowchart for the artifact graph.
-    pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
+    fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
         let mut output = String::new();
         output.push_str("```mermaid\n");
         output.push_str("flowchart LR\n");
@@ -405,7 +435,7 @@ impl ArtifactGraph {
         let mut next_id = 1_u32;
         let mut stable_id_map = AHashMap::default();
 
-        for id in self.map.keys() {
+        for (id, _) in self.iter() {
             stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
@@ -433,7 +463,7 @@ impl ArtifactGraph {
         let mut groups = IndexMap::new();
         let mut ungrouped = Vec::new();
 
-        for artifact in self.map.values() {
+        for artifact in self.values() {
             let id = artifact.id();
 
             let grouped = match artifact {
@@ -479,7 +509,7 @@ impl ArtifactGraph {
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
             for artifact_id in artifact_ids {
-                let artifact = self.map.get(&artifact_id).unwrap();
+                let artifact = self.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
                 self.flowchart_node(output, artifact, id, &indented)?;
             }
@@ -487,7 +517,7 @@ impl ArtifactGraph {
         }
 
         for artifact_id in ungrouped {
-            let artifact = self.map.get(&artifact_id).unwrap();
+            let artifact = self.get(&artifact_id).unwrap();
             let id = *stable_id_map.get(&artifact_id).unwrap();
             self.flowchart_node(output, artifact, id, prefix)?;
         }
@@ -818,7 +848,7 @@ impl ArtifactGraph {
         // edge under a canonical `(min, max)` key and merges duplicates; Mermaid
         // would otherwise render `a --- b` and `b --- a` as two edges.
         let mut edges = IndexMap::default();
-        for artifact in self.map.values() {
+        for artifact in self.values() {
             let source_id = *stable_id_map.get(&artifact.id()).unwrap();
             // In Mermaid, the textual order defines the rank, even though the
             // edge arrow can go in either direction.
@@ -836,7 +866,7 @@ impl ArtifactGraph {
                         .zip(std::iter::repeat(EdgeFlow::SourceToTarget)),
                 )
             {
-                let Some(target) = self.map.get(&target_id) else {
+                let Some(target) = self.get(&target_id) else {
                     continue;
                 };
                 let edge_kind = match (artifact, target) {
@@ -894,7 +924,7 @@ impl ArtifactGraph {
         let node_key = |node_id: NodeId| {
             reverse_stable_id_map
                 .get(&node_id)
-                .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(|artifact_id| self.get(artifact_id))
                 .and_then(Self::flowchart_duplicate_segment_key)
                 .unwrap_or_else(|| format!("Node:{node_id}"))
         };
@@ -909,7 +939,7 @@ impl ArtifactGraph {
         let signature_node_key = |node_id: NodeId| {
             reverse_stable_id_map
                 .get(&node_id)
-                .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(|artifact_id| self.get(artifact_id))
                 .map(Self::flowchart_basic_sort_key)
                 .unwrap_or_else(|| format!("Node:{node_id}"))
         };

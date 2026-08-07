@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
@@ -69,15 +70,30 @@ export type HomeProjectOpenResult = {
   defaultFile: string
 }
 
+export interface HomeProjectMoveToLibraryTarget {
+  library: ProjectLibrary
+  sourceLibrary: ProjectLibrary
+}
+
 export interface HomeProjectActionsService {
   canOpen: (project: HomeProjectEntry) => boolean
+  canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
+  canMoveToLibrary: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
+  duplicate: (project: HomeProjectEntry) => Promise<void>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
+  getMoveToLibraryTargets: (
+    project: HomeProjectEntry
+  ) => readonly HomeProjectMoveToLibraryTarget[]
+  moveToLibrary: (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) => Promise<HomeProjectOpenResult | undefined>
 }
 
 function contributionBucketKey(entry: HomeProjectEntryContribution) {
