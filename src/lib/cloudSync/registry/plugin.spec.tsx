@@ -11,7 +11,6 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import {
-  CloudConflictDialogHost,
   cloudSyncPlugin,
   cloudSyncProjectLibraryType,
   getCloudSyncStatusBarPresentation,
@@ -29,7 +28,7 @@ import {
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import { Themes } from '@src/lib/theme'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import {
   cloudProjectRelationshipsService,
@@ -59,20 +58,96 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
 const cloudConflictDialogMocks = vi.hoisted(
-  (): { conflict: unknown; dialogProjectPaths: string[] } => ({
+  (): {
+    conflict: unknown
+    conflictDialogProjectPath?: string
+    dialogProjectPaths: string[]
+    errorDialogMessage?: string
+    listeners: Set<() => void>
+    notify: () => void
+  } => ({
     conflict: undefined,
+    conflictDialogProjectPath: undefined,
     dialogProjectPaths: [],
+    errorDialogMessage: undefined,
+    listeners: new Set(),
+    notify: () => {
+      for (const listener of cloudConflictDialogMocks.listeners) {
+        listener()
+      }
+    },
   })
 )
 
-vi.mock('@src/components/CloudConflictDialog', () => ({
-  CloudConflictDialog: ({ projectPath }: { projectPath: string }) => {
-    cloudConflictDialogMocks.dialogProjectPaths.push(projectPath)
-    return <div data-testid="cloud-conflict-dialog">{projectPath}</div>
-  },
-  useCloudSyncProjectConflict: () => cloudConflictDialogMocks.conflict,
-  useCloudSyncProjectConflicts: () => [],
-}))
+vi.mock('@src/components/CloudConflictDialog', async () => {
+  const React = await vi.importActual<typeof import('react')>('react')
+
+  function useMockDialogSignalRender() {
+    const [, forceRender] = React.useState(0)
+
+    React.useEffect(() => {
+      const listener = () => forceRender((count) => count + 1)
+      cloudConflictDialogMocks.listeners.add(listener)
+
+      return () => {
+        cloudConflictDialogMocks.listeners.delete(listener)
+      }
+    }, [])
+  }
+
+  function MockCloudConflictDialogHost() {
+    useMockDialogSignalRender()
+
+    if (cloudConflictDialogMocks.conflictDialogProjectPath) {
+      cloudConflictDialogMocks.dialogProjectPaths.push(
+        cloudConflictDialogMocks.conflictDialogProjectPath
+      )
+    }
+
+    return (
+      <>
+        {cloudConflictDialogMocks.conflictDialogProjectPath && (
+          <div data-testid="cloud-conflict-dialog">
+            {cloudConflictDialogMocks.conflictDialogProjectPath}
+          </div>
+        )}
+      </>
+    )
+  }
+
+  function MockCloudSyncErrorDialogHost() {
+    useMockDialogSignalRender()
+
+    return (
+      <>
+        {cloudConflictDialogMocks.errorDialogMessage && (
+          <div data-testid="cloud-sync-error-dialog">
+            {cloudConflictDialogMocks.errorDialogMessage}
+          </div>
+        )}
+      </>
+    )
+  }
+
+  return {
+    CloudConflictDialog: ({ projectPath }: { projectPath: string }) => {
+      cloudConflictDialogMocks.dialogProjectPaths.push(projectPath)
+      return <div data-testid="cloud-conflict-dialog">{projectPath}</div>
+    },
+    CloudConflictDialogHost: MockCloudConflictDialogHost,
+    CloudSyncErrorDialogHost: MockCloudSyncErrorDialogHost,
+    openCloudConflictDialog: ({ projectPath }: { projectPath: string }) => {
+      cloudConflictDialogMocks.conflictDialogProjectPath = projectPath
+      cloudConflictDialogMocks.notify()
+    },
+    openCloudSyncErrorDialog: ({ message }: { message: string }) => {
+      cloudConflictDialogMocks.errorDialogMessage = message
+      cloudConflictDialogMocks.notify()
+    },
+    useCloudSyncProjectConflict: () => cloudConflictDialogMocks.conflict,
+    useCloudSyncProjectConflicts: () => [],
+  }
+})
 
 vi.mock('@src/lib/desktop', () => ({
   writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
@@ -139,6 +214,19 @@ type TestSettings = {
 
 function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
+}
+
+function CloudSyncDialogHostContribution({ app }: { app: App }) {
+  const item = app.registry
+    .get(appHeaderItemsValueSpec)
+    .find((item) => item.id === 'cloud-sync.dialog-app-header-item')
+  expect(item).toBeDefined()
+  if (!item) {
+    return null
+  }
+
+  const Component = item.Component
+  return <Component app={app} className="" />
 }
 
 function createCloudSyncService(): CloudSyncRegistryService {
@@ -341,7 +429,9 @@ function enableCloudSyncPlugin(registry: Registry) {
 afterEach(() => {
   window.electron = originalElectron
   cloudConflictDialogMocks.conflict = undefined
+  cloudConflictDialogMocks.conflictDialogProjectPath = undefined
   cloudConflictDialogMocks.dialogProjectPaths = []
+  cloudConflictDialogMocks.errorDialogMessage = undefined
   cloudSyncStatus.value = {
     enabled: false,
     state: 'disabled',
@@ -371,6 +461,45 @@ describe('cloud sync status presentation', () => {
 })
 
 describe('cloud sync status bar conflict dialog', () => {
+  test('contributes the cloud sync status bar item only on home', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    const registry = new Registry()
+    const settings = createSettingsService({})
+    const settingsExtension = defineRegistryItem({
+      id: 'test-settings-service',
+      providesServices: [provideService(settingsService, settings.service)],
+    })
+    const userFeaturesExtension = defineRegistryItem({
+      id: 'test-user-features-service',
+      providesServices: [
+        provideService(userFeaturesService, createUserFeaturesService()),
+      ],
+    })
+
+    registry.configure([
+      settingsExtension,
+      userFeaturesExtension,
+      cloudSyncPlugin,
+    ])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      expect(
+        registry
+          .get(statusBarGlobalItemsValueSpec)
+          .find((item) => item.id === 'cloud-sync')
+      ).toMatchObject({
+        scopes: ['home'],
+      })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   test('keeps inspecting the clicked project when global conflict status changes', async () => {
     cloudConflictDialogMocks.conflict = {
       conflict: {
@@ -417,8 +546,19 @@ describe('cloud sync status bar conflict dialog', () => {
       }
 
       const StatusBarItem = statusItem.component
+      const app = {
+        registry,
+        settings: {
+          useSettings: () => settings.settingsSignal.value,
+        },
+      } as unknown as App
       window.history.pushState({}, '', '/file/%2Fprojects%2Fcurrent%2Fmain.kcl')
-      renderWithRouter(<StatusBarItem />)
+      renderWithRouter(
+        <>
+          <StatusBarItem />
+          <CloudSyncDialogHostContribution app={app} />
+        </>
+      )
 
       fireEvent.click(screen.getByTestId('cloud-sync-status'))
       expect(
@@ -448,8 +588,80 @@ describe('cloud sync status bar conflict dialog', () => {
   })
 })
 
-describe('cloud sync conflict project menu item', () => {
+describe('cloud sync project menu item', () => {
+  test('shows synced state from the project sidebar menu', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectCloudProjectId: 'remote-123',
+      lastSyncedAt: new Date(now).toISOString(),
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <>
+          <ProjectSidebarMenu
+            app={app}
+            enableMenu
+            project={projectWellFormed}
+          />
+          <CloudSyncDialogHostContribution app={app} />
+        </>
+      )
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+
+      expect(
+        await screen.findByTestId('project-sidebar-cloud-sync-status')
+      ).toHaveTextContent('Cloud synced')
+    } finally {
+      dispose()
+    }
+  })
+
+  test('hides quiet cloud sync state for unlinked local projects', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <>
+          <ProjectSidebarMenu
+            app={app}
+            enableMenu
+            project={projectWellFormed}
+          />
+          <CloudSyncDialogHostContribution app={app} />
+        </>
+      )
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+
+      expect(
+        screen.queryByTestId('project-sidebar-cloud-sync-status')
+      ).not.toBeInTheDocument()
+    } finally {
+      dispose()
+    }
+  })
+
   test('opens conflict resolution from the project sidebar menu', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'conflict',
+      pendingCount: 0,
+      activeProjectPath: projectWellFormed.path,
+      lastFailure: 'Cloud sync conflict: local and remote both changed.',
+      lastFailureAt: new Date(now).toISOString(),
+    }
     cloudConflictDialogMocks.conflict = {
       conflict: {
         conflictProjectPath: `${projectWellFormed.path} (cloud conflict)`,
@@ -468,7 +680,7 @@ describe('cloud sync conflict project menu item', () => {
             enableMenu
             project={projectWellFormed}
           />
-          <CloudConflictDialogHost resolvedTheme={Themes.Dark} />
+          <CloudSyncDialogHostContribution app={app} />
         </>
       )
 
@@ -482,6 +694,85 @@ describe('cloud sync conflict project menu item', () => {
       ).toHaveTextContent(projectWellFormed.path)
       expect(cloudSync.startProjectSync).not.toHaveBeenCalled()
       expect(cloudSync.disconnectProjectSync).not.toHaveBeenCalled()
+    } finally {
+      dispose()
+    }
+  })
+
+  test('opens cloud sync error details from the project sidebar menu', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'failed',
+      pendingCount: 1,
+      activeProjectPath: projectWellFormed.path,
+      lastFailure: 'Cloud sync cannot upload local changes.',
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailureAt: new Date(now).toISOString(),
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <>
+          <ProjectSidebarMenu
+            app={app}
+            enableMenu
+            project={projectWellFormed}
+          />
+          <CloudSyncDialogHostContribution app={app} />
+        </>
+      )
+
+      expect(
+        screen.getByTestId('project-sidebar-cloud-error-badge')
+      ).toHaveTextContent('Cloud error')
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+      fireEvent.click(
+        await screen.findByTestId('project-sidebar-inspect-cloud-sync-error')
+      )
+
+      expect(
+        await screen.findByTestId('cloud-sync-error-dialog')
+      ).toHaveTextContent('Cloud sync cannot upload local changes.')
+      expect(cloudSync.startProjectSync).not.toHaveBeenCalled()
+      expect(cloudSync.disconnectProjectSync).not.toHaveBeenCalled()
+    } finally {
+      dispose()
+    }
+  })
+
+  test('keeps cloud sync error visible during scheduled retry pulses', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'syncing',
+      pendingCount: 1,
+      activeProjectPath: projectWellFormed.path,
+      lastFailure: 'Cloud sync cannot upload local changes.',
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailureAt: new Date(now).toISOString(),
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
+      )
+
+      expect(
+        screen.getByTestId('project-sidebar-cloud-error-badge')
+      ).toHaveTextContent('Cloud error')
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+
+      expect(
+        await screen.findByTestId('project-sidebar-inspect-cloud-sync-error')
+      ).toHaveTextContent('Cloud sync blocked')
+      expect(
+        screen.queryByTestId('project-sidebar-cloud-sync-status')
+      ).not.toBeInTheDocument()
     } finally {
       dispose()
     }
