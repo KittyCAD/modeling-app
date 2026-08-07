@@ -44,6 +44,20 @@ two = increment(1)
 three = add(1, delta = 2)
 ```
 
+## Point-and-click editability
+
+Custom functions are useful when the same parameterized feature needs to be
+reused with different inputs. However, Zoo Design Studio's point-and-click
+tools cannot currently edit sketches inside a custom function body.
+
+Keep sketches at the top level when point-and-click editing is important. Use a
+custom function when reuse is more important than point-and-click access to its
+internal sketches. Repeating an identical body usually does not require a
+custom function; use [`clone`](/docs/kcl-std/functions/std-clone),
+[`patternLinear3d`](/docs/kcl-std/functions/std-solid-patternLinear3d), or
+[`patternCircular3d`](/docs/kcl-std/functions/std-solid-patternCircular3d)
+instead.
+
 Below shows how a custom function must be called if it has a labeled argument, and another example with an unlabeled argument:
 
 ```

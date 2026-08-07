@@ -204,6 +204,10 @@ pub enum PathSubType {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
+    /// The original segment this segment was cloned from, if any. For clones
+    /// of clones, this continues to point to the originating segment.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_segment_id: Option<ArtifactId>,
     /// If this artifact is a segment in a region, the segment in the original
     /// sketch that this was derived from.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -228,6 +232,10 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The original sweep this body was cloned from, if any. For clones of
+    /// clones, this continues to point to the originating sweep.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_sweep_id: Option<ArtifactId>,
     /// ID of trajectory path for sweep, if any
     /// Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which
     /// can use a second path-like input

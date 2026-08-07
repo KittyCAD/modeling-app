@@ -594,77 +594,6 @@ description: Result of parsing split-washer-spring-version.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "washerSectionSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "XZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// The sweep profile needs to sit on the XZ plane, because the helix starts at Y = 0."
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "washerSectionProfile",
             "start": 0,
             "type": "Identifier"
@@ -690,7 +619,7 @@ description: Result of parsing split-washer-spring-version.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "washerSectionSketch",
+                    "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2466,9 +2395,7 @@ description: Result of parsing split-washer-spring-version.kcl
             "value": {
               "type": "newLine"
             }
-          }
-        ],
-        "8": [
+          },
           {
             "commentStart": 0,
             "end": 0,
@@ -2476,7 +2403,9 @@ description: Result of parsing split-washer-spring-version.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLine"
+              "type": "blockComment",
+              "value": "The sweep profile needs to sit on the XZ plane, because the helix starts at Y = 0.",
+              "style": "line"
             }
           },
           {
@@ -2502,7 +2431,7 @@ description: Result of parsing split-washer-spring-version.kcl
             }
           }
         ],
-        "9": [
+        "8": [
           {
             "commentStart": 0,
             "end": 0,

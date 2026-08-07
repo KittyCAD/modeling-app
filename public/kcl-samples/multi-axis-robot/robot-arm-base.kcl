@@ -99,13 +99,13 @@ hidden001 = hide(sketch004)
 sketch001 = extrude(region001, length = basePlateThickness)
 
 // Base Motor for actuating first joint
-sketch002 = sketch(on = startSketchOn(sketch001, face = END)) {
+sketch002 = sketch(on = faceOf(sketch001, face = END)) {
   circle1 = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
 }
 region002 = region(segments = [sketch002.circle1])
 extrude002 = extrude(region002, length = baseHeight - basePlateThickness - 1.5)
 
-sketch003 = sketch(on = startSketchOn(extrude002, face = END)) {
+sketch003 = sketch(on = faceOf(extrude002, face = END)) {
   circle1 = circle(start = [var 0.5in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [sketch003.circle1])

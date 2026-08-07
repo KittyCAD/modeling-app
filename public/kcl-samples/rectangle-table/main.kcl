@@ -16,8 +16,7 @@ legHeight = tableHeight - tableTopThickness
 
 // Tabletop
 tableTopPlane = offsetPlane(XY, offset = tableHeight)
-tableTopSketch = startSketchOn(tableTopPlane)
-tableTopProfile = sketch(on = tableTopSketch) {
+tableTopProfile = sketch(on = tableTopPlane) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1500mm])
   line2 = line(start = [var 0mm, var 1500mm], end = [var 600mm, var 1500mm])
   coincident([line1.end, line2.start])
@@ -38,8 +37,7 @@ region001 = region(segments = [
 tableTopExtrude = extrude(region001, length = -tableTopThickness)
 
 // Leg
-legSketch = startSketchOn(XY)
-legProfile = sketch(on = legSketch) {
+legProfile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 40mm])
   line2 = line(start = [var 0mm, var 40mm], end = [var 40mm, var 40mm])
   coincident([line1.end, line2.start])

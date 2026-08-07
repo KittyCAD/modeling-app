@@ -8,6 +8,14 @@ import fsZds from '@src/lib/fs-zds'
 import { createTwoFilesPatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
+const clientErrorMocks = vi.hoisted(() => ({
+  reportSystemIOError: vi.fn(),
+}))
+
+vi.mock('@src/machines/systemIO/errorReporting', () => ({
+  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+}))
+
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
@@ -17,6 +25,7 @@ beforeAll(async () => {
 
 afterEach(() => {
   vi.restoreAllMocks()
+  clientErrorMocks.reportSystemIOError.mockClear()
 })
 
 describe('Zookeeper history patch replay', () => {
@@ -583,6 +592,7 @@ describe('Zookeeper history patch replay', () => {
     const modifiedPath = fsZds.join(projectPath, 'modified.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
     const originalWriteFile = fsZds.writeFile.bind(fsZds)
+    const writeError = new Error('disk write failed')
     let shouldFailModifiedWrite = true
 
     await fsZds.mkdir(projectPath, { recursive: true })
@@ -594,7 +604,8 @@ describe('Zookeeper history patch replay', () => {
     vi.spyOn(fsZds, 'writeFile').mockImplementation(async (path, data) => {
       if (path === modifiedPath && shouldFailModifiedWrite) {
         shouldFailModifiedWrite = false
-        throw new Error('disk write failed')
+        await originalWriteFile(path, data)
+        throw writeError
       }
       return originalWriteFile(path, data)
     })
@@ -630,6 +641,19 @@ describe('Zookeeper history patch replay', () => {
       await expect(fsZds.readFile(modifiedPath, 'utf8')).resolves.toBe(
         'length = 10\n'
       )
+      expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
+        error: writeError,
+        operation: 'zookeeper_history_replay',
+        risk: 'destructive',
+        source: 'ZookeeperEditor',
+        extra: {
+          phase: 'write',
+          totalCount: 2,
+          completedCount: 1,
+          rollbackAttemptedCount: 2,
+          rollbackFailureCount: 0,
+        },
+      })
     } finally {
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }

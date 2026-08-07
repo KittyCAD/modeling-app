@@ -1,3 +1,9 @@
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  DEFAULT_PROJECT_LIBRARY_ID,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+} from '@src/lib/projectLibraries'
 import { coalesceHomeProjectEntries } from '@src/registry/contracts/homeProjects'
 import { describe, expect, test } from 'vitest'
 
@@ -91,6 +97,8 @@ describe('coalesceHomeProjectEntries', () => {
           title: 'Local title',
           localProjectPath: '/projects/local-name',
           localProjectName: 'local-name',
+          libraryPath: '/projects',
+          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
           remoteProjectId: 'remote-123',
           modified: 10,
           readWriteAccess: true,
@@ -105,6 +113,8 @@ describe('coalesceHomeProjectEntries', () => {
         title: 'Local title',
         modified: 20,
         localProjectPath: '/projects/local-name',
+        libraryPath: '/projects',
+        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
         remoteProjectId: 'remote-123',
       }),
     ])
@@ -150,6 +160,48 @@ describe('coalesceHomeProjectEntries', () => {
         conflict: {
           conflictProjectPath: '/projects/local-name (cloud conflict)',
         },
+      }),
+    ])
+  })
+
+  test('keeps configured library ownership over the default local fallback', () => {
+    expect(
+      coalesceHomeProjectEntries([
+        {
+          source: 'local',
+          status: 'synced',
+          libraryId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          name: 'cloud-name',
+          localProjectPath: '/cloud/cloud-name',
+          localProjectName: 'cloud-name',
+          libraryPath: '/cloud',
+          libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+          remoteProjectId: 'remote-123',
+          modified: 20,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'synced',
+          libraryId: DEFAULT_PROJECT_LIBRARY_ID,
+          name: 'cloud-name',
+          localProjectPath: '/cloud/cloud-name',
+          localProjectName: 'cloud-name',
+          libraryPath: '/cloud',
+          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          remoteProjectId: 'remote-123',
+          modified: 10,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        libraryIds: [
+          PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+          DEFAULT_PROJECT_LIBRARY_ID,
+        ],
+        libraryPath: '/cloud',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
       }),
     ])
   })

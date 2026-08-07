@@ -20468,27 +20468,6 @@ description: Result of parsing helium-tank.kcl
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -20606,27 +20585,6 @@ description: Result of parsing helium-tank.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
                 }
               }
             ],
@@ -21678,27 +21636,6 @@ description: Result of parsing helium-tank.kcl
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "legacyMethod",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "true",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": true
                     }
                   }
                 ],
@@ -23144,27 +23081,6 @@ description: Result of parsing helium-tank.kcl
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "legacyMethod",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "true",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": true
                     }
                   }
                 ],
