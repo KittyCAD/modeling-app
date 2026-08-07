@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
+pub(crate) use artifact::EntityCloneInfo;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;

@@ -149,24 +149,30 @@ singleBinFillRegion = region(segments = [singleBinFillSketch.line1])
 singleBinFill = extrude(singleBinFillRegion, length = height)
 hide(singleBinFillSketch)
 magPocketPlane = planeOf(singleBinFill, face = START)
-magPocketSketch = circle(
-  magPocketPlane,
+magPocketSketch = sketch(on = magPocketPlane) {
+  magPocket = circle(
+    start = [
+      -magOffset - binBaseLength - binTol + magOuterDiam / 2,
+      magOffset + binBaseLength + binTol
+    ],
+    center = [
+      -magOffset - binBaseLength - binTol,
+      magOffset + binBaseLength + binTol
+    ],
+  )
+}
+magPocketRegion = region(segments = [magPocketSketch.magPocket])
+magPocketRegions = patternCircular2d(
+  magPocketRegion,
+  arcDegrees = 360deg,
   center = [
-    -magOffset - binBaseLength - binTol,
-    magOffset + binBaseLength + binTol
+    (-binLength + 2 * binTol) / 2,
+    (binLength + 2 * binTol) / 2
   ],
-  radius = magOuterDiam / 2,
+  instances = 4,
+  rotateDuplicates = true,
 )
-  |> patternCircular2d(
-       arcDegrees = 360deg,
-       center = [
-         (-binLength + 2 * binTol) / 2,
-         (binLength + 2 * binTol) / 2
-       ],
-       instances = 4,
-       rotateDuplicates = true,
-     )
-magPocketCutters = extrude(magPocketSketch, length = -magDepth)
+magPocketCutters = extrude(magPocketRegions, length = -magDepth)
 hide(magPocketSketch)
 singleBinFillWithPockets = subtract(singleBinFill, tools = magPocketCutters)
 

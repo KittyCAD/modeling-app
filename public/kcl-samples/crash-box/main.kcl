@@ -151,25 +151,47 @@ crashBoxWithPocket = subtract(crashBoxShelled, tools = beamEndFillets)
 // -----------------------------
 
 
-leftHoleProfile = circle(
-  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [
+holePlane = offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm)
+holeSketch = sketch(on = holePlane) {
+  leftHole = circle(
+    start = [
+      -mountHoleSpacing / 2 + mountHoleRadius,
+      -mountHoleOffsetFromTop
+    ],
+    center = [
+      -mountHoleSpacing / 2,
+      -mountHoleOffsetFromTop
+    ],
+  )
+  rightHole = circle(
+    start = [
+      mountHoleSpacing / 2 + mountHoleRadius,
+      -mountHoleOffsetFromTop
+    ],
+    center = [
+      mountHoleSpacing / 2,
+      -mountHoleOffsetFromTop
+    ],
+  )
+}
+leftHoleProfile = region(
+  point = [
     -mountHoleSpacing / 2,
     -mountHoleOffsetFromTop
   ],
-  radius = mountHoleRadius,
+  sketch = holeSketch,
 )
-rightHoleProfile = circle(
-  offsetPlane(YZ, offset = -crashBoxOuterWidth / 2 - 10mm),
-  center = [
+rightHoleProfile = region(
+  point = [
     mountHoleSpacing / 2,
     -mountHoleOffsetFromTop
   ],
-  radius = mountHoleRadius,
+  sketch = holeSketch,
 )
 
 // Apply the hole cut to the crash box with pocket
 holeCutters = extrude([leftHoleProfile, rightHoleProfile], to = offsetPlane(YZ, offset = crashBoxOuterWidth / 2 + 10mm), method = NEW)
+hide(holeSketch)
 
 crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 

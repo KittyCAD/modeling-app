@@ -32,6 +32,10 @@ import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/dire
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  ExpectedSystemIOError,
+  reportSystemIOError,
+} from '@src/machines/systemIO/errorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -422,6 +426,20 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               data: { folders },
             })
           },
+          onProjectStatFailures: ({ error, count }) => {
+            reportSystemIOError({
+              error,
+              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+              risk: 'read',
+              source: 'SystemIOMachine',
+              dedupeKey:
+                'SystemIO:SystemIOMachine:read folders from project directory:stat_project',
+              extra: {
+                phase: 'stat_project',
+                skippedProjectCount: count,
+              },
+            })
+          },
         })
 
         return projects
@@ -537,7 +555,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         ) {
           return Promise.reject(
-            new Error(
+            new ExpectedSystemIOError(
               `Project with title "${requestedProjectTitle}" already exists`
             )
           )
@@ -894,7 +912,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       for (const entry of entries) {
         if (entry === requestedFolderName) {
-          return Promise.reject(new Error('Folder name already exists.'))
+          return Promise.reject(
+            new ExpectedSystemIOError('Folder name already exists.')
+          )
         }
       }
 
@@ -961,7 +981,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       for (const entry of entries) {
         if (entry === requestedFileNameWithExtension) {
-          return Promise.reject(new Error('Filename already exists.'))
+          return Promise.reject(
+            new ExpectedSystemIOError('Filename already exists.')
+          )
         }
       }
 
@@ -1020,7 +1042,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`File ${fileNameWithExtension} already exists`)
+              new ExpectedSystemIOError(
+                `File ${fileNameWithExtension} already exists`
+              )
             )
           }
         } catch (e) {
@@ -1067,7 +1091,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`Folder ${folderName} already exists`)
+              new ExpectedSystemIOError(`Folder ${folderName} already exists`)
             )
           }
         } catch (e) {

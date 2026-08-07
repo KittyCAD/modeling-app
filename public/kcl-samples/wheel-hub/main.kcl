@@ -273,7 +273,7 @@ chamfer002 = chamfer(
 mountingFlange = subtract([chamfer002], tools = [flangeHoleCutters])
 
 // Solver reconstruction of the welded lug bolts
-boltHeadProfile = sketch(on = startSketchOn(mountingFlange, face = START)) {
+boltHeadProfile = sketch(on = faceOf(mountingFlange, face = START)) {
   centerGuide = line(start = [var 0in, var 0in], end = [var -2.25in, var 0in], construction = true)
   boltHeadCircle = circle(start = [var -1.82in, var 0in], center = [var -2.25in, var 0in], construction = true)
 
@@ -341,7 +341,7 @@ boltHead = extrude(boltHeadRegion, length = hubSpacing / 8, method = NEW)
   |> appearance(color = "#121212")
 hide(boltHeadProfile)
 
-boltStemProfile = sketch(on = startSketchOn(boltHead, face = START)) {
+boltStemProfile = sketch(on = faceOf(boltHead, face = START)) {
   centerGuide = line(start = [var 0in, var 0in], end = [var 2.25in, var 0in], construction = true)
   radiusGuide = line(start = [var 2.25in, var 0in], end = [var 2.52in, var 0in], construction = true)
   circle1 = circle(start = [var 2.52in, var 0in], center = [var 2.25in, var 0in])

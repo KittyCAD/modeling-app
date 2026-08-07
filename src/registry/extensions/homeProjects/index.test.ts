@@ -5,10 +5,13 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import type * as ClientErrors from '@src/lib/clientErrors'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_ID,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   type ProjectLibrary,
@@ -42,6 +45,18 @@ const cloudSyncPathMocks = vi.hoisted(() => ({
     async (library: { path: string }) => library.path
   ),
 }))
+
+const clientErrorMocks = vi.hoisted(() => ({
+  reportClientError: vi.fn(),
+}))
+
+vi.mock('@src/lib/clientErrors', async (importOriginal) => {
+  const original = await importOriginal<typeof ClientErrors>()
+  return {
+    ...original,
+    reportClientError: clientErrorMocks.reportClientError,
+  }
+})
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({
   getModule: vi.fn(),
@@ -299,6 +314,127 @@ describe('home project actions', () => {
     await waitFor(() =>
       expect(registry?.get(homeProjectEntriesValueSpec)).toEqual([])
     )
+  })
+
+  it('reports configured directory project delete failures as destructive', async () => {
+    const deleteError = new Error('Project delete failed')
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const removeSpy = vi.spyOn(fsZds, 'rm').mockRejectedValue(deleteError)
+    const library = {
+      id: 'directory:/projects',
+      title: 'Projects',
+      path: '/projects',
+      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+    } satisfies ProjectLibrary
+    const project = {
+      id: 'local:/projects/at-risk',
+      source: 'local',
+      status: 'local',
+      libraryIds: [library.id],
+      name: 'at-risk',
+      title: 'At Risk',
+      localProjectName: 'at-risk',
+      localProjectPath: '/projects/at-risk',
+      readWriteAccess: true,
+    } satisfies HomeProjectEntry
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(settingsService, createSettingsService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.wasm',
+        provides: [provideWasmPromise(Promise.resolve({} as never))],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const deleteProject = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(DIRECTORY_PROJECT_LIBRARY_TYPE)?.operations?.deleteProject
+    expect(deleteProject).toBeDefined()
+    await expect(deleteProject?.run({ library, project })).rejects.toBe(
+      deleteError
+    )
+
+    expect(removeSpy).toHaveBeenCalledWith('/projects/at-risk', {
+      recursive: true,
+    })
+    expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'system_io_error',
+        errorName: 'Error',
+        message: 'SystemIO destructive operation failed during delete project.',
+        extra: expect.objectContaining({
+          source: 'DirectoryProjectLibrary',
+          operation: 'delete project',
+          risk: 'destructive',
+          errorType: 'Error',
+        }),
+      })
+    )
+    expect(
+      JSON.stringify(clientErrorMocks.reportClientError.mock.calls[0])
+    ).not.toContain('/projects/at-risk')
+  })
+
+  it('does not report missing WASM registry configuration as a SystemIO failure', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const library = {
+      id: 'directory:/projects',
+      title: 'Projects',
+      path: '/projects',
+      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+    } satisfies ProjectLibrary
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(settingsService, createSettingsService()),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const createProject = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(DIRECTORY_PROJECT_LIBRARY_TYPE)?.operations?.createProject
+    if (!createProject) {
+      throw new Error('Expected directory create project operation')
+    }
+
+    await expect(
+      createProject.run({
+        library,
+        requestedProjectName: 'new-project',
+        requestedProjectTitle: 'New Project',
+      })
+    ).rejects.toThrow('Missing WASM promise registry value.')
+    expect(clientErrorMocks.reportClientError).not.toHaveBeenCalled()
   })
 
   it('does not clear configured library entries for unrelated settings updates', async () => {
@@ -563,5 +699,158 @@ describe('home project actions', () => {
     expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
     expect(desktopMocks.getProjectInfo).not.toHaveBeenCalled()
     expect(systemIO.send).not.toHaveBeenCalled()
+  })
+
+  it('deletes only local state for a cloud-backed project outside a cloud-type library', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const removeProjectDirectory = vi
+      .spyOn(fsZds, 'rm')
+      .mockResolvedValue(undefined)
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                {
+                  title: 'Projects',
+                  path: '/projects',
+                  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+                },
+              ],
+            }).service
+          ),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      homeProjectsExtension,
+    ])
+
+    const directoryLibraryType = registry
+      .get(projectLibraryTypesValueSpec)
+      .get(DIRECTORY_PROJECT_LIBRARY_TYPE)
+    const deleteProject = directoryLibraryType?.operations?.deleteProject
+    expect(deleteProject).toBeDefined()
+    if (!deleteProject) {
+      return
+    }
+
+    await deleteProject.run({
+      library: {
+        id: DEFAULT_PROJECT_LIBRARY_ID,
+        title: 'Projects',
+        path: '/projects',
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      },
+      project: {
+        id: 'local:/projects/bracket',
+        source: 'both',
+        status: 'synced',
+        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID],
+        name: 'bracket',
+        localProjectPath: '/projects/bracket',
+        localProjectName: 'bracket',
+        remoteProjectId: 'remote-123',
+        defaultFile: '/projects/bracket/main.kcl',
+        readWriteAccess: true,
+      },
+    })
+
+    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+      'remote-123',
+      '/projects/bracket'
+    )
+    expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
+    expect(removeProjectDirectory).not.toHaveBeenCalled()
+  })
+
+  it('uses the owning directory library when a local project is merged with its cloud entry', async () => {
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const deleteCloudProject = vi.fn().mockResolvedValue(undefined)
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [
+          provideService(
+            settingsService,
+            createMutableSettingsService({
+              libraries: [
+                getDefaultCloudProjectLibrarySetting('/cloud-projects'),
+                {
+                  title: 'Projects',
+                  path: '/projects',
+                  type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+                },
+              ],
+            }).service
+          ),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: CLOUD_PROJECT_LIBRARY_TYPE,
+            title: 'Cloud',
+            readEntries: async () => [],
+            operations: {
+              deleteProject: {
+                run: deleteCloudProject,
+              },
+            },
+          }),
+        ],
+      }),
+      homeProjectsExtension,
+    ])
+
+    await registry.get(homeProjectActionsService).delete({
+      id: 'remote:remote-123',
+      source: 'both',
+      status: 'synced',
+      libraryIds: [
+        PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+        DEFAULT_PROJECT_LIBRARY_ID,
+      ],
+      name: 'bracket',
+      title: 'Bracket',
+      localProjectPath: '/projects/bracket',
+      localProjectName: 'bracket',
+      libraryPath: '/projects',
+      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      remoteProjectId: 'remote-123',
+      defaultFile: '/projects/bracket/main.kcl',
+      readWriteAccess: true,
+    })
+
+    expect(deleteCloudProject).not.toHaveBeenCalled()
+    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+      'remote-123',
+      '/projects/bracket'
+    )
+    expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
   })
 })

@@ -140,7 +140,7 @@ hiddenBaseProfile = hide(baseProfile)
 flangeBase = extrude(baseRegion, length = baseThickness)
 
 // Create the extrusion on the top of the flange base
-topBossProfile = sketch(on = startSketchOn(flangeBase, face = END)) {
+topBossProfile = sketch(on = faceOf(flangeBase, face = END)) {
   circle1 = circle(start = [var 1.2in, var 0in], center = [var 0in, var 0in])
   radiusGuide = line(start = [var 0in, var 0in], end = [var 1.2in, var 0in], construction = true)
 
@@ -157,7 +157,7 @@ hiddenTopBossProfile = hide(topBossProfile)
 flangeWithTopBoss = extrude(topBossRegion, length = topTotalThickness)
 
 // Create the extrusion on the bottom of the flange base
-bottomBossProfile = sketch(on = startSketchOn(flangeBase, face = START)) {
+bottomBossProfile = sketch(on = faceOf(flangeBase, face = START)) {
   circle1 = circle(start = [var 1.3in, var 0in], center = [var 0in, var 0in])
   radiusGuide = line(start = [var 0in, var 0in], end = [var 1.3in, var 0in], construction = true)
 
@@ -174,7 +174,7 @@ hiddenBottomBossProfile = hide(bottomBossProfile)
 flangeWithBottomBoss = extrude(bottomBossRegion, length = bottomThickness)
 
 // Cut a hole through the entire body
-pipeHoleProfile = sketch(on = startSketchOn(flangeWithTopBoss, face = END)) {
+pipeHoleProfile = sketch(on = faceOf(flangeWithTopBoss, face = END)) {
   circle1 = circle(start = [var 0.7in, var 0in], center = [var 0in, var 0in])
   radiusGuide = line(start = [var 0in, var 0in], end = [var 0.7in, var 0in], construction = true)
 

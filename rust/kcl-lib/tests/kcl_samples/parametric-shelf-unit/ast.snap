@@ -5521,74 +5521,6 @@ description: Result of parsing parametric-shelf-unit.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "firstShelfSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "firstShelfPlane",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "firstShelfProfile",
             "start": 0,
             "type": "Identifier"
@@ -5614,7 +5546,7 @@ description: Result of parsing parametric-shelf-unit.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "firstShelfSketch",
+                    "name": "firstShelfPlane",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -7935,7 +7867,7 @@ description: Result of parsing parametric-shelf-unit.kcl
             }
           }
         ],
-        "28": [
+        "27": [
           {
             "commentStart": 0,
             "end": 0,
@@ -7947,7 +7879,7 @@ description: Result of parsing parametric-shelf-unit.kcl
             }
           }
         ],
-        "29": [
+        "28": [
           {
             "commentStart": 0,
             "end": 0,
