@@ -5,14 +5,14 @@ sketch = "profile"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 320
 height = 240
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 320
 height = 240
 padding = 24
@@ -24,14 +24,14 @@ sketch = "profile"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 360
 height = 300
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 360
 height = 300
 padding = 24
@@ -43,14 +43,14 @@ sketch = "s"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 320
 height = 240
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 320
 height = 240
 padding = 24
@@ -62,14 +62,14 @@ sketch = "s"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 320
 height = 240
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 320
 height = 240
 padding = 24
@@ -81,14 +81,14 @@ sketch = "crabHalf"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 420
 height = 320
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 420
 height = 320
 padding = 24
@@ -100,14 +100,14 @@ sketch = "profile"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 320
 height = 240
 padding = 24
 
 [[cases.visualizations]]
 name = "ids_control_polygons"
-color-scheme = "ids"
+mode = "ids"
 show-control-polygons = true
 width = 320
 height = 240
@@ -120,14 +120,14 @@ sketch = "profile"
 
 [[cases.visualizations]]
 name = "dof"
-color-scheme = "dof"
+mode = "dof"
 width = 320
 height = 240
 padding = 24
 
 [[cases.visualizations]]
 name = "ids"
-color-scheme = "ids"
+mode = "ids"
 width = 320
 height = 240
 padding = 24

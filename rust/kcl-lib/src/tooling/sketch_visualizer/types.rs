@@ -23,15 +23,32 @@ pub enum SketchSelector {
     Id(ObjectId),
 }
 
-/// The visual color strategy for rendered sketch geometry.
+/// The selected visualization diagnostic.
+///
+/// Each mode owns both parts of the contract: the color mapping used for the PNG
+/// and the sidecar block that explains that mapping.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum SketchVisualizationColorScheme {
-    /// Color geometry by solver degree-of-freedom state.
+pub enum SketchVisualizationMode {
+    /// Color geometry by solver degree-of-freedom state and emit DoF graph data.
     #[default]
     Dof,
-    /// Color primary geometry by stable per-segment ID colors.
+    /// Color primary geometry by stable per-segment ID colors and emit the ID map.
     Ids,
+}
+
+impl SketchVisualizationMode {
+    pub(super) fn emits_dof_sidecar(self) -> bool {
+        self == Self::Dof
+    }
+
+    pub(super) fn emits_id_sidecar(self) -> bool {
+        self == Self::Ids
+    }
+
+    pub(super) fn emits_segment_render_colors(self) -> bool {
+        self != Self::Ids
+    }
 }
 
 /// The static visualization theme.
@@ -52,7 +69,8 @@ pub struct SketchVisualizationOptions {
     pub padding: u32,
     pub theme: SketchVisualizationTheme,
     pub contact_tolerance: f64,
-    pub color_scheme: SketchVisualizationColorScheme,
+    #[serde(alias = "colorScheme", alias = "color_scheme")]
+    pub mode: SketchVisualizationMode,
     pub show_control_polygons: bool,
 }
 
@@ -64,7 +82,7 @@ impl Default for SketchVisualizationOptions {
             padding: DEFAULT_PADDING,
             theme: SketchVisualizationTheme::Dark,
             contact_tolerance: DEFAULT_CONTACT_TOLERANCE,
-            color_scheme: SketchVisualizationColorScheme::Dof,
+            mode: SketchVisualizationMode::Dof,
             show_control_polygons: false,
         }
     }
@@ -84,9 +102,9 @@ pub struct SketchVisualization {
 
 /// JSON-friendly facts used to interpret the visualization.
 ///
-/// This is intentionally more graph-like than UI-like. It describes the source
-/// sketch entities, how they were colored, which points are near or constrained
-/// together, and which primary segments form connected components.
+/// This is intentionally more graph-like than UI-like. The stable core records
+/// source sketch entities and their IDs, while mode-specific sidecars explain
+/// only the diagnostic overlay selected by `mode`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVisualizationData {
@@ -96,30 +114,38 @@ pub struct SketchVisualizationData {
     pub bounds: SketchVisualizationBounds,
     /// Unit suffixes discovered while extracting point positions.
     pub units: Vec<String>,
-    /// The selected render color scheme.
-    pub color_scheme: SketchVisualizationColorScheme,
-    /// Solver-level constraint summary for the whole sketch, when available.
+    /// The selected visualization diagnostic.
+    pub mode: SketchVisualizationMode,
+    /// Solver-level constraint summary for the whole sketch in DoF mode.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub constraint_status: Option<SketchConstraintStatus>,
     /// Compact degree-of-freedom facts, keyed by point and primary-segment IDs.
-    pub dof: SketchVisualizationDofData,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dof: Option<SketchVisualizationDofData>,
     /// All owned sketch points, including control points.
     pub points: Vec<SketchVisualizationPointData>,
     /// Primary sketch geometry, excluding helper/control-polygon geometry.
     pub segments: Vec<SketchVisualizationSegmentData>,
     /// Constraint sidecar data attached to the selected sketch.
     pub constraints: Vec<SketchVisualizationConstraintData>,
-    /// Stable per-segment colors emitted for every primary segment in every mode.
-    pub id_color_map: BTreeMap<usize, String>,
+    /// Stable per-segment colors emitted for IDs mode.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id_color_map: Option<BTreeMap<usize, String>>,
     /// Groups of points whose coordinates are within `contact_tolerance`.
-    pub contact_groups: Vec<SketchVisualizationPointGroup>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub contact_groups: Option<Vec<SketchVisualizationPointGroup>>,
     /// Groups of points joined by explicit coincident constraints.
-    pub coincident_groups: Vec<SketchVisualizationCoincidentGroup>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub coincident_groups: Option<Vec<SketchVisualizationCoincidentGroup>>,
     /// Connected sets of primary segments after contact and coincidence are applied.
-    pub connected_components: Vec<SketchVisualizationConnectedComponent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub connected_components: Option<Vec<SketchVisualizationConnectedComponent>>,
     /// Endpoint point IDs that are not connected to any other endpoint.
-    pub open_endpoints: Vec<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub open_endpoints: Option<Vec<usize>>,
     /// Per-component closedness hints derived from `open_endpoints`.
-    pub closedness_hints: Vec<SketchVisualizationClosednessHint>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub closedness_hints: Option<Vec<SketchVisualizationClosednessHint>>,
     /// Recoverable extraction problems that did not prevent rendering.
     pub warnings: Vec<String>,
 }
@@ -151,7 +177,9 @@ pub struct SketchVisualizationPointData {
     pub id: usize,
     pub position: SketchVisualizationPoint,
     pub owner: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contact_group: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub coincident_group: Option<usize>,
 }
 
@@ -212,7 +240,9 @@ pub struct SketchVisualizationSegmentData {
     pub point_ids: Vec<usize>,
     pub endpoint_ids: Vec<usize>,
     pub construction: bool,
-    pub component_id: usize,
+    /// DoF-mode connected component ID.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub component_id: Option<usize>,
     /// Actual render color in DoF mode. In IDs mode this is omitted because it
     /// would duplicate `id_color_map[id]`.
     #[serde(default, skip_serializing_if = "Option::is_none")]

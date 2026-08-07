@@ -43,14 +43,16 @@ use crate::frontend::sketch::ConstraintSegment;
 use crate::pretty::NumericSuffix;
 
 #[test]
-fn dof_is_default_and_id_color_map_is_always_emitted() {
+fn dof_is_default_and_omits_id_color_map() {
     let outcome = simple_two_line_outcome(false);
     let visualization = outcome
         .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
         .unwrap();
 
-    assert_eq!(visualization.data.color_scheme, SketchVisualizationColorScheme::Dof);
-    assert_eq!(visualization.data.id_color_map.len(), 2);
+    assert_eq!(visualization.data.mode, SketchVisualizationMode::Dof);
+    assert!(visualization.data.id_color_map.is_none());
+    assert!(visualization.data.dof.is_some());
+    assert!(visualization.data.contact_groups.is_some());
     assert_eq!(
         visualization.data.segments[0].rendered_color,
         Some(dof_color(Some(Freedom::Free), SketchVisualizationTheme::Dark).to_hex_string())
@@ -59,56 +61,54 @@ fn dof_is_default_and_id_color_map_is_always_emitted() {
 }
 
 #[test]
-fn ids_color_scheme_omits_redundant_rendered_colors() {
+fn ids_mode_omits_redundant_rendered_colors() {
     let outcome = simple_two_line_outcome(false);
     let visualization = outcome
         .visualize_sketch(
             SketchSelector::First,
             SketchVisualizationOptions {
-                color_scheme: SketchVisualizationColorScheme::Ids,
+                mode: SketchVisualizationMode::Ids,
                 ..Default::default()
             },
         )
         .unwrap();
 
+    let id_color_map = visualization.data.id_color_map.as_ref().unwrap();
+    assert!(visualization.data.dof.is_none());
+    assert!(visualization.data.connected_components.is_none());
     for segment in &visualization.data.segments {
         assert!(segment.rendered_color.is_none());
-        assert!(visualization.data.id_color_map.contains_key(&segment.id));
+        assert!(id_color_map.contains_key(&segment.id));
     }
 }
 
 #[test]
-fn id_color_map_is_deterministic_across_color_schemes() {
+fn id_color_map_is_deterministic_in_ids_mode() {
     let outcome = simple_two_line_outcome(false);
-    let dof_visualization = outcome
-        .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
-        .unwrap();
     let ids_visualization = outcome
         .visualize_sketch(
             SketchSelector::First,
             SketchVisualizationOptions {
-                color_scheme: SketchVisualizationColorScheme::Ids,
+                mode: SketchVisualizationMode::Ids,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+    let resized_ids_visualization = outcome
+        .visualize_sketch(
+            SketchSelector::First,
+            SketchVisualizationOptions {
+                mode: SketchVisualizationMode::Ids,
+                width: 512,
+                height: 512,
                 ..Default::default()
             },
         )
         .unwrap();
 
-    assert_eq!(dof_visualization.data.id_color_map, ids_visualization.data.id_color_map);
     assert_eq!(
         ids_visualization.data.id_color_map,
-        outcome
-            .visualize_sketch(
-                SketchSelector::First,
-                SketchVisualizationOptions {
-                    color_scheme: SketchVisualizationColorScheme::Ids,
-                    width: 512,
-                    height: 512,
-                    ..Default::default()
-                },
-            )
-            .unwrap()
-            .data
-            .id_color_map
+        resized_ids_visualization.data.id_color_map
     );
 }
 
@@ -148,10 +148,10 @@ fn touching_line_endpoints_are_grouped_into_one_component() {
         .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
         .unwrap();
 
-    assert_eq!(visualization.data.contact_groups.len(), 1);
-    assert_eq!(visualization.data.connected_components.len(), 1);
-    assert_eq!(visualization.data.open_endpoints.len(), 2);
-    assert!(!visualization.data.closedness_hints[0].is_closed);
+    assert_eq!(visualization.data.contact_groups.as_ref().unwrap().len(), 1);
+    assert_eq!(visualization.data.connected_components.as_ref().unwrap().len(), 1);
+    assert_eq!(visualization.data.open_endpoints.as_ref().unwrap().len(), 2);
+    assert!(!visualization.data.closedness_hints.as_ref().unwrap()[0].is_closed);
 }
 
 #[test]
@@ -161,9 +161,9 @@ fn separated_line_endpoints_remain_in_separate_components() {
         .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
         .unwrap();
 
-    assert!(visualization.data.contact_groups.is_empty());
-    assert_eq!(visualization.data.connected_components.len(), 2);
-    assert_eq!(visualization.data.open_endpoints.len(), 4);
+    assert!(visualization.data.contact_groups.as_ref().unwrap().is_empty());
+    assert_eq!(visualization.data.connected_components.as_ref().unwrap().len(), 2);
+    assert_eq!(visualization.data.open_endpoints.as_ref().unwrap().len(), 4);
 }
 
 #[test]
@@ -179,17 +179,17 @@ fn coincident_constraints_group_points_and_connect_components() {
         .visualize_sketch(SketchSelector::First, SketchVisualizationOptions::default())
         .unwrap();
 
-    assert!(visualization.data.contact_groups.is_empty());
+    assert!(visualization.data.contact_groups.as_ref().unwrap().is_empty());
     assert_eq!(
-        visualization.data.coincident_groups,
-        vec![SketchVisualizationCoincidentGroup {
+        visualization.data.coincident_groups.as_ref().unwrap(),
+        &vec![SketchVisualizationCoincidentGroup {
             id: 0,
             point_ids: vec![2, 4],
             includes_origin: false,
         }]
     );
-    assert_eq!(visualization.data.connected_components.len(), 1);
-    assert_eq!(visualization.data.open_endpoints, vec![1, 5]);
+    assert_eq!(visualization.data.connected_components.as_ref().unwrap().len(), 1);
+    assert_eq!(visualization.data.open_endpoints.as_ref().unwrap(), &vec![1, 5]);
 }
 
 #[test]
@@ -252,7 +252,7 @@ fn snapshots_data_and_png_for_dof_and_ids_modes() {
             width: 240,
             height: 180,
             padding: 20,
-            color_scheme: SketchVisualizationColorScheme::Ids,
+            mode: SketchVisualizationMode::Ids,
             show_control_polygons: true,
             ..Default::default()
         },
@@ -377,8 +377,8 @@ struct SketchVisualizerSnapshotCase {
 #[serde(rename_all = "kebab-case")]
 struct SketchVisualizerSnapshot {
     name: String,
-    #[serde(default)]
-    color_scheme: SketchVisualizationColorScheme,
+    #[serde(default, alias = "color-scheme")]
+    mode: SketchVisualizationMode,
     #[serde(default)]
     show_control_polygons: bool,
     theme: Option<SketchVisualizationTheme>,
@@ -398,7 +398,7 @@ impl SketchVisualizerSnapshot {
             padding: self.padding.unwrap_or(default_options.padding),
             theme: self.theme.unwrap_or(default_options.theme),
             contact_tolerance: self.contact_tolerance.unwrap_or(default_options.contact_tolerance),
-            color_scheme: self.color_scheme,
+            mode: self.mode,
             show_control_polygons: self.show_control_polygons,
         }
     }

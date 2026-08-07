@@ -33,12 +33,12 @@ use super::scene::object_kind_name;
 use super::scene::position_to_point;
 use super::types::SketchVisualization;
 use super::types::SketchVisualizationBounds;
-use super::types::SketchVisualizationColorScheme;
 use super::types::SketchVisualizationConstraintData;
 use super::types::SketchVisualizationData;
 use super::types::SketchVisualizationDofBuckets;
 use super::types::SketchVisualizationDofData;
 use super::types::SketchVisualizationError;
+use super::types::SketchVisualizationMode;
 use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
 use super::types::SketchVisualizationPointData;
@@ -265,6 +265,9 @@ impl<'a> Extraction<'a> {
     }
 
     pub(super) fn finish(self) -> Result<SketchVisualization, SketchVisualizationError> {
+        let mode = self.options.mode;
+        let include_dof_sidecar = mode.emits_dof_sidecar();
+        let include_ids_sidecar = mode.emits_id_sidecar();
         let id_color_map = self.id_color_map();
         let contact_groups = contact_groups(&self.points, self.options.contact_tolerance);
         let coincident_groups = coincident_groups(&self.constraints, &self.points);
@@ -284,7 +287,6 @@ impl<'a> Extraction<'a> {
         // Build all machine-readable sidecar facts before rendering. The PNG and
         // JSON must agree on colors and bounds, so both are derived from the same
         // internal point/segment maps in this finalization step.
-        let dof = self.dof_data();
         let rendered_colors = self.rendered_colors(&id_color_map);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());
         for segment in self.primary_segments.values() {
@@ -299,8 +301,8 @@ impl<'a> Extraction<'a> {
                 point_ids: segment.point_ids.clone(),
                 endpoint_ids: segment.endpoint_ids.clone(),
                 construction: segment.construction,
-                component_id,
-                rendered_color: (self.options.color_scheme != SketchVisualizationColorScheme::Ids).then(|| {
+                component_id: include_dof_sidecar.then_some(component_id),
+                rendered_color: mode.emits_segment_render_colors().then(|| {
                     rendered_colors
                         .get(&segment.id)
                         .cloned()
@@ -315,12 +317,21 @@ impl<'a> Extraction<'a> {
                 id: point.id,
                 position: point.position,
                 owner: point.owner,
-                contact_group: point_contact_group.get(&point.id).copied(),
-                coincident_group: point_coincident_group.get(&point.id).copied(),
+                contact_group: include_dof_sidecar
+                    .then(|| point_contact_group.get(&point.id).copied())
+                    .flatten(),
+                coincident_group: include_dof_sidecar
+                    .then(|| point_coincident_group.get(&point.id).copied())
+                    .flatten(),
             });
         }
 
         let bounds = self.bounds();
+        let constraint_status = include_dof_sidecar
+            .then(|| sketch_constraint_status_for_sketch(self.scene_objects, self.sketch_object))
+            .flatten();
+        let dof = include_dof_sidecar.then(|| self.dof_data());
+        let id_color_map = include_ids_sidecar.then_some(id_color_map);
         let data = SketchVisualizationData {
             sketch: SketchVisualizationSketchInfo {
                 id: self.sketch_object.id.0,
@@ -328,18 +339,18 @@ impl<'a> Extraction<'a> {
             },
             bounds,
             units: self.units.into_iter().collect(),
-            color_scheme: self.options.color_scheme,
-            constraint_status: sketch_constraint_status_for_sketch(self.scene_objects, self.sketch_object),
+            mode,
+            constraint_status,
             dof,
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
             id_color_map,
-            contact_groups,
-            coincident_groups,
-            connected_components: component_result.components,
-            open_endpoints: component_result.open_endpoints,
-            closedness_hints: component_result.closedness_hints,
+            contact_groups: include_dof_sidecar.then_some(contact_groups),
+            coincident_groups: include_dof_sidecar.then_some(coincident_groups),
+            connected_components: include_dof_sidecar.then_some(component_result.components),
+            open_endpoints: include_dof_sidecar.then_some(component_result.open_endpoints),
+            closedness_hints: include_dof_sidecar.then_some(component_result.closedness_hints),
             warnings: self.warnings.clone(),
         };
 
@@ -430,14 +441,12 @@ impl<'a> Extraction<'a> {
         self.primary_segments
             .values()
             .map(|segment| {
-                let color = match self.options.color_scheme {
-                    SketchVisualizationColorScheme::Ids => id_color_map
+                let color = match self.options.mode {
+                    SketchVisualizationMode::Ids => id_color_map
                         .get(&segment.id)
                         .cloned()
                         .unwrap_or_else(|| id_color(segment.id).to_hex_string()),
-                    SketchVisualizationColorScheme::Dof => {
-                        dof_color(segment.freedom, self.options.theme).to_hex_string()
-                    }
+                    SketchVisualizationMode::Dof => dof_color(segment.freedom, self.options.theme).to_hex_string(),
                 };
                 (segment.id, color)
             })

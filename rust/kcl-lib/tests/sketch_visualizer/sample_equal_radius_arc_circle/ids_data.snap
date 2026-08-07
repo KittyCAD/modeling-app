@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/tooling/sketch_visualizer.rs
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
 ---
 {
   "sketch": {
@@ -19,32 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
   "units": [
     "Mm"
   ],
-  "colorScheme": "ids",
-  "constraintStatus": {
-    "name": "",
-    "status": "FullyConstrained",
-    "free_count": 0,
-    "conflict_count": 0,
-    "total_count": 2
-  },
-  "dof": {
-    "default": "Free",
-    "points": {
-      "fixed": [
-        2,
-        3,
-        4,
-        6,
-        7
-      ]
-    },
-    "segments": {
-      "fixed": [
-        5,
-        8
-      ]
-    }
-  },
+  "mode": "ids",
   "points": [
     {
       "id": 2,
@@ -52,9 +27,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": -4.9999999995,
         "y": 0.0
       },
-      "owner": 5,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 5
     },
     {
       "id": 3,
@@ -62,9 +35,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 4.9999999995,
         "y": 0.0
       },
-      "owner": 5,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 5
     },
     {
       "id": 4,
@@ -72,9 +43,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 0.000000000000000000000000044408924466238024,
         "y": 0.0
       },
-      "owner": 5,
-      "contactGroup": null,
-      "coincidentGroup": 0
+      "owner": 5
     },
     {
       "id": 6,
@@ -82,9 +51,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 14.999999997,
         "y": 0.0
       },
-      "owner": 8,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 8
     },
     {
       "id": 7,
@@ -92,9 +59,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         "x": 9.999999999,
         "y": 0.0
       },
-      "owner": 8,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 8
     }
   ],
   "segments": [
@@ -110,8 +75,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         2,
         3
       ],
-      "construction": false,
-      "componentId": 0
+      "construction": false
     },
     {
       "id": 8,
@@ -121,8 +85,7 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
         7
       ],
       "endpointIds": [],
-      "construction": false,
-      "componentId": 1
+      "construction": false
     }
   ],
   "constraints": [
@@ -188,48 +151,5 @@ source: kcl-lib/src/tooling/sketch_visualizer.rs
     "5": "#79d941",
     "8": "#f2935c"
   },
-  "contactGroups": [],
-  "coincidentGroups": [
-    {
-      "id": 0,
-      "pointIds": [
-        4
-      ],
-      "includesOrigin": true
-    }
-  ],
-  "connectedComponents": [
-    {
-      "id": 0,
-      "segmentIds": [
-        5
-      ]
-    },
-    {
-      "id": 1,
-      "segmentIds": [
-        8
-      ]
-    }
-  ],
-  "openEndpoints": [
-    2,
-    3
-  ],
-  "closednessHints": [
-    {
-      "componentId": 0,
-      "isClosed": false,
-      "openEndpointIds": [
-        2,
-        3
-      ]
-    },
-    {
-      "componentId": 1,
-      "isClosed": true,
-      "openEndpointIds": []
-    }
-  ],
   "warnings": []
 }

@@ -19,7 +19,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
   "units": [
     "Mm"
   ],
-  "colorScheme": "dof",
+  "mode": "dof",
   "constraintStatus": {
     "name": "",
     "status": "FullyConstrained",
@@ -168,9 +168,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 0.94,
         "y": 2.54
       },
-      "owner": 22,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 22
     },
     {
       "id": 27,
@@ -198,9 +196,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 5.62,
         "y": 2.54
       },
-      "owner": 30,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 30
     },
     {
       "id": 44,
@@ -208,9 +204,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 3.28,
         "y": 3.48
       },
-      "owner": 46,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 46
     },
     {
       "id": 45,
@@ -218,9 +212,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         "x": 3.28,
         "y": 0.0
       },
-      "owner": 46,
-      "contactGroup": null,
-      "coincidentGroup": null
+      "owner": 46
     }
   ],
   "segments": [
@@ -719,15 +711,6 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       ]
     }
   ],
-  "idColorMap": {
-    "4": "#ede855",
-    "7": "#d94e9a",
-    "10": "#4f6ed1",
-    "13": "#35e8d9",
-    "22": "#8848db",
-    "30": "#69d952",
-    "46": "#eb44e2"
-  },
   "contactGroups": [
     {
       "id": 0,
