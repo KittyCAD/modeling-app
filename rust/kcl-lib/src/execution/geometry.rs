@@ -38,6 +38,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
@@ -2393,6 +2394,15 @@ pub enum UnsolvedSegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
+        /// The direction that the arc sweeps from its declared start to its
+        /// declared end. The solver and engine only understand
+        /// counterclockwise arcs, so code sending them the arc must use
+        /// [`ArcDirection::ccw_order`] to resolve which points to treat as the
+        /// sweep's start and end.
+        #[serde(default, skip_serializing_if = "ArcDirection::is_ccw")]
+        #[ts(as = "Option<ArcDirection>")]
+        #[ts(optional)]
+        direction: ArcDirection,
         construction: bool,
     },
     Circle {
@@ -2497,6 +2507,12 @@ pub enum SegmentKind {
         end_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        /// The direction that the arc sweeps from its declared start to its
+        /// declared end.
+        #[serde(default, skip_serializing_if = "ArcDirection::is_ccw")]
+        #[ts(as = "Option<ArcDirection>")]
+        #[ts(optional)]
+        direction: ArcDirection,
         construction: bool,
     },
     Circle {

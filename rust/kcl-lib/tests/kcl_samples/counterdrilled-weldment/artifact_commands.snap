@@ -1052,7 +1052,6 @@ description: Artifact commands counterdrilled-weldment.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     },
@@ -1071,7 +1070,6 @@ description: Artifact commands counterdrilled-weldment.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     },

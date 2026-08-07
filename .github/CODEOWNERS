@@ -10,6 +10,10 @@
 /rust/**/frontend.rs              @KittyCAD/frontend @KittyCAD/kcl
 /rust/**/frontend/                @KittyCAD/frontend @KittyCAD/kcl
 
+# CodeMirror
+/packages/codemirror-lang-kcl     @KittyCAD/frontend @KittyCAD/kcl
+/packages/codemirror-lsp-client   @KittyCAD/frontend @KittyCAD/kcl
+
 # Dependencies
 Cargo.toml                        @KittyCAD/frontend @KittyCAD/kcl
 Cargo.lock                        @KittyCAD/frontend @KittyCAD/kcl

@@ -10,6 +10,7 @@ node_modules
 
 # production
 build
+*.log
 
 # misc
 .DS_Store

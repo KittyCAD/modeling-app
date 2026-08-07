@@ -183,8 +183,8 @@ counterdrillCutters = patternLinear3d(
   axis = [0, 1, 0],
 )
 
-plateWithThroughHoles = subtract(plateChamfered, tools = throughHoleCutters, legacyMethod = true)
-plate = subtract(plateWithThroughHoles, tools = counterdrillCutters, legacyMethod = true)
+plateWithThroughHoles = subtract(plateChamfered, tools = throughHoleCutters)
+plate = subtract(plateWithThroughHoles, tools = counterdrillCutters)
 
 tubeOuterRadius = tubeInnerDiameter / 2 + tubeThickness
 finBaseReach = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter
