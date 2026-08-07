@@ -13,8 +13,7 @@ twistAngle = 30 // twist applied to tip (yaw)
 
 // root profile (base of blade)
 rootPlane = XY
-rootSketch = startSketchOn(rootPlane)
-rootProfile = sketch(on = rootSketch) {
+rootProfile = sketch(on = rootPlane) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 40mm])
   coincident([line1.end, line2.start])
@@ -29,8 +28,7 @@ rootProfile = sketch(on = rootSketch) {
 
 // tip profile (top of blade, twisted)
 tipPlane = offsetPlane(XY, offset = bladeHeight)
-tipSketch = startSketchOn(tipPlane)
-tipProfile = sketch(on = tipSketch) {
+tipProfile = sketch(on = tipPlane) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
   line2 = line(start = [var 5mm, var 0mm], end = [var 5mm, var 40mm])
   coincident([line1.end, line2.start])

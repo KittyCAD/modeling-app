@@ -9025,13 +9025,6 @@ description: Operations executed helium-tank.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -9081,13 +9074,6 @@ description: Operations executed helium-tank.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -9518,13 +9504,6 @@ description: Operations executed helium-tank.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
@@ -10145,13 +10124,6 @@ description: Operations executed helium-tank.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",

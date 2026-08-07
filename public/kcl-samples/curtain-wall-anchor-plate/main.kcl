@@ -223,7 +223,7 @@ hiddenBoltHeadProfile = hide(boltHeadProfile)
 boltHeadBody = extrude(boltHeadRegion, length = boltDiameter * 0.7)
 
 // Build a bolt with a hexagonal head and cylindrical shaft
-boltShaftProfile = sketch(on = startSketchOn(boltHeadBody, face = START)) {
+boltShaftProfile = sketch(on = faceOf(boltHeadBody, face = START)) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   radiusGuide = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm], construction = true)
   coincident([radiusGuide.start, ORIGIN])
@@ -274,7 +274,7 @@ clampPlateRegion = region(segments = [
 hiddenClampPlateProfile = hide(clampPlateProfile)
 clampPlateBody = extrude(clampPlateRegion, length = -boltDiameter * 0.3)
 
-nutProfile = sketch(on = startSketchOn(clampPlateBody, face = START)) {
+nutProfile = sketch(on = faceOf(clampPlateBody, face = START)) {
   nutCircle = circle(start = [var 12mm, var 0mm], center = [var 0mm, var 0mm], construction = true)
   coincident([nutCircle.center, ORIGIN])
 

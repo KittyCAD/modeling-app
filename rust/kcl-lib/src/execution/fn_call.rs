@@ -317,7 +317,7 @@ impl FunctionSource {
                     None => format!("{subject} is deprecated, see the docs for a recommended replacement"),
                 })
             } else if let Some(since) = &self.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(match migration_help(self) {
                     Some(help) => format!("{subject} is deprecated as of KCL {since}. {help}"),
@@ -377,7 +377,7 @@ impl FunctionSource {
             } else if param.deprecated {
                 Some("is deprecated, see the docs for a recommended replacement".to_owned())
             } else if let Some(since) = &param.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(format!(
                     "is deprecated as of KCL {since}. See the docs for a recommended replacement."
@@ -2278,6 +2278,36 @@ plane = startSketchOn(XY)
             warnings[0].message
         );
         assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecation_version_override_does_not_change_program_version() {
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 1.0)
+plane = startSketchOn(XY)
+"#,
+        )
+        .unwrap();
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: crate::engine::EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+        exec_state.set_deprecation_version_override(Some("2.0"));
+
+        exec_ctxt.run(&program, &mut exec_state).await.unwrap();
+
+        assert_eq!(exec_state.mod_local.settings.kcl_version, "1.0");
+        let warnings = exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.tag == crate::errors::Tag::Deprecated)
+            .collect::<Vec<_>>();
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]

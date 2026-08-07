@@ -13,8 +13,8 @@ description: Lints multi-axis-robot.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      5117,
-      5533,
+      5103,
+      5519,
       1
     ],
     "overridden": false,

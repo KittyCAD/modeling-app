@@ -139,7 +139,7 @@ holeCutters = patternLinear3d(
   axis = plateWidthAxis,
 )
 
-bodyCut = subtract(body, tools = holeCutters, legacyMethod = true)
+bodyCut = subtract(body, tools = holeCutters)
 
 // Fillet the exterior edges
 bodyFinal = fillet(

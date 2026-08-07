@@ -3515,13 +3515,6 @@ description: Operations executed field-monitor-stand.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "legacyMethod": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        },
         "tools": {
           "value": {
             "type": "Array",
