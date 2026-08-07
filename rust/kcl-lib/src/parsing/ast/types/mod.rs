@@ -5450,6 +5450,37 @@ fn demo(a) {
         );
     }
 
+    #[test]
+    fn test_rename_inside_if_then_branch() {
+        let code = r#"param1 = 1
+if true {
+  param1
+} else if false {
+  param1 + 1
+} else {
+  param1 + 2
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("param1").unwrap() + 1;
+
+        program.rename_symbol("height", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"height = 1
+if true {
+  height
+} else if false {
+  height + 1
+} else {
+  height + 2
+}
+"#
+        );
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
