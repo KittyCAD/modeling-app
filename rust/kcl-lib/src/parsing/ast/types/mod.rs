@@ -925,9 +925,20 @@ impl Program {
         let member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
         let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
             match node {
-                WalkNode::Identifier(ident) => {
-                    if SourceRange::from(ident).contains(pos) {
-                        *ident_at_pos.borrow_mut() = Some(ident.name.clone());
+                // Only a reference (a bare name) or a declaration's id can identify a sketch
+                // block symbol. Other identifiers at the position, like function parameters
+                // and expression labels, bind different symbols; matching them would rename an
+                // unrelated same-named declaration.
+                WalkNode::Name(name) => {
+                    if SourceRange::from(name).contains(pos)
+                        && let Some(local) = name.local_ident()
+                    {
+                        *ident_at_pos.borrow_mut() = Some(local.inner.to_owned());
+                    }
+                }
+                WalkNode::VariableDeclarator(decl) => {
+                    if SourceRange::from(&decl.id).contains(pos) {
+                        *ident_at_pos.borrow_mut() = Some(decl.id.name.clone());
                     }
                 }
                 WalkNode::MemberExpression(member) => {
@@ -6584,6 +6595,28 @@ top = s.edgeOne
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_from_param_position_does_not_rename_sketch_block_declaration() {
+        // The parameter `line1` is its own binding; even though the position is inside the
+        // sketch block's range and the block declares a same-named symbol, renaming from the
+        // parameter's position must not touch the block's declaration. (Renaming parameters
+        // of nested functions isn't supported, so nothing is renamed at all.)
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  helper = fn(line1) {
+    return line1
+  }
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("fn(line1").unwrap() + "fn(".len() + 1;
+
+        program.rename_symbol("newName", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
     }
 
     /// Helper to create a comment NonCodeNode for tests.
