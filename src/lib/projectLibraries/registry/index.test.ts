@@ -138,9 +138,17 @@ describe('project library realizations registry service', () => {
       )
 
       vi.useFakeTimers()
-      registrations
-        .find((registration) => registration.path === '/projects-a')
-        ?.callback('unlinkDir', '/projects-a/old-project')
+      const libraryAWatcher = registrations.find(
+        (registration) => registration.path === '/projects-a'
+      )
+
+      libraryAWatcher?.callback('unlinkDir', '/projects-a/old-project/main.kcl')
+      libraryAWatcher?.callback('unlinkDir', '/projects-b/old-project')
+      libraryAWatcher?.callback('ready', '/projects-a/old-project')
+      await vi.advanceTimersByTimeAsync(750)
+      expect(readRealizations).not.toHaveBeenCalled()
+
+      libraryAWatcher?.callback('unlinkDir', '/projects-a/old-project')
       await vi.advanceTimersByTimeAsync(750)
       await Promise.resolve()
       await Promise.resolve()

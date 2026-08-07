@@ -172,6 +172,12 @@ type ProjectLibraryWatchTarget = {
   libraryIds: readonly string[]
 }
 
+type ProjectLibraryWatchPathScope =
+  | 'outside'
+  | 'root'
+  | 'immediate-child'
+  | 'nested-child'
+
 function normalizeProjectLibraryWatchPath(path: string) {
   return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
 }
@@ -201,59 +207,51 @@ function projectLibraryWatchTargetsFromLibraries(
   )
 }
 
-function relativeProjectLibraryWatchPath(
+/**
+ * Classifies a file-watch event path relative to one configured library root.
+ * Discovery only needs root and immediate-child events because each direct
+ * child may be a local project realization; deeper file events belong to an
+ * already-known realization and should not trigger a full library rescan.
+ */
+function projectLibraryWatchPathScope(
   targetPath: string,
   libraryPath: string
-) {
+): ProjectLibraryWatchPathScope {
   const normalizedTargetPath = normalizeProjectLibraryWatchPath(targetPath)
   const normalizedLibraryPath = normalizeProjectLibraryWatchPath(libraryPath)
 
   if (normalizedTargetPath === normalizedLibraryPath) {
-    return ''
+    return 'root'
   }
 
   const libraryPrefix = `${normalizedLibraryPath}/`
   if (!normalizedTargetPath.startsWith(libraryPrefix)) {
-    return undefined
+    return 'outside'
   }
 
-  return normalizedTargetPath.slice(libraryPrefix.length)
+  const relativePath = normalizedTargetPath.slice(libraryPrefix.length)
+  return relativePath.includes('/') ? 'nested-child' : 'immediate-child'
 }
 
-function countNormalizedPathSegments(path: string) {
-  let count = 0
-  let inSegment = false
+const PROJECT_LIBRARY_REALIZATION_INVALIDATION_EVENT_TYPES = new Set([
+  'add',
+  'addDir',
+  'change',
+  'unlink',
+  'unlinkDir',
+])
 
-  for (const character of path) {
-    if (character === '/') {
-      inSegment = false
-      continue
-    }
-
-    if (!inSegment) {
-      count += 1
-      inSegment = true
-    }
-  }
-
-  return count
-}
-
-function isProjectLibraryRealizationBoundaryEvent(
+function shouldInvalidateProjectLibraryRealizationsForWatchEvent(
   eventType: string,
   targetPath: string,
   libraryPath: string
 ) {
-  if (!['add', 'addDir', 'change', 'unlink', 'unlinkDir'].includes(eventType)) {
+  if (!PROJECT_LIBRARY_REALIZATION_INVALIDATION_EVENT_TYPES.has(eventType)) {
     return false
   }
 
-  const relativePath = relativeProjectLibraryWatchPath(targetPath, libraryPath)
-  if (relativePath === undefined) {
-    return false
-  }
-
-  return relativePath === '' || countNormalizedPathSegments(relativePath) <= 1
+  const pathScope = projectLibraryWatchPathScope(targetPath, libraryPath)
+  return pathScope === 'root' || pathScope === 'immediate-child'
 }
 
 function watchConfiguredProjectLibraries({
@@ -305,7 +303,7 @@ function watchConfiguredProjectLibraries({
       watcherKey,
       (eventType, targetPath) => {
         if (
-          !isProjectLibraryRealizationBoundaryEvent(
+          !shouldInvalidateProjectLibraryRealizationsForWatchEvent(
             eventType,
             targetPath,
             target.path
