@@ -1,3 +1,10 @@
+//! Sketch connectedness and closedness analysis.
+//!
+//! The renderer only needs polylines, but downstream tools need to know whether
+//! geometry is connected by coordinates, by explicit coincident constraints, or
+//! not connected at all. This module turns points and segment endpoints into a
+//! few stable graph-shaped sidecar facts.
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
@@ -20,6 +27,8 @@ pub(super) fn contact_groups(
     let mut union = UnionFind::new(point_ids.iter().copied());
     let tolerance = libm::fmax(contact_tolerance, 0.0);
 
+    // Contact groups are purely geometric. Union every pair of points whose
+    // coordinates fall inside the tolerance, then emit only multi-point sets.
     for (left_index, left_id) in point_ids.iter().enumerate() {
         for right_id in point_ids.iter().skip(left_index + 1) {
             let left = points[left_id].position;
@@ -42,6 +51,10 @@ pub(super) fn coincident_groups(
     let mut origin_anchor = None;
     let mut roots_including_origin = BTreeSet::new();
 
+    // Coincident constraints can mention more than two points, and multiple
+    // constraints can chain together. Union-find gives the transitive closure so
+    // callers see the full explicit coincidence group rather than constraint
+    // pairs.
     for constraint in constraints.iter().filter(|constraint| constraint.kind == "coincident") {
         let mut point_ids = Vec::new();
         let mut includes_origin = false;
@@ -116,6 +129,9 @@ pub(super) fn connected_components(
     let mut union = UnionFind::new(segment_ids.iter().copied());
     let endpoint_to_segments = endpoint_to_segments(segments);
 
+    // First union segments that literally share endpoint IDs. Then apply the two
+    // point-group systems so coincident-but-distinct endpoint IDs connect the
+    // same way shared IDs do.
     for segment_ids_for_endpoint in endpoint_to_segments.values() {
         union_all(&mut union, segment_ids_for_endpoint);
     }
@@ -149,6 +165,10 @@ pub(super) fn connected_components(
         });
     }
 
+    // Closedness is endpoint-centric rather than segment-centric. We union
+    // endpoints through contact/coincident groups, count how many segment
+    // endpoints land in each endpoint connection, and flag singleton
+    // connections as open.
     let mut endpoint_connection_union = UnionFind::new(
         segments
             .values()
@@ -259,6 +279,11 @@ fn point_groups_from_union(mut point_ids: Vec<usize>, union: &mut UnionFind) -> 
         .collect()
 }
 
+/// Small deterministic disjoint-set helper for object IDs.
+///
+/// Connectivity facts need stable ordering for snapshots and downstream JSON.
+/// This keeps the lower numeric root when merging sets, so repeated runs produce
+/// the same group IDs after the final BTreeMap enumeration.
 #[derive(Debug, Clone)]
 struct UnionFind {
     parent: BTreeMap<usize, usize>,

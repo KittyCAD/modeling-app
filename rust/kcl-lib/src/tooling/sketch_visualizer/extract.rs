@@ -1,3 +1,9 @@
+//! Extraction from frontend scene objects into visualization inputs.
+//!
+//! This is the only module that knows how to interpret `front::Segment` values.
+//! It records primary geometry for the sidecar, samples curves into polylines for
+//! rendering, and preserves enough IDs to let later modules build graph facts.
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
@@ -49,6 +55,11 @@ use super::types::SketchVisualizationSegmentData;
 use super::types::SketchVisualizationSegmentKind;
 use super::types::SketchVisualizationSketchInfo;
 
+/// Mutable extraction state for one selected sketch.
+///
+/// Points are collected before most segment geometry is usable because frontend
+/// segments refer to point objects by ID. Missing referenced objects become
+/// warnings where possible so the caller still gets a partial diagnostic image.
 #[derive(Debug)]
 pub(super) struct Extraction<'a> {
     scene_objects: &'a [Object],
@@ -102,6 +113,9 @@ impl<'a> Extraction<'a> {
             match segment {
                 Segment::Point(point) => {
                     self.insert_point(object.id, point)?;
+                    // Standalone points are primary geometry. Points owned by a
+                    // line, arc, circle, or spline are represented through their
+                    // owner segment instead.
                     if point.owner.is_none() {
                         self.primary_segments.insert(
                             object.id.0,
@@ -119,6 +133,9 @@ impl<'a> Extraction<'a> {
                 }
                 Segment::Line(line) => {
                     if line.owner.is_some() {
+                        // Owned lines are helper geometry. Today these are the
+                        // control polygon edges for splines, and are only drawn
+                        // when `show_control_polygons` is enabled.
                         if let Some(polyline) = self.line_polyline(line) {
                             self.control_polygons.push(InternalPolyline {
                                 points: polyline,
@@ -265,6 +282,9 @@ impl<'a> Extraction<'a> {
                 .collect::<Vec<_>>(),
         );
 
+        // Build all machine-readable sidecar facts before rendering. The PNG and
+        // JSON must agree on colors and bounds, so both are derived from the same
+        // internal point/segment maps in this finalization step.
         let dof = self.dof_data();
         let rendered_colors = self.rendered_colors(&id_color_map);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());

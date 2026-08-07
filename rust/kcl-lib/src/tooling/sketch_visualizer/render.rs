@@ -1,3 +1,10 @@
+//! Deterministic raster rendering for sampled sketch geometry.
+//!
+//! By the time data reaches this module, curves have already been sampled into
+//! polylines and colors have been decided by extraction. Rendering can therefore
+//! be a small pixel pipeline: fit world bounds to the canvas, draw optional
+//! helper polylines, draw primary polylines, then draw points on top.
+
 use std::collections::BTreeMap;
 use std::io::Cursor;
 
@@ -67,6 +74,8 @@ pub(super) fn dof_color(freedom: Option<Freedom>, theme: SketchVisualizationThem
 }
 
 pub(super) fn id_color(id: usize) -> Color {
+    // Hash the object ID before mapping into HSV so nearby segment IDs do not
+    // produce visually adjacent colors.
     let hash = stable_id_hash(id as u64);
     let hue = ((hash % 360) as f64) / 360.0;
     let saturation = 0.62 + (((hash >> 32) % 18) as f64 / 100.0);
@@ -122,6 +131,8 @@ pub(super) fn render_png(
     let mut image = RgbaImage::from_pixel(options.width, options.height, background.to_rgba());
     let transform = Transform::new(bounds, options);
 
+    // Draw control polygons first so primary geometry and endpoint points remain
+    // visually dominant.
     if options.show_control_polygons {
         for polyline in control_polygons {
             draw_polyline(
@@ -135,6 +146,8 @@ pub(super) fn render_png(
         }
     }
 
+    // Segment polylines were sampled in world coordinates by extraction. The
+    // transform below is the only world-to-screen conversion in the raster path.
     for segment in segments.values() {
         let color = rendered_colors
             .get(&segment.id)
@@ -208,6 +221,7 @@ impl Transform {
         let world_center_y = (bounds.min.y + bounds.max.y) * 0.5;
         let screen_center_x = options.width as f64 * 0.5;
         let screen_center_y = options.height as f64 * 0.5;
+        // KCL sketch space is y-up, while image pixels are y-down.
         Self {
             scale,
             offset_x: screen_center_x - world_center_x * scale,
@@ -274,6 +288,9 @@ fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color:
         return;
     }
 
+    // The `image` crate gives raw pixels, not vector stroking. Sampling along the
+    // line and stamping filled circles gives deterministic anti-aliased-enough
+    // strokes without pulling in a larger renderer.
     let samples = length.ceil() as usize;
     for index in 0..=samples {
         let t = index as f64 / samples as f64;
