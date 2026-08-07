@@ -11,9 +11,13 @@ import { expect, it } from 'vitest'
 
 const nonEmptyPath = [['body', '']] as unknown as PathToNode
 
-function getPatternSourceFixture(argExpression: string, arrayValue = false) {
+function getPatternSourceFixture(
+  argExpression: string,
+  arrayValue = false,
+  patternDeclaration = 'pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)'
+) {
   const code = `extrude001 = 0
-pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)
+${patternDeclaration}
 translate(${argExpression}, x = 5)`
   const patternCallStart = code.indexOf('patternLinear3d')
   const patternRange: SourceRange = [
@@ -120,4 +124,22 @@ it('recovers pattern index zero inside an array argument', () => {
       (selection) => selection.artifact === pattern
     )
   ).toBe(true)
+})
+
+it('recovers pattern index zero when the pattern call is piped', () => {
+  const { artifactGraph, code, opArg, pattern } = getPatternSourceFixture(
+    'pattern001[0]',
+    false,
+    `pattern001 = extrude001
+  |> patternLinear3d(instances = 3, distance = 5, axis = X)`
+  )
+
+  const selections = retrieveSelectionsFromOpArg(opArg, artifactGraph, code)
+  if (err(selections)) throw selections
+
+  expect(selections.graphSelections[0]).toMatchObject({
+    artifact: pattern,
+    engineEntityId: pattern.sourceId,
+    patternIndex: 0,
+  })
 })

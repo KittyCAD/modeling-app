@@ -1763,9 +1763,11 @@ function getPatternSourceFromOpArg(
 
       const callStart = toUtf16(candidate.codeRef.range[0], code)
       const declarationPrefix = code.slice(0, callStart)
-      const declaredName = declarationPrefix.match(
-        /([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/
-      )?.[1]
+      const declaredName = [
+        ...declarationPrefix.matchAll(
+          /(?:^|\n)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/g
+        ),
+      ].at(-1)?.[1]
       return declaredName
         ? new RegExp(
             `(?:^|[^A-Za-z0-9_])${declaredName}\\s*\\[\\s*0\\s*\\]`
