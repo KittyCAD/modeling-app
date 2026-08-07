@@ -249,6 +249,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            X: '5',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Translate',
@@ -256,22 +257,12 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Translate',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, or `z` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '5',
           headerArguments: {
             Objects: selectedObjects,
-            X: '',
+            X: '5',
           },
           highlightedHeaderArg: 'x',
           commandName: 'Translate',
@@ -346,6 +337,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            Factor: '2',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Scale',
@@ -353,24 +345,14 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Scale',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, `z` or `factor` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '1',
+          currentArgKey: 'factor',
+          currentArgValue: '2',
           headerArguments: {
             Objects: selectedObjects,
-            X: '',
+            Factor: '2',
           },
-          highlightedHeaderArg: 'x',
+          highlightedHeaderArg: 'factor',
           commandName: 'Scale',
         })
         await page.keyboard.insertText('1.1')
@@ -379,7 +361,7 @@ test.describe(
           stage: 'review',
           headerArguments: {
             Objects: selectedObjects,
-            X: '1.1',
+            Factor: '1.1',
           },
           commandName: 'Scale',
         })
@@ -389,7 +371,7 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `translate(bracket, x = 1, y = 2)
-          scale(bracket, x = 1.1)`,
+          scale(bracket, factor = 1.1)`,
           { shouldNormalise: true }
         )
       })
@@ -400,20 +382,19 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '1.1',
+            Factor: '1.1',
           },
           commandName: 'Scale',
         })
-        await cmdBar.clickOptionalArgument('y')
+        await cmdBar.clickHeaderArgument('factor')
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'y',
-          currentArgValue: '1',
+          currentArgKey: 'factor',
+          currentArgValue: '1.1',
           headerArguments: {
-            X: '1.1',
-            Y: '',
+            Factor: '1.1',
           },
-          highlightedHeaderArg: 'y',
+          highlightedHeaderArg: 'factor',
           commandName: 'Scale',
         })
         await page.keyboard.insertText('1.2')
@@ -421,19 +402,15 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            X: '1.1',
-            Y: '1.2',
+            Factor: '1.2',
           },
           commandName: 'Scale',
         })
         await cmdBar.submit()
         await scene.settled()
-        await editor.expectEditor.toContain(
-          `scale(bracket, x = 1.1, y = 1.2)`,
-          {
-            shouldNormalise: true,
-          }
-        )
+        await editor.expectEditor.toContain(`scale(bracket, factor = 1.2)`, {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Set rotate on module', async () => {
@@ -447,6 +424,7 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            Roll: '45deg',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Rotate',
@@ -454,22 +432,12 @@ test.describe(
         await selectBracket()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: selectedObjects,
-          },
-          commandName: 'Rotate',
-          reviewValidationError:
-            'semantic: Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
-        })
-        await cmdBar.clickOptionalArgument('roll')
-        await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'roll',
-          currentArgValue: '0',
+          currentArgValue: '45deg',
           headerArguments: {
             Objects: selectedObjects,
-            Roll: '',
+            Roll: '45deg',
           },
           highlightedHeaderArg: 'roll',
           commandName: 'Rotate',
@@ -491,7 +459,7 @@ test.describe(
         await editor.expectEditor.toContain(
           `
           translate(bracket, x = 1, y = 2)
-          scale(bracket, x = 1.1, y = 1.2)
+          scale(bracket, factor = 1.2)
           rotate(bracket, roll = 0.1)
           `,
           { shouldNormalise: true }

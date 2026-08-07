@@ -351,17 +351,17 @@ export const modelingCommandStdLibDriftConfig = {
   Translate: {
     stdLibName: 'translate',
     editFlow: true,
-    flowArgOrder: ['objects'],
+    flowArgOrder: ['objects', 'x'],
   },
   Rotate: {
     stdLibName: 'rotate',
     editFlow: true,
-    flowArgOrder: ['objects'],
+    flowArgOrder: ['objects', 'roll'],
   },
   Scale: {
     stdLibName: 'scale',
     editFlow: true,
-    flowArgOrder: ['objects'],
+    flowArgOrder: ['objects', 'factor'],
   },
   Clone: {
     stdLibName: 'clone',

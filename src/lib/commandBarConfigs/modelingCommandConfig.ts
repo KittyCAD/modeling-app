@@ -35,8 +35,11 @@ import {
   KCL_DEFAULT_ORIGIN,
   KCL_DEFAULT_ORIGIN_2D,
   KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_ROTATE_ROLL,
   KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSLATE_X,
   KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
@@ -1540,7 +1543,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           x: {
-            defaultValue: KCL_DEFAULT_TRANSFORM,
+            defaultValue: KCL_DEFAULT_TRANSLATE_X,
+            prepopulate: true,
           },
           y: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1573,7 +1577,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           hidden: isEditingNodeSelection,
         },
         roll: {
-          defaultValue: KCL_DEFAULT_TRANSFORM,
+          defaultValue: KCL_DEFAULT_ROTATE_ROLL,
+          prepopulate: true,
         },
         pitch: {
           defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1622,7 +1627,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_SCALE,
         },
         factor: {
-          defaultValue: KCL_DEFAULT_SCALE,
+          defaultValue: KCL_DEFAULT_SCALE_FACTOR,
+          prepopulate: true,
         },
       },
     }),

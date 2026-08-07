@@ -22,6 +22,11 @@ import type {
   CommandArgumentConfig,
   KclCommandValue,
 } from '@src/lib/commandTypes'
+import {
+  KCL_DEFAULT_ROTATE_ROLL,
+  KCL_DEFAULT_SCALE_FACTOR,
+  KCL_DEFAULT_TRANSLATE_X,
+} from '@src/lib/constants'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -375,6 +380,25 @@ describe('Sweep-like bodyType argument', () => {
 })
 
 describe('Transform arguments', () => {
+  it('prepopulates a clearable first transform value', () => {
+    for (const [commandName, argName, defaultValue] of [
+      ['Translate', 'x', KCL_DEFAULT_TRANSLATE_X],
+      ['Rotate', 'roll', KCL_DEFAULT_ROTATE_ROLL],
+      ['Scale', 'factor', KCL_DEFAULT_SCALE_FACTOR],
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const args = commandConfig.args as Record<string, unknown> | undefined
+      expect(args?.[argName]).toMatchObject({
+        defaultValue,
+        prepopulate: true,
+      })
+    }
+  })
+
   it('accepts helices only for supported transforms', () => {
     for (const commandName of [
       'Translate',
