@@ -12,8 +12,8 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "y": 0.0
     },
     "max": {
-      "x": 7.0,
-      "y": 4.0
+      "x": 6.56,
+      "y": 3.48
     }
   },
   "units": [
@@ -22,27 +22,51 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
   "colorScheme": "ids",
   "constraintStatus": {
     "name": "",
-    "status": "UnderConstrained",
-    "free_count": 6,
+    "status": "FullyConstrained",
+    "free_count": 0,
     "conflict_count": 0,
-    "total_count": 6
+    "total_count": 7
   },
   "dof": {
     "default": "Free",
     "points": {
       "fixed": [
+        2,
+        3,
+        5,
+        6,
+        8,
+        9,
+        11,
         12,
-        17
+        19,
+        20,
+        21,
+        27,
+        28,
+        29,
+        44,
+        45
       ]
     },
-    "segments": {}
+    "segments": {
+      "fixed": [
+        4,
+        7,
+        10,
+        13,
+        22,
+        30,
+        46
+      ]
+    }
   },
   "points": [
     {
       "id": 2,
       "position": {
-        "x": 1.0,
-        "y": 4.0
+        "x": 0.94,
+        "y": 3.48
       },
       "owner": 4,
       "contactGroup": 0,
@@ -51,8 +75,8 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     {
       "id": 3,
       "position": {
-        "x": 6.0,
-        "y": 4.0
+        "x": 5.62,
+        "y": 3.48
       },
       "owner": 4,
       "contactGroup": 1,
@@ -61,8 +85,8 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     {
       "id": 5,
       "position": {
-        "x": 7.0,
-        "y": 3.0
+        "x": 6.56,
+        "y": 2.54
       },
       "owner": 7,
       "contactGroup": 2,
@@ -71,7 +95,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     {
       "id": 6,
       "position": {
-        "x": 7.0,
+        "x": 6.56,
         "y": 0.0
       },
       "owner": 7,
@@ -81,7 +105,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     {
       "id": 8,
       "position": {
-        "x": 7.0,
+        "x": 6.56,
         "y": 0.0
       },
       "owner": 10,
@@ -112,69 +136,89 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "id": 12,
       "position": {
         "x": 0.0,
-        "y": 3.0
+        "y": 2.54
       },
       "owner": 13,
       "contactGroup": 5,
       "coincidentGroup": 5
     },
     {
-      "id": 16,
+      "id": 19,
       "position": {
-        "x": 1.0,
-        "y": 4.0
+        "x": 0.94,
+        "y": 3.48
       },
-      "owner": 19,
+      "owner": 22,
       "contactGroup": 0,
       "coincidentGroup": 0
     },
     {
-      "id": 17,
+      "id": 20,
       "position": {
         "x": 0.0,
-        "y": 3.0
+        "y": 2.54
       },
-      "owner": 19,
+      "owner": 22,
       "contactGroup": 5,
       "coincidentGroup": 5
     },
     {
-      "id": 18,
+      "id": 21,
       "position": {
-        "x": 1.0,
-        "y": 3.0
+        "x": 0.94,
+        "y": 2.54
       },
-      "owner": 19,
+      "owner": 22,
       "contactGroup": null,
       "coincidentGroup": null
     },
     {
-      "id": 24,
+      "id": 27,
       "position": {
-        "x": 6.0,
-        "y": 4.0
+        "x": 5.62,
+        "y": 3.48
       },
-      "owner": 27,
+      "owner": 30,
       "contactGroup": 1,
       "coincidentGroup": 1
     },
     {
-      "id": 25,
+      "id": 28,
       "position": {
-        "x": 7.0,
-        "y": 3.0
+        "x": 6.56,
+        "y": 2.54
       },
-      "owner": 27,
+      "owner": 30,
       "contactGroup": 2,
       "coincidentGroup": 2
     },
     {
-      "id": 26,
+      "id": 29,
       "position": {
-        "x": 6.0,
-        "y": 3.0
+        "x": 5.62,
+        "y": 2.54
       },
-      "owner": 27,
+      "owner": 30,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 44,
+      "position": {
+        "x": 3.28,
+        "y": 3.48
+      },
+      "owner": 46,
+      "contactGroup": null,
+      "coincidentGroup": null
+    },
+    {
+      "id": 45,
+      "position": {
+        "x": 3.28,
+        "y": 0.0
+      },
+      "owner": 46,
       "contactGroup": null,
       "coincidentGroup": null
     }
@@ -237,39 +281,66 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "componentId": 0
     },
     {
-      "id": 19,
+      "id": 22,
       "kind": "arc",
       "pointIds": [
-        16,
-        17,
-        18
+        19,
+        20,
+        21
       ],
       "endpointIds": [
-        16,
-        17
+        19,
+        20
       ],
       "construction": false,
       "componentId": 0
     },
     {
-      "id": 27,
+      "id": 30,
       "kind": "arc",
       "pointIds": [
-        24,
-        25,
-        26
+        27,
+        28,
+        29
       ],
       "endpointIds": [
-        24,
-        25
+        27,
+        28
       ],
       "construction": false,
       "componentId": 0
+    },
+    {
+      "id": 46,
+      "kind": "line",
+      "pointIds": [
+        44,
+        45
+      ],
+      "endpointIds": [
+        44,
+        45
+      ],
+      "construction": true,
+      "componentId": 1
     }
   ],
   "constraints": [
     {
       "id": 14,
+      "kind": "horizontal",
+      "targets": [
+        {
+          "type": "object",
+          "id": 6
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 15,
       "kind": "coincident",
       "targets": [
         {
@@ -283,7 +354,20 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       ]
     },
     {
-      "id": 15,
+      "id": 16,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 9
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 17,
       "kind": "coincident",
       "targets": [
         {
@@ -297,160 +381,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       ]
     },
     {
-      "id": 20,
-      "kind": "coincident",
-      "targets": [
-        {
-          "type": "object",
-          "id": 16
-        },
-        {
-          "type": "object",
-          "id": 2
-        }
-      ]
-    },
-    {
-      "id": 21,
-      "kind": "coincident",
-      "targets": [
-        {
-          "type": "object",
-          "id": 17
-        },
-        {
-          "type": "object",
-          "id": 12
-        }
-      ]
-    },
-    {
-      "id": 22,
-      "kind": "tangent",
-      "targets": [
-        {
-          "type": "object",
-          "id": 4
-        },
-        {
-          "type": "object",
-          "id": 19
-        }
-      ]
-    },
-    {
-      "id": 23,
-      "kind": "tangent",
-      "targets": [
-        {
-          "type": "object",
-          "id": 13
-        },
-        {
-          "type": "object",
-          "id": 19
-        }
-      ]
-    },
-    {
-      "id": 28,
-      "kind": "coincident",
-      "targets": [
-        {
-          "type": "object",
-          "id": 24
-        },
-        {
-          "type": "object",
-          "id": 3
-        }
-      ]
-    },
-    {
-      "id": 29,
-      "kind": "coincident",
-      "targets": [
-        {
-          "type": "object",
-          "id": 25
-        },
-        {
-          "type": "object",
-          "id": 5
-        }
-      ]
-    },
-    {
-      "id": 30,
-      "kind": "tangent",
-      "targets": [
-        {
-          "type": "object",
-          "id": 4
-        },
-        {
-          "type": "object",
-          "id": 27
-        }
-      ]
-    },
-    {
-      "id": 31,
-      "kind": "tangent",
-      "targets": [
-        {
-          "type": "object",
-          "id": 7
-        },
-        {
-          "type": "object",
-          "id": 27
-        }
-      ]
-    },
-    {
-      "id": 32,
-      "kind": "perpendicular",
-      "targets": [
-        {
-          "type": "object",
-          "id": 7
-        },
-        {
-          "type": "object",
-          "id": 10
-        }
-      ]
-    },
-    {
-      "id": 33,
-      "kind": "perpendicular",
-      "targets": [
-        {
-          "type": "object",
-          "id": 10
-        },
-        {
-          "type": "object",
-          "id": 13
-        }
-      ]
-    },
-    {
-      "id": 34,
-      "kind": "horizontal",
-      "targets": [
-        {
-          "type": "object",
-          "id": 9
-        },
-        {
-          "type": "origin"
-        }
-      ]
-    },
-    {
-      "id": 35,
+      "id": 18,
       "kind": "vertical",
       "targets": [
         {
@@ -463,8 +394,8 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       ]
     },
     {
-      "id": 36,
-      "kind": "equal_radius",
+      "id": 23,
+      "kind": "coincident",
       "targets": [
         {
           "type": "object",
@@ -472,17 +403,147 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         },
         {
           "type": "object",
+          "id": 2
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 20
+        },
+        {
+          "type": "object",
+          "id": 12
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 13
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
           "id": 27
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 28
+        },
+        {
+          "type": "object",
+          "id": 5
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 30
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 30
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 10
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 10
+        },
+        {
+          "type": "object",
+          "id": 13
         }
       ]
     },
     {
       "id": 37,
-      "kind": "radius",
+      "kind": "lines_equal_length",
       "targets": [
         {
           "type": "object",
-          "id": 19
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 13
         }
       ]
     },
@@ -502,6 +563,20 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     },
     {
       "id": 39,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 13
+        }
+      ]
+    },
+    {
+      "id": 40,
       "kind": "distance",
       "targets": [
         {
@@ -515,7 +590,115 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       ]
     },
     {
-      "id": 40,
+      "id": 41,
+      "kind": "equal_radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 30
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "kind": "radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 2
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 44
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "kind": "midpoint",
+      "targets": [
+        {
+          "type": "object",
+          "id": 44
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "kind": "midpoint",
+      "targets": [
+        {
+          "type": "object",
+          "id": 45
+        },
+        {
+          "type": "object",
+          "id": 10
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 46
+        },
+        {
+          "type": "object",
+          "id": 10
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 46
+        }
+      ]
+    },
+    {
+      "id": 52,
       "kind": "distance",
       "targets": [
         {
@@ -534,29 +717,30 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
     "7": "#d94e9a",
     "10": "#4f6ed1",
     "13": "#35e8d9",
-    "19": "#e39e36",
-    "27": "#9c38e8"
+    "22": "#8848db",
+    "30": "#69d952",
+    "46": "#eb44e2"
   },
   "contactGroups": [
     {
       "id": 0,
       "pointIds": [
         2,
-        16
+        19
       ]
     },
     {
       "id": 1,
       "pointIds": [
         3,
-        24
+        27
       ]
     },
     {
       "id": 2,
       "pointIds": [
         5,
-        25
+        28
       ]
     },
     {
@@ -577,7 +761,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "id": 5,
       "pointIds": [
         12,
-        17
+        20
       ]
     }
   ],
@@ -586,7 +770,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "id": 0,
       "pointIds": [
         2,
-        16
+        19
       ],
       "includesOrigin": false
     },
@@ -594,7 +778,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "id": 1,
       "pointIds": [
         3,
-        24
+        27
       ],
       "includesOrigin": false
     },
@@ -602,7 +786,7 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
       "id": 2,
       "pointIds": [
         5,
-        25
+        28
       ],
       "includesOrigin": false
     },
@@ -620,13 +804,13 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         9,
         11
       ],
-      "includesOrigin": false
+      "includesOrigin": true
     },
     {
       "id": 5,
       "pointIds": [
         12,
-        17
+        20
       ],
       "includesOrigin": false
     }
@@ -639,17 +823,34 @@ source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
         7,
         10,
         13,
-        19,
-        27
+        22,
+        30
+      ]
+    },
+    {
+      "id": 1,
+      "segmentIds": [
+        46
       ]
     }
   ],
-  "openEndpoints": [],
+  "openEndpoints": [
+    44,
+    45
+  ],
   "closednessHints": [
     {
       "componentId": 0,
       "isClosed": true,
       "openEndpointIds": []
+    },
+    {
+      "componentId": 1,
+      "isClosed": false,
+      "openEndpointIds": [
+        44,
+        45
+      ]
     }
   ],
   "warnings": []
