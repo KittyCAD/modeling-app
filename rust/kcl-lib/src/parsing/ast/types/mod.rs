@@ -6553,6 +6553,39 @@ top = s.edgeOne
         );
     }
 
+    #[test]
+    fn test_rename_sketch_block_declaration_inside_if_branch() {
+        let code = r#"x = if true {
+  s = sketch(on = XY) {
+    line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  }
+  r = region(segments = [s.line1])
+  r.tags.line1
+} else {
+  0
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"x = if true {
+  s = sketch(on = XY) {
+    edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+  }
+  r = region(segments = [s.edgeOne])
+  r.tags.edgeOne
+} else {
+  0
+}
+"#
+        );
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
