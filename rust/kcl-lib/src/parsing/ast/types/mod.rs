@@ -6774,6 +6774,60 @@ x = baz
         );
     }
 
+    #[test]
+    fn test_rename_import_original_name_of_aliased_import_does_nothing() {
+        // `foo` is the name exported by the other module; renaming it locally isn't
+        // supported. Only the alias can be renamed.
+        let code = r#"import foo as bar from "m.kcl"
+
+x = bar
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("baz", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_region_in_nested_fn_limitation() {
+        // Known limitation: regions derived from a sketch are only detected in the scope the
+        // sketch is declared in. A region declared inside a nested function still gets its
+        // direct member references to the sketch renamed (`s.line1`), but its `.tags`
+        // references are not, since the region isn't recognized as derived from the sketch.
+        // If this test starts failing because `r.tags.edgeOne` appears, the limitation was
+        // lifted; update this test and the docs on rename_sketch_block_symbol.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  r = region(segments = [s.line1])
+  return r.tags.line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  r = region(segments = [s.edgeOne])
+  return r.tags.line1
+}
+"#
+        );
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
