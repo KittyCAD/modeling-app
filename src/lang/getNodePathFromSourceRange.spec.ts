@@ -117,5 +117,52 @@ b1 = cube(pos = [0,0], scale = 10)`
       expect(node.type).toBe('Name')
       expect(node.name.name).toBe('scale')
     })
+
+    // No traversal descends into a type declaration, on either side of the
+    // language boundary. In Rust, `NodePath::Step` has no variant that could name
+    // a position inside one, so `path.rs` assigns the statement its own path and
+    // stops. In TypeScript, `moreNodePathFromSourceRange` has no branch for a
+    // `TypeDeclaration`, so the path to the statement is what comes back. The two
+    // therefore agree, and nothing asks for more: an enum declaration emits no
+    // operation, so no feature-tree range ever falls inside one.
+    //
+    // This pins the agreement. If descent is ever added to one side only, this
+    // fails instead of a selection quietly landing on the wrong node.
+    it.each([
+      ['a variant name', 'Red'],
+      ['the declared type name', 'Color'],
+      ['the enum body', '{ | Red | Green }'],
+    ])(
+      'resolves %s to the enum declaration statement',
+      async (_case, subStr) => {
+        const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+        const code = `@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+shade = Color::Red
+`
+        const ast = assertParse(code, instance)
+
+        const declaration = 'type Color { | Red | Green }'
+        const declarationIndex = code.indexOf(declaration)
+        const declarationPath = getNodePathFromSourceRange(
+          ast,
+          topLevelRange(declarationIndex, declarationIndex + declaration.length)
+        )
+
+        const subStrIndex = code.indexOf(subStr)
+        const innerPath = getNodePathFromSourceRange(
+          ast,
+          topLevelRange(subStrIndex, subStrIndex + subStr.length)
+        )
+
+        // Deliberately compared against the declaration's own path rather than a
+        // literal, so the test survives the statement moving in the file.
+        expect(innerPath).toEqual(declarationPath)
+
+        const _node = getNodeFromPath<any>(ast, innerPath, instance)
+        if (err(_node)) throw _node
+        expect(_node.node.type).toBe('TypeDeclaration')
+      }
+    )
   })
 })

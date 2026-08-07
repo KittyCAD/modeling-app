@@ -210,74 +210,6 @@ description: Result of parsing single-impeller-blade.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "rootSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "rootPlane",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "rootProfile",
             "start": 0,
             "type": "Identifier"
@@ -303,7 +235,7 @@ description: Result of parsing single-impeller-blade.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "rootSketch",
+                    "name": "rootPlane",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1673,74 +1605,6 @@ description: Result of parsing single-impeller-blade.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "tipSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "tipPlane",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "tipProfile",
             "start": 0,
             "type": "Identifier"
@@ -1766,7 +1630,7 @@ description: Result of parsing single-impeller-blade.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "tipSketch",
+                    "name": "tipPlane",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3277,7 +3141,7 @@ description: Result of parsing single-impeller-blade.kcl
             }
           }
         ],
-        "6": [
+        "5": [
           {
             "commentStart": 0,
             "end": 0,
@@ -3289,7 +3153,7 @@ description: Result of parsing single-impeller-blade.kcl
             }
           }
         ],
-        "9": [
+        "7": [
           {
             "commentStart": 0,
             "end": 0,

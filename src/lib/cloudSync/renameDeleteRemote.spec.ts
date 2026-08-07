@@ -32,7 +32,7 @@ describe('renameRemoteCloudProject', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
     vi.stubGlobal('fetch', fetchMock)
   })
@@ -124,7 +124,7 @@ describe('deleteRemoteCloudProject', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
     vi.stubGlobal('fetch', fetchMock)
   })

@@ -11,8 +11,6 @@ spongeEyeDiameter = 14
 spongeEyeCenter2Center = 34
 spongeDiameter = 100
 
-sketch = startSketchOn(XY)
-
 // create the magnets so we can subtract them from the holder later
 magnetSketch = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 11.15mm, var 0mm], construction = true)
@@ -28,7 +26,7 @@ magnets = extrude(magnetRegion, length = magnetThickness)
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
 // create the base of the holder
-baseSketch = sketch(on = sketch) {
+baseSketch = sketch(on = XY) {
   line1 = line(start = [var -30mm, var -10.5mm], end = [var 30mm, var -10.5mm])
   line2 = line(start = [var 30mm, var -10.5mm], end = [var 30mm, var 10.5mm])
   coincident([line1.end, line2.start])

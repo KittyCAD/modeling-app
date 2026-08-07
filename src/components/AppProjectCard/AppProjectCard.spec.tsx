@@ -1,5 +1,6 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import fsZds from '@src/lib/fs-zds'
+import { DIRECTORY_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -311,6 +312,25 @@ describe('ProjectCard', () => {
     fireEvent.click(screen.getByTestId('project-card-context-move-to-library'))
 
     expect(onMoveToLibrary).toHaveBeenCalledWith(cloudProject)
+  })
+
+  test('clarifies that deleting a cloud-backed non-cloud library project keeps the cloud version', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        libraryPath: '/projects',
+        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      },
+    })
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    fireEvent.click(screen.getByTestId('project-card-context-delete'))
+
+    expect(
+      screen.getByText(
+        'This will delete the local copy of "Old cloud title". The cloud version will not be deleted.'
+      )
+    ).toBeInTheDocument()
   })
 
   test('selects the project title when opening rename from the context menu', async () => {

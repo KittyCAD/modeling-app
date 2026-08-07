@@ -352,6 +352,7 @@ export function buildSegmentCtorFromObject(
       center: centerPoint,
       start: startPoint,
       end: endPoint,
+      direction: obj.kind.segment.direction,
     }
   } else if (isCircleSegment(obj)) {
     const centerPoint = getLinkedPoint({
