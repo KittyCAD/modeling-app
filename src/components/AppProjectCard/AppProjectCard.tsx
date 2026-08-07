@@ -8,7 +8,11 @@ import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDeleteWarningMessage,
+  getHomeProjectDisplayName,
+  shouldPreserveRemoteOnHomeProjectDelete,
+} from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -240,6 +244,16 @@ function AppProjectCard({
   const canMoveToLibrary = Boolean(
     onMoveToLibrary && projectActions.canMoveToLibrary(project)
   )
+  const deleteProjectDisplayName = projectName || 'this file'
+  const deleteWarningMessage = getHomeProjectDeleteWarningMessage(
+    project,
+    deleteProjectDisplayName
+  )
+  const deleteConfirmationMessage = shouldPreserveRemoteOnHomeProjectDelete(
+    project
+  )
+    ? `Are you sure you want to delete the local copy of "${deleteProjectDisplayName}"? This action cannot be undone.`
+    : `Are you sure you want to delete "${deleteProjectDisplayName}"? This action cannot be undone.`
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
@@ -329,13 +343,9 @@ function AppProjectCard({
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
+          <p className="my-4 text-wrap break-words">{deleteWarningMessage}</p>
           <p className="my-4 text-wrap break-words">
-            This will permanently delete "{projectName || 'this file'}
-            ".
-          </p>
-          <p className="my-4 text-wrap break-words">
-            Are you sure you want to delete "{projectName || 'this file'}
-            "? This action cannot be undone.
+            {deleteConfirmationMessage}
           </p>
         </DeleteConfirmationDialog>
       )}

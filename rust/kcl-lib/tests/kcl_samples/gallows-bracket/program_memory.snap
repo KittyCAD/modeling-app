@@ -10346,7 +10346,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           ],
           "from": [
             417.00000001425,
-            -37.500000013
+            -37.500000013000005
           ],
           "radius": 4.5000000008333245,
           "tag": {
@@ -10359,7 +10359,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "to": [
             417.00000001425,
-            -37.500000013
+            -37.500000013000005
           ],
           "type": "Circle",
           "units": "mm"
@@ -10399,11 +10399,11 @@ description: Variables in memory after executing gallows-bracket.kcl
       "start": {
         "from": [
           417.00000001425,
-          -37.500000013
+          -37.500000013000005
         ],
         "to": [
           417.00000001425,
-          -37.500000013
+          -37.500000013000005
         ],
         "units": "mm",
         "tag": null,
@@ -10463,7 +10463,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             ],
             "from": [
               417.00000001425,
-              -37.500000013
+              -37.500000013000005
             ],
             "radius": 4.5000000008333245,
             "tag": {
@@ -10476,7 +10476,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "to": [
               417.00000001425,
-              -37.500000013
+              -37.500000013000005
             ],
             "type": "Circle",
             "units": "mm"
@@ -10516,11 +10516,11 @@ description: Variables in memory after executing gallows-bracket.kcl
         "start": {
           "from": [
             417.00000001425,
-            -37.500000013
+            -37.500000013000005
           ],
           "to": [
             417.00000001425,
-            -37.500000013
+            -37.500000013000005
           ],
           "units": "mm",
           "tag": null,
@@ -10569,7 +10569,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -37.500000013,
+                        "n": -37.500000013000005,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10689,7 +10689,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.000000007500000445269326,
+                        "n": -0.000000007500000888308543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10802,7 +10802,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000003500000509885903,
+                        "n": 0.000000003500000375344242,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10810,7 +10810,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.000000002500000145089775,
+                        "n": -0.000000002500000292769514,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -10828,7 +10828,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.00000000500000029267955,
+                        "n": -0.000000005000000588039029,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -11053,7 +11053,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   ],
                   "from": [
                     417.00000001425,
-                    -37.500000013
+                    -37.500000013000005
                   ],
                   "radius": 4.5000000008333245,
                   "tag": {
@@ -11066,7 +11066,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "to": [
                     417.00000001425,
-                    -37.500000013
+                    -37.500000013000005
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -11106,11 +11106,11 @@ description: Variables in memory after executing gallows-bracket.kcl
               "start": {
                 "from": [
                   417.00000001425,
-                  -37.500000013
+                  -37.500000013000005
                 ],
                 "to": [
                   417.00000001425,
-                  -37.500000013
+                  -37.500000013000005
                 ],
                 "units": "mm",
                 "tag": null,
@@ -12702,8 +12702,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.29289321881344815,
-            0.29289321881345054
+            0.2928932188134521,
+            0.29289321881345226
           ],
           "tag": {
             "commentStart": 11232,
@@ -12714,7 +12714,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "horizontalStartMiterEdge"
           },
           "to": [
-            76.29289321881345,
+            76.29289321881346,
             76.29289321881343
           ],
           "type": "ToPoint",
@@ -12726,7 +12726,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            76.29289321881345,
+            76.29289321881346,
             76.29289321881343
           ],
           "tag": {
@@ -12738,8 +12738,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "horizontalStartRightEdge"
           },
           "to": [
-            76.29289321881345,
-            -0.7071067811865575
+            76.29289321881346,
+            -0.70710678118655
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -12750,8 +12750,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            76.29289321881345,
-            -0.7071067811865575
+            76.29289321881346,
+            -0.70710678118655
           ],
           "tag": {
             "commentStart": 11408,
@@ -12762,8 +12762,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "horizontalStartBottomEdge"
           },
           "to": [
-            0.29289321881344144,
-            -0.7071067811865549
+            0.2928932188134516,
+            -0.7071067811865492
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -12774,8 +12774,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.29289321881344144,
-            -0.7071067811865549
+            0.2928932188134516,
+            -0.7071067811865492
           ],
           "tag": {
             "commentStart": 11497,
@@ -12786,8 +12786,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "horizontalStartLeftEdge"
           },
           "to": [
-            0.2928932188134455,
-            0.2928932188134485
+            0.29289321881345187,
+            0.29289321881345176
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -12826,12 +12826,12 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "start": {
         "from": [
-          0.29289321881344815,
-          0.29289321881345054
+          0.2928932188134521,
+          0.29289321881345226
         ],
         "to": [
-          0.29289321881344815,
-          0.29289321881345054
+          0.2928932188134521,
+          0.29289321881345226
         ],
         "units": "mm",
         "tag": null,
@@ -12897,7 +12897,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12905,7 +12905,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865563,
+                        "n": -0.7071067811865497,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12915,7 +12915,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.29289321881344144,
+                        "n": 0.2928932188134516,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -12923,7 +12923,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865549,
+                        "n": -0.7071067811865492,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13017,7 +13017,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2928932188134432,
+                        "n": 0.2928932188134517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13025,7 +13025,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865533,
+                        "n": -0.7071067811865488,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13035,7 +13035,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.2928932188134455,
+                        "n": 0.29289321881345187,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13043,7 +13043,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.2928932188134485,
+                        "n": 0.29289321881345176,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13137,7 +13137,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.29289321881344815,
+                        "n": 0.2928932188134521,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13145,7 +13145,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.29289321881345054,
+                        "n": 0.29289321881345226,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13155,7 +13155,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13257,7 +13257,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13275,7 +13275,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13283,7 +13283,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865575,
+                        "n": -0.70710678118655,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -13380,8 +13380,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.29289321881344815,
-                    0.29289321881345054
+                    0.2928932188134521,
+                    0.29289321881345226
                   ],
                   "tag": {
                     "commentStart": 11232,
@@ -13392,7 +13392,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "horizontalStartMiterEdge"
                   },
                   "to": [
-                    76.29289321881345,
+                    76.29289321881346,
                     76.29289321881343
                   ],
                   "type": "ToPoint",
@@ -13404,7 +13404,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    76.29289321881345,
+                    76.29289321881346,
                     76.29289321881343
                   ],
                   "tag": {
@@ -13416,8 +13416,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "horizontalStartRightEdge"
                   },
                   "to": [
-                    76.29289321881345,
-                    -0.7071067811865575
+                    76.29289321881346,
+                    -0.70710678118655
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -13428,8 +13428,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    76.29289321881345,
-                    -0.7071067811865575
+                    76.29289321881346,
+                    -0.70710678118655
                   ],
                   "tag": {
                     "commentStart": 11408,
@@ -13440,8 +13440,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "horizontalStartBottomEdge"
                   },
                   "to": [
-                    0.29289321881344144,
-                    -0.7071067811865549
+                    0.2928932188134516,
+                    -0.7071067811865492
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -13452,8 +13452,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.29289321881344144,
-                    -0.7071067811865549
+                    0.2928932188134516,
+                    -0.7071067811865492
                   ],
                   "tag": {
                     "commentStart": 11497,
@@ -13464,8 +13464,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "horizontalStartLeftEdge"
                   },
                   "to": [
-                    0.2928932188134455,
-                    0.2928932188134485
+                    0.29289321881345187,
+                    0.29289321881345176
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -13504,12 +13504,12 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "start": {
                 "from": [
-                  0.29289321881344815,
-                  0.29289321881345054
+                  0.2928932188134521,
+                  0.29289321881345226
                 ],
                 "to": [
-                  0.29289321881344815,
-                  0.29289321881345054
+                  0.2928932188134521,
+                  0.29289321881345226
                 ],
                 "units": "mm",
                 "tag": null,
@@ -13641,8 +13641,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.29289321881344815,
-              0.29289321881345054
+              0.2928932188134521,
+              0.29289321881345226
             ],
             "tag": {
               "commentStart": 11232,
@@ -13653,7 +13653,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "horizontalStartMiterEdge"
             },
             "to": [
-              76.29289321881345,
+              76.29289321881346,
               76.29289321881343
             ],
             "type": "ToPoint",
@@ -13665,7 +13665,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              76.29289321881345,
+              76.29289321881346,
               76.29289321881343
             ],
             "tag": {
@@ -13677,8 +13677,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "horizontalStartRightEdge"
             },
             "to": [
-              76.29289321881345,
-              -0.7071067811865575
+              76.29289321881346,
+              -0.70710678118655
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -13689,8 +13689,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              76.29289321881345,
-              -0.7071067811865575
+              76.29289321881346,
+              -0.70710678118655
             ],
             "tag": {
               "commentStart": 11408,
@@ -13701,8 +13701,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "horizontalStartBottomEdge"
             },
             "to": [
-              0.29289321881344144,
-              -0.7071067811865549
+              0.2928932188134516,
+              -0.7071067811865492
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -13713,8 +13713,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.29289321881344144,
-              -0.7071067811865549
+              0.2928932188134516,
+              -0.7071067811865492
             ],
             "tag": {
               "commentStart": 11497,
@@ -13725,8 +13725,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "horizontalStartLeftEdge"
             },
             "to": [
-              0.2928932188134455,
-              0.2928932188134485
+              0.29289321881345187,
+              0.29289321881345176
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -13765,12 +13765,12 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "start": {
           "from": [
-            0.29289321881344815,
-            0.29289321881345054
+            0.2928932188134521,
+            0.29289321881345226
           ],
           "to": [
-            0.29289321881344815,
-            0.29289321881345054
+            0.2928932188134521,
+            0.29289321881345226
           ],
           "units": "mm",
           "tag": null,
@@ -15944,7 +15944,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "from": [
             -69.29289321881345,
-            629.6179284748406
+            629.6179284748407
           ],
           "tag": {
             "commentStart": 19611,
@@ -15955,8 +15955,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "strutEndMiterEdge"
           },
           "to": [
-            0.7071067811865586,
-            559.6179284748406
+            0.7071067811865533,
+            559.6179284748407
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -15967,8 +15967,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.7071067811865586,
-            559.6179284748406
+            0.7071067811865533,
+            559.6179284748407
           ],
           "tag": {
             "commentStart": 19692,
@@ -15979,8 +15979,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "strutEndRightEdge"
           },
           "to": [
-            0.7071067811865619,
-            630.6179284748406
+            0.7071067811865548,
+            630.6179284748407
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -15991,8 +15991,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.7071067811865619,
-            630.6179284748406
+            0.7071067811865548,
+            630.6179284748407
           ],
           "tag": {
             "commentStart": 19773,
@@ -16004,7 +16004,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "to": [
             -69.29289321881345,
-            630.6179284748406
+            630.6179284748407
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -16016,7 +16016,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "from": [
             -69.29289321881345,
-            630.6179284748406
+            630.6179284748407
           ],
           "tag": {
             "commentStart": 19852,
@@ -16028,7 +16028,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "to": [
             -69.29289321881345,
-            629.6179284748406
+            629.6179284748407
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -16068,11 +16068,11 @@ description: Variables in memory after executing gallows-bracket.kcl
       "start": {
         "from": [
           -69.29289321881345,
-          629.6179284748406
+          629.6179284748407
         ],
         "to": [
           -69.29289321881345,
-          629.6179284748406
+          629.6179284748407
         ],
         "units": "mm",
         "tag": null,
@@ -16142,7 +16142,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "from": [
                     -69.29289321881345,
-                    629.6179284748406
+                    629.6179284748407
                   ],
                   "tag": {
                     "commentStart": 19611,
@@ -16153,8 +16153,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "strutEndMiterEdge"
                   },
                   "to": [
-                    0.7071067811865586,
-                    559.6179284748406
+                    0.7071067811865533,
+                    559.6179284748407
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -16165,8 +16165,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7071067811865586,
-                    559.6179284748406
+                    0.7071067811865533,
+                    559.6179284748407
                   ],
                   "tag": {
                     "commentStart": 19692,
@@ -16177,8 +16177,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "strutEndRightEdge"
                   },
                   "to": [
-                    0.7071067811865619,
-                    630.6179284748406
+                    0.7071067811865548,
+                    630.6179284748407
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -16189,8 +16189,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7071067811865619,
-                    630.6179284748406
+                    0.7071067811865548,
+                    630.6179284748407
                   ],
                   "tag": {
                     "commentStart": 19773,
@@ -16202,7 +16202,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "to": [
                     -69.29289321881345,
-                    630.6179284748406
+                    630.6179284748407
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -16214,7 +16214,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "from": [
                     -69.29289321881345,
-                    630.6179284748406
+                    630.6179284748407
                   ],
                   "tag": {
                     "commentStart": 19852,
@@ -16226,7 +16226,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "to": [
                     -69.29289321881345,
-                    629.6179284748406
+                    629.6179284748407
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -16266,11 +16266,11 @@ description: Variables in memory after executing gallows-bracket.kcl
               "start": {
                 "from": [
                   -69.29289321881345,
-                  629.6179284748406
+                  629.6179284748407
                 ],
                 "to": [
                   -69.29289321881345,
-                  629.6179284748406
+                  629.6179284748407
                 ],
                 "units": "mm",
                 "tag": null,
@@ -16326,7 +16326,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 630.6179284748406,
+                        "n": 630.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16344,7 +16344,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 629.6179284748406,
+                        "n": 629.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16446,7 +16446,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 629.6179284748406,
+                        "n": 629.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16456,7 +16456,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7071067811865586,
+                        "n": 0.7071067811865533,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16464,7 +16464,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 559.6179284748406,
+                        "n": 559.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16558,7 +16558,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7071067811865605,
+                        "n": 0.7071067811865541,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16566,7 +16566,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 559.6179284748406,
+                        "n": 559.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16576,7 +16576,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7071067811865619,
+                        "n": 0.7071067811865548,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16584,7 +16584,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 630.6179284748406,
+                        "n": 630.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16678,7 +16678,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7071067811865629,
+                        "n": 0.7071067811865555,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16686,7 +16686,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 630.6179284748406,
+                        "n": 630.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16704,7 +16704,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 630.6179284748406,
+                        "n": 630.6179284748407,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -16883,7 +16883,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "from": [
               -69.29289321881345,
-              629.6179284748406
+              629.6179284748407
             ],
             "tag": {
               "commentStart": 19611,
@@ -16894,8 +16894,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "strutEndMiterEdge"
             },
             "to": [
-              0.7071067811865586,
-              559.6179284748406
+              0.7071067811865533,
+              559.6179284748407
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -16906,8 +16906,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.7071067811865586,
-              559.6179284748406
+              0.7071067811865533,
+              559.6179284748407
             ],
             "tag": {
               "commentStart": 19692,
@@ -16918,8 +16918,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "strutEndRightEdge"
             },
             "to": [
-              0.7071067811865619,
-              630.6179284748406
+              0.7071067811865548,
+              630.6179284748407
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -16930,8 +16930,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.7071067811865619,
-              630.6179284748406
+              0.7071067811865548,
+              630.6179284748407
             ],
             "tag": {
               "commentStart": 19773,
@@ -16943,7 +16943,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "to": [
               -69.29289321881345,
-              630.6179284748406
+              630.6179284748407
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -16955,7 +16955,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "from": [
               -69.29289321881345,
-              630.6179284748406
+              630.6179284748407
             ],
             "tag": {
               "commentStart": 19852,
@@ -16967,7 +16967,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "to": [
               -69.29289321881345,
-              629.6179284748406
+              629.6179284748407
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -17007,11 +17007,11 @@ description: Variables in memory after executing gallows-bracket.kcl
         "start": {
           "from": [
             -69.29289321881345,
-            629.6179284748406
+            629.6179284748407
           ],
           "to": [
             -69.29289321881345,
-            629.6179284748406
+            629.6179284748407
           ],
           "units": "mm",
           "tag": null,
@@ -18643,7 +18643,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "from": [
             -69.29289321881345,
-            0.29289321881345065
+            0.29289321881345226
           ],
           "tag": {
             "commentStart": 17360,
@@ -18654,7 +18654,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "strutStartMiterEdge"
           },
           "to": [
-            0.7071067811865586,
+            0.7071067811865533,
             70.29289321881343
           ],
           "type": "ToPoint",
@@ -18666,7 +18666,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.7071067811865586,
+            0.7071067811865533,
             70.29289321881343
           ],
           "tag": {
@@ -18678,8 +18678,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "strutStartRightEdge"
           },
           "to": [
-            0.7071067811865619,
-            -0.7071067811865505
+            0.7071067811865548,
+            -0.7071067811865536
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -18690,8 +18690,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.7071067811865619,
-            -0.7071067811865505
+            0.7071067811865548,
+            -0.7071067811865536
           ],
           "tag": {
             "commentStart": 17526,
@@ -18703,7 +18703,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "to": [
             -69.29289321881345,
-            -0.7071067811865506
+            -0.7071067811865513
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -18715,7 +18715,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "from": [
             -69.29289321881345,
-            -0.7071067811865506
+            -0.7071067811865513
           ],
           "tag": {
             "commentStart": 17610,
@@ -18727,7 +18727,7 @@ description: Variables in memory after executing gallows-bracket.kcl
           },
           "to": [
             -69.29289321881345,
-            0.29289321881345004
+            0.2928932188134511
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -18767,11 +18767,11 @@ description: Variables in memory after executing gallows-bracket.kcl
       "start": {
         "from": [
           -69.29289321881345,
-          0.29289321881345065
+          0.29289321881345226
         ],
         "to": [
           -69.29289321881345,
-          0.29289321881345065
+          0.29289321881345226
         ],
         "units": "mm",
         "tag": null,
@@ -18841,7 +18841,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "from": [
                     -69.29289321881345,
-                    0.29289321881345065
+                    0.29289321881345226
                   ],
                   "tag": {
                     "commentStart": 17360,
@@ -18852,7 +18852,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "strutStartMiterEdge"
                   },
                   "to": [
-                    0.7071067811865586,
+                    0.7071067811865533,
                     70.29289321881343
                   ],
                   "type": "ToPoint",
@@ -18864,7 +18864,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7071067811865586,
+                    0.7071067811865533,
                     70.29289321881343
                   ],
                   "tag": {
@@ -18876,8 +18876,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "strutStartRightEdge"
                   },
                   "to": [
-                    0.7071067811865619,
-                    -0.7071067811865505
+                    0.7071067811865548,
+                    -0.7071067811865536
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -18888,8 +18888,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.7071067811865619,
-                    -0.7071067811865505
+                    0.7071067811865548,
+                    -0.7071067811865536
                   ],
                   "tag": {
                     "commentStart": 17526,
@@ -18901,7 +18901,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "to": [
                     -69.29289321881345,
-                    -0.7071067811865506
+                    -0.7071067811865513
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -18913,7 +18913,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "from": [
                     -69.29289321881345,
-                    -0.7071067811865506
+                    -0.7071067811865513
                   ],
                   "tag": {
                     "commentStart": 17610,
@@ -18925,7 +18925,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   },
                   "to": [
                     -69.29289321881345,
-                    0.29289321881345004
+                    0.2928932188134511
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -18965,11 +18965,11 @@ description: Variables in memory after executing gallows-bracket.kcl
               "start": {
                 "from": [
                   -69.29289321881345,
-                  0.29289321881345065
+                  0.29289321881345226
                 ],
                 "to": [
                   -69.29289321881345,
-                  0.29289321881345065
+                  0.29289321881345226
                 ],
                 "units": "mm",
                 "tag": null,
@@ -19017,7 +19017,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7071067811865629,
+                        "n": 0.7071067811865555,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19025,7 +19025,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865507,
+                        "n": -0.7071067811865525,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19043,7 +19043,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865506,
+                        "n": -0.7071067811865513,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19145,7 +19145,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865503,
+                        "n": -0.7071067811865502,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19163,7 +19163,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.29289321881345004,
+                        "n": 0.2928932188134511,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19265,7 +19265,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 0.29289321881345065,
+                        "n": 0.29289321881345226,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19275,7 +19275,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7071067811865586,
+                        "n": 0.7071067811865533,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19377,7 +19377,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.7071067811865605,
+                        "n": 0.7071067811865541,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19395,7 +19395,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.7071067811865619,
+                        "n": 0.7071067811865548,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19403,7 +19403,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": -0.7071067811865505,
+                        "n": -0.7071067811865536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -19582,7 +19582,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "from": [
               -69.29289321881345,
-              0.29289321881345065
+              0.29289321881345226
             ],
             "tag": {
               "commentStart": 17360,
@@ -19593,7 +19593,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "strutStartMiterEdge"
             },
             "to": [
-              0.7071067811865586,
+              0.7071067811865533,
               70.29289321881343
             ],
             "type": "ToPoint",
@@ -19605,7 +19605,7 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.7071067811865586,
+              0.7071067811865533,
               70.29289321881343
             ],
             "tag": {
@@ -19617,8 +19617,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "strutStartRightEdge"
             },
             "to": [
-              0.7071067811865619,
-              -0.7071067811865505
+              0.7071067811865548,
+              -0.7071067811865536
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -19629,8 +19629,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.7071067811865619,
-              -0.7071067811865505
+              0.7071067811865548,
+              -0.7071067811865536
             ],
             "tag": {
               "commentStart": 17526,
@@ -19642,7 +19642,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "to": [
               -69.29289321881345,
-              -0.7071067811865506
+              -0.7071067811865513
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -19654,7 +19654,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "from": [
               -69.29289321881345,
-              -0.7071067811865506
+              -0.7071067811865513
             ],
             "tag": {
               "commentStart": 17610,
@@ -19666,7 +19666,7 @@ description: Variables in memory after executing gallows-bracket.kcl
             },
             "to": [
               -69.29289321881345,
-              0.29289321881345004
+              0.2928932188134511
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -19706,11 +19706,11 @@ description: Variables in memory after executing gallows-bracket.kcl
         "start": {
           "from": [
             -69.29289321881345,
-            0.29289321881345065
+            0.29289321881345226
           ],
           "to": [
             -69.29289321881345,
-            0.29289321881345065
+            0.29289321881345226
           ],
           "units": "mm",
           "tag": null,
@@ -20763,8 +20763,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.29289321881344815,
-            1251.7071067811862
+            0.2928932188134521,
+            1251.7071067811864
           ],
           "tag": {
             "commentStart": 4986,
@@ -20775,8 +20775,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "verticalEndMiterEdge"
           },
           "to": [
-            76.29289321881345,
-            1175.7071067811862
+            76.29289321881346,
+            1175.7071067811864
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -20787,8 +20787,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            76.29289321881345,
-            1175.7071067811862
+            76.29289321881346,
+            1175.7071067811864
           ],
           "tag": {
             "commentStart": 5070,
@@ -20799,8 +20799,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "verticalEndRightEdge"
           },
           "to": [
-            76.29289321881345,
-            1252.7071067811862
+            76.29289321881346,
+            1252.7071067811864
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -20811,8 +20811,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            76.29289321881345,
-            1252.7071067811862
+            76.29289321881346,
+            1252.7071067811864
           ],
           "tag": {
             "commentStart": 5154,
@@ -20823,8 +20823,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "verticalEndTopEdge"
           },
           "to": [
-            0.29289321881344144,
-            1252.7071067811862
+            0.2928932188134516,
+            1252.7071067811864
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -20835,8 +20835,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "sourceRange": []
           },
           "from": [
-            0.29289321881344144,
-            1252.7071067811862
+            0.2928932188134516,
+            1252.7071067811864
           ],
           "tag": {
             "commentStart": 5236,
@@ -20847,8 +20847,8 @@ description: Variables in memory after executing gallows-bracket.kcl
             "value": "verticalEndLeftEdge"
           },
           "to": [
-            0.2928932188134455,
-            1251.7071067811862
+            0.29289321881345187,
+            1251.7071067811864
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -20887,12 +20887,12 @@ description: Variables in memory after executing gallows-bracket.kcl
       },
       "start": {
         "from": [
-          0.29289321881344815,
-          1251.7071067811862
+          0.2928932188134521,
+          1251.7071067811864
         ],
         "to": [
-          0.29289321881344815,
-          1251.7071067811862
+          0.2928932188134521,
+          1251.7071067811864
         ],
         "units": "mm",
         "tag": null,
@@ -20961,8 +20961,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.29289321881344815,
-                    1251.7071067811862
+                    0.2928932188134521,
+                    1251.7071067811864
                   ],
                   "tag": {
                     "commentStart": 4986,
@@ -20973,8 +20973,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "verticalEndMiterEdge"
                   },
                   "to": [
-                    76.29289321881345,
-                    1175.7071067811862
+                    76.29289321881346,
+                    1175.7071067811864
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -20985,8 +20985,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    76.29289321881345,
-                    1175.7071067811862
+                    76.29289321881346,
+                    1175.7071067811864
                   ],
                   "tag": {
                     "commentStart": 5070,
@@ -20997,8 +20997,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "verticalEndRightEdge"
                   },
                   "to": [
-                    76.29289321881345,
-                    1252.7071067811862
+                    76.29289321881346,
+                    1252.7071067811864
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -21009,8 +21009,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    76.29289321881345,
-                    1252.7071067811862
+                    76.29289321881346,
+                    1252.7071067811864
                   ],
                   "tag": {
                     "commentStart": 5154,
@@ -21021,8 +21021,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "verticalEndTopEdge"
                   },
                   "to": [
-                    0.29289321881344144,
-                    1252.7071067811862
+                    0.2928932188134516,
+                    1252.7071067811864
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -21033,8 +21033,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.29289321881344144,
-                    1252.7071067811862
+                    0.2928932188134516,
+                    1252.7071067811864
                   ],
                   "tag": {
                     "commentStart": 5236,
@@ -21045,8 +21045,8 @@ description: Variables in memory after executing gallows-bracket.kcl
                     "value": "verticalEndLeftEdge"
                   },
                   "to": [
-                    0.2928932188134455,
-                    1251.7071067811862
+                    0.29289321881345187,
+                    1251.7071067811864
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -21085,12 +21085,12 @@ description: Variables in memory after executing gallows-bracket.kcl
               },
               "start": {
                 "from": [
-                  0.29289321881344815,
-                  1251.7071067811862
+                  0.2928932188134521,
+                  1251.7071067811864
                 ],
                 "to": [
-                  0.29289321881344815,
-                  1251.7071067811862
+                  0.2928932188134521,
+                  1251.7071067811864
                 ],
                 "units": "mm",
                 "tag": null,
@@ -21138,7 +21138,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2928932188134432,
+                        "n": 0.2928932188134517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21146,7 +21146,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1252.7071067811862,
+                        "n": 1252.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21156,7 +21156,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.2928932188134455,
+                        "n": 0.29289321881345187,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21164,7 +21164,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1251.7071067811862,
+                        "n": 1251.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21258,7 +21258,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.29289321881344815,
+                        "n": 0.2928932188134521,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21266,7 +21266,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1251.7071067811862,
+                        "n": 1251.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21276,7 +21276,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21284,7 +21284,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1175.7071067811862,
+                        "n": 1175.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21378,7 +21378,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21386,7 +21386,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1175.7071067811862,
+                        "n": 1175.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21396,7 +21396,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21404,7 +21404,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1252.7071067811862,
+                        "n": 1252.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21498,7 +21498,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 76.29289321881345,
+                        "n": 76.29289321881346,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21506,7 +21506,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1252.7071067811862,
+                        "n": 1252.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21516,7 +21516,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.29289321881344144,
+                        "n": 0.2928932188134516,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21524,7 +21524,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                         }
                       },
                       {
-                        "n": 1252.7071067811862,
+                        "n": 1252.7071067811864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -21702,8 +21702,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.29289321881344815,
-              1251.7071067811862
+              0.2928932188134521,
+              1251.7071067811864
             ],
             "tag": {
               "commentStart": 4986,
@@ -21714,8 +21714,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "verticalEndMiterEdge"
             },
             "to": [
-              76.29289321881345,
-              1175.7071067811862
+              76.29289321881346,
+              1175.7071067811864
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -21726,8 +21726,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              76.29289321881345,
-              1175.7071067811862
+              76.29289321881346,
+              1175.7071067811864
             ],
             "tag": {
               "commentStart": 5070,
@@ -21738,8 +21738,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "verticalEndRightEdge"
             },
             "to": [
-              76.29289321881345,
-              1252.7071067811862
+              76.29289321881346,
+              1252.7071067811864
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -21750,8 +21750,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              76.29289321881345,
-              1252.7071067811862
+              76.29289321881346,
+              1252.7071067811864
             ],
             "tag": {
               "commentStart": 5154,
@@ -21762,8 +21762,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "verticalEndTopEdge"
             },
             "to": [
-              0.29289321881344144,
-              1252.7071067811862
+              0.2928932188134516,
+              1252.7071067811864
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -21774,8 +21774,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "sourceRange": []
             },
             "from": [
-              0.29289321881344144,
-              1252.7071067811862
+              0.2928932188134516,
+              1252.7071067811864
             ],
             "tag": {
               "commentStart": 5236,
@@ -21786,8 +21786,8 @@ description: Variables in memory after executing gallows-bracket.kcl
               "value": "verticalEndLeftEdge"
             },
             "to": [
-              0.2928932188134455,
-              1251.7071067811862
+              0.29289321881345187,
+              1251.7071067811864
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -21826,12 +21826,12 @@ description: Variables in memory after executing gallows-bracket.kcl
         },
         "start": {
           "from": [
-            0.29289321881344815,
-            1251.7071067811862
+            0.2928932188134521,
+            1251.7071067811864
           ],
           "to": [
-            0.29289321881344815,
-            1251.7071067811862
+            0.2928932188134521,
+            1251.7071067811864
           ],
           "units": "mm",
           "tag": null,
@@ -22743,7 +22743,7 @@ description: Variables in memory after executing gallows-bracket.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000003500000509885903,
+                        "n": -0.000000003500000375344242,
                         "ty": {
                           "mm": null,
                           "type": "Known",

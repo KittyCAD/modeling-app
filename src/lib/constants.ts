@@ -175,6 +175,11 @@ export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
 
+/** Predefined Zoo environment base domains */
+export const ZOO_DOMAIN_STAGING = 'dev.zoo.dev'
+export const ZOO_DOMAIN_PRODUCTION = 'zoo.dev'
+export const ZOO_DOMAIN_REGULATED = 'zoogov.dev'
+
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted
  * This needs to be of type WebsocketResponse, so that we can parse it back out

@@ -133,8 +133,13 @@ function updateExtensionArcs(
     return
   }
 
-  const arcStartObject = objects[arc.kind.segment.start]
-  const arcEndObject = objects[arc.kind.segment.end]
+  // Sweep math below assumes the arc goes CCW from arcStart to arcEnd, so
+  // swap the declared endpoints for a clockwise arc.
+  const isClockwise = arc.kind.segment.direction === 'cw'
+  const arcStartObject =
+    objects[isClockwise ? arc.kind.segment.end : arc.kind.segment.start]
+  const arcEndObject =
+    objects[isClockwise ? arc.kind.segment.start : arc.kind.segment.end]
   if (!isPointSegment(arcStartObject) || !isPointSegment(arcEndObject)) {
     hideExtensionArcs(extensionArcs)
     return

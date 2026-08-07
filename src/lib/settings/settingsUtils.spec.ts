@@ -9,10 +9,11 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import {
+  DEFAULT_PROJECT_LIBRARY_TITLE,
   getDefaultCloudProjectLibrarySetting,
   getDefaultProjectLibrarySettings,
   LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
@@ -21,6 +22,7 @@ import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
+  clearSettingsAtLevel,
   configurationToSettingsPayload,
   formatSettingsLabel,
   getAllCurrentSettings,
@@ -122,7 +124,7 @@ describe('testing settings initialization', () => {
 
     expect(settings.app.libraries.current).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -137,6 +139,31 @@ describe('testing settings initialization', () => {
     expect(settings.app.libraries.current).toEqual([])
     expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toEqual(
       []
+    )
+  })
+
+  it('falls back to default project libraries after clearing user-level libraries', () => {
+    const settings = createSettingsWithProjectLibraries()
+    settings.app.libraries.default =
+      getDefaultProjectLibrarySettings('/tmp/projects')
+
+    setSettingsAtLevel(settings, 'user', {
+      app: {
+        libraries: [getDefaultCloudProjectLibrarySetting()],
+      },
+    })
+
+    clearSettingsAtLevel(settings, 'user')
+
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
+        path: '/tmp/projects',
+        type: 'directory',
+      },
+    ])
+    expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toBe(
+      undefined
     )
   })
 })
@@ -280,7 +307,7 @@ describe('project settings serialization regression', () => {
             projectDirectory: '/tmp/projects',
             libraries: [
               {
-                title: 'Default Projects Directory',
+                title: DEFAULT_PROJECT_LIBRARY_TITLE,
                 path: '/tmp/projects',
                 type: 'directory',
               },
@@ -368,7 +395,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
     expect(parsedPayload.app?.libraries).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },

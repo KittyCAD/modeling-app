@@ -14,7 +14,7 @@ The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloud
 
 ## Libraries and disk persistence
 
-The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. At present, we only support a "personal" cloud library in our API (see [our docs](https://zoo.dev/docs/developer-tools/api/projects)), and the location on the disk where this library's contents are synced locally is not editable by users. The chosen locations are:
+The cloud sync system supports syncing on a per-project basis. However, cloud sync also pairs with our project library capability to register a "cloud" library type to the application, which maps local project directories to user cloud libraries. Each configured cloud-type library contributes its own local materialization path. A source-less Personal Cloud library still accepts the legacy `/personal` path and resolves it to the app-managed default:
 - On web: `<opfs-root>/documents/zoo-design-studio-projects`
 - Linux: `~/Zoo/personal`
 - Windows: `%USERPROFILE%\Zoo\personal`
@@ -29,17 +29,18 @@ Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-
 - Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. If the project already has a valid cloud project ID, the engine may bind to that remote project; otherwise the next sync creates one.
 - Cloud -> Directory: treat this as "make local-only." Before the filesystem move, run the user-initiated disconnect flow: remove the local `project.toml` cloud project ID, clear pending cloud sync work, mark the local project `syncExcluded` with `reason: "user-disconnected"`, delete the remote cloud project, and update the remote project index. If remote deletion fails, the disconnect restores the local cloud link and the move should fail rather than leaving a half-detached project.
 - Cloud -> Cloud: if we add multiple cloud-type libraries, moving between them should preserve the cloud binding. Do not disconnect unless the target library type is not cloud.
-- Directory -> Directory: leave cloud sync state alone. This preserves support for individually synced projects outside cloud-type libraries.
+- Directory -> Directory: leave existing project metadata alone, but do not auto-enroll local-only projects. Directory-type libraries may discover projects that already carry cloud metadata, but they do not own cloud sync enrollment.
 - Library move availability is a declared library-type capability. Libraries whose type does not implement `moveProjectFrom` or `moveProjectTo` must not appear as move sources or targets. Future read-only/virtual types such as "recents" should omit both capabilities.
 
 ### Deleting projects
 
-Deleting a cloud-backed project means deleting the project everywhere. This applies both to projects in cloud-type libraries and to individually synced projects shown in directory-type libraries.
+Only delete the remote version of a project if that project is within a cloud-type library. Directory-type libraries can still display already-linked projects from their `project.toml` metadata, but deleting them removes only the local realization and leaves the remote cloud project in place. Directory-type libraries must not create a new cloud project for an unlinked local project.
 
-- Local materialized cloud project: remove the local project directory and delete the linked remote cloud project before reporting success. The filesystem observer may enqueue a tombstone as part of the local delete, but product actions must not rely on background sync as the only remote deletion path.
+- Local materialized cloud-library project: remove the local project directory and delete the linked remote cloud project before reporting success. The filesystem observer may enqueue a tombstone as part of the local delete, but product actions must not rely on background sync as the only remote deletion path.
+- Local materialized directory-library project with a cloud project ID: remove the local realization and clear local cloud sync state/outbox without deleting the linked remote cloud project.
 - Remote-only cloud project: delete the remote cloud project. There is no local materialization to remove.
 - Local-only directory project: remove only the local project directory.
-- If the remote delete fails for a cloud-backed project, the delete action should fail rather than show success while the cloud project can still reappear from the remote index.
+- If the remote delete fails for a project within a cloud-type library, the delete action should fail rather than show success while the cloud project can still reappear from the remote index.
 
 ## Sync Flows
 
@@ -120,7 +121,7 @@ flowchart TD
 
 - OPFS is the user-visible source of truth for reads, writes, and deletes.
 - Cloud sync must not block local reads, local writes, local project creation, or local project open.
-- Every local mutation that affects a project persists durable metadata and an outbox entry before cloud work runs.
+- Every local mutation inside the configured cloud library persists durable metadata and an outbox entry before cloud work runs.
 - Returning to a visible browser tab schedules an immediate remote-index check, bypassing the normal remote-index throttle.
 - Remote updates must send `expected_revision`; creates and deletes are the only unguarded remote writes.
 - A remote-only project discovered from the cloud index may remain remote-only; local materialization happens when a caller explicitly opens or moves it into a local library.
@@ -130,7 +131,7 @@ flowchart TD
 - Sync failures must preserve outbox and dirty metadata.
 - Cloud project title is user-facing metadata; the OPFS folder name is an implementation detail that may be uniquified.
 - Home rename of a cloud project acts on the local materialization when one exists and acts directly on the remote project when the project is still remote-only. Because the cloud API has no title-only update, a remote-only rename re-uploads the downloaded project archive with the new title under `expected_revision`.
-- Home delete of a cloud-backed project must remove both the local materialization, when present, and the linked remote project before reporting success.
+- Home delete must delete the linked remote project only when the project is within a cloud-type library. Home delete of a directory-library project with a cloud project ID removes only the local realization.
 
 ## Persistent State
 

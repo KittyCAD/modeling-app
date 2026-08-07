@@ -1,4 +1,5 @@
 import type { CloudSyncProjectMetadata } from '@src/lib/cloudSync'
+import type { ProjectLibraryType } from '@src/lib/projectLibraries'
 
 /**
  * The permissions of a file.
@@ -75,6 +76,15 @@ export type Project = {
    * Absolute path
    */
   path: string
+  /**
+   * Local root path for the configured library that owns this project.
+   * Undefined when a project was opened outside configured project libraries.
+   */
+  libraryPath?: string
+  /**
+   * Type of the configured library that owns this project.
+   */
+  libraryType?: ProjectLibraryType
   /**
    * Folder name of the project
    */
