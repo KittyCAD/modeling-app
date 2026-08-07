@@ -9,6 +9,10 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::util::MathExt;
 
+// TODO: Use the appropriate ezpz tolerance once
+// https://github.com/KittyCAD/ezpz/issues/276 is implemented.
+const LINE_INTERSECTION_EPSILON: f64 = 1e-9;
+
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     let (x, y, ty) = NumericType::combine_eq_coerce(p[0].clone(), p[1].clone(), None);
     ([x, y], ty)
@@ -96,7 +100,7 @@ pub(crate) fn intersect_lines_2d(line0: (Coords2d, Coords2d), line1: (Coords2d, 
     let q = line1.0;
     let s = vec2_sub(line1.1, line1.0);
     let denom = vec2_cross(r, s);
-    if denom.abs() <= 1e-9 {
+    if denom.abs() <= LINE_INTERSECTION_EPSILON {
         return None;
     }
 
