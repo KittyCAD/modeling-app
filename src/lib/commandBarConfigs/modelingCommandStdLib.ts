@@ -356,7 +356,7 @@ export const modelingCommandStdLibDriftConfig = {
   Rotate: {
     stdLibName: 'rotate',
     editFlow: true,
-    flowArgOrder: ['objects', 'roll'],
+    flowArgOrder: ['objects', 'axis', 'angle'],
   },
   Scale: {
     stdLibName: 'scale',

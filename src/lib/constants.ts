@@ -93,8 +93,8 @@ export const KCL_DEFAULT_TRANSFORM = `0`
 /** The default KCL translation along the x axis */
 export const KCL_DEFAULT_TRANSLATE_X = `5`
 
-/** The default KCL rotation around the roll axis */
-export const KCL_DEFAULT_ROTATE_ROLL = `45deg`
+/** The default KCL rotation angle */
+export const KCL_DEFAULT_ROTATE_ANGLE = `45deg`
 
 /** The default KCL scale arg value that means no scale */
 export const KCL_DEFAULT_SCALE = `1`

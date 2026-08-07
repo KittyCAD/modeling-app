@@ -23,7 +23,8 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import {
-  KCL_DEFAULT_ROTATE_ROLL,
+  KCL_AXIS_Z,
+  KCL_DEFAULT_ROTATE_ANGLE,
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
 } from '@src/lib/constants'
@@ -380,10 +381,11 @@ describe('Sweep-like bodyType argument', () => {
 })
 
 describe('Transform arguments', () => {
-  it('prepopulates a clearable first transform value', () => {
+  it('prepopulates clearable transform values', () => {
     for (const [commandName, argName, defaultValue] of [
       ['Translate', 'x', KCL_DEFAULT_TRANSLATE_X],
-      ['Rotate', 'roll', KCL_DEFAULT_ROTATE_ROLL],
+      ['Rotate', 'axis', KCL_AXIS_Z],
+      ['Rotate', 'angle', KCL_DEFAULT_ROTATE_ANGLE],
       ['Scale', 'factor', KCL_DEFAULT_SCALE_FACTOR],
     ] as const) {
       const commandConfig = modelingMachineCommandConfig[commandName]

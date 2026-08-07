@@ -424,7 +424,8 @@ test.describe(
           currentArgValue: '',
           headerArguments: {
             Objects: '',
-            Roll: '45deg',
+            Axis: 'Z',
+            Angle: '45deg',
           },
           highlightedHeaderArg: 'objects',
           commandName: 'Rotate',
@@ -433,13 +434,14 @@ test.describe(
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'roll',
+          currentArgKey: 'angle',
           currentArgValue: '45deg',
           headerArguments: {
             Objects: selectedObjects,
-            Roll: '45deg',
+            Axis: 'Z',
+            Angle: '45deg',
           },
-          highlightedHeaderArg: 'roll',
+          highlightedHeaderArg: 'angle',
           commandName: 'Rotate',
         })
         await page.keyboard.insertText('0.1')
@@ -448,7 +450,8 @@ test.describe(
           stage: 'review',
           headerArguments: {
             Objects: selectedObjects,
-            Roll: '0.1',
+            Axis: 'Z',
+            Angle: '0.1',
           },
           commandName: 'Rotate',
         })
@@ -460,7 +463,7 @@ test.describe(
           `
           translate(bracket, x = 1, y = 2)
           scale(bracket, factor = 1.2)
-          rotate(bracket, roll = 0.1)
+          rotate(bracket, axis = Z, angle = 0.1)
           `,
           { shouldNormalise: true }
         )
@@ -472,20 +475,21 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Roll: '0.1',
+            Axis: 'Z',
+            Angle: '0.1',
           },
           commandName: 'Rotate',
         })
-        await cmdBar.clickOptionalArgument('yaw')
+        await cmdBar.clickHeaderArgument('angle')
         await cmdBar.expectState({
           stage: 'arguments',
-          currentArgKey: 'yaw',
-          currentArgValue: '0',
+          currentArgKey: 'angle',
+          currentArgValue: '0.1',
           headerArguments: {
-            Roll: '0.1',
-            Yaw: '',
+            Axis: 'Z',
+            Angle: '0.1',
           },
-          highlightedHeaderArg: 'yaw',
+          highlightedHeaderArg: 'angle',
           commandName: 'Rotate',
         })
         await page.keyboard.insertText('0.2')
@@ -493,15 +497,15 @@ test.describe(
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
-            Roll: '0.1',
-            Yaw: '0.2',
+            Axis: 'Z',
+            Angle: '0.2',
           },
           commandName: 'Rotate',
         })
         await cmdBar.submit()
         await scene.settled()
         await editor.expectEditor.toContain(
-          `rotate(bracket, roll = 0.1, yaw = 0.2)`,
+          `rotate(bracket, axis = Z, angle = 0.2)`,
           {
             shouldNormalise: true,
           }
