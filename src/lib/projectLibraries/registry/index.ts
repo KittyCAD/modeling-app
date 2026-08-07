@@ -367,7 +367,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
       libraryType: ProjectLibraryTypeContribution | undefined,
       invalidation: ProjectLibraryRealizationsInvalidationSnapshot
     ) => {
-      const previousState = scanStates.get(library.id)
+      const cachedScan = scanStates.get(library.id)
       const input: ConfiguredProjectLibraryScanInput = {
         library,
         libraryType,
@@ -377,13 +377,11 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         ),
       }
 
-      if (
-        configuredProjectLibraryScanInputIsEqual(previousState?.input, input)
-      ) {
+      if (configuredProjectLibraryScanInputIsEqual(cachedScan?.input, input)) {
         return
       }
 
-      previousState?.abortController?.abort()
+      cachedScan?.abortController?.abort()
       const readRealizations = libraryType?.readRealizations
       if (!readRealizations) {
         warnMissingProjectLibraryTypeHandler(
@@ -402,10 +400,10 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         input,
         abortController,
         realizations: configuredProjectLibrarySourceIsEqual(
-          previousState?.input,
+          cachedScan?.input,
           input
         )
-          ? (previousState?.realizations ?? [])
+          ? (cachedScan?.realizations ?? [])
           : [],
       }
       scanStates.set(library.id, state)
