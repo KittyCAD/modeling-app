@@ -49,7 +49,7 @@ sketch004 = sketch(on = XY) {
   horizontal([line14.end, ORIGIN])
   horizontal(line14)
   horizontal(line13)
-  angle([line13, line5]) == 34
+  angleDimension(lines = [line13, line5], sector = 1) == 34
   line15 = line(start = [var 0in, var 0in], end = [var 0in, var 4.46in], construction = true)
   coincident([line15.start, line5.start])
   vertical([line15.end, ORIGIN])
@@ -58,13 +58,13 @@ sketch004 = sketch(on = XY) {
   vertical([line16.end, ORIGIN])
   vertical(line16)
   vertical(line15)
-  angle([line6, line15]) == 34
-  angle([line15, line7]) == 34
-  angle([line8, line14]) == 34
-  angle([line14, line9]) == 34
-  angle([line10, line16]) == 34
-  angle([line16, line11]) == 34
-  angle([line12, line13]) == 34
+  angleDimension(lines = [line6, line15], sector = 1) == 34
+  angleDimension(lines = [line15, line7], sector = 1) == 34
+  angleDimension(lines = [line8, line14], sector = 1) == 34
+  angleDimension(lines = [line14, line9], sector = 1) == 34
+  angleDimension(lines = [line10, line16], sector = 1) == 34
+  angleDimension(lines = [line16, line11], sector = 1) == 34
+  angleDimension(lines = [line12, line13], sector = 1) == 34
   distance([line12.start, line12.end]) == 5.35
   circle1 = circle(start = [var 4.54in, var 2.61in], center = [var 4.43in, var 2.99in])
   coincident([circle1.center, line5.end])

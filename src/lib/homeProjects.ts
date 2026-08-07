@@ -14,18 +14,15 @@ export function getHomeProjectDisplayName(project: HomeProjectEntry) {
 }
 
 export function shouldDeleteRemoteOnHomeProjectDelete(
-  project: Pick<HomeProjectEntry, 'libraryType' | 'remoteProjectId'>
+  project: Pick<HomeProjectEntry, 'deleteRemoteOnDelete' | 'remoteProjectId'>
 ) {
-  return Boolean(
-    project.remoteProjectId &&
-      project.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
-  )
+  return Boolean(project.remoteProjectId && project.deleteRemoteOnDelete)
 }
 
 export function shouldPreserveRemoteOnHomeProjectDelete(
   project: Pick<
     HomeProjectEntry,
-    'libraryType' | 'localProjectPath' | 'remoteProjectId'
+    'deleteRemoteOnDelete' | 'localProjectPath' | 'remoteProjectId'
   >
 ): boolean {
   return Boolean(
@@ -87,9 +84,11 @@ export function homeProjectEntryFromProject(
     title: getProjectDisplayName(project),
     localProjectPath: project.path,
     localProjectName: project.name,
-    libraryPath: project.libraryPath,
-    libraryType: project.libraryType,
     remoteProjectId: project.cloudProjectId,
+    deleteRemoteOnDelete: Boolean(
+      project.cloudProjectId &&
+        project.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
+    ),
     modified,
     defaultFile: project.default_file,
     kclFileCount: project.kcl_file_count,

@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
+pub(crate) use artifact::EntityCloneInfo;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -66,9 +67,11 @@ pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
+pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::PendingEdgeRefactorMeta;
+pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 

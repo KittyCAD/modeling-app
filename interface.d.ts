@@ -48,7 +48,8 @@ export interface IElectronAPI {
   watchFileOn: (
     path: string,
     key: string,
-    callback: (eventType: string, path: string) => void
+    callback: (eventType: string, path: string) => void,
+    options?: { depth?: number }
   ) => void
   readFile: typeof fs.readFile
   watchFileOff: (path: string, key: string) => void

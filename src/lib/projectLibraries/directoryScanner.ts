@@ -240,6 +240,11 @@ export function shouldSendProjectFolderReadProgress(
   return !folders?.length
 }
 
+/**
+ * Scans one directory library for concrete project folders. Cloud sync metadata
+ * is used only to enrich local observations with modified/conflict/cloud ID
+ * hints; duplicate detection and cleanup policy are handled after discovery.
+ */
 export async function readProjectsFromProjectDirectory({
   projectDirectoryPath,
   wasmInstancePromise,

@@ -726,6 +726,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -802,6 +807,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -878,6 +888,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -954,6 +969,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -1030,6 +1050,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -1106,6 +1131,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -1182,6 +1212,11 @@ description: Artifact commands bone-plate.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {

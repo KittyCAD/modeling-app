@@ -5,6 +5,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
@@ -179,6 +180,7 @@ export class Connection extends EventTarget {
         if (message.errors.length > 0) {
           const firstError = message.errors[0]
           if (firstError.error_code === 'auth_token_invalid') {
+            notifySessionExpired('legacy-engine-websocket')
             callback('auth_token_invalid')
           }
         }
