@@ -38,7 +38,13 @@ import {
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { reportRejection } from '@src/lib/trap'
 import {
+  ExpectedSystemIOError,
+  reportSystemIOError,
+  type SystemIOErrorRisk,
+} from '@src/machines/systemIO/errorReporting'
+import {
   NO_PROJECT_DIRECTORY,
+  SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
@@ -55,6 +61,7 @@ import {
 import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import {
   getProjectLibraryOperation,
+  type ProjectLibraryOperation,
   type ProjectLibraryTypeOperations,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
@@ -65,6 +72,103 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
 const configuredProjectLibraryEntriesInvalidation = signal(0)
+
+type DirectoryProjectOperationReport = {
+  operation: string
+  risk: SystemIOErrorRisk
+}
+
+async function runReportedDirectoryProjectOperation<T>({
+  run,
+  ...report
+}: DirectoryProjectOperationReport & {
+  run: () => Promise<T> | T
+}): Promise<T> {
+  try {
+    return await run()
+  } catch (error) {
+    reportSystemIOError({
+      error,
+      source: 'DirectoryProjectLibrary',
+      ...report,
+    })
+    return Promise.reject(error)
+  }
+}
+
+function withReportedDirectoryProjectOperation<
+  Input extends { library: ProjectLibrary },
+  Result,
+>(
+  operation: ProjectLibraryOperation<Input, Result>,
+  report: DirectoryProjectOperationReport
+): ProjectLibraryOperation<Input, Result> {
+  return {
+    ...operation,
+    run: (input) =>
+      runReportedDirectoryProjectOperation({
+        ...report,
+        run: () => operation.run(input),
+      }),
+  }
+}
+
+function withReportedDirectoryProjectOperations(
+  operations: ProjectLibraryTypeOperations
+): ProjectLibraryTypeOperations {
+  const report = <Input extends { library: ProjectLibrary }, Result>(
+    operation: ProjectLibraryOperation<Input, Result> | undefined,
+    metadata: DirectoryProjectOperationReport
+  ) =>
+    operation
+      ? withReportedDirectoryProjectOperation(operation, metadata)
+      : undefined
+
+  return {
+    ...operations,
+    createProject: report(operations.createProject, {
+      operation: SystemIOMachineActors.createProject,
+      risk: 'write',
+    }),
+    duplicateProject: report(operations.duplicateProject, {
+      operation: SystemIOMachineActors.duplicateProject,
+      risk: 'write',
+    }),
+    renameProject: report(operations.renameProject, {
+      operation: SystemIOMachineActors.renameProject,
+      risk: 'write',
+    }),
+    deleteProject: report(operations.deleteProject, {
+      operation: SystemIOMachineActors.deleteProject,
+      risk: 'destructive',
+    }),
+    moveProjectTo: report(operations.moveProjectTo, {
+      operation: SystemIOMachineActors.moveRecursive,
+      risk: 'destructive',
+    }),
+  }
+}
+
+function reportDirectoryProjectStatFailures({
+  error,
+  count,
+}: {
+  error: unknown
+  count: number
+}) {
+  reportSystemIOError({
+    error,
+    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    risk: 'read',
+    source: 'DirectoryProjectLibrary',
+    dedupeKey:
+      'SystemIO:DirectoryProjectLibrary:read folders from project directory:stat_project',
+    extra: {
+      phase: 'stat_project',
+      skippedProjectCount: count,
+    },
+  })
+}
 
 export function invalidateConfiguredProjectLibraryEntries() {
   configuredProjectLibraryEntriesInvalidation.value += 1
@@ -549,7 +653,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
-    new Error('Missing WASM promise registry value.')
+    new ExpectedSystemIOError('Missing WASM promise registry value.')
   const refreshLocalProjectEntries = () => {
     systemIO.value?.actor.send({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
@@ -584,22 +688,29 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
               return Promise.reject(wasmInstancePromise)
             }
 
-            const projects = await readProjectsFromProjectDirectory({
-              projectDirectoryPath: library.path,
-              wasmInstancePromise,
-              signal,
-            })
-            if (!signal.aborted) {
-              scheduleProjectDirectoryNameSyncFromTitles({
-                projects,
-                onProjectDirectoriesRenamed:
-                  invalidateConfiguredProjectLibraryEntries,
-              })
-            }
+            return runReportedDirectoryProjectOperation({
+              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+              risk: 'read',
+              run: async () => {
+                const projects = await readProjectsFromProjectDirectory({
+                  projectDirectoryPath: library.path,
+                  wasmInstancePromise,
+                  signal,
+                  onProjectStatFailures: reportDirectoryProjectStatFailures,
+                })
+                if (!signal.aborted) {
+                  scheduleProjectDirectoryNameSyncFromTitles({
+                    projects,
+                    onProjectDirectoriesRenamed:
+                      invalidateConfiguredProjectLibraryEntries,
+                  })
+                }
 
-            return localHomeProjectEntriesFromProjects(projects, library)
+                return localHomeProjectEntriesFromProjects(projects, library)
+              },
+            })
           },
-          operations: {
+          operations: withReportedDirectoryProjectOperations({
             createProject: {
               run: async ({
                 library,
@@ -688,7 +799,9 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                   project.remoteProjectId &&
                   cloudSyncActions?.status.value.enabled !== true
                 ) {
-                  return Promise.reject(new Error('Cloud sync is not enabled.'))
+                  return Promise.reject(
+                    new ExpectedSystemIOError('Cloud sync is not enabled.')
+                  )
                 }
 
                 if (project.remoteProjectId) {
@@ -722,7 +835,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 return result
               },
             },
-          },
+          }),
         }),
       ],
     }),
