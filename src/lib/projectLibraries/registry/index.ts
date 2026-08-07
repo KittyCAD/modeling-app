@@ -367,6 +367,13 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
       libraryType: ProjectLibraryTypeContribution | undefined,
       invalidation: ProjectLibraryRealizationsInvalidationSnapshot
     ) => {
+      /**
+       * Cached scan state is the active discovery cache entry for this library.
+       * It lets unchanged inputs skip redundant rescans, aborts stale in-flight
+       * reads when a new scan replaces them, keeps existing realizations visible
+       * while the same library source refreshes, and gives async completions a
+       * stable identity check before they publish results.
+       */
       const cachedScan = scanStates.get(library.id)
       const input: ConfiguredProjectLibraryScanInput = {
         library,
