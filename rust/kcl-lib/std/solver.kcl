@@ -525,17 +525,28 @@ export fn angle(
 /// Constrain a specific angle dimension sector between two lines.
 ///
 /// ```kcl,sketchSolve
-/// profile = sketch(on = XY) {
+/// normalProfile = sketch(on = XY) {
 ///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
 ///   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
 ///   line3 = line(start = [var 2mm, var 3.464mm], end = [var 4mm, var 0mm])
 ///   coincident([line1.start, line2.start])
 ///   coincident([line2.end, line3.start])
 ///   coincident([line3.end, line1.end])
-///   angleDimension(lines = [line1, line2], sector = 1) == 60deg
+///   angleDimension(lines = [line1, line2], sector = 1, inverse = false) == 60deg
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// inverseProfile = sketch(on = XY) {
+///   line1 = line(start = [var 7mm, var 0mm], end = [var 11mm, var 0mm])
+///   line2 = line(start = [var 7mm, var 0mm], end = [var 9mm, var 3.464mm])
+///   line3 = line(start = [var 9mm, var 3.464mm], end = [var 11mm, var 0mm])
+///   coincident([line1.start, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.end])
+///   angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 300deg
+/// }
+///
+/// normalSolid = extrude(region(point = [2mm, 1mm], sketch = normalProfile), length = 2)
+/// inverseSolid = extrude(region(point = [9mm, 1mm], sketch = inverseProfile), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn angleDimension(
