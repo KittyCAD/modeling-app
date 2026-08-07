@@ -6509,7 +6509,7 @@ export default {
       {
         "name": "intersectionIndex",
         "ty": "number(_)",
-        "docs": "Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is only used when the `segments` argument is provided.",
+        "docs": "Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is usually only needed when two or more `segments` are provided.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6519,7 +6519,7 @@ export default {
       {
         "name": "direction",
         "ty": "string",
-        "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is only used when the `segments` argument is provided.",
+        "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is usually only needed when two or more `segments` are provided.",
         "required": false,
         "special": false,
         "experimental": false,
