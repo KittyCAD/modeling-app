@@ -464,4 +464,44 @@ y = outer()
         );
         crate::execution::parse_execute(&applied).await.unwrap();
     }
+
+    /// Renaming a snake_case declaration inside a sketch block via the Z0001 suggestion
+    /// renames the declaration, uses inside the block, and member references on the sketch
+    /// variable.
+    #[tokio::test]
+    async fn z0001_sketch_block_declaration_renames_member_references() {
+        let kcl = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  line_one = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  coincident([line_one.end, line2.start])
+}
+r = region(segments = [s.line_one, s.line2])
+"#;
+        let expected = r#"@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  lineOne = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  coincident([lineOne.end, line2.start])
+}
+r = region(segments = [s.lineOne, s.line2])
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let rename_finding = lints
+            .iter()
+            .find(|d| d.description == "found 'line_one'" && d.suggestion.is_some());
+        let Some(discovered) = rename_finding else {
+            panic!("Expected a Z0001 finding for line_one with a suggestion; lints: {lints:?}")
+        };
+        let applied = discovered.apply_suggestion(kcl).expect("suggestion should apply");
+        assert_eq!(
+            applied.trim(),
+            expected.trim(),
+            "applied suggestion should match expected"
+        );
+        crate::execution::parse_execute(&applied).await.unwrap();
+    }
 }
