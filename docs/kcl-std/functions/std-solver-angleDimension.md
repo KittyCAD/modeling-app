@@ -5,7 +5,7 @@ excerpt: "Constrain a specific angle dimension sector between two lines."
 layout: manual
 ---
 
-Constrain a specific angle dimension sector between two lines.
+Constrain the angle in the selected sector between two lines.
 
 ```kcl
 solver::angleDimension(
