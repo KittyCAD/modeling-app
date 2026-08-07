@@ -18,6 +18,7 @@ mod api;
 mod connectivity;
 mod constraints;
 mod extract;
+mod mode;
 mod model;
 mod render;
 mod sampling;
