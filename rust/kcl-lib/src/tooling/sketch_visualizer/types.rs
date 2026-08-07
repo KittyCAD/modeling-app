@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
@@ -33,8 +31,6 @@ pub enum SketchVisualizationMode {
     /// Color geometry by solver degree-of-freedom state and emit DoF graph data.
     #[default]
     Dof,
-    /// Color primary geometry by stable per-segment ID colors and emit the ID map.
-    Ids,
 }
 
 /// The static visualization theme.
@@ -114,9 +110,6 @@ pub struct SketchVisualizationData {
     pub segments: Vec<SketchVisualizationSegmentData>,
     /// Constraint sidecar data attached to the selected sketch.
     pub constraints: Vec<SketchVisualizationConstraintData>,
-    /// Stable per-segment colors emitted for IDs mode.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub id_color_map: Option<BTreeMap<usize, String>>,
     /// Groups of points whose coordinates are within `contact_tolerance`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contact_groups: Option<Vec<SketchVisualizationPointGroup>>,
@@ -229,8 +222,7 @@ pub struct SketchVisualizationSegmentData {
     /// DoF-mode connected component ID.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub component_id: Option<usize>,
-    /// Actual render color in DoF mode. In IDs mode this is omitted because it
-    /// would duplicate `id_color_map[id]`.
+    /// Actual render color for this mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rendered_color: Option<String>,
 }

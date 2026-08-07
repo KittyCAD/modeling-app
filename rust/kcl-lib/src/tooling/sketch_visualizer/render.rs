@@ -72,44 +72,6 @@ pub(super) fn dof_color(freedom: Option<Freedom>, theme: SketchVisualizationThem
     }
 }
 
-pub(super) fn id_color(id: usize) -> Color {
-    // Hash the object ID before mapping into HSV so nearby segment IDs do not
-    // produce visually adjacent colors.
-    let hash = stable_id_hash(id as u64);
-    let hue = ((hash % 360) as f64) / 360.0;
-    let saturation = 0.62 + (((hash >> 32) % 18) as f64 / 100.0);
-    let value = 0.82 + (((hash >> 40) % 14) as f64 / 100.0);
-    hsv_to_rgb(hue, saturation, value)
-}
-
-fn stable_id_hash(mut value: u64) -> u64 {
-    value = value.wrapping_add(0x9e37_79b9_7f4a_7c15);
-    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
-    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
-    value ^ (value >> 31)
-}
-
-fn hsv_to_rgb(h: f64, s: f64, v: f64) -> Color {
-    let i = (h * 6.0).floor();
-    let f = h * 6.0 - i;
-    let p = v * (1.0 - s);
-    let q = v * (1.0 - f * s);
-    let t = v * (1.0 - (1.0 - f) * s);
-    let (r, g, b) = match (i as u32) % 6 {
-        0 => (v, t, p),
-        1 => (q, v, p),
-        2 => (p, v, t),
-        3 => (p, q, v),
-        4 => (t, p, v),
-        _ => (v, p, q),
-    };
-    Color::rgb(float_channel(r), float_channel(g), float_channel(b))
-}
-
-fn float_channel(value: f64) -> u8 {
-    (value.clamp(0.0, 1.0) * 255.0).round() as u8
-}
-
 pub(super) fn render_png(
     segments: &BTreeMap<usize, InternalSegment>,
     control_polygons: &[InternalPolyline],

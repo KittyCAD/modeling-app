@@ -10,13 +10,6 @@ width = 320
 height = 240
 padding = 24
 
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "tangential_fillet_direction"
 input = "tangential_fillet_direction/input.kcl"
@@ -25,13 +18,6 @@ sketch = "profile"
 [[cases.visualizations]]
 name = "dof"
 mode = "dof"
-width = 360
-height = 300
-padding = 24
-
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
 width = 360
 height = 300
 padding = 24
@@ -48,13 +34,6 @@ width = 320
 height = 240
 padding = 24
 
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "sample_equal_radius_arc_circle"
 input = "../equal_radius_arc_circle_native/input.kcl"
@@ -63,13 +42,6 @@ sketch = "s"
 [[cases.visualizations]]
 name = "dof"
 mode = "dof"
-width = 320
-height = 240
-padding = 24
-
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
 width = 320
 height = 240
 padding = 24
@@ -86,13 +58,6 @@ width = 420
 height = 320
 padding = 24
 
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
-width = 420
-height = 320
-padding = 24
-
 [[cases]]
 name = "arc_circle_spline"
 input = "arc_circle_spline/input.kcl"
@@ -105,14 +70,6 @@ width = 320
 height = 240
 padding = 24
 
-[[cases.visualizations]]
-name = "ids_control_polygons"
-mode = "ids"
-show-control-polygons = true
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "coincident_lines"
 input = "coincident_lines/input.kcl"
@@ -121,13 +78,6 @@ sketch = "profile"
 [[cases.visualizations]]
 name = "dof"
 mode = "dof"
-width = 320
-height = 240
-padding = 24
-
-[[cases.visualizations]]
-name = "ids"
-mode = "ids"
 width = 320
 height = 240
 padding = 24
