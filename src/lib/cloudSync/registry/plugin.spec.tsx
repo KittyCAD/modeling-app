@@ -52,6 +52,7 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type * as ReactModule from 'react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -80,7 +81,7 @@ const cloudConflictDialogMocks = vi.hoisted(
 )
 
 vi.mock('@src/components/CloudConflictDialog', async () => {
-  const React = await vi.importActual<typeof import('react')>('react')
+  const React = await vi.importActual<typeof ReactModule>('react')
 
   function useMockDialogSignalRender() {
     const [, forceRender] = React.useState(0)
