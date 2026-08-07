@@ -6742,6 +6742,38 @@ x = baz
         );
     }
 
+    #[test]
+    fn test_rename_fn_param_with_same_named_sketch_block_declaration() {
+        // Renaming the parameter `line1` must not be intercepted by the sketch block symbol
+        // handling just because the body's sketch block declares the same name. The block's
+        // own declaration shadows the parameter from its statement on, so it and its (empty
+        // set of) later uses stay; the use in its own initializer refers to the parameter and
+        // is renamed, like any use before a shadowing declaration.
+        let code = r#"fn f(line1) {
+  s = sketch(on = XY) {
+    line1 = line(start = [line1, var 0], end = [var 10, var 0])
+  }
+  return line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("newLen", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn f(newLen) {
+  s = sketch(on = XY) {
+    line1 = line(start = [newLen, var 0], end = [var 10, var 0])
+  }
+  return newLen
+}
+"#
+        );
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
