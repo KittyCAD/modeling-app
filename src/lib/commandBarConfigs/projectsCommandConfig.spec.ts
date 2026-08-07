@@ -1,7 +1,10 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import {
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  type ProjectLibrary,
+} from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -9,6 +12,7 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 
@@ -524,6 +528,51 @@ describe('project command config', () => {
     } finally {
       window.location.hash = ''
     }
+  })
+
+  it('clarifies command-bar deletion for cloud-backed non-cloud library projects', () => {
+    const homeProject = {
+      ...createHomeProject({
+        id: 'remote:remote-123',
+        title: 'Client Bracket',
+        localProjectName: 'bracket',
+        localProjectPath: '/client-projects/bracket',
+        libraryIds: ['client-projects'],
+      }),
+      source: 'both',
+      status: 'synced',
+      libraryPath: '/client-projects',
+      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      remoteProjectId: 'remote-123',
+    } satisfies HomeProjectEntry
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+      enableProjectDirectoryCommands: true,
+      getHomeProjectActions: () => createHomeProjectActions(),
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const deleteCommand = commands.find(
+      (command) => command.name === 'Delete project'
+    )
+    const reviewMessage = deleteCommand?.reviewMessage
+    expect(typeof reviewMessage).toBe('function')
+    if (typeof reviewMessage !== 'function') {
+      return
+    }
+
+    render(
+      reviewMessage({
+        argumentsToSubmit: {
+          name: homeProject.id,
+        },
+      } as unknown as ContextFrom<typeof commandBarMachine>)
+    )
+
+    expect(
+      screen.getByText(
+        'This will delete the local copy of "Client Bracket". The cloud version will not be deleted.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('moves home project entries to a selected library through project actions', async () => {

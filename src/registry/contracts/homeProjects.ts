@@ -3,7 +3,11 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import type {
+  ProjectLibrary,
+  ProjectLibraryType,
+} from '@src/lib/projectLibraries'
+import { DEFAULT_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
@@ -41,6 +45,8 @@ export interface HomeProjectEntry {
   title?: string
   localProjectPath?: string
   localProjectName?: string
+  libraryPath?: string
+  libraryType?: ProjectLibraryType
   remoteProjectId?: string
   modified?: number
   defaultFile?: string
@@ -188,9 +194,16 @@ function mergeSameSourceHomeProjectEntries(
     return next
   }
 
+  const nextIsDefaultFallback =
+    next.libraryIds?.length === 1 &&
+    next.libraryIds[0] === DEFAULT_PROJECT_LIBRARY_ID
+  const ownership = nextIsDefaultFallback ? existing : next
+
   return {
     ...existing,
     ...next,
+    libraryPath: ownership.libraryPath,
+    libraryType: ownership.libraryType,
     modified: Math.max(existing.modified ?? 0, next.modified ?? 0) || undefined,
     thumbnail: existing.thumbnail ?? next.thumbnail,
     libraryIds: uniqueStrings([
