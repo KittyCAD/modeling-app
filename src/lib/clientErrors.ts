@@ -27,6 +27,7 @@ export enum ClientErrorCode {
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',
   EngineDisconnect = 'engine_disconnect',
+  SystemIOError = 'system_io_error',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',
