@@ -1,4 +1,8 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import {
+  defineContract,
+  defineService,
+  defineValueSpec,
+} from '@kittycad/registry'
 import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
@@ -100,6 +104,30 @@ export type ProjectLibraryRealizationContribution = Omit<
 export type ProjectLibraryRealizationContributionGroup =
   | ProjectLibraryRealizationContribution
   | readonly ProjectLibraryRealizationContribution[]
+
+export type ProjectLibraryRealizationsInvalidationInput = {
+  libraryId?: string
+}
+
+export type ProjectLibraryRealizationWatchOptions = {
+  libraries: readonly ProjectLibrary[]
+}
+
+export interface ProjectLibraryRealizationsService {
+  /**
+   * Refreshes configured realization discovery. Prefer passing `libraryId`
+   * whenever the caller knows which library changed.
+   */
+  invalidate: (input?: ProjectLibraryRealizationsInvalidationInput) => void
+  /**
+   * Watches configured library roots for realization boundary changes while a UI
+   * surface needs live discovery updates. The returned disposer must be called
+   * when that surface unmounts.
+   */
+  watchConfiguredLibraries: (
+    options: ProjectLibraryRealizationWatchOptions
+  ) => () => void
+}
 
 export interface ProjectLibraryOperation<
   Input extends { library: ProjectLibrary },
@@ -446,6 +474,10 @@ export function combineProjectLibraryRealizationContributions(
 }
 
 export const projectLibrariesContract = defineContract({
+  projectLibraryRealizationsService:
+    defineService<ProjectLibraryRealizationsService>(
+      'project-library-realizations'
+    ),
   projectLibraryTypesValueSpec: defineValueSpec<
     ProjectLibraryTypeContribution,
     Map<ProjectLibraryType, ProjectLibraryTypeContribution>
@@ -481,6 +513,7 @@ export const projectLibrariesContract = defineContract({
 })
 
 export const {
+  projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
