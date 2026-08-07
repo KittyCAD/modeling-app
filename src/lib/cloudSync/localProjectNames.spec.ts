@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  deleteCloudSyncDuplicateProjectRealizations,
   deleteCloudSyncLocalProjectRealizations,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
@@ -352,6 +353,33 @@ describe('cloud sync local project names', () => {
     expect(files.has(`${titleProjectPath}/main.kcl`)).toBe(false)
     expect(await getCloudSyncProjectMetadata(titleProjectPath)).toBeUndefined()
     expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('deletes selected duplicate local realizations without deleting the canonical path', async () => {
+    const files = new Map<string, string>()
+    addCloudProjectFiles(files, titleProjectPath)
+    addCloudProjectFiles(files, duplicateTitleProjectPath)
+    addCloudProjectFiles(files, dirtyTitleProjectPath, 'x = 2')
+    configureCloudSyncTestFs(files)
+    await seedCleanTitleCloudProjectMetadata()
+
+    await deleteCloudSyncDuplicateProjectRealizations({
+      remoteProjectId,
+      canonicalProjectPath: titleProjectPath,
+      duplicateProjectPaths: [
+        titleProjectPath,
+        duplicateTitleProjectPath,
+        dirtyTitleProjectPath,
+      ],
+    })
+
+    expect(files.get(`${titleProjectPath}/main.kcl`)).toBe('x = 1')
+    expect(files.has(`${duplicateTitleProjectPath}/main.kcl`)).toBe(false)
+    expect(files.has(`${dirtyTitleProjectPath}/main.kcl`)).toBe(false)
+    expect(await getCloudSyncProjectMetadata(titleProjectPath)).toMatchObject({
+      localProjectPath: titleProjectPath,
+      remoteProjectId,
+    })
   })
 
   it('leaves data and metadata in place when a cloud project directory rename fails', async () => {
