@@ -3,6 +3,7 @@ import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { KclManager } from '@src/lang/KclManager'
 import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
@@ -206,7 +207,7 @@ export default function CommandBarSelectionMixedInput({
     isMixedSelection && arg.selectionSource?.allowSceneSelection
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
           'relative flex flex-col mx-4 my-4 ' +
@@ -246,6 +247,7 @@ export default function CommandBarSelectionMixedInput({
           {arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           id="selection"
           name="selection"
           ref={inputRef}
