@@ -75,6 +75,9 @@ sketch009 = sketch(on = XZ) {
   tangent([arc1, arc2])
   distance([line1.start, line1.end]) == .05
   horizontalDistance([ORIGIN, line1.start]) == .8
+  radius(arc1) == 1.02
+  radius(arc2) == 18.6
+  fixed([arc2.end, [2.72in, -2.27in]])
 }
 
 // Sketch the tube profile for the pulmonary vein, then sweep
