@@ -12,7 +12,6 @@ import {
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
-import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
