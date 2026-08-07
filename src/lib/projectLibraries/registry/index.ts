@@ -3,6 +3,7 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
@@ -28,18 +29,22 @@ import {
 import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
 import {
   invalidateProjectLibraryRealizations,
+  readProjectLibraryRealizationInvalidationForLibrary,
   readProjectLibraryRealizationsInvalidation,
+  type ProjectLibraryRealizationsInvalidationSnapshot,
 } from '@src/lib/projectLibraries/registry/invalidation'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { uuidv4 } from '@src/lib/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   type ProjectLibraryRealizationContribution,
+  type ProjectLibraryRealizationsService,
   type ProjectLibraryTypeContribution,
   type ProjectLibraryTypeOperations,
+  projectLibraryRealizationsService,
   projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
@@ -48,7 +53,6 @@ import {
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 
 function areProjectLibrariesEqual(
@@ -71,71 +75,269 @@ function areProjectLibrariesEqual(
   )
 }
 
-/** Inputs whose change requires configured libraries to be rediscovered. */
-type ConfiguredProjectLibraryScanInputs = {
-  libraries: readonly ProjectLibrary[]
-  libraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
-  invalidation: number
+type ProjectLibraryInvalidationGeneration = {
+  global: number
+  library: number
 }
 
-/**
- * Avoids rescanning when unrelated settings updates produce new settings object
- * identities but the library list, type handlers, and invalidation token are
- * unchanged.
- */
-function configuredProjectLibraryScanInputsAreEqual(
-  left: ConfiguredProjectLibraryScanInputs | undefined,
-  right: ConfiguredProjectLibraryScanInputs
+/** Inputs whose change requires one configured library to be rediscovered. */
+type ConfiguredProjectLibraryScanInput = {
+  library: ProjectLibrary
+  libraryType?: ProjectLibraryTypeContribution
+  invalidation: ProjectLibraryInvalidationGeneration
+}
+
+type ConfiguredProjectLibraryScanState = {
+  input: ConfiguredProjectLibraryScanInput
+  abortController?: AbortController
+  realizations: ProjectLibraryRealizationContribution[]
+}
+
+function configuredProjectLibraryScanInputIsEqual(
+  left: ConfiguredProjectLibraryScanInput | undefined,
+  right: ConfiguredProjectLibraryScanInput
 ) {
   return Boolean(
     left &&
-      left.libraryTypes === right.libraryTypes &&
-      left.invalidation === right.invalidation &&
-      areProjectLibrariesEqual(left.libraries, right.libraries)
+      left.libraryType === right.libraryType &&
+      left.invalidation.global === right.invalidation.global &&
+      left.invalidation.library === right.invalidation.library &&
+      areProjectLibrariesEqual([left.library], [right.library])
+  )
+}
+
+function configuredProjectLibrarySourceIsEqual(
+  left: ConfiguredProjectLibraryScanInput | undefined,
+  right: ConfiguredProjectLibraryScanInput
+) {
+  return Boolean(
+    left &&
+      left.libraryType === right.libraryType &&
+      areProjectLibrariesEqual([left.library], [right.library])
+  )
+}
+
+function warnMissingProjectLibraryTypeHandler(
+  library: ProjectLibrary,
+  warnedMissingTypeLibraryIds: Set<string>
+) {
+  if (warnedMissingTypeLibraryIds.has(library.id)) {
+    return
+  }
+
+  warnedMissingTypeLibraryIds.add(library.id)
+  console.warn(
+    `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
   )
 }
 
 /**
- * Reads every configured library for one discovery pass. Results are flattened
- * without identity resolution; the value spec combiner later merges only
- * observations of the same normalized local path.
+ * Reads one configured library for one discovery pass. The result is still only
+ * a set of local observations; the ValueSpec combiner later merges observations
+ * of the same normalized path and cloudSync handles cloud identity.
  */
 async function readConfiguredProjectLibraryRealizations({
-  libraries,
-  libraryTypes,
+  library,
+  libraryType,
   warnedMissingTypeLibraryIds,
   signal,
 }: {
-  libraries: readonly ProjectLibrary[]
-  libraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
+  library: ProjectLibrary
+  libraryType?: ProjectLibraryTypeContribution
   warnedMissingTypeLibraryIds: Set<string>
   signal: AbortSignal
 }): Promise<ProjectLibraryRealizationContribution[]> {
-  const realizationGroups = await Promise.all(
-    libraries.map(async (library) => {
-      const readRealizations = libraryTypes.get(library.type)?.readRealizations
-      if (!readRealizations) {
-        if (!warnedMissingTypeLibraryIds.has(library.id)) {
-          warnedMissingTypeLibraryIds.add(library.id)
-          console.warn(
-            `Configured project library "${library.title}" (${library.id}) has no registered "${library.type}" type handler; its projects cannot be listed.`
-          )
-        }
-        return []
-      }
+  const readRealizations = libraryType?.readRealizations
+  if (!readRealizations) {
+    warnMissingProjectLibraryTypeHandler(library, warnedMissingTypeLibraryIds)
+    return []
+  }
 
-      try {
-        return await readRealizations({ library, signal })
-      } catch (error) {
-        if (!signal.aborted) {
-          reportRejection(error)
-        }
-        return []
-      }
+  try {
+    return await readRealizations({ library, signal })
+  } catch (error) {
+    if (!signal.aborted) {
+      reportRejection(error)
+    }
+    return []
+  }
+}
+
+const PROJECT_LIBRARY_WATCH_DEBOUNCE_MS = 750
+const PROJECT_LIBRARY_WATCH_SETTLED_RESCAN_MS = 3000
+
+type ProjectLibraryWatchTarget = {
+  path: string
+  normalizedPath: string
+  libraryIds: readonly string[]
+}
+
+function normalizeProjectLibraryWatchPath(path: string) {
+  return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+function projectLibraryWatchTargetsFromLibraries(
+  libraries: readonly ProjectLibrary[]
+): ProjectLibraryWatchTarget[] {
+  const targetsByPath = new Map<string, ProjectLibraryWatchTarget>()
+
+  for (const library of libraries) {
+    const path = library.path.trim()
+    const normalizedPath = normalizeProjectLibraryWatchPath(path)
+    if (!path || !normalizedPath || normalizedPath === fsZds.sep) {
+      continue
+    }
+
+    const previousTarget = targetsByPath.get(normalizedPath)
+    targetsByPath.set(normalizedPath, {
+      path: previousTarget?.path ?? path,
+      normalizedPath,
+      libraryIds: [...(previousTarget?.libraryIds ?? []), library.id],
     })
-  )
+  }
 
-  return signal.aborted ? [] : realizationGroups.flat()
+  return Array.from(targetsByPath.values()).toSorted((left, right) =>
+    left.normalizedPath.localeCompare(right.normalizedPath)
+  )
+}
+
+function relativeProjectLibraryWatchPath(
+  targetPath: string,
+  libraryPath: string
+) {
+  const normalizedTargetPath = normalizeProjectLibraryWatchPath(targetPath)
+  const normalizedLibraryPath = normalizeProjectLibraryWatchPath(libraryPath)
+
+  if (normalizedTargetPath === normalizedLibraryPath) {
+    return ''
+  }
+
+  const libraryPrefix = `${normalizedLibraryPath}/`
+  if (!normalizedTargetPath.startsWith(libraryPrefix)) {
+    return undefined
+  }
+
+  return normalizedTargetPath.slice(libraryPrefix.length)
+}
+
+function countNormalizedPathSegments(path: string) {
+  let count = 0
+  let inSegment = false
+
+  for (const character of path) {
+    if (character === '/') {
+      inSegment = false
+      continue
+    }
+
+    if (!inSegment) {
+      count += 1
+      inSegment = true
+    }
+  }
+
+  return count
+}
+
+function isProjectLibraryRealizationBoundaryEvent(
+  eventType: string,
+  targetPath: string,
+  libraryPath: string
+) {
+  if (!['add', 'addDir', 'change', 'unlink', 'unlinkDir'].includes(eventType)) {
+    return false
+  }
+
+  const relativePath = relativeProjectLibraryWatchPath(targetPath, libraryPath)
+  if (relativePath === undefined) {
+    return false
+  }
+
+  return relativePath === '' || countNormalizedPathSegments(relativePath) <= 1
+}
+
+function watchConfiguredProjectLibraries({
+  libraries,
+  onInvalidateLibrary,
+}: {
+  libraries: readonly ProjectLibrary[]
+  onInvalidateLibrary: (libraryId: string) => void
+}) {
+  if (typeof window === 'undefined' || !window.electron) {
+    return () => {}
+  }
+
+  const targets = projectLibraryWatchTargetsFromLibraries(libraries)
+  const timersByLibraryId = new Map<string, ReturnType<typeof setTimeout>>()
+  const settledTimersByLibraryId = new Map<
+    string,
+    ReturnType<typeof setTimeout>
+  >()
+  const watcherKeysByPath = new Map<string, string>()
+
+  const scheduleInvalidation = (libraryId: string) => {
+    clearTimeout(timersByLibraryId.get(libraryId))
+    timersByLibraryId.set(
+      libraryId,
+      setTimeout(() => {
+        timersByLibraryId.delete(libraryId)
+        onInvalidateLibrary(libraryId)
+      }, PROJECT_LIBRARY_WATCH_DEBOUNCE_MS)
+    )
+  }
+
+  const scheduleSettledInvalidation = (libraryId: string) => {
+    clearTimeout(settledTimersByLibraryId.get(libraryId))
+    settledTimersByLibraryId.set(
+      libraryId,
+      setTimeout(() => {
+        settledTimersByLibraryId.delete(libraryId)
+        onInvalidateLibrary(libraryId)
+      }, PROJECT_LIBRARY_WATCH_SETTLED_RESCAN_MS)
+    )
+  }
+
+  for (const target of targets) {
+    const watcherKey = `project-library-realizations:${uuidv4()}`
+    watcherKeysByPath.set(target.path, watcherKey)
+    window.electron.watchFileOn(
+      target.path,
+      watcherKey,
+      (eventType, targetPath) => {
+        if (
+          !isProjectLibraryRealizationBoundaryEvent(
+            eventType,
+            targetPath,
+            target.path
+          )
+        ) {
+          return
+        }
+
+        for (const libraryId of target.libraryIds) {
+          scheduleInvalidation(libraryId)
+          if (eventType === 'addDir') {
+            // Root-only watchers see the project folder creation, not every file
+            // copied into it. A settled follow-up catches slower external copies.
+            scheduleSettledInvalidation(libraryId)
+          }
+        }
+      },
+      { depth: 0 }
+    )
+  }
+
+  return () => {
+    for (const timer of timersByLibraryId.values()) {
+      clearTimeout(timer)
+    }
+    for (const timer of settledTimersByLibraryId.values()) {
+      clearTimeout(timer)
+    }
+    for (const [path, watcherKey] of watcherKeysByPath) {
+      window.electron?.watchFileOff(path, watcherKey)
+    }
+  }
 }
 
 /**
@@ -149,12 +351,86 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
     const realizations = signal<ProjectLibraryRealizationContribution[]>([])
     const warnedMissingTypeLibraryIds = new Set<string>()
-    let abortController: AbortController | undefined
+    const scanStates = new Map<string, ConfiguredProjectLibraryScanState>()
     let disposeConfiguredProjectLibraryRealizationsEffect:
       | (() => void)
       | undefined
     let disposed = false
-    let lastScannedInputs: ConfiguredProjectLibraryScanInputs | undefined
+    let currentLibraryIds: readonly string[] = []
+
+    const updateRealizations = () => {
+      realizations.value = currentLibraryIds.flatMap(
+        (libraryId) => scanStates.get(libraryId)?.realizations ?? []
+      )
+    }
+
+    const scanLibrary = (
+      library: ProjectLibrary,
+      libraryType: ProjectLibraryTypeContribution | undefined,
+      invalidation: ProjectLibraryRealizationsInvalidationSnapshot
+    ) => {
+      const previousState = scanStates.get(library.id)
+      const input: ConfiguredProjectLibraryScanInput = {
+        library,
+        libraryType,
+        invalidation: readProjectLibraryRealizationInvalidationForLibrary(
+          invalidation,
+          library.id
+        ),
+      }
+
+      if (
+        configuredProjectLibraryScanInputIsEqual(previousState?.input, input)
+      ) {
+        return
+      }
+
+      previousState?.abortController?.abort()
+      const readRealizations = libraryType?.readRealizations
+      if (!readRealizations) {
+        warnMissingProjectLibraryTypeHandler(
+          library,
+          warnedMissingTypeLibraryIds
+        )
+        scanStates.set(library.id, {
+          input,
+          realizations: [],
+        })
+        return
+      }
+
+      const abortController = new AbortController()
+      const state: ConfiguredProjectLibraryScanState = {
+        input,
+        abortController,
+        realizations: configuredProjectLibrarySourceIsEqual(
+          previousState?.input,
+          input
+        )
+          ? (previousState?.realizations ?? [])
+          : [],
+      }
+      scanStates.set(library.id, state)
+
+      void readConfiguredProjectLibraryRealizations({
+        library,
+        libraryType,
+        warnedMissingTypeLibraryIds,
+        signal: abortController.signal,
+      }).then((nextRealizations) => {
+        if (
+          disposed ||
+          abortController.signal.aborted ||
+          scanStates.get(library.id) !== state
+        ) {
+          return
+        }
+
+        state.abortController = undefined
+        state.realizations = nextRealizations
+        updateRealizations()
+      })
+    }
 
     queueMicrotask(() => {
       if (disposed) {
@@ -165,44 +441,23 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         const currentSettings = settings.value?.current.value
         const typeById = libraryTypes.value
         const invalidation = readProjectLibraryRealizationsInvalidation()
-        const scanInputs: ConfiguredProjectLibraryScanInputs = {
-          libraries: currentSettings
-            ? projectLibrariesFromSettings(
-                currentSettings.app.libraries.current
-              )
-            : [],
-          libraryTypes: typeById,
-          invalidation,
-        }
+        const libraries = currentSettings
+          ? projectLibrariesFromSettings(currentSettings.app.libraries.current)
+          : []
+        const activeLibraryIds = new Set(libraries.map((library) => library.id))
+        currentLibraryIds = libraries.map((library) => library.id)
 
-        if (
-          configuredProjectLibraryScanInputsAreEqual(
-            lastScannedInputs,
-            scanInputs
-          )
-        ) {
-          return
-        }
-
-        lastScannedInputs = scanInputs
-
-        abortController?.abort()
-        const loadController = new AbortController()
-        abortController = loadController
-        realizations.value = []
-
-        void readConfiguredProjectLibraryRealizations({
-          libraries: scanInputs.libraries,
-          libraryTypes: scanInputs.libraryTypes,
-          warnedMissingTypeLibraryIds,
-          signal: loadController.signal,
-        }).then((nextRealizations) => {
-          if (disposed || loadController.signal.aborted) {
-            return
+        for (const [libraryId, state] of scanStates) {
+          if (!activeLibraryIds.has(libraryId)) {
+            state.abortController?.abort()
+            scanStates.delete(libraryId)
           }
+        }
 
-          realizations.value = nextRealizations
+        libraries.forEach((library) => {
+          scanLibrary(library, typeById.get(library.type), invalidation)
         })
+        updateRealizations()
       })
     })
 
@@ -216,7 +471,9 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         ],
         dispose: () => {
           disposed = true
-          abortController?.abort()
+          for (const state of scanStates.values()) {
+            state.abortController?.abort()
+          }
           disposeConfiguredProjectLibraryRealizationsEffect?.()
         },
       }),
@@ -224,6 +481,21 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
   },
   'project-libraries.configured-realizations'
 )
+
+const projectLibraryRealizationsRegistryService = defineRegistryItem({
+  id: 'project-libraries.realizations-service',
+  providesServices: [
+    provideService(projectLibraryRealizationsService, {
+      invalidate: invalidateProjectLibraryRealizations,
+      watchConfiguredLibraries: ({ libraries }) =>
+        watchConfiguredProjectLibraries({
+          libraries,
+          onInvalidateLibrary: (libraryId) =>
+            invalidateProjectLibraryRealizations({ libraryId }),
+        }),
+    } satisfies ProjectLibraryRealizationsService),
+  ],
+})
 
 function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
   if (!project.localProjectPath || !project.readWriteAccess) {
@@ -239,20 +511,20 @@ function getProjectMoveSource({ project }: { project: HomeProjectEntry }) {
 }
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
-  const systemIO = ctx.services.signal(systemIOService)
   const cloudSync = ctx.services.signal(cloudSyncService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
   /**
-   * Directory operations still notify System IO's legacy folder cache for open
-   * editor/explorer flows, but Home discovery refreshes through projectLibraries.
+   * Directory operations know the configured library they changed, so they
+   * refresh that library's local realization discovery directly.
    */
-  const refreshLocalProjectRealizations = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
-    invalidateProjectLibraryRealizations()
+  const refreshLocalProjectRealizations = (
+    ...libraries: readonly ProjectLibrary[]
+  ) => {
+    for (const library of libraries) {
+      invalidateProjectLibraryRealizations({ libraryId: library.id })
+    }
   }
 
   const operations: ProjectLibraryTypeOperations = {
@@ -269,7 +541,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectTitle,
           wasmInstancePromise,
         })
-        refreshLocalProjectRealizations()
+        refreshLocalProjectRealizations(library)
 
         return project
       },
@@ -303,13 +575,13 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectTitle: getHomeProjectDisplayName(project),
           wasmInstance: await wasmInstancePromise,
         })
-        refreshLocalProjectRealizations()
+        refreshLocalProjectRealizations(library)
 
         return result
       },
     },
     renameProject: {
-      run: async ({ project, requestedName }) => {
+      run: async ({ library, project, requestedName }) => {
         if (!project.localProjectPath || !project.readWriteAccess) {
           return
         }
@@ -318,11 +590,11 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           project.localProjectPath,
           requestedName
         )
-        refreshLocalProjectRealizations()
+        refreshLocalProjectRealizations(library)
       },
     },
     deleteProject: {
-      run: async ({ project }) => {
+      run: async ({ library, project }) => {
         if (!project.localProjectPath || !project.readWriteAccess) {
           return
         }
@@ -343,7 +615,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         if (project.remoteProjectId) {
           await cloudSyncActions?.deleteRemoteProject(project.remoteProjectId)
         }
-        refreshLocalProjectRealizations()
+        refreshLocalProjectRealizations(library)
       },
     },
     moveProjectFrom: {
@@ -352,14 +624,14 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
       run: ({ project }) => getProjectMoveSource({ project }),
     },
     moveProjectTo: {
-      run: async ({ library, source }) => {
+      run: async ({ library, sourceLibrary, source }) => {
         const result = await moveProjectIntoLocalDirectory({
           projectDirectoryPath: library.path,
           sourceProjectPath: source.localProjectPath,
           sourceProjectName: source.localProjectName,
           defaultFile: source.defaultFile,
         })
-        refreshLocalProjectRealizations()
+        refreshLocalProjectRealizations(sourceLibrary, library)
 
         return result
       },
@@ -406,8 +678,10 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             if (!signal.aborted) {
               scheduleProjectDirectoryNameSyncFromTitles({
                 projects,
-                onProjectDirectoriesRenamed:
-                  invalidateProjectLibraryRealizations,
+                onProjectDirectoriesRenamed: () =>
+                  invalidateProjectLibraryRealizations({
+                    libraryId: library.id,
+                  }),
               })
             }
 
@@ -448,6 +722,7 @@ const projectLibrariesExtension = defineRegistryItem({
     configuredProjectLibraryRealizations,
     directoryProjectLibraryDefaultPolicy,
     directoryProjectLibraryType,
+    projectLibraryRealizationsRegistryService,
   ],
   provides: [provide(settingsValueSpec, projectLibrariesSettingsContribution)],
 })
