@@ -84,9 +84,11 @@ export function addExtrude({
   length,
   to,
   symmetric,
+  direction,
   bidirectionalLength,
   tagStart,
   tagEnd,
+  draftAngle,
   twistAngle,
   twistAngleStep,
   twistCenter,
@@ -102,9 +104,11 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
+  direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  draftAngle?: KclCommandValue
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
@@ -266,6 +270,22 @@ export function addExtrude({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  let directionExpr: LabeledArg[] = []
+  if (direction) {
+    const directionResult = getAxisExpression(
+      undefined,
+      direction,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(directionResult)) return directionResult
+    modifiedAst = directionResult.modifiedAst
+    directionExpr = [
+      createLabeledArg('direction', directionResult.generatedAxis),
+    ]
+  }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -279,6 +299,9 @@ export function addExtrude({
     : []
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
+  const draftAngleExpr = draftAngle
+    ? [createLabeledArg('draftAngle', valueOrVariable(draftAngle))]
     : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
@@ -311,9 +334,11 @@ export function addExtrude({
     ...lengthExpr,
     ...toExpr,
     ...symmetricExpr,
+    ...directionExpr,
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...draftAngleExpr,
     ...twistAngleExpr,
     ...twistAngleStepExpr,
     ...twistCenterExpr,
@@ -336,6 +361,9 @@ export function addExtrude({
       modifiedAst,
       mNodeToEdit
     )
+  }
+  if (draftAngle && 'variableName' in draftAngle && draftAngle.variableName) {
+    insertVariableAndOffsetPathToNode(draftAngle, modifiedAst, mNodeToEdit)
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
