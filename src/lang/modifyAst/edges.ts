@@ -379,8 +379,24 @@ export function addChamfer({
   let bodyData: ReturnType<typeof groupSelectionsByBodyAndAddTags> | null = null
 
   if (!err(edgeRefsBodyData)) {
-    useEdgeRefs = true
+    useEdgeRefs = edgeRefsBodyData.bodies.size > 0
     modifiedAst = edgeRefsBodyData.modifiedAst
+    const unhandledSelections = edgeRefsBodyData.unhandledSelections
+    if (
+      unhandledSelections.graphSelections.length > 0 ||
+      unhandledSelections.otherSelections.length > 0
+    ) {
+      bodyData = groupSelectionsByBodyAndAddTags(
+        unhandledSelections,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        mNodeToEdit,
+        { includePrimitiveEdgeIndices: true }
+      )
+      if (err(bodyData)) return bodyData
+      modifiedAst = bodyData.modifiedAst
+    }
   } else {
     bodyData = groupSelectionsByBodyAndAddTags(
       selection,
@@ -418,10 +434,12 @@ export function addChamfer({
     : []
   const tagArgs = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
 
-  if (useEdgeRefs && !err(edgeRefsBodyData)) {
-    for (const data of edgeRefsBodyData.bodies.values()) {
+  // Primitive indices describe the topology at selection time, so apply
+  // legacy-only selections before face references mutate that topology.
+  if (bodyData) {
+    for (const data of bodyData.bodies.values()) {
       const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-        createLabeledArg('edges', data.edgeRefsExpr),
+        createLabeledArg('tags', data.tagsExpr),
         createLabeledArg('length', valueOrVariable(length)),
         ...secondLengthArgs,
         ...angleArgs,
@@ -439,10 +457,12 @@ export function addChamfer({
       if (err(pathToNode)) return pathToNode
       pathToNodes.push(pathToNode)
     }
-  } else if (bodyData) {
-    for (const data of bodyData.bodies.values()) {
+  }
+
+  if (useEdgeRefs && !err(edgeRefsBodyData)) {
+    for (const data of edgeRefsBodyData.bodies.values()) {
       const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('edges', data.edgeRefsExpr),
         createLabeledArg('length', valueOrVariable(length)),
         ...secondLengthArgs,
         ...angleArgs,
