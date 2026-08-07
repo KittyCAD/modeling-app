@@ -19,6 +19,7 @@ export const defaultSelectionFilter: EntityType[] = [
   'curve',
   'object',
   'path',
+  'region',
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */

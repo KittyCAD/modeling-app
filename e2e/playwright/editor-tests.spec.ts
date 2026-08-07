@@ -1129,10 +1129,24 @@ sketch001 = startSketchOn(XZ)
     })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: '',
+      },
+      highlightedHeaderArg: 'bodyType',
+      commandName: 'Extrude',
+    })
+    await cmdBar.selectOption({ name: 'Solid' }).click()
+    await cmdBar.expectState({
       stage: 'review',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
       commandName: 'Extrude',
     })
@@ -1141,7 +1155,7 @@ sketch001 = startSketchOn(XZ)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)  |> startProfile(at = [4.61, -14.01])  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfile(at = [4.61, -14.01])  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5, bodyType = SOLID)`
     )
 
     // Now hit undo

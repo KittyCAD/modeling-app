@@ -76,18 +76,14 @@ export function deriveSegmentFreedom(
     }
   } else if (segmentData.type === 'Circle') {
     const startPoint = getObjById(segmentData.start)
-    const centerPoint = getObjById(segmentData.center)
     if (isPointSegment(startPoint)) {
       pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
     }
-    if (isPointSegment(centerPoint)) {
-      pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
-    }
   } else if (segmentData.type === 'ControlPointSpline') {
     for (const controlId of segmentData.controls) {
-      const point = getObjById(controlId)
-      if (isPointSegment(point)) {
-        pointFreedoms.push(point.kind.segment.freedom ?? null)
+      const controlPoint = getObjById(controlId)
+      if (isPointSegment(controlPoint)) {
+        pointFreedoms.push(controlPoint.kind.segment.freedom ?? null)
       }
     }
   }

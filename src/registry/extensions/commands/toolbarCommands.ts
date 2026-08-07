@@ -6,7 +6,7 @@ import {
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
-import { selectSketchPlane } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
@@ -17,56 +17,13 @@ import {
   type EquipTool,
   isSketchBlockSelected,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import type { StateFrom } from 'xstate'
 
 const TOOLBAR_COMMAND_GROUP_ID = 'toolbar'
 const SKETCH_TOOL_NONE: SketchTool = 'none'
 
-export const TOOLBAR_COMMAND_IDS = {
-  modeling: {
-    sketch: 'zds.toolbar.modeling.sketch',
-  },
-  sketching: {
-    exit: 'zds.toolbar.sketchLegacy.exit',
-    cancelTool: 'zds.toolbar.sketchLegacy.cancelTool',
-    line: 'zds.toolbar.sketchLegacy.line',
-    threePointArc: 'zds.toolbar.sketchLegacy.threePointArc',
-    tangentialArc: 'zds.toolbar.sketchLegacy.tangentialArc',
-    circleCenter: 'zds.toolbar.sketchLegacy.circleCenter',
-    circleThreePoints: 'zds.toolbar.sketchLegacy.circleThreePoints',
-    cornerRectangle: 'zds.toolbar.sketchLegacy.cornerRectangle',
-    centerRectangle: 'zds.toolbar.sketchLegacy.centerRectangle',
-  },
-  sketchSolve: {
-    exit: 'zds.toolbar.sketch.exit',
-    cancel: 'zds.toolbar.sketch.cancel',
-    line: 'zds.toolbar.sketch.line',
-    point: 'zds.toolbar.sketch.point',
-    spline: 'zds.toolbar.sketch.spline',
-    circleCenter: 'zds.toolbar.sketch.circleCenter',
-    centerArc: 'zds.toolbar.sketch.centerArc',
-    threePointArc: 'zds.toolbar.sketch.threePointArc',
-    tangentialArc: 'zds.toolbar.sketch.tangentialArc',
-    trim: 'zds.toolbar.sketch.trim',
-    cornerRectangle: 'zds.toolbar.sketch.cornerRectangle',
-    centerRectangle: 'zds.toolbar.sketch.centerRectangle',
-    angledRectangle: 'zds.toolbar.sketch.angledRectangle',
-    coincident: 'zds.toolbar.sketch.coincident',
-    midpoint: 'zds.toolbar.sketch.midpoint',
-    tangent: 'zds.toolbar.sketch.tangent',
-    parallel: 'zds.toolbar.sketch.parallel',
-    perpendicular: 'zds.toolbar.sketch.perpendicular',
-    equal: 'zds.toolbar.sketch.equal',
-    symmetric: 'zds.toolbar.sketch.symmetric',
-    vertical: 'zds.toolbar.sketch.vertical',
-    horizontal: 'zds.toolbar.sketch.horizontal',
-    fixed: 'zds.toolbar.sketch.fixed',
-    dimension: 'zds.toolbar.sketch.dimension',
-    horizontalDistance: 'zds.toolbar.sketch.horizontalDistance',
-    verticalDistance: 'zds.toolbar.sketch.verticalDistance',
-    construction: 'zds.toolbar.sketch.construction',
-  },
-} as const
+export { TOOLBAR_COMMAND_IDS }
 
 type ModelingState = StateFrom<typeof modelingMachine>
 type ToolbarCommandSubmit = { context: CommandBarContext }
@@ -279,7 +236,10 @@ async function enterSketch(input: unknown) {
         kclManager.artifactGraph,
         state.context.selectionRanges
       )
-  const isSketchBlock = isSketchBlockSelected(state.context.selectionRanges)
+  const isSketchBlock = isSketchBlockSelected(
+    state.context.selectionRanges,
+    state.context.kclManager.artifactGraph
+  )
   const selectedSketchTarget = getSelectedSketchTarget(
     state.context.selectionRanges
   )

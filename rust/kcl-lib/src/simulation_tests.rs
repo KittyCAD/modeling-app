@@ -316,9 +316,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
-            let mut lint_findings = program_to_lint
-                .lint_all_with_options(crate::lint::LintOptions::default().with_z0006(true))
-                .expect("failed to lint program");
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             lint_findings.extend(
                 exec_state
                     .modules()
@@ -331,10 +329,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         // Only lint KCL files.
                         match &module.repr {
                             ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
-                            ModuleRepr::Kcl(node, _exec_result) => Some(
-                                node.lint_all_with_options(crate::lint::LintOptions::default().with_z0006(true))
-                                    .expect("failed to lint program"),
-                            ),
+                            ModuleRepr::Kcl(node, _exec_result) => {
+                                Some(node.lint_all().expect("failed to lint program"))
+                            }
                         }
                     })
                     .flatten(),
@@ -5243,6 +5240,42 @@ mod face_api_fillet_edge_refs_variant_6 {
 }
 mod face_api_fillet_edge_refs_variant_7 {
     const TEST_NAME: &str = "face_api_fillet_edge_refs_variant_7";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_ref_requires_two_end_faces {
+    const TEST_NAME: &str = "face_api_fillet_edge_ref_requires_two_end_faces";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod face_api_fillet_edge_ref_requires_index {
+    const TEST_NAME: &str = "face_api_fillet_edge_ref_requires_index";
 
     #[test]
     fn parse() {

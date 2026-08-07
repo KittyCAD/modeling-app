@@ -12,6 +12,7 @@ import {
 import {
   type DiameterConstraint,
   type RadiusConstraint,
+  exprToNumber,
   isArcLikeSegment,
   isArcSegment,
   isDiameterConstraint,
@@ -49,12 +50,26 @@ export class RadiusConstraintBuilder {
   ) {
     const arc = objects[obj.kind.constraint.arc]
     if (isArcLikeSegment(arc)) {
-      const centerObject = objects[arc.kind.segment.center]
       const startObject = objects[arc.kind.segment.start]
+      const center = isArcSegment(arc)
+        ? (() => {
+            const centerObject = objects[arc.kind.segment.center]
+            return isPointSegment(centerObject)
+              ? pointToVec3(centerObject)
+              : null
+          })()
+        : arc.kind.segment.ctor.type === 'Circle'
+          ? (() => {
+              const centerX = exprToNumber(arc.kind.segment.ctor.center.x)
+              const centerY = exprToNumber(arc.kind.segment.ctor.center.y)
+              return centerX !== null && centerY !== null
+                ? new Vector3(centerX, centerY, 0)
+                : null
+            })()
+          : null
 
-      if (isPointSegment(centerObject) && isPointSegment(startObject)) {
+      if (center && isPointSegment(startObject)) {
         const arcStart = pointToVec3(startObject)
-        const center = pointToVec3(centerObject)
         const constraintLabelPosition = obj.kind.constraint.labelPosition
         const labelPosition = constraintLabelPosition
           ? new Vector3(

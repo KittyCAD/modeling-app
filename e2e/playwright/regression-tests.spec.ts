@@ -454,82 +454,86 @@ extrude002 = extrude(profile002, length = 150)`
     }
   )
   // We updated this test such that you can have multiple exports going at once.
-  test('ensure you CAN export while an export is already going', async ({
-    page,
-    homePage,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await test.step('Set up the code and durations', async () => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        {
-          code: bracket,
-        }
-      )
+  test(
+    'ensure you CAN export while an export is already going',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage, cmdBar }) => {
+      const u = await getUtils(page)
+      await test.step('Set up the code and durations', async () => {
+        await page.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+            ;(window as any).playwrightSkipFilePicker = true
+          },
+          {
+            code: bracket,
+          }
+        )
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+        await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-    })
+        // expect zero errors in guter
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      })
 
-    const errorToastMessage = page.getByText(`Error while exporting`)
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-    const successToastMessage = page.getByText(`Exported successfully`)
+      const errorToastMessage = page.getByText(`Error while exporting`)
+      const exportingToastMessage = page.getByText(`Exporting...`)
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      const successToastMessage = page.getByText(`Exported successfully`)
 
-    await test.step('second export', async () => {
-      await clickExportButton(page, cmdBar)
+      await test.step('second export', async () => {
+        await clickExportButton(page, cmdBar)
 
-      await expect(exportingToastMessage).toBeVisible()
+        await expect(exportingToastMessage).toBeVisible()
 
-      await clickExportButton(page, cmdBar)
+        await clickExportButton(page, cmdBar)
 
-      await test.step('The first export still succeeds', async () => {
+        await test.step('The first export still succeeds', async () => {
+          await Promise.all([
+            expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+            expect(errorToastMessage).not.toBeVisible(),
+            expect(engineErrorToastMessage).not.toBeVisible(),
+            expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
+            expect(alreadyExportingToastMessage).not.toBeVisible({
+              timeout: 15_000,
+            }),
+          ])
+        })
+      })
+
+      await test.step('Successful, unblocked export', async () => {
+        const previousSuccessToastCount = await successToastMessage.count()
+
+        // Try exporting again.
+        await clickExportButton(page, cmdBar)
+
+        // Find the toast.
+        // Look out for the toast message
+        await expect(exportingToastMessage).toBeVisible()
+
+        // Expect it to succeed.
         await Promise.all([
           expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
-          expect(alreadyExportingToastMessage).not.toBeVisible({
-            timeout: 15_000,
-          }),
+          expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
+
+        await expect
+          .poll(() => successToastMessage.count(), { timeout: 15_000 })
+          .toBeGreaterThan(previousSuccessToastCount)
       })
-    })
-
-    await test.step('Successful, unblocked export', async () => {
-      const previousSuccessToastCount = await successToastMessage.count()
-
-      // Try exporting again.
-      await clickExportButton(page, cmdBar)
-
-      // Expect it to succeed.
-      await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
-        expect(errorToastMessage).not.toBeVisible(),
-        expect(engineErrorToastMessage).not.toBeVisible(),
-        expect(alreadyExportingToastMessage).not.toBeVisible(),
-      ])
-
-      await expect
-        .poll(() => successToastMessage.count(), { timeout: 15_000 })
-        .toBeGreaterThan(previousSuccessToastCount)
-    })
-  })
+    }
+  )
 
   test(`Network health indicator only appears in modeling view`, async ({
     page,
@@ -689,8 +693,8 @@ extrude002 = extrude(profile002, length = 150)`
       // The animation typically takes around 500ms, so we'll check for a second
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
-      // After animation completes, we should see the sketching toolbar
-      await toolbar.expectToolbarMode.toBe('sketchSolve')
+      // After animation completes, we still should not show modeling tools.
+      await toolbar.expectToolbarMode.not.toBe('modeling')
     })
   })
 

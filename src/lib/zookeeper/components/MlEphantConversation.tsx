@@ -8,8 +8,9 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useApp } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import type {
@@ -168,6 +169,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface MlEphantExtraInputsProps {
+  context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
@@ -188,6 +190,9 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       data-testid="ml-ephant-extra-inputs"
     >
       <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
+        {props.context && (
+          <MlCopilotSelectionsContext selections={props.context} />
+        )}
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
@@ -263,7 +268,25 @@ export interface MlEphantContextsProps {
   contexts: MlEphantManagerPromptContext[]
 }
 
+const MlCopilotSelectionsContext = (props: {
+  selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
+}) => {
+  const { kclManager } = useSingletons()
+  const selectionText = getSelectionTypeDisplayText(
+    kclManager.astSignal.value,
+    props.selections.data,
+    kclManager.artifactGraph
+  )
+  return selectionText ? (
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
+      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
+      {selectionText}
+    </button>
+  ) : null
+}
+
 interface MlEphantConversationInputProps {
+  contexts: MlEphantManagerPromptContext[]
   onProcess: MlEphantConversationProps['onProcess']
   onCancel: MlEphantConversationProps['onCancel']
   hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
@@ -510,6 +533,15 @@ export const MlEphantConversationInput = (
     appendAttachments(files)
   }
 
+  const selectionsContext = props.contexts.find(
+    (
+      context
+    ): context is Extract<
+      MlEphantManagerPromptContext,
+      { type: 'selections' }
+    > => context.type === 'selections'
+  )
+
   return (
     <div className="flex flex-col p-4 gap-2">
       <div
@@ -585,6 +617,7 @@ export const MlEphantConversationInput = (
           data-testid="ml-ephant-composer-actions"
         >
           <MlEphantExtraInputs
+            context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -865,6 +898,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <MlEphantConversationInput
+              contexts={props.contexts}
               disabled={
                 Boolean(props.blockedReason) ||
                 props.disabled ||

@@ -1,5 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import { type Artifact, recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -60,7 +61,7 @@ extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
       const surface: Selections = {
         graphSelections: [
           {
-            artifact: artifact,
+            entityRef: artifactToEntityRef(artifact!.type, artifact!.id),
             codeRef: artifact!.codeRef,
           },
         ],
@@ -173,7 +174,10 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
       const pathArtifacts = [...artifactGraph.values()].filter(
         (n) => n.type === 'path'
       )
-      const selection = createSelectionFromPathArtifact(pathArtifacts)
+      const selection = createSelectionFromPathArtifact(
+        pathArtifacts,
+        artifactGraph
+      )
       const result = addJoinSurfaces({
         ast,
         artifactGraph,

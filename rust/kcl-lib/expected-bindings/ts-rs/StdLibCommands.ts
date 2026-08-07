@@ -705,7 +705,7 @@ export default {
       {
         "name": "edges",
         "ty": "[BoundedEdge | TaggedEdge | any; 2]",
-        "docs": "The two edges that will be blended. Tagged edges blend the full edge length. Experimental face API: edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or bounded edges until point-and-click and migration support ships.",
+        "docs": "The two edges that will be blended. Tagged edges blend the full edge length. Edge specifier objects can also be used, e.g. `{ sideFaces = [...], endFaces? = [...], index? = 0 }`.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -781,10 +781,10 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
         "required": false,
         "special": false,
-        "experimental": true,
+        "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
       },
@@ -1840,10 +1840,10 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
         "required": false,
         "special": false,
-        "experimental": true,
+        "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
       },
@@ -3908,7 +3908,7 @@ export default {
       {
         "name": "edge",
         "ty": "Edge | any",
-        "docs": "The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or `edgeId(...)` until point-and-click and migration support ships.",
+        "docs": "The edge to bound. This can be a tagged edge, an edge ID from `edgeId(...)`, or an edge reference object. Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -4083,7 +4083,7 @@ export default {
       {
         "name": "axis",
         "ty": "Axis3d | Edge | Segment | any",
-        "docs": "Axis to use for the helix. Can be an Axis3d, an Edge, or a Segment when not using a cylinder. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis3d, Edge, or Segment until point-and-click and migration support ships.",
+        "docs": "Axis to use for the helix. Can be an Axis3d, an Edge, a Segment, or an edge reference object when not using a cylinder. Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6595,7 +6595,7 @@ export default {
       {
         "name": "axis",
         "ty": "Axis2d | Edge | Segment | any",
-        "docs": "Axis of revolution. Can be an Axis2d, an Edge, or a solved Segment. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis2d, Edge, or Segment until point-and-click and migration support ships.",
+        "docs": "Axis of revolution. Can be an Axis2d, an Edge, a solved Segment, or an edge reference object. Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.",
         "required": true,
         "special": false,
         "experimental": false,

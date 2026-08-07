@@ -157,6 +157,7 @@ pub enum EdgeRefactorStdlibFn {
     GetPreviousAdjacentEdge,
     GetCommonEdge,
     EdgeId,
+    DirectEdgeTag,
 }
 
 /// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
@@ -1073,7 +1074,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
+                RefactorMetadata::EdgeRefactor(meta) => Some((**meta).clone()),
                 RefactorMetadata::DirectTagFillet(_) => None,
             })
             .collect()

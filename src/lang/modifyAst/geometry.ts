@@ -11,6 +11,9 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  createEdgeRefObjectExpression,
+  edgeSelectionToEntityReference,
+  entityReferenceToEdgeRefPayload,
   getEdgeTagCall,
   getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
@@ -19,6 +22,7 @@ import {
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -98,7 +102,8 @@ export function addHelix({
       edge,
       modifiedAst,
       wasmInstance,
-      artifactGraph
+      artifactGraph,
+      mNodeToEdit
     )
     if (err(result)) {
       return result
@@ -185,6 +190,45 @@ export function getAxisExpression(
   if (axis) {
     return { generatedAxis: createLocalName(axis), modifiedAst }
   } else if (edge && artifactGraph) {
+    const firstEdgeSelection = edge.graphSelections[0]
+    const originalEdgeSelection = firstEdgeSelection
+      ? resolveToCodeRef(firstEdgeSelection, artifactGraph)
+      : null
+    const shouldInferEdgeRef =
+      firstEdgeSelection?.entityRef?.type === 'edge' ||
+      originalEdgeSelection?.artifact?.type === 'edgeCut'
+    const edgeEntityRef =
+      firstEdgeSelection?.entityRef?.type === 'edge'
+        ? firstEdgeSelection.entityRef
+        : shouldInferEdgeRef && originalEdgeSelection?.artifact
+          ? edgeSelectionToEntityReference(
+              {
+                ...originalEdgeSelection,
+                artifact: originalEdgeSelection.artifact,
+              },
+              artifactGraph
+            )
+          : undefined
+
+    if (edgeEntityRef && !err(edgeEntityRef) && edgeEntityRef.type === 'edge') {
+      const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+
+      return {
+        generatedAxis: edgeRefResult.expr,
+        modifiedAst: edgeRefResult.modifiedAst,
+      }
+    }
+
     // Direct segment case (sketch solve)
     const segmentAxisExpr = getVariableExprsFromSelection(
       edge,
@@ -201,9 +245,13 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
+    const edgeCodeRef = edge.graphSelections[0]?.codeRef
+    if (!edgeCodeRef) {
+      return new Error('Selected edge is missing a source range.')
+    }
     const pathToAxisSelection = getNodePathFromSourceRange(
       modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
+      edgeCodeRef.range
     )
     const tagResult = mutateAstWithTagForSketchSegment(
       modifiedAst,
@@ -213,7 +261,9 @@ export function getAxisExpression(
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
       const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
+      const axisSelection =
+        edge?.graphSelections[0]?.artifact ??
+        resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
       if (!axisSelection) {
         return new Error('Generated axis selection is missing.')
       }
