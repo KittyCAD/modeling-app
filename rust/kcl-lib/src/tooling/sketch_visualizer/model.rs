@@ -7,12 +7,11 @@
 
 use std::collections::BTreeMap;
 
-use crate::front::Freedom;
-
 use super::types::SketchVisualizationClosednessHint;
 use super::types::SketchVisualizationConnectedComponent;
 use super::types::SketchVisualizationPoint;
 use super::types::SketchVisualizationSegmentKind;
+use crate::front::Freedom;
 
 /// A sketch point with only the fields needed for sidecar JSON and drawing.
 #[derive(Debug, Clone)]

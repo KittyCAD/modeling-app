@@ -2,6 +2,10 @@ use std::collections::BTreeSet;
 
 use indexmap::IndexMap;
 
+use super::types::SketchSelector;
+use super::types::SketchVisualizationError;
+use super::types::SketchVisualizationOptions;
+use super::types::SketchVisualizationPoint;
 use crate::KclValueView;
 use crate::SourceRange;
 use crate::execution::ArtifactId;
@@ -12,11 +16,6 @@ use crate::front::ObjectId;
 use crate::front::ObjectKind;
 use crate::front::Point2d;
 use crate::front::SourceRef;
-
-use super::types::SketchSelector;
-use super::types::SketchVisualizationError;
-use super::types::SketchVisualizationOptions;
-use super::types::SketchVisualizationPoint;
 
 pub(super) fn validate_canvas(options: &SketchVisualizationOptions) -> Result<(), SketchVisualizationError> {
     let min_width = options.padding.saturating_mul(2).saturating_add(2);

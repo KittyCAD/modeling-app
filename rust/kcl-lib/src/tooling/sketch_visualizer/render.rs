@@ -13,8 +13,6 @@ use image::ImageFormat;
 use image::Rgba;
 use image::RgbaImage;
 
-use crate::front::Freedom;
-
 use super::model::InternalPoint;
 use super::model::InternalPolyline;
 use super::model::InternalSegment;
@@ -24,6 +22,7 @@ use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
 use super::types::SketchVisualizationSegmentKind;
 use super::types::SketchVisualizationTheme;
+use crate::front::Freedom;
 
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
 const CONTROL_POLYGON_LINE_WIDTH: f64 = 1.25;

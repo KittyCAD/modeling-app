@@ -7,14 +7,6 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
-use crate::execution::sketch_constraint_status_for_sketch;
-use crate::front::ArcDirection;
-use crate::front::Freedom;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
-use crate::front::Segment;
-
 use super::connectivity::coincident_groups;
 use super::connectivity::connected_components;
 use super::connectivity::contact_groups;
@@ -54,6 +46,13 @@ use super::types::SketchVisualizationPointGroup;
 use super::types::SketchVisualizationSegmentData;
 use super::types::SketchVisualizationSegmentKind;
 use super::types::SketchVisualizationSketchInfo;
+use crate::execution::sketch_constraint_status_for_sketch;
+use crate::front::ArcDirection;
+use crate::front::Freedom;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::front::ObjectKind;
+use crate::front::Segment;
 
 /// Mutable extraction state for one selected sketch.
 ///

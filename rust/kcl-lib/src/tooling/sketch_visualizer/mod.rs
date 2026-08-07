@@ -28,12 +28,24 @@ mod types;
 mod tests;
 
 pub use api::visualize_scene_objects;
-pub use types::{
-    SketchSelector, SketchVisualization, SketchVisualizationBounds, SketchVisualizationClosednessHint,
-    SketchVisualizationCoincidentGroup, SketchVisualizationColorScheme, SketchVisualizationConnectedComponent,
-    SketchVisualizationConstraintData, SketchVisualizationConstraintTarget, SketchVisualizationData,
-    SketchVisualizationDofBuckets, SketchVisualizationDofData, SketchVisualizationError, SketchVisualizationOptions,
-    SketchVisualizationPoint, SketchVisualizationPointData, SketchVisualizationPointGroup,
-    SketchVisualizationSegmentData, SketchVisualizationSegmentKind, SketchVisualizationSketchInfo,
-    SketchVisualizationTheme,
-};
+pub use types::SketchSelector;
+pub use types::SketchVisualization;
+pub use types::SketchVisualizationBounds;
+pub use types::SketchVisualizationClosednessHint;
+pub use types::SketchVisualizationCoincidentGroup;
+pub use types::SketchVisualizationColorScheme;
+pub use types::SketchVisualizationConnectedComponent;
+pub use types::SketchVisualizationConstraintData;
+pub use types::SketchVisualizationConstraintTarget;
+pub use types::SketchVisualizationData;
+pub use types::SketchVisualizationDofBuckets;
+pub use types::SketchVisualizationDofData;
+pub use types::SketchVisualizationError;
+pub use types::SketchVisualizationOptions;
+pub use types::SketchVisualizationPoint;
+pub use types::SketchVisualizationPointData;
+pub use types::SketchVisualizationPointGroup;
+pub use types::SketchVisualizationSegmentData;
+pub use types::SketchVisualizationSegmentKind;
+pub use types::SketchVisualizationSketchInfo;
+pub use types::SketchVisualizationTheme;

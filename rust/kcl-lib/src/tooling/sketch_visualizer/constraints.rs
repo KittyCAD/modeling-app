@@ -1,10 +1,9 @@
+use super::types::SketchVisualizationConstraintTarget;
 use crate::front::Constraint;
 use crate::front::Horizontal;
 use crate::front::ObjectId;
 use crate::front::Vertical;
 use crate::frontend::sketch::ConstraintSegment;
-
-use super::types::SketchVisualizationConstraintTarget;
 
 pub(super) fn constraint_kind_name(constraint: &Constraint) -> &'static str {
     match constraint {
