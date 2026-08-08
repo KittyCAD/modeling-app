@@ -1,0 +1,192 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "s"
+  },
+  "bounds": {
+    "min": {
+      "x": -10.0,
+      "y": 0.0000000009999998552932053
+    },
+    "max": {
+      "x": 10.0,
+      "y": 6.000000016999997
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "mode": "dof",
+  "constraintStatus": {
+    "name": "",
+    "status": "FullyConstrained",
+    "free_count": 0,
+    "conflict_count": 0,
+    "total_count": 2
+  },
+  "dof": {
+    "default": "Free",
+    "points": {
+      "fixed": [
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    "segments": {
+      "fixed": [
+        4,
+        7
+      ]
+    }
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": -10.0,
+        "y": 0.0000000009999998595609285
+      },
+      "owner": 4
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 10.0,
+        "y": 0.0000000009999998552932053
+      },
+      "owner": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.0,
+        "y": 6.000000016999997
+      },
+      "owner": 7
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 0.0,
+        "y": 3.0000000109999982
+      },
+      "owner": 7
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#ffffff"
+    },
+    {
+      "id": 7,
+      "kind": "circle",
+      "pointIds": [
+        5,
+        6
+      ],
+      "endpointIds": [],
+      "construction": false,
+      "componentId": 1,
+      "renderedColor": "#ffffff"
+    }
+  ],
+  "constraints": [
+    {
+      "id": 8,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 2
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "kind": "radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 7
+        }
+      ]
+    }
+  ],
+  "contactGroups": [],
+  "coincidentGroups": [],
+  "connectedComponents": [
+    {
+      "id": 0,
+      "segmentIds": [
+        4
+      ]
+    },
+    {
+      "id": 1,
+      "segmentIds": [
+        7
+      ]
+    }
+  ],
+  "openEndpoints": [
+    2,
+    3
+  ],
+  "closednessHints": [
+    {
+      "componentId": 0,
+      "isClosed": false,
+      "openEndpointIds": [
+        2,
+        3
+      ]
+    },
+    {
+      "componentId": 1,
+      "isClosed": true,
+      "openEndpointIds": []
+    }
+  ],
+  "warnings": []
+}
