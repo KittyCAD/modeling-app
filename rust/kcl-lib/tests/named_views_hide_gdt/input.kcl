@@ -1,0 +1,35 @@
+// Pins that GD&T annotations are engine-addressable by the id hide() sends
+// (an annotation has a single engine id, recorded unchanged on the
+// operation). The rendered snapshot must show the box and exactly ONE datum
+// frame: "B". Both frames visible means the engine silently ignored the id.
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 5, var 0])
+  line2 = line(start = [var 5, var 0], end = [var 5, var 5])
+  line3 = line(start = [var 5, var 5], end = [var 0, var 5])
+  line4 = line(start = [var 0, var 5], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+region001 = region(point = [2.5, 2.5], sketch = sketch001)
+extrude(region001, length = 5)
+
+labelHidden = gdt::datum(
+  face = region001.tags.line2,
+  name = "A",
+  framePosition = [10, 0],
+  framePlane = XZ,
+)
+
+labelVisible = gdt::datum(
+  face = region001.tags.line4,
+  name = "B",
+  framePosition = [-10, 0],
+  framePlane = XZ,
+)
+
+hide(labelHidden)
