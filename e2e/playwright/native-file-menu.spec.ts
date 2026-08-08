@@ -412,10 +412,14 @@ test.describe(
       })
       await test.step('Modeling.View.Panes.Feature tree', async () => {
         await page.waitForTimeout(250)
+        await page.getByTestId('engine-scene-model-tree-hud-collapse').click()
+        await expect(
+          page.getByTestId('engine-scene-model-tree-hud-collapsed')
+        ).toBeVisible()
         await nativeMenu.click('View.Panes.Feature tree')
-        const button = page.getByTestId('feature-tree-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        const hud = page.getByTestId('engine-scene-model-tree-hud')
+        await expect(hud).toBeVisible()
+        await expect(hud).toBeFocused()
       })
       await test.step('Modeling.View.Panes.KCL code', async () => {
         await page.waitForTimeout(250)

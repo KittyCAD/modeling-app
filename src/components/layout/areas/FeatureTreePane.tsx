@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -13,28 +13,28 @@ import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  ROOT_MODULE_ID,
-  type SourceRange,
   base64Decode,
   countOperations,
   emptyOperationsByModule,
   getAllOperations,
+  ROOT_MODULE_ID,
+  type SourceRange,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
-  type OperationTreeNode,
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
+  type OperationTreeNode,
 } from '@src/lib/featureTreeOperationTree'
 import {
-  getOpTypeLabel,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
+  getOpTypeLabel,
   onHide,
   onUnhide,
   stdLibMap,
@@ -46,16 +46,18 @@ import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
+
 export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import {
@@ -63,6 +65,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
   prepareEditCommand,
@@ -73,14 +76,13 @@ import {
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  type Layout,
   getOpenPanes,
+  type Layout,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -176,6 +178,14 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
+export function FeatureTreeHudArea() {
+  return (
+    <div id="operations-list-pane">
+      <FeatureTreePaneContents className="max-h-[55vh]" />
+    </div>
+  )
+}
+
 function isCodePaneOpen(layout: Layout) {
   return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
 }
@@ -190,130 +200,130 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
   )
 }
 
-export const FeatureTreePaneContents = memo(() => {
-  useSignals()
-  const app = useApp()
-  const { layout, commands, settings } = app
-  const settingsValues = settings.useSettings()
-  const platform = usePlatform()
-  const keymap = app.registry.optional(keymapService)
-  const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
-    keymap
-      ? findKeymapItemForCommand(
-          keymap.keymap.value,
-          APP_COMMAND_IDS.editor.render,
-          keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
-        )?.keystrokes
-      : [UNRENDERED_EXECUTE_HOTKEY],
-    platform
-  )
-  const { kclManager } = useSingletons()
-  const executionService = app.registry.signal(executingEditorService).value
-  const { engineCommandManager, rustContext } = kclManager
-  const {
-    send: modelingSend,
-    state: modelingState,
-    actor: modelingActor,
-  } = useModelingContext()
-  const systemDeps: SystemDeps = useMemo(
-    () => ({
-      kclManager,
-      sceneInfra: kclManager.sceneInfra,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      rustContext,
-      commandBarActor: commands.actor,
-    }),
-    [kclManager, rustContext, commands.actor]
-  )
-
-  const selectOperation = useCallback(
-    (sourceRange: SourceRange) => {
-      sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
-        kclManager,
-        modelingSend,
-      })
-    },
-    [modelingSend, kclManager]
-  )
-
-  const sketchNoFace = modelingState.matches('Sketch no face')
-  const hasParseErrors = kclManager.hasParseErrors()
-  const disableModelingForUnrenderedChanges =
-    shouldDisableModelingForUnrenderedChanges({
-      settings: settingsValues,
-      hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
-    })
-  const diagnostics = kclManager.diagnosticsSignal.value
-  const parseDiagnostics = hasParseErrors
-    ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
-    : []
-  const firstParseDiagnostic = parseDiagnostics[0]
-  const firstParseAction = firstParseDiagnostic?.actions?.[0]
-
-  // If there are engine errors we show the successful operations
-  // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationsByModule = kclManager.errors.reduce(
-    (acc, error) => {
-      return countOperations(error.operations) > countOperations(acc)
-        ? error.operations
-        : acc
-    },
-    emptyOperationsByModule()
-  )
-
-  const unfilteredOperationsByModule = kclManager.isExecuting
-    ? kclManager.operationsByModule
-    : !hasParseErrors
-      ? !kclManager.errors.length
-        ? kclManager.operationsByModule
-        : longestErrorOperationsByModule
-      : kclManager.lastSuccessfulOperations
-  // We use the code that corresponds to the operations. In case this is an
-  // error on the first run, fall back to whatever is currently in the code
-  // editor.
-  const operationsCode = hasParseErrors
-    ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-    : disableModelingForUnrenderedChanges
-      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-      : kclManager.codeSignal.value
-  const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
-
-  // We filter out operations that are not useful to show in the feature tree
-  const operationList = buildOperationTree(
-    unfilteredOperationsByModule,
-    ROOT_MODULE_ID
-  )
-  const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
-
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
-
-  function goToError() {
-    const l = layout.signal.value
-    if (!isCodePaneOpen(l)) {
-      openCodePane(l, layout.set)
-    }
-    kclManager.scrollToFirstErrorDiagnosticIfExists()
-  }
-
-  function applyParseQuickFix() {
-    if (!firstParseDiagnostic || !firstParseAction) return
-    firstParseAction.apply(
-      kclManager.editorView,
-      firstParseDiagnostic.from,
-      firstParseDiagnostic.to
+export const FeatureTreePaneContents = memo(
+  ({ className = '' }: { className?: string }) => {
+    useSignals()
+    const app = useApp()
+    const { layout, commands, settings } = app
+    const settingsValues = settings.useSettings()
+    const platform = usePlatform()
+    const keymap = app.registry.optional(keymapService)
+    const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
+      keymap
+        ? findKeymapItemForCommand(
+            keymap.keymap.value,
+            APP_COMMAND_IDS.editor.render,
+            keymap.getCurrentScopes(),
+            app.registry.signal(keymapScopesValueSpec).value
+          )?.keystrokes
+        : [UNRENDERED_EXECUTE_HOTKEY],
+      platform
     )
-  }
+    const { kclManager } = useSingletons()
+    const executionService = app.registry.signal(executingEditorService).value
+    const { engineCommandManager, rustContext } = kclManager
+    const {
+      send: modelingSend,
+      state: modelingState,
+      actor: modelingActor,
+    } = useModelingContext()
+    const systemDeps: SystemDeps = useMemo(
+      () => ({
+        kclManager,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        rustContext,
+        commandBarActor: commands.actor,
+      }),
+      [kclManager, rustContext, commands.actor]
+    )
 
-  return (
-    <div className="relative">
+    const selectOperation = useCallback(
+      (sourceRange: SourceRange) => {
+        sendSelectionEvent({
+          sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+          kclManager,
+          modelingSend,
+        })
+      },
+      [modelingSend, kclManager]
+    )
+
+    const sketchNoFace = modelingState.matches('Sketch no face')
+    const hasParseErrors = kclManager.hasParseErrors()
+    const disableModelingForUnrenderedChanges =
+      shouldDisableModelingForUnrenderedChanges({
+        settings: settingsValues,
+        hasEditsSinceLastExecution:
+          kclManager.hasEditsSinceLastExecutionSignal.value,
+      })
+    const diagnostics = kclManager.diagnosticsSignal.value
+    const parseDiagnostics = hasParseErrors
+      ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
+      : []
+    const firstParseDiagnostic = parseDiagnostics[0]
+    const firstParseAction = firstParseDiagnostic?.actions?.[0]
+
+    // If there are engine errors we show the successful operations
+    // Errors return an operation list, so use the longest one if there are multiple
+    const longestErrorOperationsByModule = kclManager.errors.reduce(
+      (acc, error) => {
+        return countOperations(error.operations) > countOperations(acc)
+          ? error.operations
+          : acc
+      },
+      emptyOperationsByModule()
+    )
+
+    const unfilteredOperationsByModule = kclManager.isExecuting
+      ? kclManager.operationsByModule
+      : !hasParseErrors
+        ? !kclManager.errors.length
+          ? kclManager.operationsByModule
+          : longestErrorOperationsByModule
+        : kclManager.lastSuccessfulOperations
+    // We use the code that corresponds to the operations. In case this is an
+    // error on the first run, fall back to whatever is currently in the code
+    // editor.
+    const operationsCode = hasParseErrors
+      ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+      : disableModelingForUnrenderedChanges
+        ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+        : kclManager.codeSignal.value
+    const isReadOnlyFeatureTree =
+      hasParseErrors || disableModelingForUnrenderedChanges
+
+    // We filter out operations that are not useful to show in the feature tree
+    const operationList = buildOperationTree(
+      unfilteredOperationsByModule,
+      ROOT_MODULE_ID
+    )
+    const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+
+    // Live execution tracking: expand only the active module branch.
+    const liveActiveModuleId = kclManager.liveActiveModuleId
+
+    function goToError() {
+      const l = layout.signal.value
+      if (!isCodePaneOpen(l)) {
+        openCodePane(l, layout.set)
+      }
+      kclManager.scrollToFirstErrorDiagnosticIfExists()
+    }
+
+    function applyParseQuickFix() {
+      if (!firstParseDiagnostic || !firstParseAction) return
+      firstParseAction.apply(
+        kclManager.editorView,
+        firstParseDiagnostic.from,
+        firstParseDiagnostic.to
+      )
+    }
+
+    return (
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
+        className={`min-h-0 overflow-auto p-1 pb-2 ${className}`}
       >
         <>
           {kclManager.isExecuting && (
@@ -401,13 +411,35 @@ export const FeatureTreePaneContents = memo(() => {
           ))}
         </>
       </section>
-    </div>
-  )
-})
+    )
+  }
+)
 
 interface VisibilityToggleProps {
   visible: boolean
   onVisibilityChange: () => unknown
+}
+
+function OperationDisclosureChevronButton({
+  ariaLabel,
+  testId,
+}: {
+  ariaLabel: string
+  testId?: string
+}) {
+  return (
+    <Disclosure.Button
+      aria-label={ariaLabel}
+      data-testid={testId}
+      className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
+    >
+      <CustomIcon
+        name="caretDown"
+        className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
+        aria-hidden
+      />
+    </Disclosure.Button>
+  )
 }
 
 /**
@@ -461,16 +493,10 @@ function OperationItemGroup({
     return (
       <Disclosure>
         <div className="flex items-start gap-1">
-          <Disclosure.Button
-            data-testid="operation-group-caret"
-            className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
-          >
-            <CustomIcon
-              name="caretDown"
-              className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-              aria-hidden
-            />
-          </Disclosure.Button>
+          <OperationDisclosureChevronButton
+            ariaLabel="Toggle operation group"
+            testId="operation-group-caret"
+          />
           <div className="flex-1 min-w-0">
             <OperationItem
               item={parentItem}
@@ -510,20 +536,19 @@ function OperationItemGroup({
     )
   }
 
+  const operationTypeLabel = getOpTypeLabel(contentItems[0].type)
+  const groupLabel = `${contentItems.length} ${operationTypeLabel}s`
+
   return (
     <Disclosure>
-      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
-        <CustomIcon
-          name="caretDown"
-          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
-          aria-hidden
-        />
-        <span className="text-sm flex-1">
-          {contentItems.length} {getOpTypeLabel(contentItems[0].type)}s
-        </span>
-      </Disclosure.Button>
+      <div className="flex items-start gap-1">
+        <OperationDisclosureChevronButton ariaLabel={`Toggle ${groupLabel}`} />
+        <Disclosure.Button className="reset flex min-w-0 flex-1 self-stretch !border-transparent !px-1 !py-1 text-left text-base focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+          <span className="text-sm flex-1">{groupLabel}</span>
+        </Disclosure.Button>
+      </div>
       <Disclosure.Panel as="ul" className="border-b b-4">
-        <div className="border-l b-4 ml-4">
+        <div className="border-l b-4 ml-6">
           {contentItems.map((op) => {
             return (
               <OperationItem
@@ -596,16 +621,10 @@ function OperationBranchGroup({
         className="flex items-start gap-1"
         data-module-branch={parentItem.moduleId}
       >
-        <Disclosure.Button
-          data-testid="operation-group-caret"
-          className="reset !px-0 !py-1 self-stretch !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25"
-        >
-          <CustomIcon
-            name="caretDown"
-            className="w-4 h-4 block -rotate-90 ui-open:rotate-0 ui-open:transform"
-            aria-hidden
-          />
-        </Disclosure.Button>
+        <OperationDisclosureChevronButton
+          ariaLabel="Toggle module group"
+          testId="operation-group-caret"
+        />
         <div className="flex-1 min-w-0">
           <OperationItem
             item={parentItem}

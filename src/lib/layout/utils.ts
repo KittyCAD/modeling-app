@@ -1,6 +1,7 @@
 import type { TooltipProps } from '@src/components/Tooltip'
 import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 import {
+  DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
   featureTreePaneConfig,
@@ -27,7 +28,7 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v3'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
 
 export const defaultLayout = defaultLayoutConfig
 
@@ -855,9 +856,9 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
   closeAllPanes(rootLayout, DefaultLayoutToolbarID.Right)
 
   const deduplicatedPaneIDs = new Set(paneIDs)
-  const validPaneIDs = Array.from(deduplicatedPaneIDs).filter(
-    isDefaultLayoutPaneID
-  )
+  const validPaneIDs = Array.from(deduplicatedPaneIDs)
+    .filter(isDefaultLayoutPaneID)
+    .filter((id) => id !== DefaultLayoutPaneID.FeatureTree)
   for (const id of validPaneIDs) {
     togglePaneLayoutNode({
       rootLayout,
@@ -897,7 +898,7 @@ function applyLayoutMigration(
   layout: LayoutWithMetadata,
   migration: LayoutMigration
 ): LayoutWithMetadata {
-  let newLayout = Object.assign(layout, { version: migration.newVersion })
+  const newLayout = Object.assign(layout, { version: migration.newVersion })
   for (let transformationSet of migration.transformationSets) {
     const result = applyTransformationsToMatchedLayoutChildren(
       newLayout.layout,
@@ -936,9 +937,133 @@ function applyTransformationsToMatchedLayoutChildren(
   return newLayout
 }
 
+const retiredModelTreeLayoutNodeIds = new Set([
+  DefaultLayoutPaneID.FeatureTree,
+  'operations-list',
+  'bodies-list',
+])
+
+function isRetiredModelTreeLayoutNode(layout: Layout): boolean {
+  return (
+    retiredModelTreeLayoutNodeIds.has(layout.id) ||
+    (layout.type === LayoutType.Simple &&
+      (layout.areaType === AreaType.FeatureTree ||
+        layout.areaType === AreaType.Bodies))
+  )
+}
+
+function normalizePercentages(
+  values: readonly number[] | undefined,
+  count: number
+): number[] {
+  if (count === 0) {
+    return []
+  }
+
+  const validValues =
+    values &&
+    values.length === count &&
+    values.every((value) => Number.isFinite(value) && value >= 0)
+
+  if (!validValues) {
+    return new Array(count).fill(100 / count)
+  }
+
+  const total = values.reduce((sum, value) => sum + value, 0)
+  if (total <= 0) {
+    return new Array(count).fill(100 / count)
+  }
+
+  let allocated = 0
+  return values.map((value, index) => {
+    if (index === count - 1) {
+      return 100 - allocated
+    }
+
+    const normalized = (value / total) * 100
+    allocated += normalized
+    return normalized
+  })
+}
+
+/**
+ * v4 moves the model tree out of persisted pane layouts and into the engine
+ * scene HUD. Strip old feature-tree/body nodes and remap pane active state so
+ * stale active indices do not point at unrelated panes after removal.
+ */
+function migrateModelTreePaneLayoutToHud(layout: Layout): Layout | null {
+  if (isRetiredModelTreeLayoutNode(layout)) {
+    return null
+  }
+
+  if (layout.type === LayoutType.Simple) {
+    return layout
+  }
+
+  if (layout.type === LayoutType.Splits) {
+    const migratedChildrenWithSizes = layout.children.flatMap(
+      (child, index) => {
+        const migratedChild = migrateModelTreePaneLayoutToHud(child)
+        return migratedChild
+          ? [{ child: migratedChild, size: layout.sizes[index] }]
+          : []
+      }
+    )
+
+    if (migratedChildrenWithSizes.length === 0) {
+      return null
+    }
+
+    return {
+      ...layout,
+      children: migratedChildrenWithSizes.map(({ child }) => child),
+      sizes: normalizePercentages(
+        migratedChildrenWithSizes.map(({ size }) => size),
+        migratedChildrenWithSizes.length
+      ),
+    }
+  }
+
+  const activeSizeByOldIndex = new Map(
+    layout.activeIndices.map((activeIndex, sizeIndex) => [
+      activeIndex,
+      layout.sizes[sizeIndex],
+    ])
+  )
+  const activeSizes: number[] = []
+  const activeIndices: number[] = []
+  const children: typeof layout.children = []
+
+  layout.children.forEach((child, oldIndex) => {
+    const migratedChild = migrateModelTreePaneLayoutToHud(child)
+    if (!migratedChild) {
+      return
+    }
+
+    const newIndex = children.length
+    if (layout.activeIndices.includes(oldIndex)) {
+      activeIndices.push(newIndex)
+      activeSizes.push(activeSizeByOldIndex.get(oldIndex) ?? 0)
+    }
+
+    children.push({ ...migratedChild, icon: child.icon })
+  })
+
+  if (children.length === 0) {
+    return null
+  }
+
+  return {
+    ...layout,
+    children,
+    activeIndices,
+    sizes: normalizePercentages(activeSizes, activeIndices.length),
+  }
+}
+
 /** Get a Map of all layout migrations authored by developers. */
 function getLayoutMigrations(): LayoutMigrationMap {
-  const migrationMap: LayoutMigrationMap = new Map([
+  const migrationMap: LayoutMigrationMap = new Map<string, LayoutMigration>([
     // This first migration is going to do nothing: just increment the version.
     [
       'v1',
@@ -958,6 +1083,18 @@ function getLayoutMigrations(): LayoutMigrationMap {
               layout.type === LayoutType.Simple &&
               layout.areaType === AreaType.FeatureTree,
             transformations: [() => structuredClone(featureTreePaneConfig)],
+          },
+        ],
+      },
+    ],
+    [
+      'v3',
+      {
+        newVersion: 'v4',
+        transformationSets: [
+          {
+            matcher: true,
+            transformations: [migrateModelTreePaneLayoutToHud],
           },
         ],
       },

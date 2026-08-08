@@ -1,9 +1,9 @@
 import type { PropsOf } from '@headlessui/react/dist/types'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ContextMenuItem } from '@src/components/ContextMenu'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
@@ -18,8 +18,8 @@ import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { sendSelectionEvent } from '@src/lib/featureTree'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
-  type HideOperation,
   getHideOpByArtifactId,
+  type HideOperation,
   onDelete,
   onHide,
   onUnhide,
@@ -31,6 +31,35 @@ import toast from 'react-hot-toast'
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
+  const bodiesWithProps = useBodiesWithProps()
+
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="model"
+        title={props.layout.label}
+      />
+      <BodiesList bodies={bodiesWithProps} />
+    </LayoutPanel>
+  )
+}
+
+export function BodiesHudArea() {
+  const bodiesWithProps = useBodiesWithProps()
+
+  return (
+    <div id="bodies-list-pane">
+      <BodiesList bodies={bodiesWithProps} className="max-h-[35vh]" />
+    </div>
+  )
+}
+
+function useBodiesWithProps(): Map<string, PropsOf<typeof BodyItem>> {
   useSignals()
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
@@ -41,7 +70,7 @@ export function BodiesPane(props: AreaTypeComponentProps) {
 
   if (operations) {
     let i = 0
-    for (let [id, artifact] of bodies || new Map()) {
+    for (const [id, artifact] of bodies || new Map()) {
       const patternIndex =
         artifact.type === 'pattern'
           ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
@@ -63,26 +92,15 @@ export function BodiesPane(props: AreaTypeComponentProps) {
     }
   }
 
-  return (
-    <LayoutPanel
-      title={props.layout.label}
-      id={`${props.layout.id}-pane`}
-      className="border-none"
-    >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="model"
-        title={props.layout.label}
-      />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
-    </LayoutPanel>
-  )
+  return bodiesWithProps
 }
 
 function BodiesList({
   bodies,
+  className = '',
 }: {
   bodies: Map<string, PropsOf<typeof BodyItem>>
+  className?: string
 }) {
   const { userFeatures } = useApp()
   const showExperimentalPointAndClick = userFeatures.useHas(
@@ -91,7 +109,7 @@ function BodiesList({
   )
 
   return (
-    <section className="overflow-auto mr-1 pb-8">
+    <section className={`overflow-auto mr-1 pb-8 ${className}`}>
       <ul>
         {Array.from(bodies.entries()).map(([id, props], i) => (
           <BodyItem

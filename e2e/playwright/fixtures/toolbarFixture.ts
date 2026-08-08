@@ -1,7 +1,3 @@
-import { type Locator, type Page, test } from '@playwright/test'
-import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
-import type { ToolbarModeName } from '@src/lib/toolbar'
-
 import {
   checkIfPaneIsOpen,
   closePane,
@@ -9,8 +5,11 @@ import {
   openPane,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
+import { type Locator, type Page, test } from '@playwright/test'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+import type { baseUnitLabels } from '@src/lib/settings/settingsTypes'
+import type { ToolbarModeName } from '@src/lib/toolbar'
 
 type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
@@ -326,12 +325,47 @@ export class ToolbarFixture {
   }
 
   async closePane(paneId: DefaultLayoutPaneID) {
+    if (paneId === DefaultLayoutPaneID.FeatureTree) {
+      const collapsedHud = this.page.getByTestId(
+        'engine-scene-model-tree-hud-collapsed'
+      )
+      if (await collapsedHud.isVisible()) {
+        return
+      }
+
+      const collapseButton = this.page.getByTestId(
+        'engine-scene-model-tree-hud-collapse'
+      )
+      if (await collapseButton.isVisible()) {
+        await collapseButton.click()
+        await expect(collapsedHud).toBeVisible()
+      }
+      return
+    }
+
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
   async openPane(paneId: DefaultLayoutPaneID) {
+    if (paneId === DefaultLayoutPaneID.FeatureTree) {
+      const expandedHud = this.page.getByTestId('engine-scene-model-tree-hud')
+      if (await expandedHud.isVisible()) {
+        return
+      }
+
+      await this.page
+        .getByTestId('engine-scene-model-tree-hud-collapsed')
+        .click()
+      await expect(expandedHud).toBeVisible()
+      return
+    }
+
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
   async checkIfPaneIsOpen(paneId: DefaultLayoutPaneID) {
+    if (paneId === DefaultLayoutPaneID.FeatureTree) {
+      return this.page.getByTestId('engine-scene-model-tree-hud').isVisible()
+    }
+
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 

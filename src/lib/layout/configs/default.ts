@@ -69,8 +69,8 @@ const primaryPane: Layout = {
   label: 'left-toolbar',
   type: LayoutType.Panes,
   side: isMobile() ? 'block-end' : 'inline-start',
-  activeIndices: isDesktop() ? [0, 2] : [0],
-  sizes: isDesktop() ? [50, 50] : [100],
+  activeIndices: isDesktop() ? [] : [0],
+  sizes: isDesktop() ? [] : [100],
   splitOrientation: 'block',
   children: [
     ...(isMobile()
@@ -84,7 +84,6 @@ const primaryPane: Layout = {
           } satisfies PaneChild,
         ]
       : []),
-    featureTreePaneConfig,
     {
       id: DefaultLayoutPaneID.Code,
       label: 'Code Editor',
@@ -186,9 +185,9 @@ const secondaryPane: Layout = {
 /**
  * The default layout has:
  * - a left (in LTR languages) sidebar with:
- *   - Feature tree (open)
  *   - code
  *   - variables
+ *   - project utilities
  * - the modeling view
  * - a right (in LTR languages) sidebar with:
  *   - Zookeeper
@@ -198,7 +197,7 @@ export const defaultLayoutConfig: Layout = {
   label: 'root',
   type: LayoutType.Splits,
   orientation: isMobile() ? 'block' : 'inline',
-  sizes: isMobile() ? [50, 50] : [20, 50, 30],
+  sizes: isMobile() ? [50, 50] : [0, 70, 30],
   children: isMobile()
     ? [modelingPane, primaryPane]
     : [primaryPane, modelingPane, secondaryPane],

@@ -3,7 +3,6 @@ import type { Layout } from '@src/lib/layout/types'
 /**
  * The Playwright testing layout has:
  * - a left (in LTR languages) sidebar with:
- *   - Feature tree (open)
  *   - code
  *   - variables
  *   - debug
@@ -23,32 +22,10 @@ export const playwrightLayoutConfig = {
       label: 'left-toolbar',
       type: 'panes',
       side: 'inline-start',
-      activeIndices: [1],
+      activeIndices: [0],
       sizes: [100],
       splitOrientation: 'block',
       children: [
-        {
-          id: 'feature-tree',
-          label: 'Feature Tree',
-          type: 'split',
-          icon: 'model',
-          sizes: [75, 25],
-          orientation: 'block',
-          children: [
-            {
-              id: 'operations-list',
-              label: 'Feature Tree',
-              type: 'simple',
-              areaType: 'featureTree',
-            },
-            {
-              id: 'bodies-list',
-              label: 'Bodies List',
-              type: 'simple',
-              areaType: 'bodies',
-            },
-          ],
-        },
         {
           id: 'code',
           label: 'Code Editor',

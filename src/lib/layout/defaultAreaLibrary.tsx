@@ -1,9 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
@@ -12,16 +10,20 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
+  EngineSceneHud,
   EngineSceneViewExtensionOverlay,
+  engineSceneHudAreasValueSpec,
+  engineSceneModelTreeHudService,
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
   engineSceneViewExtensionsValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
+import { keymapService } from '@src/registry/contracts/keymap'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 
@@ -41,6 +43,13 @@ function ModelingArea() {
   ).value
   const engineSceneStreamLayers =
     registry.signal(engineSceneStreamLayersValueSpec).value ?? []
+  const engineSceneHudAreas = registry.signal(
+    engineSceneHudAreasValueSpec
+  ).value
+  const modelTreeHudService = registry.signal(
+    engineSceneModelTreeHudService
+  ).value
+  const keymap = registry.optional(keymapService)
   const engineSceneContext = {
     modelingState: state,
     modelingSend: send,
@@ -62,6 +71,12 @@ function ModelingArea() {
       />
       <EngineSceneViewExtensionOverlay
         extensions={engineSceneViewExtensions}
+        {...engineSceneContext}
+      />
+      <EngineSceneHud
+        areas={engineSceneHudAreas}
+        service={modelTreeHudService}
+        keymap={keymap}
         {...engineSceneContext}
       />
     </div>
@@ -95,15 +110,6 @@ export const useDefaultAreaLibrary = () => {
   return useMemo(
     () =>
       Object.freeze({
-        featureTree: {
-          hide: () => false,
-          shortcut: 'Shift + T',
-          Component: FeatureTreePane,
-        },
-        bodies: {
-          hide: () => false,
-          Component: BodiesPane,
-        },
         modeling: {
           hide: () => false,
           Component: ModelingArea,
@@ -179,8 +185,6 @@ function testArea(name: string): AreaTypeDefinition {
 }
 
 export const testAreaLibrary = Object.freeze({
-  featureTree: testArea('Feature Tree'),
-  bodies: testArea('bodies'),
   modeling: testArea('Modeling Scene'),
   ttc: testArea('TTC'),
   codeEditor: testArea('Code Editor'),
