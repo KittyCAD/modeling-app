@@ -7,6 +7,8 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
+import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
+
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
 /// This is part of sketch v1 and is deprecated in favor of
