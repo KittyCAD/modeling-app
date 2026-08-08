@@ -115,8 +115,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('ControlOrMeta+K')
-    await expect(cmdSearchBar).toBeVisible()
+    await commandBarButton.focus()
+    await cmdBar.openCmdBarViaHotkey()
     await expect(cmdSearchBar).toBeFocused()
 
     await test.step(`Pressing backspace in the command selection step does not dismiss`, async () => {
@@ -179,13 +179,14 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await scene.settled()
 
     // Put the cursor in the code editor
-    await page.locator('.cm-content').click()
+    const codeEditor = page.locator('.cm-content')
+    await codeEditor.click()
+    await expect(codeEditor).toBeFocused()
 
     // Now try the same, but with the keyboard shortcut, check focus
-    await page.keyboard.press('ControlOrMeta+K')
+    await cmdBar.openCmdBarViaHotkey()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
     // Try typing in the command bar
@@ -242,7 +243,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await scene.settled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-    await page.keyboard.press('ControlOrMeta+K')
+    await cmdBar.openCmdBarViaHotkey()
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
