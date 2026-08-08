@@ -61,6 +61,12 @@ describe('createNewProjectDirectory', () => {
     expect(project.title).toBe('Human Project')
     expect(projectToml).toContain('default_file = "main.kcl"')
     expect(projectToml).toContain('title = "Human Project"')
+    expect(projectToml).toContain('kcl_version = "2.0"')
+
+    const mainKcl = await fsZds.readFile(fsZds.join(project.path, 'main.kcl'), {
+      encoding: 'utf-8',
+    })
+    expect(mainKcl).toContain('kclVersion = 2.0')
   })
 
   it('can create project directories with separate project titles', async () => {
