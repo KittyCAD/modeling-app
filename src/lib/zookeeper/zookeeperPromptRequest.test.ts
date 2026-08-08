@@ -244,6 +244,7 @@ describe('constructZookeeperUserPromptRequest', () => {
         id: 'face:cubeRegion.tags.right',
         label: 'Face',
         code: 'cubeRegion.tags.right',
+        moduleId: 0,
       },
     ])
 
@@ -303,6 +304,7 @@ describe('constructZookeeperUserPromptRequest', () => {
         id: 'face:cubeRegion.tags.right',
         label: 'Face',
         code: 'cubeRegion.tags.right',
+        moduleId: 0,
       },
     ])
 
