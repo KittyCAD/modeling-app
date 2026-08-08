@@ -2223,6 +2223,7 @@ x = f(1, oldArg = 2)
         let warnings = deprecation_warnings(&result);
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
         assert!(
             warnings[0].message.contains("`f(oldArg)` is deprecated"),
             "found {}",

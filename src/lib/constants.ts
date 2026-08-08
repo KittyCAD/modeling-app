@@ -90,8 +90,17 @@ export const KCL_DEFAULT_INSTANCES = `3`
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
+/** The default KCL translation along the x axis */
+export const KCL_DEFAULT_TRANSLATE_X = `5`
+
+/** The default KCL rotation angle */
+export const KCL_DEFAULT_ROTATE_ANGLE = `45deg`
+
 /** The default KCL scale arg value that means no scale */
 export const KCL_DEFAULT_SCALE = `1`
+
+/** The default KCL uniform scale factor */
+export const KCL_DEFAULT_SCALE_FACTOR = `2`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
@@ -339,6 +348,8 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+/** React Router state flag that starts desktop sign-in after accepting the session-expired dialog. */
+export const SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY = 'sessionExpiredSignIn'
 /**
  * A query parameter to allow the app to be accessed on mobile devices.
  * Used to test mobile experience as we improve it to be release-able.
