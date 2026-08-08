@@ -275,11 +275,21 @@ impl<'a> Extraction<'a> {
                 })
                 .collect::<Vec<_>>(),
         );
+        let mode_context = ModeSidecarContext {
+            scene_objects: self.scene_objects,
+            sketch_object: self.sketch_object,
+            points: &self.points,
+            segments: &self.primary_segments,
+            constraints: &self.constraints,
+            contact_groups: &contact_groups,
+            coincident_groups: &coincident_groups,
+            component_result: &component_result,
+        };
 
         // Build all machine-readable sidecar facts before rendering. The PNG and
         // JSON must agree on colors and bounds, so both are derived from the same
         // internal point/segment maps in this finalization step.
-        let rendered_colors = mode.rendered_colors(&self.primary_segments, self.options.theme);
+        let rendered_colors = mode.rendered_colors(&mode_context, self.options.theme);
         let mut segment_data = Vec::with_capacity(self.primary_segments.len());
         for segment in self.primary_segments.values() {
             segment_data.push(SketchVisualizationSegmentData {
@@ -315,6 +325,7 @@ impl<'a> Extraction<'a> {
             mode,
             constraint_status: None,
             dof: None,
+            sharp_tangents: None,
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
@@ -326,18 +337,7 @@ impl<'a> Extraction<'a> {
             closedness_hints: None,
             warnings: self.warnings.clone(),
         };
-        mode.attach_sidecar(
-            &mut data,
-            ModeSidecarContext {
-                scene_objects: self.scene_objects,
-                sketch_object: self.sketch_object,
-                points: &self.points,
-                segments: &self.primary_segments,
-                contact_groups: &contact_groups,
-                coincident_groups: &coincident_groups,
-                component_result: &component_result,
-            },
-        );
+        mode.attach_sidecar(&mut data, mode_context);
 
         let png = render_png(
             &self.primary_segments,
