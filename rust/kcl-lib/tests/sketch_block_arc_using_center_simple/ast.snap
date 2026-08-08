@@ -705,6 +705,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                   "suffix": "None"
                 }
               }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "callee": {
@@ -853,6 +877,10 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
           }
         },
         "moduleId": 0,
+        "preComments": [
+          "// Tolerance matches the solver's convergence tolerance (1e-8); asserting",
+          "// tighter than that asks for more precision than ezpz guarantees."
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -882,6 +910,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                 "type": "Literal",
                 "value": {
                   "value": 0.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
                   "suffix": "None"
                 }
               }
@@ -1065,6 +1117,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                   "suffix": "Mm"
                 }
               }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "callee": {
@@ -1245,6 +1321,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                   "suffix": "None"
                 }
               }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "callee": {
@@ -1422,6 +1522,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                 "type": "Literal",
                 "value": {
                   "value": 0.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
                   "suffix": "None"
                 }
               }
@@ -1603,6 +1727,30 @@ description: Result of parsing sketch_block_arc_using_center_simple.kcl
                 "value": {
                   "value": 1.0,
                   "suffix": "Mm"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.00000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.00000001,
+                  "suffix": "None"
                 }
               }
             }

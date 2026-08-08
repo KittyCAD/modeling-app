@@ -32,7 +32,7 @@ describe('renameRemoteCloudProject', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
     vi.stubGlobal('fetch', fetchMock)
   })
@@ -45,6 +45,7 @@ describe('renameRemoteCloudProject', () => {
 
   it('re-uploads the remote project archive with the new title', async () => {
     let uploadedTitle: string | undefined
+    let uploadedEntrypointPath: string | undefined
     fetchMock.mockImplementation(async (input, init) => {
       const url = getFetchUrl(input)
       const method = getFetchMethod(input, init)
@@ -54,21 +55,23 @@ describe('renameRemoteCloudProject', () => {
           id: remoteProjectId,
           title: 'Bracket',
           revision: 'rev-1',
+          entrypoint_path: 'nested/part.kcl',
         })
       }
       if (url === remoteProjectDownloadUrl && method === 'GET') {
         return jsonResponse({
           files: [
             { relativePath: 'main.kcl', contents: 'foo = 1' },
+            { relativePath: 'nested/part.kcl', contents: 'bar = 2' },
             { relativePath: 'project.toml', contents: 'title = "Bracket"\n' },
           ],
         })
       }
       if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
         const body = init?.body as FormData
-        uploadedTitle = JSON.parse(
-          await (body.get('body') as Blob).text()
-        ).title
+        const uploadedBody = JSON.parse(await (body.get('body') as Blob).text())
+        uploadedTitle = uploadedBody.title
+        uploadedEntrypointPath = uploadedBody.entrypoint_path
         return jsonResponse({
           id: remoteProjectId,
           title: 'Housing',
@@ -85,6 +88,7 @@ describe('renameRemoteCloudProject', () => {
     await renameRemoteCloudProject(remoteProjectId, 'Housing')
 
     expect(uploadedTitle).toBe('Housing')
+    expect(uploadedEntrypointPath).toBe('nested/part.kcl')
     expect(fetchMock).toHaveBeenCalledWith(
       remoteProjectDownloadUrl,
       expect.objectContaining({ credentials: 'include' })
@@ -120,7 +124,7 @@ describe('deleteRemoteCloudProject', () => {
       enabled: true,
       baseUrl,
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
     vi.stubGlobal('fetch', fetchMock)
   })
@@ -169,5 +173,14 @@ describe('deleteRemoteCloudProject', () => {
       deleteRemoteCloudProject(remoteProjectId)
     ).resolves.toBeUndefined()
     expect(cloudSyncRemoteProjects.value).toEqual([{ id: 'other-project' }])
+  })
+
+  it('fails when cloud sync is not enabled', async () => {
+    configureCloudSyncEngine({ enabled: false })
+
+    await expect(deleteRemoteCloudProject(remoteProjectId)).rejects.toThrow(
+      'Cloud sync is not enabled.'
+    )
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

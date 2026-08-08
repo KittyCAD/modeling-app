@@ -9,6 +9,7 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 
@@ -44,12 +45,16 @@ function createSystemIOActor(folders: Project[] = []) {
   } as unknown as ActorRefFrom<typeof systemIOMachine>
 }
 
-function createLibrary(id: string, title: string): ProjectLibrary {
+function createLibrary(
+  id: string,
+  title: string,
+  type = 'directory'
+): ProjectLibrary {
   return {
     id,
     title,
     path: `/projects/${id}`,
-    type: 'directory',
+    type,
   }
 }
 
@@ -85,11 +90,20 @@ function createHomeProjectActions(
 ): HomeProjectActionsService {
   return {
     canOpen: vi.fn(() => true),
+    canDuplicate: vi.fn(() => true),
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
-    open: vi.fn(async (project) => ({ defaultFile: project.defaultFile! })),
+    canMoveToLibrary: vi.fn(() => false),
+    canReviewDuplicateRealizations: vi.fn(() => false),
+    open: vi.fn(async (project) => ({
+      defaultFile: project.defaultFile ?? '',
+    })),
+    duplicate: vi.fn(async () => undefined),
     rename: vi.fn(async () => undefined),
     delete: vi.fn(async () => undefined),
+    getMoveToLibraryTargets: vi.fn(() => []),
+    moveToLibrary: vi.fn(async () => undefined),
+    deleteDuplicateRealizations: vi.fn(async () => undefined),
     ...overrides,
   }
 }
@@ -126,6 +140,7 @@ describe('project command config', () => {
     expect(commands.map((command) => command.name)).toEqual([
       'Open project',
       'Create project',
+      'Move to library',
       'Delete project',
       'Rename project',
       'Import file from URL',
@@ -512,6 +527,135 @@ describe('project command config', () => {
     } finally {
       window.location.hash = ''
     }
+  })
+
+  it('clarifies command-bar deletion for cloud-backed non-cloud library projects', () => {
+    const homeProject = {
+      ...createHomeProject({
+        id: 'remote:remote-123',
+        title: 'Client Bracket',
+        localProjectName: 'bracket',
+        localProjectPath: '/client-projects/bracket',
+        libraryIds: ['client-projects'],
+      }),
+      source: 'local',
+      status: 'synced',
+      remoteProjectId: 'remote-123',
+      deleteRemoteOnDelete: false,
+    } satisfies HomeProjectEntry
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+      enableProjectDirectoryCommands: true,
+      getHomeProjectActions: () => createHomeProjectActions(),
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const deleteCommand = commands.find(
+      (command) => command.name === 'Delete project'
+    )
+    const reviewMessage = deleteCommand?.reviewMessage
+    expect(typeof reviewMessage).toBe('function')
+    if (typeof reviewMessage !== 'function') {
+      return
+    }
+
+    render(
+      reviewMessage({
+        argumentsToSubmit: {
+          name: homeProject.id,
+        },
+      } as unknown as ContextFrom<typeof commandBarMachine>)
+    )
+
+    expect(
+      screen.getByText(
+        'This will delete the local copy of "Client Bracket". The cloud version will not be deleted.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('moves home project entries to a selected library through project actions', async () => {
+    const systemIOActor = createSystemIOActor()
+    const sourceLibrary = createLibrary('client-projects', 'Client Projects')
+    const targetLibrary = createLibrary(
+      'cloud-personal',
+      'Personal Cloud',
+      'cloud'
+    )
+    const homeProject = createHomeProject({
+      id: 'local:/client-projects/bracket',
+      title: 'Client Bracket',
+      localProjectName: 'bracket',
+      localProjectPath: '/client-projects/bracket',
+      libraryIds: [sourceLibrary.id],
+    })
+    const homeProjectActions = createHomeProjectActions({
+      canMoveToLibrary: vi.fn(() => true),
+      getMoveToLibraryTargets: vi.fn(() => [
+        {
+          sourceLibrary,
+          library: targetLibrary,
+        },
+      ]),
+      moveToLibrary: vi.fn(async () => ({
+        defaultFile: '/cloud/bracket/main.kcl',
+      })),
+    })
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+      getHomeProjectActions: () => homeProjectActions,
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const moveCommand = commands.find(
+      (command) => command.name === 'Move to library'
+    )
+    const libraryArg = moveCommand?.args?.library as unknown as {
+      defaultValue: (
+        context: ContextFrom<typeof commandBarMachine>
+      ) => string | undefined
+      options: (context: {
+        argumentsToSubmit: Record<string, unknown>
+      }) => CommandArgumentOption<string>[]
+    }
+
+    expect(moveCommand && projectOptions(moveCommand, 'project')).toEqual([
+      {
+        name: 'Client Bracket',
+        value: 'local:/client-projects/bracket',
+        isCurrent: false,
+      },
+    ])
+    expect(
+      libraryArg.options({
+        argumentsToSubmit: {
+          project: homeProject.id,
+        },
+      })
+    ).toEqual([
+      {
+        name: 'Personal Cloud',
+        value: 'cloud-personal',
+        isCurrent: false,
+      },
+    ])
+    expect(
+      libraryArg.defaultValue({
+        argumentsToSubmit: {
+          project: homeProject.id,
+        },
+      } as unknown as ContextFrom<typeof commandBarMachine>)
+    ).toBe('cloud-personal')
+
+    await moveCommand?.onSubmit({
+      project: homeProject.id,
+      library: targetLibrary.id,
+    })
+
+    expect(homeProjectActions.moveToLibrary).toHaveBeenCalledWith(
+      homeProject,
+      targetLibrary.id
+    )
+    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('defaults home project rename titles from the selected entry', () => {

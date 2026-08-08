@@ -1,8 +1,10 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
+use ezpz::datatypes::inputs::DatumPoint;
 use indexmap::IndexMap;
 use kcl_api::Group;
 use kcl_api::NumericType;
@@ -17,9 +19,13 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::Sketch;
 use crate::execution::AbstractSegment;
+use crate::execution::AngleConstraintMode;
+use crate::execution::AngleRayDirection;
+use crate::execution::AngleSector;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::ConstraintKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
@@ -27,10 +33,13 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
+use crate::execution::PendingLegacyAngleRefactorMeta;
 use crate::execution::PreserveMem;
+use crate::execution::RefactorMetadata;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::SKETCH_OBJECT_META;
 use crate::execution::SKETCH_OBJECT_META_SKETCH;
@@ -39,6 +48,7 @@ use crate::execution::SegmentKind;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchSurface;
+use crate::execution::SolverArc;
 use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
 use crate::execution::UnsolvedExpr;
@@ -52,6 +62,9 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::fn_call::unexpected_kw_arg_message;
+use crate::execution::kcl_value::EnumTypeDef;
+use crate::execution::kcl_value::EnumTypeId;
+use crate::execution::kcl_value::EnumValue;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::KclObjectKind;
@@ -69,9 +82,11 @@ use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
 use crate::execution::state::ModuleState;
 use crate::execution::state::SketchBlockState;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::ArcDirection;
 use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -91,6 +106,7 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::Identifier;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
@@ -115,6 +131,11 @@ use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
+use crate::std::utils::intersect_lines_2d;
+use crate::std::utils::normalize_rad;
+use crate::std::utils::vec2_dot;
+use crate::std::utils::vec2_len;
+use crate::std::utils::vec2_sub;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -199,6 +220,325 @@ fn datum_line_from_constrainable(
             line.vars[1].y.to_constraint_id(range)?,
         ),
     ))
+}
+
+fn push_hidden_sketch_point(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    initial: [f64; 2],
+    range: SourceRange,
+) -> Result<DatumPoint, KclError> {
+    let x_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: x_id,
+            initial_value: initial[0],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+    let y_id = sketch_block_state.next_sketch_var_id();
+    sketch_block_state.sketch_vars.push(KclValue::SketchVar {
+        value: Box::new(crate::execution::SketchVar {
+            id: y_id,
+            initial_value: initial[1],
+            ty: sketch_var_ty,
+            node_path: None,
+            meta: vec![],
+        }),
+    });
+
+    Ok(DatumPoint::new_xy(
+        x_id.to_constraint_id(range)?,
+        y_id.to_constraint_id(range)?,
+    ))
+}
+
+fn front_angle_sector(sector: AngleSector) -> u8 {
+    match sector {
+        AngleSector::One => 1,
+        AngleSector::Two => 2,
+        AngleSector::Three => 3,
+        AngleSector::Four => 4,
+    }
+}
+
+#[derive(Clone, Copy)]
+struct AngleSectorRay {
+    line_index: usize,
+    direction: AngleRayDirection,
+}
+
+fn angle_sector_rays(sector: AngleSector, is_inverse: bool) -> [AngleSectorRay; 2] {
+    let rays = match sector {
+        AngleSector::One => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+        AngleSector::Two => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Forward,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Three => [
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+        ],
+        AngleSector::Four => [
+            AngleSectorRay {
+                line_index: 1,
+                direction: AngleRayDirection::Reverse,
+            },
+            AngleSectorRay {
+                line_index: 0,
+                direction: AngleRayDirection::Forward,
+            },
+        ],
+    };
+    if is_inverse { [rays[1], rays[0]] } else { rays }
+}
+
+fn line_endpoint_datum(
+    line: &ConstrainableLine2d,
+    endpoint_index: usize,
+    range: SourceRange,
+) -> Result<DatumPoint, KclError> {
+    let Some(endpoint) = line.vars.get(endpoint_index) else {
+        return Err(internal_err("Invalid angle line endpoint index", range));
+    };
+
+    Ok(DatumPoint::new_xy(
+        endpoint.x.to_constraint_id(range)?,
+        endpoint.y.to_constraint_id(range)?,
+    ))
+}
+
+fn representative_angle_endpoint(
+    line: &ConstrainableLine2d,
+    initial_line: ([f64; 2], [f64; 2]),
+    vertex: [f64; 2],
+    range: SourceRange,
+) -> Result<(DatumPoint, AngleRayDirection), KclError> {
+    let start_delta = vec2_sub(initial_line.0, vertex);
+    let end_delta = vec2_sub(initial_line.1, vertex);
+    let endpoint_index = if vec2_len(end_delta) >= vec2_len(start_delta) {
+        1
+    } else {
+        0
+    };
+    let endpoint_delta = if endpoint_index == 1 { end_delta } else { start_delta };
+    if vec2_len(endpoint_delta) <= 1e-9 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "angleDimension(lines = ..., sector = ...) requires each line to have an endpoint away from the intersection"
+                .to_owned(),
+            vec![range],
+        )));
+    }
+
+    let line_direction = vec2_sub(initial_line.1, initial_line.0);
+    let direction = if vec2_dot(endpoint_delta, line_direction) >= 0.0 {
+        AngleRayDirection::Forward
+    } else {
+        AngleRayDirection::Reverse
+    };
+
+    Ok((line_endpoint_datum(line, endpoint_index, range)?, direction))
+}
+
+fn remap_angle_for_representative_rays(
+    requested_rays: [AngleSectorRay; 2],
+    representative_directions: [AngleRayDirection; 2],
+    desired_angle: ezpz::datatypes::Angle,
+) -> ezpz::datatypes::Angle {
+    let mut requested_directions = representative_directions;
+    for ray in requested_rays {
+        requested_directions[ray.line_index] = ray.direction;
+    }
+
+    let sign_offset = if (requested_directions[0] != representative_directions[0])
+        ^ (requested_directions[1] != representative_directions[1])
+    {
+        std::f64::consts::PI
+    } else {
+        0.0
+    };
+
+    let desired = desired_angle.to_radians();
+    let representative_angle = if requested_rays[0].line_index == 0 {
+        desired - sign_offset
+    } else {
+        -desired - sign_offset
+    };
+
+    ezpz::datatypes::Angle::from_radians(normalize_rad(representative_angle))
+}
+
+struct PointsAtAngleLineData {
+    initial_vertex: [f64; 2],
+    representative_points: [DatumPoint; 2],
+    angle_kind: ezpz::datatypes::AngleKind,
+}
+
+enum AngleConstraintLowering {
+    LinesAtAngle(Box<PendingLegacyAngleRefactorMeta>),
+    PointsAtAngle(PointsAtAngleLineData),
+}
+
+fn solved_angle_line(line: &ConstrainableLine2d, final_values: &[f64]) -> Option<([f64; 2], [f64; 2])> {
+    let point = |index: usize| {
+        let point = line.vars.get(index)?;
+        Some([*final_values.get(point.x.0)?, *final_values.get(point.y.0)?])
+    };
+    Some((point(0)?, point(1)?))
+}
+
+fn angle_ray_vector(lines: [[f64; 2]; 2], ray: AngleSectorRay) -> [f64; 2] {
+    let direction = lines[ray.line_index];
+    match ray.direction {
+        AngleRayDirection::Forward => direction,
+        AngleRayDirection::Reverse => [-direction[0], -direction[1]],
+    }
+}
+
+fn directed_angle(from: [f64; 2], to: [f64; 2]) -> f64 {
+    let cross = from[0] * to[1] - from[1] * to[0];
+    libm::atan2(cross, vec2_dot(from, to)).rem_euclid(std::f64::consts::TAU)
+}
+
+fn circular_angle_distance(a: f64, b: f64) -> f64 {
+    let delta = (a - b).abs().rem_euclid(std::f64::consts::TAU);
+    libm::fmin(delta, std::f64::consts::TAU - delta)
+}
+
+fn legacy_angle_arc_midpoint_angle(
+    lines: [([f64; 2], [f64; 2]); 2],
+    directions: [[f64; 2]; 2],
+    vertex: [f64; 2],
+    desired: f64,
+) -> f64 {
+    let signed_distances = lines.map(|line| {
+        let direction = vec2_sub(line.1, line.0);
+        let length = vec2_len(direction);
+        [
+            vec2_dot(vec2_sub(line.0, vertex), direction) / length,
+            vec2_dot(vec2_sub(line.1, vertex), direction) / length,
+        ]
+    });
+    let overlap = [
+        libm::fmax(signed_distances[0][0], signed_distances[1][0]),
+        libm::fmin(signed_distances[0][1], signed_distances[1][1]),
+    ];
+    // Match calculateArcRenderInput in src/machines/sketchSolve/constraints/AngleConstraintBuilder.ts;
+    // the radius sign chooses the line 0 ray on which the legacy arc starts.
+    let radius = if overlap[1] >= overlap[0] {
+        let near_start = overlap[0] + (overlap[1] - overlap[0]) * 0.15;
+        let near_end = overlap[0] + (overlap[1] - overlap[0]) * 0.85;
+        if near_start.abs() < near_end.abs() {
+            near_start
+        } else {
+            near_end
+        }
+    } else {
+        let mut distances = signed_distances.into_iter().flatten().collect::<Vec<_>>();
+        distances.sort_by(f64::total_cmp);
+        distances[1]
+    };
+    let start = if radius < 0.0 {
+        [-directions[0][0], -directions[0][1]]
+    } else {
+        directions[0]
+    };
+
+    (libm::atan2(start[1], start[0]) + desired * 0.5).rem_euclid(std::f64::consts::TAU)
+}
+
+fn finalize_legacy_angle_refactor_meta(
+    pending: &PendingLegacyAngleRefactorMeta,
+    final_values: &[f64],
+) -> Option<LegacyAngleRefactorMeta> {
+    let line0 = solved_angle_line(&pending.lines[0], final_values)?;
+    let line1 = solved_angle_line(&pending.lines[1], final_values)?;
+    let vertex = intersect_lines_2d(line0, line1)?;
+    let directions = [vec2_sub(line0.1, line0.0), vec2_sub(line1.1, line1.0)];
+    if directions.iter().any(|direction| vec2_len(*direction) <= 1e-9) {
+        return None;
+    }
+
+    let desired = pending.desired_angle_radians.rem_euclid(std::f64::consts::TAU);
+    let sectors = [
+        AngleSector::One,
+        AngleSector::Two,
+        AngleSector::Three,
+        AngleSector::Four,
+    ];
+    let mut candidates = Vec::new();
+    for sector in sectors {
+        for inverse in [false, true] {
+            let rays = angle_sector_rays(sector, inverse);
+            let from = angle_ray_vector(directions, rays[0]);
+            let to = angle_ray_vector(directions, rays[1]);
+            if circular_angle_distance(directed_angle(from, to), desired) <= 1e-5 {
+                let midpoint = libm::atan2(from[1], from[0]) + desired * 0.5;
+                candidates.push((sector, inverse, midpoint.rem_euclid(std::f64::consts::TAU)));
+            }
+        }
+    }
+
+    let arc_midpoint_angle = legacy_angle_arc_midpoint_angle([line0, line1], directions, vertex, desired);
+    let selected = candidates.into_iter().min_by(|a, b| {
+        circular_angle_distance(a.2, arc_midpoint_angle).total_cmp(&circular_angle_distance(b.2, arc_midpoint_angle))
+    })?;
+
+    Some(LegacyAngleRefactorMeta {
+        source_range: pending.source_range,
+        sector: front_angle_sector(selected.0),
+        inverse: selected.1,
+    })
+}
+
+fn push_points_at_angle_for_lines(
+    sketch_block_state: &mut SketchBlockState,
+    sketch_var_ty: NumericType,
+    lines: [&ConstrainableLine2d; 2],
+    data: PointsAtAngleLineData,
+    range: SourceRange,
+) -> Result<(), KclError> {
+    let solver_line0 = datum_line_from_constrainable(lines[0], range)?;
+    let solver_line1 = datum_line_from_constrainable(lines[1], range)?;
+    let vertex = push_hidden_sketch_point(sketch_block_state, sketch_var_ty, data.initial_vertex, range)?;
+
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line0, 0.0));
+    sketch_block_state
+        .solver_constraints
+        .push(Constraint::PointLineDistance(vertex, solver_line1, 0.0));
+    sketch_block_state.solver_constraints.push(Constraint::PointsAtAngle(
+        vertex,
+        data.representative_points[0],
+        data.representative_points[1],
+        data.angle_kind,
+    ));
+
+    Ok(())
 }
 
 fn sketch_var_initial_value(
@@ -840,6 +1180,19 @@ impl ExecutorContext {
 
                                 if let Ok(ty) = ty {
                                     let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                                    if matches!(
+                                        &ty,
+                                        KclValue::Type {
+                                            value: TypeDef::Enum(_),
+                                            ..
+                                        }
+                                    ) {
+                                        reject_enum_clashing_with_module(
+                                            exec_state,
+                                            import_item.identifier(),
+                                            SourceRange::from(&import_item.name),
+                                        )?;
+                                    }
                                     exec_state.mut_stack().add(
                                         ty_name.clone(),
                                         ty,
@@ -853,6 +1206,11 @@ impl ExecutorContext {
 
                                 if let Ok(mod_value) = mod_value {
                                     let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                                    reject_module_clashing_with_enum(
+                                        exec_state,
+                                        import_item.identifier(),
+                                        SourceRange::from(&import_item.name),
+                                    )?;
                                     exec_state.mut_stack().add(
                                         mod_name.clone(),
                                         mod_value,
@@ -879,6 +1237,7 @@ impl ExecutorContext {
                                             source_range,
                                         )
                                     })?;
+                                reject_glob_import_clash(exec_state, name, &item, source_range)?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -888,6 +1247,7 @@ impl ExecutorContext {
                         }
                         ImportSelector::None { .. } => {
                             let name = import_stmt.module_name().unwrap();
+                            reject_module_clashing_with_enum(exec_state, &name, source_range)?;
                             let item = KclValue::Module {
                                 value: module_id,
                                 meta: vec![source_range.into()],
@@ -1125,11 +1485,57 @@ impl ExecutorContext {
                                     vec![metadata.source_range],
                                 )));
                             }
-                            TypeDeclarationDefinition::Enum(_) => {
-                                return Err(KclError::new_semantic(KclErrorDetails::new(
-                                    "Enum declarations are not yet supported.".to_owned(),
-                                    vec![metadata.source_range],
-                                )));
+                            TypeDeclarationDefinition::Enum(decl) => {
+                                // Identity is module plus declared name, so `type Color` in
+                                // two function bodies of one file would be one type with two
+                                // variant sets. A V1 limitation, liftable in enum v2 by
+                                // giving `EnumTypeId` a declaration site.
+                                if !matches!(body_type, BodyType::Root) {
+                                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                                        format!(
+                                            "Enum declarations are only supported at the top-level of a file. Move `type {}` to the top-level.",
+                                            ty.name.name
+                                        ),
+                                        vec![metadata.source_range],
+                                    )));
+                                }
+
+                                reject_enum_clashing_with_module(exec_state, &ty.name.name, metadata.source_range)?;
+
+                                let variants = decl.variants.iter().map(|v| v.name.name.clone()).collect();
+                                let id = EnumTypeId::new(metadata.source_range.module_id(), ty.name.name.clone());
+                                // Constructing the definition is the validation step: nothing
+                                // below runs, so nothing reaches memory, unless every variant
+                                // name is distinct.
+                                let def = EnumTypeDef::new(id, variants).map_err(|duplicate| {
+                                    KclError::new_semantic(KclErrorDetails::new(
+                                        format!("Duplicate variant `{}` in enum `{}`.", duplicate.name, ty.name.name),
+                                        vec![
+                                            decl.variants[duplicate.first_index].as_source_range(),
+                                            decl.variants[duplicate.duplicate_index].as_source_range(),
+                                        ],
+                                    ))
+                                })?;
+
+                                let value = KclValue::Type {
+                                    value: TypeDef::Enum(Arc::new(def)),
+                                    meta: vec![metadata],
+                                    experimental: attrs.experimental,
+                                };
+                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                                exec_state
+                                    .mut_stack()
+                                    .add(name_in_mem.clone(), value, metadata.source_range)
+                                    .map_err(|_| {
+                                        KclError::new_semantic(KclErrorDetails::new(
+                                            format!("Redefinition of type {}.", ty.name.name),
+                                            vec![metadata.source_range],
+                                        ))
+                                    })?;
+
+                                if let ItemVisibility::Export = ty.visibility {
+                                    exec_state.mod_local.module_exports.push(name_in_mem);
+                                }
                             }
                         },
                     }
@@ -1564,6 +1970,216 @@ impl ExecutorContext {
     }
 }
 
+/// The head of a `Color::Red` path is looked up both as a module and as an enum,
+/// so one scope must not bind a module and an enum under the same name. Reporting
+/// the clash where the second name is introduced keeps every `X::y` use site
+/// unambiguous, so no check is needed at the use site.
+///
+/// Type aliases and bare types are exempt, since neither can head a `::` path.
+/// They may continue to share a name with a module.
+fn module_enum_clash(name: &str, source_range: SourceRange) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "An enum and a module cannot share the name `{name}` in the same scope, because `{name}::x` would be ambiguous. Rename one of them."
+        ),
+        vec![source_range],
+    ))
+}
+
+/// Call before binding an enum under `name`.
+fn reject_enum_clashing_with_module(
+    exec_state: &ExecState,
+    name: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    if exec_state
+        .stack()
+        .get(&format!("{}{}", memory::MODULE_PREFIX, name), source_range)
+        .is_err()
+    {
+        return Ok(());
+    }
+
+    Err(module_enum_clash(name, source_range))
+}
+
+/// Call before binding a module under `name`. The mirror of
+/// [`reject_enum_clashing_with_module`].
+fn reject_module_clashing_with_enum(
+    exec_state: &ExecState,
+    name: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    let Ok(KclValue::Type {
+        value: TypeDef::Enum(_),
+        ..
+    }) = exec_state
+        .stack()
+        .get(&format!("{}{}", memory::TYPE_PREFIX, name), source_range)
+    else {
+        return Ok(());
+    };
+
+    Err(module_enum_clash(name, source_range))
+}
+
+/// Builds the error for comparing values of two different enum types.
+fn different_enums_err(left: &EnumValue, right: &EnumValue, source_range: SourceRange) -> KclError {
+    let left_name = left.enum_id().declared_name();
+    let right_name = right.enum_id().declared_name();
+
+    let message = if left_name == right_name {
+        // Identity is the declaration, so two enums can share a name and still be
+        // different types. Naming both would read as a mistake in the message.
+        format!(
+            "Cannot compare two different enums that are both named `{left_name}`. They come from separate declarations."
+        )
+    } else {
+        format!("Cannot compare enum `{left_name}` with enum `{right_name}`. They are different types.")
+    };
+
+    KclError::new_semantic(KclErrorDetails::new(message, vec![source_range]))
+}
+
+/// Builds the error for a name that resolves to a type where a value is needed,
+/// such as `x = Color`.
+///
+/// Returns `None` when no type of that name is in scope, which leaves the
+/// caller's "is not defined" error in place.
+fn type_used_as_value(exec_state: &ExecState, name: &Node<Identifier>) -> Option<KclError> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, name.name);
+    let KclValue::Type { value: def, .. } = exec_state.stack().get(&key, name.as_source_range()).ok()? else {
+        return None;
+    };
+
+    // The suggestion uses the name as written, which may be an import alias, so
+    // that it can be pasted into the file that produced the error.
+    let suggestion = match &def {
+        TypeDef::Enum(def) => def
+            .variants()
+            .first()
+            .map(|variant| format!(" Use one of its variants, such as `{}::{variant}`.", name.name))
+            .unwrap_or_default(),
+        _ => String::new(),
+    };
+
+    Some(KclError::new_semantic(KclErrorDetails::new(
+        format!("`{}` is a type, not a value.{suggestion}", name.name),
+        name.as_source_ranges(),
+    )))
+}
+
+/// Looks up the enum named by a `::` path segment: `Color` in both `Color::Red`
+/// and `colors::Color::Red`.
+///
+/// Returns `None` when the segment does not name an enum, including when it
+/// names a type alias, since only an enum can head a `::` path. The caller then
+/// resolves the segment as a module instead.
+///
+/// This is the only place that builds a `__ty_` memory key, so the deferred
+/// typed-key refactor has one site to change.
+fn enum_named_by_segment(
+    exec_state: &ExecState,
+    segment: &Node<Identifier>,
+    within: Option<&(EnvironmentRef, Vec<String>)>,
+) -> Option<Arc<EnumTypeDef>> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
+    let value = match within {
+        // Inside another module the enum must be exported to be reachable, and
+        // exports record the prefixed key rather than the bare name.
+        Some((env, exports)) => {
+            if !exports.contains(&key) {
+                return None;
+            }
+
+            exec_state
+                .stack()
+                .memory
+                .get_from_owned(&key, *env, segment.as_source_range(), 0)
+                .ok()?
+        }
+        None => exec_state.stack().get(&key, segment.as_source_range()).ok()?,
+    };
+
+    match value {
+        KclValue::Type {
+            value: TypeDef::Enum(def),
+            ..
+        } => Some(def),
+        _ => None,
+    }
+}
+
+/// `Red` in `Color::Red`.
+fn enum_variant_value(
+    def: Arc<EnumTypeDef>,
+    variant: &Node<Identifier>,
+    exec_state: &mut ExecState,
+) -> Result<KclValue, KclError> {
+    let enum_name = def.id().declared_name();
+
+    if !def.has_variant(&variant.name) {
+        let known = if def.variants().is_empty() {
+            format!("Enum `{enum_name}` has no variants")
+        } else {
+            format!("Its variants are: {}", def.variants().join(", "))
+        };
+
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("`{}` is not a variant of enum `{enum_name}`. {known}.", variant.name),
+            variant.as_source_ranges(),
+        )));
+    }
+
+    // Every V1 enum is experimental, not only those with an annotation, so this
+    // call is unconditional. `warn_experimental` reads the setting of the module
+    // being executed and does nothing when that setting is `allow`, so an enum
+    // imported from a permissive module is still reported in a consumer that has
+    // not opted in. Declarations are gated during parsing; type positions by
+    // `RuntimeType::from_alias`.
+    exec_state.warn_experimental(&format!("the enum `{enum_name}`"), variant.as_source_range());
+
+    // The value holds the declaration itself, so its identity is read off that
+    // declaration and can never be rebuilt from a name. A later enum v2 adding a
+    // declaration site to `EnumTypeId` therefore changes nothing here.
+    Ok(KclValue::Enum {
+        value: Box::new(EnumValue::new(
+            def,
+            variant.name.clone(),
+            vec![Metadata {
+                source_range: variant.as_source_range(),
+            }],
+        )),
+    })
+}
+
+/// Glob imports copy exported keys verbatim, prefix included, so which namespace
+/// an incoming key lands in has to be read back off the key itself.
+fn reject_glob_import_clash(
+    exec_state: &ExecState,
+    key: &str,
+    item: &KclValue,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    if let Some(name) = key.strip_prefix(memory::MODULE_PREFIX) {
+        return reject_module_clashing_with_enum(exec_state, name, source_range);
+    }
+
+    if let Some(name) = key.strip_prefix(memory::TYPE_PREFIX)
+        && matches!(
+            item,
+            KclValue::Type {
+                value: TypeDef::Enum(_),
+                ..
+            }
+        )
+    {
+        return reject_enum_clashing_with_module(exec_state, name, source_range);
+    }
+
+    Ok(())
+}
+
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
 fn sketch_mode_should_skip(expr: &Expr) -> bool {
@@ -1654,13 +2270,13 @@ impl Node<SketchBlock> {
             // Get the plane artifact ID so that we can do an exclusive borrow.
             let plane_artifact_id = on_object.map(|object| object.artifact_id);
             let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Plane(plane) => Some(super::artifact::artifact_plane_info(&plane.info)),
                 SketchSurface::Face(_) => None,
             };
 
             let standard_plane = match &sketch_ctor_on {
                 Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) => None,
+                Plane::Object(_) | Plane::PrimitiveFace(_) => None,
             };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
@@ -1926,6 +2542,17 @@ impl Node<SketchBlock> {
                 format!("{}", warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
+        }
+        if solve_outcome.converged {
+            exec_state.mod_local.artifacts.refactor_metadata.extend(
+                sketch_block_state
+                    .pending_legacy_angle_refactor_metadata
+                    .iter()
+                    .filter_map(|pending| {
+                        finalize_legacy_angle_refactor_meta(pending, &solve_outcome.final_values)
+                            .map(RefactorMetadata::LegacyAngle)
+                    }),
+            );
         }
         // Substitute solutions back into sketch variables.
         let sketch_engine_id = exec_state.next_uuid();
@@ -2353,7 +2980,13 @@ fn apply_ascription(
         exec_state.clear_units_warnings(&source_range);
     }
 
-    value.coerce(&ty, false, exec_state).map_err(|_| {
+    value.coerce(&ty, CoercionMode::explicit(), exec_state).map_err(|e| {
+        // A coercion that knows why it failed says so; the generic wording below
+        // would replace that with a worse description of the same failure.
+        if let Some(message) = e.message {
+            return KclError::new_semantic(KclErrorDetails::new(message, vec![source_range]));
+        }
+
         let suggestion = if ty == RuntimeType::length() {
             ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
@@ -2426,11 +3059,35 @@ impl Node<Name> {
             if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
                 return Ok(item_value);
             }
-            return exec_state.stack().get(&mod_name, self.into());
+
+            let not_defined = match exec_state.stack().get(&mod_name, self.into()) {
+                Ok(module) => return Ok(module),
+                Err(err) => err,
+            };
+
+            // No value and no module of this name exists. If a type does, report
+            // that instead: "is not defined" would point away from the mistake.
+            return Err(type_used_as_value(exec_state, &self.name).unwrap_or(not_defined));
         }
 
         let mut mem_spec: Option<(EnvironmentRef, Vec<String>)> = None;
-        for p in &self.path {
+        for (index, p) in self.path.iter().enumerate() {
+            // Only the last segment can name an enum, because what follows an
+            // enum is a variant rather than something to traverse into.
+            if let Some(def) = enum_named_by_segment(exec_state, p, mem_spec.as_ref()) {
+                if let Some(next) = self.path.get(index + 1) {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "`{}` is an enum, so only a variant name can follow it. There is nothing to reach through `{}::{}`.",
+                            p.name, p.name, next.name
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
+
+                return enum_variant_value(def, &self.name, exec_state);
+            }
+
             let value = match mem_spec {
                 Some((env, exports)) => {
                     if !exports.contains(&p.name) {
@@ -3798,26 +4455,13 @@ impl Node<BinaryExpression> {
                     };
 
                     match &constraint.kind {
-                        SketchConstraintKind::Angle { line0, line1 } => {
+                        SketchConstraintKind::Angle {
+                            line0,
+                            line1,
+                            mode,
+                            label_position,
+                        } => {
                             let range = self.as_source_range();
-                            // Line 0 is points A and B.
-                            // Line 1 is points C and D.
-                            let ax = line0.vars[0].x.to_constraint_id(range)?;
-                            let ay = line0.vars[0].y.to_constraint_id(range)?;
-                            let bx = line0.vars[1].x.to_constraint_id(range)?;
-                            let by = line0.vars[1].y.to_constraint_id(range)?;
-                            let cx = line1.vars[0].x.to_constraint_id(range)?;
-                            let cy = line1.vars[0].y.to_constraint_id(range)?;
-                            let dx = line1.vars[1].x.to_constraint_id(range)?;
-                            let dy = line1.vars[1].y.to_constraint_id(range)?;
-                            let solver_line0 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(ax, ay),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(bx, by),
-                            );
-                            let solver_line1 = ezpz::datatypes::inputs::DatumLineSegment::new(
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(cx, cy),
-                                ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
-                            );
                             let desired_angle = match n.ty {
                                 NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Degrees))
                                 | NumericType::Default {
@@ -3840,11 +4484,71 @@ impl Node<BinaryExpression> {
                                     return Err(internal_err(message, self));
                                 }
                             };
-                            let solver_constraint = Constraint::LinesAtAngle(
-                                solver_line0,
-                                solver_line1,
-                                ezpz::datatypes::AngleKind::Other(desired_angle),
-                            );
+                            let angle_lowering = match *mode {
+                                AngleConstraintMode::LinesAtAngle => {
+                                    AngleConstraintLowering::LinesAtAngle(Box::new(PendingLegacyAngleRefactorMeta {
+                                        source_range: constraint
+                                            .meta
+                                            .first()
+                                            .map(|meta| meta.source_range)
+                                            .unwrap_or(range),
+                                        lines: [line0.clone(), line1.clone()],
+                                        desired_angle_radians: desired_angle.to_radians(),
+                                    }))
+                                }
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
+                                    let sketch_vars = exec_state
+                                        .mod_local
+                                        .sketch_block
+                                        .as_ref()
+                                        .ok_or_else(|| {
+                                            internal_err(
+                                                "Being inside a sketch block should have already been checked above",
+                                                self,
+                                            )
+                                        })?
+                                        .sketch_vars
+                                        .clone();
+                                    let initial_line0 = constrainable_line_initial_positions(
+                                        &sketch_vars,
+                                        line0,
+                                        exec_state,
+                                        range,
+                                        "angle line0",
+                                    )?;
+                                    let initial_line1 = constrainable_line_initial_positions(
+                                        &sketch_vars,
+                                        line1,
+                                        exec_state,
+                                        range,
+                                        "angle line1",
+                                    )?;
+                                    let Some(initial_vertex) = intersect_lines_2d(initial_line0, initial_line1) else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "angleDimension(lines = ..., sector = ...) requires non-parallel lines"
+                                                .to_owned(),
+                                            vec![range],
+                                        )));
+                                    };
+                                    let (line0_representative, line0_direction) =
+                                        representative_angle_endpoint(line0, initial_line0, initial_vertex, range)?;
+                                    let (line1_representative, line1_direction) =
+                                        representative_angle_endpoint(line1, initial_line1, initial_vertex, range)?;
+                                    let sector_rays = angle_sector_rays(sector, inverse);
+                                    let angle_kind =
+                                        ezpz::datatypes::AngleKind::Other(remap_angle_for_representative_rays(
+                                            sector_rays,
+                                            [line0_direction, line1_direction],
+                                            desired_angle,
+                                        ));
+                                    AngleConstraintLowering::PointsAtAngle(PointsAtAngleLineData {
+                                        initial_vertex,
+                                        representative_points: [line0_representative, line1_representative],
+                                        angle_kind,
+                                    })
+                                }
+                            };
+                            let sketch_var_ty = solver_numeric_type(exec_state);
                             let constraint_id = exec_state.next_object_id();
                             let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
                                 let message =
@@ -3852,11 +4556,30 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(internal_err(message, self));
                             };
-                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            match angle_lowering {
+                                AngleConstraintLowering::LinesAtAngle(refactor_meta) => {
+                                    sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
+                                        datum_line_from_constrainable(line0, range)?,
+                                        datum_line_from_constrainable(line1, range)?,
+                                        ezpz::datatypes::AngleKind::Other(desired_angle),
+                                    ));
+                                    sketch_block_state
+                                        .pending_legacy_angle_refactor_metadata
+                                        .push(*refactor_meta);
+                                }
+                                AngleConstraintLowering::PointsAtAngle(points_at_angle_data) => {
+                                    push_points_at_angle_for_lines(
+                                        sketch_block_state,
+                                        sketch_var_ty,
+                                        [line0, line1],
+                                        points_at_angle_data,
+                                        range,
+                                    )?
+                                }
+                            }
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Angle;
                             use crate::front::SourceRef;
 
@@ -3865,11 +4588,20 @@ impl Node<BinaryExpression> {
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
+                            let (sector, inverse) = match *mode {
+                                AngleConstraintMode::LinesAtAngle => (None, None),
+                                AngleConstraintMode::PointsAtAngle { sector, inverse } => {
+                                    (Some(front_angle_sector(sector)), Some(inverse))
+                                }
+                            };
                             let sketch_constraint = crate::front::Constraint::Angle(Angle {
                                 lines: vec![line0.object_id, line1.object_id],
                                 angle: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
                                 })?,
+                                sector,
+                                inverse,
+                                label_position: label_position.clone(),
                                 source,
                             });
                             sketch_block_state.sketch_constraints.push(constraint_id);
@@ -3878,7 +4610,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -3986,7 +4718,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4027,7 +4758,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4133,7 +4864,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4161,7 +4891,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4277,7 +5007,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4301,7 +5030,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4373,7 +5102,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4401,7 +5129,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4513,7 +5241,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4537,7 +5264,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4696,7 +5423,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -4720,7 +5446,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&sketch_constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&sketch_constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -4743,6 +5469,7 @@ impl Node<BinaryExpression> {
                                 Arc {
                                     object_id: ObjectId,
                                     end: [crate::execution::SketchVarId; 2],
+                                    direction: ArcDirection,
                                 },
                                 Circle {
                                     object_id: ObjectId,
@@ -4808,6 +5535,7 @@ impl Node<BinaryExpression> {
                                         center_object_id,
                                         start_object_id,
                                         end,
+                                        direction,
                                         ..
                                     } if *center_object_id == center.object_id
                                         && *start_object_id == start.object_id =>
@@ -4821,6 +5549,7 @@ impl Node<BinaryExpression> {
                                         Some(CircularSegmentConstraintTarget::Arc {
                                             object_id: seg.object_id,
                                             end: [end_x_var, end_y_var],
+                                            direction: *direction,
                                         })
                                     }
                                     UnsolvedSegmentKind::Circle {
@@ -4852,16 +5581,15 @@ impl Node<BinaryExpression> {
                                 start.vars.y.to_constraint_id(range)?,
                             );
                             let solver_constraint = match target_segment {
-                                CircularSegmentConstraintTarget::Arc { end, .. } => {
-                                    let solver_arc = ezpz::datatypes::inputs::DatumCircularArc {
-                                        center: center_point,
-                                        start: start_point,
-                                        end: ezpz::datatypes::inputs::DatumPoint::new_xy(
-                                            end[0].to_constraint_id(range)?,
-                                            end[1].to_constraint_id(range)?,
-                                        ),
-                                    };
-                                    Constraint::ArcRadius(solver_arc, radius_value)
+                                CircularSegmentConstraintTarget::Arc { end, direction, .. } => {
+                                    let solver_arc = SolverArc::new(
+                                        [center.vars.x, center.vars.y],
+                                        [start.vars.x, start.vars.y],
+                                        end,
+                                        direction,
+                                        range,
+                                    )?;
+                                    solver_arc.radius_constraint(radius_value)
                                 }
                                 CircularSegmentConstraintTarget::Circle { .. } => {
                                     let sketch_var_ty = solver_numeric_type(exec_state);
@@ -4921,7 +5649,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::SourceRef;
                             let segment_object_id = match target_segment {
                                 CircularSegmentConstraintTarget::Arc { object_id, .. }
@@ -4960,7 +5687,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5034,7 +5761,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5075,7 +5801,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5147,7 +5873,6 @@ impl Node<BinaryExpression> {
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::execution::SketchBlockConstraintType;
                             use crate::front::Distance;
                             use crate::front::SourceRef;
                             use crate::frontend::sketch::ConstraintSegment;
@@ -5188,7 +5913,7 @@ impl Node<BinaryExpression> {
                                 id: artifact_id,
                                 sketch_id,
                                 constraint_id,
-                                constraint_type: SketchBlockConstraintType::from(&constraint),
+                                constraint_type: super::artifact::sketch_block_constraint_type(&constraint),
                                 code_ref: CodeRef::placeholder(range),
                             }));
                             exec_state.add_scene_object(
@@ -5232,6 +5957,38 @@ impl Node<BinaryExpression> {
                 !is_equal
             };
             return Ok(KclValue::Bool { value, meta });
+        }
+
+        // Enums compare by declaration and variant. This has to precede
+        // `number_as_f64` below, which would otherwise reject an enum with
+        // "expected a number" and describe the wrong problem.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq) {
+            match (&left_value, &right_value) {
+                (KclValue::Enum { value: left }, KclValue::Enum { value: right }) => {
+                    if left.enum_id() != right.enum_id() {
+                        return Err(different_enums_err(left, right, self.as_source_range()));
+                    }
+
+                    let is_equal = left.variant() == right.variant();
+                    let value = if self.operator == BinaryOperator::Eq {
+                        is_equal
+                    } else {
+                        !is_equal
+                    };
+                    return Ok(KclValue::Bool { value, meta });
+                }
+                (KclValue::Enum { value }, other) | (other, KclValue::Enum { value }) => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot compare enum `{}` with {}.",
+                            value.qualified_name(),
+                            other.human_friendly_type()
+                        ),
+                        vec![self.as_source_range()],
+                    )));
+                }
+                _ => {}
+            }
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;
@@ -5888,6 +6645,394 @@ mod test {
     use crate::exec::UnitType;
     use crate::execution::ContextType;
     use crate::execution::parse_execute;
+
+    fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
+        assert!(
+            (actual.to_degrees() - expected).abs() < 1e-9,
+            "expected {expected}deg, got {}deg",
+            actual.to_degrees()
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_to_existing_representative_endpoint_rays() {
+        let representative_directions = [AngleRayDirection::Forward, AngleRayDirection::Forward];
+
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Two, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Three, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::Four, false),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(120.0),
+            ),
+            60.0,
+        );
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, true),
+                representative_directions,
+                ezpz::datatypes::Angle::from_degrees(300.0),
+            ),
+            60.0,
+        );
+    }
+
+    #[test]
+    fn remaps_sector_angles_when_representative_endpoint_is_on_reverse_ray() {
+        assert_angle_degrees(
+            remap_angle_for_representative_rays(
+                angle_sector_rays(AngleSector::One, false),
+                [AngleRayDirection::Forward, AngleRayDirection::Reverse],
+                ezpz::datatypes::Angle::from_degrees(60.0),
+            ),
+            240.0,
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
+        let code = r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  lines = [line1, line2]
+  angle(lines) == 60deg
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 1);
+        assert!(!metadata[0].inverse);
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let findings = program.lint(crate::lint::checks::lint_legacy_angle).unwrap();
+        assert_eq!(metadata[0].source_range, findings[0].pos);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_matches_the_default_label_side() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var -2mm, var -3.464mm])
+  angle([line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 4);
+        assert!(metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_uses_reverse_segment_rays() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var -4mm, var 0mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var -2mm, var -3.464mm], end = [var 0mm, var 0mm])
+  angle([line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 3);
+        assert!(!metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_label_position_does_not_change_the_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2], labelPosition = [-3mm, -1.7mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 1);
+        assert!(!metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parallel_legacy_angle_has_no_refactor_metadata() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angle([line1, line2]) == 0deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        assert!(
+            result
+                .exec_state
+                .global
+                .root_module_artifacts
+                .legacy_angle_refactor_metadata()
+                .is_empty()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_with_sector_uses_named_lines() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_requires_sector() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("The `angleDimension` function requires a keyword argument `sector`"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_label_position() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_all_four_sectors() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1) == 60deg
+  angleDimension(lines = [line1, line2], sector = 2) == 120deg
+  angleDimension(lines = [line1, line2], sector = 3) == 60deg
+  angleDimension(lines = [line1, line2], sector = 4) == 120deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_accepts_inverse_angle_for_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 360deg - 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(angle.sector, Some(1));
+        assert_eq!(angle.inverse, Some(true));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_rejects_invalid_sector() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angleDimension(lines = [line1, line2], sector = 5) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angleDimension() sector must be 1, 2, 3, or 4"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_dimension_rejects_parallel_lines() {
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angleDimension(lines = [line1, line2], sector = 2) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.to_string()
+                .contains("angleDimension(lines = ..., sector = ...) requires non-parallel lines"),
+            "unexpected error: {err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_accepts_label_position() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+        let angle = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .scene_objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Constraint {
+                    constraint: crate::front::Constraint::Angle(angle),
+                } => Some(angle),
+                _ => None,
+            })
+            .unwrap();
+        let label_position = angle.label_position.as_ref().unwrap();
+        assert_eq!(label_position.x.value, 10.0);
+        assert_eq!(label_position.y.value, 11.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn angle_requires_unlabeled_lines() {
+        parse_execute(
+            r#"
+sketch(on = XY) {
+  angle() == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription() {

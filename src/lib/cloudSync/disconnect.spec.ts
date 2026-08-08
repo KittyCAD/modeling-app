@@ -6,8 +6,9 @@ import {
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  notifyCloudSyncWriteLikeMutation,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
 } from '@src/lib/cloudSync'
 import {
   appendOutboxEntry,
@@ -21,7 +22,11 @@ import {
   getFetchUrl,
   jsonResponse,
 } from '@src/lib/cloudSync/testUtils'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const projectDirectory = '/documents/Projects'
@@ -79,7 +84,7 @@ describe('disconnectCloudSyncProject', () => {
       enabled: true,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
   })
 
@@ -87,6 +92,22 @@ describe('disconnectCloudSyncProject', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('ignores mutations inside temporary duplicate roots', async () => {
+    const temporaryProjectPath = `${projectDirectory}/${DUPLICATE_PROJECT_TEMPORARY_PREFIX}temporary`
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(new Map(), { projectDirectory })
+    )
+
+    await notifyCloudSyncWriteLikeMutation(
+      `${temporaryProjectPath}/project.toml`
+    )
+
+    expect(
+      await getCloudSyncProjectMetadata(temporaryProjectPath)
+    ).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {
@@ -205,7 +226,7 @@ describe('cloud sync upload failures', () => {
   })
 
   afterEach(async () => {
-    setCloudSyncProjectScope(undefined)
+    setCloudSyncOpenedProject(undefined)
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
@@ -264,9 +285,13 @@ describe('cloud sync upload failures', () => {
       enabled: false,
       baseUrl: 'https://example.test',
       environmentName: 'dev.zoo.dev',
-      projectDirectoryPath: '/documents/Projects',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
     })
-    setCloudSyncProjectScope(projectPath)
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
     configureCloudSyncEngine({ enabled: true })
     retryCloudSync()
     await vi.waitFor(() => {
@@ -289,6 +314,20 @@ describe('cloud sync upload failures', () => {
       kind: 'remote-upload-forbidden',
       message: expect.stringContaining('does not have edit access'),
     })
+    expect(cloudSyncStatus.value).toMatchObject({
+      state: 'failed',
+      activeProjectPath: projectPath,
+      lastFailureKind: 'remote-upload-forbidden',
+      lastFailure: expect.stringContaining('does not have edit access'),
+    })
+
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl: 'https://example.test',
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
+    })
+
     expect(cloudSyncStatus.value).toMatchObject({
       state: 'failed',
       activeProjectPath: projectPath,

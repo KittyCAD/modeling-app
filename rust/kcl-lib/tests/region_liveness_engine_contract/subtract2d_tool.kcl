@@ -1,0 +1,19 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+firstOuterSketch = sketch(on = XY) {
+  outer = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  seedHole = circle(start = [var -4mm, var 0mm], center = [var -5mm, var 0mm])
+}
+secondOuterSketch = sketch(on = XY) {
+  outer = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  seedHole = circle(start = [var -4mm, var 0mm], center = [var -5mm, var 0mm])
+}
+holeSketch = sketch(on = XY) {
+  c = circle(start = [var 6mm, var 0mm], center = [var 5mm, var 0mm])
+}
+firstOuter = region(segments = [firstOuterSketch.outer])
+secondOuter = region(segments = [secondOuterSketch.outer])
+sharedHole = region(segments = [holeSketch.c])
+
+first = subtract2d(firstOuter, tool = sharedHole)
+second = subtract2d(secondOuter, tool = sharedHole)

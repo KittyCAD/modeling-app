@@ -37,6 +37,7 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
@@ -210,7 +211,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityLinearPatternTransform::builder()
-                    .entity_id(if use_original { solid.original_id() } else { solid.id() })
+                    .entity_id(if use_original { solid.topology_id() } else { solid.id() })
                     .transform(Default::default())
                     .transforms(transforms)
                     .build(),
@@ -415,7 +416,7 @@ fn array_to_point3d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 3], KclError> {
-    val.coerce(&RuntimeType::point3d(), true, exec_state)
+    val.coerce(&RuntimeType::point3d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -435,7 +436,7 @@ fn array_to_point2d(
     source_ranges: Vec<SourceRange>,
     exec_state: &mut ExecState,
 ) -> Result<[TyF64; 2], KclError> {
-    val.coerce(&RuntimeType::point2d(), true, exec_state)
+    val.coerce(&RuntimeType::point2d(), CoercionMode::implicit(), exec_state)
         .map_err(|e| {
             KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -453,7 +454,7 @@ fn array_to_point2d(
 pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     fn id(&self) -> Uuid;
-    fn original_id(&self) -> Uuid;
+    fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
@@ -476,7 +477,7 @@ impl GeometryTrait for Sketch {
     fn id(&self) -> Uuid {
         self.id
     }
-    fn original_id(&self) -> Uuid {
+    fn topology_id(&self) -> Uuid {
         self.original_id
     }
     fn array_to_point3d(
@@ -506,15 +507,15 @@ impl GeometryTrait for Solid {
     }
 
     fn set_artifact_id(&mut self, id: Uuid) {
-        self.artifact_id = ArtifactId::new(id);
+        self.become_pattern_copy(id);
     }
 
     fn id(&self) -> Uuid {
         self.id
     }
 
-    fn original_id(&self) -> Uuid {
-        Solid::original_id(self)
+    fn topology_id(&self) -> Uuid {
+        Solid::topology_id(self)
     }
 
     fn array_to_point3d(
@@ -1028,7 +1029,7 @@ async fn pattern_circular(
                 mcmd::EntityCircularPattern::builder()
                     .axis(kcmc::shared::Point3d::from(data.axis()))
                     .entity_id(if data.use_original() {
-                        geometry.original_id()
+                        geometry.pattern_source_id()
                     } else {
                         geometry.id()
                     })
@@ -1082,7 +1083,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
-                new_solid.artifact_id = ArtifactId::new(id);
+                new_solid.become_pattern_copy(id);
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

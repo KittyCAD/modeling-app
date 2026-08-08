@@ -3,6 +3,10 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import {
+  getSelectedPlaneId,
+  getSelectedSketchTarget as getSelectedSketchTargetId,
+} from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -1171,7 +1175,7 @@ export function buildToolbarConfig(
               icon: 'move',
               status: 'available',
               title: 'Translate',
-              description: 'Apply a translation to a solid or sketch.',
+              description: 'Apply a translation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -1191,7 +1195,7 @@ export function buildToolbarConfig(
               icon: 'rotate',
               status: 'available',
               title: 'Rotate',
-              description: 'Apply a rotation to a solid or sketch.',
+              description: 'Apply a rotation to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -1211,7 +1215,7 @@ export function buildToolbarConfig(
               icon: 'scale',
               status: 'available',
               title: 'Scale',
-              description: 'Apply scaling to a solid or sketch.',
+              description: 'Apply scaling to a solid, sketch, or helix.',
               links: [
                 {
                   label: 'API docs',
@@ -2498,11 +2502,15 @@ export function buildToolbarConfig(
         {
           id: 'Dimension',
           command: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'Dimension',
-              keepSelection,
-            }),
+          onClick: ({ modelingSend, isActive, keepSelection }) =>
+            isActive
+              ? modelingSend({
+                  type: 'unequip tool',
+                })
+              : modelingSend({
+                  type: 'Dimension',
+                  keepSelection,
+                }),
           icon: 'dimension',
           status: 'available',
           title: 'Dimension',
@@ -2510,7 +2518,9 @@ export function buildToolbarConfig(
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
+          isActive: (state) =>
+            state.matches('sketchSolveMode') &&
+            state.context.sketchSolveToolName === 'dimensionTool',
         },
         {
           id: 'HorizontalDistance',
@@ -2581,31 +2591,16 @@ function getSelectedSketchTarget(selectionRanges: Selections): {
     }
   }
 
-  const planeSelection = getSelectedSketchTargetPlane(selectionRanges)
-  const artifact = planeSelection?.artifact
-  if (!artifact?.id) {
-    return null
-  }
+  const id = getSelectedSketchTargetId(selectionRanges)
+  if (!id) return null
 
   return {
-    id: artifact.id,
+    id,
     title:
-      artifact.type === 'plane'
+      getSelectedPlaneId(selectionRanges) === id
         ? 'Start Sketch on plane'
         : 'Start Sketch on face',
   }
-}
-
-function getSelectedSketchTargetPlane(selectionRanges: Selections) {
-  return selectionRanges.graphSelections.find((selection) => {
-    const artifact = selection.artifact
-    return (
-      artifact?.type === 'plane' ||
-      artifact?.type === 'wall' ||
-      artifact?.type === 'cap' ||
-      (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
-    )
-  })
 }
 
 function getSelectedSketchIconColor(
@@ -2623,7 +2618,7 @@ function getSelectedSketchIconColor(
     }
   }
 
-  return getSelectedSketchTargetPlane(selectionRanges)
+  return getSelectedSketchTargetId(selectionRanges)
     ? `rgb(${SKETCH_SELECTION_RGB_STR})`
     : undefined
 }

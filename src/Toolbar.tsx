@@ -41,6 +41,7 @@ import {
   toolbarModeNameToKeymapScope,
   useToolbarConfig,
 } from '@src/lib/toolbar'
+import { toolbarToastsSignal } from '@src/lib/toolbarToast'
 import { reportRejection } from '@src/lib/trap'
 import { type Platform, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -776,6 +777,7 @@ const Toolbar_ = memo(
           })}
         </ul>
         <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
+          <ToolbarToasts />
           {props.disableModelingForUnrenderedChanges && (
             <div className="mt-2 py-1 px-2 bg-2 text-2 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg flex items-center gap-2">
               <p className="text-xs m-0">
@@ -829,6 +831,30 @@ const Toolbar_ = memo(
       newP.disableModelingForUnrenderedChanges &&
     oldP.context?.currentTool === newP.context?.currentTool
 )
+
+const ToolbarToasts = memo(function ToolbarToasts() {
+  useSignals()
+  const toasts = toolbarToastsSignal.value
+
+  if (toasts.length === 0) {
+    return null
+  }
+
+  return (
+    <>
+      {toasts.map((toast) => (
+        <div
+          key={toast.id}
+          role="status"
+          aria-live="polite"
+          className="mt-2 w-max max-w-[calc(100vw-2rem)] whitespace-nowrap rounded-sm border border-chalkboard-20/50 bg-chalkboard-10 px-4 py-2 text-sm leading-5 text-chalkboard-110 shadow-lg dark:border-chalkboard-80/50 dark:bg-chalkboard-90 dark:text-chalkboard-10"
+        >
+          {toast.message}
+        </div>
+      ))}
+    </>
+  )
+})
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
   itemConfig: ToolbarItemResolved

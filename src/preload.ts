@@ -10,6 +10,11 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import {
+  ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL,
+  ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+  type ElectronLifecycleReport,
+} from '@src/lib/electronLifecycle'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
@@ -89,6 +94,22 @@ const getMachineApiRunning = (): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.get-state')
 const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.set-state', signal)
+const drainElectronLifecycleReports = (): Promise<ElectronLifecycleReport[]> =>
+  ipcRenderer.invoke(ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL)
+const onElectronLifecycleReportAvailable = (callback: () => void) => {
+  const subscription = () => callback()
+  typeSafeIpcRendererOn(
+    ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+    subscription
+  )
+
+  return () => {
+    ipcRenderer.removeListener(
+      ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+      subscription
+    )
+  }
+}
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -108,13 +129,17 @@ let fsWatchListeners = new Map<
 const watchFileOn = (
   path: string,
   key: string,
-  callback: (eventType: string, path: string) => void
+  callback: (eventType: string, path: string) => void,
+  options: { depth?: number } = {}
 ) => {
   let watchers = fsWatchListeners.get(path)
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
+  const watcher = chokidar.watch(path, {
+    depth: options.depth ?? 1,
+    ignoreInitial: true,
+  })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
@@ -131,6 +156,9 @@ const watchFileOff = (path: string, key: string) => {
   }
   const { watcher, callback } = data
   watcher.off('all', callback)
+  void watcher.close().catch((error) => {
+    console.warn('Failed to close file watcher.', error)
+  })
   watchers.delete(key)
   if (watchers.size === 0) {
     fsWatchListeners.delete(path)
@@ -312,6 +340,8 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 }
 
 contextBridge.exposeInMainWorld('electron', {
+  drainElectronLifecycleReports,
+  onElectronLifecycleReportAvailable,
   startDeviceFlow,
   loginWithDeviceFlow,
   cancelDeviceFlow,

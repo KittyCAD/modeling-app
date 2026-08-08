@@ -40,8 +40,8 @@ outerProfile = sketch(on = XY) {
 
   vertical(c2ToC1)
   vertical(c1ToC6)
-  angle([baseline, c2ToC3]) == 150deg
-  angle([baseline, c4ToC5]) == 30deg
+  angleDimension(lines = [baseline, c2ToC3], sector = 3, labelPosition = [-1.23in, -0.83in]) == 150deg
+  angleDimension(lines = [baseline, c4ToC5], sector = 1, labelPosition = [-0.22in, 0.19in]) == 30deg
   parallel([c2ToC3, c3ToC4])
   parallel([c4ToC5, c5ToC6])
 

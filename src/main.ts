@@ -42,6 +42,18 @@ import {
 import { registerFileProtocolCsp } from '@src/lib/csp'
 import { DeviceFlowSessionStore } from '@src/lib/deviceFlowSessions'
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
+import {
+  ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL,
+  ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL,
+  type ElectronLifecycleDiagnostics,
+  type ElectronLifecycleReport,
+  ElectronLifecycleReportQueue,
+  MAX_ELECTRON_LIFECYCLE_REPORT_STORE_BYTES,
+  compactAppProcessMetrics,
+  compactSystemMemoryInfo,
+  parseElectronLifecycleReportStore,
+  serializeElectronLifecycleReportStore,
+} from '@src/lib/electronLifecycle'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -117,6 +129,7 @@ let mainWindow: BrowserWindow | null = null
 let isInstallingUpdate = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
+let electronLifecycleReportSequence = 0
 
 type MachineApiSignal = 'on' | 'off'
 
@@ -164,6 +177,49 @@ const appProfilePath = path.join(
 fs.mkdirSync(appProfilePath, { recursive: true })
 app.setPath('userData', appProfilePath)
 app.setPath('sessionData', appProfilePath)
+
+const electronLifecycleReportStorePath = path.join(
+  app.getPath('userData'),
+  'electron_lifecycle_reports.json'
+)
+const loadElectronLifecycleReports = () => {
+  try {
+    if (
+      fs.statSync(electronLifecycleReportStorePath).size >
+      MAX_ELECTRON_LIFECYCLE_REPORT_STORE_BYTES
+    ) {
+      console.warn('Ignoring oversized Electron lifecycle report store')
+      return []
+    }
+    return parseElectronLifecycleReportStore(
+      fs.readFileSync(electronLifecycleReportStorePath, 'utf8')
+    )
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn('Failed to read Electron lifecycle report store', error)
+    }
+    return []
+  }
+}
+const electronLifecycleReports = new ElectronLifecycleReportQueue()
+for (const report of loadElectronLifecycleReports()) {
+  electronLifecycleReports.enqueue(report)
+}
+const persistElectronLifecycleReports = () => {
+  const temporaryPath = `${electronLifecycleReportStorePath}.tmp`
+  try {
+    fs.writeFileSync(
+      temporaryPath,
+      serializeElectronLifecycleReportStore(
+        electronLifecycleReports.snapshot()
+      ),
+      { encoding: 'utf8', mode: 0o600 }
+    )
+    fs.renameSync(temporaryPath, electronLifecycleReportStorePath)
+  } catch (error) {
+    console.warn('Failed to persist Electron lifecycle reports', error)
+  }
+}
 
 /// Register our application to handle all "zoo-studio:" protocols.
 const singleInstanceLock = app.requestSingleInstanceLock()
@@ -297,6 +353,18 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   newWindow.on('focus', () => {
     windowMenuManager.rebuildWindowMenu(newWindow)
   })
+  let rendererUnresponsiveReported = false
+  newWindow.on('unresponsive', () => {
+    if (rendererUnresponsiveReported) return
+    rendererUnresponsiveReported = true
+    queueElectronLifecycleReport({
+      ...createElectronLifecycleReportBase(newWindow),
+      eventType: 'renderer-unresponsive',
+    })
+  })
+  newWindow.on('responsive', () => {
+    rendererUnresponsiveReported = false
+  })
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
@@ -381,6 +449,119 @@ function sendToAllWindows(channel: string, ...args: unknown[]) {
     browserWindow.webContents.send(channel, ...args)
   }
 }
+
+const safelyReadDiagnostic = <T>(read: () => T): T | undefined => {
+  try {
+    return read()
+  } catch {
+    return undefined
+  }
+}
+
+const getRendererProcessId = (browserWindow: BrowserWindow) => {
+  const processId = safelyReadDiagnostic(() =>
+    browserWindow.webContents.getOSProcessId()
+  )
+  return processId && processId > 0 ? processId : undefined
+}
+
+const captureElectronLifecycleDiagnostics = (
+  targetWindow?: BrowserWindow | null
+): ElectronLifecycleDiagnostics => {
+  const windows = BrowserWindow.getAllWindows().filter(
+    (browserWindow) => !browserWindow.isDestroyed()
+  )
+  const systemMemory = safelyReadDiagnostic(() =>
+    compactSystemMemoryInfo(process.getSystemMemoryInfo())
+  )
+  const appProcesses = safelyReadDiagnostic(() =>
+    compactAppProcessMetrics(app.getAppMetrics())
+  )
+
+  return {
+    appProcesses,
+    runtime: {
+      appVersion: app.getVersion(),
+      arch: process.arch,
+      chromeVersion: process.versions.chrome ?? 'unknown',
+      electronVersion: process.versions.electron ?? 'unknown',
+      osRelease: os.release(),
+      platform: process.platform,
+    },
+    systemMemory,
+    targetWindowId:
+      targetWindow && !targetWindow.isDestroyed() ? targetWindow.id : undefined,
+    windowCount: windows.length,
+    windows: windows.map((browserWindow) => ({
+      id: browserWindow.id,
+      isFocused: browserWindow.isFocused(),
+      isMinimized: browserWindow.isMinimized(),
+      isVisible: browserWindow.isVisible(),
+      rendererProcessId: getRendererProcessId(browserWindow),
+    })),
+  }
+}
+
+const createElectronLifecycleReportBase = (
+  targetWindow?: BrowserWindow | null
+) => ({
+  diagnostics: captureElectronLifecycleDiagnostics(targetWindow),
+  id: `${Date.now()}-${++electronLifecycleReportSequence}`,
+  occurredAt: new Date().toISOString(),
+})
+
+function notifyElectronLifecycleReportAvailable() {
+  for (const browserWindow of BrowserWindow.getAllWindows()) {
+    if (browserWindow.isDestroyed()) continue
+    const { webContents } = browserWindow
+    if (webContents.isDestroyed() || webContents.isCrashed()) continue
+
+    try {
+      webContents.send(ELECTRON_LIFECYCLE_REPORT_AVAILABLE_CHANNEL)
+    } catch {
+      // Another healthy or subsequently-created renderer can drain the queue.
+    }
+  }
+}
+
+function queueElectronLifecycleReport(report: ElectronLifecycleReport) {
+  electronLifecycleReports.enqueue(report)
+  persistElectronLifecycleReports()
+  notifyElectronLifecycleReportAvailable()
+}
+
+app.on('render-process-gone', (_event, webContents, details) => {
+  if (details.reason === 'clean-exit') return
+
+  queueElectronLifecycleReport({
+    ...createElectronLifecycleReportBase(
+      BrowserWindow.fromWebContents(webContents)
+    ),
+    eventType: 'render-process-gone',
+    exitCode: details.exitCode,
+    reason: details.reason,
+  })
+})
+
+app.on('child-process-gone', (_event, details) => {
+  if (details.reason === 'clean-exit') return
+
+  queueElectronLifecycleReport({
+    ...createElectronLifecycleReportBase(),
+    eventType: 'child-process-gone',
+    exitCode: details.exitCode,
+    name: details.name,
+    processType: details.type,
+    reason: details.reason,
+    serviceName: details.serviceName,
+  })
+})
+
+ipcMain.handle(ELECTRON_LIFECYCLE_DRAIN_REPORTS_CHANNEL, () => {
+  const reports = electronLifecycleReports.drain()
+  persistElectronLifecycleReports()
+  return reports
+})
 
 interface LocalDeviceState {
   windowBounds: Electron.Rectangle

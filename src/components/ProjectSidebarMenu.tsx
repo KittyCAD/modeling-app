@@ -16,6 +16,7 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -285,18 +286,42 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
+        project
+          ? {
+              id: 'duplicate-project',
+              Element: 'button' as const,
+              children: (
+                <span
+                  className="flex-1"
+                  data-testid="project-sidebar-duplicate-project"
+                >
+                  Duplicate project
+                </span>
+              ),
+              onClick: () => {
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.duplicateProject,
+                  data: {
+                    projectName: project.name,
+                    projectPath: project.path,
+                    requestedProjectName: getProjectDisplayName(project),
+                  },
+                })
+              },
+            }
+          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
           }
 
           const context = { projectPath, project }
-          if (item.Component) {
-            return [{ kind: 'contributed' as const, item, context }]
-          }
-
           if (item.isVisible && !item.isVisible(context)) {
             return []
+          }
+
+          if (item.Component) {
+            return [{ kind: 'contributed' as const, item, context }]
           }
 
           const disabled =
@@ -433,18 +458,34 @@ function ProjectMenuPopover({
           },
         },
       ]
-      return items.filter((props): props is Exclude<ProjectMenuItem, null> => {
-        if (!props) {
-          return false
+      const visibleItems = items.filter(
+        (props): props is Exclude<ProjectMenuItem, null> => {
+          if (!props) {
+            return false
+          }
+          if (isProjectMenuBreak(props)) {
+            return true
+          }
+          if (isContributedProjectMenuItem(props)) {
+            return true
+          }
+          return !props.className?.includes('hidden')
         }
-        if (isProjectMenuBreak(props)) {
-          return true
-        }
-        if (isContributedProjectMenuItem(props)) {
-          return true
-        }
-        return !props.className?.includes('hidden')
-      })
+      )
+      const footerItems = visibleItems.filter(
+        (props) =>
+          isContributedProjectMenuItem(props) &&
+          props.item.placement === 'footer'
+      )
+
+      return visibleItems
+        .filter((props) => !footerItems.includes(props))
+        .flatMap((props) => {
+          if (isProjectMenuBreak(props) && props.id === 'before-go-home') {
+            return [props, ...footerItems]
+          }
+          return [props]
+        })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
@@ -460,6 +501,7 @@ function ProjectMenuPopover({
       project,
       contributedProjectMenuItems,
       commands.actor,
+      app.systemIOActor,
       file,
       filePath,
       machineCount,

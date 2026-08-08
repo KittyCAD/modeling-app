@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
@@ -11,7 +11,15 @@ import { updateEnvironment } from '@src/env'
 import env from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
-import { APP_NAME } from '@src/lib/constants'
+import {
+  ClientErrorCode,
+  errorToMessage,
+  reportClientError,
+} from '@src/lib/clientErrors'
+import {
+  APP_NAME,
+  SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY,
+} from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -23,6 +31,10 @@ import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
+type SignInRouteState = {
+  [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]?: boolean
+}
+
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
@@ -31,9 +43,11 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
+  const routerLocation = useLocation()
   const [userCode, setUserCode] = useState('')
   const [verificationUri, setVerificationUri] = useState('')
   const signInAttemptRef = useRef(0)
+  const autoSignInAttemptedRef = useRef(false)
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -47,6 +61,42 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
+  const reportSignInClientError = ({
+    code,
+    error,
+    message,
+    dedupeKeyPrefix,
+    extra,
+    suppressWhenOffline,
+  }: {
+    code: ClientErrorCode
+    error?: unknown
+    message?: string
+    dedupeKeyPrefix: string
+    extra?: Record<string, unknown>
+    suppressWhenOffline?: boolean
+  }) => {
+    const online =
+      typeof navigator === 'undefined' ? undefined : navigator.onLine
+    if (suppressWhenOffline && online === false) return
+
+    const reportMessage = message ?? errorToMessage(error, 'Unknown auth error')
+
+    void reportClientError({
+      code,
+      message: reportMessage,
+      error,
+      dedupeKey: `${dedupeKeyPrefix}:${selectedEnvironment}:${reportMessage}`,
+      extra: {
+        source: 'SignIn',
+        selectedEnvironment,
+        isDesktop: isDesktop(),
+        ...extra,
+        online,
+      },
+    })
   }
 
   const commitEnvironmentChange = (requestedEnvironment: string) => {
@@ -145,6 +195,15 @@ const SignIn = () => {
       .catch((error) => {
         if (signInAttemptRef.current === signInAttempt) {
           reportError(error)
+          reportSignInClientError({
+            code: ClientErrorCode.AuthDeviceFlowStartError,
+            error,
+            dedupeKeyPrefix: 'SignIn:device-flow-start',
+            suppressWhenOffline: true,
+            extra: {
+              requestedEnvironment,
+            },
+          })
         }
       })
     if (signInAttemptRef.current !== signInAttempt) return
@@ -152,6 +211,15 @@ const SignIn = () => {
       console.error(
         'No device flow authorization received while trying to log in'
       )
+      reportSignInClientError({
+        code: ClientErrorCode.AuthDeviceFlowStartError,
+        message: 'No device flow authorization received while trying to log in',
+        dedupeKeyPrefix: 'SignIn:device-flow-start-empty',
+        suppressWhenOffline: true,
+        extra: {
+          requestedEnvironment,
+        },
+      })
       toast.error('Error while trying to log in.')
       return
     }
@@ -162,17 +230,57 @@ const SignIn = () => {
     const token = await electron.loginWithDeviceFlow().catch((error) => {
       if (signInAttemptRef.current === signInAttempt) {
         reportError(error)
+        reportSignInClientError({
+          code: ClientErrorCode.AuthDeviceFlowLoginError,
+          error,
+          dedupeKeyPrefix: 'SignIn:device-flow-login',
+          suppressWhenOffline: true,
+          extra: {
+            requestedEnvironment,
+            hasUserCode: Boolean(deviceFlowAuthorization.userCode),
+            hasVerificationUri: Boolean(
+              deviceFlowAuthorization.verificationUri
+            ),
+          },
+        })
       }
     })
     if (signInAttemptRef.current !== signInAttempt) return
     if (!token) {
       console.error('No token received while trying to log in')
+      reportSignInClientError({
+        code: ClientErrorCode.AuthDeviceFlowLoginError,
+        message: 'No token received while trying to log in',
+        dedupeKeyPrefix: 'SignIn:device-flow-login-empty',
+        suppressWhenOffline: true,
+        extra: {
+          requestedEnvironment,
+          hasUserCode: Boolean(deviceFlowAuthorization.userCode),
+          hasVerificationUri: Boolean(deviceFlowAuthorization.verificationUri),
+        },
+      })
       toast.error('Error while trying to log in.')
       return
     }
 
     auth.send({ type: 'Log in', token })
   }
+
+  useEffect(() => {
+    const electron = window.electron
+    const routeState = routerLocation.state as SignInRouteState | null
+    if (
+      autoSignInAttemptedRef.current ||
+      !electron ||
+      !routeState?.[SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]
+    ) {
+      return
+    }
+
+    autoSignInAttemptedRef.current = true
+    void signInDesktop(electron)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- The router state is a one-shot intent to start desktop sign-in with the current environment.
+  }, [routerLocation.state])
 
   const cancelSignIn = async () => {
     signInAttemptRef.current += 1

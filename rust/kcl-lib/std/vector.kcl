@@ -6,7 +6,7 @@ import * from "std::array"
 import pow, sqrt from "std::math"
 
 /// Adds every element of u to its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise addition.
 /// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [1, 2, 3]
@@ -20,7 +20,7 @@ import pow, sqrt from "std::math"
 export fn add(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] + v[i])
@@ -28,7 +28,7 @@ export fn add(@u: [number], v: [number]): [number] {
 }
 
 /// Subtracts from every element of u its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise subtraction.
 /// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
@@ -51,7 +51,7 @@ export fn sub(@u: [number], v: [number]): [number] {
 
 
 /// Multiplies every element of u by its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise multiplication.
 /// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
@@ -65,7 +65,7 @@ export fn sub(@u: [number], v: [number]): [number] {
 export fn mul(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] * v[i])
@@ -74,7 +74,7 @@ export fn mul(@u: [number], v: [number]): [number] {
 
 
 /// Divides every element of u by its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise division.
 /// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
@@ -88,7 +88,7 @@ export fn mul(@u: [number], v: [number]): [number] {
 export fn div(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] / v[i])
@@ -124,7 +124,7 @@ export fn cross(@u: Point3d, v: Point3d) {
 export fn dot(@u: [number], v: [number]): number {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   return reduce(
     [0..<l0],
     initial = 0,

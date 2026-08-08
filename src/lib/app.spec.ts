@@ -28,7 +28,6 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -235,7 +234,8 @@ function hasPersonalCloudLibrarySetting(app: App) {
     .app.libraries.current.some(
       (library) =>
         library.type === defaultCloudLibrary.type &&
-        library.path === defaultCloudLibrary.path
+        library.path === defaultCloudLibrary.path &&
+        library.source === defaultCloudLibrary.source
     )
 }
 
@@ -271,6 +271,41 @@ describe('project system', () => {
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
       expect(app.rustContext).toBe(registryRustContext.context)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('annotates opened projects with their owning library path', async () => {
+    const app = createAppForTest()
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const library = app.settings
+        .get()
+        .app.libraries.current.find(
+          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+        )
+      expect(library).toBeDefined()
+      if (!library) {
+        return
+      }
+
+      const projectPath = fsZds.join(library.path, 'bracket')
+      const openedProject = await app.openProject({
+        ...mockProject,
+        name: 'bracket',
+        path: projectPath,
+        default_file: fsZds.join(projectPath, 'main.kcl'),
+      })
+
+      expect(openedProject.projectIORefSignal.value).toEqual(
+        expect.objectContaining({
+          libraryPath: library.path,
+          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        })
+      )
     } finally {
       app.dispose()
     }
@@ -433,11 +468,15 @@ describe('project system', () => {
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
       expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
       expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(
-        app.registry
-          .get(projectLibrariesValueSpec)
-          .some((library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
-      ).toBe(false)
+      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            library: expect.objectContaining({
+              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+            }),
+          }),
+        ])
+      )
     } finally {
       app.dispose()
     }
@@ -460,11 +499,6 @@ describe('project system', () => {
           hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
           hasDefaultDirectoryLibrarySetting:
             hasDefaultDirectoryLibrarySetting(app),
-          hasPersonalCloudLibrary: app.registry
-            .get(projectLibrariesValueSpec)
-            .some(
-              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-            ),
         }))
         .toEqual({
           active: true,
@@ -472,7 +506,6 @@ describe('project system', () => {
           user: true,
           hasPersonalCloudLibrarySetting: true,
           hasDefaultDirectoryLibrarySetting: false,
-          hasPersonalCloudLibrary: true,
         })
 
       // On web, cloud sync is the project storage layer, not an optional
@@ -491,11 +524,7 @@ describe('project system', () => {
         .poll(() => ({
           current: getCloudSyncPluginSetting(app)?.current,
           active: getPluginToggle(app, 'cloud-sync').active.value,
-          hasPersonalCloudLibrary: app.registry
-            .get(projectLibrariesValueSpec)
-            .some(
-              (library) => library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-            ),
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
           canCreateInPersonalCloud: app
             .getCreateProjectLibraryTargets()
             .some(
@@ -506,7 +535,7 @@ describe('project system', () => {
         .toEqual({
           current: true,
           active: true,
-          hasPersonalCloudLibrary: true,
+          hasPersonalCloudLibrarySetting: true,
           canCreateInPersonalCloud: true,
         })
     } finally {
@@ -516,8 +545,20 @@ describe('project system', () => {
 
   it('respects an explicit cloud sync opt-out on desktop', async () => {
     const previousElectron = window.electron
+    const userAgentSpy = vi
+      .spyOn(navigator, 'userAgent', 'get')
+      .mockReturnValue('Electron')
     window.electron = {
-      os: { isMac: false },
+      os: {
+        isLinux: true,
+        isMac: false,
+        isWindows: false,
+        name: 'Linux',
+      },
+      packageJson: {
+        name: 'zoo-modeling-app',
+      },
+      getAppTestProperty: vi.fn().mockResolvedValue(undefined),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),
@@ -531,8 +572,17 @@ describe('project system', () => {
     try {
       // Cloud sync auto-enables for the flag on desktop too.
       await expect
-        .poll(() => getPluginToggle(app, 'cloud-sync').active.value)
-        .toBe(true)
+        .poll(() => ({
+          active: getPluginToggle(app, 'cloud-sync').active.value,
+          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
+          hasDefaultDirectoryLibrarySetting:
+            hasDefaultDirectoryLibrarySetting(app),
+        }))
+        .toEqual({
+          active: true,
+          hasPersonalCloudLibrarySetting: true,
+          hasDefaultDirectoryLibrarySetting: true,
+        })
 
       // Unlike web (where the disable attempt is overridden), desktop keeps
       // cloud sync optional and honors the opt-out.
@@ -552,6 +602,7 @@ describe('project system', () => {
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
     } finally {
       app.dispose()
+      userAgentSpy.mockRestore()
       window.electron = previousElectron
     }
   })

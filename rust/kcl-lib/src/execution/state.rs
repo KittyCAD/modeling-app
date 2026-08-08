@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -84,6 +85,10 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub issues: Vec<CompilationIssue>,
+    /// If set, use this version only when deciding whether to emit
+    /// `deprecated_since` warnings. Runtime behavior still uses the version
+    /// declared by the KCL program.
+    pub deprecation_version_override: Option<String>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -200,6 +205,17 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
 /// Unified metadata stream for Z0006 and future execution-backed refactors.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -207,6 +223,14 @@ pub struct DirectTagFilletMeta {
 pub enum RefactorMetadata {
     EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
 }
 
 /// Artifact state for a single module.
@@ -304,6 +328,45 @@ pub(super) struct ModuleState {
     /// the exact key lookup misses, this map lets us reject that solid by
     /// `engine_id`, unless the key is a recorded operation output.
     pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+    /// Region engine UUIDs consumed by successful modeling operations. Regions
+    /// use the KCL `Sketch` representation, so this state keeps stale Region
+    /// values from reaching an engine object that has become something else.
+    pub(super) consumed_regions: AHashMap<Uuid, ConsumedRegionInfo>,
+}
+
+/// Information about the operation that consumed a Region.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct ConsumedRegionInfo {
+    operation: ConsumedRegionOperation,
+}
+
+impl ConsumedRegionInfo {
+    pub(crate) fn new(operation: ConsumedRegionOperation) -> Self {
+        Self { operation }
+    }
+
+    pub(crate) fn operation(self) -> ConsumedRegionOperation {
+        self.operation
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ConsumedRegionOperation {
+    Extrude,
+    Revolve,
+    Sweep,
+    Delete,
+}
+
+impl std::fmt::Display for ConsumedRegionOperation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Extrude => f.write_str("extrude"),
+            Self::Revolve => f.write_str("revolve"),
+            Self::Sweep => f.write_str("sweep"),
+            Self::Delete => f.write_str("delete"),
+        }
+    }
 }
 
 /// Internal identity for one runtime KCL solid value.
@@ -407,6 +470,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -540,6 +604,18 @@ impl ExecState {
 
     pub fn issues(&self) -> &[CompilationIssue] {
         &self.global.issues
+    }
+
+    pub(crate) fn deprecation_version(&self) -> &str {
+        self.global
+            .deprecation_version_override
+            .as_deref()
+            .unwrap_or(&self.mod_local.settings.kcl_version)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
+        self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -768,6 +844,34 @@ impl ExecState {
     /// boolean operation.
     pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    pub(crate) fn mark_region_consumed(&mut self, id: Uuid, info: ConsumedRegionInfo) {
+        self.mod_local.consumed_regions.insert(id, info);
+    }
+
+    pub(crate) fn check_region_consumed(&self, id: &Uuid) -> Option<ConsumedRegionInfo> {
+        self.mod_local.consumed_regions.get(id).copied()
+    }
+
+    /// Find the current variable containing a Region engine UUID. This runs
+    /// only while constructing a diagnostic, so recursively searching arrays
+    /// and objects is preferable to storing variable names in liveness state.
+    pub(crate) fn find_var_name_for_region_id(&self, target_id: Uuid) -> Result<Option<String>, KclError> {
+        fn contains_region_id(value: &KclValue, target_id: Uuid) -> bool {
+            match value {
+                KclValue::Sketch { value } => value.origin_sketch_id.is_some() && value.id == target_id,
+                KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => {
+                    value.iter().any(|value| contains_region_id(value, target_id))
+                }
+                KclValue::Object { value, .. } => value.values().any(|value| contains_region_id(value, target_id)),
+                _ => false,
+            }
+        }
+
+        self.mod_local
+            .stack
+            .find_var_name_in_all_envs(|value| contains_region_id(value, target_id))
     }
 
     /// Follow direct replacement links until we find the latest known output.
@@ -1007,7 +1111,7 @@ impl ExecState {
             .iter()
             .filter_map(|m| match m {
                 RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
-                RefactorMetadata::DirectTagFillet(_) => None,
+                RefactorMetadata::DirectTagFillet(_) | RefactorMetadata::LegacyAngle(_) => None,
             })
             .collect()
     }
@@ -1019,7 +1123,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::LegacyAngle(_) => None,
                 RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
             })
             .collect()
@@ -1200,6 +1304,7 @@ impl GlobalState {
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
+            deprecation_version_override: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
@@ -1240,7 +1345,7 @@ impl GlobalState {
 
 impl ArtifactState {
     pub fn cached_body_items(&self) -> usize {
-        self.graph.item_count
+        self.graph.item_count()
     }
 
     pub(crate) fn clear(&mut self) {
@@ -1250,6 +1355,16 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .filter_map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => Some(*metadata),
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();
@@ -1377,6 +1492,7 @@ impl ModuleState {
             denied_warnings: Vec::new(),
             consumed_solids: AHashMap::default(),
             consumed_solid_ids: AHashMap::default(),
+            consumed_regions: AHashMap::default(),
             inside_stdlib: false,
         }
     }

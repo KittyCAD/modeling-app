@@ -1,6 +1,7 @@
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineDebugger } from '@src/lib/debugger'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import { useEffect, useRef } from 'react'
 
 export const useOnPageIdle = ({
@@ -66,7 +67,8 @@ export const useOnPageIdle = ({
 
         const isBusy =
           kclManager.isExecuting ||
-          !modelingMachineStateRef.current.matches('idle')
+          !modelingMachineStateRef.current.matches('idle') ||
+          zookeeperPromptRunningSignal.value
 
         // Only start the idle timer once KCL execution and other modeling
         // interactions have fully finished.
@@ -91,6 +93,11 @@ export const useOnPageIdle = ({
             } catch (e) {
               console.warn('unable to save old camera state on idle', e)
               kclManager.sceneInfra.camControls.clearOldCameraState()
+            }
+            // A prompt may have started while the camera state was being saved.
+            if (zookeeperPromptRunningSignal.value) {
+              wasBusyRef.current = true
+              return
             }
             console.log(kclManager.sceneInfra.camControls.oldCameraState)
             console.warn('detected idle, tearing down connection.')
@@ -121,7 +128,8 @@ export const useOnPageIdle = ({
       startCallbackRef.current()
       timeoutStart.current =
         kclManager.isExecuting ||
-        !modelingMachineStateRef.current.matches('idle')
+        !modelingMachineStateRef.current.matches('idle') ||
+        zookeeperPromptRunningSignal.value
           ? null
           : Date.now()
     }
@@ -130,7 +138,9 @@ export const useOnPageIdle = ({
     // all, meaning the timer is not reset to run. We need to set it every
     // time our effect dependencies change then.
     timeoutStart.current =
-      kclManager.isExecuting || !modelingMachineStateRef.current.matches('idle')
+      kclManager.isExecuting ||
+      !modelingMachineStateRef.current.matches('idle') ||
+      zookeeperPromptRunningSignal.value
         ? null
         : Date.now()
 

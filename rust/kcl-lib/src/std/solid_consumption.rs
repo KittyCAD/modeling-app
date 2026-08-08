@@ -220,6 +220,8 @@ mod tests {
         Solid {
             id,
             value_id,
+            topology_id: id,
+            pattern_source_artifact_id: None,
             artifact_id: ArtifactId::new(id),
             value: vec![],
             faces: Default::default(),

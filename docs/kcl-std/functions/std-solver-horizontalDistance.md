@@ -14,13 +14,18 @@ solver::horizontalDistance(
 )
 ```
 
-
+The distance is signed, so the order of the points matters: the value set
+with `==` equals the second point's X coordinate minus the first point's
+X coordinate. A positive value places the second point at a greater X
+than the first, and swapping the points negates the sign. For example,
+`horizontalDistance([ORIGIN, point]) == 5mm` places `point` at X = 5mm,
+while `horizontalDistance([point, ORIGIN]) == 5mm` places it at X = -5mm.
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`, whose X-axis separation should match the value set with `==`. | Yes |
+| `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`. The value set with `==` equals the second point's X coordinate minus the first point's X coordinate, so the order of the points determines the sign. | Yes |
 | `labelPosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Optional position for the displayed constraint label in the sketch's local 2D coordinate system. | No |
 
 

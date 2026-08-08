@@ -4,6 +4,7 @@ import type { Stats } from 'fs'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type { ElectronLifecycleReport } from '@src/lib/electronLifecycle'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
@@ -24,6 +25,8 @@ export type DeviceFlowAuthorization = {
 }
 
 export interface IElectronAPI {
+  drainElectronLifecycleReports: () => Promise<ElectronLifecycleReport[]>
+  onElectronLifecycleReportAvailable: (callback: () => void) => () => void
   resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
@@ -45,13 +48,16 @@ export interface IElectronAPI {
   watchFileOn: (
     path: string,
     key: string,
-    callback: (eventType: string, path: string) => void
+    callback: (eventType: string, path: string) => void,
+    options?: { depth?: number }
   ) => void
   readFile: typeof fs.readFile
   watchFileOff: (path: string, key: string) => void
   writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
-  getPath: (name: 'appData' | 'documents' | 'userData') => Promise<string>
+  getPath: (
+    name: 'appData' | 'documents' | 'home' | 'userData'
+  ) => Promise<string>
   rm: typeof fs.rm
   access: typeof fs.access
   stat: (path: string) => Promise<Stats>

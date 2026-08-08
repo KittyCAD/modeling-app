@@ -90,8 +90,17 @@ export const KCL_DEFAULT_INSTANCES = `3`
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
+/** The default KCL translation along the x axis */
+export const KCL_DEFAULT_TRANSLATE_X = `5`
+
+/** The default KCL rotation angle */
+export const KCL_DEFAULT_ROTATE_ANGLE = `45deg`
+
 /** The default KCL scale arg value that means no scale */
 export const KCL_DEFAULT_SCALE = `1`
+
+/** The default KCL uniform scale factor */
+export const KCL_DEFAULT_SCALE_FACTOR = `2`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
@@ -166,11 +175,17 @@ export const KCL_DEFAULT_FONT_SIZE = `10mm`
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
+export const DUPLICATE_PROJECT_TEMPORARY_PREFIX = '.zds-duplicate-'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
+
+/** Predefined Zoo environment base domains */
+export const ZOO_DOMAIN_STAGING = 'dev.zoo.dev'
+export const ZOO_DOMAIN_PRODUCTION = 'zoo.dev'
+export const ZOO_DOMAIN_REGULATED = 'zoogov.dev'
 
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted
@@ -333,6 +348,8 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+/** React Router state flag that starts desktop sign-in after accepting the session-expired dialog. */
+export const SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY = 'sessionExpiredSignIn'
 /**
  * A query parameter to allow the app to be accessed on mobile devices.
  * Used to test mobile experience as we improve it to be release-able.
