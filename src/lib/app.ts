@@ -17,15 +17,13 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
-import type RustContext from '@src/lib/rustContext'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   areProjectLibrarySettingsEqual,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -33,9 +31,12 @@ import {
   isLegacyPersonalCloudProjectLibraryPathSetting,
   isPersonalCloudProjectLibrarySetting,
   mergeProjectLibrarySettings,
-  projectLibrariesFromSettings,
   type ProjectLibrarySetting,
+  projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -234,6 +235,7 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  private disposeProjectEntrySync: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -367,6 +369,7 @@ export class App implements AppSubsystems {
 
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
+    this.disposeProjectEntrySync?.()
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
@@ -448,6 +451,44 @@ export class App implements AppSubsystems {
       }
     })
 
+    const homeProjectEntries = this.registry.signal(homeProjectEntriesValueSpec)
+    let syncedProjectTitle = ownedProject.title ?? ownedProject.name
+    let handledProjectTitleUpdate = this.settings.projectTitle.updates.value
+    this.disposeProjectEntrySync = effect(() => {
+      const entry = homeProjectEntries.value.find(
+        (candidate) =>
+          candidate.localProjectPath === projectIORefSignal.value.path
+      )
+      const title = entry ? getHomeProjectDisplayName(entry) : undefined
+      if (title && title !== syncedProjectTitle) {
+        syncedProjectTitle = title
+        projectIORefSignal.value = {
+          ...projectIORefSignal.value,
+          title,
+        }
+      }
+      const projectTitleUpdate = this.settings.projectTitle.updates.value
+      if (projectTitleUpdate !== handledProjectTitleUpdate) {
+        handledProjectTitleUpdate = projectTitleUpdate
+        if (projectTitleUpdate?.projectPath === projectIORefSignal.value.path) {
+          projectIORefSignal.value = {
+            ...projectIORefSignal.value,
+            title: projectTitleUpdate.title,
+          }
+        }
+      }
+      const currentProject = projectIORefSignal.value
+      if (
+        this.settings.actor.getSnapshot().context.currentProject !==
+        currentProject
+      ) {
+        this.settings.actor.send({
+          type: 'sync.project',
+          project: currentProject,
+        })
+      }
+    })
+
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -472,6 +513,8 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
+    this.disposeProjectEntrySync?.()
+    this.disposeProjectEntrySync = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
     this.setCloudSyncOpenedProject(undefined)

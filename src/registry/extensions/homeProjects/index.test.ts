@@ -53,6 +53,7 @@ function projectNameFromPath(projectPath: string) {
 
 const desktopMocks = vi.hoisted(() => ({
   getProjectInfo: vi.fn(),
+  writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
 }))
 
 const cloudSyncPathMocks = vi.hoisted(() => ({
@@ -131,7 +132,7 @@ vi.mock('@src/lib/desktop', () => {
     getProjectInfo: desktopMocks.getProjectInfo,
     isPathNotFoundError: vi.fn(() => false),
     mkdirOrNOOP: vi.fn().mockResolvedValue(undefined),
-    writeProjectTitleToProjectToml: vi.fn().mockResolvedValue(undefined),
+    writeProjectTitleToProjectToml: desktopMocks.writeProjectTitleToProjectToml,
   }
 })
 
@@ -736,6 +737,91 @@ describe('home project actions', () => {
         },
       }),
     ])
+  })
+
+  it('validates, updates, and refreshes a local project before Home has indexed it', async () => {
+    const settings = createMutableSettingsService({
+      libraries: [
+        {
+          title: 'Custom projects',
+          path: '/custom-projects',
+          type: 'custom-projects',
+        },
+      ],
+    })
+    const systemIO = createSystemIOService()
+    const cloudSync = createCloudSyncService()
+    const readRealizations = vi.fn().mockResolvedValue([
+      {
+        name: 'other-project',
+        title: 'Existing title',
+        localProjectPath: '/custom-projects/other-project',
+        localProjectName: 'other-project',
+        readWriteAccess: true,
+      },
+    ] satisfies ProjectLibraryRealizationContribution[])
+    const project = {
+      metadata: null,
+      kcl_file_count: 1,
+      directory_count: 0,
+      title: 'Bracket',
+      default_file: '/custom-projects/bracket/main.kcl',
+      path: '/custom-projects/bracket',
+      name: 'bracket',
+      children: [],
+      readWriteAccess: true,
+    } satisfies Project
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test.settings',
+        providesServices: [provideService(settingsService, settings.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+      defineRegistryItem({
+        id: 'test.cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      defineRegistryItem({
+        id: 'test.custom-library-type',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: 'custom-projects',
+            title: 'Custom projects',
+            readRealizations,
+          }),
+        ],
+      }),
+      projectLibrariesExtension,
+      homeProjectsExtension,
+    ])
+    await waitFor(() => {
+      registry?.get(homeProjectEntriesValueSpec)
+      expect(readRealizations).toHaveBeenCalled()
+    })
+    readRealizations.mockClear()
+
+    await expect(
+      registry
+        .get(homeProjectActionsService)
+        .renameLocalProject(project, 'Existing title')
+    ).rejects.toThrow('Project with title "Existing title" already exists')
+    expect(desktopMocks.writeProjectTitleToProjectToml).not.toHaveBeenCalled()
+
+    await registry
+      .get(homeProjectActionsService)
+      .renameLocalProject(project, 'Updated bracket')
+
+    expect(desktopMocks.writeProjectTitleToProjectToml).toHaveBeenCalledWith(
+      project.path,
+      'Updated bracket'
+    )
+    expect(project.title).toBe('Updated bracket')
+    await waitFor(() => expect(readRealizations).toHaveBeenCalledTimes(1))
   })
 
   it('opens remote-only cloud projects without forcing a full folder rescan', async () => {

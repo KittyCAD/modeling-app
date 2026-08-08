@@ -848,6 +848,7 @@ async function syncCloudProjectDirectoryNameFromTitle({
   pendingProjectPaths: ReadonlySet<string>
 }) {
   const sourceProjectPath = normalizePathForSync(metadata.localProjectPath)
+  const currentProjectName = projectNameFromPath(sourceProjectPath)
   if (
     !metadata.remoteProjectId ||
     metadata.tombstone ||
@@ -858,13 +859,28 @@ async function syncCloudProjectDirectoryNameFromTitle({
     return metadata
   }
 
+  // Title changes are metadata changes. Only migrate legacy directories that
+  // still use the remote project ID; established paths must stay stable.
+  if (currentProjectName !== metadata.remoteProjectId) {
+    if (metadata.projectName === currentProjectName) {
+      return metadata
+    }
+
+    const nextMetadata = {
+      ...metadata,
+      localProjectPath: sourceProjectPath,
+      projectName: currentProjectName,
+    }
+    await putProjectMetadata(nextMetadata)
+    return nextMetadata
+  }
+
   const projectTitle =
     title?.trim() || (await readLocalProjectTitle(sourceProjectPath))
   if (!projectTitle?.trim()) {
     return metadata
   }
 
-  const currentProjectName = projectNameFromPath(sourceProjectPath)
   const preferredProjectName = cloudProjectDirectoryNameFromTitle(
     projectTitle,
     currentProjectName

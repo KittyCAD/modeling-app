@@ -71,19 +71,6 @@ export function modelingMenuCallbackMostActions({
           name: 'Open project',
         },
       })
-    } else if (data.menuLabel === 'Edit.Rename project') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Rename project',
-          argDefaultValues: {
-            oldName: currentProject?.name,
-            newName: currentProject?.name,
-          },
-        },
-      })
     } else if (data.menuLabel === 'Edit.Delete project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({

@@ -10,7 +10,6 @@ import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
   getProjectDirectoryOptions,
-  getProjectDisplayName,
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
@@ -53,7 +52,7 @@ export interface CreateProjectLibraryTarget {
   >
 }
 
-type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'moveToLibrary'
+type HomeProjectCommandAction = 'open' | 'delete' | 'moveToLibrary'
 
 interface HomeProjectCommandTarget {
   actions: HomeProjectActionsService
@@ -120,8 +119,6 @@ export function createProjectCommands({
     switch (action) {
       case 'open':
         return actions.canOpen(project)
-      case 'rename':
-        return actions.canRename(project)
       case 'delete':
         return actions.canDelete(project)
       case 'moveToLibrary':
@@ -520,71 +517,6 @@ export function createProjectCommands({
     },
   }
 
-  const renameProjectCommand: Command = {
-    icon: 'folder',
-    name: 'Rename project',
-    displayName: `Rename project`,
-    description: 'Rename a project',
-    groupId: 'projects',
-    needsReview: true,
-    onSubmit: (record) => {
-      if (record) {
-        const target = selectedHomeProjectTarget(record.oldName, 'rename')
-        if (target) {
-          return target.actions.rename(target.project, record.newName)
-        }
-
-        // Only redirect back to the project when not on the home page
-        const hash = window.location.hash
-        const pathname = hash
-          ? hash.replace(/^#/, '')
-          : window.location.pathname
-        const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
-      }
-    },
-    args: {
-      oldName: {
-        displayName: 'Project',
-        description: 'Project to retitle.',
-        inputType: 'options',
-        required: true,
-        options: () => projectOptions('rename'),
-      },
-      newName: {
-        displayName: 'New title',
-        inputType: 'string',
-        required: true,
-        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
-          const projectDirectoryName = context.argumentsToSubmit.oldName as
-            | string
-            | undefined
-          const target = selectedHomeProjectTarget(
-            projectDirectoryName,
-            'rename'
-          )
-          if (target) {
-            return getHomeProjectDisplayName(target.project)
-          }
-
-          const folder = folderSnapshot()?.find(
-            (item) => item.name === projectDirectoryName
-          )
-          return folder
-            ? getProjectDisplayName(folder)
-            : projectDirectoryName || defaultProjectFolderNameSnapshot()
-        },
-      },
-    },
-  }
-
   const importFileFromURL: Command = {
     name: 'Import file from URL',
     groupId: 'projects',
@@ -672,7 +604,6 @@ export function createProjectCommands({
         createProjectCommand,
         moveToLibraryCommand,
         deleteProjectCommand,
-        renameProjectCommand,
         importFileFromURL,
       ]
     : [importFileFromURL]

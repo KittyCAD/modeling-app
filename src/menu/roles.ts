@@ -31,7 +31,6 @@ type FileRoleLabel =
   | 'User Default Units'
 
 type EditRoleLabel =
-  | 'Rename Project'
   | 'Delete Project'
   | 'Manage Project Libraries'
   | 'Undo'

@@ -7,23 +7,28 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
+import type {
+  ProjectTitleService,
+  ProjectTitleUpdate,
+} from '@src/lib/projectTitle'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
-  type SettingsActorType,
   getOnlySettingsFromContext,
+  type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { homeProjectActionsService } from '@src/registry/contracts/homeProjects'
+import {
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibrarySettingDefaultsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-} from '@src/registry/contracts/projectLibraries'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
@@ -31,12 +36,33 @@ import { createActor } from 'xstate'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
   const settingsSignal = signal<SettingsType>(createSettings())
+  const projectTitleUpdates = signal<ProjectTitleUpdate | undefined>(undefined)
   let settingsActor: SettingsActorType | undefined
   let settingsSubscription: { unsubscribe: () => void } | undefined
 
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  const projectTitle: ProjectTitleService = {
+    updates: projectTitleUpdates,
+    canUpdateTitle: (project) =>
+      project.readWriteAccess &&
+      Boolean(ctx.services.optional(homeProjectActionsService)),
+    updateTitle: async (project, title) => {
+      if (!project.readWriteAccess) {
+        return Promise.reject(new Error('This project title cannot be edited.'))
+      }
+
+      const actions = ctx.services.optional(homeProjectActionsService)
+      if (!actions) {
+        return Promise.reject(new Error('Project actions are unavailable.'))
+      }
+
+      await actions.renameLocalProject(project, title)
+      projectTitleUpdates.value = { projectPath: project.path, title }
+    },
+  }
 
   const ensureActor = () => {
     if (settingsActor) {
@@ -58,6 +84,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
         defaultProjectLibraries,
         projectLibrarySettingDefaultPolicies,
         extensionSettings,
+        projectTitleCommand: projectTitle,
         wasmInstancePromise: getWasmPromise(),
       },
     }).start()
@@ -80,6 +107,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       ensureActor()
       return settingsSignal
     },
+    projectTitle,
     get: () => {
       ensureActor()
       return settingsSignal.value
