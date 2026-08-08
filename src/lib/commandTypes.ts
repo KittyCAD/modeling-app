@@ -143,6 +143,8 @@ export type Command<
   icon?: Icon
   hide?: TARGET[number]
   hideFromSearch?: boolean
+  /** App contexts where this command may be discovered or executed. */
+  scopes?: readonly string[]
   disabled?: boolean
   status?: CommandStatus
 }

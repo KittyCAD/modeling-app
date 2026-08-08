@@ -9,6 +9,7 @@ import { selectAllInCurrentSketch } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { FILE_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
 
 const APP_COMMAND_GROUP_ID = 'zds'
@@ -73,6 +74,7 @@ function createAppCommand({
   description,
   icon,
   hideFromSearch = true,
+  scopes,
   onSubmit,
 }: {
   id: string
@@ -80,6 +82,7 @@ function createAppCommand({
   description?: Command['description']
   icon?: Command['icon']
   hideFromSearch?: boolean
+  scopes?: Command['scopes']
   onSubmit: Command['onSubmit']
 }): Command {
   return {
@@ -90,6 +93,7 @@ function createAppCommand({
     description,
     icon,
     hideFromSearch,
+    scopes,
     needsReview: false,
     onSubmit,
   }
@@ -231,6 +235,7 @@ export const appCommands: readonly Command[] = [
     description: 'Center the camera on the current selection.',
     icon: 'camera',
     hideFromSearch: false,
+    scopes: FILE_KEYMAP_SCOPES,
     onSubmit: (input) =>
       sendModelingEvent(input, { type: 'Center camera on selection' }),
   }),
@@ -250,6 +255,7 @@ export const appCommands: readonly Command[] = [
     description: 'Restore the default camera position and view.',
     icon: 'refresh',
     hideFromSearch: false,
+    scopes: FILE_KEYMAP_SCOPES,
     onSubmit: resetView,
   }),
   createAppCommand({

@@ -7,6 +7,26 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
+  test('Command palette keeps its modeling context after search autofocus', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.clickNoWhere()
+
+    await page.keyboard.press('ControlOrMeta+K')
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await expect(cmdSearchBar).toBeFocused()
+
+    await cmdSearchBar.fill('Reset view')
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).toBeVisible()
+  })
+
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
