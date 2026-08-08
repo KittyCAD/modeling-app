@@ -13,7 +13,18 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { FILE_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
+import {
+  FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+  FILE_KEYMAP_SCOPES,
+  GLOBAL_KEYMAP_SCOPES,
+  HOME_KEYMAP_SCOPE,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  SETTINGS_KEYMAP_SCOPE,
+  SKETCH_KEYMAP_SCOPES,
+} from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { describe, expect, it, vi } from 'vitest'
@@ -47,6 +58,7 @@ describe('commands extension', () => {
   it('syncs registry command contributions into the command system service', () => {
     const commandsSlot = new Slot()
     const command: Command = {
+      scopes: GLOBAL_KEYMAP_SCOPES,
       groupId: 'test',
       name: 'test-command',
       needsReview: false,
@@ -101,6 +113,71 @@ describe('commands extension', () => {
     expect(appCommands.map((command) => command.id).toSorted()).toEqual(
       appCommandIds.toSorted()
     )
+  })
+
+  it('classifies every registry command into an explicit context', () => {
+    expect(
+      [...appCommands, ...toolbarCommands].every(
+        (command) => command.scopes.length > 0
+      )
+    ).toBe(true)
+  })
+
+  it.each([
+    [APP_COMMAND_IDS.editor.undo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.editor.redo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.editor.format, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [
+      APP_COMMAND_IDS.editor.convertToVariable,
+      FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+    ],
+    [APP_COMMAND_IDS.editor.render, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.deleteSelection, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.centerCameraOnSelection, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.selectAllInCurrentSketch, SKETCH_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.toggleSnapToGrid, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.view.reset, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.search.focusProjects, [HOME_KEYMAP_SCOPE]],
+    [APP_COMMAND_IDS.search.focusSettings, [SETTINGS_KEYMAP_SCOPE]],
+  ] as const)('scopes app command %s', (commandId, scopes) => {
+    expect(
+      appCommands.find((command) => command.id === commandId)?.scopes
+    ).toEqual(scopes)
+  })
+
+  it('scopes toolbar command families to their owning mode', () => {
+    expect(
+      toolbarCommands.find(
+        (command) => command.id === TOOLBAR_COMMAND_IDS.modeling.sketch
+      )?.scopes
+    ).toEqual([MODE_MODELING_KEYMAP_SCOPE])
+    expect(
+      toolbarCommands.find(
+        (command) => command.id === TOOLBAR_COMMAND_IDS.sketching.exit
+      )?.scopes
+    ).toEqual([MODE_SKETCHING_KEYMAP_SCOPE, MODE_SKETCH_NO_FACE_KEYMAP_SCOPE])
+    expect(
+      toolbarCommands
+        .filter(
+          (command) =>
+            command.id?.startsWith('zds.toolbar.sketchLegacy.') &&
+            command.id !== TOOLBAR_COMMAND_IDS.sketching.exit
+        )
+        .every(
+          (command) =>
+            command.scopes.length === 1 &&
+            command.scopes[0] === MODE_SKETCHING_KEYMAP_SCOPE
+        )
+    ).toBe(true)
+    expect(
+      toolbarCommands
+        .filter((command) => command.id?.startsWith('zds.toolbar.sketch.'))
+        .every(
+          (command) =>
+            command.scopes.length === 1 &&
+            command.scopes[0] === MODE_SKETCH_SOLVE_KEYMAP_SCOPE
+        )
+    ).toBe(true)
   })
 
   it('exposes view commands with command palette metadata', () => {

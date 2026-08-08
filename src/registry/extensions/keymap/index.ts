@@ -8,6 +8,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import type { CommandScopes } from '@src/lib/commandTypes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
@@ -20,7 +21,10 @@ import {
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  COMMAND_PALETTE_OPEN_KEYMAP_SCOPE,
   DEFAULT_KEYMAP_SCOPES,
+  EDITABLE_FOCUSED_KEYMAP_SCOPE,
+  GLOBAL_KEYMAP_SCOPES,
   type KeymapArguments,
   type KeymapItem,
   type KeymapService,
@@ -34,6 +38,7 @@ import {
   matchKeymapKeystrokes,
   normalizeEventKey,
   resolveKeymapItems,
+  SETTINGS_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -45,6 +50,13 @@ import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
+
+const BUILT_IN_KEYMAP_COMMAND_SCOPES = new Map<string, CommandScopes>([
+  ['zds.commandPalette.open', GLOBAL_KEYMAP_SCOPES],
+  ['zds.commandPalette.close', [COMMAND_PALETTE_OPEN_KEYMAP_SCOPE]],
+  ['zds.settings.open', GLOBAL_KEYMAP_SCOPES],
+  ['zds.settings.tab', [SETTINGS_KEYMAP_SCOPE]],
+])
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
@@ -146,11 +158,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     if (
       !chord ||
       (source === 'global' &&
-        shouldIgnoreKeyboardEvent(
-          event,
-          pendingKeystrokes.length > 0,
-          activeScopes.value
-        ))
+        shouldIgnoreKeyboardEvent(event, pendingKeystrokes.length > 0))
     ) {
       return false
     }
@@ -163,13 +171,13 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         (candidate) => commandKey(candidate) === item.command
       )
 
-      return (
-        command === undefined ||
-        isCommandAvailable(
-          command,
-          activeScopes.value,
-          keymapScopesSignal.value
-        )
+      const requiredScopes =
+        BUILT_IN_KEYMAP_COMMAND_SCOPES.get(item.command) ?? command?.scopes
+
+      return isCommandAvailable(
+        { scopes: requiredScopes },
+        activeScopes.value,
+        keymapScopesSignal.value
       )
     }
     const match = matchKeymapKeystrokes(
@@ -375,23 +383,31 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     handleKeyDown(event, { source: 'global' })
   }
 
-  const syncEditorFocusScopeFromEventTarget = (target: EventTarget | null) => {
-    if (isEventFromEditableTarget(target)) {
+  const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
+    if (isEventFromCodeEditor(target)) {
       serviceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+      serviceImpl.removeScope(EDITABLE_FOCUSED_KEYMAP_SCOPE)
       serviceImpl.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
       return
     }
 
     serviceImpl.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+    if (isEventFromEditableTarget(target)) {
+      serviceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+      serviceImpl.applyScope(EDITABLE_FOCUSED_KEYMAP_SCOPE)
+      return
+    }
+
+    serviceImpl.removeScope(EDITABLE_FOCUSED_KEYMAP_SCOPE)
     serviceImpl.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
   }
 
   const handleGlobalFocusIn = (event: FocusEvent) => {
-    syncEditorFocusScopeFromEventTarget(event.target)
+    syncFocusScopeFromEventTarget(event.target)
   }
 
   const handleGlobalPointerDown = (event: PointerEvent) => {
-    syncEditorFocusScopeFromEventTarget(event.target)
+    syncFocusScopeFromEventTarget(event.target)
   }
 
   if (typeof window !== 'undefined') {
@@ -496,8 +512,7 @@ function isMacPlatform() {
 
 function shouldIgnoreKeyboardEvent(
   event: KeyboardEvent,
-  hasPendingKeystrokes: boolean,
-  scopes: readonly string[]
+  hasPendingKeystrokes: boolean
 ) {
   if (event.metaKey || event.ctrlKey || event.altKey || hasPendingKeystrokes) {
     return false
@@ -505,9 +520,12 @@ function shouldIgnoreKeyboardEvent(
 
   return (
     isEventFromFormControl(event.target) ||
-    (scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
-      isEventFromContentEditableTarget(event.target))
+    isEventFromContentEditableTarget(event.target)
   )
+}
+
+function isEventFromCodeEditor(target: EventTarget | null) {
+  return target instanceof Element && target.closest('.cm-editor') !== null
 }
 
 function isEventFromEditableTarget(target: EventTarget | null) {

@@ -10,12 +10,9 @@ import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
-  type KeymapDocument,
-  MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
   findKeymapItemForCommand,
+  type KeymapDocument,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -36,12 +33,7 @@ const codeEditorKeymap: KeymapDocument = {
     {
       id: 'code-editor.render',
       title: 'Render code',
-      scopes: [
-        MODE_MODELING_KEYMAP_SCOPE,
-        MODE_SKETCHING_KEYMAP_SCOPE,
-        MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-        MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-      ],
+      scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
       keystrokes: [RENDER_HOTKEY],
       command: APP_COMMAND_IDS.editor.render,
     },

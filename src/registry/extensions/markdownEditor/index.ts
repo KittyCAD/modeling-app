@@ -173,6 +173,7 @@ const markdownEditorCommands: readonly Command[] = Object.values(
 
   return {
     id: commandId,
+    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
     name: commandId,
     groupId: MARKDOWN_EDITOR_COMMAND_GROUP_ID,
     displayName: keymap?.title ?? commandId,

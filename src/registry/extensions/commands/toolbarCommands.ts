@@ -17,6 +17,12 @@ import {
   type EquipTool,
   isSketchBlockSelected,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+} from '@src/registry/contracts/keymap'
 import type { StateFrom } from 'xstate'
 
 const TOOLBAR_COMMAND_GROUP_ID = 'toolbar'
@@ -76,6 +82,7 @@ type ToolbarCommandConfig = {
   displayName: string
   description: string
   icon?: Command['icon']
+  scopes: Command['scopes']
   onSubmit: Command['onSubmit']
 }
 
@@ -119,6 +126,7 @@ const createToolbarCommand = ({
   displayName,
   description,
   icon,
+  scopes,
   onSubmit,
 }: ToolbarCommandConfig): Command => ({
   id,
@@ -127,6 +135,7 @@ const createToolbarCommand = ({
   displayName,
   description,
   icon,
+  scopes,
   hideFromSearch: true,
   needsReview: false,
   onSubmit,
@@ -193,6 +202,7 @@ function createLegacySketchToolCommand({
     displayName,
     description,
     icon,
+    scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
     onSubmit: (input) => {
       const state = getModelingState(input)
       if (!state || state.matches('Sketch no face')) {
@@ -220,6 +230,7 @@ function createSketchSolveToolCommand({
     displayName,
     description,
     icon,
+    scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     onSubmit: (input) => {
       if (experimental && !hasSketchExperimentalFeatures(input)) {
         return
@@ -256,6 +267,7 @@ function createSketchSolveActionCommand({
     displayName,
     description,
     icon,
+    scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     onSubmit: (input) => sendModelingEvent(input, { type: event }),
   })
 }
@@ -346,6 +358,7 @@ export const toolbarCommands: readonly Command[] = [
     displayName: 'Start or edit sketch',
     description: 'Start drawing a 2D sketch.',
     icon: 'sketch',
+    scopes: [MODE_MODELING_KEYMAP_SCOPE],
     onSubmit: enterSketch,
   }),
   createToolbarCommand({
@@ -353,12 +366,14 @@ export const toolbarCommands: readonly Command[] = [
     displayName: 'Exit sketch',
     description: 'Exit the current sketch.',
     icon: 'arrowShortLeft',
+    scopes: [MODE_SKETCHING_KEYMAP_SCOPE, MODE_SKETCH_NO_FACE_KEYMAP_SCOPE],
     onSubmit: exitSketch,
   }),
   createToolbarCommand({
     id: TOOLBAR_COMMAND_IDS.sketching.cancelTool,
     displayName: 'Cancel sketch tool',
     description: 'Cancel the active sketch tool.',
+    scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
     onSubmit: cancelLegacySketchTool,
   }),
   createLegacySketchToolCommand({
@@ -422,12 +437,14 @@ export const toolbarCommands: readonly Command[] = [
     displayName: 'Exit sketch',
     description: 'Exit the current sketch.',
     icon: 'arrowShortLeft',
+    scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     onSubmit: (input) => sendModelingEvent(input, { type: 'Exit sketch' }),
   }),
   createToolbarCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
     displayName: 'Cancel sketch solve action',
     description: 'Cancel the active sketch solve action.',
+    scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
     onSubmit: (input) => sendModelingEvent(input, { type: 'Cancel' }),
   }),
   createSketchSolveToolCommand({

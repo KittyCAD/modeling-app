@@ -9,7 +9,13 @@ import { selectAllInCurrentSketch } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
-import { FILE_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
+import {
+  FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+  FILE_KEYMAP_SCOPES,
+  HOME_KEYMAP_SCOPE,
+  SETTINGS_KEYMAP_SCOPE,
+  SKETCH_KEYMAP_SCOPES,
+} from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
 
 const APP_COMMAND_GROUP_ID = 'zds'
@@ -82,7 +88,7 @@ function createAppCommand({
   description?: Command['description']
   icon?: Command['icon']
   hideFromSearch?: boolean
-  scopes?: Command['scopes']
+  scopes: Command['scopes']
   onSubmit: Command['onSubmit']
 }): Command {
   return {
@@ -202,31 +208,37 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.editor.undo,
     displayName: 'Undo',
+    scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
     onSubmit: (input) => getKclManager(input)?.undo(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.redo,
     displayName: 'Redo',
+    scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
     onSubmit: (input) => getKclManager(input)?.redo(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.format,
     displayName: 'Format code',
+    scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
     onSubmit: (input) => getKclManager(input)?.format().catch(reportRejection),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.convertToVariable,
     displayName: 'Convert to variable',
+    scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
     onSubmit: (input) => getKclManager(input)?.convertToVariable(),
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.editor.render,
     displayName: 'Render code',
+    scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
     onSubmit: reexecuteOrToastAutosaveBehavior,
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.deleteSelection,
     displayName: 'Delete selection',
+    scopes: FILE_KEYMAP_SCOPES,
     onSubmit: deleteSelection,
   }),
   createAppCommand({
@@ -242,11 +254,13 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
     displayName: 'Select all in current sketch',
+    scopes: SKETCH_KEYMAP_SCOPES,
     onSubmit: selectAllInCurrentSketchCommand,
   }),
   createAppCommand({
     id: APP_COMMAND_IDS.modeling.toggleSnapToGrid,
     displayName: 'Toggle snap to grid',
+    scopes: FILE_KEYMAP_SCOPES,
     onSubmit: toggleSnapToGrid,
   }),
   createAppCommand({
@@ -261,6 +275,7 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.search.focusProjects,
     displayName: 'Focus project search',
+    scopes: [HOME_KEYMAP_SCOPE],
     onSubmit: () => {
       projectSearchFocusRequest.value += 1
     },
@@ -268,6 +283,7 @@ export const appCommands: readonly Command[] = [
   createAppCommand({
     id: APP_COMMAND_IDS.search.focusSettings,
     displayName: 'Focus settings search',
+    scopes: [SETTINGS_KEYMAP_SCOPE],
     onSubmit: () => {
       settingsSearchFocusRequest.value += 1
     },

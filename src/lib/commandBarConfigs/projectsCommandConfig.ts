@@ -22,6 +22,7 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import { GLOBAL_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
 import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
@@ -289,6 +290,7 @@ export function createProjectCommands({
   ) => moveToLibraryOptions(context)[0]?.value ?? ''
 
   const openProjectCommand: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     icon: 'folder',
     name: 'Open project',
     displayName: `Open project`,
@@ -322,6 +324,7 @@ export function createProjectCommands({
   }
 
   const createProjectCommand: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     icon: 'folder',
     name: 'Create project',
     displayName: `Create project`,
@@ -401,6 +404,7 @@ export function createProjectCommands({
   }
 
   const moveToLibraryCommand: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     icon: 'folder',
     name: 'Move to library',
     displayName: 'Move to library',
@@ -475,6 +479,7 @@ export function createProjectCommands({
   }
 
   const deleteProjectCommand: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     icon: 'folder',
     name: 'Delete project',
     displayName: `Delete project`,
@@ -521,6 +526,7 @@ export function createProjectCommands({
   }
 
   const renameProjectCommand: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     icon: 'folder',
     name: 'Rename project',
     displayName: `Rename project`,
@@ -586,6 +592,7 @@ export function createProjectCommands({
   }
 
   const importFileFromURL: Command = {
+    scopes: GLOBAL_KEYMAP_SCOPES,
     name: 'Import file from URL',
     groupId: 'projects',
     icon: 'file',

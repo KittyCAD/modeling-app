@@ -12,7 +12,10 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { isCommandSearchable } from '@src/registry/contracts/commands'
+import {
+  getCommandPaletteScopes,
+  isCommandSearchable,
+} from '@src/registry/contracts/commands'
 import {
   COMMAND_PALETTE_OPEN_KEYMAP_SCOPE,
   keymapScopesValueSpec,
@@ -27,9 +30,13 @@ export const CommandBar = () => {
   const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
-  // Palette autofocus activates the editor scope, so keep the scope that opened it.
+  // Palette autofocus can change focus scopes, so keep the scope that opened it.
+  // Ordinary editable focus suppresses background shortcuts, not command discovery.
   const commandPaletteScopes = useMemo(
-    () => (isCommandBarOpen ? (keymap?.getCurrentScopes() ?? []) : []),
+    () =>
+      isCommandBarOpen
+        ? getCommandPaletteScopes(keymap?.getCurrentScopes() ?? [])
+        : [],
     [isCommandBarOpen, keymap]
   )
   const keymapScopes = registry.signal(keymapScopesValueSpec).value

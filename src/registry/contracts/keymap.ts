@@ -10,6 +10,7 @@ import { type Platform, isArray } from '@src/lib/utils'
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE = 'code-editor-not-focused'
+export const EDITABLE_FOCUSED_KEYMAP_SCOPE = 'editable-focused'
 export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
@@ -23,6 +24,8 @@ export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
 export const KEYMAP_SCHEMA_VERSION = 1
 export const USER_KEYMAP_SOURCE = 'User'
 
+export const GLOBAL_KEYMAP_SCOPES = [BASE_KEYMAP_SCOPE] as const
+
 export const SKETCH_KEYMAP_SCOPES = [
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
@@ -32,6 +35,11 @@ export const SKETCH_KEYMAP_SCOPES = [
 export const FILE_KEYMAP_SCOPES = [
   MODE_MODELING_KEYMAP_SCOPE,
   ...SKETCH_KEYMAP_SCOPES,
+] as const
+
+export const FILE_AND_CODE_EDITOR_KEYMAP_SCOPES = [
+  ...FILE_KEYMAP_SCOPES,
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
 ] as const
 
 export type KeymapArguments =
@@ -120,6 +128,13 @@ export const DEFAULT_KEYMAP_SCOPES: readonly KeymapScope[] = [
     displayName: 'Code editor focused',
     group: KEYMAP_CONTEXT_SCOPE_GROUP,
     priority: 1000,
+    userEditable: false,
+  },
+  {
+    id: EDITABLE_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Editable control focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1100,
     userEditable: false,
   },
   {

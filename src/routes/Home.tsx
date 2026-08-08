@@ -250,7 +250,8 @@ const Home = () => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
       location,
-      ''
+      '',
+      [HOME_KEYMAP_SCOPE]
     )
 
     commands.send({

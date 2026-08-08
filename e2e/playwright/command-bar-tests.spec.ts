@@ -7,23 +7,48 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
-  test('Command palette keeps its modeling context after search autofocus', async ({
+  test('Command palette scopes Home, modeling, and editor commands', async ({
     page,
     homePage,
     scene,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await expect(page.getByPlaceholder('Search projects')).toBeVisible()
+
+    await page.keyboard.press('ControlOrMeta+K')
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    await cmdSearchBar.fill('Go to Telemetry')
+    await expect(
+      page.getByRole('option', { name: 'Go to Telemetry', exact: false })
+    ).toBeVisible()
+    await cmdSearchBar.fill('Reset view')
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).not.toBeVisible()
+    await page.keyboard.press('Escape')
+
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.clickNoWhere()
 
     await page.keyboard.press('ControlOrMeta+K')
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeFocused()
 
     await cmdSearchBar.fill('Reset view')
     await expect(
       page.getByRole('option', { name: 'Reset view', exact: false })
+    ).toBeVisible()
+    await page.keyboard.press('Escape')
+
+    await page.locator('.cm-content').click()
+    await page.keyboard.press('ControlOrMeta+K')
+    await cmdSearchBar.fill('Reset view')
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).not.toBeVisible()
+    await cmdSearchBar.fill('Format Code')
+    await expect(
+      page.getByRole('option', { name: 'Format Code', exact: false })
     ).toBeVisible()
   })
 
