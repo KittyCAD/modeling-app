@@ -64,6 +64,37 @@ async fn assert_trim_does_not_create_degenerate_geometry(base_kcl_code: &str, tr
     assert_no_zero_length_line_or_arc_constructors(&result.kcl_code);
 }
 
+#[tokio::test]
+async fn test_trim_arc_crossed_once_does_not_create_extra_arc() {
+    let base_kcl_code = r#"@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 1.03mm, var -0.6mm], end = [var 1.34mm, var -3.19mm], center = [var -4.83mm, var -2.61mm])
+  line1 = line(start = [var -1.21mm, var 2.31mm], end = [var -1.17mm, var -0.13mm])
+  line(start = [var -2.01mm, var -8.09mm], end = [var -9.3mm, var 2.73mm])
+  line2 = line(start = [var -1.49mm, var -1.06mm], end = [var 0mm, var 3.31mm])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 3.31mm], end = [var 1.34mm, var -3.19mm])
+  coincident([line2.end, line3.start])
+  vertical([line3.start, ORIGIN])
+  arc2 = arc(start = [var -1.17mm, var -0.13mm], end = [var -8.85mm, var -4.14mm], center = [var -5mm, var -2.15mm])
+  coincident([arc1.end, line3.end])
+  coincident([arc2.start, line2])
+  coincident([line1.end, arc2])
+  point(at = [var -4.81mm, var 5.29mm])
+  point(at = [var -5.43mm, var 2.88mm])
+  point(at = [var -4.78mm, var 0.95mm])
+}"#;
+    let trim_points = [Coords2d { x: -5.43, y: 2.88 }, Coords2d { x: -4.78, y: 0.95 }];
+
+    assert_trim_result_default_sketch(
+        "test_trim_arc_crossed_once_does_not_create_extra_arc",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
 mod sync {
     use crate::frontend::trim::*;
 
