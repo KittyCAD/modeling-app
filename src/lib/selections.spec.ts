@@ -32,7 +32,8 @@ test('materialized pattern topology stays selectable and coerces to its copy bod
     type: 'pattern',
     id: 'pattern-command',
     subType: 'linear',
-    sourceId: 'source-body',
+    sourceIds: ['source-body'],
+    instanceIds: ['source-body', 'copy-body-1', 'copy-body-2'],
     copyIds: ['copy-body-1', 'copy-body-2'],
     copyFaceIds: ['copy-face-2a', 'copy-face-2b'],
     copyEdgeIds: [],
@@ -120,7 +121,8 @@ test('a pattern source body remains a direct body selection', async () => {
     type: 'pattern',
     id: 'pattern-command',
     subType: 'linear',
-    sourceId: 'source-body',
+    sourceIds: ['source-body'],
+    instanceIds: ['source-body', 'copy-body-1', 'copy-body-2'],
     copyIds: ['copy-body-1', 'copy-body-2'],
     copyFaceIds: [],
     copyEdgeIds: [],
@@ -132,7 +134,7 @@ test('a pattern source body remains a direct body selection', async () => {
   }
   const sourceBody = {
     type: 'sweep',
-    id: pattern.sourceId,
+    id: pattern.instanceIds[0],
     codeRef: pattern.codeRef,
   } as unknown as Artifact
   const artifactGraph: ArtifactGraph = new Map([
@@ -142,7 +144,7 @@ test('a pattern source body remains a direct body selection', async () => {
   const sendSceneCommand = vi.fn()
 
   const event = await getEventForSelectWithPoint(
-    { data: { entity_id: pattern.sourceId } } as Parameters<
+    { data: { entity_id: pattern.instanceIds[0] } } as Parameters<
       typeof getEventForSelectWithPoint
     >[0],
     {
@@ -172,7 +174,8 @@ test('unmaterialized pattern topology falls back to its engine parent', async ()
     type: 'pattern',
     id: 'pattern-command',
     subType: 'linear',
-    sourceId: 'source-body',
+    sourceIds: ['source-body'],
+    instanceIds: ['source-body', 'copy-body-1', 'copy-body-2'],
     copyIds: ['copy-body-1', 'copy-body-2'],
     copyFaceIds: ['copy-face-2'],
     copyEdgeIds: [],
@@ -1906,7 +1909,8 @@ describe('pattern copy selection highlighting', () => {
     type: 'pattern',
     id: 'pattern-command-id',
     subType: 'transform',
-    sourceId: 'source-body-id',
+    sourceIds: ['source-body-id'],
+    instanceIds: ['source-body-id', 'copy-body-id'],
     copyIds: ['copy-body-id'],
     copyFaceIds: ['copy-face-id'],
     copyEdgeIds: ['copy-edge-id'],

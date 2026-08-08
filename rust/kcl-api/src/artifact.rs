@@ -498,8 +498,12 @@ pub struct GdtAnnotationArtifact {
 pub struct Pattern {
     pub id: ArtifactId,
     pub sub_type: PatternSubType,
-    /// Geometry artifact that was the source of the pattern operation.
-    pub source_id: ArtifactId,
+    /// Geometry artifacts that were the sources of the pattern operation, in
+    /// input order.
+    pub source_ids: Vec<ArtifactId>,
+    /// IDs of the top-level geometry returned by the pattern operation, in
+    /// KCL output order. This includes both sources and copies.
+    pub instance_ids: Vec<ArtifactId>,
     /// IDs of copied top-level objects created by the pattern operation.
     pub copy_ids: Vec<ArtifactId>,
     /// IDs of copied faces created by the pattern operation.

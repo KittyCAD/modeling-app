@@ -1060,13 +1060,15 @@ fn pattern_artifact_links_to_source_geometry() {
         Some(Artifact::Pattern(Pattern {
             id,
             sub_type: PatternSubType::Circular,
-            source_id,
+            source_ids,
+            instance_ids,
             copy_ids,
             copy_face_ids,
             copy_edge_ids,
             ..
         })) if *id == pattern_id
-            && *source_id == path_id
+            && source_ids == &vec![path_id]
+            && instance_ids == &vec![sweep_id, ArtifactId::new(copy_id)]
             && copy_ids == &vec![ArtifactId::new(copy_id)]
             && copy_face_ids == &vec![ArtifactId::new(copy_wall_id), ArtifactId::new(copy_cap_id)]
             && copy_edge_ids == &vec![ArtifactId::new(copy_edge_id)]
@@ -1131,6 +1133,55 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
                 if source.id == source_id && source.pattern_ids == vec![pattern_id]
         )
     }));
+}
+
+#[test]
+fn merged_pattern_preserves_multi_source_output_order() {
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let source_path_a = ArtifactId::new(Uuid::new_v4());
+    let source_path_b = ArtifactId::new(Uuid::new_v4());
+    let source_body_a = ArtifactId::new(Uuid::new_v4());
+    let source_body_b = ArtifactId::new(Uuid::new_v4());
+    let copies = (0..4).map(|_| ArtifactId::new(Uuid::new_v4())).collect::<Vec<_>>();
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut pattern = Pattern {
+        id: pattern_id,
+        sub_type: PatternSubType::Linear,
+        source_ids: vec![source_path_a],
+        instance_ids: vec![source_body_a, copies[0], copies[1]],
+        copy_ids: copies[..2].to_vec(),
+        copy_face_ids: Vec::new(),
+        copy_edge_ids: Vec::new(),
+        code_ref: code_ref.clone(),
+    };
+
+    assert_eq!(
+        merge_pattern(
+            &mut pattern,
+            Artifact::Pattern(Pattern {
+                id: pattern_id,
+                sub_type: PatternSubType::Linear,
+                source_ids: vec![source_path_b],
+                instance_ids: vec![source_body_b, copies[2], copies[3]],
+                copy_ids: copies[2..].to_vec(),
+                copy_face_ids: Vec::new(),
+                copy_edge_ids: Vec::new(),
+                code_ref,
+            })
+        ),
+        None
+    );
+    assert_eq!(pattern.source_ids, vec![source_path_a, source_path_b]);
+    assert_eq!(
+        pattern.instance_ids,
+        vec![source_body_a, copies[0], copies[1], source_body_b, copies[2], copies[3]]
+    );
+
+    let artifacts = IndexMap::from([(pattern_id, Artifact::Pattern(pattern))]);
+    assert_eq!(
+        pattern_source_body_id_for_copy(&artifacts, copies[2]),
+        Some(source_body_b)
+    );
 }
 
 #[test]
@@ -1370,7 +1421,8 @@ fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
         Artifact::Pattern(Pattern {
             id: pattern_id,
             sub_type: PatternSubType::Linear,
-            source_id: source_path_id,
+            source_ids: vec![source_path_id],
+            instance_ids: vec![source_sweep_id, ArtifactId::new(copy_id)],
             copy_ids: vec![ArtifactId::new(copy_id)],
             copy_face_ids: Vec::new(),
             copy_edge_ids: Vec::new(),

@@ -174,7 +174,7 @@ export function getPatternSelectionIndex(
     if (
       !Number.isInteger(patternIndex) ||
       patternIndex < 0 ||
-      patternIndex > artifact.copyIds.length
+      patternIndex >= artifact.instanceIds.length
     ) {
       return new Error(`Invalid pattern instance index: ${patternIndex}`)
     }
@@ -184,15 +184,11 @@ export function getPatternSelectionIndex(
   if (engineEntityId === undefined) {
     return undefined
   }
-  if (engineEntityId === artifact.sourceId) {
-    return 0
-  }
-
-  const copyIndex = artifact.copyIds.indexOf(engineEntityId)
-  if (copyIndex < 0) {
+  const instanceIndex = artifact.instanceIds.indexOf(engineEntityId)
+  if (instanceIndex < 0) {
     return new Error('Selected entity is not a body instance in the pattern')
   }
-  return copyIndex + 1
+  return instanceIndex
 }
 
 function getPatternCopyBodyId(
@@ -1159,25 +1155,8 @@ export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
 
   for (const artifact of artifactGraph.values()) {
     if (artifact.type !== 'pattern') continue
-    const directSource = artifactGraph.get(artifact.sourceId)
-    const sourceBody =
-      directSource?.type === 'sweep' || directSource?.type === 'compositeSolid'
-        ? directSource
-        : [...artifactGraph.values()].find(
-            (
-              source
-            ): source is Extract<
-              Artifact,
-              { type: 'sweep' | 'compositeSolid' }
-            > =>
-              (source.type === 'sweep' || source.type === 'compositeSolid') &&
-              (source.patternIds || []).includes(artifact.id)
-          )
-    if (sourceBody) {
-      artifacts.set(sourceBody.id, artifact)
-    }
-    artifact.copyIds.forEach((copyId) => {
-      artifacts.set(copyId, artifact)
+    artifact.instanceIds.forEach((instanceId) => {
+      artifacts.set(instanceId, artifact)
     })
   }
 

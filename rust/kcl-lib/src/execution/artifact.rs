@@ -278,6 +278,8 @@ fn merge_gdt_annotation(old: &mut GdtAnnotationArtifact, new: Artifact) -> Optio
 
 fn merge_pattern(old: &mut Pattern, new: Artifact) -> Option<Artifact> {
     let Artifact::Pattern(new) = new else { return Some(new) };
+    old.source_ids.extend(new.source_ids);
+    old.instance_ids.extend(new.instance_ids);
     merge_ids(&mut old.copy_ids, new.copy_ids);
     merge_ids(&mut old.copy_face_ids, new.copy_face_ids);
     merge_ids(&mut old.copy_edge_ids, new.copy_edge_ids);
@@ -873,7 +875,8 @@ fn remap_artifact_for_clone(
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            source_id: remap_id_for_clone(source.source_id, entity_id_map),
+            source_ids: remap_ids_for_clone(&source.source_ids, entity_id_map),
+            instance_ids: remap_ids_for_clone(&source.instance_ids, entity_id_map),
             copy_ids: remap_ids_for_clone(&source.copy_ids, entity_id_map),
             copy_face_ids: remap_ids_for_clone(&source.copy_face_ids, entity_id_map),
             copy_edge_ids: remap_ids_for_clone(&source.copy_edge_ids, entity_id_map),
@@ -911,6 +914,22 @@ fn pattern_source_ids(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: Art
     unique
 }
 
+fn pattern_source_body_id(artifacts: &IndexMap<ArtifactId, Artifact>, source_id: ArtifactId) -> ArtifactId {
+    match artifacts.get(&source_id) {
+        Some(Artifact::Path(path)) => path.composite_solid_id.or(path.sweep_id).unwrap_or(source_id),
+        Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_)) => source_id,
+        _ => pattern_source_ids(artifacts, source_id)
+            .into_iter()
+            .find(|id| {
+                matches!(
+                    artifacts.get(id),
+                    Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+                )
+            })
+            .unwrap_or(source_id),
+    }
+}
+
 fn pattern_source_body_id_for_copy(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     copy_id: ArtifactId,
@@ -923,12 +942,12 @@ fn pattern_source_body_id_for_copy(
             return None;
         }
 
-        pattern_source_ids(artifacts, pattern.source_id).into_iter().find(|id| {
-            matches!(
-                artifacts.get(id),
-                Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
-            )
-        })
+        let copy_index = pattern.instance_ids.iter().position(|id| *id == copy_id)?;
+        pattern.instance_ids[..copy_index]
+            .iter()
+            .rev()
+            .copied()
+            .find(|id| !pattern.copy_ids.contains(id))
     })
 }
 
@@ -954,10 +973,15 @@ fn pattern_artifact_updates(
         .collect::<Vec<_>>();
 
     let source_ids = pattern_source_ids(artifacts, source_id);
+    let source_body_id = pattern_source_body_id(artifacts, source_id);
+    let instance_ids = std::iter::once(source_body_id)
+        .chain(copy_ids.iter().copied())
+        .collect();
     let mut return_arr = vec![Artifact::Pattern(Pattern {
         id: pattern_id,
         sub_type,
-        source_id,
+        source_ids: vec![source_id],
+        instance_ids,
         copy_ids,
         copy_face_ids,
         copy_edge_ids,

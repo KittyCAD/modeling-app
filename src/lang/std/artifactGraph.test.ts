@@ -3,6 +3,7 @@ import {
   BODY_ARTIFACT_TYPES,
   coerceSelectionsToBody,
   getBodiesFromArtifactGraph,
+  getPatternSelectionIndex,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   isBodyArtifactType,
@@ -256,7 +257,8 @@ describe('coerceSelectionsToBody', () => {
       type: 'pattern',
       id: 'pattern-command-id',
       subType: 'linear',
-      sourceId: 'source-body-id',
+      sourceIds: ['source-body-id'],
+      instanceIds: ['source-body-id', 'copy-body-1', 'copy-body-2'],
       copyIds: ['copy-body-1', 'copy-body-2'],
       copyFaceIds: [],
       copyEdgeIds: [],
@@ -293,12 +295,57 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
+  it('uses KCL output order for multi-source pattern selections', () => {
+    const pattern = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['source-a', 'source-b'],
+      instanceIds: [
+        'source-body-a',
+        'copy-a1',
+        'copy-a2',
+        'source-body-b',
+        'copy-b1',
+        'copy-b2',
+      ],
+      copyIds: ['copy-a1', 'copy-a2', 'copy-b1', 'copy-b2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    } satisfies Extract<Artifact, { type: 'pattern' }>
+
+    expect(
+      pattern.instanceIds.map((engineEntityId) =>
+        getPatternSelectionIndex({
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId,
+        })
+      )
+    ).toEqual([0, 1, 2, 3, 4, 5])
+    expect(
+      getPatternSelectionIndex({
+        artifact: pattern,
+        codeRef: pattern.codeRef,
+        patternIndex: pattern.instanceIds.length,
+      })
+    ).toEqual(
+      new Error(`Invalid pattern instance index: ${pattern.instanceIds.length}`)
+    )
+  })
+
   it('preserves metadata while deduplicating pattern copies', () => {
     const pattern: Artifact = {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'source-body',
+      sourceIds: ['source-body'],
+      instanceIds: ['source-body', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: [],
       copyEdgeIds: [],
@@ -355,7 +402,8 @@ describe('coerceSelectionsToBody', () => {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'source-body',
+      sourceIds: ['source-body'],
+      instanceIds: ['source-body', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: ['copy-face-1'],
       copyEdgeIds: ['copy-edge-1'],
@@ -488,7 +536,8 @@ describe('getBodiesFromArtifactGraph', () => {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'sweep-1',
+      sourceIds: ['sweep-1'],
+      instanceIds: ['sweep-1', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: ['copy-face-1'],
       copyEdgeIds: ['copy-edge-1'],
@@ -541,7 +590,8 @@ describe('getBodiesFromArtifactGraph', () => {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'path-1',
+      sourceIds: ['path-1'],
+      instanceIds: ['sweep-1', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: [],
       copyEdgeIds: [],
@@ -558,6 +608,30 @@ describe('getBodiesFromArtifactGraph', () => {
     expect(result.get('sweep-1')).toBe(pattern)
     expect(result.get('copy-1')).toBe(pattern)
     expect(result.get('copy-2')).toBe(pattern)
+  })
+
+  it('includes every source and copy of a multi-source pattern in output order', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['path-a', 'path-b'],
+      instanceIds: [
+        'sweep-a',
+        'copy-a1',
+        'copy-a2',
+        'sweep-b',
+        'copy-b1',
+        'copy-b2',
+      ],
+      copyIds: ['copy-a1', 'copy-a2', 'copy-b1', 'copy-b2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+    const result = getBodiesFromArtifactGraph(new Map([[pattern.id, pattern]]))
+
+    expect([...result.keys()]).toEqual(pattern.instanceIds)
   })
 })
 

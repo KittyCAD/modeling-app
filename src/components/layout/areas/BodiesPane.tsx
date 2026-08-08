@@ -44,12 +44,22 @@ export function BodiesPane(props: AreaTypeComponentProps) {
     for (let [id, artifact] of bodies || new Map()) {
       const patternIndex =
         artifact.type === 'pattern'
-          ? Math.max(0, artifact.copyIds.indexOf(id) + 1)
+          ? artifact.instanceIds.indexOf(id)
+          : undefined
+      const patternSourceIndex =
+        artifact.type === 'pattern' && patternIndex !== undefined
+          ? artifact.instanceIds
+              .slice(0, patternIndex + 1)
+              .filter((instanceId) => !artifact.copyIds.includes(instanceId))
+              .length - 1
           : undefined
       const hideOperation =
         getHideOpByArtifactId(operations, id) ??
-        (artifact.type === 'pattern' && patternIndex === 0
-          ? getHideOpByArtifactId(operations, artifact.sourceId)
+        (artifact.type === 'pattern' && !artifact.copyIds.includes(id)
+          ? getHideOpByArtifactId(
+              operations,
+              artifact.sourceIds[patternSourceIndex ?? -1]
+            )
           : undefined)
       bodiesWithProps.set(id, {
         artifact,
