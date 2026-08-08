@@ -891,6 +891,19 @@ export function getOriginalSegmentArtifact(
   return originalSegment?.type === 'segment' ? originalSegment : segment
 }
 
+export function getSourceSegmentArtifact(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | undefined {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return undefined
+
+  if (!segment.sourceSegmentId) return segment
+
+  const sourceSegment = artifactGraph.get(segment.sourceSegmentId)
+  return sourceSegment?.type === 'segment' ? sourceSegment : segment
+}
+
 export function getSketchBlockForArtifact(
   artifact: Artifact | undefined,
   artifactGraph: ArtifactGraph
