@@ -221,6 +221,21 @@ function getEdgeBodyKey(selectedBodyExpr: Expr, pathIfPipe?: PathToNode) {
   return JSON.stringify([selectedBodyExpr, pathIfPipe])
 }
 
+function getSelectedSweepBodyArtifact(
+  selectedSweep: Extract<Artifact, { type: 'sweep' }>,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'compositeSolid' | 'sweep' }> | Error {
+  const path = artifactGraph.get(selectedSweep.pathId)
+  if (path?.type !== 'path' || !path.compositeSolidId) {
+    return selectedSweep
+  }
+
+  return getArtifactOfTypes(
+    { key: path.compositeSolidId, types: ['compositeSolid'] },
+    artifactGraph
+  )
+}
+
 function resolveSweepSelectionContext(
   ast: Node<Program>,
   selectedSweep: Extract<Artifact, { type: 'sweep' }>,
@@ -239,12 +254,20 @@ function resolveSweepSelectionContext(
     return sourceSweep
   }
 
+  const selectedBody = getSelectedSweepBodyArtifact(
+    selectedSweep,
+    artifactGraph
+  )
+  if (err(selectedBody)) {
+    return selectedBody
+  }
+
   const body = getVariableExprsFromSelection(
     {
       graphSelections: [
         {
-          artifact: selectedSweep,
-          codeRef: selectedSweep.codeRef,
+          artifact: selectedBody,
+          codeRef: selectedBody.codeRef,
         },
       ],
       otherSelections: [],

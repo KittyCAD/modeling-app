@@ -709,12 +709,22 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
             sub_type: source.sub_type,
-            output_index: source.output_index,
+            // clone() returns one new top-level body, even when its source was
+            // an indexed output or belonged to another composite solid.
+            output_index: if source.id == source_root_id {
+                None
+            } else {
+                source.output_index
+            },
             solid_ids: remap_ids_for_clone(&source.solid_ids, entity_id_map),
             tool_ids: remap_ids_for_clone(&source.tool_ids, entity_id_map),
             pattern_ids: remap_mapped_ids_for_clone(&source.pattern_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
-            composite_solid_id: remap_opt_id_for_clone(source.composite_solid_id, entity_id_map),
+            composite_solid_id: if source.id == source_root_id {
+                None
+            } else {
+                remap_opt_id_for_clone(source.composite_solid_id, entity_id_map)
+            },
         }),
         Artifact::Plane(source) => Artifact::Plane(Plane {
             id: remap_id_for_clone(source.id, entity_id_map),
