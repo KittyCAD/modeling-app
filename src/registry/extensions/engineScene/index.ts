@@ -75,7 +75,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  scopes: openMeasureToolCommand.scopes,
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }

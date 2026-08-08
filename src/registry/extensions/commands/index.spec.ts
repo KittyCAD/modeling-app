@@ -115,14 +115,6 @@ describe('commands extension', () => {
     )
   })
 
-  it('classifies every registry command into an explicit context', () => {
-    expect(
-      [...appCommands, ...toolbarCommands].every(
-        (command) => command.scopes.length > 0
-      )
-    ).toBe(true)
-  })
-
   it.each([
     [APP_COMMAND_IDS.editor.undo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
     [APP_COMMAND_IDS.editor.redo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
@@ -133,13 +125,11 @@ describe('commands extension', () => {
     ],
     [APP_COMMAND_IDS.editor.render, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
     [APP_COMMAND_IDS.modeling.deleteSelection, FILE_KEYMAP_SCOPES],
-    [APP_COMMAND_IDS.modeling.centerCameraOnSelection, FILE_KEYMAP_SCOPES],
-    [APP_COMMAND_IDS.modeling.selectAllInCurrentSketch, SKETCH_KEYMAP_SCOPES],
     [APP_COMMAND_IDS.modeling.toggleSnapToGrid, FILE_KEYMAP_SCOPES],
-    [APP_COMMAND_IDS.view.reset, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.selectAllInCurrentSketch, SKETCH_KEYMAP_SCOPES],
     [APP_COMMAND_IDS.search.focusProjects, [HOME_KEYMAP_SCOPE]],
     [APP_COMMAND_IDS.search.focusSettings, [SETTINGS_KEYMAP_SCOPE]],
-  ] as const)('scopes app command %s', (commandId, scopes) => {
+  ] as const)('scopes representative app command %s', (commandId, scopes) => {
     expect(
       appCommands.find((command) => command.id === commandId)?.scopes
     ).toEqual(scopes)

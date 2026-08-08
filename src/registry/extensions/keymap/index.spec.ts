@@ -101,33 +101,16 @@ describe('keymap extension', () => {
   })
 
   it('marks a partial match and awaits more input', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.keystrokes',
-          title: 'Test keystrokes',
-          command: 'test.keystrokes',
-          source: 'test',
-          keystrokes: ['q', 'w'],
-          scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            {
-              id: 'test.keystrokes',
-              scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
-              groupId: 'test',
-              name: 'Test keystrokes',
-              needsReview: false,
-              onSubmit: vi.fn(),
-            },
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.keystrokes',
+        title: 'Test keystrokes',
+        command: 'test.keystrokes',
+        source: 'test',
+        keystrokes: ['q', 'w'],
+        scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+      },
+    ])
 
     const keymap = registry.get(keymapService)
     const event = new KeyboardEvent('keydown', { key: 'q' })
@@ -139,28 +122,16 @@ describe('keymap extension', () => {
   })
 
   it('runs a full match and clears partial match state', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.full-keymap',
-          title: 'Test full',
-          command: 'test.full',
-          source: 'test',
-          keystrokes: ['x'],
-          scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.full', [
-              CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-            ]),
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.full-keymap',
+        title: 'Test full',
+        command: 'test.full',
+        source: 'test',
+        keystrokes: ['x'],
+        scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+      },
+    ])
 
     const keymap = registry.get(keymapService)
     const event = new KeyboardEvent('keydown', { key: 'x' })
@@ -172,33 +143,16 @@ describe('keymap extension', () => {
   })
 
   it('matches macOS Option-modified letter chords by physical key code', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.alt-d',
-          title: 'Test Alt+D',
-          command: 'test.alt-d',
-          source: 'test',
-          keystrokes: ['alt+d'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            {
-              id: 'test.alt-d',
-              scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-              groupId: 'test',
-              name: 'Test Alt+D',
-              needsReview: false,
-              onSubmit: vi.fn(),
-            },
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.alt-d',
+        title: 'Test Alt+D',
+        command: 'test.alt-d',
+        source: 'test',
+        keystrokes: ['alt+d'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
 
     const keymap = registry.get(keymapService)
     keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
@@ -292,39 +246,21 @@ describe('keymap extension', () => {
           arguments: { value: 'abc' },
         },
       ],
-      [
-        defineRegistryItem({
-          id: 'test-command-system',
-          providesServices: [
-            provideService(commandSystemService, {
-              actor: {
-                getSnapshot: () => ({
-                  context: {
-                    commands: [
-                      {
-                        id: 'test.command',
-                        groupId: 'test',
-                        name: 'Run test command',
-                        needsReview: false,
-                        scopes: GLOBAL_KEYMAP_SCOPES,
-                        args: {
-                          value: {
-                            inputType: 'string',
-                            required: true,
-                          },
-                        },
-                        onSubmit,
-                      },
-                    ],
-                  },
-                }),
+      {
+        commands: [
+          createTestCommand('test.command', GLOBAL_KEYMAP_SCOPES, {
+            name: 'Run test command',
+            args: {
+              value: {
+                inputType: 'string',
+                required: true,
               },
-              send,
-              useState: vi.fn(),
-            } as unknown as CommandSystemService),
-          ],
-        }),
-      ]
+            },
+            onSubmit,
+          }),
+        ],
+        send,
+      }
     )
 
     const keymap = registry.get(keymapService)
@@ -360,21 +296,14 @@ describe('keymap extension', () => {
           keystrokes: ['mod+u'],
         },
       ],
-      [
-        createTestCommandSystemItem(
-          [
-            {
-              id: 'test.file-command',
-              groupId: 'test',
-              name: 'Run file command',
-              needsReview: false,
-              scopes: FILE_KEYMAP_SCOPES,
-              onSubmit: vi.fn(),
-            },
-          ],
-          send
-        ),
-      ]
+      {
+        commands: [
+          createTestCommand('test.file-command', FILE_KEYMAP_SCOPES, {
+            name: 'Run file command',
+          }),
+        ],
+        send,
+      }
     )
     const keymap = registry.get(keymapService)
     const createEvent = () =>
@@ -427,29 +356,17 @@ describe('keymap extension', () => {
           keystrokes: ['mod+u'],
         },
       ],
-      [
-        createTestCommandSystemItem(
-          [
-            {
-              id: 'test.file-command',
-              groupId: 'test',
-              name: 'Run file command',
-              needsReview: false,
-              scopes: FILE_KEYMAP_SCOPES,
-              onSubmit: vi.fn(),
-            },
-            {
-              id: 'test.global-command',
-              scopes: GLOBAL_KEYMAP_SCOPES,
-              groupId: 'test',
-              name: 'Run global command',
-              needsReview: false,
-              onSubmit: vi.fn(),
-            },
-          ],
-          send
-        ),
-      ]
+      {
+        commands: [
+          createTestCommand('test.file-command', FILE_KEYMAP_SCOPES, {
+            name: 'Run file command',
+          }),
+          createTestCommand('test.global-command', GLOBAL_KEYMAP_SCOPES, {
+            name: 'Run global command',
+          }),
+        ],
+        send,
+      }
     )
     const keymap = registry.get(keymapService)
     const event = new KeyboardEvent('keydown', {
@@ -477,15 +394,18 @@ describe('keymap extension', () => {
   it.each(['test.command-that-no-longer-exists', 'toString'])(
     'does not consume a shortcut for unknown command %s',
     (command) => {
-      const registry = createRegistryWithKeymapItems([
-        {
-          id: 'test.stale-command-keymap',
-          title: 'Stale command keymap',
-          command,
-          source: 'User',
-          keystrokes: ['mod+u'],
-        },
-      ])
+      const registry = createRegistryWithKeymapItems(
+        [
+          {
+            id: 'test.stale-command-keymap',
+            title: 'Stale command keymap',
+            command,
+            source: 'User',
+            keystrokes: ['mod+u'],
+          },
+        ],
+        { commands: [] }
+      )
       const keymap = registry.get(keymapService)
       const event = new KeyboardEvent('keydown', {
         key: 'u',
@@ -508,32 +428,16 @@ describe('keymap extension', () => {
         resolveInitialRead = resolve
       })
     )
-    const registry = createRegistryWithKeymapItems(
-      [],
-      [
-        createTestCommandSystemItem(
-          [
-            {
-              id: 'zds.toolbar.sketchLegacy.line',
-              scopes: [MODE_SKETCHING_KEYMAP_SCOPE],
-              groupId: 'test',
-              name: 'Legacy sketch line',
-              needsReview: false,
-              onSubmit: vi.fn(),
-            },
-            {
-              id: 'zds.toolbar.sketch.line',
-              scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-              groupId: 'test',
-              name: 'Sketch line',
-              needsReview: false,
-              onSubmit: vi.fn(),
-            },
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([], {
+      commands: [
+        createTestCommand('zds.toolbar.sketchLegacy.line', [
+          MODE_SKETCHING_KEYMAP_SCOPE,
+        ]),
+        createTestCommand('zds.toolbar.sketch.line', [
+          MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+        ]),
+      ],
+    })
 
     const keymap = registry.get(keymapService)
     keymap.applyScope(MODE_SKETCHING_KEYMAP_SCOPE)
@@ -571,23 +475,15 @@ describe('keymap extension', () => {
   })
 
   it('lets CodeMirror source handle contenteditable targets', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.code-mirror-keymap',
-          title: 'Test CodeMirror',
-          command: 'test.code-mirror',
-          source: 'test',
-          keystrokes: ['escape'],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [createTestCommand('test.code-mirror', GLOBAL_KEYMAP_SCOPES)],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.code-mirror-keymap',
+        title: 'Test CodeMirror',
+        command: 'test.code-mirror',
+        source: 'test',
+        keystrokes: ['escape'],
+      },
+    ])
     const keymap = registry.get(keymapService)
     const target = document.createElement('div')
     target.contentEditable = 'true'
@@ -606,28 +502,16 @@ describe('keymap extension', () => {
   })
 
   it('ignores unmodified global shortcuts from input targets', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.sketch-solve-line-keymap',
-          title: 'Test sketch solve line',
-          command: 'test.sketch-solve-line',
-          source: 'test',
-          keystrokes: ['l'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.sketch-solve-line', [
-              MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-            ]),
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line-keymap',
+        title: 'Test sketch solve line',
+        command: 'test.sketch-solve-line',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
     const keymap = registry.get(keymapService)
     const input = document.createElement('input')
     document.body.append(input)
@@ -665,16 +549,14 @@ describe('keymap extension', () => {
           scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
         },
       ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.sketch-select-all', [
-              MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-            ]),
-          ],
-          send
-        ),
-      ]
+      {
+        commands: [
+          createTestCommand('test.sketch-select-all', [
+            MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+          ]),
+        ],
+        send,
+      }
     )
     const keymap = registry.get(keymapService)
     const input = document.createElement('input')
@@ -698,28 +580,16 @@ describe('keymap extension', () => {
   })
 
   it('does not run mode keybindings from CodeMirror while the editor is focused', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.sketch-solve-line-keymap',
-          title: 'Test sketch solve line',
-          command: 'test.sketch-solve-line',
-          source: 'test',
-          keystrokes: ['l'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.sketch-solve-line', [
-              MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-            ]),
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line-keymap',
+        title: 'Test sketch solve line',
+        command: 'test.sketch-solve-line',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
     const keymap = registry.get(keymapService)
     const event = new KeyboardEvent('keydown', { key: 'l' })
 
@@ -733,22 +603,11 @@ describe('keymap extension', () => {
   })
 
   it('handles default undo and redo keybindings from CodeMirror while the editor is focused', () => {
-    const registry = createRegistryWithKeymapItems(
-      [],
-      [
-        createTestCommandSystemItem(
-          ['zds.editor.undo', 'zds.editor.redo'].map((id) => ({
-            id,
-            scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
-            groupId: 'test',
-            name: id,
-            needsReview: false,
-            onSubmit: vi.fn(),
-          })),
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([], {
+      commands: ['zds.editor.undo', 'zds.editor.redo'].map((id) =>
+        createTestCommand(id, [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE])
+      ),
+    })
     const keymap = registry.get(keymapService)
 
     keymap.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
@@ -780,28 +639,16 @@ describe('keymap extension', () => {
   })
 
   it('does not treat arbitrary editable content as the code editor', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.sketch-solve-line-keymap',
-          title: 'Test sketch solve line',
-          command: 'test.sketch-solve-line',
-          source: 'test',
-          keystrokes: ['l'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.sketch-solve-line', [
-              MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-            ]),
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line-keymap',
+        title: 'Test sketch solve line',
+        command: 'test.sketch-solve-line',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
     const keymap = registry.get(keymapService)
     const editableTarget = document.createElement('div')
     editableTarget.contentEditable = 'true'
@@ -839,28 +686,16 @@ describe('keymap extension', () => {
   })
 
   it('keeps editor focus priority while typing in the CodeMirror search field', () => {
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.sketch-solve-line-keymap',
-          title: 'Test sketch solve line',
-          command: 'test.sketch-solve-line',
-          source: 'test',
-          keystrokes: ['l'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-        },
-      ],
-      [
-        createTestCommandSystemItem(
-          [
-            createTestCommand('test.sketch-solve-line', [
-              MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-            ]),
-          ],
-          vi.fn()
-        ),
-      ]
-    )
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line-keymap',
+        title: 'Test sketch solve line',
+        command: 'test.sketch-solve-line',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
     const keymap = registry.get(keymapService)
     const editor = document.createElement('div')
     const searchPanel = document.createElement('div')
@@ -927,15 +762,26 @@ describe('keymap extension', () => {
   })
 })
 
+type TestRegistryOptions = {
+  commands?: Command[]
+  send?: CommandSystemService['send']
+}
+
 function createRegistryWithKeymapItems(
   items: Parameters<typeof provideKeymapItem>[0][],
-  extraItems: Parameters<Registry['configure']>[0] = []
+  options: TestRegistryOptions = {}
 ) {
+  const inferredCommands = [...new Set(items.map((item) => item.command))].map(
+    (id) => createTestCommand(id, GLOBAL_KEYMAP_SCOPES)
+  )
+  const commands = options.commands ?? inferredCommands
   const keymapSlot = new Slot()
   const registry = new Registry()
   registry.configure([
     keymapExtension,
-    ...extraItems,
+    ...(commands.length > 0
+      ? [createTestCommandSystemItem(commands, options.send ?? vi.fn())]
+      : []),
     keymapSlot.of(
       defineRegistryItem({
         id: 'test-keymap-items',
@@ -964,7 +810,11 @@ function createTestCommandSystemItem(
   })
 }
 
-function createTestCommand(id: string, scopes: Command['scopes']): Command {
+function createTestCommand(
+  id: string,
+  scopes: Command['scopes'],
+  overrides: Partial<Omit<Command, 'id' | 'scopes'>> = {}
+): Command {
   return {
     id,
     scopes,
@@ -972,6 +822,7 @@ function createTestCommand(id: string, scopes: Command['scopes']): Command {
     name: id,
     needsReview: false,
     onSubmit: vi.fn(),
+    ...overrides,
   }
 }
 

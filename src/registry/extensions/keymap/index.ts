@@ -8,7 +8,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import type { CommandScopes } from '@src/lib/commandTypes'
+import type { Command, CommandScopes } from '@src/lib/commandTypes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
@@ -16,6 +16,7 @@ import { isArray } from '@src/lib/utils'
 import {
   commandKey,
   commandSystemService,
+  getEffectiveCommandScopeSet,
   isCommandAvailable,
 } from '@src/registry/contracts/commands'
 import {
@@ -51,12 +52,10 @@ import { createElement } from 'react'
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
 
-const BUILT_IN_KEYMAP_COMMAND_SCOPES = new Map<string, CommandScopes>([
-  ['zds.commandPalette.open', GLOBAL_KEYMAP_SCOPES],
-  ['zds.commandPalette.close', [COMMAND_PALETTE_OPEN_KEYMAP_SCOPE]],
-  ['zds.settings.open', GLOBAL_KEYMAP_SCOPES],
-  ['zds.settings.tab', [SETTINGS_KEYMAP_SCOPE]],
-])
+type BuiltInKeymapCommand = {
+  scopes: CommandScopes
+  run: (item: KeymapItem) => unknown
+}
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
@@ -75,6 +74,39 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   ])
   const partialMatch = signal(false)
   const partialMatchProgress = signal(0)
+  const builtInKeymapCommands = new Map<string, BuiltInKeymapCommand>([
+    [
+      'zds.commandPalette.open',
+      {
+        scopes: GLOBAL_KEYMAP_SCOPES,
+        run: () =>
+          ctx.services.optional(commandSystemService)?.send({ type: 'Open' }),
+      },
+    ],
+    [
+      'zds.commandPalette.close',
+      {
+        scopes: [COMMAND_PALETTE_OPEN_KEYMAP_SCOPE],
+        run: () =>
+          ctx.services.optional(commandSystemService)?.send({ type: 'Close' }),
+      },
+    ],
+    [
+      'zds.settings.open',
+      {
+        scopes: GLOBAL_KEYMAP_SCOPES,
+        run: openSettings,
+      },
+    ],
+    [
+      'zds.settings.tab',
+      {
+        scopes: [SETTINGS_KEYMAP_SCOPE],
+        run: (item) =>
+          updateSettingsTab(getSettingsTabArgument(item.arguments)),
+      },
+    ],
+  ])
 
   const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
     global: [],
@@ -166,20 +198,28 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const commandSystem = ctx.services.optional(commandSystemService)
     const registeredCommands =
       commandSystem?.actor.getSnapshot().context.commands ?? []
+    const commandsByKey = new Map<string, Command>()
+    for (const command of registeredCommands) {
+      const key = commandKey(command)
+      if (!commandsByKey.has(key)) {
+        commandsByKey.set(key, command)
+      }
+    }
+    const effectiveCommandScopes = getEffectiveCommandScopeSet(
+      activeScopes.value,
+      keymapScopesSignal.value
+    )
     const isItemAvailable = (item: KeymapItem) => {
-      const command = registeredCommands.find(
-        (candidate) => commandKey(candidate) === item.command
-      )
-
-      const requiredScopes =
-        BUILT_IN_KEYMAP_COMMAND_SCOPES.get(item.command) ?? command?.scopes
-
-      return isCommandAvailable(
-        { scopes: requiredScopes },
-        activeScopes.value,
-        keymapScopesSignal.value
+      const command =
+        builtInKeymapCommands.get(item.command) ??
+        commandsByKey.get(item.command)
+      return (
+        command !== undefined &&
+        isCommandAvailable(command, effectiveCommandScopes)
       )
     }
+    const runAvailableKeymapItem = (item: KeymapItem) =>
+      runKeymapItem(item, commandsByKey, isItemAvailable(item))
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
@@ -203,7 +243,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.stopPropagation()
       event.stopImmediatePropagation()
       clearPendingKeystrokes()
-      runKeymapItem(match.item)
+      runAvailableKeymapItem(match.item)
       return true
     }
 
@@ -235,7 +275,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
-      runKeymapItem(retryMatch.item)
+      runAvailableKeymapItem(retryMatch.item)
       return true
     }
 
@@ -302,42 +342,31 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }),
   }
 
-  function runKeymapItem(item: KeymapItem) {
-    const result = runBuiltInKeymapCommand(item)
+  function runKeymapItem(
+    item: KeymapItem,
+    commandsByKey: ReadonlyMap<string, Command>,
+    isAvailable: boolean
+  ) {
+    if (!isAvailable) {
+      return
+    }
+
+    const builtInCommand = builtInKeymapCommands.get(item.command)
+    const result = builtInCommand
+      ? builtInCommand.run(item)
+      : runCommandById(item, commandsByKey)
     if (result instanceof Promise) {
       result.catch(reportRejection)
     }
   }
 
-  function runBuiltInKeymapCommand(item: KeymapItem): unknown {
-    switch (item.command) {
-      case 'zds.commandPalette.open':
-        return ctx.services
-          .optional(commandSystemService)
-          ?.send({ type: 'Open' })
-      case 'zds.commandPalette.close':
-        return ctx.services
-          .optional(commandSystemService)
-          ?.send({ type: 'Close' })
-      case 'zds.settings.open':
-        return openSettings()
-      case 'zds.settings.tab':
-        return updateSettingsTab(getSettingsTabArgument(item.arguments))
-      default:
-        return runCommandById(item)
-    }
-  }
-
-  function runCommandById(item: KeymapItem) {
+  function runCommandById(
+    item: KeymapItem,
+    commandsByKey: ReadonlyMap<string, Command>
+  ) {
     const commandSystem = ctx.services.optional(commandSystemService)
-    const command = commandSystem?.actor
-      .getSnapshot()
-      .context.commands.find((cmd) => commandKey(cmd) === item.command)
-    if (
-      !command ||
-      !commandSystem ||
-      !isCommandAvailable(command, activeScopes.value, keymapScopesSignal.value)
-    ) {
+    const command = commandsByKey.get(item.command)
+    if (!command || !commandSystem) {
       return
     }
 

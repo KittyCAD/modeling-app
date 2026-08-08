@@ -485,10 +485,14 @@ export function createKeymapTree(items: readonly KeymapItem[]): KeymapTree {
   return { items, root }
 }
 
-export function getKeymapItemScopes(item: Pick<KeymapBinding, 'scopes'>) {
-  const scopes = [
-    ...new Set(item.scopes?.map((scope) => scope.trim()).filter(Boolean)),
+export function normalizeKeymapScopeIds(scopes: readonly string[] | undefined) {
+  return [
+    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
   ]
+}
+
+export function getKeymapItemScopes(item: Pick<KeymapBinding, 'scopes'>) {
+  const scopes = normalizeKeymapScopeIds(item.scopes)
   const nonBaseScopes = scopes.filter((scope) => scope !== BASE_KEYMAP_SCOPE)
 
   return nonBaseScopes.length > 0 ? nonBaseScopes : [BASE_KEYMAP_SCOPE]

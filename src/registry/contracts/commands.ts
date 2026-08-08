@@ -10,6 +10,7 @@ import {
   EDITABLE_FOCUSED_KEYMAP_SCOPE,
   getEffectiveKeymapScopes,
   type KeymapScope,
+  normalizeKeymapScopeIds,
 } from '@src/registry/contracts/keymap'
 import type { SnapshotFrom } from 'xstate'
 
@@ -26,39 +27,31 @@ export function getCommandPaletteScopes(activeScopes: readonly string[]) {
   return activeScopes.filter((scope) => scope !== EDITABLE_FOCUSED_KEYMAP_SCOPE)
 }
 
-export function getCommandScopes(
-  command: Partial<Pick<Command, 'scopes'>>
-): readonly string[] {
-  return [
-    ...new Set(command.scopes?.map((scope) => scope.trim()).filter(Boolean)),
-  ]
+export function getEffectiveCommandScopeSet(
+  activeScopes: readonly string[],
+  keymapScopes: readonly KeymapScope[] = []
+) {
+  return new Set(getEffectiveKeymapScopes(activeScopes, keymapScopes))
 }
 
 export function isCommandAvailable(
   command: Partial<Pick<Command, 'scopes'>>,
-  activeScopes: readonly string[],
-  keymapScopes: readonly KeymapScope[] = []
+  effectiveScopes: ReadonlySet<string>
 ) {
-  const commandScopes = getCommandScopes(command)
-  if (commandScopes.length === 0) {
-    return false
-  }
-
-  const effectiveScopes = new Set(
-    getEffectiveKeymapScopes(activeScopes, keymapScopes)
+  const commandScopes = normalizeKeymapScopeIds(command.scopes)
+  return (
+    commandScopes.length > 0 &&
+    commandScopes.some((scope) => effectiveScopes.has(scope))
   )
-
-  return commandScopes.some((scope) => effectiveScopes.has(scope))
 }
 
 export function isCommandSearchable(
   command: Pick<Command, 'hideFromSearch'> & Partial<Pick<Command, 'scopes'>>,
-  activeScopes: readonly string[],
-  keymapScopes: readonly KeymapScope[] = []
+  effectiveScopes: ReadonlySet<string>
 ) {
   return (
     command.hideFromSearch !== true &&
-    isCommandAvailable(command, activeScopes, keymapScopes)
+    isCommandAvailable(command, effectiveScopes)
   )
 }
 
