@@ -13,6 +13,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { FILE_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { describe, expect, it, vi } from 'vitest'
@@ -115,12 +116,14 @@ describe('commands extension', () => {
           displayName: 'Center camera on selection',
           description: 'Center the camera on the current selection.',
           icon: 'camera',
+          scopes: FILE_KEYMAP_SCOPES,
         }),
         expect.objectContaining({
           id: APP_COMMAND_IDS.view.reset,
           displayName: 'Reset view',
           description: 'Restore the default camera position and view.',
           icon: 'refresh',
+          scopes: FILE_KEYMAP_SCOPES,
         }),
       ])
     )
