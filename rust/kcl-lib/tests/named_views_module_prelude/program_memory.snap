@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_module_prelude.kcl
+---
+{
+  "baseline": {
+    "type": "Enum",
+    "enum_name": "Visibility",
+    "variant": "Hide"
+  },
+  "orientation": {
+    "type": "Enum",
+    "enum_name": "Orientation",
+    "variant": "Isometric"
+  },
+  "projection": {
+    "type": "Enum",
+    "enum_name": "Projection",
+    "variant": "Orthographic"
+  }
+}
