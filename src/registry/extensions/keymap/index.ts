@@ -15,23 +15,16 @@ import { isArray } from '@src/lib/utils'
 import {
   commandKey,
   commandSystemService,
+  isCommandAvailable,
 } from '@src/registry/contracts/commands'
 import {
-  BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-  HOME_KEYMAP_SCOPE,
+  DEFAULT_KEYMAP_SCOPES,
   type KeymapArguments,
   type KeymapItem,
-  type KeymapScope,
   type KeymapService,
   type KeymapSource,
-  MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   createEmptyPersistedKeymap,
   createKeymapTree,
   createUnbindBinding,
@@ -51,92 +44,7 @@ import {
 import { createElement } from 'react'
 
 const PARTIAL_MATCH_TIMEOUT_MS = 1500
-const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
-const KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
 type SettingsKeymapTab = 'project' | 'user' | 'keybindings' | 'plugins'
-
-const defaultKeymapScopes: readonly KeymapScope[] = [
-  {
-    id: BASE_KEYMAP_SCOPE,
-    displayName: 'Base',
-    priority: 0,
-    userEditable: false,
-  },
-  {
-    id: 'cmd-palette-open',
-    displayName: 'Command palette open',
-    priority: 2000,
-    userEditable: false,
-  },
-  {
-    id: 'settings-open',
-    displayName: 'Settings open',
-    priority: 1900,
-    userEditable: false,
-  },
-  {
-    id: HOME_KEYMAP_SCOPE,
-    displayName: 'Home',
-    priority: 50,
-    userEditable: false,
-  },
-  {
-    id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Code editor not focused',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 10,
-    userEditable: false,
-  },
-  {
-    id: MODE_MODELING_KEYMAP_SCOPE,
-    displayName: 'Modeling mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 100,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCHING_KEYMAP_SCOPE,
-    displayName: 'Legacy sketch mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 200,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-    displayName: 'Sketch no face mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 210,
-    userEditable: false,
-  },
-  {
-    id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-    displayName: 'Sketch mode',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 220,
-    userEditable: false,
-  },
-  {
-    id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Code editor focused',
-    group: KEYMAP_CONTEXT_SCOPE_GROUP,
-    priority: 1000,
-    userEditable: false,
-  },
-  {
-    id: PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-    displayName: 'Project explorer focused',
-    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
-    priority: 100,
-    userEditable: false,
-  },
-  {
-    id: PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
-    displayName: 'Project explorer renaming',
-    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
-    priority: 200,
-    userEditable: false,
-  },
-]
 
 const keymapExtension = defineRegistryItemFactory((ctx) => {
   const contributedKeymapSignal = ctx.valueSpecs.signal(keymapValueSpec)
@@ -247,11 +155,29 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       return false
     }
 
+    const commandSystem = ctx.services.optional(commandSystemService)
+    const registeredCommands =
+      commandSystem?.actor.getSnapshot().context.commands ?? []
+    const isItemAvailable = (item: KeymapItem) => {
+      const command = registeredCommands.find(
+        (candidate) => commandKey(candidate) === item.command
+      )
+
+      return (
+        command === undefined ||
+        isCommandAvailable(
+          command,
+          activeScopes.value,
+          keymapScopesSignal.value
+        )
+      )
+    }
     const match = matchKeymapKeystrokes(
       keymapSignal.value,
       activeScopes.value,
       [...pendingKeystrokes, chord],
-      keymapScopesSignal.value
+      keymapScopesSignal.value,
+      isItemAvailable
     )
 
     if (match.type === 'prefix') {
@@ -283,7 +209,8 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       keymapSignal.value,
       activeScopes.value,
       [chord],
-      keymapScopesSignal.value
+      keymapScopesSignal.value,
+      isItemAvailable
     )
 
     if (retryMatch.type === 'prefix') {
@@ -398,7 +325,11 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const command = commandSystem?.actor
       .getSnapshot()
       .context.commands.find((cmd) => commandKey(cmd) === item.command)
-    if (!command || !commandSystem) {
+    if (
+      !command ||
+      !commandSystem ||
+      !isCommandAvailable(command, activeScopes.value, keymapScopesSignal.value)
+    ) {
       return
     }
 
@@ -476,7 +407,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       id: 'keymap-extension',
       providesServices: [provideService(keymapService, serviceImpl)],
       provides: [
-        ...defaultKeymapScopes.map((scope) =>
+        ...DEFAULT_KEYMAP_SCOPES.map((scope) =>
           provide(keymapScopesValueSpec, scope, { key: scope.id })
         ),
         provide(

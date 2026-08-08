@@ -16,6 +16,7 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { platform } from '@src/lib/utils'
 import {
+  SETTINGS_KEYMAP_SCOPE,
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
@@ -91,7 +92,7 @@ export const Settings = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusSettings,
-          ['settings-open'],
+          [SETTINGS_KEYMAP_SCOPE],
           app.registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -103,10 +104,10 @@ export const Settings = () => {
       return
     }
 
-    keymap.applyScope('settings-open')
+    keymap.applyScope(SETTINGS_KEYMAP_SCOPE)
 
     return () => {
-      keymap.removeScope('settings-open')
+      keymap.removeScope(SETTINGS_KEYMAP_SCOPE)
     }
   }, [keymap])
 

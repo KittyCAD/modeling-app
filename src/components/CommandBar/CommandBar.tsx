@@ -1,5 +1,5 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -12,7 +12,12 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { keymapService } from '@src/registry/contracts/keymap'
+import { isCommandSearchable } from '@src/registry/contracts/commands'
+import {
+  COMMAND_PALETTE_OPEN_KEYMAP_SCOPE,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -22,6 +27,12 @@ export const CommandBar = () => {
   const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
+  // Palette autofocus activates the editor scope, so keep the scope that opened it.
+  const commandPaletteScopes = useMemo(
+    () => (isCommandBarOpen ? (keymap?.getCurrentScopes() ?? []) : []),
+    [isCommandBarOpen, keymap]
+  )
+  const keymapScopes = registry.signal(keymapScopesValueSpec).value
   const {
     context: {
       selectedCommand,
@@ -61,10 +72,10 @@ export const CommandBar = () => {
       return
     }
 
-    keymap.applyScope('cmd-palette-open')
+    keymap.applyScope(COMMAND_PALETTE_OPEN_KEYMAP_SCOPE)
 
     return () => {
-      keymap.removeScope('cmd-palette-open')
+      keymap.removeScope(COMMAND_PALETTE_OPEN_KEYMAP_SCOPE)
     }
   }, [isCommandBarOpen, keymap])
 
@@ -169,14 +180,13 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) => {
-                  return (
-                    // By default everything is undefined
-                    // If marked explicitly as false hide
-                    command.hideFromSearch === undefined ||
-                    command.hideFromSearch === false
+                options={commands.filter((command: Command) =>
+                  isCommandSearchable(
+                    command,
+                    commandPaletteScopes,
+                    keymapScopes
                   )
-                })}
+                )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
