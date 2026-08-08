@@ -454,7 +454,6 @@ sketch001 = extrude(region001, length = -12)`
   })
 
   test(`Offset plane point-and-click`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -515,6 +514,64 @@ sketch001 = extrude(region001, length = -12)`
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
+    })
+  })
+
+  test(`Offset plane autocomplete works after reopening`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `offsetDistance = 5`
+    const expectedOutput = `plane001 = offsetPlane(XZ, offset = offsetDistance)`
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', initialCode)
+    await editor.expectEditor.toContain(initialCode)
+    await scene.settled()
+
+    await test.step('Accept variable autocomplete', async () => {
+      await toolbar.offsetPlaneButton.click()
+      await expect
+        .poll(() => page.getByText('Please select one').count())
+        .toBe(1)
+      await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
+      const offsetInput = cmdBar.currentArgumentInput.locator('.cm-content')
+      await offsetInput.fill('offsetD')
+      await expect(
+        page.locator('.cm-tooltip-autocomplete .cm-completionLabel', {
+          hasText: /^offsetDistance$/,
+        })
+      ).toBeVisible()
+      await offsetInput.press('Enter')
+      await expect(offsetInput).toHaveText('offsetDistance')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Plane: '1 plane', Offset: '5' },
+        commandName: 'Offset plane',
+      })
+      await cmdBar.submit()
+      await editor.expectEditor.toContain(expectedOutput)
+    })
+
+    await test.step('Accept variable autocomplete after reopening', async () => {
+      await toolbar.offsetPlaneButton.click()
+      await toolbar.selectDefaultPlane('Front plane')
+      await cmdBar.progressCmdBar()
+      const offsetInput = cmdBar.currentArgumentInput.locator('.cm-content')
+      await offsetInput.fill('offsetD')
+      await expect(
+        page.locator('.cm-tooltip-autocomplete .cm-completionLabel', {
+          hasText: /^offsetDistance$/,
+        })
+      ).toBeVisible()
+      await offsetInput.press('Enter')
+      await expect(offsetInput).toHaveText('offsetDistance')
+      await cmdBar.closeCmdBar()
     })
   })
 
