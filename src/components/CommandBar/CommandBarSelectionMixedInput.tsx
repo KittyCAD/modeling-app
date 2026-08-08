@@ -2,7 +2,10 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { KclManager } from '@src/lang/KclManager'
-import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import {
+  coerceSelectionsToBody,
+  isBodyArtifactType,
+} from '@src/lang/std/artifactGraph'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -61,11 +64,7 @@ export default function CommandBarSelectionMixedInput({
     // Check if this argument only accepts body types
     // These are the artifact types that represent 3D bodies/objects
     const onlyAcceptsBodies = arg.selectionTypes?.every(
-      (type) =>
-        type === 'sweep' ||
-        type === 'compositeSolid' ||
-        type === 'path' ||
-        type === 'helix'
+      (type) => isBodyArtifactType(type) || type === 'helix'
     )
 
     if (!onlyAcceptsBodies) return // Command accepts non-body types

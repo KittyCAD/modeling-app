@@ -20,7 +20,9 @@ import {
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getPatternSelectionIndex,
 } from '@src/lang/std/artifactGraph'
+import { toUtf16 } from '@src/lang/errors'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
@@ -1280,6 +1282,9 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    if (patternExpr instanceof Error) {
+      return patternExpr
+    }
     if (patternExpr) {
       const key = outputExprKey(patternExpr)
       if (pushedNames[key]) {
@@ -1514,19 +1519,15 @@ function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
-): Expr | null {
+): Expr | null | Error {
   const artifact = selection.artifact
   if (artifact?.type !== 'pattern') {
     return null
   }
 
-  const patternIndex =
-    selection.patternIndex ??
-    (selection.engineEntityId
-      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : undefined)
-  if (patternIndex !== undefined && patternIndex < 0) {
-    return null
+  const patternIndex = getPatternSelectionIndex({ ...selection, artifact })
+  if (patternIndex instanceof Error) {
+    return patternIndex
   }
 
   const pathCandidates = [
@@ -1743,9 +1744,43 @@ export function getSketchVariableNameForSegment(
 // Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
+function getPatternSourceFromOpArg(
+  artifactId: string,
+  opArg: OpArg,
+  artifactGraph: ArtifactGraph,
+  code?: string
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  if (!code) return undefined
+
+  const argText = code.slice(
+    ...opArg.sourceRange.map((offset) => toUtf16(offset, code))
+  )
+  return [...artifactGraph.values()].findLast(
+    (candidate): candidate is Extract<Artifact, { type: 'pattern' }> => {
+      if (candidate.type !== 'pattern' || candidate.sourceId !== artifactId) {
+        return false
+      }
+
+      const callStart = toUtf16(candidate.codeRef.range[0], code)
+      const declarationPrefix = code.slice(0, callStart)
+      const declaredName = [
+        ...declarationPrefix.matchAll(
+          /(?:^|\n)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/g
+        ),
+      ].at(-1)?.[1]
+      return declaredName
+        ? new RegExp(
+            `(?:^|[^A-Za-z0-9_])${declaredName}\\s*\\[\\s*0\\s*\\]`
+          ).test(argText)
+        : false
+    }
+  )
+}
+
 export function retrieveSelectionsFromOpArg(
   opArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code?: string
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
   let artifactIds: string[] = []
@@ -1785,9 +1820,16 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
+    const sourcePattern = getPatternSourceFromOpArg(
+      artifactId,
+      opArg,
+      artifactGraph,
+      code
+    )
     let artifact =
-      artifactGraph.get(artifactId) ??
-      getPatternArtifactForCopyId(artifactId, artifactGraph)
+      sourcePattern ??
+      getPatternArtifactForCopyId(artifactId, artifactGraph) ??
+      artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
@@ -1817,10 +1859,22 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    graphSelections.push({
+    const graphSelection: Selection = {
       artifact,
       codeRef: codeRefs[0],
-    })
+    }
+    if (artifact.type === 'pattern' && artifactId !== artifact.id) {
+      graphSelection.engineEntityId = artifactId
+      const patternIndex = getPatternSelectionIndex({
+        ...graphSelection,
+        artifact,
+      })
+      if (patternIndex instanceof Error || patternIndex === undefined) {
+        return new Error("Couldn't retrieve pattern instance from operation")
+      }
+      graphSelection.patternIndex = patternIndex
+    }
+    graphSelections.push(graphSelection)
   }
 
   if (graphSelections.length === 0) {

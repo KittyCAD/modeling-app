@@ -3,7 +3,10 @@ import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import {
+  type Artifact,
+  coerceSelectionsToBody,
+} from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
@@ -11,6 +14,8 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEventForSelectWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -21,6 +26,202 @@ import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, test, vi } from 'vitest'
+
+test('materialized pattern topology stays selectable and coerces to its copy body', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: ['copy-face-2a', 'copy-face-2b'],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const copyFace: Artifact = {
+    type: 'primitiveFace',
+    id: 'copy-face-2a',
+    solidId: 'copy-body-2',
+    codeRef: pattern.codeRef,
+  }
+  const secondCopyFace: Artifact = {
+    ...copyFace,
+    id: 'copy-face-2b',
+  }
+  const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+    [pattern.id, pattern],
+    [copyFace.id, copyFace],
+    [secondCopyFace.id, secondCopyFace],
+  ])
+  const sendSceneCommand = vi.fn()
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: copyFace.id } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).not.toHaveBeenCalled()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: copyFace,
+        engineEntityId: copyFace.id,
+      },
+    },
+  })
+
+  const coerced = coerceSelectionsToBody(
+    {
+      graphSelections: [
+        {
+          artifact: copyFace,
+          codeRef: copyFace.codeRef,
+          engineEntityId: copyFace.id,
+        },
+        {
+          artifact: secondCopyFace,
+          codeRef: secondCopyFace.codeRef,
+          engineEntityId: secondCopyFace.id,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph
+  )
+  if (coerced instanceof Error) throw coerced
+  expect(coerced.graphSelections).toHaveLength(1)
+  expect(coerced).toMatchObject({
+    graphSelections: [
+      {
+        artifact: pattern,
+        engineEntityId: 'copy-body-2',
+        patternIndex: 2,
+      },
+    ],
+  })
+})
+
+test('a pattern source body remains a direct body selection', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: [],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const sourceBody = {
+    type: 'sweep',
+    id: pattern.sourceId,
+    codeRef: pattern.codeRef,
+  } as unknown as Artifact
+  const artifactGraph: ArtifactGraph = new Map([
+    [pattern.id, pattern],
+    [sourceBody.id, sourceBody],
+  ])
+  const sendSceneCommand = vi.fn()
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: pattern.sourceId } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).not.toHaveBeenCalled()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: sourceBody,
+        engineEntityId: sourceBody.id,
+      },
+    },
+  })
+})
+
+test('unmaterialized pattern topology falls back to its engine parent', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: ['copy-face-2'],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+  const sendSceneCommand = vi.fn(async () => ({
+    success: true,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: {
+          type: 'entity_get_parent_id',
+          data: { entity_id: 'copy-body-2' },
+        },
+      },
+    },
+  }))
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: 'copy-face-2' } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).toHaveBeenCalledOnce()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: pattern,
+        engineEntityId: 'copy-body-2',
+        patternIndex: 2,
+      },
+    },
+  })
+})
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1728,6 +1929,42 @@ describe('pattern copy selection highlighting', () => {
       'copy-face-id',
       'copy-edge-id',
     ])
+  })
+
+  test('prefers the owning pattern only when pattern lookup is requested', () => {
+    const materializedCopy = {
+      type: 'sweep',
+      id: 'copy-body-id',
+      codeRef: { range: selectionCodeRef.range, nodePath: [] },
+      pathId: 'source-path-id',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'new',
+      trajectoryId: null,
+      consumed: false,
+    } as unknown as Artifact
+    const graph = new Map([
+      [patternArtifact.id, patternArtifact],
+      [materializedCopy.id, materializedCopy],
+    ])
+
+    expect(
+      getBodySelectionFromPrimitiveParentEntityId(materializedCopy.id, graph)
+        ?.artifact
+    ).toBe(materializedCopy)
+
+    const result = getBodySelectionFromPrimitiveParentEntityId(
+      materializedCopy.id,
+      graph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+      }
+    )
+
+    expect(result?.artifact).toBe(patternArtifact)
+    expect(result?.engineEntityId).toBe(materializedCopy.id)
   })
 
   test('keeps a selected copied pattern entity highlighted through selection batching', () => {

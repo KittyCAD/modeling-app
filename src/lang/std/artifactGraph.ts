@@ -33,6 +33,19 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
+export const BODY_ARTIFACT_TYPES = [
+  'path',
+  'sweep',
+  'compositeSolid',
+  'pattern',
+] as const satisfies readonly Artifact['type'][]
+
+export type BodyArtifactType = (typeof BODY_ARTIFACT_TYPES)[number]
+
+export function isBodyArtifactType(type: unknown): type is BodyArtifactType {
+  return BODY_ARTIFACT_TYPES.some((bodyType) => bodyType === type)
+}
+
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
 }
@@ -148,6 +161,106 @@ export function getPatternArtifactForCopyId(
         artifact.copyFaceIds.includes(id) ||
         artifact.copyEdgeIds.includes(id))
   )
+}
+
+export function getPatternSelectionIndex(
+  selection: Selection & {
+    artifact: Extract<Artifact, { type: 'pattern' }>
+  }
+): number | undefined | Error {
+  const { artifact, engineEntityId, patternIndex } = selection
+
+  if (patternIndex !== undefined) {
+    if (
+      !Number.isInteger(patternIndex) ||
+      patternIndex < 0 ||
+      patternIndex > artifact.copyIds.length
+    ) {
+      return new Error(`Invalid pattern instance index: ${patternIndex}`)
+    }
+    return patternIndex
+  }
+
+  if (engineEntityId === undefined) {
+    return undefined
+  }
+  if (engineEntityId === artifact.sourceId) {
+    return 0
+  }
+
+  const copyIndex = artifact.copyIds.indexOf(engineEntityId)
+  if (copyIndex < 0) {
+    return new Error('Selected entity is not a body instance in the pattern')
+  }
+  return copyIndex + 1
+}
+
+function getPatternCopyBodyId(
+  selection: Selection & { artifact: Artifact },
+  artifactGraph: ArtifactGraph
+): ArtifactId | undefined {
+  const { artifact } = selection
+
+  if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+    return artifact.id
+  }
+  if (artifact.type === 'path') {
+    return artifact.sweepId ?? artifact.id
+  }
+  if (
+    artifact.type === 'wall' ||
+    artifact.type === 'cap' ||
+    artifact.type === 'sweepEdge'
+  ) {
+    return artifact.sweepId
+  }
+  if (artifact.type === 'primitiveFace' || artifact.type === 'primitiveEdge') {
+    return artifact.solidId
+  }
+  if (artifact.type === 'segment') {
+    const path = artifactGraph.get(artifact.pathId)
+    return path?.type === 'path' ? (path.sweepId ?? path.id) : undefined
+  }
+  if (artifact.type === 'edgeCut') {
+    const sweep = getSweepArtifactFromSelection(selection, artifactGraph)
+    return err(sweep) ? undefined : sweep.id
+  }
+
+  return selection.engineEntityId ?? artifact.id
+}
+
+function getPatternBodySelection(
+  selection: Selection & { artifact: Artifact },
+  artifactGraph: ArtifactGraph
+): Selection | undefined | Error {
+  if (selection.artifact.type === 'pattern') {
+    return selection
+  }
+
+  const bodyId = getPatternCopyBodyId(selection, artifactGraph)
+  if (!bodyId) return undefined
+
+  const pattern = getPatternArtifactForCopyId(bodyId, artifactGraph)
+  if (!pattern || !pattern.copyIds.includes(bodyId)) return undefined
+
+  const patternIndex = getPatternSelectionIndex({
+    artifact: pattern,
+    codeRef: pattern.codeRef,
+    engineEntityId: bodyId,
+  })
+  if (patternIndex instanceof Error || patternIndex === undefined) {
+    return patternIndex instanceof Error
+      ? patternIndex
+      : new Error('Could not resolve the selected pattern instance')
+  }
+
+  return {
+    ...selection,
+    artifact: pattern,
+    codeRef: pattern.codeRef,
+    engineEntityId: bodyId,
+    patternIndex,
+  }
 }
 
 export function expandPlane(
@@ -934,7 +1047,7 @@ export function coerceSelectionsToBody(
   artifactGraph: ArtifactGraph
 ): Selections | Error {
   const bodySelections: Selection[] = []
-  const seenBodyIds = new Set<string>()
+  const seenBodyKeys = new Set<string>()
 
   for (const selection of selections.graphSelections) {
     if (!selection.artifact) {
@@ -947,17 +1060,36 @@ export function coerceSelectionsToBody(
       continue
     }
 
+    const patternBodySelection = getPatternBodySelection(
+      selection as Selection & { artifact: Artifact },
+      artifactGraph
+    )
+    if (patternBodySelection instanceof Error) {
+      return patternBodySelection
+    }
+    const bodySelection = patternBodySelection ?? selection
+
     // If it's already a body type, use it directly
     if (
-      selection.artifact.type === 'sweep' ||
-      selection.artifact.type === 'compositeSolid' ||
-      selection.artifact.type === 'pattern' ||
-      selection.artifact.type === 'path'
+      bodySelection.artifact &&
+      isBodyArtifactType(bodySelection.artifact.type)
     ) {
-      const bodyId = selection.engineEntityId ?? selection.artifact.id
-      if (!seenBodyIds.has(bodyId)) {
-        seenBodyIds.add(bodyId)
-        bodySelections.push(selection)
+      let bodyKey = bodySelection.artifact.id
+      if (bodySelection.artifact.type === 'pattern') {
+        const patternIndex = getPatternSelectionIndex({
+          ...bodySelection,
+          artifact: bodySelection.artifact,
+        })
+        if (patternIndex instanceof Error) {
+          return patternIndex
+        }
+        bodyKey = `pattern:${bodySelection.artifact.id}:${
+          patternIndex === undefined ? 'all' : `index:${patternIndex}`
+        }`
+      }
+      if (!seenBodyKeys.has(bodyKey)) {
+        seenBodyKeys.add(bodyKey)
+        bodySelections.push(bodySelection)
       }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts
@@ -976,8 +1108,8 @@ export function coerceSelectionsToBody(
       )
       if (!err(maybePath)) {
         // Successfully got the path from the sweep
-        if (!seenBodyIds.has(maybePath.id)) {
-          seenBodyIds.add(maybePath.id)
+        if (!seenBodyKeys.has(maybePath.id)) {
+          seenBodyKeys.add(maybePath.id)
           bodySelections.push({
             artifact: maybePath,
             codeRef: maybePath.codeRef,
@@ -989,8 +1121,8 @@ export function coerceSelectionsToBody(
           { key: maybeSweep.id, types: ['sweep'] },
           artifactGraph
         )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
+        if (!err(sweepWithType) && !seenBodyKeys.has(sweepWithType.id)) {
+          seenBodyKeys.add(sweepWithType.id)
           bodySelections.push({
             artifact: sweepWithType,
             codeRef: maybeSweep.codeRef,

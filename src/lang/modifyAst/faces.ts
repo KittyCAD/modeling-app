@@ -1051,9 +1051,10 @@ export function isFaceArtifact(artifact: Artifact | undefined): boolean {
 export function retrieveFaceSelectionsFromOpArgs(
   solidsArg: OpArg,
   facesArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code?: string
 ) {
-  const solids = retrieveSelectionsFromOpArg(solidsArg, artifactGraph)
+  const solids = retrieveSelectionsFromOpArg(solidsArg, artifactGraph, code)
   if (err(solids)) {
     return solids
   }
