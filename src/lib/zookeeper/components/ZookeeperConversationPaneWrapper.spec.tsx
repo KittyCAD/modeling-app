@@ -5,18 +5,23 @@ import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
+  const applyFilePatch = vi.fn(
+    async (_input: { files: { path: string; contents: string | null }[] }) =>
+      undefined
+  )
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const project = {
+    name: 'demo',
+    path: '/workspace/demo',
+    executingPath: '/workspace/demo/other.kcl',
+    executingFileEntry: { value: { name: 'main.kcl' } },
+  }
   const projectSession = {
-    project: {
-      value: {
-        name: 'demo',
-        path: '/workspace/demo',
-        executingPath: '/workspace/demo/main.kcl',
-        executingFileEntry: { value: { name: 'main.kcl' } },
-      },
-    },
+    project: { value: project },
+    getProject: () => project,
+    applyFilePatch,
   }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
@@ -32,8 +37,10 @@ const mocks = vi.hoisted(() => {
   }
 
   return {
+    applyFilePatch,
     kclManager,
     zookeeperSubscribe,
+    project,
     projectSession,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
@@ -137,14 +144,9 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
   },
 }))
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof SystemIOUtils>()
-
-  return {
-    ...original,
-    waitForIdleState: vi.fn(async () => undefined),
-  }
-})
+vi.mock('@src/machines/systemIO/utils', async (importOriginal) =>
+  importOriginal<typeof SystemIOUtils>()
+)
 
 vi.mock('@src/routes/utils', () => ({
   IS_STAGING_OR_DEBUG: false,
@@ -193,8 +195,10 @@ async function flushQueuedWork() {
 describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
+    mocks.applyFilePatch.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
     mocks.kclManager.path = '/workspace/demo/main.kcl'
+    mocks.project.executingPath = '/workspace/demo/other.kcl'
     mocks.watchCallback = undefined
 
     render(
@@ -214,24 +218,26 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     emitZookeeperFileRequest('intermediate code')
 
+    await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1))
+
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+    const firstNavigation = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstNavigation.onProjectLoaderComplete).toEqual(
+      expect.any(Function)
+    )
 
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstRequest.onSuccess).toEqual(expect.any(Function))
-
-    // The filesystem callback completes before the route/editor refresh callback.
+    // The filesystem patch completes before the route/editor refresh callback.
     // Starting the next edit here can let the older refresh win and leave stale
     // intermediate KCL visible in the editor.
-    firstRequest.onFileSystemSuccess()
     await flushQueuedWork()
 
     emitZookeeperFileRequest('final code')
     await flushQueuedWork()
 
-    expect(mocks.systemIOSend).toHaveBeenCalledTimes(1)
+    expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1)
 
     // Once the editor refresh has completed, the queued final edit can run.
-    firstRequest.onSuccess()
+    firstNavigation.onProjectLoaderComplete()
 
     expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
       'intermediate code',
@@ -244,19 +250,21 @@ describe('ZookeeperConversationPaneWrapper', () => {
       }
     )
 
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(2))
 
-    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
-    expect(secondRequest.files[0]).toMatchObject({
-      requestedFileName: 'main.kcl',
-      requestedCode: 'final code',
+    const secondPatch = mocks.applyFilePatch.mock.calls[1][0]
+    expect(secondPatch.files[0]).toMatchObject({
+      path: '/workspace/demo/main.kcl',
+      contents: 'final code',
     })
   })
 
   test('does not refresh a file that is no longer active or stall later edits', async () => {
     mocks.systemIOSend.mockClear()
+    mocks.applyFilePatch.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
     mocks.kclManager.path = '/workspace/demo/main.kcl'
+    mocks.project.executingPath = '/workspace/demo/other.kcl'
     mocks.watchCallback = undefined
 
     render(
@@ -273,16 +281,16 @@ describe('ZookeeperConversationPaneWrapper', () => {
     )
 
     emitZookeeperFileRequest('intermediate code')
+    await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1))
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
 
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    firstRequest.onFileSystemSuccess()
+    const firstNavigation = mocks.systemIOSend.mock.calls[0][0].data
     mocks.kclManager.path = '/workspace/demo/other.kcl'
-    firstRequest.onSuccess()
+    firstNavigation.onProjectLoaderComplete()
 
     expect(mocks.kclManager.updateCodeEditor).not.toHaveBeenCalled()
 
     emitZookeeperFileRequest('final code')
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(2))
   })
 })
