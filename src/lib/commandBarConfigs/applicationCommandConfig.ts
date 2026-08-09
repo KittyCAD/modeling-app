@@ -194,11 +194,10 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit(data) {
       if (data) {
-        /** TODO: Make a new machine for models. This is only a temporary location
-         * to move it to the global application level. To reduce its footprint
-         * and complexity the implementation lives here with systemIOMachine. Not
-         * inside the systemIOMachine. We can have a fancy model machine that loads
-         * KCL samples
+        /**
+         * TODO: Move imported model handling into a domain service. This command
+         * currently handles KCL samples and model files directly through project
+         * session operations.
          */
         const error = "The command couldn't be submitted, check the arguments."
         const session = app.registry.get(projectSession)

@@ -279,7 +279,11 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     const projectDirectoryPath = () =>
       page.evaluate(
         () =>
-          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
+          window.app.settings
+            .get()
+            .app.libraries.current.find(
+              (library) => library.type === 'directory'
+            )?.path
       )
     const nestedProjectSettingsFile = async () =>
       fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
