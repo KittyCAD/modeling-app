@@ -361,10 +361,7 @@ export class App implements AppSubsystems {
         return
       }
 
-      const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
-        executingEditor
-      )
+      const disposeFSHistory = buildFSHistoryExtension(session, executingEditor)
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
         kclManager: executingEditor,
         onCurrentFileDelete: async (deletedPaths) => {

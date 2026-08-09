@@ -9,6 +9,7 @@ import type { ZDSProject } from '@src/lang/KclManager'
 import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import {
   type ProjectSessionApplyFilePatchInput,
+  type ProjectSessionArchiveEntryInput,
   type ProjectSessionEntryCopyMoveInput,
   type ProjectSessionEntryPathInput,
   type ProjectSessionEntryRenameInput,
@@ -16,6 +17,7 @@ import {
   type ProjectSessionMutationOperation,
   type ProjectSessionMutationState,
   type ProjectSessionOpenEditorInput,
+  type ProjectSessionRestoreEntryInput,
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
@@ -252,9 +254,15 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         input.targetPath,
         (currentProject) => currentProject.moveEntry(input)
       ),
-    archiveEntry: (input: ProjectSessionEntryPathInput) =>
+    archiveEntry: (input: ProjectSessionArchiveEntryInput) =>
       runQueuedProjectMutation('archive-entry', input.path, (currentProject) =>
         currentProject.archiveEntry(input)
+      ),
+    restoreEntry: (input: ProjectSessionRestoreEntryInput) =>
+      runQueuedProjectMutation(
+        'restore-entry',
+        input.targetPath,
+        (currentProject) => currentProject.restoreEntry(input)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
       runQueuedProjectMutation(
