@@ -74,6 +74,10 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
+  type ProjectSessionRegistryService,
+  projectSessionService,
+} from '@src/registry/contracts/projectSession'
+import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
@@ -173,15 +177,21 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
-  public currentProjectLibraryIdSignal: Signal<string | undefined> =
-    signal(undefined)
+  private get projectSession(): ProjectSessionRegistryService {
+    return this.registry.get(projectSessionService)
+  }
+  public get projectSignal(): Signal<ZDSProject | undefined> {
+    return this.projectSession.project
+  }
+  public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
+    return this.projectSession.currentProjectLibraryId
+  }
   public debug: AppDebug = {}
   get project() {
-    return this.projectSignal.value
+    return this.projectSession.getProject()
   }
   set project(newProject: ZDSProject | undefined) {
-    this.projectSignal.value = newProject
+    this.projectSession.setProject(newProject)
   }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
