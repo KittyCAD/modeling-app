@@ -92,6 +92,25 @@ describe('project session extension', () => {
     expect(projectSession.projectTree.value).toBeUndefined()
   })
 
+  it('mirrors external updates from the opened project tree signal', () => {
+    const projectSession = configureProjectSession()
+    const project = createFakeProject()
+    const updatedProjectTree = createProjectTree('bracket-updated')
+
+    projectSession.setProject(project)
+
+    project.projectIORefSignal.value = updatedProjectTree
+
+    expect(projectSession.getProjectTree()).toBe(updatedProjectTree)
+    expect(projectSession.projectTree.value).toBe(updatedProjectTree)
+
+    projectSession.clearProject()
+    project.projectIORefSignal.value = createProjectTree('after-clear')
+
+    expect(projectSession.getProjectTree()).toBeUndefined()
+    expect(projectSession.projectTree.value).toBeUndefined()
+  })
+
   it('tracks the current project library id', () => {
     const projectSession = configureProjectSession()
 
