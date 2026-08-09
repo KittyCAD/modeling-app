@@ -2,21 +2,11 @@ import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/pla
 import type { Project } from '@src/lib/project'
 
 export function getProjectExplorerProjectWithPlaceholders({
-  loadedProject,
-  projects,
+  project,
 }: {
-  loadedProject: Project
-  projects: Project[] | undefined
+  project: Project
 }) {
-  const sourceProject =
-    projects?.find((p) => p.name === loadedProject.name) ??
-    (projects === undefined ? loadedProject : null)
-
-  if (!sourceProject) {
-    return null
-  }
-
-  const duplicated = structuredClone(sourceProject)
+  const duplicated = structuredClone(project)
   addPlaceHoldersForNewFileAndFolder(duplicated.children, duplicated.path)
   return duplicated
 }

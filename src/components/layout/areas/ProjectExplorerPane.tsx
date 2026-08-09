@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
@@ -27,22 +28,21 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useFolders,
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
+  useSignals()
   const app = useApp()
   const { commands, systemIOActor, layout } = app
-  const project = app.registry.get(projectSession).project.value
+  const session = app.registry.get(projectSession)
+  const project = session.project.value
+  const projectTree = session.projectTree.value
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
@@ -60,23 +60,12 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
 
-    const loadedProject = project.projectIORefSignal.value
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-    }
-
     const duplicated = getProjectExplorerProjectWithPlaceholders({
-      loadedProject,
-      projects,
+      project: projectTree ?? project.projectIORefSignal.value,
     })
 
-    if (!duplicated) {
-      return
-    }
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
+  }, [file, project, projectTree])
 
   const [createFilePressed, setCreateFilePressed] = useState<number>(0)
   const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
@@ -264,6 +253,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             createFilePressed={createFilePressed}
             createFolderPressed={createFolderPressed}
             refreshExplorerPressed={refreshExplorerPressed}
+            onRefreshExplorer={() =>
+              projectSession.refreshProjectTree().catch(reportRejection)
+            }
             collapsePressed={collapsePressed}
             onRowClicked={onRowClicked}
             onRowDoubleClicked={onRowDoubleClicked}
