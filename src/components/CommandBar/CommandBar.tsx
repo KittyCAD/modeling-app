@@ -106,6 +106,7 @@ export const CommandBar = () => {
     () => cmd.send({ type: 'Close' }),
     project?.executingEditor.value ?? undefined,
     {
+      enabled: isCommandBarOpen,
       enableOnFormTags: true,
       enableOnContentEditable: true,
     }

@@ -10,13 +10,18 @@ import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
+  commandKey,
   commandSystemService,
+  getEffectiveCommandScopeSet,
+  isCommandAvailable,
   provideCommand,
 } from '@src/registry/contracts/commands'
 import {
+  DEFAULT_KEYMAP_SCOPES,
   FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
   FILE_KEYMAP_SCOPES,
   GLOBAL_KEYMAP_SCOPES,
+  getKeymapItemScopes,
   HOME_KEYMAP_SCOPE,
   MODE_MODELING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
@@ -27,6 +32,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension } from '.'
 import { APP_COMMAND_IDS, appCommands } from './appCommands'
@@ -52,6 +58,12 @@ function createCommandBarContext({
   }
 
   return context
+}
+
+function commandIds(
+  groups: Readonly<Record<string, Readonly<Record<string, string>>>>
+) {
+  return Object.values(groups).flatMap((group) => Object.values(group))
 }
 
 describe('commands extension', () => {
@@ -99,20 +111,60 @@ describe('commands extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('provides toolbar commands for keymap-backed tool selection', () => {
-    expect(toolbarCommands.map((command) => command.id)).toContain(
-      TOOLBAR_COMMAND_IDS.sketchSolve.vertical
+  it('provides a toolbar command for every toolbar command id', () => {
+    expect(toolbarCommands.map((command) => command.id).toSorted()).toEqual(
+      commandIds(TOOLBAR_COMMAND_IDS).toSorted()
     )
   })
 
   it('provides an app command for every app command id', () => {
-    const appCommandIds = Object.values(APP_COMMAND_IDS).flatMap((group) =>
-      Object.values(group)
+    expect(appCommands.map((command) => command.id).toSorted()).toEqual(
+      commandIds(APP_COMMAND_IDS).toSorted()
+    )
+  })
+
+  it('keeps static default keybindings within command availability', () => {
+    const staticCommandIds = [
+      ...commandIds(APP_COMMAND_IDS),
+      ...commandIds(TOOLBAR_COMMAND_IDS),
+    ]
+    const staticCommandPrefixes = [
+      ...new Set(
+        staticCommandIds.map((id) => id.slice(0, id.lastIndexOf('.') + 1))
+      ),
+    ]
+    const commandsByKey = new Map(
+      [...appCommands, ...toolbarCommands].map((command) => [
+        commandKey(command),
+        command,
+      ])
+    )
+    const staticBindings = defaultKeymap.bindings.filter((binding) =>
+      staticCommandPrefixes.some((prefix) => binding.command.startsWith(prefix))
     )
 
-    expect(appCommands.map((command) => command.id).toSorted()).toEqual(
-      appCommandIds.toSorted()
-    )
+    for (const binding of staticBindings) {
+      const command = commandsByKey.get(binding.command)
+      expect(
+        command,
+        `Default keybinding ${binding.id} targets missing static command ${binding.command}`
+      ).toBeDefined()
+      if (!command) {
+        continue
+      }
+
+      const unavailableScopes = getKeymapItemScopes(binding).filter(
+        (scope) =>
+          !isCommandAvailable(
+            command,
+            getEffectiveCommandScopeSet([scope], DEFAULT_KEYMAP_SCOPES)
+          )
+      )
+      expect(
+        unavailableScopes,
+        `Default keybinding ${binding.id} exceeds ${binding.command} availability`
+      ).toEqual([])
+    }
   })
 
   it.each([
