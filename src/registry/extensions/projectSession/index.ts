@@ -7,24 +7,212 @@ import {
 import { signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
 import {
-  projectSession,
+  type ProjectSessionApplyFilePatchInput,
+  type ProjectSessionEntryCopyMoveInput,
+  type ProjectSessionEntryPathInput,
+  type ProjectSessionEntryRenameInput,
+  type ProjectSessionFileWriteInput,
+  type ProjectSessionMutationOperation,
+  type ProjectSessionMutationState,
+  type ProjectSessionOpenEditorInput,
   type ProjectSessionService,
+  projectSession,
 } from '@src/registry/contracts/projectSession'
 
 export const projectSessionExtension = defineRegistryItemFactory(() => {
   const project = signal<ZDSProject | undefined>(undefined)
+  const projectTree = signal(project.value?.projectIORefSignal.value)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
+  const mutation = signal<ProjectSessionMutationState>({ pending: false })
+
+  const setMutation = ({
+    pending,
+    operation,
+    targetPath,
+    lastTargetPath,
+  }: ProjectSessionMutationState) => {
+    mutation.value = {
+      pending,
+      ...(operation ? { operation } : {}),
+      ...(targetPath ? { targetPath } : {}),
+      ...(lastTargetPath ? { lastTargetPath } : {}),
+    }
+  }
+
+  const requireProject = () => {
+    const currentProject = project.value
+    if (!currentProject) {
+      throw new Error('No project is currently open.')
+    }
+    return currentProject
+  }
+
+  const syncProjectTree = () => {
+    projectTree.value = project.value?.projectIORefSignal.value
+    return projectTree.value
+  }
+
+  const refreshProjectTree = async () => {
+    const currentProject = project.value
+    if (!currentProject) {
+      projectTree.value = undefined
+      return undefined
+    }
+
+    setMutation({
+      pending: true,
+      operation: 'refresh-project-tree',
+      targetPath: currentProject.path,
+      lastTargetPath: mutation.value.lastTargetPath,
+    })
+    try {
+      projectTree.value = await currentProject.refreshProjectTree()
+      return projectTree.value
+    } finally {
+      setMutation({
+        pending: false,
+        operation: 'refresh-project-tree',
+        lastTargetPath: currentProject.path,
+      })
+    }
+  }
+
+  const runProjectMutation = async <Result>(
+    operation: ProjectSessionMutationOperation,
+    targetPath: string | undefined,
+    run: (currentProject: ZDSProject) => Promise<Result>,
+    options: { refreshProjectTree?: boolean } = {}
+  ) => {
+    const currentProject = requireProject()
+    setMutation({
+      pending: true,
+      operation,
+      targetPath,
+      lastTargetPath: mutation.value.lastTargetPath,
+    })
+    try {
+      const result = await run(currentProject)
+      if (options.refreshProjectTree ?? true) {
+        projectTree.value = await currentProject.refreshProjectTree()
+      } else {
+        syncProjectTree()
+      }
+      setMutation({
+        pending: false,
+        operation,
+        lastTargetPath: targetPath,
+      })
+      return result
+    } catch (error) {
+      setMutation({
+        pending: false,
+        operation,
+        lastTargetPath: targetPath,
+      })
+      return Promise.reject(error)
+    }
+  }
 
   const serviceImpl: ProjectSessionService = {
     project,
+    projectTree,
     currentProjectLibraryId,
+    mutation,
     getProject: () => project.value,
     setProject: (nextProject) => {
       project.value = nextProject
+      syncProjectTree()
     },
     clearProject: () => {
       project.value = undefined
+      syncProjectTree()
     },
+    getProjectTree: () => projectTree.value,
+    refreshProjectTree,
+    openEditor: (input: ProjectSessionOpenEditorInput) =>
+      runProjectMutation(
+        'open-editor',
+        input.path,
+        (currentProject) =>
+          currentProject.openEditor(
+            input.path,
+            input.editor,
+            input.code,
+            input.isExecuting
+          ),
+        { refreshProjectTree: false }
+      ),
+    closeEditor: (input: ProjectSessionEntryPathInput) => {
+      setMutation({
+        pending: true,
+        operation: 'close-editor',
+        targetPath: input.path,
+        lastTargetPath: mutation.value.lastTargetPath,
+      })
+      try {
+        requireProject().closeEditor(input.path)
+      } finally {
+        setMutation({
+          pending: false,
+          operation: 'close-editor',
+          lastTargetPath: input.path,
+        })
+      }
+    },
+    closeAllEditors: () => {
+      setMutation({
+        pending: true,
+        operation: 'close-all-editors',
+        lastTargetPath: mutation.value.lastTargetPath,
+      })
+      try {
+        requireProject().closeAllEditors()
+      } finally {
+        setMutation({
+          pending: false,
+          operation: 'close-all-editors',
+          lastTargetPath: mutation.value.lastTargetPath,
+        })
+      }
+    },
+    createFile: (input: ProjectSessionFileWriteInput) =>
+      runProjectMutation('create-file', input.path, (currentProject) =>
+        currentProject.createFile(input)
+      ),
+    writeFile: (input: ProjectSessionFileWriteInput) =>
+      runProjectMutation('write-file', input.path, (currentProject) =>
+        currentProject.writeFile(input)
+      ),
+    createFolder: (input: ProjectSessionEntryPathInput) =>
+      runProjectMutation('create-folder', input.path, (currentProject) =>
+        currentProject.createFolder(input)
+      ),
+    renameEntry: (input: ProjectSessionEntryRenameInput) =>
+      runProjectMutation('rename-entry', input.newPath, (currentProject) =>
+        currentProject.renameEntry(input)
+      ),
+    deleteEntry: (input: ProjectSessionEntryPathInput) =>
+      runProjectMutation('delete-entry', input.path, (currentProject) =>
+        currentProject.deleteEntry(input)
+      ),
+    copyEntry: (input: ProjectSessionEntryCopyMoveInput) =>
+      runProjectMutation('copy-entry', input.targetPath, (currentProject) =>
+        currentProject.copyEntry(input)
+      ),
+    moveEntry: (input: ProjectSessionEntryCopyMoveInput) =>
+      runProjectMutation('move-entry', input.targetPath, (currentProject) =>
+        currentProject.moveEntry(input)
+      ),
+    archiveEntry: (input: ProjectSessionEntryPathInput) =>
+      runProjectMutation('archive-entry', input.path, (currentProject) =>
+        currentProject.archiveEntry(input)
+      ),
+    applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
+      runProjectMutation(
+        'apply-file-patch',
+        input.files.at(-1)?.path,
+        (currentProject) => currentProject.applyFilePatch(input)
+      ),
     getCurrentProjectLibraryId: () => currentProjectLibraryId.value,
     setCurrentProjectLibraryId: (libraryId) => {
       currentProjectLibraryId.value = libraryId
