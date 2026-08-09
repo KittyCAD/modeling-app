@@ -32,11 +32,14 @@ import {
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor, layout } = useApp()
+  const app = useApp()
+  const { commands, systemIOActor, layout } = app
+  const project = app.registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()

@@ -8,6 +8,7 @@ import fsZds from '@src/lib/fs-zds'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
@@ -16,7 +17,9 @@ export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
   useSignals()
-  const { settings, project } = useApp()
+  const app = useApp()
+  const { settings } = app
+  const project = app.registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useAuthNavigation()

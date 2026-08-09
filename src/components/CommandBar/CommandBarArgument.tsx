@@ -11,6 +11,7 @@ import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -75,7 +76,8 @@ function ArgumentInput({
   onSubmit: (event: any) => void
 }) {
   const app = useApp()
-  const executingEditor = app.project?.executingEditor.value
+  const executingEditor = app.registry.get(projectSession).project.value
+    ?.executingEditor.value
   // @ts-ignore
   switch (arg.inputType) {
     case 'options':
