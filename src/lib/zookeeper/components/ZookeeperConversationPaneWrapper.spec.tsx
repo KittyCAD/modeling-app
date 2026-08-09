@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => {
     async (_input: { files: { path: string; contents: string | null }[] }) =>
       undefined
   )
+  const navigate = vi.fn()
+  const openFile = vi.fn(async () => ({}))
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
@@ -22,6 +24,8 @@ const mocks = vi.hoisted(() => {
     project: { value: project },
     getProject: () => project,
     applyFilePatch,
+    openFile,
+    navigate,
   }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
@@ -40,6 +44,8 @@ const mocks = vi.hoisted(() => {
     applyFilePatch,
     kclManager,
     zookeeperSubscribe,
+    navigate,
+    openFile,
     project,
     projectSession,
     systemIOSend,
@@ -91,6 +97,9 @@ vi.mock('@src/lib/boot', () => ({
     registry: {
       get: vi.fn(() => mocks.projectSession),
     },
+    singletons: {
+      kclManager: mocks.kclManager,
+    },
     settings: {
       actor: { send: vi.fn() },
       useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
@@ -113,6 +122,7 @@ vi.mock('@src/lib/fs-zds', () => ({
     readFile: vi.fn(async () => 'current disk code'),
     relative: (from: string, to: string) =>
       to.startsWith(`${from}/`) ? to.slice(from.length + 1) : to,
+    resolve: (path: string) => path.replaceAll(/\/+/g, '/'),
     sep: '/',
   },
 }))
@@ -196,10 +206,19 @@ describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
     mocks.applyFilePatch.mockClear()
+    mocks.navigate.mockClear()
+    mocks.openFile.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
     mocks.kclManager.path = '/workspace/demo/main.kcl'
     mocks.project.executingPath = '/workspace/demo/other.kcl'
     mocks.watchCallback = undefined
+    let finishOpenFile: (() => void) | undefined
+    mocks.openFile.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishOpenFile = () => resolve({})
+        })
+    )
 
     render(
       <ZookeeperConversationPaneWrapper
@@ -220,13 +239,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1))
 
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
-    const firstNavigation = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstNavigation.onProjectLoaderComplete).toEqual(
-      expect.any(Function)
-    )
-
-    // The filesystem patch completes before the route/editor refresh callback.
+    // The filesystem patch completes before the open-file refresh completes.
     // Starting the next edit here can let the older refresh win and leave stale
     // intermediate KCL visible in the editor.
     await flushQueuedWork()
@@ -236,19 +249,22 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1)
 
-    // Once the editor refresh has completed, the queued final edit can run.
-    firstNavigation.onProjectLoaderComplete()
+    // Once the file open has completed, the queued final edit can run.
+    finishOpenFile?.()
 
-    expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
-      'intermediate code',
-      {
-        shouldAddToHistory: false,
-        shouldClearHistory: false,
-        shouldExecute: true,
-        shouldResetCamera: true,
-        shouldWriteToDisk: false,
-      }
-    )
+    await waitFor(() => {
+      expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
+        'intermediate code',
+        {
+          shouldAddToHistory: false,
+          shouldClearHistory: false,
+          shouldExecute: true,
+          shouldResetCamera: true,
+          shouldWriteToDisk: false,
+        }
+      )
+    })
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalled())
 
     await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(2))
 
@@ -262,10 +278,19 @@ describe('ZookeeperConversationPaneWrapper', () => {
   test('does not refresh a file that is no longer active or stall later edits', async () => {
     mocks.systemIOSend.mockClear()
     mocks.applyFilePatch.mockClear()
+    mocks.navigate.mockClear()
+    mocks.openFile.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
     mocks.kclManager.path = '/workspace/demo/main.kcl'
     mocks.project.executingPath = '/workspace/demo/other.kcl'
     mocks.watchCallback = undefined
+    let finishOpenFile: (() => void) | undefined
+    mocks.openFile.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishOpenFile = () => resolve({})
+        })
+    )
 
     render(
       <ZookeeperConversationPaneWrapper
@@ -282,11 +307,10 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     emitZookeeperFileRequest('intermediate code')
     await waitFor(() => expect(mocks.applyFilePatch).toHaveBeenCalledTimes(1))
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
 
-    const firstNavigation = mocks.systemIOSend.mock.calls[0][0].data
     mocks.kclManager.path = '/workspace/demo/other.kcl'
-    firstNavigation.onProjectLoaderComplete()
+    finishOpenFile?.()
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledTimes(1))
 
     expect(mocks.kclManager.updateCodeEditor).not.toHaveBeenCalled()
 

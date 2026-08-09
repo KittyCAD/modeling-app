@@ -278,6 +278,12 @@ describe('project session extension', () => {
       code: 'cube(1)',
       isExecuting: false,
     })
+    await projectSession.openFile({
+      path: '/projects/bracket/other.kcl',
+      editor,
+      code: 'cube(2)',
+      isExecuting: true,
+    })
     projectSession.closeEditor({ path: '/projects/bracket/main.kcl' })
     projectSession.closeAllEditors()
 
@@ -286,6 +292,12 @@ describe('project session extension', () => {
       editor,
       'cube(1)',
       false
+    )
+    expect(project.mocks.openEditor).toHaveBeenCalledWith(
+      '/projects/bracket/other.kcl',
+      editor,
+      'cube(2)',
+      true
     )
     expect(project.mocks.closeEditor).toHaveBeenCalledWith(
       '/projects/bracket/main.kcl'
