@@ -1952,6 +1952,7 @@ box = extrude(profile, length = 30)`
         currentArgValue: '',
         headerArguments: {
           Objects: '',
+          X: '5',
         },
         highlightedHeaderArg: 'objects',
         stage: 'arguments',
@@ -1962,8 +1963,23 @@ box = extrude(profile, length = 30)`
     })
 
     await test.step('Complete command flow', async () => {
-      await test.step('Progress to review since object is already selected', async () => {
+      await test.step('Progress to the prepopulated x argument', async () => {
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '5',
+          headerArguments: {
+            Objects: '1 path',
+            X: '5',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+      })
+
+      await test.step('Clear the default x translation', async () => {
+        await cmdBar.clearNonRequiredButton.click()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
@@ -2011,7 +2027,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '5',
           headerArguments: {
             Objects: '1 path',
             X: '',

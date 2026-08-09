@@ -22,7 +22,7 @@ boltHead = extrude(boltProfile, length = -boltHeadLength, tagStart = $capStart00
   |> fillet(tags = getCommonEdge(faces = [boltProfile.tags.circle1, capStart001]), radius = 0.020)
 
 // Define the sketch of the hex pattern on the screw head
-hexSketch = sketch(on = startSketchOn(boltHead, face = START)) {
+hexSketch = sketch(on = faceOf(boltHead, face = START)) {
   line1 = line(start = [var 0.08in, var 0.05in], end = [var 0.08in, var -0.05in])
   line2 = line(start = [var 0.08in, var -0.05in], end = [var 0in, var -0.09in])
   coincident([line1.end, line2.start])
@@ -37,7 +37,7 @@ hexSketch = sketch(on = startSketchOn(boltHead, face = START)) {
 }
 hexProfile = region(segments = [hexSketch.line1, hexSketch.line2])
 hexPatternSketch = extrude(hexProfile, length = -boltHeadLength * 0.75)
-stemSketch = sketch(on = startSketchOn(boltHead, face = END)) {
+stemSketch = sketch(on = faceOf(boltHead, face = END)) {
   circle1 = circle(start = [var 0.1in, var 0in], center = [var 0in, var 0in])
 }
 stemProfile = region(segments = [stemSketch.circle1])

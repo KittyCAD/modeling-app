@@ -1,0 +1,36 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 25mm, var 0mm], center = [var 20mm, var 0mm])
+}
+
+extrudeRegion = region(segments = [profileSketch.c])
+twistExtrudeRegion = region(segments = [profileSketch.c])
+extrudeToReferenceRegion = region(segments = [profileSketch.c])
+revolveRegion = region(segments = [profileSketch.c])
+revolveAboutEdgeRegion = region(segments = [profileSketch.c])
+sweepRegion = region(segments = [profileSketch.c])
+deleteRegion = region(segments = [profileSketch.c])
+regionTemplate = region(segments = [profileSketch.c])
+
+axisSketch = sketch(on = XY) {
+  axisLine = line(start = [var 0mm, var -20mm], end = [var 0mm, var 20mm])
+}
+
+pathSketch = sketch(on = XZ) {
+  path = line(start = [var 0mm, var 0mm], end = [var 0mm, var 100mm])
+}
+
+extruded = extrude(extrudeRegion, length = 10mm)
+twistExtruded = extrude(twistExtrudeRegion, length = 10mm, twistAngle = 90deg)
+extrudedToReference = extrude(extrudeToReferenceRegion, to = [0mm, 0mm, 10mm])
+revolved = revolve(revolveRegion, axis = Y, angle = 180deg)
+revolvedAboutEdge = revolve(revolveAboutEdgeRegion, axis = axisSketch.axisLine, angle = 180deg)
+swept = sweep(
+  sweepRegion,
+  path = [pathSketch.path],
+  translateProfileToPath = true,
+  orientProfilePerpendicular = true,
+  version = 2,
+)
+delete(deleteRegion)

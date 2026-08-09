@@ -1,10 +1,10 @@
-import { coalesceHomeProjectEntries } from '@src/registry/contracts/homeProjects'
+import { combineHomeProjectEntryContributions } from '@src/registry/contracts/homeProjects'
 import { describe, expect, test } from 'vitest'
 
-describe('coalesceHomeProjectEntries', () => {
+describe('combineHomeProjectEntryContributions', () => {
   test('keeps local-only projects as local entries', () => {
     expect(
-      coalesceHomeProjectEntries([
+      combineHomeProjectEntryContributions([
         {
           source: 'local',
           status: 'local',
@@ -27,7 +27,7 @@ describe('coalesceHomeProjectEntries', () => {
 
   test('keeps cloud-only projects as remote entries', () => {
     expect(
-      coalesceHomeProjectEntries([
+      combineHomeProjectEntryContributions([
         {
           source: 'remote',
           status: 'cloud-only',
@@ -50,7 +50,7 @@ describe('coalesceHomeProjectEntries', () => {
 
   test('keeps cloud-linked local projects keyed by local path', () => {
     expect(
-      coalesceHomeProjectEntries([
+      combineHomeProjectEntryContributions([
         {
           source: 'local',
           status: 'synced',
@@ -72,9 +72,9 @@ describe('coalesceHomeProjectEntries', () => {
     ])
   })
 
-  test('merges local and remote entries with the same cloud project id', () => {
+  test('does not merge local and remote entries with the same cloud project id', () => {
     expect(
-      coalesceHomeProjectEntries([
+      combineHomeProjectEntryContributions([
         {
           source: 'remote',
           status: 'cloud-only',
@@ -98,21 +98,29 @@ describe('coalesceHomeProjectEntries', () => {
       ])
     ).toEqual([
       expect.objectContaining({
+        id: 'remote:remote-123',
+        source: 'remote',
+        status: 'cloud-only',
+        name: 'remote-name',
+        modified: 20,
+        remoteProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
         id: 'local:/projects/local-name',
-        source: 'both',
+        source: 'local',
         status: 'synced',
         name: 'local-name',
         title: 'Local title',
-        modified: 20,
+        modified: 10,
         localProjectPath: '/projects/local-name',
         remoteProjectId: 'remote-123',
       }),
     ])
   })
 
-  test('preserves remote conflict metadata when the local project snapshot is stale', () => {
+  test('keeps stale remote conflict metadata as its own explicit entry', () => {
     expect(
-      coalesceHomeProjectEntries([
+      combineHomeProjectEntryContributions([
         {
           source: 'remote',
           status: 'conflicted',
@@ -140,16 +148,101 @@ describe('coalesceHomeProjectEntries', () => {
       ])
     ).toEqual([
       expect.objectContaining({
-        id: 'local:/projects/local-name',
-        source: 'both',
+        id: 'remote:remote-123',
+        source: 'remote',
         status: 'conflicted',
-        name: 'local-name',
-        title: 'Local title',
+        name: 'remote-name',
+        title: 'Remote title',
         localProjectPath: '/projects/local-name',
         remoteProjectId: 'remote-123',
         conflict: {
           conflictProjectPath: '/projects/local-name (cloud conflict)',
         },
+      }),
+      expect.objectContaining({
+        id: 'local:/projects/local-name',
+        source: 'local',
+        status: 'synced',
+        name: 'local-name',
+        title: 'Local title',
+        localProjectPath: '/projects/local-name',
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+
+  test('does not collapse local-only projects with the same path', () => {
+    expect(
+      combineHomeProjectEntryContributions([
+        {
+          source: 'local',
+          status: 'local',
+          libraryId: 'parent-library',
+          name: 'shared-project',
+          localProjectPath: '/projects/shared-project',
+          localProjectName: 'shared-project',
+          modified: 10,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'local',
+          libraryId: 'child-library',
+          name: 'shared-project',
+          localProjectPath: '/projects/shared-project',
+          localProjectName: 'shared-project',
+          modified: 10,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        libraryIds: ['parent-library'],
+      }),
+      expect.objectContaining({
+        libraryIds: ['child-library'],
+      }),
+    ])
+  })
+
+  test('does not deduplicate local entries with the same cloud project id', () => {
+    expect(
+      combineHomeProjectEntryContributions([
+        {
+          source: 'local',
+          status: 'synced',
+          libraryId: 'directory-library',
+          name: 'older-project',
+          localProjectPath: '/projects/older-project',
+          localProjectName: 'older-project',
+          remoteProjectId: 'remote-123',
+          modified: 10,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'synced',
+          libraryId: 'cloud-library',
+          name: 'newer-project',
+          localProjectPath: '/cloud/newer-project',
+          localProjectName: 'newer-project',
+          remoteProjectId: 'remote-123',
+          modified: 20,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'local:/projects/older-project',
+        name: 'older-project',
+        libraryIds: ['directory-library'],
+        remoteProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
+        id: 'local:/cloud/newer-project',
+        name: 'newer-project',
+        libraryIds: ['cloud-library'],
+        remoteProjectId: 'remote-123',
       }),
     ])
   })

@@ -1,0 +1,10 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+// The harness resends this raw command to model the second profile in
+// extrude([sharedRegion, sharedRegion], ...) below KCL's liveness check.
+extrude(sharedRegion, length = 10mm)

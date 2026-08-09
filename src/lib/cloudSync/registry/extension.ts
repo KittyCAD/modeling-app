@@ -8,6 +8,7 @@ import { effect, signal, untracked } from '@preact/signals-core'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  deleteCloudSyncDuplicateProjectRealizations,
   deleteCloudSyncLocalProjectRealizations,
   deleteRemoteCloudProject,
   disconnectCloudSyncProject,
@@ -19,7 +20,7 @@ import {
   installCloudSyncFileSystemObserver,
   resolveCloudSyncProjectConflict,
   retryCloudSync,
-  setCloudSyncProjectScope,
+  setCloudSyncOpenedProject,
   startCloudSyncProject,
 } from '@src/lib/cloudSync'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
@@ -167,9 +168,10 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       currentSettings?.plugins?.[CLOUD_SYNC_PLUGIN_ID]?.current === true
     const cloudSyncFeatureEnabled =
       userFeatures.value?.has(OPFS_CLOUD_FEATURE_FLAG, false) ?? true
-    const cloudProjectLibrary = currentSettings?.app.libraries.current.find(
-      (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
-    )
+    const cloudProjectLibraries =
+      currentSettings?.app.libraries.current.filter(
+        (library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE
+      ) ?? []
     const runtimePolicy = {
       ...runtimeConfig.value,
       enabled:
@@ -185,21 +187,33 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
       return
     }
 
-    void getCloudProjectLibraryMaterializationDirectoryPath(cloudProjectLibrary)
-      .catch(() => undefined)
-      .then((cloudProjectDirectoryPath) => {
-        if (version !== runtimePolicyVersion) {
-          return
-        }
-
-        untracked(() =>
-          configureCloudSync({
-            ...runtimePolicy,
-            projectDirectoryPath:
-              runtimePolicy.projectDirectoryPath ?? cloudProjectDirectoryPath,
-          })
+    const cloudProjectDirectoryPathsPromise = Promise.all(
+      cloudProjectLibraries.map((library) =>
+        getCloudProjectLibraryMaterializationDirectoryPath(library).catch(
+          () => undefined
         )
-      })
+      )
+    )
+
+    void cloudProjectDirectoryPathsPromise.then((resolvedProjectPaths) => {
+      if (version !== runtimePolicyVersion) {
+        return
+      }
+
+      const cloudProjectDirectoryPaths = resolvedProjectPaths.filter(
+        (projectDirectoryPath): projectDirectoryPath is string =>
+          Boolean(projectDirectoryPath)
+      )
+      const policyCloudProjectDirectoryPaths =
+        runtimePolicy.cloudProjectDirectoryPaths ?? cloudProjectDirectoryPaths
+
+      untracked(() =>
+        configureCloudSync({
+          ...runtimePolicy,
+          cloudProjectDirectoryPaths: policyCloudProjectDirectoryPaths,
+        })
+      )
+    })
   }
 
   const subscribeToSettingsActor = () => {
@@ -268,11 +282,13 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     },
     installFileSystemObserver: installCloudSyncFileSystemObserver,
     retry: retryCloudSync,
-    setProjectScope: setCloudSyncProjectScope,
+    setOpenedProject: setCloudSyncOpenedProject,
     startProjectSync: startCloudSyncProject,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,
     deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
+    deleteDuplicateProjectRealizations:
+      deleteCloudSyncDuplicateProjectRealizations,
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

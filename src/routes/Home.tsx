@@ -30,7 +30,6 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -73,6 +72,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -160,6 +160,14 @@ const Home = () => {
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
   }))
+  const projectLibraryRealizations = registry.optional(
+    projectLibraryRealizationsService
+  )
+  const projectLibraryWatchKey = projectLibraries
+    .map((library) =>
+      [library.id, library.type, library.path, library.source ?? ''].join(':')
+    )
+    .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -220,6 +228,13 @@ const Home = () => {
   }
 
   useEffect(() => {
+    return projectLibraryRealizations?.watchConfiguredLibraries({
+      libraries: projectLibraries,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
+  }, [projectLibraryRealizations, projectLibraryWatchKey])
+
+  useEffect(() => {
     app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
 
     return () => {
@@ -230,10 +245,6 @@ const Home = () => {
       }
     }
   }, [app, selectedProjectLibraryId])
-
-  useEffect(() => {
-    setCloudSyncProjectScope(undefined)
-  }, [])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(

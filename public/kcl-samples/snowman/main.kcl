@@ -174,7 +174,7 @@ region002 = region(segments = [sketch001.circle1])
 hide(sketch001)
 hatBrim = extrude(region002, length = hatBrimThk)
 
-sketch002 = sketch(on = startSketchOn(hatBrim, face = END)) {
+sketch002 = sketch(on = faceOf(hatBrim, face = END)) {
   circle1 = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region003 = region(segments = [sketch002.circle1])
@@ -184,8 +184,7 @@ hat = extrude(region003, length = hatTopH)
 
 // Stick arms (thin cylinders), kept horizontal for robustness
 // Right arm: build along +Y using -XZ (normal is +Y)
-armSketchR = startSketchOn(-XZ)
-armCircleR = sketch(on = armSketchR) {
+armCircleR = sketch(on = -XZ) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region004 = region(segments = [armCircleR.circle1])
@@ -200,8 +199,7 @@ rightArm = extrude(region004, length = armLen)
   |> appearance(color = "#6b4f2a", roughness = 60, metalness = 0)
 
 // Left arm: build along -Y using XZ (normal is -Y)
-armSketchL = startSketchOn(XZ)
-armCircleL = sketch(on = armSketchL) {
+armCircleL = sketch(on = XZ) {
   circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region005 = region(segments = [armCircleL.circle1])
