@@ -36,10 +36,7 @@ describe('project session extension', () => {
 
   function createFakeProject(projectTree = createProjectTree()) {
     const refreshedProjectTree = createProjectTree(`${projectTree.name}-fresh`)
-    return {
-      path: projectTree.path,
-      name: projectTree.name,
-      projectIORefSignal: signal(projectTree),
+    const mocks = {
       refreshProjectTree: vi.fn(async () => refreshedProjectTree),
       openEditor: vi.fn(async () => ({}) as KclManager),
       closeEditor: vi.fn(),
@@ -57,7 +54,14 @@ describe('project session extension', () => {
       ),
       archiveEntry: vi.fn(async () => ({ archivedPath: '/archive/main.kcl' })),
       applyFilePatch: vi.fn(async () => undefined),
-    } as unknown as ZDSProject
+    }
+    return {
+      path: projectTree.path,
+      name: projectTree.name,
+      projectIORefSignal: signal(projectTree),
+      ...mocks,
+      mocks,
+    } as unknown as ZDSProject & { mocks: typeof mocks }
   }
 
   it('provides the opened project session through registry signals', () => {
@@ -116,7 +120,7 @@ describe('project session extension', () => {
 
     const refreshedProjectTree = await projectSession.refreshProjectTree()
 
-    expect(project.refreshProjectTree).toHaveBeenCalledOnce()
+    expect(project.mocks.refreshProjectTree).toHaveBeenCalledOnce()
     expect(refreshedProjectTree).toBe(projectSession.projectTree.value)
     expect(projectSession.getProjectTree()).toBe(refreshedProjectTree)
     expect(projectSession.mutation.value).toEqual({
@@ -141,16 +145,16 @@ describe('project session extension', () => {
     projectSession.closeEditor({ path: '/projects/bracket/main.kcl' })
     projectSession.closeAllEditors()
 
-    expect(project.openEditor).toHaveBeenCalledWith(
+    expect(project.mocks.openEditor).toHaveBeenCalledWith(
       '/projects/bracket/main.kcl',
       editor,
       'cube(1)',
       false
     )
-    expect(project.closeEditor).toHaveBeenCalledWith(
+    expect(project.mocks.closeEditor).toHaveBeenCalledWith(
       '/projects/bracket/main.kcl'
     )
-    expect(project.closeAllEditors).toHaveBeenCalledOnce()
+    expect(project.mocks.closeAllEditors).toHaveBeenCalledOnce()
   })
 
   it('delegates file management through the opened project and refreshes projectTree', async () => {
@@ -184,38 +188,38 @@ describe('project session extension', () => {
       files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
     })
 
-    expect(project.createFile).toHaveBeenCalledWith({
+    expect(project.mocks.createFile).toHaveBeenCalledWith({
       path: '/projects/bracket/new.kcl',
     })
-    expect(project.writeFile).toHaveBeenCalledWith({
+    expect(project.mocks.writeFile).toHaveBeenCalledWith({
       path: '/projects/bracket/main.kcl',
       contents: 'cube(1)',
     })
-    expect(project.createFolder).toHaveBeenCalledWith({
+    expect(project.mocks.createFolder).toHaveBeenCalledWith({
       path: '/projects/bracket/parts',
     })
-    expect(project.renameEntry).toHaveBeenCalledWith({
+    expect(project.mocks.renameEntry).toHaveBeenCalledWith({
       oldPath: '/projects/bracket/old.kcl',
       newPath: '/projects/bracket/new.kcl',
     })
-    expect(project.copyEntry).toHaveBeenCalledWith({
+    expect(project.mocks.copyEntry).toHaveBeenCalledWith({
       sourcePath: '/projects/bracket/new.kcl',
       targetPath: '/projects/bracket/copy.kcl',
     })
-    expect(project.moveEntry).toHaveBeenCalledWith({
+    expect(project.mocks.moveEntry).toHaveBeenCalledWith({
       sourcePath: '/projects/bracket/copy.kcl',
       targetPath: '/projects/bracket/parts/copy.kcl',
     })
-    expect(project.deleteEntry).toHaveBeenCalledWith({
+    expect(project.mocks.deleteEntry).toHaveBeenCalledWith({
       path: '/projects/bracket/parts/copy.kcl',
     })
-    expect(project.archiveEntry).toHaveBeenCalledWith({
+    expect(project.mocks.archiveEntry).toHaveBeenCalledWith({
       path: '/projects/bracket/new.kcl',
     })
-    expect(project.applyFilePatch).toHaveBeenCalledWith({
+    expect(project.mocks.applyFilePatch).toHaveBeenCalledWith({
       files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
     })
-    expect(project.refreshProjectTree).toHaveBeenCalledTimes(9)
+    expect(project.mocks.refreshProjectTree).toHaveBeenCalledTimes(9)
     expect(projectSession.projectTree.value?.name).toBe('bracket-fresh')
     expect(projectSession.mutation.value).toEqual({
       pending: false,
@@ -228,12 +232,13 @@ describe('project session extension', () => {
     const projectSession = configureProjectSession()
     const project = createFakeProject()
     let finishCreateFile: (() => void) | undefined
-    project.createFile = vi.fn(
+    project.mocks.createFile = vi.fn(
       () =>
         new Promise<string>((resolve) => {
           finishCreateFile = () => resolve('/projects/bracket/new.kcl')
         })
     )
+    project.createFile = project.mocks.createFile
     projectSession.setProject(project)
 
     const pendingCreate = projectSession.createFile({

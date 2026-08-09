@@ -39,10 +39,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
     }
   }
 
-  const requireProject = () => {
+  const getRequiredProject = () => {
     const currentProject = project.value
     if (!currentProject) {
-      throw new Error('No project is currently open.')
+      return new Error('No project is currently open.')
     }
     return currentProject
   }
@@ -83,7 +83,11 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
     run: (currentProject: ZDSProject) => Promise<Result>,
     options: { refreshProjectTree?: boolean } = {}
   ) => {
-    const currentProject = requireProject()
+    const currentProject = getRequiredProject()
+    if (currentProject instanceof Error) {
+      return Promise.reject(currentProject)
+    }
+
     setMutation({
       pending: true,
       operation,
@@ -150,7 +154,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
         lastTargetPath: mutation.value.lastTargetPath,
       })
       try {
-        requireProject().closeEditor(input.path)
+        const currentProject = getRequiredProject()
+        if (!(currentProject instanceof Error)) {
+          currentProject.closeEditor(input.path)
+        }
       } finally {
         setMutation({
           pending: false,
@@ -166,7 +173,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
         lastTargetPath: mutation.value.lastTargetPath,
       })
       try {
-        requireProject().closeAllEditors()
+        const currentProject = getRequiredProject()
+        if (!(currentProject instanceof Error)) {
+          currentProject.closeAllEditors()
+        }
       } finally {
         setMutation({
           pending: false,
