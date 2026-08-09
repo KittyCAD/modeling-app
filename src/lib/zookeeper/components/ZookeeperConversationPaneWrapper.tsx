@@ -41,6 +41,7 @@ import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
@@ -111,7 +112,8 @@ export function ZookeeperConversationPaneWrapper(
 function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, project, systemIOActor } = app
+  const { auth, billing, settings, systemIOActor } = app
+  const project = app.registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()

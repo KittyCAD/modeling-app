@@ -50,6 +50,7 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { fromPromise } from 'xstate'
 
 export {
@@ -821,7 +822,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             input.onFileSystemSuccess?.()
 
             potentialError = new Error('prepareNavigation')
-            const project = input.context.app.project
+            const project = input.context.app.registry
+              .get(projectSession)
+              .getProject()
             const requestedRelativePath = normalizeKCLFileDeletePath(
               input.requestedFileNameWithExtension
             )
@@ -931,19 +934,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       await fsZds.rename(oldPath, newPath)
 
-      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // TODO: remove duplicate state, make `projectSession` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
       //
       // Replace the signal value for the currently-opened executing editor if its
       // parent directory was renamed
-      if (
-        input.app.project?.executingPathSignal.value?.value.includes(oldPath)
-      ) {
-        const v = input.app.project.executingPathSignal.value.value
-        input.app.project.executingPathSignal.value.value = v.replace(
-          oldPath,
-          newPath
-        )
+      const project = input.app.registry.get(projectSession).getProject()
+      if (project?.executingPathSignal.value?.value.includes(oldPath)) {
+        const v = project.executingPathSignal.value.value
+        project.executingPathSignal.value.value = v.replace(oldPath, newPath)
       }
 
       return {
@@ -1000,16 +999,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       await fsZds.rename(oldPath, newPath)
 
-      // TODO: remove duplicate state, make `app.project` the source of truth,
+      // TODO: remove duplicate state, make `projectSession` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
       //
       // Replace the signal value for the currently-opened executing editor if
       // it was renamed.
+      const project = input.app.registry.get(projectSession).getProject()
       if (
-        input.app.project?.executingPathSignal.value &&
-        input.app.project.executingPathSignal.value.value === oldPath
+        project?.executingPathSignal.value &&
+        project.executingPathSignal.value.value === oldPath
       ) {
-        input.app.project.executingPathSignal.value.value = newPath
+        project.executingPathSignal.value.value = newPath
       }
 
       return {

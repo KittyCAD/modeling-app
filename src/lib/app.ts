@@ -6,7 +6,7 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
@@ -73,10 +73,7 @@ import {
   getProjectLibraryCreateProjectOperation,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import {
-  projectSession,
-  type ProjectSessionService,
-} from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -177,22 +174,7 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  private get projectSession(): ProjectSessionService {
-    return this.registry.get(projectSession)
-  }
-  public get projectSignal(): Signal<ZDSProject | undefined> {
-    return this.projectSession.project
-  }
-  public get currentProjectLibraryIdSignal(): Signal<string | undefined> {
-    return this.projectSession.currentProjectLibraryId
-  }
   public debug: AppDebug = {}
-  get project() {
-    return this.projectSession.getProject()
-  }
-  set project(newProject: ZDSProject | undefined) {
-    this.projectSession.setProject(newProject)
-  }
   singletons: ReturnType<typeof this.buildSingletons>
   /**
    * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -361,17 +343,19 @@ export class App implements AppSubsystems {
 
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
+    const session = this.registry.get(projectSession)
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
     )
     const projectIORefSignal = signal(ownedProject)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
+    const openedProject = await ZDSProject.open(projectIORefSignal, this)
+    session.setProject(openedProject)
     this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
-      const project = this.project
+      const project = session.project.value
       const executingEditor = project?.executingEditor.value
       if (!project || !executingEditor) {
         return
@@ -446,7 +430,7 @@ export class App implements AppSubsystems {
       this.onSettingsUpdate
     )
 
-    return this.project
+    return openedProject
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
@@ -468,9 +452,10 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    const session = this.registry.get(projectSession)
     this.setCloudSyncOpenedProject(undefined)
-    this.project?.close()
-    this.project = undefined
+    session.getProject()?.close()
+    session.clearProject()
   }
 
   syncUserFeaturesFromAuth = (
@@ -554,7 +539,9 @@ export class App implements AppSubsystems {
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectLibraryId: () =>
-              this.currentProjectLibraryIdSignal.value,
+              this.registry
+                .get(projectSession)
+                .getCurrentProjectLibraryId(),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
@@ -834,7 +821,7 @@ export class App implements AppSubsystems {
    * as a dependency input, we must subscribe to updates from the outside.
    */
   onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    if (!this.project) {
+    if (!this.registry.get(projectSession).getProject()) {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot

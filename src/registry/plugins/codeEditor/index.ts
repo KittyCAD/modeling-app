@@ -21,6 +21,7 @@ import {
   keymapService,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
@@ -51,7 +52,7 @@ const codeEditorKeymap: KeymapDocument = {
 function RenderHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
-  const currentProject = app.projectSignal.value
+  const currentProject = app.registry.get(projectSession).project.value
   const automaticallyRenderEnabled = useSelector(app.settings.actor, (state) =>
     getAutomaticallyRenderEnabledFromSettings(state.context)
   )

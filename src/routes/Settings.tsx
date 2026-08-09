@@ -21,6 +21,7 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 
 type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
@@ -38,6 +39,7 @@ export const Settings = () => {
   useSignals()
   const app = useApp()
   const keymap = app.registry.optional(keymapService)
+  const session = app.registry.get(projectSession)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const close = () => {
@@ -49,7 +51,7 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const hasOpenProject = app.project !== undefined
+  const hasOpenProject = session.project.value !== undefined
   const defaultTab: SettingsLevel =
     isFileSettings && hasOpenProject ? 'project' : 'user'
   const requestedTab = searchParams.get('tab')

@@ -89,6 +89,7 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useNavigate } from 'react-router-dom'
 
@@ -1081,9 +1082,10 @@ const OperationItem = ({
         openCodePane(l, layout.set)
       }
 
-      if (targetModulePath?.type === 'Local' && app.project) {
+      const project = app.registry.get(projectSession).project.value
+      if (targetModulePath?.type === 'Local' && project) {
         const targetPath = targetModulePath.value
-        if (app.project.executingPath !== targetPath) {
+        if (project.executingPath !== targetPath) {
           kclManager.pendingFeatureTreeSourceSelection = {
             path: targetPath,
             range: providedSourceRange ?? item.sourceRange,

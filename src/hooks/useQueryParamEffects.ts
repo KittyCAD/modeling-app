@@ -32,6 +32,7 @@ import {
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -84,6 +85,7 @@ async function createFreshWebLayoutProject(app: App) {
 export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
+  const session = app.registry.get(projectSession)
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -240,7 +242,7 @@ export function useQueryParamEffects() {
       !isDesktop() &&
       commandData.groupId === 'application' &&
       commandData.name === 'set-layout' &&
-      !app.project
+      !session.project.value
 
     if (shouldCreateWebLayoutProject) {
       let cancelled = false

@@ -31,6 +31,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
@@ -63,7 +64,9 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands } = useApp()
+  const app = useApp()
+  const { settings, wasmPromise, commands } = app
+  const project = app.registry.get(projectSession).project.value
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager

@@ -33,6 +33,7 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
@@ -294,7 +295,8 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: () => app.project?.name,
+        defaultValue: () =>
+          app.registry.get(projectSession).getProject()?.name,
         options: (_, _context) => {
           const { folders } = app.systemIOActor.getSnapshot().context
           return getProjectDirectoryOptions(folders)
@@ -607,13 +609,14 @@ export function createApplicationCommands({
     icon: 'download',
     groupId: 'application',
     onSubmit: async () => {
-      const project = app.project?.projectIORefSignal.value
-      const executingEditor = app.project?.executingEditor.value
+      const openedProject = app.registry.get(projectSession).getProject()
+      const project = openedProject?.projectIORefSignal.value
+      const executingEditor = openedProject?.executingEditor.value
       const wasmInstance = await app.wasmPromise
 
       await exportProjectZip({
         project,
-        currentFilePath: app.project?.executingPath,
+        currentFilePath: openedProject?.executingPath,
         currentFileContents: executingEditor?.code,
         wasmInstance,
       })
