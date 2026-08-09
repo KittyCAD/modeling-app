@@ -2,17 +2,17 @@ import { assertParse } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
+let worldInThisFile:
+  | Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
+  | undefined
 
 /**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
+ * Every it test could build the world, but this is too resource intensive.
  *
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
@@ -21,15 +21,17 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+  const { instance, rustContext, ...world } =
+    await buildTheWorldAndNoEngineConnection()
   instanceInThisFile = instance
-  engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
+  worldInThisFile = { instance, rustContext, ...world }
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  worldInThisFile?.engineCommandManager.tearDown()
+  worldInThisFile?.commandBarActor.stop()
+  worldInThisFile?.settingsActor.stop()
 })
 
 describe('testing angledLineThatIntersects', () => {
