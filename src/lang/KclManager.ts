@@ -578,10 +578,11 @@ export class ZDSProject {
     )
   }
 
-  private assertPathInsideProject(path: string) {
+  private getPathOutsideProjectError(path: string) {
     if (!this.isPathInsideProject(path)) {
-      throw new Error(`Path "${path}" is outside project "${this.path}".`)
+      return new Error(`Path "${path}" is outside project "${this.path}".`)
     }
+    return undefined
   }
 
   private isPathAtOrUnder(path: string, targetPath: string) {
@@ -737,7 +738,11 @@ export class ZDSProject {
   }
 
   async writeFile(input: ZDSProjectFileWriteInput) {
-    this.assertPathInsideProject(input.path)
+    const outsideProjectError = this.getPathOutsideProjectError(input.path)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     if (input.overwrite === false && (await this.pathExists(input.path))) {
       return Promise.reject(new Error(`File already exists: ${input.path}`))
     }
@@ -748,7 +753,11 @@ export class ZDSProject {
   }
 
   async createFolder(input: ZDSProjectPathInput) {
-    this.assertPathInsideProject(input.path)
+    const outsideProjectError = this.getPathOutsideProjectError(input.path)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     if (await this.pathExists(input.path)) {
       return Promise.reject(new Error(`Folder already exists: ${input.path}`))
     }
@@ -758,8 +767,13 @@ export class ZDSProject {
   }
 
   async renameEntry(input: ZDSProjectRenameInput) {
-    this.assertPathInsideProject(input.oldPath)
-    this.assertPathInsideProject(input.newPath)
+    const outsideProjectError =
+      this.getPathOutsideProjectError(input.oldPath) ??
+      this.getPathOutsideProjectError(input.newPath)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     if (input.oldPath === input.newPath) {
       return input.newPath
     }
@@ -773,7 +787,11 @@ export class ZDSProject {
   }
 
   async deleteEntry(input: ZDSProjectPathInput) {
-    this.assertPathInsideProject(input.path)
+    const outsideProjectError = this.getPathOutsideProjectError(input.path)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     await fsZds.rm(input.path, { recursive: true })
     this.closeProjectEntryEditors(input.path)
     this.forgetProjectEntryFiles(input.path)
@@ -781,8 +799,13 @@ export class ZDSProject {
   }
 
   async copyEntry(input: ZDSProjectCopyMoveInput) {
-    this.assertPathInsideProject(input.sourcePath)
-    this.assertPathInsideProject(input.targetPath)
+    const outsideProjectError =
+      this.getPathOutsideProjectError(input.sourcePath) ??
+      this.getPathOutsideProjectError(input.targetPath)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     await fsZds.cp(input.sourcePath, input.targetPath, {
       recursive: true,
       force: false,
@@ -791,15 +814,24 @@ export class ZDSProject {
   }
 
   async moveEntry(input: ZDSProjectCopyMoveInput) {
-    this.assertPathInsideProject(input.sourcePath)
-    this.assertPathInsideProject(input.targetPath)
+    const outsideProjectError =
+      this.getPathOutsideProjectError(input.sourcePath) ??
+      this.getPathOutsideProjectError(input.targetPath)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     await this.movePath(input.sourcePath, input.targetPath)
     this.rewriteProjectEntryPaths(input.sourcePath, input.targetPath)
     return input.targetPath
   }
 
   async archiveEntry(input: ZDSProjectPathInput) {
-    this.assertPathInsideProject(input.path)
+    const outsideProjectError = this.getPathOutsideProjectError(input.path)
+    if (outsideProjectError) {
+      return Promise.reject(outsideProjectError)
+    }
+
     const archivedPath = await toArchivePath(input.path)
     await this.movePath(input.path, archivedPath)
     this.closeProjectEntryEditors(input.path)
@@ -809,7 +841,10 @@ export class ZDSProject {
 
   async applyFilePatch(input: ZDSProjectFilePatchInput) {
     for (const file of input.files) {
-      this.assertPathInsideProject(file.path)
+      const outsideProjectError = this.getPathOutsideProjectError(file.path)
+      if (outsideProjectError) {
+        return Promise.reject(outsideProjectError)
+      }
     }
 
     for (const file of input.files) {
