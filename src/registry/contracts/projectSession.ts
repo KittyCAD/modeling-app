@@ -21,6 +21,7 @@ export type ProjectSessionMutationOperation =
   | 'copy-entry'
   | 'move-entry'
   | 'archive-entry'
+  | 'restore-entry'
   | 'apply-file-patch'
 
 export interface ProjectSessionMutationState {
@@ -48,6 +49,11 @@ export interface ProjectSessionEntryPathInput {
   readonly path: string
 }
 
+export interface ProjectSessionArchiveEntryInput
+  extends ProjectSessionEntryPathInput {
+  readonly archivedPath?: string
+}
+
 export interface ProjectSessionEntryRenameInput {
   readonly oldPath: string
   readonly newPath: string
@@ -60,6 +66,11 @@ export interface ProjectSessionEntryCopyMoveInput {
 
 export interface ProjectSessionArchiveEntryResult {
   readonly archivedPath: string
+}
+
+export interface ProjectSessionRestoreEntryInput {
+  readonly archivedPath: string
+  readonly targetPath: string
 }
 
 export interface ProjectSessionFilePatchEntry {
@@ -100,8 +111,9 @@ export interface ProjectSessionService {
   copyEntry: (input: ProjectSessionEntryCopyMoveInput) => Promise<string>
   moveEntry: (input: ProjectSessionEntryCopyMoveInput) => Promise<string>
   archiveEntry: (
-    input: ProjectSessionEntryPathInput
+    input: ProjectSessionArchiveEntryInput
   ) => Promise<ProjectSessionArchiveEntryResult>
+  restoreEntry: (input: ProjectSessionRestoreEntryInput) => Promise<string>
   applyFilePatch: (input: ProjectSessionApplyFilePatchInput) => Promise<void>
   getCurrentProjectLibraryId: () => string | undefined
   setCurrentProjectLibraryId: (libraryId: string | undefined) => void
