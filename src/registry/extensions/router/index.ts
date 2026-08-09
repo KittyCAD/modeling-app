@@ -70,8 +70,9 @@ const readBrowserLocation = (): Location => {
   }
 }
 
-const createUnseededNavigate = (syncLocation: () => void): NavigateFunction =>
-  ((toOrDelta: To | number, options?: NavigateOptions) => {
+const createUnseededNavigate =
+  (syncLocation: () => void): NavigateFunction =>
+  (toOrDelta: To | number, options?: NavigateOptions) => {
     if (typeof window === 'undefined') {
       return
     }
@@ -99,7 +100,7 @@ const createUnseededNavigate = (syncLocation: () => void): NavigateFunction =>
         window.location.assign(path)
       }
     }
-  }) as NavigateFunction
+  }
 
 export const createRouterRegistryService = (): RouterRegistryService => {
   const location = signal<Location>(readBrowserLocation())
@@ -109,13 +110,16 @@ export const createRouterRegistryService = (): RouterRegistryService => {
   }
   let activeNavigate = createUnseededNavigate(syncBrowserLocation)
 
-  const navigate = ((toOrDelta: To | number, options?: NavigateOptions) => {
+  const navigate: NavigateFunction = (
+    toOrDelta: To | number,
+    options?: NavigateOptions
+  ) => {
     if (typeof toOrDelta === 'number') {
       return activeNavigate(toOrDelta)
     }
 
     return activeNavigate(toOrDelta, options)
-  }) as NavigateFunction
+  }
 
   const resetNavigate = (navigateToReset: NavigateFunction) => {
     if (activeNavigate !== navigateToReset) {
