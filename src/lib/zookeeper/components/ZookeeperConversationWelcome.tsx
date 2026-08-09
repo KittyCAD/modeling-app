@@ -3,14 +3,14 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type { PropsWithChildren, ReactNode } from 'react'
 
 /**
- * Local authoring surface for the MlEphant welcome message.
+ * Local authoring surface for the Zookeeper welcome message.
  *
  * When this content needs to come from a remote source, resolve that content
- * before rendering `MlEphantConversation` and pass it through the
+ * before rendering `ZookeeperConversation` and pass it through the
  * `welcomeMessage` prop. That keeps the conversation layout logic unchanged
  * while swapping the content source.
  */
-export const MlEphantConversationWelcome = () => {
+export const ZookeeperConversationWelcome = () => {
   return (
     <div data-testid="ml-ephant-conversation-welcome" className="px-4 py-3">
       <div className="bg-img-mel w-16 h-16 rounded mb-4" />
@@ -30,7 +30,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-1.webm`} />
+            <source src={`${isDesktop() ? '.' : ''}/zookeeper-idle-1.webm`} />
           </video>
         }
         heading="Ask me anything"
@@ -48,7 +48,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-2.webm`} />
+            <source src={`${isDesktop() ? '.' : ''}/zookeeper-idle-2.webm`} />
           </video>
         }
         heading="Turn thoughts into geometry"
@@ -66,7 +66,7 @@ export const MlEphantConversationWelcome = () => {
             autoPlay
             loop
           >
-            <source src={`${isDesktop() ? '.' : ''}/mlephant-idle-3.webm`} />
+            <source src={`${isDesktop() ? '.' : ''}/zookeeper-idle-3.webm`} />
           </video>
         }
         heading="Supplemental analysis"

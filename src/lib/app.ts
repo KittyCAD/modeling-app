@@ -49,7 +49,7 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -166,7 +166,7 @@ export type AppLayoutSystem = LayoutService
 export type AppRegistrySystem = Registry
 
 export type AppDebug = {
-  mlEphantManagerActor?: MlEphantManagerActor
+  zookeeperManagerActor?: ZookeeperManagerActor
 }
 
 /** All of the subsystems needed to run the ZDS app */
