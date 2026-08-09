@@ -166,16 +166,18 @@ export function createProjectCommands({
     }))
 
   const projectOptions = (action: HomeProjectCommandAction) => {
-    if (action === 'moveToLibrary') {
-      return homeProjectOptions(action) ?? []
+    const options = homeProjectOptions(action)
+    if (options) {
+      return options
     }
 
-    return (
-      homeProjectOptions(action) ??
-      getProjectDirectoryOptions(folderSnapshot(), {
+    if (action === 'open') {
+      return getProjectDirectoryOptions(folderSnapshot(), {
         defaultValue: currentProjectDirectoryNameSnapshot(),
       })
-    )
+    }
+
+    return []
   }
 
   const projectDisplayNameFromCommandValue = (
@@ -342,7 +344,7 @@ export function createProjectCommands({
     onSubmit: (record) => {
       if (record) {
         const target = selectedCreateProjectTarget(record.libraryId)
-        if (getCreateProjectLibraryTargets && !target) {
+        if (!target) {
           toast.error(
             'Add a writable project library before creating a project.'
           )
@@ -362,26 +364,16 @@ export function createProjectCommands({
           return
         }
 
-        if (target) {
-          return Promise.resolve(
-            target.createProject.run({
-              library: target.library,
-              requestedProjectName,
-              requestedProjectTitle,
-            })
-          ).then((project) => {
-            if (project?.default_file) {
-              navigateToProjectFile(project.default_file)
-            }
-          })
-        }
-
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createProject,
-          data: {
+        return Promise.resolve(
+          target.createProject.run({
+            library: target.library,
             requestedProjectName,
             requestedProjectTitle,
-          },
+          })
+        ).then((project) => {
+          if (project?.default_file) {
+            navigateToProjectFile(project.default_file)
+          }
         })
       }
     },
@@ -497,14 +489,12 @@ export function createProjectCommands({
     onSubmit: (record) => {
       if (record) {
         const target = selectedHomeProjectTarget(record.name, 'delete')
-        if (target) {
-          return target.actions.delete(target.project)
+        if (!target) {
+          toast.error('Select a project that can be deleted.')
+          return
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
-        })
+        return target.actions.delete(target.project)
       }
     },
     reviewMessage: ({ argumentsToSubmit }) => {
@@ -543,24 +533,12 @@ export function createProjectCommands({
     onSubmit: (record) => {
       if (record) {
         const target = selectedHomeProjectTarget(record.oldName, 'rename')
-        if (target) {
-          return target.actions.rename(target.project, record.newName)
+        if (!target) {
+          toast.error('Select a project that can be renamed.')
+          return
         }
 
-        // Only redirect back to the project when not on the home page
-        const hash = window.location.hash
-        const pathname = hash
-          ? hash.replace(/^#/, '')
-          : window.location.pathname
-        const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
+        return target.actions.rename(target.project, record.newName)
       }
     },
     args: {
