@@ -170,6 +170,7 @@ export const ProjectExplorer = ({
   createFilePressed,
   createFolderPressed,
   refreshExplorerPressed,
+  onRefreshExplorer,
   collapsePressed,
   onRowClicked,
   onRowDoubleClicked,
@@ -184,6 +185,7 @@ export const ProjectExplorer = ({
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
+  onRefreshExplorer?: () => void
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
   onRowDoubleClicked?: (row: FileExplorerEntry, domIndex: number) => void
@@ -358,12 +360,8 @@ export const ProjectExplorer = ({
     if (refreshExplorerPressed <= 0) {
       return
     }
-    // TODO: Refresh only this path from the Project. This will refresh your entire application project directory
-    // It is correct but can be slow if there are many projects
-    systemIOActor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
-  }, [refreshExplorerPressed, systemIOActor])
+    onRefreshExplorer?.()
+  }, [onRefreshExplorer, refreshExplorerPressed])
 
   useEffect(() => {
     if (collapsePressed <= 0) {
