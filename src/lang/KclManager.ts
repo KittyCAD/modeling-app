@@ -78,7 +78,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -430,6 +430,7 @@ export class ZDSProject {
 
   private fileWatcherId = uuidv4()
   private fileSystemOperations: ZDSProjectFileSystemOperations
+  private timeoutProjectTreeRefresh: ReturnType<typeof setTimeout> | undefined
 
   constructor(
     public projectIORefSignal: Signal<Project>,
@@ -449,6 +450,8 @@ export class ZDSProject {
   /** Clean up resources and watchers for Project */
   public close() {
     this.closeAllEditors()
+    clearTimeout(this.timeoutProjectTreeRefresh)
+    this.timeoutProjectTreeRefresh = undefined
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -791,6 +794,14 @@ export class ZDSProject {
     return ownedProject
   }
 
+  private scheduleProjectTreeRefresh() {
+    clearTimeout(this.timeoutProjectTreeRefresh)
+    this.timeoutProjectTreeRefresh = setTimeout(() => {
+      this.timeoutProjectTreeRefresh = undefined
+      this.refreshProjectTree().catch(reportRejection)
+    }, 250)
+  }
+
   async createFile(
     input: ZDSProjectFileWriteInput,
     fileSystemOperations = this.fileSystemOperations
@@ -956,6 +967,8 @@ export class ZDSProject {
 
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
+    this.scheduleProjectTreeRefresh()
+
     const foundEditorKey = Array.from(this.editors.keys()).find(
       (pathSignal) => pathSignal.value === path
     )

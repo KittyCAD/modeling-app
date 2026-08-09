@@ -14,7 +14,7 @@ import { sanitizeProjectName } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { collectProjectFiles } from '@src/lib/projectFiles'
 
 type ProjectZipFile = {
   relativePath: string

@@ -838,24 +838,33 @@ describe('project system', () => {
           },
         })
       )
-      const send = vi.spyOn(app.systemIOActor, 'send')
+      const session = app.registry.get(projectSession)
+      await session.refreshProjectTree()
+      expect(
+        session.projectTree.value?.children?.some(
+          (child) => child.name === 'created.kcl'
+        )
+      ).toBe(true)
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+      expect(
+        session.projectTree.value?.children?.some(
+          (child) => child.name === 'created.kcl'
+        )
+      ).toBe(false)
 
-      send.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
+      expect(
+        session.projectTree.value?.children?.some(
+          (child) => child.name === 'created.kcl'
+        )
+      ).toBe(true)
     } finally {
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })

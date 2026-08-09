@@ -1,7 +1,7 @@
 import {
   reportSystemIOError,
   type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
+} from '@src/lib/systemIOErrorReporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,

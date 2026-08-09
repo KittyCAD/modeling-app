@@ -12,7 +12,6 @@ import {
 } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -38,10 +37,6 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -305,7 +300,7 @@ export const fileLoader =
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
     const session = app.registry.get(projectSession)
-    const projectRef = await session.openProject(project)
+    await session.openProject(project)
     const openFilePath =
       currentFilePath ||
       project.default_file ||
@@ -320,32 +315,6 @@ export const fileLoader =
           ? kclManager.localStoragePersistCode()
           : undefined,
     })
-
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
-    }
 
     const projectData: IndexLoaderData = {
       code: editor.code,
@@ -365,7 +334,7 @@ export const fileLoader =
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
+// Should also invalidate currently loaded Home projects. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {

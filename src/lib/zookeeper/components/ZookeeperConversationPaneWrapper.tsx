@@ -38,8 +38,8 @@ import {
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
-  prepareZookeeperNewFileRequest,
-} from '@src/machines/systemIO/utils'
+  prepareMlEphantNewFileRequest as prepareZookeeperNewFileRequest,
+} from '@src/lib/projectFiles'
 import { ZOOKEEPER_FILE_WRITE_TOAST_ID } from '@src/lib/constants'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'

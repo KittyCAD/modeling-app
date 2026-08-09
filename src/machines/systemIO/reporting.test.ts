@@ -2,7 +2,7 @@ import type * as ClientErrors from '@src/lib/clientErrors'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-} from '@src/machines/systemIO/errorReporting'
+} from '@src/lib/systemIOErrorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
