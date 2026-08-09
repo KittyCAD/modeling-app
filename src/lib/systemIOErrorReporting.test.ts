@@ -3,9 +3,6 @@ import {
   ExpectedSystemIOError,
   reportSystemIOError,
 } from '@src/lib/systemIOErrorReporting'
-import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -22,66 +19,34 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
-const context = {
-  projectDirectoryPath: '/projects',
-  hasListedProjects: true,
-  folders: [{}, {}],
-} as SystemIOContext
-
-const operationCases = [
-  {
-    operation: SystemIOMachineActors.deleteProject,
-    risk: 'destructive',
-  },
-  {
-    operation: SystemIOMachineActors.duplicateProject,
-    risk: 'write',
-  },
-  {
-    operation: SystemIOMachineActors.createBlankFolder,
-    risk: 'write',
-  },
-  {
-    operation: SystemIOMachineActors.renameFile,
-    risk: 'destructive',
-  },
-] as const
-
-describe('SystemIO client error reporting', () => {
+describe('System.IO client error reporting', () => {
   beforeEach(() => {
     mocks.reportClientError.mockClear()
   })
 
-  it.each(operationCases)(
-    'classifies $operation failures',
-    ({ operation, risk }) => {
-      const error = new Error('operation failed')
+  it('classifies filesystem failures', () => {
+    reportSystemIOError({
+      error: new Error('operation failed'),
+      operation: 'delete project',
+      risk: 'destructive',
+      source: 'ProjectSession',
+      extra: { projectCount: 2 },
+    })
 
-      reportSystemIOMachineError({
-        context,
-        event: {
-          type: `xstate.error.actor.${operation}`,
-          error,
-        },
+    expect(mocks.reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'system_io_error',
+        errorName: 'Error',
+        extra: expect.objectContaining({
+          source: 'ProjectSession',
+          operation: 'delete project',
+          risk: 'destructive',
+          errorType: 'Error',
+          projectCount: 2,
+        }),
       })
-
-      expect(mocks.reportClientError).toHaveBeenCalledWith(
-        expect.objectContaining({
-          code: 'system_io_error',
-          errorName: 'Error',
-          extra: expect.objectContaining({
-            source: 'SystemIOMachine',
-            operation,
-            risk,
-            errorType: 'Error',
-            hasProjectDirectory: true,
-            hasListedProjects: true,
-            projectCount: 2,
-          }),
-        })
-      )
-    }
-  )
+    )
+  })
 
   it('does not send filesystem paths from the original error', () => {
     const sensitivePath = '/Users/alice/Secret Project/main.kcl'
@@ -90,12 +55,11 @@ describe('SystemIO client error reporting', () => {
       { code: 'EACCES' }
     )
 
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.createBlankFile}`,
-        error,
-      },
+    reportSystemIOError({
+      error,
+      operation: 'create blank file',
+      risk: 'write',
+      source: 'ProjectSession',
     })
 
     const report = mocks.reportClientError.mock.calls[0]?.[0]
@@ -125,12 +89,11 @@ describe('SystemIO client error reporting', () => {
       `    at actor (${sensitivePath}/systemIOMachineImpl.ts:824:30)`,
     ].join('\n')
 
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
-        error,
-      },
+    reportSystemIOError({
+      error,
+      operation: 'bulk create and delete kcl files and navigate to file',
+      risk: 'write',
+      source: 'ProjectSession',
     })
 
     const report = mocks.reportClientError.mock.calls[0]?.[0]
@@ -138,7 +101,7 @@ describe('SystemIO client error reporting', () => {
       error: expect.any(Error),
       errorName: 'Error',
       dedupeKey:
-        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:EACCES',
+        'SystemIO:ProjectSession:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:EACCES',
       extra: {
         errorCode: 'EACCES',
         errorType: 'Error',
@@ -214,26 +177,24 @@ describe('SystemIO client error reporting', () => {
   })
 
   it('does not report expected user naming conflicts', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new ExpectedSystemIOError('Filename already exists.'),
-      },
+    reportSystemIOError({
+      error: new ExpectedSystemIOError('Filename already exists.'),
+      operation: 'rename file',
+      risk: 'destructive',
+      source: 'ProjectSession',
     })
 
     expect(mocks.reportClientError).not.toHaveBeenCalled()
   })
 
   it('does not report expected errors wrapped with operation context', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new Error('sharedBulkCreateWorkflow', {
-          cause: new ExpectedSystemIOError('Filename already exists.'),
-        }),
-      },
+    reportSystemIOError({
+      error: new Error('sharedBulkCreateWorkflow', {
+        cause: new ExpectedSystemIOError('Filename already exists.'),
+      }),
+      operation: 'rename file',
+      risk: 'destructive',
+      source: 'ProjectSession',
     })
 
     expect(mocks.reportClientError).not.toHaveBeenCalled()

@@ -145,8 +145,7 @@ const collectDroppedFiles = async (
  * the selection logic of the tree since add file will be based on your
  * selection within the tree.
  *
- * pass a Project type which is compatible with the data stored in
- * the systemIOMachine
+ * pass a Project type which is compatible with the project-session tree
  *
  */
 export const ProjectExplorer = ({

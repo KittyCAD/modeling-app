@@ -77,7 +77,7 @@ flowchart TD
   RemoteDecision -->|"Matching project.toml id"| AdoptLocal["Adopt existing OPFS project metadata"]
   RemoteDecision -->|"Unknown remote id"| CloneRemote["Download archive and clone into OPFS"]
   RemoteDecision -->|"Locally tombstoned"| SkipRemote["Skip remote hydration"]
-  ReconcileKnown --> NotifyHome["Notify Home via systemIO reload"]
+  ReconcileKnown --> NotifyHome["Invalidate Home project realizations"]
   AdoptLocal --> NotifyHome
   CloneRemote --> NotifyHome
   SkipRemote --> Done["Done"]

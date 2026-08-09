@@ -34,8 +34,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -67,7 +65,6 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -83,7 +80,6 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
-import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
 
@@ -171,12 +167,6 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /**
-   * The interface to reading/writing to IO.
-   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
-   */
-  systemIOActor: SystemIOActor
-
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
@@ -194,12 +184,6 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
     this.registry = subsystems.registry
     this.userFeatures = subsystems.userFeatures
-    this.systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -302,7 +286,6 @@ export class App implements AppSubsystems {
     this.unsubscribeFromActiveWasmInstance = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
-    this.systemIOActor.stop()
     this.settings.actor.stop()
     this.commands.actor.stop()
     this.auth.actor.stop()
@@ -605,9 +588,6 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
-          provideService(systemIOService, {
-            actor: this.systemIOActor,
-          }),
         ],
       }),
     ])

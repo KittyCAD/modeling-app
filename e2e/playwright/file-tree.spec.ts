@@ -118,22 +118,6 @@ test.describe(
       await page.goto(`/file/${encodeURIComponent(startingFilePath)}`)
       await scene.settled()
       await u.openFilePanel()
-      await expect
-        .poll(
-          async () =>
-            await page.evaluate(() => {
-              const snapshot = window.app.systemIOActor.getSnapshot()
-              return {
-                hasFolders: snapshot.context.folders !== undefined,
-                state: snapshot.value,
-              }
-            }),
-          {
-            timeout: 30_000,
-            message: 'SystemIO should finish initial browser folder load',
-          }
-        )
-        .toMatchObject({ hasFolders: true, state: 'idle' })
 
       const filePaneScroll = page.getByTestId('file-pane-scroll-container')
       const partsFolder = filePaneScroll.getByRole('treeitem', {
@@ -142,23 +126,6 @@ test.describe(
       })
       await expect(partsFolder).toBeVisible()
       await partsFolder.click()
-      await page.evaluate(() => {
-        const appWindow = window as any
-        const systemIOActor = window.app.systemIOActor as any
-        const originalSend = systemIOActor.send.bind(systemIOActor)
-        appWindow.__setProjectDirectoryPathEvents = []
-        systemIOActor.send = (event: any) => {
-          if (event?.type === 'set project directory path') {
-            appWindow.__setProjectDirectoryPathEvents.push(event)
-          }
-          return originalSend(event)
-        }
-      })
-      await page.evaluate(() => {
-        window.app.systemIOActor.send({
-          type: 'read folders from project directory' as any,
-        })
-      })
 
       await page.getByTestId('create-file-button').click()
       await page.getByTestId('file-rename-field').fill('nested-file')
@@ -190,19 +157,6 @@ test.describe(
           }
         )
         .toBeTruthy()
-      await expect
-        .poll(
-          async () =>
-            await page.evaluate(
-              () => (window as any).__setProjectDirectoryPathEvents.length
-            ),
-          {
-            timeout: 5_000,
-            message:
-              'Same-project file navigation should not restart project directory reads',
-          }
-        )
-        .toBe(0)
     })
   }
 )
@@ -401,7 +355,11 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     const projectDirectoryPath = () =>
       page.evaluate(
         () =>
-          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
+          window.app.settings
+            .get()
+            .app.libraries.current.find(
+              (library) => library.type === 'directory'
+            )?.path
       )
     const nestedProjectSettingsFile = async () =>
       fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)

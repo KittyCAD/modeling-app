@@ -11,7 +11,6 @@ const mocks = vi.hoisted(() => {
   )
   const navigate = vi.fn()
   const openFile = vi.fn(async () => ({}))
-  const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
   const project = {
@@ -48,7 +47,6 @@ const mocks = vi.hoisted(() => {
     openFile,
     project,
     projectSession,
-    systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
       | ((props: {
@@ -103,9 +101,6 @@ vi.mock('@src/lib/boot', () => ({
     settings: {
       actor: { send: vi.fn() },
       useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
-    },
-    systemIOActor: {
-      send: mocks.systemIOSend,
     },
   }),
   useSingletons: () => ({
@@ -204,7 +199,6 @@ async function flushQueuedWork() {
 
 describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
-    mocks.systemIOSend.mockClear()
     mocks.applyFilePatch.mockClear()
     mocks.navigate.mockClear()
     mocks.openFile.mockClear()
@@ -276,7 +270,6 @@ describe('ZookeeperConversationPaneWrapper', () => {
   })
 
   test('does not refresh a file that is no longer active or stall later edits', async () => {
-    mocks.systemIOSend.mockClear()
     mocks.applyFilePatch.mockClear()
     mocks.navigate.mockClear()
     mocks.openFile.mockClear()

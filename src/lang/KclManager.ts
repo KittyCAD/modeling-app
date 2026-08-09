@@ -1475,8 +1475,8 @@ export class KclManager extends File {
 
   /**
    * Watching the file system for updates and reacting to them.
-   * TODO: might need to watch for deletions here or in the project eventually.
-   * It's currently handled elsewhere in SystemIOMachine I believe.
+   * TODO: continue consolidating project-level file watching and deletion
+   * handling into ZDSProject.
    *
    * NOTE: This listener is in *addition* to the base File class one, so it must have a distinct name and
    * In future, event listeners like `onWatchEvent` should be Facets in the CodeMirror sense.

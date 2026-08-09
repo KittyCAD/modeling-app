@@ -36,10 +36,6 @@ import {
 } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
-import {
-  type SystemIORegistryService,
-  systemIOService,
-} from '@src/registry/contracts/systemIO'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import homeProjectsExtension, {
   deriveHomeProjectEntryContributions,
@@ -173,28 +169,6 @@ function createMutableSettingsService({
       send: vi.fn(),
       useSettings: () => current.value,
     } as unknown as SettingsRegistryService,
-  }
-}
-
-function createSystemIOService() {
-  const send = vi.fn()
-
-  return {
-    service: {
-      actor: {
-        send,
-        getSnapshot: () => ({
-          context: {
-            folders: undefined,
-          },
-          matches: (state: string) => state === 'idle',
-        }),
-        subscribe: vi.fn(() => ({
-          unsubscribe: vi.fn(),
-        })),
-      },
-    } as unknown as SystemIORegistryService,
-    send,
   }
 }
 
@@ -455,7 +429,6 @@ describe('home project actions', () => {
     const settings = createMutableSettingsService({
       libraries: getDefaultProjectLibrarySettings('/projects'),
     })
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     fsZdsMocks.readdir.mockResolvedValue(['local-project'])
     fsZdsMocks.stat.mockResolvedValue({
@@ -469,10 +442,6 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -502,7 +471,6 @@ describe('home project actions', () => {
 
   it('reports configured directory project delete failures as destructive', async () => {
     const deleteError = new Error('Project delete failed')
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const removeSpy = vi.spyOn(fsZds, 'rm').mockRejectedValue(deleteError)
     const library = {
@@ -541,10 +509,6 @@ describe('home project actions', () => {
             }).service
           ),
         ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -588,7 +552,6 @@ describe('home project actions', () => {
   })
 
   it('does not report missing WASM registry configuration as a SystemIO failure', async () => {
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const library = {
       id: 'directory:/projects',
@@ -615,10 +578,6 @@ describe('home project actions', () => {
             }).service
           ),
         ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -655,7 +614,6 @@ describe('home project actions', () => {
         },
       ],
     })
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const readRealizations = vi.fn(({ library }: { library: ProjectLibrary }) =>
       Promise.resolve([
@@ -681,10 +639,6 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.settings',
         providesServices: [provideService(settingsService, settings.service)],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -741,7 +695,6 @@ describe('home project actions', () => {
   it('opens remote-only cloud projects without forcing a full folder rescan', async () => {
     const wasmInstance = {} as never
     const wasmPromise = Promise.resolve(wasmInstance)
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService({
       ensureProjectLocallySynced: vi.fn().mockResolvedValue({
         projectPath: '/cloud-projects/remote-title',
@@ -777,10 +730,6 @@ describe('home project actions', () => {
             }).service
           ),
         ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -827,13 +776,11 @@ describe('home project actions', () => {
       '/cloud-projects/remote-title',
       wasmInstance
     )
-    expect(systemIO.send).not.toHaveBeenCalled()
   })
 
   it('opens locally materialized cloud library projects without re-syncing them first', async () => {
     const wasmInstance = {} as never
     const wasmPromise = Promise.resolve(wasmInstance)
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const localCloudProject = {
       id: 'remote:remote-123',
@@ -861,10 +808,6 @@ describe('home project actions', () => {
             }).service
           ),
         ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
@@ -905,11 +848,9 @@ describe('home project actions', () => {
     })
     expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
     expect(desktopMocks.getProjectInfo).not.toHaveBeenCalled()
-    expect(systemIO.send).not.toHaveBeenCalled()
   })
 
   it('deletes only local state for a cloud-backed project outside a cloud-type library', async () => {
-    const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const removeProjectDirectory = vi
       .spyOn(fsZds, 'rm')
@@ -933,10 +874,6 @@ describe('home project actions', () => {
             }).service
           ),
         ],
-      }),
-      defineRegistryItem({
-        id: 'test.system-io',
-        providesServices: [provideService(systemIOService, systemIO.service)],
       }),
       defineRegistryItem({
         id: 'test.cloud-sync',
