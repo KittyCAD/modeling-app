@@ -42,7 +42,7 @@ export async function navigateToProjectFile({
     })
   }
 
-  app.registry
+  await app.registry
     .get(routerService)
     .navigate(
       joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(filePath), subRoute)
@@ -59,7 +59,7 @@ export function navigateToProject({
   projectPath: string
   subRoute?: string
 }) {
-  app.registry
+  void app.registry
     .get(routerService)
     .navigate(
       joinRouterPaths(
