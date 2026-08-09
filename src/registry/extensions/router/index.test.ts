@@ -1,7 +1,7 @@
 import { Registry } from '@kittycad/registry'
 import { routerService } from '@src/registry/contracts/router'
 import routerRegistryItem, { createRouterRegistryService } from '.'
-import type { Location, NavigateFunction } from 'react-router-dom'
+import type { Location } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const testLocation = (pathname: string): Location => ({
@@ -82,9 +82,7 @@ describe('router extension', () => {
     historyGo.mockRestore()
 
     router.setLocation(location)
-    const disposeNavigate = router.setNavigate(
-      navigate as unknown as NavigateFunction
-    )
+    const disposeNavigate = router.setNavigate(navigate)
 
     expect(router.location.value).toBe(location)
     expect(router.isReady.value).toBe(true)
@@ -107,12 +105,8 @@ describe('router extension', () => {
     const firstNavigate = vi.fn()
     const secondNavigate = vi.fn()
 
-    const disposeFirstNavigate = router.setNavigate(
-      firstNavigate as unknown as NavigateFunction
-    )
-    const disposeSecondNavigate = router.setNavigate(
-      secondNavigate as unknown as NavigateFunction
-    )
+    const disposeFirstNavigate = router.setNavigate(firstNavigate)
+    const disposeSecondNavigate = router.setNavigate(secondNavigate)
 
     disposeFirstNavigate()
     void router.navigate('/home')
