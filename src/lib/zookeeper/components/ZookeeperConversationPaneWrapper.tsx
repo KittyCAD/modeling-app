@@ -349,9 +349,12 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                   const session = app.registry.get(projectSession)
                   const currentProject = session.getProject()
                   if (!currentProject) {
-                    throw new Error(
-                      'Cannot apply Zookeeper file request because no project is open.'
+                    await Promise.reject(
+                      new Error(
+                        'Cannot apply Zookeeper file request because no project is open.'
+                      )
                     )
+                    return
                   }
                   const requestedFileNameWithExtension =
                     payload.requestedFileNameWithExtension ?? ''
