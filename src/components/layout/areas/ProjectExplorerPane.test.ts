@@ -18,8 +18,8 @@ const project = (name: string, children: Project['children']): Project => ({
 })
 
 describe('getProjectExplorerProjectWithPlaceholders', () => {
-  it('uses the loaded project while folder hydration is pending', () => {
-    const loadedProject = project('demo', [
+  it('duplicates the project tree and adds create placeholders', () => {
+    const sourceProject = project('demo', [
       {
         name: 'main.kcl',
         path: '/projects/demo/main.kcl',
@@ -28,8 +28,7 @@ describe('getProjectExplorerProjectWithPlaceholders', () => {
     ])
 
     const explorerProject = getProjectExplorerProjectWithPlaceholders({
-      loadedProject,
-      projects: undefined,
+      project: sourceProject,
     })
 
     expect(explorerProject?.children?.map((child) => child.name)).toEqual([
@@ -37,36 +36,8 @@ describe('getProjectExplorerProjectWithPlaceholders', () => {
       'main.kcl',
       FILE_PLACEHOLDER_NAME,
     ])
-    expect(loadedProject.children?.map((child) => child.name)).toEqual([
+    expect(sourceProject.children?.map((child) => child.name)).toEqual([
       'main.kcl',
-    ])
-  })
-
-  it('prefers the hydrated project from the folder list', () => {
-    const loadedProject = project('demo', [
-      {
-        name: 'stale.kcl',
-        path: '/projects/demo/stale.kcl',
-        children: null,
-      },
-    ])
-    const hydratedProject = project('demo', [
-      {
-        name: 'fresh.kcl',
-        path: '/projects/demo/fresh.kcl',
-        children: null,
-      },
-    ])
-
-    const explorerProject = getProjectExplorerProjectWithPlaceholders({
-      loadedProject,
-      projects: [hydratedProject],
-    })
-
-    expect(explorerProject?.children?.map((child) => child.name)).toEqual([
-      FOLDER_PLACEHOLDER_NAME,
-      'fresh.kcl',
-      FILE_PLACEHOLDER_NAME,
     ])
   })
 })
