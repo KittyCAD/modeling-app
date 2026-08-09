@@ -359,6 +359,15 @@ interface ZDSProjectPathInput {
   path: string
 }
 
+interface ZDSProjectArchiveInput extends ZDSProjectPathInput {
+  archivedPath?: string
+}
+
+interface ZDSProjectRestoreInput {
+  archivedPath: string
+  targetPath: string
+}
+
 interface ZDSProjectRenameInput {
   oldPath: string
   newPath: string
@@ -889,16 +898,30 @@ export class ZDSProject {
   }
 
   async archiveEntry(
-    input: ZDSProjectPathInput,
+    input: ZDSProjectArchiveInput,
     fileSystemOperations = this.fileSystemOperations
   ) {
     await this.ensureProjectPaths(input.path)
 
-    const archivedPath = await toArchivePath(input.path)
+    const archivedPath = input.archivedPath ?? (await toArchivePath(input.path))
     await this.movePath(input.path, archivedPath, fileSystemOperations)
     this.closeProjectEntryEditors(input.path)
     this.forgetProjectEntryFiles(input.path)
     return { archivedPath }
+  }
+
+  async restoreEntry(
+    input: ZDSProjectRestoreInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
+    await this.ensureProjectPaths(input.targetPath)
+
+    await this.movePath(
+      input.archivedPath,
+      input.targetPath,
+      fileSystemOperations
+    )
+    return input.targetPath
   }
 
   async applyFilePatch(
