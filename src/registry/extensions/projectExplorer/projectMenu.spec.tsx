@@ -1,7 +1,18 @@
-import { Registry } from '@kittycad/registry'
+import {
+  Registry,
+  defineRegistryItem,
+  provide,
+  provideService,
+} from '@kittycad/registry'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
+import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import getDesktopAppExtension from '@src/registry/extensions/getDesktopApp'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
@@ -47,9 +58,50 @@ function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
 }
 
+function createHomeProjectActions(): HomeProjectActionsService {
+  return {
+    canOpen: vi.fn(() => true),
+    canDuplicate: vi.fn(() => true),
+    canRename: vi.fn(() => true),
+    canDelete: vi.fn(() => true),
+    canMoveToLibrary: vi.fn(() => false),
+    canReviewDuplicateRealizations: vi.fn(() => false),
+    open: vi.fn(async (project) => ({
+      defaultFile: project.defaultFile ?? '',
+    })),
+    duplicate: vi.fn(async () => undefined),
+    rename: vi.fn(async () => undefined),
+    delete: vi.fn(async () => undefined),
+    getMoveToLibraryTargets: vi.fn(() => []),
+    moveToLibrary: vi.fn(async () => undefined),
+    deleteDuplicateRealizations: vi.fn(async () => undefined),
+  }
+}
+
 function createProjectMenuApp() {
   const registry = new Registry()
-  registry.configure([projectExplorerExtension, getDesktopAppExtension])
+  const homeProjectActions = createHomeProjectActions()
+  const homeProjectEntry = homeProjectEntryFromProject(projectWellFormed)
+  registry.configure([
+    projectExplorerExtension,
+    getDesktopAppExtension,
+    defineRegistryItem({
+      id: 'test-home-project-actions',
+      providesServices: [
+        provideService(homeProjectActionsService, homeProjectActions),
+      ],
+    }),
+    defineRegistryItem({
+      id: 'test-home-project-entries',
+      provides: [
+        provide(homeProjectEntriesValueSpec, {
+          ...homeProjectEntry,
+          id: `local:${projectWellFormed.path}`,
+          libraryIds: ['test-library'],
+        }),
+      ],
+    }),
+  ])
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -82,6 +134,7 @@ function createProjectMenuApp() {
       },
       registry,
     } as unknown as App,
+    homeProjectActions,
     dispose: () => {
       commandsActor.stop()
       registry[Symbol.dispose]()
@@ -142,7 +195,7 @@ describe('project explorer project menu', () => {
   })
 
   test('duplicates the current project', async () => {
-    const { app, dispose } = createProjectMenuApp()
+    const { app, homeProjectActions, dispose } = createProjectMenuApp()
 
     try {
       renderWithRouter(
@@ -160,14 +213,13 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
-      })
+      expect(homeProjectActions.duplicate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          localProjectPath: projectWellFormed.path,
+          localProjectName: projectWellFormed.name,
+        })
+      )
+      expect(app.systemIOActor.send).not.toHaveBeenCalled()
     } finally {
       dispose()
     }

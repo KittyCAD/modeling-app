@@ -18,8 +18,13 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { normalizeLibraryPath } from '@src/lib/projectLibraries'
+import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -256,6 +261,37 @@ function ProjectMenuPopover({
   const contributedProjectBreadcrumbBadges = app.registry.signal(
     projectExplorerProjectBreadcrumbBadgesValueSpec
   ).value
+  const homeProjectActions = app.registry.optional(homeProjectActionsService)
+  const homeProjectEntries = app.registry.signal(
+    homeProjectEntriesValueSpec
+  ).value
+  const currentHomeProject = useMemo(() => {
+    if (!project) {
+      return undefined
+    }
+
+    const normalizedProjectPath = normalizeLibraryPath(project.path)
+    return (
+      homeProjectEntries.find(
+        (entry) =>
+          entry.localProjectPath &&
+          normalizeLibraryPath(entry.localProjectPath) === normalizedProjectPath
+      ) ??
+      homeProjectEntries.find(
+        (entry) =>
+          entry.localProjectName === project.name || entry.name === project.name
+      )
+    )
+  }, [homeProjectEntries, project])
+  const duplicateProjectTarget =
+    homeProjectActions &&
+    currentHomeProject &&
+    homeProjectActions.canDuplicate(currentHomeProject)
+      ? {
+          actions: homeProjectActions,
+          project: currentHomeProject,
+        }
+      : undefined
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
@@ -311,7 +347,7 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
-        project
+        duplicateProjectTarget
           ? {
               id: 'duplicate-project',
               Element: 'button' as const,
@@ -324,14 +360,9 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.systemIOActor.send({
-                  type: SystemIOMachineEvents.duplicateProject,
-                  data: {
-                    projectName: project.name,
-                    projectPath: project.path,
-                    requestedProjectName: getProjectDisplayName(project),
-                  },
-                })
+                void duplicateProjectTarget.actions
+                  .duplicate(duplicateProjectTarget.project)
+                  .catch(reportRejection)
               },
             }
           : null,
@@ -537,9 +568,9 @@ function ProjectMenuPopover({
       homeNavigationEnabled,
       projectPath,
       project,
+      duplicateProjectTarget,
       contributedProjectMenuItems,
       commands.actor,
-      app.systemIOActor,
       file,
       filePath,
       machineCount,
