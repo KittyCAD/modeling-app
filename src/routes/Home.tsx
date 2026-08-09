@@ -222,6 +222,7 @@ const Home = () => {
     return projectLibraryRealizations?.watchConfiguredLibraries({
       libraries: projectLibraries,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
