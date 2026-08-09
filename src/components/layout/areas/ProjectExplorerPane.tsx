@@ -253,9 +253,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             createFilePressed={createFilePressed}
             createFolderPressed={createFolderPressed}
             refreshExplorerPressed={refreshExplorerPressed}
-            onRefreshExplorer={() =>
-              projectSession.refreshProjectTree().catch(reportRejection)
-            }
+            onRefreshExplorer={() => {
+              void session.refreshProjectTree().catch(reportRejection)
+            }}
             collapsePressed={collapsePressed}
             onRowClicked={onRowClicked}
             onRowDoubleClicked={onRowDoubleClicked}
