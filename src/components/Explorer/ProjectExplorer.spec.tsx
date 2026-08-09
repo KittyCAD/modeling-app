@@ -83,13 +83,17 @@ let project: Project = PROJECT_TEMPLATE
 
 function createFakeOpenedProject(projectTree: Project) {
   const projectIORefSignal = signal(projectTree)
+  const mocks = {
+    createFile: vi.fn(async ({ path }: { path: string }) => path),
+    refreshProjectTree: vi.fn(async () => projectIORefSignal.value),
+  }
   return {
     path: projectTree.path,
     name: projectTree.name,
     projectIORefSignal,
-    createFile: vi.fn(async ({ path }: { path: string }) => path),
-    refreshProjectTree: vi.fn(async () => projectIORefSignal.value),
-  } as unknown as ZDSProject
+    ...mocks,
+    mocks,
+  } as unknown as ZDSProject & { mocks: typeof mocks }
 }
 
 describe('ProjectExplorer', () => {
@@ -907,7 +911,7 @@ describe('ProjectExplorer', () => {
     fireEvent.keyUp(renameField, { key: 'Enter' })
 
     await waitFor(() => {
-      expect(openedProject.createFile).toHaveBeenCalledWith({
+      expect(openedProject.mocks.createFile).toHaveBeenCalledWith({
         path: `/${applicationDirectory}/${projectName}/notes.txt`,
       })
     })
