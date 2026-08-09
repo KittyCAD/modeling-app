@@ -4,7 +4,7 @@ import {
   defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
 import {
   type ProjectSessionApplyFilePatchInput,
@@ -24,6 +24,7 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   const projectTree = signal(project.value?.projectIORefSignal.value)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   const mutation = signal<ProjectSessionMutationState>({ pending: false })
+  let disposeProjectTreeSync: (() => void) | undefined
 
   const setMutation = ({
     pending,
@@ -50,6 +51,19 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   const syncProjectTree = () => {
     projectTree.value = project.value?.projectIORefSignal.value
     return projectTree.value
+  }
+
+  const watchProjectTree = (nextProject: ZDSProject | undefined) => {
+    disposeProjectTreeSync?.()
+    disposeProjectTreeSync = undefined
+    if (!nextProject) {
+      projectTree.value = undefined
+      return
+    }
+
+    disposeProjectTreeSync = effect(() => {
+      projectTree.value = nextProject.projectIORefSignal.value
+    })
   }
 
   const refreshProjectTree = async () => {
@@ -125,11 +139,11 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
     getProject: () => project.value,
     setProject: (nextProject) => {
       project.value = nextProject
-      syncProjectTree()
+      watchProjectTree(nextProject)
     },
     clearProject: () => {
       project.value = undefined
-      syncProjectTree()
+      watchProjectTree(undefined)
     },
     getProjectTree: () => projectTree.value,
     refreshProjectTree,
@@ -233,6 +247,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
     item: defineRuntimeRegistryItem({
       id: 'project-session-extension',
       providesServices: [provideService(projectSession, serviceImpl)],
+      dispose: () => {
+        disposeProjectTreeSync?.()
+        disposeProjectTreeSync = undefined
+      },
     }),
   }
 }, 'project-session-extension')
