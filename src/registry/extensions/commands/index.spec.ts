@@ -123,7 +123,7 @@ describe('commands extension', () => {
     )
   })
 
-  it('keeps static default keybindings within command availability', () => {
+  it('keeps app and toolbar default keybindings within command availability', () => {
     const staticCommandIds = [
       ...commandIds(APP_COMMAND_IDS),
       ...commandIds(TOOLBAR_COMMAND_IDS),

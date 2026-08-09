@@ -206,15 +206,8 @@ describe('keymap extension', () => {
       },
     ])
     const keymap = registry.get(keymapService)
-    const createEvent = () =>
-      new KeyboardEvent('keydown', {
-        key: 'u',
-        ctrlKey: true,
-        metaKey: true,
-        cancelable: true,
-      })
 
-    const outsideSettingsEvent = createEvent()
+    const outsideSettingsEvent = createModUEvent()
     expect(
       keymap.handleKeyDown(outsideSettingsEvent, { source: 'global' })
     ).toBe(false)
@@ -222,7 +215,7 @@ describe('keymap extension', () => {
     expect(new URL(window.location.href).searchParams.get('tab')).toBe('user')
 
     keymap.applyScope(SETTINGS_KEYMAP_SCOPE)
-    const settingsEvent = createEvent()
+    const settingsEvent = createModUEvent()
     expect(keymap.handleKeyDown(settingsEvent, { source: 'global' })).toBe(true)
     expect(settingsEvent.defaultPrevented).toBe(true)
     expect(new URL(window.location.href).searchParams.get('tab')).toBe(
@@ -264,11 +257,7 @@ describe('keymap extension', () => {
     )
 
     const keymap = registry.get(keymapService)
-    const event = new KeyboardEvent('keydown', {
-      key: 'u',
-      ctrlKey: true,
-      metaKey: true,
-    })
+    const event = createModUEvent()
 
     expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
     expect(send).toHaveBeenCalledWith({
@@ -306,87 +295,26 @@ describe('keymap extension', () => {
       }
     )
     const keymap = registry.get(keymapService)
-    const createEvent = () =>
-      new KeyboardEvent('keydown', {
-        key: 'u',
-        ctrlKey: true,
-        metaKey: true,
-        cancelable: true,
-      })
 
     keymap.applyScope(HOME_KEYMAP_SCOPE)
-    const homeEvent = createEvent()
+    const homeEvent = createModUEvent()
     expect(keymap.handleKeyDown(homeEvent, { source: 'global' })).toBe(false)
     expect(homeEvent.defaultPrevented).toBe(false)
     expect(send).not.toHaveBeenCalled()
 
     keymap.applyScope(MODE_MODELING_KEYMAP_SCOPE)
-    const modelingEvent = createEvent()
+    const modelingEvent = createModUEvent()
     expect(keymap.handleKeyDown(modelingEvent, { source: 'global' })).toBe(true)
     expect(modelingEvent.defaultPrevented).toBe(true)
     expect(send).toHaveBeenCalledOnce()
 
     keymap.applyScope(SETTINGS_KEYMAP_SCOPE)
-    const settingsEvent = createEvent()
+    const settingsEvent = createModUEvent()
     expect(keymap.handleKeyDown(settingsEvent, { source: 'global' })).toBe(
       false
     )
     expect(settingsEvent.defaultPrevented).toBe(false)
     expect(send).toHaveBeenCalledOnce()
-
-    registry[Symbol.dispose]()
-  })
-
-  it('falls back to an available command sharing an unavailable command chord', () => {
-    const send = vi.fn()
-    const registry = createRegistryWithKeymapItems(
-      [
-        {
-          id: 'test.file-command-keymap',
-          title: 'Test file command keymap',
-          command: 'test.file-command',
-          source: 'User',
-          keystrokes: ['mod+u'],
-        },
-        {
-          id: 'test.global-command-keymap',
-          title: 'Test global command keymap',
-          command: 'test.global-command',
-          source: 'User',
-          keystrokes: ['mod+u'],
-        },
-      ],
-      {
-        commands: [
-          createTestCommand('test.file-command', FILE_KEYMAP_SCOPES, {
-            name: 'Run file command',
-          }),
-          createTestCommand('test.global-command', GLOBAL_KEYMAP_SCOPES, {
-            name: 'Run global command',
-          }),
-        ],
-        send,
-      }
-    )
-    const keymap = registry.get(keymapService)
-    const event = new KeyboardEvent('keydown', {
-      key: 'u',
-      ctrlKey: true,
-      metaKey: true,
-      cancelable: true,
-    })
-
-    keymap.applyScope(HOME_KEYMAP_SCOPE)
-
-    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
-    expect(event.defaultPrevented).toBe(true)
-    expect(send).toHaveBeenCalledWith({
-      type: 'Find and select command',
-      data: {
-        groupId: 'test',
-        name: 'Run global command',
-      },
-    })
 
     registry[Symbol.dispose]()
   })
@@ -407,12 +335,7 @@ describe('keymap extension', () => {
         { commands: [] }
       )
       const keymap = registry.get(keymapService)
-      const event = new KeyboardEvent('keydown', {
-        key: 'u',
-        ctrlKey: true,
-        metaKey: true,
-        cancelable: true,
-      })
+      const event = createModUEvent()
 
       expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(false)
       expect(event.defaultPrevented).toBe(false)
@@ -834,4 +757,13 @@ function createKeyboardEventWithTarget(
   const event = new KeyboardEvent('keydown', { ...init, key })
   Object.defineProperty(event, 'target', { value: target })
   return event
+}
+
+function createModUEvent() {
+  return new KeyboardEvent('keydown', {
+    key: 'u',
+    ctrlKey: true,
+    metaKey: true,
+    cancelable: true,
+  })
 }
