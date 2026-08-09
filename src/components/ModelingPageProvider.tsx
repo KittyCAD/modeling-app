@@ -22,6 +22,7 @@ import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 function isNumberArray(value: unknown): value is number[] {
   return isArray(value) && value.every((item) => typeof item === 'number')
@@ -61,7 +62,9 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const app = useApp()
+  const { auth, commands, settings, systemIOActor } = app
+  const project = app.registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()

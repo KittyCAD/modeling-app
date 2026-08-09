@@ -5,9 +5,8 @@ import type { ZDSProject } from '@src/lang/KclManager'
 /**
  * Owns the currently opened project session.
  *
- * This is the registry replacement target for `App.project`,
- * `App.projectSignal`, and the selected project-library id. The legacy App
- * fields delegate to this service while call sites are migrated.
+ * This replaces the App-level `project`, `projectSignal`, and selected
+ * project-library id state so consumers can depend on a registry service.
  */
 export interface ProjectSessionService {
   readonly project: Signal<ZDSProject | undefined>

@@ -8,6 +8,7 @@ import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './AppHeader.module.css'
@@ -39,7 +40,8 @@ export const AppHeader = ({
   const lsp = app.registry.get(lspService)
   const navigate = useNavigate()
   const user = auth.useUser()
-  const executingPath = app.project?.executingPathSignal.value?.value
+  const executingPath = app.registry.get(projectSession).project.value
+    ?.executingPathSignal.value?.value
   const absoluteFilePath = executingPath
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined

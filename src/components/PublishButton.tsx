@@ -21,6 +21,7 @@ import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   type ComponentProps,
   memo,
@@ -38,7 +39,8 @@ export const PublishButton = memo(function PublishButton({
   app,
 }: PublishButtonProps) {
   useSignals()
-  const project = app.projectSignal.value?.projectIORefSignal.value
+  const project = app.registry.get(projectSession).project.value
+    ?.projectIORefSignal.value
 
   return (
     <Popover className="relative hidden sm:flex">

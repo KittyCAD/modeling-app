@@ -278,10 +278,10 @@ describe('project system', () => {
       )
       expect(app.billing.actor).toBe(registryBilling.actor)
       expect(app.rustContext).toBe(registryRustContext.context)
-      expect(app.projectSignal).toBe(registryProjectSession.project)
-      expect(app.currentProjectLibraryIdSignal).toBe(
-        registryProjectSession.currentProjectLibraryId
-      )
+      expect(registryProjectSession.project.value).toBeUndefined()
+      expect(
+        registryProjectSession.currentProjectLibraryId.value
+      ).toBeUndefined()
     } finally {
       app.dispose()
     }
@@ -862,10 +862,12 @@ describe('project system', () => {
 
     try {
       const project = await app.openProject(mockProject)
+      const session = app.registry.get(projectSession)
+      const openedProject = session.getProject()
 
-      expect(app.project).toBeDefined()
-      expect(app.project?.executingPath).toBeNull()
-      expect(app.project?.executingFileEntry.value.name).toEqual('')
+      expect(openedProject).toBe(project)
+      expect(openedProject?.executingPath).toBeNull()
+      expect(openedProject?.executingFileEntry.value.name).toEqual('')
 
       const [mainEntry] = mockProject.children ?? []
       expect(mainEntry).toBeDefined()
@@ -874,12 +876,16 @@ describe('project system', () => {
       }
 
       await project.openEditor(mainEntry.path)
-      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
-      expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(session.getProject()?.executingPath).toEqual(
+        '/some-dir/test/main.kcl'
+      )
+      expect(session.getProject()?.executingFileEntry.value.name).toEqual(
+        'main.kcl'
+      )
 
       app.closeProject()
 
-      expect(app.project).toBeUndefined()
+      expect(session.getProject()).toBeUndefined()
     } finally {
       app.dispose()
     }

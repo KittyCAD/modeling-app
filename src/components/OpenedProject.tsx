@@ -47,6 +47,7 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   needsToOnboard,
   TutorialRequestToast,
@@ -67,8 +68,8 @@ if (window.electron) {
 export function OpenedProject() {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    app
+  const { auth, billing, settings, layout, systemIOActor, registry } = app
+  const project = registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
