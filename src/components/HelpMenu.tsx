@@ -12,6 +12,7 @@ import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
@@ -24,14 +25,16 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu() {
   const app = useApp()
+  const { registry } = app
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
+  const session = registry.get(projectSession)
 
   const replayOnboardingWorkflow = () => {
     void acceptOnboarding({
-      app,
       onboardingStatus: onboardingStartPath,
       navigate,
+      projectSession: session,
     }).catch(reportOnboardingStartFailure)
   }
 

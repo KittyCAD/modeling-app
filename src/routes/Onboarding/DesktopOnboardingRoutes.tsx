@@ -1,8 +1,12 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
-import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
+import {
+  ONBOARDING_PROJECT_NAME,
+  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+} from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
+import fsZds from '@src/lib/fs-zds'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   type DesktopOnboardingPath,
@@ -11,9 +15,14 @@ import {
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import {
+  navigateToProject,
+  navigateToProjectFile,
+} from '@src/lib/projectSessionNavigation'
+import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type { ProjectSessionKclProjectFile } from '@src/registry/contracts/projectSession'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   OnboardingButtons,
@@ -57,15 +66,100 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
-function useOnboardingProjectIO() {
+function useOnboardingProjectSession() {
   useSignals()
-  const { registry, systemIOActor } = useApp()
+  const app = useApp()
+  const { registry } = app
   const currentProjectName = registry.get(projectSession).project.value?.name
-  return { projectName: currentProjectName, systemIOActor }
+  return {
+    app,
+    projectName: currentProjectName ?? ONBOARDING_PROJECT_NAME,
+  }
+}
+
+async function getOnboardingProjectRoot({
+  app,
+  projectName = ONBOARDING_PROJECT_NAME,
+}: {
+  app: ReturnType<typeof useApp>
+  projectName?: string
+}) {
+  const session = app.registry.get(projectSession)
+  const currentProject = session.getProject()
+  if (currentProject?.name === projectName) {
+    return currentProject.path
+  }
+
+  return fsZds.join(await session.getDefaultProjectDirectoryPath(), projectName)
+}
+
+async function navigateToOnboardingFile({
+  app,
+  fileName,
+  projectName = ONBOARDING_PROJECT_NAME,
+  onboardingStatus,
+  shouldNavigate,
+}: {
+  app: ReturnType<typeof useApp>
+  fileName: string
+  projectName?: string
+  onboardingStatus: DesktopOnboardingPath
+  shouldNavigate?: () => boolean
+}) {
+  const projectRoot = await getOnboardingProjectRoot({ app, projectName })
+  if (shouldNavigate?.() === false) {
+    return
+  }
+  await navigateToProjectFile({
+    app,
+    filePath: fsZds.join(projectRoot, fileName),
+    subRoute: joinRouterPaths(String(PATHS.ONBOARDING), onboardingStatus),
+  })
+}
+
+async function createOnboardingFiles({
+  app,
+  files,
+  onboardingStatus,
+  fileName,
+  projectName = ONBOARDING_PROJECT_NAME,
+  shouldNavigate,
+}: {
+  app: ReturnType<typeof useApp>
+  files: readonly ProjectSessionKclProjectFile[]
+  onboardingStatus: DesktopOnboardingPath
+  fileName?: string
+  projectName?: string
+  shouldNavigate?: () => boolean
+}) {
+  const result = await app.registry.get(projectSession).createKclFiles({
+    requestedProjectName: projectName,
+    files,
+    override: true,
+  })
+  if (shouldNavigate?.() === false) {
+    return
+  }
+  const subRoute = joinRouterPaths(String(PATHS.ONBOARDING), onboardingStatus)
+
+  if (fileName) {
+    await navigateToProjectFile({
+      app,
+      filePath: fsZds.join(result.projectRoot, fileName),
+      subRoute,
+    })
+    return
+  }
+
+  navigateToProject({
+    app,
+    projectPath: result.projectRoot,
+    subRoute,
+  })
 }
 
 function Welcome() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { app, projectName } = useOnboardingProjectSession()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -73,22 +167,18 @@ function Welcome() {
 
   // Things that happen when we load this route
   useEffect(() => {
-    if (!projectName) {
-      return
+    let isCurrent = true
+    void navigateToOnboardingFile({
+      app,
+      projectName,
+      fileName: 'main.kcl',
+      onboardingStatus: thisOnboardingStatus,
+      shouldNavigate: () => isCurrent,
+    }).catch(reportRejection)
+    return () => {
+      isCurrent = false
     }
-    // Navigate to the `main.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: 'main.kcl',
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -108,7 +198,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { app, projectName } = useOnboardingProjectSession()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -116,30 +206,25 @@ function Scene() {
 
   // Things that happen when we load this route
   useEffect(() => {
-    if (!projectName) {
-      return
+    let isCurrent = true
+    void createOnboardingFiles({
+      app,
+      projectName,
+      onboardingStatus: thisOnboardingStatus,
+      fileName: 'blank.kcl',
+      shouldNavigate: () => isCurrent,
+      files: [
+        {
+          requestedProjectName: projectName,
+          requestedFileName: 'blank.kcl',
+          requestedCode: '',
+        },
+      ],
+    }).catch(reportRejection)
+    return () => {
+      isCurrent = false
     }
-    // Create if necessary and navigate to the `blank.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileNameWithExtension: 'blank.kcl',
-        files: [
-          {
-            requestedProjectName: projectName,
-            requestedFileName: 'blank.kcl',
-            requestedCode: '',
-          },
-        ],
-        override: true,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+  }, [app, projectName])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -250,7 +335,7 @@ function ZookeeperPrompt() {
 }
 
 function FeatureTreePane() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { app, projectName } = useOnboardingProjectSession()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -263,21 +348,18 @@ function FeatureTreePane() {
 
   // navigate to the "generated" file
   useEffect(() => {
-    if (!projectName) {
-      return
+    let isCurrent = true
+    void navigateToOnboardingFile({
+      app,
+      projectName,
+      fileName: generatedFileName,
+      onboardingStatus: thisOnboardingStatus,
+      shouldNavigate: () => isCurrent,
+    }).catch(reportRejection)
+    return () => {
+      isCurrent = false
     }
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: generatedFileName,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -387,7 +469,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { app, projectName } = useOnboardingProjectSession()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the zookeeper button if it's present
@@ -396,21 +478,18 @@ function PromptToEdit() {
   // Open the zookeeper pane
   // Navigate to the sample file
   useEffect(() => {
-    if (!projectName) {
-      return
+    let isCurrent = true
+    void navigateToOnboardingFile({
+      app,
+      projectName,
+      fileName: 'main.kcl',
+      onboardingStatus: thisOnboardingStatus,
+      shouldNavigate: () => isCurrent,
+    }).catch(reportRejection)
+    return () => {
+      isCurrent = false
     }
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: projectName,
-        requestedFileName: 'main.kcl',
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -507,7 +586,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { projectName, systemIOActor } = useOnboardingProjectIO()
+  const { app, projectName } = useOnboardingProjectSession()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -515,29 +594,25 @@ function PromptToEditResult() {
   useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   useEffect(() => {
-    if (!projectName) {
-      return
+    let isCurrent = true
+    void createOnboardingFiles({
+      app,
+      projectName,
+      onboardingStatus: thisOnboardingStatus,
+      fileName: 'main.kcl',
+      shouldNavigate: () => isCurrent,
+      files: [
+        {
+          requestedFileName: 'main.kcl',
+          requestedProjectName: projectName,
+          requestedCode: modifiedColdPlate,
+        },
+      ],
+    }).catch(reportRejection)
+    return () => {
+      isCurrent = false
     }
-    // Navigate to the `main.kcl` file
-    systemIOActor.send({
-      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-      data: {
-        requestedProjectName: projectName,
-        files: [
-          {
-            requestedFileName: 'main.kcl',
-            requestedProjectName: projectName,
-            requestedCode: modifiedColdPlate,
-          },
-        ],
-        override: true,
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [systemIOActor, projectName])
+  }, [app, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">

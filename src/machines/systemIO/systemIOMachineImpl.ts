@@ -35,7 +35,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-} from '@src/machines/systemIO/errorReporting'
+} from '@src/lib/systemIOErrorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,

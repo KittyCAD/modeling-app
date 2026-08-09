@@ -1,6 +1,6 @@
 import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type * as SystemIOUtils from '@src/machines/systemIO/utils'
+import type * as ProjectFiles from '@src/lib/projectFiles'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -151,8 +151,8 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
   },
 }))
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) =>
-  importOriginal<typeof SystemIOUtils>()
+vi.mock('@src/lib/projectFiles', async (importOriginal) =>
+  importOriginal<typeof ProjectFiles>()
 )
 
 vi.mock('@src/routes/utils', () => ({

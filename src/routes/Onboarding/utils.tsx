@@ -12,7 +12,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -38,14 +37,11 @@ import {
   joinRouterPaths,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import {
-  DEFAULT_PROJECT_LIBRARY_ID,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-} from '@src/lib/projectLibraries'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
 
 // Get the 1-indexed step number of the current onboarding step
@@ -317,8 +313,8 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
-  app: Pick<App, 'getCreateProjectLibraryTargets'>
   onboardingStatus: OnboardingStatus
+  projectSession: ProjectSessionService
   navigate: NavigateFunction
 }
 
@@ -328,46 +324,20 @@ async function createOnboardingProject(
   deps: OnboardingUtilDeps,
   onboardingStatus: OnboardingStatus
 ) {
-  const targets = deps.app.getCreateProjectLibraryTargets()
-  const isDesktopApp = typeof window !== 'undefined' && Boolean(window.electron)
-  const preferredLibraryId = isDesktopApp
-    ? DEFAULT_PROJECT_LIBRARY_ID
-    : PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-  const projectLibraryTarget =
-    targets.find((target) => target.library.id === preferredLibraryId) ??
-    (isDesktopApp
-      ? targets.find(
-          (target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-        )
-      : undefined) ??
-    targets[0]
-
-  if (!projectLibraryTarget) {
-    return Promise.reject(
-      new Error('No writable project library is available for onboarding.')
-    )
-  }
-
-  const initialKclFile = coldPlateParts[0]
-  const project = await projectLibraryTarget.createProject.run({
-    library: projectLibraryTarget.library,
+  const result = await deps.projectSession.createKclFiles({
+    files: coldPlateParts.map((part) => ({
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      ...part,
+    })),
+    override: true,
     requestedProjectName: ONBOARDING_PROJECT_NAME,
     requestedProjectTitle: ONBOARDING_PROJECT_NAME,
-    // Write the tutorial before cloud enrollment can observe a blank project.
-    initialKclFile: {
-      fileName: initialKclFile.requestedFileName,
-      code: initialKclFile.requestedCode,
-    },
   })
-
-  if (!project?.default_file) {
-    return Promise.reject(new Error('Unable to create the onboarding project.'))
-  }
 
   await deps.navigate(
     joinRouterPaths(
       PATHS.FILE,
-      safeEncodeForRouterPaths(project.default_file),
+      safeEncodeForRouterPaths(result.projectRoot),
       PATHS.ONBOARDING,
       onboardingStatus
     )

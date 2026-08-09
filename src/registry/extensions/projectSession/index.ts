@@ -4,17 +4,26 @@ import {
   defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal, type Signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { ZDSProject, type ZDSProjectRuntime } from '@src/lang/KclManager'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import {
+  createNewProjectDirectory,
+  ensureProjectDirectoryExists,
+  isPathNotFoundError,
+  readAppSettingsFile,
+} from '@src/lib/desktop'
+import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
@@ -23,23 +32,25 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import {
   type ProjectSessionApplyFilePatchInput,
   type ProjectSessionArchiveEntryInput,
+  type ProjectSessionCreateKclFilesInput,
   type ProjectSessionEntryCopyMoveInput,
   type ProjectSessionEntryPathInput,
   type ProjectSessionEntryRenameInput,
   type ProjectSessionFileWriteInput,
+  type ProjectSessionImportProjectFilesInput,
   type ProjectSessionMutationOperation,
   type ProjectSessionMutationState,
   type ProjectSessionOpenEditorInput,
+  type ProjectSessionProjectFilesResult,
   type ProjectSessionRestoreEntryInput,
   type ProjectSessionService,
+  type ProjectSessionWriteFileAtPathInput,
   projectSession,
 } from '@src/registry/contracts/projectSession'
 import { settingsService } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import fsOperationQueueRegistryItem from '@src/registry/extensions/fsOperationQueue'
-import type { Subscription } from 'xstate'
 
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -63,15 +74,60 @@ function getZookeeperReplayFallbackFilePath(
   return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
+function normalizePathForComparison(path: string) {
+  const normalizedPath = fsZds.resolve(path).replace(/\\/g, '/')
+  return fsZds.sep === '\\' ? normalizedPath.toLowerCase() : normalizedPath
+}
+
+function isPathAtOrUnder(path: string, parentPath: string) {
+  const normalizedPath = normalizePathForComparison(path)
+  const normalizedParentPath = normalizePathForComparison(parentPath)
+  return (
+    normalizedPath === normalizedParentPath ||
+    normalizedPath.startsWith(`${normalizedParentPath}/`)
+  )
+}
+
+async function getDirectoryEntryNames(path: string) {
+  try {
+    return await fsZds.readdir(path)
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      return []
+    }
+    return Promise.reject(error)
+  }
+}
+
+function projectEntriesFromNames(
+  projectDirectoryPath: string,
+  names: string[]
+) {
+  return names.map((name) => ({
+    name,
+    path: fsZds.join(projectDirectoryPath, name),
+    children: [],
+  }))
+}
+
+function relativePathInsideParent(path: string, parentPath: string) {
+  if (!isPathAtOrUnder(path, parentPath)) {
+    return undefined
+  }
+
+  const relativePath = fsZds.relative(parentPath, path)
+  return relativePath && relativePath !== '.' ? relativePath : undefined
+}
+
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
   const project = signal<ZDSProject | undefined>(undefined)
   const projectTree = signal(project.value?.projectIORefSignal.value)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   const mutation = signal<ProjectSessionMutationState>({ pending: false })
-  let disposeProjectTreeSync: (() => void) | undefined
   let disposeProjectHistoryExtensions: (() => void) | undefined
-  let projectFoldersSubscription: Subscription | undefined
   let seededCloudSyncOpenedProject = false
+  let disposeProjectTreeEffect: (() => void) | undefined
 
   const setMutation = ({
     pending,
@@ -85,6 +141,14 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       ...(targetPath ? { targetPath } : {}),
       ...(lastTargetPath ? { lastTargetPath } : {}),
     }
+  }
+
+  const getWasmPromise = () => {
+    const wasmPromise = ctx.valueSpecs.get(wasmPromiseValueSpec)
+    if (!wasmPromise) {
+      return Promise.reject(new Error('Missing WASM promise registry value.'))
+    }
+    return wasmPromise
   }
 
   const getRequiredProject = () => {
@@ -142,17 +206,32 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     return projectTree.value
   }
 
-  const watchProjectTree = (nextProject: ZDSProject | undefined) => {
-    disposeProjectTreeSync?.()
-    disposeProjectTreeSync = undefined
+  const attachProjectTree = (nextProject: ZDSProject | undefined) => {
+    disposeProjectTreeEffect?.()
+    disposeProjectTreeEffect = undefined
+    project.value = nextProject
+
     if (!nextProject) {
       projectTree.value = undefined
       return
     }
 
-    disposeProjectTreeSync = effect(() => {
+    disposeProjectTreeEffect = effect(() => {
       projectTree.value = nextProject.projectIORefSignal.value
     })
+  }
+
+  const refreshOpenProjectTreeForPath = async (targetPath: string) => {
+    const currentProject = project.value
+    if (
+      currentProject &&
+      (isPathAtOrUnder(targetPath, currentProject.path) ||
+        isPathAtOrUnder(currentProject.path, targetPath))
+    ) {
+      projectTree.value = await currentProject.refreshProjectTree()
+    } else {
+      syncProjectTree()
+    }
   }
 
   const refreshProjectTree = async () => {
@@ -180,33 +259,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const watchSystemIOProjectTree = (projectIORefSignal: Signal<Project>) => {
-    projectFoldersSubscription?.unsubscribe()
-    projectFoldersSubscription = ctx.services
-      .get(systemIOService)
-      .actor.subscribe(({ context }) => {
-        const foundProject = (context.folders ?? []).find(
-          (candidate) =>
-            candidate.name === projectIORefSignal.value.name &&
-            candidate.path === projectIORefSignal.value.path
-        )
-        if (foundProject && projectIORefSignal.value !== foundProject) {
-          projectIORefSignal.value = {
-            ...foundProject,
-            ...(projectIORefSignal.value.libraryPath
-              ? { libraryPath: projectIORefSignal.value.libraryPath }
-              : {}),
-            ...(projectIORefSignal.value.libraryType
-              ? { libraryType: projectIORefSignal.value.libraryType }
-              : {}),
-          }
-        }
-      })
-  }
-
   const watchProjectHistoryExtensions = () => {
-    const systemIOActor = ctx.services.get(systemIOService).actor
-
     disposeProjectHistoryExtensions?.()
     disposeProjectHistoryExtensions = effect(() => {
       const currentProject = project.value
@@ -246,9 +299,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         onProjectFilesReplay: async (replayFiles) => {
           await currentProject.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            await serviceImpl.refreshProjectTree()
           }
         },
       })
@@ -283,7 +334,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       serviceImpl.setProject(openedProject)
       setCloudSyncOpenedProject(ownedProject)
       watchProjectHistoryExtensions()
-      watchSystemIOProjectTree(projectIORefSignal)
       setMutation({
         pending: false,
         operation: 'open-project',
@@ -341,6 +391,294 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
+  const runQueuedMutation = <Result>(
+    operation: ProjectSessionMutationOperation,
+    targetPath: string | undefined,
+    run: () => Promise<Result>
+  ) =>
+    ctx.services.get(fsOperationQueue).run(
+      {
+        kind: operation,
+        targetPath,
+        metadata: {
+          service: 'projectSession',
+        },
+      },
+      async () => {
+        setMutation({
+          pending: true,
+          operation,
+          targetPath,
+          lastTargetPath: mutation.value.lastTargetPath,
+        })
+        try {
+          const result = await run()
+          setMutation({
+            pending: false,
+            operation,
+            lastTargetPath: targetPath,
+          })
+          return result
+        } catch (error) {
+          setMutation({
+            pending: false,
+            operation,
+            lastTargetPath: targetPath,
+          })
+          return Promise.reject(error)
+        }
+      }
+    )
+
+  const getDefaultProjectDirectoryPath = async () => {
+    const currentSettings = settings.value?.current.value
+    const configuredProjectDirectoryPath = currentSettings
+      ? getDefaultDirectoryProjectLibraryPath(
+          currentSettings.app.libraries.current
+        )
+      : undefined
+    if (configuredProjectDirectoryPath) {
+      return configuredProjectDirectoryPath
+    }
+
+    const wasmInstance = await getWasmPromise()
+    const configuration = await readAppSettingsFile(wasmInstance)
+    if (configuration instanceof Error) {
+      return Promise.reject(configuration)
+    }
+
+    const projectDirectoryPath =
+      await ensureProjectDirectoryExists(configuration)
+    if (!projectDirectoryPath) {
+      return Promise.reject(
+        new Error('Unable to determine the project directory.')
+      )
+    }
+
+    return projectDirectoryPath
+  }
+
+  const getDefaultProjectName = () =>
+    settings.value?.current.value.projects.defaultProjectName.current ||
+    'project'
+
+  const prepareProjectFileWrite = async ({
+    projectDirectoryPath,
+    requestedProjectName,
+    useReservedProjectName,
+  }: {
+    projectDirectoryPath?: string
+    requestedProjectName?: string
+    useReservedProjectName?: boolean
+  }) => {
+    const resolvedProjectDirectoryPath =
+      projectDirectoryPath ?? (await getDefaultProjectDirectoryPath())
+    const targetProjectName = requestedProjectName || getDefaultProjectName()
+    const projectName = useReservedProjectName
+      ? targetProjectName
+      : requestedProjectName
+        ? targetProjectName
+        : getUniqueProjectName(
+            targetProjectName,
+            projectEntriesFromNames(
+              resolvedProjectDirectoryPath,
+              await getDirectoryEntryNames(resolvedProjectDirectoryPath)
+            )
+          )
+    const projectRoot = fsZds.join(resolvedProjectDirectoryPath, projectName)
+
+    return {
+      projectDirectoryPath: resolvedProjectDirectoryPath,
+      projectName,
+      projectRoot,
+    }
+  }
+
+  const createKclFiles = (input: ProjectSessionCreateKclFilesInput) =>
+    runQueuedMutation(
+      'create-project-kcl-files',
+      input.requestedProjectName,
+      async (): Promise<ProjectSessionProjectFilesResult> => {
+        if (input.files.length === 0) {
+          return Promise.reject(
+            new Error('Cannot create project files without any files.')
+          )
+        }
+
+        const wasmInstance = await getWasmPromise()
+        const writeProjectName =
+          input.requestedProjectName ?? input.files[0]?.requestedProjectName
+        const {
+          projectDirectoryPath,
+          projectName: resolvedWriteProjectName,
+          projectRoot: writeProjectRoot,
+        } = await prepareProjectFileWrite({
+          projectDirectoryPath: input.projectDirectoryPath,
+          requestedProjectName: writeProjectName,
+          useReservedProjectName: input.useReservedProjectName,
+        })
+        let firstFileName: string | undefined
+        let firstFilePath: string | undefined
+
+        for (const file of input.files) {
+          const fileRequestedProjectName =
+            file.requestedProjectName ?? resolvedWriteProjectName
+          const relativeFileDirectory = input.requestedProjectName
+            ? relativePathInsideParent(
+                fileRequestedProjectName,
+                resolvedWriteProjectName
+              )
+            : undefined
+          const targetProjectName = relativeFileDirectory
+            ? resolvedWriteProjectName
+            : fileRequestedProjectName
+          const targetProjectRoot = fsZds.join(
+            projectDirectoryPath,
+            targetProjectName
+          )
+          const targetBaseDir = relativeFileDirectory
+            ? fsZds.join(targetProjectRoot, relativeFileDirectory)
+            : targetProjectRoot
+          const fileName = input.override
+            ? file.requestedFileName
+            : (
+                await getNextFileName({
+                  entryName: file.requestedFileName,
+                  baseDir: targetBaseDir,
+                  wasmInstance,
+                })
+              ).name
+          const projectRelativeFileName = relativeFileDirectory
+            ? fsZds.join(relativeFileDirectory, fileName)
+            : fileName
+
+          await createNewProjectDirectory(
+            targetProjectName,
+            wasmInstance,
+            file.requestedCode,
+            undefined,
+            projectRelativeFileName,
+            projectDirectoryPath,
+            input.requestedProjectTitle ?? targetProjectName
+          )
+          firstFileName ??= fileName
+          firstFilePath ??= fsZds.join(
+            targetProjectRoot,
+            projectRelativeFileName
+          )
+        }
+
+        invalidateProjectLibraryRealizations()
+        await refreshOpenProjectTreeForPath(writeProjectRoot)
+
+        const numberOfFiles = input.files.length
+        const fileText = numberOfFiles > 1 ? 'files' : 'file'
+        return {
+          projectDirectoryPath,
+          projectName: input.requestedProjectName ?? resolvedWriteProjectName,
+          projectRoot: fsZds.join(
+            projectDirectoryPath,
+            input.requestedProjectName ?? resolvedWriteProjectName
+          ),
+          fileName: firstFileName,
+          filePath: firstFilePath,
+          message: input.override
+            ? `Successfully overwrote ${numberOfFiles} ${fileText}`
+            : `Successfully created ${numberOfFiles} ${fileText}`,
+        }
+      }
+    )
+
+  const importProjectFiles = (input: ProjectSessionImportProjectFilesInput) =>
+    runQueuedMutation(
+      'import-project-files',
+      input.requestedProjectName,
+      async (): Promise<ProjectSessionProjectFilesResult> => {
+        if (input.files.length === 0) {
+          return Promise.reject(
+            new Error(
+              'The shared project import did not include any files to write.'
+            )
+          )
+        }
+
+        const { projectDirectoryPath, projectName, projectRoot } =
+          await prepareProjectFileWrite({
+            projectDirectoryPath: input.projectDirectoryPath,
+            requestedProjectName: input.requestedProjectName,
+            useReservedProjectName: true,
+          })
+        const requestedFileNameWithExtension =
+          input.requestedFileNameWithExtension || ''
+
+        if (
+          requestedFileNameWithExtension &&
+          input.files.some(
+            (file) => file.requestedFileName === requestedFileNameWithExtension
+          ) === false
+        ) {
+          return Promise.reject(
+            new Error(
+              `The shared project entry file "${requestedFileNameWithExtension}" was not present in the imported files.`
+            )
+          )
+        }
+
+        await fsZds.mkdir(projectRoot, { recursive: true })
+        for (const file of input.files) {
+          const targetPath = fsZds.join(projectRoot, file.requestedFileName)
+          await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+          await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+        }
+
+        const filePath = requestedFileNameWithExtension
+          ? fsZds.join(projectRoot, requestedFileNameWithExtension)
+          : undefined
+        if (filePath) {
+          await fsZds.stat(filePath)
+        }
+
+        invalidateProjectLibraryRealizations()
+        await refreshOpenProjectTreeForPath(projectRoot)
+
+        return {
+          projectDirectoryPath,
+          projectName,
+          projectRoot,
+          fileName: requestedFileNameWithExtension,
+          filePath,
+          message: `Successfully imported project within "${projectName}"`,
+        }
+      }
+    )
+
+  const writeFileAtPath = (input: ProjectSessionWriteFileAtPathInput) =>
+    runQueuedMutation('write-file-at-path', input.path, async () => {
+      if (!input.overwrite) {
+        try {
+          await fsZds.stat(input.path)
+          return Promise.reject(
+            new Error(`File "${fsZds.basename(input.path)}" already exists.`)
+          )
+        } catch (error) {
+          if (!isPathNotFoundError(error)) {
+            return Promise.reject(error)
+          }
+        }
+      }
+
+      await fsZds.mkdir(fsZds.dirname(input.path), { recursive: true })
+      await fsZds.writeFile(
+        input.path,
+        typeof input.contents === 'string'
+          ? new TextEncoder().encode(input.contents)
+          : input.contents
+      )
+      invalidateProjectLibraryRealizations()
+      await refreshOpenProjectTreeForPath(input.path)
+      return input.path
+    })
+
   const openProjectFile = (input: ProjectSessionOpenEditorInput) =>
     runProjectMutation(
       'open-editor',
@@ -364,20 +702,18 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     getFileSystemOperations: () => ctx.services.get(fsOperationQueue),
     openProject,
     setProject: (nextProject) => {
-      project.value = nextProject
-      watchProjectTree(nextProject)
+      attachProjectTree(nextProject)
     },
     clearProject: () => {
       disposeProjectHistoryExtensions?.()
       disposeProjectHistoryExtensions = undefined
-      projectFoldersSubscription?.unsubscribe()
-      projectFoldersSubscription = undefined
       project.value?.close?.()
-      project.value = undefined
-      watchProjectTree(undefined)
+      attachProjectTree(undefined)
       clearCloudSyncOpenedProject()
     },
     getProjectTree: () => projectTree.value,
+    getDefaultProjectDirectoryPath,
+    waitForIdle: () => ctx.services.get(fsOperationQueue).waitForIdle(),
     refreshProjectTree,
     openEditor: openProjectFile,
     openFile: openProjectFile,
@@ -420,6 +756,9 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         })
       }
     },
+    createKclFiles,
+    importProjectFiles,
+    writeFileAtPath,
     createFile: (input: ProjectSessionFileWriteInput) =>
       runProjectMutation('create-file', input.path, (currentProject) =>
         currentProject.createFile(input)

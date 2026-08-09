@@ -1,5 +1,5 @@
 import type * as ClientErrors from '@src/lib/clientErrors'
-import { ExpectedSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { ExpectedSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'

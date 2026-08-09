@@ -74,7 +74,6 @@ import {
 } from '@src/lib/revealInFileExplorer'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
   type AppHeaderItemProps,
@@ -103,7 +102,6 @@ import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
@@ -1009,20 +1007,14 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
  * sync-only surface (remote entries, status bar, project-menu sync actions).
  */
 export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
-  const systemIO = ctx.services.signal(systemIOService)
   const userFeatures = ctx.services.signal(userFeaturesService)
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new Error('Missing WASM promise registry value.')
 
-  // A materialized cloud project can be listed either by System IO (when the
-  // cloud folder is the app's project directory, e.g. on web) or by the
-  // configured Personal Cloud library scan (e.g. on desktop). Refresh both so
-  // local mutations show up regardless of which surface owns the entry.
+  // A materialized cloud project is listed through configured Personal Cloud
+  // library discovery. Refresh it so local mutations show up in Home.
   const refreshLocalCloudProjectEntries = () => {
-    systemIO.value?.actor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
     invalidateProjectLibraryRealizations()
   }
 

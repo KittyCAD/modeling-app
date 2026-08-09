@@ -8,7 +8,6 @@ import {
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -17,9 +16,7 @@ import {
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
-  isPathInDirectoryProjectLibrary,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
@@ -35,7 +32,6 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -212,11 +208,7 @@ export const fileLoader =
       )
     }
 
-    const settings = await loadRouteSettings(
-      app,
-      wasmInstance,
-      projectPathData.projectPath
-    )
+    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -300,29 +292,6 @@ export const fileLoader =
         : undefined
     )
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
-    const appProjectDir =
-      getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries?.current
-      ) ?? ''
-    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
-      project.path,
-      appProjectDir
-    )
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
-
     const projectData: IndexLoaderData = {
       code: editor.code,
       project,
@@ -341,7 +310,7 @@ export const fileLoader =
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
 
-// Should also clear currently loaded projects in SystemIO. They may be stale.
+// Should also invalidate currently loaded Home projects. They may be stale.
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
