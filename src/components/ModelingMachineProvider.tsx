@@ -1,36 +1,35 @@
+import { useSignals } from '@preact/signals-react/runtime'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { reportRejection } from '@src/lib/trap'
-import { useMachine } from '@xstate/react'
-import type React from 'react'
-import { createContext, use, useEffect, useMemo, useRef } from 'react'
-import type { MutableRefObject } from 'react'
-import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import type { Project } from '@src/lib/project'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { useFolders } from '@src/machines/systemIO/hooks'
-
-import { useSignals } from '@preact/signals-react/runtime'
-import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import {
-  modelingMachineStateToToolbarModeName,
-  toolbarModeNameToKeymapScope,
-} from '@src/lib/toolbar'
-import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import type { Project } from '@src/lib/project'
+import {
+  modelingMachineStateToToolbarModeName,
+  toolbarModeNameToKeymapScope,
+} from '@src/lib/toolbar'
+import { reportRejection } from '@src/lib/trap'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { useFolders } from '@src/machines/systemIO/hooks'
+import type { WebContentSendPayload } from '@src/menu/channels'
+import { engineSceneModelTreeHudService } from '@src/registry/contracts/engineScene'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { useMachine } from '@xstate/react'
+import type React from 'react'
+import type { MutableRefObject } from 'react'
+import { createContext, use, useEffect, useMemo, useRef } from 'react'
+import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -147,7 +146,7 @@ export const ModelingMachineProvider = ({
       )
 
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      toggle(DefaultLayoutPaneID.FeatureTree)
+      registry.optional(engineSceneModelTreeHudService)?.focus()
     } else if (data.menuLabel === 'View.Panes.KCL code') {
       toggle(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {

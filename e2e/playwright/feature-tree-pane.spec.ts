@@ -118,9 +118,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       await scene.settled()
 
       await toolbar.openFeatureTreePane()
-      await expect
-        .poll(() => page.getByText('Feature tree').count())
-        .toBeGreaterThan(1)
+      await expect(toolbar.featureTreePane).toBeVisible()
     })
 
     async function testViewSource({

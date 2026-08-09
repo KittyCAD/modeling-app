@@ -1211,7 +1211,9 @@ export function getVariableNameFromNodePath(
     program,
     pathToNode,
     wasmInstance,
-    ['CallExpressionKw', 'SketchBlock']
+    ['CallExpressionKw', 'SketchBlock'],
+    false,
+    true
   )
   if (
     err(call) ||
@@ -1224,7 +1226,9 @@ export function getVariableNameFromNodePath(
     program,
     pathToNode,
     wasmInstance,
-    'VariableDeclaration'
+    'VariableDeclaration',
+    false,
+    true
   )
   if (err(varDec)) {
     return undefined

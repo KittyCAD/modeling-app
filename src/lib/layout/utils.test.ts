@@ -39,6 +39,34 @@ const basicSplitLayout: Layout = {
   ],
 }
 
+function parseMigratedLayout(layoutWithMetadata: LayoutWithMetadata) {
+  const migrated = parseLayoutWithMigrations(layoutWithMetadata)
+
+  expect(migrated).not.toBeInstanceOf(Error)
+  return migrated as LayoutWithMetadata
+}
+
+function flattenLayout(layout: Layout): Layout[] {
+  return [
+    layout,
+    ...('children' in layout ? layout.children.flatMap(flattenLayout) : []),
+  ]
+}
+
+function expectNoRetiredModelTreeNodes(layout: Layout) {
+  const nodes = flattenLayout(layout)
+  expect(nodes.map((node) => node.id)).not.toContain(
+    DefaultLayoutPaneID.FeatureTree
+  )
+  expect(nodes.map((node) => node.id)).not.toContain('operations-list')
+  expect(nodes.map((node) => node.id)).not.toContain('bodies-list')
+  expect(
+    nodes
+      .filter((node) => node.type === LayoutType.Simple)
+      .map((node) => node.areaType)
+  ).not.toEqual(expect.arrayContaining([AreaType.FeatureTree, AreaType.Bodies]))
+}
+
 describe('Layout utils', () => {
   describe('pane visibility utilities', () => {
     it('closes every open pane in a pane layout', () => {
@@ -180,9 +208,63 @@ describe('Layout utils', () => {
         ],
       }
 
+      setOpenPanes(layout, [DefaultLayoutPaneID.Code])
+
+      expect(layout).toHaveProperty('children[0].activeIndices', [1])
+      expect(layout).toHaveProperty('children[1].activeIndices', [])
+    })
+
+    it('ignores the retired feature tree pane when setting open panes', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Splits,
+        orientation: 'inline',
+        sizes: [50, 50],
+        children: [
+          {
+            id: DefaultLayoutToolbarID.Left,
+            label: 'Left',
+            type: LayoutType.Panes,
+            side: 'inline-start',
+            activeIndices: [1],
+            sizes: [100],
+            splitOrientation: 'block',
+            children: [
+              {
+                id: DefaultLayoutPaneID.FeatureTree,
+                label: 'Feature Tree',
+                type: LayoutType.Simple,
+                areaType: AreaType.FeatureTree,
+                icon: 'model',
+              },
+              {
+                id: DefaultLayoutPaneID.Code,
+                label: 'Code',
+                type: LayoutType.Simple,
+                areaType: AreaType.Code,
+                icon: 'code',
+              },
+            ],
+            actions: [],
+          },
+          {
+            id: DefaultLayoutToolbarID.Right,
+            label: 'Right',
+            type: LayoutType.Panes,
+            side: 'inline-end',
+            activeIndices: [],
+            sizes: [],
+            splitOrientation: 'block',
+            children: [],
+            actions: [],
+          },
+        ],
+      }
+
       setOpenPanes(layout, [DefaultLayoutPaneID.FeatureTree])
 
-      expect(layout).toHaveProperty('children[0].activeIndices', [0])
+      expect(layout).toHaveProperty('children[0].activeIndices', [])
       expect(layout).toHaveProperty('children[1].activeIndices', [])
     })
   })
@@ -306,8 +388,8 @@ describe('Layout utils', () => {
   })
 
   describe('persisted layout migrations', () => {
-    it('adds the bodies list split around a v2 feature tree pane', () => {
-      const migrated = parseLayoutWithMigrations({
+    it('falls back to the current default layout for a lone v2 feature tree root', () => {
+      const migrated = parseMigratedLayout({
         version: 'v2',
         layout: {
           id: DefaultLayoutPaneID.FeatureTree,
@@ -317,17 +399,207 @@ describe('Layout utils', () => {
         },
       })
 
-      expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v3')
-      expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('layout.id', 'default')
+      expectNoRetiredModelTreeNodes(migrated.layout)
+    })
+
+    it('removes an active v3 feature tree pane and keeps other active panes', () => {
+      const migrated = parseMigratedLayout({
+        version: 'v3',
+        layout: {
+          id: 'root',
+          label: 'Root',
+          type: LayoutType.Splits,
+          orientation: 'inline',
+          sizes: [30, 70],
+          children: [
+            {
+              id: DefaultLayoutToolbarID.Left,
+              label: 'Left',
+              type: LayoutType.Panes,
+              side: 'inline-start',
+              activeIndices: [0, 1],
+              sizes: [40, 60],
+              splitOrientation: 'block',
+              children: [
+                {
+                  id: DefaultLayoutPaneID.FeatureTree,
+                  label: 'Feature Tree',
+                  type: LayoutType.Splits,
+                  orientation: 'block',
+                  sizes: [70, 30],
+                  icon: 'model',
+                  children: [
+                    {
+                      id: 'operations-list',
+                      label: 'Feature Tree',
+                      type: LayoutType.Simple,
+                      areaType: AreaType.FeatureTree,
+                    },
+                    {
+                      id: 'bodies-list',
+                      label: 'Bodies',
+                      type: LayoutType.Simple,
+                      areaType: AreaType.Bodies,
+                    },
+                  ],
+                },
+                {
+                  id: DefaultLayoutPaneID.Code,
+                  label: 'Code',
+                  type: LayoutType.Simple,
+                  areaType: AreaType.Code,
+                  icon: 'code',
+                },
+                {
+                  id: DefaultLayoutPaneID.Files,
+                  label: 'Files',
+                  type: LayoutType.Simple,
+                  areaType: AreaType.Files,
+                  icon: 'folder',
+                },
+              ],
+            },
+            {
+              id: 'modeling-scene',
+              label: 'Modeling scene',
+              type: LayoutType.Simple,
+              areaType: AreaType.ModelingScene,
+            },
+          ],
+        },
+      })
+
+      expect(migrated).toHaveProperty('version', 'v4')
+      expectNoRetiredModelTreeNodes(migrated.layout)
       expect(migrated).toHaveProperty(
-        'layout.children[0].areaType',
-        AreaType.FeatureTree
+        'layout.children[0].children[0].id',
+        'code'
       )
-      expect(migrated).toHaveProperty(
-        'layout.children[1].areaType',
-        AreaType.Bodies
-      )
+      expect(migrated).toHaveProperty('layout.children[0].activeIndices', [0])
+      expect(migrated).toHaveProperty('layout.children[0].sizes', [100])
+    })
+
+    it('removes an inactive v3 feature tree pane without changing the active pane', () => {
+      const migrated = parseMigratedLayout({
+        version: 'v3',
+        layout: {
+          id: DefaultLayoutToolbarID.Left,
+          label: 'Left',
+          type: LayoutType.Panes,
+          side: 'inline-start',
+          activeIndices: [1],
+          sizes: [100],
+          splitOrientation: 'block',
+          children: [
+            {
+              id: DefaultLayoutPaneID.FeatureTree,
+              label: 'Feature Tree',
+              type: LayoutType.Simple,
+              areaType: AreaType.FeatureTree,
+              icon: 'model',
+            },
+            {
+              id: DefaultLayoutPaneID.Code,
+              label: 'Code',
+              type: LayoutType.Simple,
+              areaType: AreaType.Code,
+              icon: 'code',
+            },
+          ],
+        },
+      })
+
+      expect(migrated).toHaveProperty('version', 'v4')
+      expectNoRetiredModelTreeNodes(migrated.layout)
+      expect(migrated).toHaveProperty('layout.children[0].id', 'code')
+      expect(migrated).toHaveProperty('layout.activeIndices', [0])
+      expect(migrated).toHaveProperty('layout.sizes', [100])
+    })
+
+    it('removes nested v3 bodies splits and normalizes split sizes', () => {
+      const migrated = parseMigratedLayout({
+        version: 'v3',
+        layout: {
+          id: 'nested-root',
+          label: 'Nested root',
+          type: LayoutType.Splits,
+          orientation: 'block',
+          sizes: [20, 30, 50],
+          children: [
+            {
+              id: 'code',
+              label: 'Code',
+              type: LayoutType.Simple,
+              areaType: AreaType.Code,
+            },
+            {
+              id: 'nested-bodies',
+              label: 'Nested bodies split',
+              type: LayoutType.Splits,
+              orientation: 'inline',
+              sizes: [100],
+              children: [
+                {
+                  id: 'bodies-list',
+                  label: 'Bodies',
+                  type: LayoutType.Simple,
+                  areaType: AreaType.Bodies,
+                },
+              ],
+            },
+            {
+              id: 'files',
+              label: 'Files',
+              type: LayoutType.Simple,
+              areaType: AreaType.Files,
+            },
+          ],
+        },
+      })
+
+      expect(migrated).toHaveProperty('version', 'v4')
+      expectNoRetiredModelTreeNodes(migrated.layout)
+      expect(migrated).toHaveProperty('layout.children.length', 2)
+      expect(migrated).toHaveProperty('layout.sizes.length', 2)
+      expect(
+        (
+          (migrated.layout as Extract<Layout, { type: LayoutType.Splits }>)
+            .sizes ?? []
+        ).reduce((sum, size) => sum + size, 0)
+      ).toBe(100)
+    })
+
+    it('falls back to the current default layout for a lone v3 feature tree root', () => {
+      const migrated = parseMigratedLayout({
+        version: 'v3',
+        layout: {
+          id: DefaultLayoutPaneID.FeatureTree,
+          label: 'Feature Tree',
+          type: LayoutType.Splits,
+          orientation: 'block',
+          sizes: [70, 30],
+          children: [
+            {
+              id: 'operations-list',
+              label: 'Feature Tree',
+              type: LayoutType.Simple,
+              areaType: AreaType.FeatureTree,
+            },
+            {
+              id: 'bodies-list',
+              label: 'Bodies',
+              type: LayoutType.Simple,
+              areaType: AreaType.Bodies,
+            },
+          ],
+        },
+      })
+
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('layout.id', 'default')
+      expectNoRetiredModelTreeNodes(migrated.layout)
     })
   })
 
