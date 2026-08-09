@@ -29,12 +29,14 @@ import {
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
-  parentPathRelativeToProject,
 } from '@src/lib/paths'
+import {
+  navigateToProject,
+  navigateToProjectFile,
+} from '@src/lib/projectSessionNavigation'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
@@ -178,7 +180,8 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, systemIOActor } = useApp()
+  const app = useApp()
+  const { commands, registry } = app
   const session = registry.get(projectSession)
   const projectSessionMutation = session.mutation.value
   const keymap = registry.optional(keymapService)
@@ -1045,11 +1048,9 @@ export const ProjectExplorer = ({
               successMessage: 'Archived successfully',
               onSuccess: () => {
                 if (shouldWeNavigate && file?.path) {
-                  systemIOActor.send({
-                    type: SystemIOMachineEvents.navigateToProject,
-                    data: {
-                      requestedProjectName: project.name,
-                    },
+                  navigateToProject({
+                    app,
+                    projectPath: project.path,
                   })
                 }
               },
@@ -1192,11 +1193,6 @@ export const ProjectExplorer = ({
                     canNavigate
 
                   if (shouldWeNavigate && file && file.path) {
-                    const requestedFileNameWithExtension =
-                      parentPathRelativeToProject(
-                        file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
-                      )
                     void runFileTreeMutation({
                       mutation: () =>
                         session.renameEntry({
@@ -1205,13 +1201,10 @@ export const ProjectExplorer = ({
                         }),
                       successMessage: `Successfully renamed folder "${name}" to "${requestedName}"`,
                       onSuccess: () => {
-                        systemIOActor.send({
-                          type: SystemIOMachineEvents.navigateToFile,
-                          data: {
-                            requestedProjectName: project.name,
-                            requestedFileName: requestedFileNameWithExtension,
-                          },
-                        })
+                        void navigateToProjectFile({
+                          app,
+                          filePath: file.path.replace(oldPath, newPath),
+                        }).catch(console.error)
                       },
                     })
                   } else {
@@ -1251,10 +1244,6 @@ export const ProjectExplorer = ({
 
               if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
                 // Create the KCL file and navigate to (open) it in the editor.
-                const pathRelativeToParent = parentPathRelativeToProject(
-                  requestedAbsolutePath,
-                  applicationProjectDirectory
-                )
                 void runFileTreeMutation({
                   mutation: () =>
                     session.createFile({
@@ -1262,13 +1251,10 @@ export const ProjectExplorer = ({
                     }),
                   successMessage: 'Successfully created 1 file',
                   onSuccess: () => {
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.navigateToFile,
-                      data: {
-                        requestedProjectName: project.name,
-                        requestedFileName: pathRelativeToParent,
-                      },
-                    })
+                    void navigateToProjectFile({
+                      app,
+                      filePath: requestedAbsolutePath,
+                    }).catch(console.error)
                   },
                 })
               } else {
@@ -1304,10 +1290,6 @@ export const ProjectExplorer = ({
                 getParentAbsolutePath(row.path),
                 fileName
               )
-              const requestedFileName = parentPathRelativeToProject(
-                newPath,
-                applicationProjectDirectory
-              )
               void runFileTreeMutation({
                 mutation: () =>
                   session.renameEntry({
@@ -1317,13 +1299,10 @@ export const ProjectExplorer = ({
                 successMessage: `Successfully renamed file "${name}" to "${fileName}"`,
                 onSuccess: () => {
                   if (shouldWeNavigate) {
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.navigateToFile,
-                      data: {
-                        requestedProjectName: project.name,
-                        requestedFileName,
-                      },
-                    })
+                    void navigateToProjectFile({
+                      app,
+                      filePath: newPath,
+                    }).catch(console.error)
                   }
                 },
               })

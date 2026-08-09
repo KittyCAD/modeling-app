@@ -12,6 +12,7 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { navigateToProjectFile } from '@src/lib/projectSessionNavigation'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import {
   useProjectIdToConversationId,
@@ -37,7 +38,6 @@ import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPrompt
 import {
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import { ZOOKEEPER_FILE_WRITE_TOAST_ID } from '@src/lib/constants'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -112,7 +112,7 @@ export function ZookeeperConversationPaneWrapper(
 function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, systemIOActor } = app
+  const { auth, billing, settings } = app
   const project = app.registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
@@ -401,13 +401,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     deletesRequestedFile
 
                   if (shouldNavigate) {
-                    systemIOActor.send({
-                      type: SystemIOMachineEvents.navigateToFile,
-                      data: {
-                        requestedProjectName: payload.requestedProjectName,
-                        requestedFileName: requestedFileNameWithExtension,
-                        onProjectLoaderComplete: handlePostWriteSuccess,
-                      },
+                    await navigateToProjectFile({
+                      app,
+                      filePath: requestedAbsolutePath,
+                      openFile: !deletesRequestedFile,
+                      onProjectLoaderComplete: handlePostWriteSuccess,
                     })
                   } else {
                     handlePostWriteSuccess()
