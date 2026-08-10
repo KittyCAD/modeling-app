@@ -75,15 +75,33 @@ function findHomeProjectEntryForCommandValue(app: App, value: unknown) {
 }
 
 function getHomeProjectOptions(app: App) {
-  const currentProjectName = app.registry.get(projectSession).getProject()?.name
+  const currentProject = app.registry.get(projectSession).getProject()
+  const currentProjectName = currentProject?.name
 
-  return app.registry.get(homeProjectEntriesValueSpec).map((project) => ({
+  const projects = app.registry.get(homeProjectEntriesValueSpec)
+  const options = projects.map((project) => ({
     name: getHomeProjectDisplayName(project),
     value: project.id,
     isCurrent:
       project.name === currentProjectName ||
       project.localProjectName === currentProjectName,
   }))
+  const currentProjectHasOption = projects.some(
+    (project) =>
+      project.localProjectPath === currentProject?.path ||
+      project.localProjectName === currentProject?.name ||
+      project.name === currentProject?.name
+  )
+
+  if (currentProject && !currentProjectHasOption) {
+    options.push({
+      name: currentProject.name,
+      value: currentProject.name,
+      isCurrent: true,
+    })
+  }
+
+  return options
 }
 
 function onSubmitKCLSampleCreation({
@@ -709,10 +727,10 @@ export function createApplicationCommands({
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(
-  settingsActor: SettingsActorType,
-  commandBarActor: CommandBarActorType
+  _settingsActor: SettingsActorType,
+  commandBarActor: CommandBarActorType,
+  currentProjectOptionValue?: string
 ) {
-  const currentProject = settingsActor.getSnapshot().context.currentProject
   commandBarActor.send({
     type: 'Find and select command',
     data: {
@@ -720,7 +738,9 @@ export function sendAddFileToProjectCommandForCurrentProject(
       groupId: 'application',
       argDefaultValues: {
         method: 'existingProject',
-        projectName: currentProject?.name,
+        ...(currentProjectOptionValue
+          ? { projectName: currentProjectOptionValue }
+          : {}),
         ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
       },
     },

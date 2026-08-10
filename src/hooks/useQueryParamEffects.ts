@@ -464,11 +464,68 @@ export function useQueryParamEffects() {
       }
     }
 
-    // Helper function to send the command exactly once
+    const commandIsRegistered = () =>
+      commands.actor
+        .getSnapshot()
+        .context.commands.some(
+          (command) =>
+            command.name === commandData.name &&
+            command.groupId === commandData.groupId
+        )
+
+    async function waitForRegisteredCommand() {
+      if (commandIsRegistered()) {
+        return
+      }
+
+      await waitFor(
+        commands.actor,
+        (snapshot) =>
+          snapshot.context.commands.some(
+            (command) =>
+              command.name === commandData.name &&
+              command.groupId === commandData.groupId
+          ),
+        { timeout: 5000 }
+      )
+    }
+
+    function normalizeAddFileToProjectCommandArgs() {
+      if (commandData.name !== 'add-kcl-file-to-project') {
+        return
+      }
+
+      const projectName = commandData.argDefaultValues?.projectName
+      if (typeof projectName !== 'string') {
+        return
+      }
+
+      const matchingProject = app.registry
+        .get(homeProjectEntriesValueSpec)
+        .find(
+          (project) =>
+            project.id === projectName ||
+            project.localProjectName === projectName ||
+            project.localProjectPath === projectName ||
+            project.name === projectName
+        )
+      if (matchingProject) {
+        commandData.argDefaultValues.projectName = matchingProject.id
+      }
+    }
+
     let sent = false
-    function sendCommand() {
+    async function sendCommand() {
       if (sent) return
       sent = true
+      try {
+        await waitForRegisteredCommand()
+      } catch {
+        toast.error(`Unable to find command: ${commandData.name}`)
+        cleanupQueryParams()
+        return
+      }
+      normalizeAddFileToProjectCommandArgs()
       commands.send({
         type: 'Find and select command',
         data: commandData,
@@ -517,7 +574,7 @@ export function useQueryParamEffects() {
 
         await session.waitForIdle()
         if (!cancelled) {
-          sendCommand()
+          await sendCommand()
         }
       })().catch(() => {
         if (!cancelled) {
@@ -529,7 +586,7 @@ export function useQueryParamEffects() {
       }
     }
 
-    sendCommand()
+    void sendCommand()
 
     // Helper function to clean up query parameters
     function cleanupQueryParams() {

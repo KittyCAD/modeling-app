@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AxisNames } from '@src/lib/constants'
 import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -147,18 +148,10 @@ export function modelingMenuCallbackMostActions({
         `${appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_USER)}#defaultUnit`
       )
     } else if (data.menuLabel === 'File.Add file to project') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'add-kcl-file-to-project',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'existingProject',
-            projectName: currentProject?.name,
-          },
-        },
-      })
+      sendAddFileToProjectCommandForCurrentProject(
+        settingsActor,
+        commandBarActor
+      )
     } else if (data.menuLabel === 'File.Export current part') {
       commandBarActor.send({
         type: 'Find and select command',

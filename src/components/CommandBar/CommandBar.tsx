@@ -140,6 +140,9 @@ export const CommandBar = () => {
     <Transition.Root
       show={isCommandBarOpen || false}
       afterLeave={() => {
+        if (!cmd.actor.getSnapshot().matches('Closed')) {
+          return
+        }
         if (selectedCommand?.onCancel) {
           selectedCommand.onCancel()
         }

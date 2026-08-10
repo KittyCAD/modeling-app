@@ -207,9 +207,7 @@ export function createProjectCommands({
         (project) =>
           project.localProjectName === currentProjectDirectoryName ||
           project.name === currentProjectDirectoryName
-      )?.id ??
-      currentProjectDirectoryName ??
-      ''
+      )?.id ?? currentProjectDirectoryName
     )
   }
 
@@ -696,6 +694,9 @@ export function createProjectCommands({
         skip: true,
         options: importProjectOptions,
         defaultValue: defaultImportProjectId,
+        valueSummary(value) {
+          return projectDisplayNameFromCommandValue(value, 'open')
+        },
       },
       name: {
         inputType: 'string',
@@ -713,11 +714,16 @@ export function createProjectCommands({
       },
     },
     reviewMessage(commandBarContext) {
+      const projectName = projectDisplayNameFromCommandValue(
+        commandBarContext.argumentsToSubmit.projectName,
+        'open'
+      )
+
       return isDesktop()
         ? `Will add the contents from URL to a new ${
             commandBarContext.argumentsToSubmit.method === 'newProject'
               ? 'project with file main.kcl'
-              : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`
+              : `file within the project "${projectName}"`
           } named "${
             commandBarContext.argumentsToSubmit.name
           }", and set default units to "${
