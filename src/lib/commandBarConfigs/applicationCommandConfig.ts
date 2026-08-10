@@ -39,6 +39,12 @@ import type { RequestedKCLFile } from '@src/lib/projectFiles'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
+import { waitFor } from 'xstate'
+
+const ADD_FILE_TO_PROJECT_COMMAND = {
+  name: 'add-kcl-file-to-project',
+  groupId: 'application',
+} as const
 
 function getHomeProjectFileEntries(app: App): FileEntry[] {
   return app.registry.get(homeProjectEntriesValueSpec).flatMap((project) => {
@@ -731,11 +737,10 @@ export function sendAddFileToProjectCommandForCurrentProject(
   commandBarActor: CommandBarActorType,
   currentProjectOptionValue?: string
 ) {
-  commandBarActor.send({
+  const event = {
     type: 'Find and select command',
     data: {
-      name: 'add-kcl-file-to-project',
-      groupId: 'application',
+      ...ADD_FILE_TO_PROJECT_COMMAND,
       argDefaultValues: {
         method: 'existingProject',
         ...(currentProjectOptionValue
@@ -744,5 +749,33 @@ export function sendAddFileToProjectCommandForCurrentProject(
         ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
       },
     },
-  })
+  } as const
+  const hasCommand = () =>
+    commandBarActor
+      .getSnapshot()
+      .context.commands.some(
+        (command) =>
+          command.name === ADD_FILE_TO_PROJECT_COMMAND.name &&
+          command.groupId === ADD_FILE_TO_PROJECT_COMMAND.groupId
+      )
+
+  if (hasCommand()) {
+    commandBarActor.send(event)
+    return
+  }
+
+  void waitFor(
+    commandBarActor,
+    (snapshot) =>
+      snapshot.context.commands.some(
+        (command) =>
+          command.name === ADD_FILE_TO_PROJECT_COMMAND.name &&
+          command.groupId === ADD_FILE_TO_PROJECT_COMMAND.groupId
+      ),
+    { timeout: 5000 }
+  )
+    .then(() => {
+      commandBarActor.send(event)
+    })
+    .catch(() => undefined)
 }

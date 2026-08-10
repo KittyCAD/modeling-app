@@ -1,5 +1,5 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -24,6 +24,7 @@ export const CommandBar = () => {
   const project = registry.get(projectSession).project.value
   const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
+  const previousPathname = useRef(pathname)
   const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
     context: {
@@ -52,6 +53,10 @@ export const CommandBar = () => {
   // but importantly not when the query parameters change
   // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
   useEffect(() => {
+    if (previousPathname.current === pathname) {
+      return
+    }
+    previousPathname.current = pathname
     if (commandBarState.matches('Closed')) {
       return
     }
