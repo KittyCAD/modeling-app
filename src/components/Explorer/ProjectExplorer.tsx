@@ -1266,7 +1266,7 @@ export const ProjectExplorer = ({
                     projectSession.createFile({
                       path: requestedAbsolutePath,
                     }),
-                  successMessage: `File ${fileName} written successfully`,
+                  successMessage: 'Successfully created 1 file',
                   onSuccess: () => {
                     systemIOActor.send({
                       type: SystemIOMachineEvents.navigateToFile,
