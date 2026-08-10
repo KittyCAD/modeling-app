@@ -574,9 +574,13 @@ export const sketchSolveMachine = setup({
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               const secondObject = second === ORIGIN_TARGET ? undefined : second
               const firstSupportsPlacement =
-                isLineSegment(firstObject) || isPointSegment(firstObject)
+                first === ORIGIN_TARGET ||
+                isLineSegment(firstObject) ||
+                isPointSegment(firstObject)
               const secondSupportsPlacement =
-                isLineSegment(secondObject) || isPointSegment(secondObject)
+                second === ORIGIN_TARGET ||
+                isLineSegment(secondObject) ||
+                isPointSegment(secondObject)
               if (firstSupportsPlacement && secondSupportsPlacement) {
                 sendToActorIfActive(self, {
                   type: 'equip tool',

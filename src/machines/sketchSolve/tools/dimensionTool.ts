@@ -1,6 +1,7 @@
 import type {
   ApiConstraint,
   ApiObject,
+  ConstraintSegment,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -27,16 +28,16 @@ import {
 } from '@src/lib/utils2d'
 import {
   getLinePoints,
-  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
+import { getSnappingCandidates } from '@src/machines/sketchSolve/snapping'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type {
-  SelectionCoordinates,
-  SketchSolveSelectionId,
+import {
+  ORIGIN_TARGET,
+  type SelectionCoordinates,
+  type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import { setup } from 'xstate'
@@ -85,7 +86,7 @@ export type LineSelection = {
 
 export type PointSelection = {
   type: 'point'
-  id: number
+  id: SketchSolveSelectionId
   point: Coords2d
 }
 
@@ -368,11 +369,14 @@ function getInitialDistanceSelections(
 
   const firstId = selectionIds[0]
   const secondId = selectionIds[1]
-  if (typeof firstId !== 'number' || typeof secondId !== 'number') {
-    return null
-  }
 
-  const selectionFromId = (id: number): DimensionSelection | null => {
+  const selectionFromId = (
+    id: SketchSolveSelectionId
+  ): DimensionSelection | null => {
+    if (id === ORIGIN_TARGET) {
+      return { type: 'point', id, point: [0, 0] }
+    }
+
     const point = pointSelectionFromObject(objects[id])
     if (point) {
       return point
@@ -482,6 +486,10 @@ function toNumber(value: number, units: NumericSuffix) {
   }
 }
 
+function toConstraintSegment(id: SketchSolveSelectionId): ConstraintSegment {
+  return id === ORIGIN_TARGET ? 'ORIGIN' : id
+}
+
 export function buildDimensionAngleConstraint(
   angleContext: DimensionAngleDraftContext,
   mousePoint: Coords2d,
@@ -547,13 +555,16 @@ export function buildDimensionDistanceConstraint(
 ): ApiDistanceConstraint {
   const type = getDimensionDistanceType(mousePoint, distanceContext)
   let distance: number
-  let constraintSegmentIds: [number, number]
+  let constraintSegments: [ConstraintSegment, ConstraintSegment]
   if (distanceContext.kind === 'pointLine') {
     distance = roundOff(distanceContext.distance)
-    constraintSegmentIds = [distanceContext.point.id, distanceContext.line.id]
+    constraintSegments = [
+      toConstraintSegment(distanceContext.point.id),
+      distanceContext.line.id,
+    ]
   } else if (distanceContext.kind === 'lineLine') {
     distance = roundOff(distanceContext.distance)
-    constraintSegmentIds = [distanceContext.line0.id, distanceContext.line1.id]
+    constraintSegments = [distanceContext.line0.id, distanceContext.line1.id]
   } else {
     const delta = subVec(
       distanceContext.point1.point,
@@ -566,15 +577,15 @@ export function buildDimensionDistanceConstraint(
           ? delta[1]
           : length2d(delta)
     )
-    constraintSegmentIds = [
-      distanceContext.point0.id,
-      distanceContext.point1.id,
+    constraintSegments = [
+      toConstraintSegment(distanceContext.point0.id),
+      toConstraintSegment(distanceContext.point1.id),
     ]
   }
 
   return {
     type,
-    segments: constraintSegmentIds,
+    segments: constraintSegments,
     distance: { value: distance, units },
     labelPosition: {
       x: toNumber(mousePoint[0], units),
@@ -874,18 +885,33 @@ function getClosestDimensionSelection(
     context.initialObjects,
     context.sketchId
   )
-  const closestObject = findClosestApiObjects(
+  const closestCandidate = getSnappingCandidates(
     mousePoint,
     currentSketchObjects,
     context.sceneInfra
   ).find(
-    ({ apiObject }) => isLineSegment(apiObject) || isPointSegment(apiObject)
-  )?.apiObject
+    ({ target }) =>
+      target.type === 'line' ||
+      target.type === 'point' ||
+      target.type === ORIGIN_TARGET
+  )
 
-  if (!closestObject) {
+  if (!closestCandidate) {
     return null
   }
 
+  if (closestCandidate.target.type === ORIGIN_TARGET) {
+    return { type: 'point', id: ORIGIN_TARGET, point: [0, 0] }
+  }
+
+  if (
+    closestCandidate.target.type !== 'line' &&
+    closestCandidate.target.type !== 'point'
+  ) {
+    return null
+  }
+
+  const closestObject = currentSketchObjects[closestCandidate.target.id]
   const pointSelection = pointSelectionFromObject(closestObject)
   if (pointSelection) {
     return pointSelection
@@ -981,17 +1007,19 @@ function updateSelectedEntities(
   self: ParentSketchSolveSender,
   selections: readonly DimensionSelection[]
 ) {
+  const selectionCoordinates: SelectionCoordinates = {}
+  for (const selection of selections) {
+    if (typeof selection.id === 'number') {
+      selectionCoordinates[selection.id] = getSelectionPoint(selection)
+    }
+  }
+
   sendParent(self, {
     type: 'update selected ids',
     data: {
       selectedIds: selections.map(({ id }) => id),
       replaceExistingSelection: true,
-      selectionCoordinates: Object.fromEntries(
-        selections.map((selection) => [
-          selection.id,
-          getSelectionPoint(selection),
-        ])
-      ),
+      selectionCoordinates,
     },
   })
 }

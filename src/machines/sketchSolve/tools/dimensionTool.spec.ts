@@ -3,9 +3,10 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
-import type {
-  SelectionCoordinates,
-  SketchSolveSelectionId,
+import {
+  ORIGIN_TARGET,
+  type SelectionCoordinates,
+  type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   buildDimensionAngleConstraint,
@@ -380,6 +381,22 @@ describe('dimensionTool distance selection', () => {
     })
   })
 
+  it('serializes the sketch origin as an ORIGIN constraint segment', () => {
+    const originDistanceContext: DimensionDistanceDraftContext = {
+      kind: 'pointPoint',
+      point0: { type: 'point', id: ORIGIN_TARGET, point: [0, 0] },
+      point1: { type: 'point', id: 2, point: [4, 3] },
+    }
+
+    expect(
+      buildDimensionDistanceConstraint(originDistanceContext, [2, 5], 'Mm')
+    ).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: ['ORIGIN', 2],
+      distance: { value: 4, units: 'Mm' },
+    })
+  })
+
   it('keeps point-to-line dimensions absolute in every cursor region', () => {
     const pointLineContext: DimensionDistanceDraftContext = {
       kind: 'pointLine',
@@ -427,6 +444,29 @@ describe('dimensionTool distance selection', () => {
 })
 
 describe('dimensionTool', () => {
+  it('creates a distance draft after selecting the origin and a point', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      point,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([0, 0]))
+    callbacks.onClick(createMouseEvent([4, 3]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      segments: ['ORIGIN', 2],
+      distance: { value: 5, units: 'Mm' },
+    })
+  })
+
   it('creates and edits one smart distance draft after selecting two points', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
@@ -590,6 +630,28 @@ describe('dimensionTool', () => {
     expect((rustContext.addConstraint as any).mock.calls[0][2].type).toBe(
       'HorizontalDistance'
     )
+  })
+
+  it('starts distance placement with a preselected origin and point', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext } = createParentHarness(
+      [sketch, point],
+      { initialSelectionIds: [ORIGIN_TARGET, 2] }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: ['ORIGIN', 2],
+      distance: { value: 4, units: 'Mm' },
+    })
   })
 
   it('starts label placement when initialized with a selected point and line', async () => {
