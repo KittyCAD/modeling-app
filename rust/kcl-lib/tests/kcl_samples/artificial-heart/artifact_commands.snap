@@ -10,21 +10,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -48,9 +48,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         }
       }
     },
@@ -70,7 +70,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 11.937999999999999,
           "y": -4.826,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -92,7 +92,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 11.937999999999999,
             "y": -5.842,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -109,7 +109,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": -5.842,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -126,7 +126,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": -16.002,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -147,11 +147,11 @@ description: Artifact commands artificial-heart.kcl
           "radius": 1.7780000000000016,
           "start": {
             "unit": "degrees",
-            "value": 0
+            "value": 0.0
           },
           "end": {
             "unit": "degrees",
-            "value": -90
+            "value": -90.0
           },
           "relative": false
         }
@@ -168,7 +168,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 5.08,
             "y": -17.779999999999998,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -185,7 +185,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 5.08,
             "y": -18.541999999999998,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -202,7 +202,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 36.321999999999996,
             "y": -18.541999999999998,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -223,11 +223,11 @@ description: Artifact commands artificial-heart.kcl
           "radius": 2.539999999999999,
           "start": {
             "unit": "degrees",
-            "value": -90
+            "value": -90.0
           },
           "end": {
             "unit": "degrees",
-            "value": 0
+            "value": 0.0
           },
           "relative": false
         }
@@ -244,7 +244,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.862,
             "y": 17.018,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -265,11 +265,11 @@ description: Artifact commands artificial-heart.kcl
           "radius": 2.5400000000000023,
           "start": {
             "unit": "degrees",
-            "value": 0
+            "value": 0.0
           },
           "end": {
             "unit": "degrees",
-            "value": 90
+            "value": 90.0
           },
           "relative": false
         }
@@ -286,7 +286,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 5.08,
             "y": 19.558,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -303,7 +303,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 5.08,
             "y": 18.796,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -320,7 +320,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 36.321999999999996,
             "y": 18.796,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -341,11 +341,11 @@ description: Artifact commands artificial-heart.kcl
           "radius": 1.7779999999999987,
           "start": {
             "unit": "degrees",
-            "value": 90
+            "value": 90.0
           },
           "end": {
             "unit": "degrees",
-            "value": 0
+            "value": 0.0
           },
           "relative": false
         }
@@ -362,7 +362,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": -4.826,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -379,7 +379,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 11.937999999999999,
             "y": -4.826,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -413,21 +413,21 @@ description: Artifact commands artificial-heart.kcl
         "type": "revolve",
         "target": "[uuid]",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "axis_is_2d": true,
         "angle": {
           "unit": "degrees",
-          "value": 360
+          "value": 360.0
         },
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "opposite": "None",
         "body_type": "solid"
       }
@@ -470,9 +470,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -481,21 +481,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -519,9 +519,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -541,7 +541,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -30.046876632894747,
           "y": 23.426378392288132,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -561,8 +561,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 7.487662687718055e-11,
-            "y": -5.837839381935019e-11
+            "x": 0.00000000007487662687718055,
+            "y": -0.00000000005837839381935019
           },
           "radius": 38.099999999715166,
           "start": {
@@ -593,8 +593,8 @@ description: Artifact commands artificial-heart.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 0,
-          "y": 0
+          "x": 0.0,
+          "y": 0.0
         }
       }
     },
@@ -608,9 +608,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -666,21 +666,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -704,9 +704,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -726,7 +726,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 13.630358821392,
           "y": -0.452060986719339,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -771,7 +771,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -4.5500468451909795,
           "y": -3.567735913474731,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -809,7 +809,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -5.268862695254358,
           "y": -3.2682988699689193,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -847,7 +847,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 7.782082066865575,
           "y": -1.4106152786449342,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -919,9 +919,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -981,9 +981,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1045,9 +1045,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -1062,9 +1062,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -1078,9 +1078,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 45,
-                "z": 0
+                "x": 0.0,
+                "y": 45.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -1104,9 +1104,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 45,
-                "z": 0
+                "x": 0.0,
+                "y": 45.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -1132,7 +1132,7 @@ description: Artifact commands artificial-heart.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "tolerance": 1e-7
+        "tolerance": 0.0000001
       }
     },
     {
@@ -1141,21 +1141,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
+          "x": 0.0,
           "y": -18.541999999999998,
-          "z": 0
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -1193,9 +1193,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -1213,9 +1213,9 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.2714150373472872,
-          "y": 32.34699348737121,
-          "z": 0
+          "x": -3.271340065307273,
+          "y": 32.34700106978268,
+          "z": 0.0
         }
       }
     },
@@ -1235,8 +1235,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -7.049916206369744e-16,
-            "y": 0
+            "x": -0.0000000000000007049916206369744,
+            "y": -0.0
           },
           "radius": 32.512000000483,
           "start": {
@@ -1260,7 +1260,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 23.087227462069087,
           "y": -26.37465890170054,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1273,8 +1273,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0,
-            "y": 0
+            "x": -0.0,
+            "y": -0.0
           },
           "radius": 35.05200000094671,
           "start": {
@@ -1298,7 +1298,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 1.2039394610216354,
           "y": 30.469456157890725,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1336,7 +1336,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 32.621135220272414,
           "y": -12.825920666396833,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1374,7 +1374,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 17.859824969803363,
           "y": -27.270817466543573,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1412,7 +1412,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -32.18706585902426,
           "y": -4.585077468047026,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1450,7 +1450,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -29.03704900121456,
           "y": -8.58799394609805,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1465,7 +1465,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 17.85982496980336,
             "y": -27.270817466543576,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1480,7 +1480,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 31.85783647069192,
           "y": -7.790722652281108,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1495,7 +1495,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 1.2039394610216392,
             "y": 30.46945615789073,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1510,7 +1510,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 15.01629722093537,
           "y": -3.817702682573467,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1523,8 +1523,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 2.4431413905482955e-19,
-            "y": 3.0927947264215504e-18
+            "x": 0.00000000000000000024431413905482955,
+            "y": 0.0000000000000000030927947264215504
           },
           "radius": 15.493999999999998,
           "start": {
@@ -1570,9 +1570,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -1634,9 +1634,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -1645,21 +1645,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -1683,9 +1683,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         }
       }
     },
@@ -1703,9 +1703,9 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.1870936788431815e-18,
+          "x": -0.00000000000000002669004540542594,
           "y": -17.779999999999998,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1725,9 +1725,9 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.6847368845328645e-17,
+            "x": 0.000000000000000026847368845328645,
             "y": -19.049999999999997,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1767,7 +1767,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 23.135071381698182,
           "y": -27.99820617861604,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1802,21 +1802,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
+          "x": 0.0,
           "y": -17.779999999999998,
-          "z": 0
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -1854,9 +1854,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -1876,7 +1876,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.809176294248497,
           "y": 3.3610379322119712,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1896,8 +1896,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.0242372089529454e-10,
-            "y": 1.4416206171459202e-10
+            "x": 0.00000000010242372089529454,
+            "y": 0.00000000014416206171459202
           },
           "radius": 5.080000002035735,
           "start": {
@@ -1921,7 +1921,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.454399990159046,
           "y": 2.5908000100153323,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1934,8 +1934,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.039762806607306e-10,
-            "y": -1.606379564395692e-10
+            "x": -0.0000000003039762806607306,
+            "y": -0.0000000001606379564395692
           },
           "radius": 4.317999998476,
           "start": {
@@ -1981,9 +1981,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -1995,7 +1995,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -2054,9 +2054,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -2070,9 +2070,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 80,
-                "z": 0
+                "x": 0.0,
+                "y": 80.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -2091,21 +2091,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -2129,9 +2129,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         }
       }
     },
@@ -2149,9 +2149,9 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000011270919455138375,
-          "y": 17.77999927726648,
-          "z": 0
+          "x": -0.0000000023826485230888196,
+          "y": 17.779999999991656,
+          "z": 0.0
         }
       }
     },
@@ -2171,9 +2171,9 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2.3914696734176673e-9,
+            "x": 0.0000000023914696734176673,
             "y": 19.049999999983317,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2188,7 +2188,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 13.499034703386945,
           "y": 31.202975945802276,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2226,7 +2226,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 13.49903475184976,
           "y": 31.20297640688555,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2261,21 +2261,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
+          "x": 0.0,
           "y": 17.779999999999998,
-          "z": 0
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -2313,9 +2313,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -2335,7 +2335,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.809176294248497,
           "y": 3.3610379322119712,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2355,8 +2355,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.0242372089529454e-10,
-            "y": 1.4416206171459202e-10
+            "x": 0.00000000010242372089529454,
+            "y": 0.00000000014416206171459202
           },
           "radius": 5.080000002035735,
           "start": {
@@ -2380,7 +2380,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.454399990159046,
           "y": 2.5908000100153323,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2393,8 +2393,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.039762806607306e-10,
-            "y": -1.606379564395692e-10
+            "x": -0.0000000003039762806607306,
+            "y": -0.0000000001606379564395692
           },
           "radius": 4.317999998476,
           "start": {
@@ -2440,9 +2440,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -2454,7 +2454,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -2513,9 +2513,9 @@ description: Artifact commands artificial-heart.kcl
           "b": 0.92941177,
           "a": 0.3
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -2529,9 +2529,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 75,
-                "z": 0
+                "x": 0.0,
+                "y": 75.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -2552,21 +2552,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -2590,9 +2590,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         }
       }
     },
@@ -2612,7 +2612,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 38.099999999999994,
           "y": 6.350000000000001,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2634,7 +2634,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": 8.89,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2651,7 +2651,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 12.436155422624678,
             "y": 8.89,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2691,7 +2691,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 8.383823500071156,
           "y": 11.664026283356515,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2706,7 +2706,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 6.106294994979952,
             "y": 17.528191615967348,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2721,9 +2721,9 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.325272045783167e-27,
+            "x": 0.000000000000000000000000004325272045783167,
             "y": 17.528191615967348,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2738,7 +2738,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 38.099999999999994,
           "y": -6.350000000000001,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2753,7 +2753,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": -8.889999999999715,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2770,7 +2770,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 12.436155370154395,
             "y": -8.889999999999135,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2810,7 +2810,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 8.38382348183707,
           "y": -11.664026330321285,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2825,7 +2825,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 6.106294994980226,
             "y": -17.528191615967348,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2840,9 +2840,9 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.3037254575945655e-27,
+            "x": 0.0000000000000000000000000043037254575945655,
             "y": -17.528191615967348,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2856,8 +2856,8 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 10.160000000000002,
-          "y": 1.2914955125958342e-16,
-          "z": 0
+          "y": 0.00000000000000012914955125958342,
+          "z": 0.0
         }
       }
     },
@@ -2872,7 +2872,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 10.160000000000002,
             "y": 6.35,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2889,7 +2889,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": 6.350000000000001,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2902,9 +2902,9 @@ description: Artifact commands artificial-heart.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.325261786583357e-27,
+          "x": 0.000000000000000000000000004325261786583357,
           "y": 17.528191615967348,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2917,9 +2917,9 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.318079590520423e-27,
+            "x": 0.000000000000000000000000004318079590520423,
             "y": -17.528191615967348,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2933,8 +2933,8 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 10.16,
-          "y": 1.2914955125983076e-16,
-          "z": 0
+          "y": 0.00000000000000012914955125983076,
+          "z": 0.0
         }
       }
     },
@@ -2949,7 +2949,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 10.159999999999998,
             "y": -6.350000000000001,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2966,7 +2966,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 38.099999999999994,
             "y": -6.350000000000001,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -3000,21 +3000,21 @@ description: Artifact commands artificial-heart.kcl
         "type": "revolve",
         "target": "[uuid]",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "axis_is_2d": true,
         "angle": {
           "unit": "degrees",
-          "value": 360
+          "value": 360.0
         },
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "opposite": "None",
         "body_type": "solid"
       }
@@ -3051,21 +3051,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
+          "x": 0.0,
           "y": -10.16,
-          "z": 0
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -3103,9 +3103,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -3125,7 +3125,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -0.91823886082956,
           "y": -18.03253798255683,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3170,7 +3170,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 0.9182388608295563,
           "y": -14.987462017443177,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3183,7 +3183,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.524958103184872e-16,
+            "x": -0.0000000000000003524958103184872,
             "y": -16.509999999999998
           },
           "radius": 1.7780001445066769,
@@ -3208,7 +3208,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 0.9182388608295562,
           "y": -14.987462017443177,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3293,9 +3293,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -3352,17 +3352,17 @@ description: Artifact commands artificial-heart.kcl
         "type": "entity_circular_pattern",
         "entity_id": "[uuid]",
         "axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "center": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "num_repetitions": 6,
-        "arc_degrees": 360,
+        "arc_degrees": 360.0,
         "rotate_duplicates": true
       }
     },
@@ -3377,24 +3377,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3417,24 +3417,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3457,24 +3457,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3497,24 +3497,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3537,24 +3537,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3577,24 +3577,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3617,24 +3617,24 @@ description: Artifact commands artificial-heart.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 25.4,
-                "z": 0
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -3654,21 +3654,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -3692,9 +3692,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -3714,7 +3714,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -29.634845199528264,
           "y": 29.63484519952814,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3759,7 +3759,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -93.50694177269038,
           "y": -19.526668243867316,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3774,7 +3774,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": -53.0469644264034,
             "y": -89.1313273918062,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -3787,20 +3787,20 @@ description: Artifact commands artificial-heart.kcl
         "type": "make_plane",
         "origin": {
           "x": -41.91,
-          "y": 0,
-          "z": 0
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -3838,9 +3838,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -3860,7 +3860,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 14.776559305424698,
           "y": -1.0298214048116676,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3905,7 +3905,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -3.3381395456945038,
           "y": -3.970125071223033,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3943,7 +3943,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -5.268862698504938,
           "y": -3.26829888894947,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -3981,7 +3981,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 7.782081135561232,
           "y": -1.4106148677749002,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4042,9 +4042,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 45,
-                "z": 0
+                "x": 0.0,
+                "y": 45.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -4091,9 +4091,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -4105,7 +4105,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -4162,11 +4162,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.05490196,
           "g": 0.13725491,
           "b": 0.74509805,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -4192,9 +4192,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 45,
-                "z": 0
+                "x": 0.0,
+                "y": 45.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -4217,9 +4217,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -4231,7 +4231,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -4288,11 +4288,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.6509804,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -4301,21 +4301,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -4339,9 +4339,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -4360,8 +4360,8 @@ description: Artifact commands artificial-heart.kcl
         "path": "[uuid]",
         "to": {
           "x": 20.32,
-          "y": -1.6458877016627636e-14,
-          "z": 0
+          "y": -0.000000000000013040593805228561,
+          "z": 0.0
         }
       }
     },
@@ -4382,8 +4382,8 @@ description: Artifact commands artificial-heart.kcl
           "type": "line",
           "end": {
             "x": 21.59,
-            "y": 1.295058652593475e-14,
-            "z": 0
+            "y": 0.00000000000001295058652593475,
+            "z": 0.0
           },
           "relative": false
         }
@@ -4423,7 +4423,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 44.90745530107332,
           "y": -14.489843663709777,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4459,20 +4459,20 @@ description: Artifact commands artificial-heart.kcl
         "type": "make_plane",
         "origin": {
           "x": 20.32,
-          "y": 0,
-          "z": 0
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -4510,9 +4510,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -4532,7 +4532,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -23.314699726712142,
           "y": -2.0556890155300493,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4553,7 +4553,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "arc",
           "center": {
             "x": -27.960185995277822,
-            "y": -5.85440327810297e-16
+            "y": -0.000000000000000585440327810297
           },
           "radius": 5.080000000000312,
           "start": {
@@ -4577,7 +4577,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -22.872928286789744,
           "y": -3.800303804623467,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4591,7 +4591,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "arc",
           "center": {
             "x": -27.960185995277822,
-            "y": -1.0659608218570306e-15
+            "y": -0.0000000000000010659608218570306
           },
           "radius": 6.350000000000545,
           "start": {
@@ -4661,9 +4661,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -4675,7 +4675,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -4733,9 +4733,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 80,
-                "z": 0
+                "x": 0.0,
+                "y": 80.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -4759,9 +4759,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 4,
-                "y": 0,
-                "z": 2
+                "x": 4.0,
+                "y": 0.0,
+                "z": 2.0
               },
               "set": false,
               "origin": {
@@ -4784,7 +4784,7 @@ description: Artifact commands artificial-heart.kcl
           {
             "translate": {
               "property": {
-                "x": 0,
+                "x": 0.0,
                 "y": -0.6858,
                 "z": 2.032
               },
@@ -4810,11 +4810,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.6509804,
           "g": 0.047058824,
           "b": 0.047058824,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -4824,20 +4824,20 @@ description: Artifact commands artificial-heart.kcl
         "type": "make_plane",
         "origin": {
           "x": 20.32,
-          "y": 0,
-          "z": 0
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -4875,9 +4875,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -4897,7 +4897,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 23.314699726712142,
           "y": -2.0556890155300493,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4918,7 +4918,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "arc",
           "center": {
             "x": 27.960185995277822,
-            "y": -5.85440327810297e-16
+            "y": -0.000000000000000585440327810297
           },
           "radius": 5.080000000000312,
           "start": {
@@ -4942,7 +4942,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 22.872928286789744,
           "y": -3.800303804623467,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -4956,7 +4956,7 @@ description: Artifact commands artificial-heart.kcl
           "type": "arc",
           "center": {
             "x": 27.960185995277822,
-            "y": -1.0659608218570306e-15
+            "y": -0.0000000000000010659608218570306
           },
           "radius": 6.350000000000545,
           "start": {
@@ -5002,9 +5002,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -5016,7 +5016,7 @@ description: Artifact commands artificial-heart.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -5074,9 +5074,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": 0,
-                "y": 75,
-                "z": 0
+                "x": 0.0,
+                "y": 75.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -5100,9 +5100,9 @@ description: Artifact commands artificial-heart.kcl
             "translate": null,
             "rotate_rpy": {
               "property": {
-                "x": -4,
-                "y": 0,
-                "z": -4
+                "x": -4.0,
+                "y": 0.0,
+                "z": -4.0
               },
               "set": false,
               "origin": {
@@ -5151,11 +5151,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.05490196,
           "g": 0.13725491,
           "b": 0.74509805,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     }
   ],
@@ -5166,21 +5166,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
+          "x": 0.0,
           "y": 6.604,
-          "z": 0
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -5218,9 +5218,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -5240,7 +5240,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 29.717999999999996,
           "y": 20.32,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5260,8 +5260,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0,
-            "y": 0
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 36.000860045282245,
           "start": {
@@ -5285,7 +5285,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 9.143999999999998,
           "y": 11.176,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5298,8 +5298,8 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0,
-            "y": 0
+            "x": 0.0,
+            "y": 0.0
           },
           "radius": 14.440073130008724,
           "start": {
@@ -5320,21 +5320,21 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -5358,9 +5358,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -5380,7 +5380,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -5.424715273685328,
           "y": 31.091802097279167,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5402,7 +5402,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": -3.7233010559575597,
             "y": 24.742037791999085,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5417,7 +5417,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.723301236955699,
           "y": 24.742038467493334,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5432,7 +5432,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 5.42471494569195,
             "y": 31.091800873191225,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5447,7 +5447,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -3.723301055957556,
           "y": 24.742037791999085,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5485,7 +5485,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 1.338356281205155,
           "y": 22.860919951892885,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5523,7 +5523,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -1.3383558197622534,
           "y": 22.860919939421326,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5536,7 +5536,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -1.0944994910389027e-13,
+            "x": -0.00000000000010944994910389027,
             "y": 72.38952519496361
           },
           "radius": 49.5466843982483,
@@ -5561,7 +5561,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -3.0717225612243935,
           "y": 34.28802109221995,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5599,7 +5599,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 5.424714945691948,
           "y": 31.091800873191225,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5637,7 +5637,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 3.0717223336991735,
           "y": 34.28802110124276,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5650,7 +5650,7 @@ description: Artifact commands artificial-heart.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -1.3183343305911422e-13,
+            "x": -0.00000000000013183343305911422,
             "y": -43.18068240375196
           },
           "radius": 77.52957823205367,
@@ -5675,7 +5675,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -2.972069767024662,
           "y": 36.829999999999984,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5713,7 +5713,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -6.177001663616065,
           "y": 24.08556673124645,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5751,7 +5751,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 1.2699996132425175,
           "y": 20.320000000000007,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5789,7 +5789,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 7.878458483641015,
           "y": 30.435490030464084,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5827,7 +5827,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -7.878446235045538,
           "y": 30.435444318083448,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5842,7 +5842,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": -6.177001663616072,
             "y": 24.08556673124645,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5857,7 +5857,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": 6.17698358650247,
           "y": 24.08549926653998,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5872,7 +5872,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 7.87845848364102,
             "y": 30.435490030464084,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5887,7 +5887,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -1.2700001930809162,
           "y": 20.32,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5902,7 +5902,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 1.2699996132425175,
             "y": 20.320000000000007,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5917,7 +5917,7 @@ description: Artifact commands artificial-heart.kcl
         "to": {
           "x": -2.972069767024662,
           "y": 36.82999999999999,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -5932,7 +5932,7 @@ description: Artifact commands artificial-heart.kcl
           "end": {
             "x": 2.9720695221094764,
             "y": 36.829999999999984,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -5969,9 +5969,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -6052,9 +6052,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -6114,11 +6114,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.8352941,
           "g": 0.29411766,
           "b": 0.0627451,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -6128,17 +6128,17 @@ description: Artifact commands artificial-heart.kcl
         "type": "entity_circular_pattern",
         "entity_id": "[uuid]",
         "axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "center": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "num_repetitions": 11,
-        "arc_degrees": 360,
+        "arc_degrees": 360.0,
         "rotate_duplicates": true
       }
     },
@@ -6149,17 +6149,17 @@ description: Artifact commands artificial-heart.kcl
         "type": "entity_circular_pattern",
         "entity_id": "[uuid]",
         "axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "center": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "num_repetitions": 11,
-        "arc_degrees": 360,
+        "arc_degrees": 360.0,
         "rotate_duplicates": true
       }
     },
@@ -6194,9 +6194,9 @@ description: Artifact commands artificial-heart.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": -1,
-          "z": 0
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
         }
       }
     },
@@ -6256,11 +6256,11 @@ description: Artifact commands artificial-heart.kcl
           "r": 0.06666667,
           "g": 0.3647059,
           "b": 0.2,
-          "a": 1
+          "a": 1.0
         },
-        "metalness": 0,
+        "metalness": 0.0,
         "roughness": 0.01,
-        "ambient_occlusion": 0
+        "ambient_occlusion": 0.0
       }
     }
   ]

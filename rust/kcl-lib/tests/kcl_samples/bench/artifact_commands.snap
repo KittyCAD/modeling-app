@@ -10,21 +10,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 0,
-          "z": 0
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 60,
+        "size": 60.0,
         "clobber": false,
         "hide": true
       }
@@ -48,9 +48,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -68,9 +68,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.820000000013945,
-          "y": 21.1999999999939,
-          "z": 0
+          "x": -16.819999999999794,
+          "y": 21.20000000015442,
+          "z": 0.0
         }
       }
     },
@@ -92,7 +92,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -16.95000000009,
             "y": 19.930000000156035,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -107,7 +107,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": -16.949999948129026,
           "y": 19.929999994829572,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -170,7 +170,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": -16.599999971450103,
           "y": 5.6799999812520925,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -210,7 +210,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -19.629999999964042,
             "y": -0.029999999949188876,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -227,7 +227,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -13.589999999871873,
             "y": -0.029999999857564342,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -244,7 +244,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -6.909999999834837,
             "y": 7.840000000280859,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -259,7 +259,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 10.059999999945022,
           "y": 8.50999999994965,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -297,7 +297,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 10.059999999936132,
           "y": 8.509999999945114,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -312,7 +312,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 17.33999999992724,
             "y": 0.03999999994057446,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -329,7 +329,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 23.31999999990946,
             "y": 0.03999999993149991,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -346,7 +346,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 22.020000000038564,
             "y": 3.049999999985865,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -361,7 +361,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 22.44999999997683,
           "y": 18.360000000018108,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -399,7 +399,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 22.449999964325997,
           "y": 18.360000017850204,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -439,7 +439,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 27.429999997300172,
             "y": 43.97999999263573,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -456,7 +456,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 29.209999991818144,
             "y": 45.13000000113929,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -471,7 +471,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 29.209998386805253,
           "y": 45.13000247390429,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -509,7 +509,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 23.930000004790745,
           "y": 48.4899999953228,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -524,7 +524,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 22.010000003098444,
             "y": 48.69999999355351,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -541,7 +541,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 18.269999999942208,
             "y": 22.15999998998277,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -556,7 +556,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": 15.130000001677558,
           "y": 19.48000000160873,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -594,7 +594,7 @@ description: Artifact commands bench.kcl
         "to": {
           "x": -16.81999999998533,
           "y": 21.200000000315008,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -657,9 +657,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -669,7 +669,7 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 2,
+        "distance": 2.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -719,9 +719,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -731,7 +731,7 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": -2,
+        "distance": -2.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -866,9 +866,9 @@ description: Artifact commands bench.kcl
           {
             "translate": {
               "property": {
-                "x": 28,
-                "y": 0,
-                "z": 0
+                "x": 28.0,
+                "y": 0.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -942,9 +942,9 @@ description: Artifact commands bench.kcl
           {
             "translate": {
               "property": {
-                "x": 28,
-                "y": 0,
-                "z": 0
+                "x": 28.0,
+                "y": 0.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -1018,9 +1018,9 @@ description: Artifact commands bench.kcl
           {
             "translate": {
               "property": {
-                "x": -28,
-                "y": 0,
-                "z": 0
+                "x": -28.0,
+                "y": 0.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -1094,9 +1094,9 @@ description: Artifact commands bench.kcl
           {
             "translate": {
               "property": {
-                "x": -28,
-                "y": 0,
-                "z": 0
+                "x": -28.0,
+                "y": 0.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {
@@ -1116,21 +1116,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -28,
-          "y": 0,
-          "z": 0
+          "x": -28.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -1168,9 +1168,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1189,8 +1189,8 @@ description: Artifact commands bench.kcl
         "path": "[uuid]",
         "to": {
           "x": -10.614359353944897,
-          "y": 8,
-          "z": 0
+          "y": 8.0,
+          "z": 0.0
         }
       }
     },
@@ -1212,7 +1212,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -11.307179676968591,
             "y": 9.200000000011567,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1229,7 +1229,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -12.692820323031407,
             "y": 9.200000000011567,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1245,8 +1245,8 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": -13.385640646055103,
-            "y": 8,
-            "z": 0
+            "y": 8.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1263,7 +1263,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -12.692820323031407,
             "y": 6.799999999988433,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1280,7 +1280,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -11.307179676968593,
             "y": 6.799999999988433,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1297,7 +1297,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -10.614359353944897,
             "y": 7.999999999999999,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1310,8 +1310,8 @@ description: Artifact commands bench.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": -12,
-          "y": 8
+          "x": -12.0,
+          "y": 8.0
         }
       }
     },
@@ -1325,9 +1325,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1337,7 +1337,7 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 56,
+        "distance": 56.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1397,24 +1397,24 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 0,
-                "y": 28,
-                "z": 0
+                "x": 0.0,
+                "y": 28.0,
+                "z": 0.0
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -1432,21 +1432,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -30,
-          "y": 0,
-          "z": 0
+          "x": -30.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -1484,9 +1484,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1504,9 +1504,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -7,
-          "y": 19,
-          "z": 0
+          "x": -7.0,
+          "y": 19.0,
+          "z": 0.0
         }
       }
     },
@@ -1526,9 +1526,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -17,
+            "x": -17.0,
             "y": 19.5,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1544,8 +1544,8 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": -16.8,
-            "y": 22,
-            "z": 0
+            "y": 22.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1562,7 +1562,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -15.3,
             "y": 23.5,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1578,8 +1578,8 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": -8.4,
-            "y": 23,
-            "z": 0
+            "y": 23.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1596,7 +1596,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -6.9,
             "y": 21.5,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1611,9 +1611,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -7,
-            "y": 19,
-            "z": 0
+            "x": -7.0,
+            "y": 19.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -1626,8 +1626,8 @@ description: Artifact commands bench.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": -12,
-          "y": 21
+          "x": -12.0,
+          "y": 21.0
         }
       }
     },
@@ -1641,9 +1641,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1653,7 +1653,7 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 60,
+        "distance": 60.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1713,24 +1713,24 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 10.986275727656292,
                 "z": -0.5493137863828146
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -1742,24 +1742,24 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": 21.972551455312583,
                 "z": -1.0986275727656292
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -1777,21 +1777,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": -30,
-          "y": 0,
-          "z": 0
+          "x": -30.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -1829,9 +1829,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1849,9 +1849,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 22,
+          "x": 22.0,
           "y": 38.5,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -1873,7 +1873,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 20.01,
             "y": 38.74,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1890,7 +1890,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 18.27,
             "y": 40.77,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1907,7 +1907,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 19.19,
             "y": 47.31,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1924,7 +1924,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 21.42,
             "y": 48.73,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1941,7 +1941,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": 23.41,
             "y": 48.49,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1956,9 +1956,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22,
+            "x": 22.0,
             "y": 38.5,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -1971,8 +1971,8 @@ description: Artifact commands bench.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": 21,
-          "y": 43
+          "x": 21.0,
+          "y": 43.0
         }
       }
     },
@@ -1986,9 +1986,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -1998,7 +1998,7 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 60,
+        "distance": 60.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -2058,24 +2058,24 @@ description: Artifact commands bench.kcl
           [
             {
               "translate": {
-                "x": 0,
+                "x": 0.0,
                 "y": -1.4930535746301998,
                 "z": -10.89820127467299
               },
               "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
               },
               "rotation": {
                 "axis": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
                 },
                 "angle": {
                   "unit": "degrees",
-                  "value": 0
+                  "value": 0.0
                 },
                 "origin": {
                   "type": "local"
@@ -2093,21 +2093,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 28,
-          "y": 0,
-          "z": 0
+          "x": 28.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -2145,9 +2145,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -2165,9 +2165,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 20,
-          "y": 33,
-          "z": 0
+          "x": 20.0,
+          "y": 33.0,
+          "z": 0.0
         }
       }
     },
@@ -2187,9 +2187,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0,
-            "y": 33,
-            "z": 0
+            "x": 0.0,
+            "y": 33.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -2204,17 +2204,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -6.123233995736766e-16,
-            "y": 23
+            "x": -0.0000000000000006123233995736766,
+            "y": 23.0
           },
-          "radius": 10,
+          "radius": 10.0,
           "start": {
             "unit": "degrees",
-            "value": 90
+            "value": 90.0
           },
           "end": {
             "unit": "degrees",
-            "value": 180
+            "value": 180.0
           },
           "relative": false
         }
@@ -2226,21 +2226,21 @@ description: Artifact commands bench.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0,
-          "y": 20,
-          "z": 0
+          "x": 0.0,
+          "y": 20.0,
+          "z": 0.0
         },
         "x_axis": {
-          "x": -1,
-          "y": 0,
-          "z": 0
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
         },
         "y_axis": {
-          "x": 0,
-          "y": 0,
-          "z": 1
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
         },
-        "size": 100,
+        "size": 100.0,
         "clobber": false,
         "hide": false
       }
@@ -2278,9 +2278,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": -0.0
         }
       }
     },
@@ -2298,9 +2298,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -28,
+          "x": -28.0,
           "y": 32.4,
-          "z": 0
+          "z": 0.0
         }
       }
     },
@@ -2322,7 +2322,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -26.7,
             "y": 32.4,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2338,8 +2338,8 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": -26.4,
-            "y": 33,
-            "z": 0
+            "y": 33.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -2356,7 +2356,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -26.7,
             "y": 33.6,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2373,7 +2373,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -29.3,
             "y": 33.6,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2389,8 +2389,8 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": -29.6,
-            "y": 33,
-            "z": 0
+            "y": 33.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -2407,7 +2407,7 @@ description: Artifact commands bench.kcl
           "end": {
             "x": -29.3,
             "y": 32.4,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2422,9 +2422,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -28,
+            "x": -28.0,
             "y": 32.4,
-            "z": 0
+            "z": 0.0
           },
           "relative": false
         }
@@ -2437,8 +2437,8 @@ description: Artifact commands bench.kcl
         "type": "create_region_from_query_point",
         "object_id": "[uuid]",
         "query_point": {
-          "x": -28,
-          "y": 33
+          "x": -28.0,
+          "y": 33.0
         }
       }
     },
@@ -2461,9 +2461,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 1,
-          "y": 0,
-          "z": 0
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
         }
       }
     },
@@ -2481,9 +2481,9 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 20,
-          "y": 33,
-          "z": 0
+          "x": 20.0,
+          "y": 33.0,
+          "z": 0.0
         }
       }
     },
@@ -2503,9 +2503,9 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0,
-            "y": 33,
-            "z": 0
+            "x": 0.0,
+            "y": 33.0,
+            "z": 0.0
           },
           "relative": false
         }
@@ -2520,17 +2520,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -6.123233995736766e-16,
-            "y": 23
+            "x": -0.0000000000000006123233995736766,
+            "y": 23.0
           },
-          "radius": 10,
+          "radius": 10.0,
           "start": {
             "unit": "degrees",
-            "value": 90
+            "value": 90.0
           },
           "end": {
             "unit": "degrees",
-            "value": 180
+            "value": 180.0
           },
           "relative": false
         }
@@ -2546,9 +2546,9 @@ description: Artifact commands bench.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0,
-          "y": 1,
-          "z": 0
+          "x": 0.0,
+          "y": 1.0,
+          "z": -0.0
         }
       }
     },
@@ -2560,7 +2560,7 @@ description: Artifact commands bench.kcl
         "target": "[uuid]",
         "trajectory": "[uuid]",
         "sectional": false,
-        "tolerance": 1e-7,
+        "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
       }
@@ -2685,9 +2685,9 @@ description: Artifact commands bench.kcl
           {
             "translate": {
               "property": {
-                "x": -56,
-                "y": 0,
-                "z": 0
+                "x": -56.0,
+                "y": 0.0,
+                "z": 0.0
               },
               "set": false,
               "origin": {

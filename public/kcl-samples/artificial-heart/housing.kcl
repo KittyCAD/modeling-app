@@ -179,9 +179,6 @@ sketch005 = sketch(on = XY) {
   arc2 = arc(start = [var 0.91in, var -1.09in], end = [var 0.6in, var -1.16in], center = [var 0.98in, var -2.13in])
   coincident([arc1.end, arc2.end])
   tangent([arc1, arc2])
-  radius(arc1) == 0.47
-  radius(arc2) == 1.04
-  fixed([arc2.start, [0.91in, -1.09in]])
 }
 
 // Model the profile of the front inlet bung, then sweep
@@ -217,9 +214,6 @@ sketch007 = sketch(on = XY) {
   coincident([line2.start, arc1.center])
   coincident([line2.end, arc2.start])
   angle([line2, line1]) == 6
-  radius(arc1) == 0.48
-  radius(arc2) == 7.47
-  fixed([arc2.end, [0.81in, 1.2in]])
 }
 
 // Model the profile of the rear inlet bung, then sweep
