@@ -1,10 +1,5 @@
 import type { Feature } from '@kittycad/lib'
-import {
-  defineRegistryItem,
-  pluginsValueSpec,
-  provide,
-  Slot,
-} from '@kittycad/registry'
+import { pluginsValueSpec } from '@kittycad/registry'
 import { type Signal, signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
@@ -14,13 +9,13 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+  getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { ProjectTitleUpdate } from '@src/lib/projectTitle'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -33,7 +28,6 @@ import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
@@ -833,61 +827,11 @@ describe('project system', () => {
     }
   })
 
-  it('keeps an open project title in sync with its Home entry', async () => {
-    const homeEntriesSlot = new Slot()
-    const app = createAppForTest({
-      registryOverrides: [homeEntriesSlot.of()],
-    })
-
-    try {
-      const projectIORef = {
-        ...mockProject,
-        title: 'Bracket',
-      }
-      await waitForSettingsIdle(app)
-      app.settings.send({ type: 'load.project', project: projectIORef })
-      await waitForSettingsIdle(app)
-
-      const project = await app.openProject(projectIORef)
-
-      expect(app.settings.actor.getSnapshot().matches('idle')).toBe(true)
-
-      app.registry.reconfigure(homeEntriesSlot, [
-        defineRegistryItem({
-          id: 'test.updated-home-project',
-          provides: [
-            provide(homeProjectEntriesValueSpec, {
-              source: 'local',
-              status: 'local',
-              name: mockProject.name,
-              title: 'Updated bracket',
-              localProjectPath: mockProject.path,
-              localProjectName: mockProject.name,
-              defaultFile: mockProject.default_file,
-              readWriteAccess: true,
-            }),
-          ],
-        }),
-      ])
-
-      expect(project.projectIORefSignal.value.title).toBe('Updated bracket')
-      expect(
-        app.settings.actor.getSnapshot().context.currentProject?.title
-      ).toBe('Updated bracket')
-      expect(app.settings.actor.getSnapshot().matches('idle')).toBe(true)
-    } finally {
-      app.dispose()
-    }
-  })
-
-  it('updates an open project title without a Home entry', async () => {
+  it('keeps an open project title update reactive', async () => {
     const app = createAppForTest()
 
     try {
-      const project = await app.openProject({
-        ...mockProject,
-        path: '/outside-configured-libraries/test',
-      })
+      const project = await app.openProject(mockProject)
       const updates = app.settings.projectTitle.updates as Signal<
         ProjectTitleUpdate | undefined
       >

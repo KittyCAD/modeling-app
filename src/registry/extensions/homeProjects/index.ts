@@ -52,19 +52,15 @@ function homeProjectDisplayNameExists({
   entries,
   requestedName,
   projectId,
-  localProjectPath,
 }: {
   entries: readonly HomeProjectEntry[] | undefined
   requestedName: string
   projectId?: string
-  localProjectPath?: string
 }) {
   return Boolean(
     entries?.some(
       (project) =>
         (projectId === undefined || project.id !== projectId) &&
-        (localProjectPath === undefined ||
-          project.localProjectPath !== localProjectPath) &&
         getHomeProjectDisplayName(project) === requestedName
     )
   )
@@ -525,11 +521,15 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return Promise.reject(new Error('This project title cannot be edited.'))
       }
 
+      const entries = ctx.valueSpecs.get(homeProjectEntriesValueSpec)
+      const projectId = entries.find(
+        (entry) => entry.localProjectPath === project.path
+      )?.id
       if (
         homeProjectDisplayNameExists({
-          entries: ctx.valueSpecs.get(homeProjectEntriesValueSpec),
+          entries,
           requestedName,
-          localProjectPath: project.path,
+          projectId,
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
