@@ -1,0 +1,53 @@
+/// Named views: cameras and visibility sets defined in KCL.
+///
+/// A named view pairs a camera with a set of visible objects, so consumers
+/// such as the modeling app and STEP export can reproduce it. This version of
+/// the module provides the enums named views are built from; the view and
+/// camera constructors arrive in a later version.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+/// A standard camera orientation for a named view.
+///
+/// The six axis-aligned orientations name the side of the model the camera
+/// looks at; `Isometric` is the standard three-quarter view.
+@(experimental = true)
+export type Orientation {
+  /// The camera looks at the front of the model.
+  | Front
+  /// The camera looks at the back of the model.
+  | Back
+  /// The camera looks at the left side of the model.
+  | Left
+  /// The camera looks at the right side of the model.
+  | Right
+  /// The camera looks down at the top of the model.
+  | Top
+  /// The camera looks up at the bottom of the model.
+  | Bottom
+  /// The standard three-quarter view, showing three faces of the model at
+  /// once.
+  | Isometric
+}
+
+/// Whether a named view shows or hides objects by default.
+@(experimental = true)
+export type Visibility {
+  /// Objects are shown unless the view hides them.
+  | Show
+  /// Objects are hidden unless the view shows them.
+  | Hide
+}
+
+/// The camera projection of a named view.
+@(experimental = true)
+export type Projection {
+  /// An object's projected size is independent of its distance from the
+  /// camera, and parallel edges remain parallel; the convention of
+  /// engineering drawings.
+  | Orthographic
+  /// Apparent size decreases with distance from the camera, as a physical
+  /// camera sees; parallel edges converge toward vanishing points.
+  | Perspective
+}

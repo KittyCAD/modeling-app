@@ -1,0 +1,8 @@
+// Pins spike S1's third finding permanently: a named item can be imported
+// from std::view explicitly. The consumer opt-in silences both experimental
+// gates (enum use, std import).
+@settings(experimentalFeatures = allow)
+
+import Orientation from "std::view"
+
+front = Orientation::Front
