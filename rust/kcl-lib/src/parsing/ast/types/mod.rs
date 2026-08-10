@@ -1166,8 +1166,9 @@ impl BodyItem {
 
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
-            BodyItem::ImportStatement(stmt) => {
-                stmt.rename_identifiers(old_name, new_name);
+            BodyItem::ImportStatement(_) => {
+                // Imports only bind names (item names, aliases, module names); they contain
+                // no references to rename.
             }
             BodyItem::ExpressionStatement(expression_statement) => {
                 expression_statement.expression.rename_identifiers(old_name, new_name);
@@ -1888,7 +1889,14 @@ fn rename_sketch_member_ref(
 /// Mirrors frontend modify::find_defined_names_expr.
 fn body_item_binds_name(item: &BodyItem, name: &str) -> bool {
     match item {
-        BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => false,
+        BodyItem::ImportStatement(import) => match &import.selector {
+            ImportSelector::List { items } => items.iter().any(|item| item.identifier() == name),
+            ImportSelector::None { .. } => import.module_name().as_deref() == Some(name),
+            // A glob import binds an unknowable set of names; treat it as binding none rather
+            // than stopping every rename that crosses it.
+            ImportSelector::Glob(_) => false,
+        },
+        BodyItem::TypeDeclaration(_) => false,
         BodyItem::ExpressionStatement(expr_stmt) => expr_binds_name(&expr_stmt.expression, name),
         BodyItem::VariableDeclaration(var_decl) => {
             var_decl.declaration.id.name == name || expr_binds_name(&var_decl.declaration.init, name)
@@ -3022,12 +3030,6 @@ impl ImportItem {
             None => &self.name.name,
         }
     }
-
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        if let Some(alias) = &mut self.alias {
-            alias.rename(old_name, new_name);
-        }
-    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -3071,19 +3073,6 @@ impl ImportSelector {
                 let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
                 Some(old_name)
             }
-        }
-    }
-
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        match self {
-            ImportSelector::List { items } => {
-                for item in items {
-                    item.rename_identifiers(old_name, new_name);
-                }
-            }
-            ImportSelector::Glob(_) => {}
-            ImportSelector::None { alias: None } => {}
-            ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
 
@@ -3156,10 +3145,6 @@ impl Node<ImportStatement> {
 }
 
 impl ImportStatement {
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.selector.rename_identifiers(old_name, new_name);
-    }
-
     /// Get the name of the module object for this import.
     /// Validated during parsing and guaranteed to return `Some` if the statement imports
     /// the module itself (i.e., self.selector is ImportSelector::None).
@@ -3782,13 +3767,6 @@ impl Identifier {
 
     pub fn is_nameable(&self) -> bool {
         !self.name.starts_with('_')
-    }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    fn rename(&mut self, old_name: &str, new_name: &str) {
-        if self.name == old_name {
-            self.name = new_name.to_string();
-        }
     }
 }
 
@@ -7318,6 +7296,71 @@ x = r.tags.line1
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_stops_at_shadowing_import() {
+        // The import rebinds `foo` inside `f`: the use before it refers to the outer variable
+        // and is renamed; the import itself (a binder, not a use) and the use after it are
+        // not.
+        let code = r#"foo = 1
+
+fn f() {
+  a = foo
+  import foo from "m.kcl"
+  return [a, foo]
+}
+result = foo
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn f() {
+  a = bar
+  import foo from "m.kcl"
+  return [a, foo]
+}
+result = bar
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_stops_at_shadowing_module_import() {
+        // Same as above for a module import: `import "foo.kcl"` binds the implicit module
+        // name `foo`.
+        let code = r#"foo = 1
+
+fn f() {
+  import "foo.kcl"
+  return foo::item
+}
+result = foo
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn f() {
+  import "foo.kcl"
+  return foo::item
+}
+result = bar
+"#
+        );
     }
 
     /// Helper to create a comment NonCodeNode for tests.
