@@ -901,28 +901,24 @@ impl Program {
     /// derived from the sketch, all within the scope where the sketch variable is declared.
     /// Returns false if `pos` doesn't resolve to a sketch block symbol.
     fn rename_sketch_block_symbol(&mut self, new_name: &str, pos: usize) -> bool {
-        let (ident_at_pos, mut member_at_pos) = self.sketch_symbol_candidates_at_pos(pos);
-        if ident_at_pos.is_none() && member_at_pos.is_none() {
+        let mut candidates = self.sketch_symbol_candidates_at_pos(pos);
+        if candidates.is_empty() {
             return false;
         }
-        rename_sketch_symbol_in_body(
-            &mut self.body,
-            ident_at_pos.as_deref(),
-            &mut member_at_pos,
-            new_name,
-            pos,
-        )
+        rename_sketch_symbol_in_body(&mut self.body, &mut candidates, new_name, pos)
     }
 
     /// Find what `pos` is on, as candidates for resolving a sketch block symbol: the
-    /// identifier at `pos` (a declaration or use), and the member reference `x.prop` whose
-    /// property is at `pos`.
-    fn sketch_symbol_candidates_at_pos(&self, pos: usize) -> (Option<String>, Option<(String, String)>) {
+    /// identifier at `pos` (a declaration or use), the member reference `x.prop` whose
+    /// property is at `pos`, or the region tag reference `r.tags.prop` whose property is at
+    /// `pos`.
+    fn sketch_symbol_candidates_at_pos(&self, pos: usize) -> SketchSymbolCandidates {
         use crate::walk::Node as WalkNode;
         use crate::walk::Walker;
 
         let ident_at_pos = std::cell::RefCell::new(None::<String>);
         let member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
+        let tags_member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
         let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
             match node {
                 // Only a reference (a bare name) or a declaration's id can identify a sketch
@@ -943,11 +939,29 @@ impl Program {
                 }
                 WalkNode::MemberExpression(member) => {
                     if !member.computed
-                        && let (Expr::Name(object), Expr::Name(property)) = (&member.object, &member.property)
+                        && let Expr::Name(property) = &member.property
                         && SourceRange::from(&**property).contains(pos)
-                        && let (Some(object), Some(property)) = (object.local_ident(), property.local_ident())
+                        && let Some(property) = property.local_ident()
                     {
-                        *member_at_pos.borrow_mut() = Some((object.inner.to_owned(), property.inner.to_owned()));
+                        match &member.object {
+                            Expr::Name(object) => {
+                                if let Some(object) = object.local_ident() {
+                                    *member_at_pos.borrow_mut() =
+                                        Some((object.inner.to_owned(), property.inner.to_owned()));
+                                }
+                            }
+                            Expr::MemberExpression(inner) => {
+                                if !inner.computed
+                                    && let Expr::Name(region) = &inner.object
+                                    && let Some(region) = region.local_ident()
+                                    && matches!(&inner.property, Expr::Name(t) if t.local_ident().is_some_and(|t| t.inner == "tags"))
+                                {
+                                    *tags_member_at_pos.borrow_mut() =
+                                        Some((region.inner.to_owned(), property.inner.to_owned()));
+                                }
+                            }
+                            _ => {}
+                        }
                     }
                 }
                 _ => {}
@@ -957,7 +971,12 @@ impl Program {
         for item in &self.body {
             let _ = finder.walk(WalkNode::from(item));
         }
-        (ident_at_pos.into_inner(), member_at_pos.into_inner())
+        SketchSymbolCandidates {
+            ident: ident_at_pos.into_inner(),
+            member: member_at_pos.into_inner(),
+            tags_member: tags_member_at_pos.into_inner(),
+            region: None,
+        }
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1288,7 +1307,13 @@ fn sketch_block_mut_in_body<'a>(body: &'a mut [BodyItem], name: &str) -> Option<
 /// (`myRegion.tags.line1`). Regions that only reach a variable indirectly (returned from a
 /// helper function, aliased, or passed as a parameter) aren't detected.
 fn is_region_derived_from_sketch(decl: &VariableDeclaration, sketch_name: &str) -> bool {
-    let Expr::CallExpressionKw(call) = &decl.declaration.init else {
+    region_call_derives_from(&decl.declaration.init, sketch_name)
+}
+
+/// Whether this expression is a `region(...)` call deriving from the given sketch variable.
+/// See [is_region_derived_from_sketch].
+fn region_call_derives_from(init: &Expr, sketch_name: &str) -> bool {
+    let Expr::CallExpressionKw(call) = init else {
         return false;
     };
     if call.callee.local_ident().map(|ident| ident.inner) != Some("region") {
@@ -1311,34 +1336,96 @@ fn is_region_derived_from_sketch(decl: &VariableDeclaration, sketch_name: &str) 
         .any(|label| arg_with_label(label).is_some_and(|arg| expr_references_name(arg, sketch_name)))
 }
 
+/// What the rename position points at, as candidates for resolving a sketch block symbol.
+/// During resolution, a candidate is killed (set to None) when a binding or scope boundary
+/// shadows what it refers to, so that outer scopes don't match a reference that doesn't
+/// resolve to their declarations.
+struct SketchSymbolCandidates {
+    /// A bare identifier at the position: a declaration or use inside a sketch block.
+    ident: Option<String>,
+    /// A member reference `x.prop` with the position on `prop`: (object, property).
+    member: Option<(String, String)>,
+    /// A region tag reference `r.tags.prop` with the position on `prop`: (region, property).
+    tags_member: Option<(String, String)>,
+    /// A resolved tags_member: the region declaration's initializer (cloned), the property,
+    /// and the end of the region's declaration. The sketch the region derives from is looked
+    /// up among sketch declarations before that position.
+    region: Option<(Expr, String, usize)>,
+}
+
+impl SketchSymbolCandidates {
+    fn is_empty(&self) -> bool {
+        self.ident.is_none() && self.member.is_none() && self.tags_member.is_none() && self.region.is_none()
+    }
+}
+
 /// Rename a sketch block symbol within this scope, preferring the innermost scope: first
 /// recurse into nested bodies (function bodies, if-expression branches, sketch blocks) that
-/// contain `pos`; if no inner scope handles the rename, resolve against sketch blocks
-/// declared directly in this body. The member candidate is passed mutably so that a scope
-/// boundary or declaration that rebinds (shadows) its sketch name can kill it, preventing
-/// outer scopes from matching a reference that doesn't resolve to their sketch. Returns
+/// contain `pos`; if no inner scope handles the rename, resolve the candidates against
+/// declarations directly in this body. Candidates are passed mutably so that a scope boundary
+/// or declaration that rebinds (shadows) what they refer to can kill them, preventing outer
+/// scopes from matching a reference that doesn't resolve to their declarations. Returns
 /// whether the rename was handled.
 fn rename_sketch_symbol_in_body(
     body: &mut [BodyItem],
-    ident_at_pos: Option<&str>,
-    member_at_pos: &mut Option<(String, String)>,
+    candidates: &mut SketchSymbolCandidates,
     new_name: &str,
     pos: usize,
 ) -> bool {
     // The innermost scope wins, so a fn-local sketch shadows a same-named outer one.
     if let Some(item) = body.iter_mut().find(|item| SourceRange::from(&**item).contains(pos))
         && let Some(expr) = body_item_expr_mut(item)
-        && rename_sketch_symbol_in_nested_bodies(expr, ident_at_pos, member_at_pos, new_name, pos)
+        && rename_sketch_symbol_in_nested_bodies(expr, candidates, new_name, pos)
     {
         return true;
+    }
+
+    // A region tag reference like `r.tags.line1` resolves through the last binding of the
+    // region name before the position. If that binding isn't a region call, the reference is
+    // not a region tag, and outer scopes must not match it either.
+    if let Some((region, property)) = candidates.tags_member.as_ref() {
+        let last_binder = body
+            .iter()
+            .rfind(|item| SourceRange::from(&**item).end() <= pos && body_item_binds_name(item, region));
+        if let Some(binder) = last_binder {
+            if let BodyItem::VariableDeclaration(decl) = binder
+                && decl.declaration.id.name == *region
+                && matches!(&decl.declaration.init, Expr::CallExpressionKw(call)
+                    if call.callee.local_ident().map(|ident| ident.inner) == Some("region"))
+            {
+                candidates.region = Some((
+                    decl.declaration.init.clone(),
+                    property.clone(),
+                    SourceRange::from(binder).end(),
+                ));
+            }
+            candidates.tags_member = None;
+        }
+    }
+
+    // The sketch a resolved region derives from: a sketch declaration before the region that
+    // the region's initializer references and whose block declares the property.
+    let mut target: Option<(String, String)> = None;
+    if let Some((region_init, property, region_pos)) = candidates.region.as_ref() {
+        let sketch = body.iter().rfind(|item| {
+            SourceRange::from(&**item).end() <= *region_pos
+                && matches!(item, BodyItem::VariableDeclaration(decl)
+                    if matches!(&decl.declaration.init, Expr::SketchBlock(sketch)
+                        if block_declares_name(&sketch.body, property))
+                    && region_call_derives_from(region_init, &decl.declaration.id.name))
+        });
+        if let Some(BodyItem::VariableDeclaration(decl)) = sketch {
+            target = Some((decl.declaration.id.name.clone(), property.clone()));
+        }
     }
 
     // A member reference like `mySketch.line1` resolves to the last binding of the sketch
     // name before the position. If that binding is a sketch block declaring the property, it
     // is the rename target. If it is any other binding, the reference is not to a sketch, and
     // outer scopes must not match it either.
-    let mut target: Option<(String, String)> = None;
-    if let Some((object, property)) = member_at_pos.as_ref() {
+    if target.is_none()
+        && let Some((object, property)) = candidates.member.as_ref()
+    {
         let last_binder = body
             .iter()
             .rfind(|item| SourceRange::from(&**item).end() <= pos && body_item_binds_name(item, object));
@@ -1350,13 +1437,13 @@ fn rename_sketch_symbol_in_body(
             {
                 target = Some((object.clone(), property.clone()));
             } else {
-                *member_at_pos = None;
+                candidates.member = None;
             }
         }
     }
     // Or a declaration or use inside a sketch block declared in this body.
     let target = target.or_else(|| {
-        let name = ident_at_pos?;
+        let name = candidates.ident.as_deref()?;
         sketch_blocks_in_body(body)
             .find(|(_, block)| block.as_source_range().contains(pos) && block_declares_name(block, name))
             .map(|(sketch_name, _)| (sketch_name.to_owned(), name.to_owned()))
@@ -1412,19 +1499,17 @@ fn rename_sketch_symbol_in_body(
 /// of them. Returns whether the rename was handled.
 fn rename_sketch_symbol_in_nested_bodies(
     expr: &mut Expr,
-    ident_at_pos: Option<&str>,
-    member_at_pos: &mut Option<(String, String)>,
+    candidates: &mut SketchSymbolCandidates,
     new_name: &str,
     pos: usize,
 ) -> bool {
     if !SourceRange::from(&*expr).contains(pos) {
         return false;
     }
-    let recurse = |e: &mut Expr, m: &mut Option<(String, String)>| {
-        rename_sketch_symbol_in_nested_bodies(e, ident_at_pos, m, new_name, pos)
-    };
-    let recurse_body = |b: &mut Node<Program>, m: &mut Option<(String, String)>| {
-        b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, ident_at_pos, m, new_name, pos)
+    let recurse =
+        |e: &mut Expr, c: &mut SketchSymbolCandidates| rename_sketch_symbol_in_nested_bodies(e, c, new_name, pos);
+    let recurse_body = |b: &mut Node<Program>, c: &mut SketchSymbolCandidates| {
+        b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos)
     };
     match expr {
         Expr::Literal(_)
@@ -1434,15 +1519,25 @@ fn rename_sketch_symbol_in_nested_bodies(
         | Expr::SketchVar(_)
         | Expr::None(_) => false,
         Expr::FunctionExpression(func) => {
-            let handled = recurse_body(&mut func.body, member_at_pos);
-            // A parameter or the function's own name that rebinds the member reference's
-            // sketch name shadows any outer sketch; if the reference didn't resolve inside
-            // the function, outer scopes must not resolve it either.
-            if !handled
-                && let Some((object, _)) = member_at_pos.as_ref()
-                && func.binds_name(object)
-            {
-                *member_at_pos = None;
+            let handled = recurse_body(&mut func.body, candidates);
+            // A parameter or the function's own name that rebinds a candidate's base name
+            // shadows any outer binding; if the reference didn't resolve inside the function,
+            // outer scopes must not resolve it either.
+            if !handled {
+                if candidates
+                    .member
+                    .as_ref()
+                    .is_some_and(|(object, _)| func.binds_name(object))
+                {
+                    candidates.member = None;
+                }
+                if candidates
+                    .tags_member
+                    .as_ref()
+                    .is_some_and(|(region, _)| func.binds_name(region))
+                {
+                    candidates.tags_member = None;
+                }
             }
             handled
         }
@@ -1450,129 +1545,84 @@ fn rename_sketch_symbol_in_nested_bodies(
             sketch_block
                 .arguments
                 .iter_mut()
-                .any(|arg| recurse(&mut arg.arg, member_at_pos))
+                .any(|arg| recurse(&mut arg.arg, candidates))
                 || (sketch_block.body.as_source_range().contains(pos)
-                    && rename_sketch_symbol_in_body(
-                        &mut sketch_block.body.items,
-                        ident_at_pos,
-                        member_at_pos,
-                        new_name,
-                        pos,
-                    ))
+                    && rename_sketch_symbol_in_body(&mut sketch_block.body.items, candidates, new_name, pos))
         }
         Expr::IfExpression(if_expr) => {
-            recurse(&mut if_expr.cond, member_at_pos)
-                || recurse_body(&mut if_expr.then_val, member_at_pos)
+            recurse(&mut if_expr.cond, candidates)
+                || recurse_body(&mut if_expr.then_val, candidates)
                 || if_expr.else_ifs.iter_mut().any(|else_if| {
-                    recurse(&mut else_if.cond, member_at_pos) || recurse_body(&mut else_if.then_val, member_at_pos)
+                    recurse(&mut else_if.cond, candidates) || recurse_body(&mut else_if.then_val, candidates)
                 })
-                || recurse_body(&mut if_expr.final_else, member_at_pos)
+                || recurse_body(&mut if_expr.final_else, candidates)
         }
         Expr::MemberExpression(member) => {
-            recurse(&mut member.object, member_at_pos) || recurse(&mut member.property, member_at_pos)
+            recurse(&mut member.object, candidates) || recurse(&mut member.property, candidates)
         }
         Expr::BinaryExpression(bin_expr) => {
-            rename_sketch_symbol_in_nested_bodies_binary_part(
-                &mut bin_expr.left,
-                ident_at_pos,
-                member_at_pos,
-                new_name,
-                pos,
-            ) || rename_sketch_symbol_in_nested_bodies_binary_part(
-                &mut bin_expr.right,
-                ident_at_pos,
-                member_at_pos,
-                new_name,
-                pos,
-            )
+            rename_sketch_symbol_in_nested_bodies_binary_part(&mut bin_expr.left, candidates, new_name, pos)
+                || rename_sketch_symbol_in_nested_bodies_binary_part(&mut bin_expr.right, candidates, new_name, pos)
         }
-        Expr::UnaryExpression(unary_expr) => rename_sketch_symbol_in_nested_bodies_binary_part(
-            &mut unary_expr.argument,
-            ident_at_pos,
-            member_at_pos,
-            new_name,
-            pos,
-        ),
+        Expr::UnaryExpression(unary_expr) => {
+            rename_sketch_symbol_in_nested_bodies_binary_part(&mut unary_expr.argument, candidates, new_name, pos)
+        }
         Expr::CallExpressionKw(call) => {
-            call.unlabeled.as_mut().is_some_and(|u| recurse(u, member_at_pos))
-                || call
-                    .arguments
-                    .iter_mut()
-                    .any(|arg| recurse(&mut arg.arg, member_at_pos))
+            call.unlabeled.as_mut().is_some_and(|u| recurse(u, candidates))
+                || call.arguments.iter_mut().any(|arg| recurse(&mut arg.arg, candidates))
         }
-        Expr::PipeExpression(pipe) => pipe.body.iter_mut().any(|e| recurse(e, member_at_pos)),
-        Expr::ArrayExpression(array) => array.elements.iter_mut().any(|e| recurse(e, member_at_pos)),
+        Expr::PipeExpression(pipe) => pipe.body.iter_mut().any(|e| recurse(e, candidates)),
+        Expr::ArrayExpression(array) => array.elements.iter_mut().any(|e| recurse(e, candidates)),
         Expr::ArrayRangeExpression(range) => {
-            recurse(&mut range.start_element, member_at_pos) || recurse(&mut range.end_element, member_at_pos)
+            recurse(&mut range.start_element, candidates) || recurse(&mut range.end_element, candidates)
         }
-        Expr::ObjectExpression(obj) => obj.properties.iter_mut().any(|p| recurse(&mut p.value, member_at_pos)),
-        Expr::LabelledExpression(labeled) => recurse(&mut labeled.expr, member_at_pos),
-        Expr::AscribedExpression(ascribed) => recurse(&mut ascribed.expr, member_at_pos),
+        Expr::ObjectExpression(obj) => obj.properties.iter_mut().any(|p| recurse(&mut p.value, candidates)),
+        Expr::LabelledExpression(labeled) => recurse(&mut labeled.expr, candidates),
+        Expr::AscribedExpression(ascribed) => recurse(&mut ascribed.expr, candidates),
     }
 }
 
 fn rename_sketch_symbol_in_nested_bodies_binary_part(
     part: &mut BinaryPart,
-    ident_at_pos: Option<&str>,
-    member_at_pos: &mut Option<(String, String)>,
+    candidates: &mut SketchSymbolCandidates,
     new_name: &str,
     pos: usize,
 ) -> bool {
-    let recurse = |e: &mut Expr, m: &mut Option<(String, String)>| {
-        rename_sketch_symbol_in_nested_bodies(e, ident_at_pos, m, new_name, pos)
-    };
+    let recurse =
+        |e: &mut Expr, c: &mut SketchSymbolCandidates| rename_sketch_symbol_in_nested_bodies(e, c, new_name, pos);
     match part {
         BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => false,
         BinaryPart::BinaryExpression(bin_expr) => {
-            rename_sketch_symbol_in_nested_bodies_binary_part(
-                &mut bin_expr.left,
-                ident_at_pos,
-                member_at_pos,
-                new_name,
-                pos,
-            ) || rename_sketch_symbol_in_nested_bodies_binary_part(
-                &mut bin_expr.right,
-                ident_at_pos,
-                member_at_pos,
-                new_name,
-                pos,
-            )
+            rename_sketch_symbol_in_nested_bodies_binary_part(&mut bin_expr.left, candidates, new_name, pos)
+                || rename_sketch_symbol_in_nested_bodies_binary_part(&mut bin_expr.right, candidates, new_name, pos)
         }
-        BinaryPart::UnaryExpression(unary_expr) => rename_sketch_symbol_in_nested_bodies_binary_part(
-            &mut unary_expr.argument,
-            ident_at_pos,
-            member_at_pos,
-            new_name,
-            pos,
-        ),
+        BinaryPart::UnaryExpression(unary_expr) => {
+            rename_sketch_symbol_in_nested_bodies_binary_part(&mut unary_expr.argument, candidates, new_name, pos)
+        }
         BinaryPart::CallExpressionKw(call) => {
-            call.unlabeled.as_mut().is_some_and(|u| recurse(u, member_at_pos))
-                || call
-                    .arguments
-                    .iter_mut()
-                    .any(|arg| recurse(&mut arg.arg, member_at_pos))
+            call.unlabeled.as_mut().is_some_and(|u| recurse(u, candidates))
+                || call.arguments.iter_mut().any(|arg| recurse(&mut arg.arg, candidates))
         }
         BinaryPart::MemberExpression(member) => {
-            recurse(&mut member.object, member_at_pos) || recurse(&mut member.property, member_at_pos)
+            recurse(&mut member.object, candidates) || recurse(&mut member.property, candidates)
         }
-        BinaryPart::ArrayExpression(array) => array.elements.iter_mut().any(|e| recurse(e, member_at_pos)),
+        BinaryPart::ArrayExpression(array) => array.elements.iter_mut().any(|e| recurse(e, candidates)),
         BinaryPart::ArrayRangeExpression(range) => {
-            recurse(&mut range.start_element, member_at_pos) || recurse(&mut range.end_element, member_at_pos)
+            recurse(&mut range.start_element, candidates) || recurse(&mut range.end_element, candidates)
         }
-        BinaryPart::ObjectExpression(obj) => obj.properties.iter_mut().any(|p| recurse(&mut p.value, member_at_pos)),
+        BinaryPart::ObjectExpression(obj) => obj.properties.iter_mut().any(|p| recurse(&mut p.value, candidates)),
         BinaryPart::IfExpression(if_expr) => {
-            let recurse_body = |b: &mut Node<Program>, m: &mut Option<(String, String)>| {
-                b.as_source_range().contains(pos)
-                    && rename_sketch_symbol_in_body(&mut b.body, ident_at_pos, m, new_name, pos)
+            let recurse_body = |b: &mut Node<Program>, c: &mut SketchSymbolCandidates| {
+                b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos)
             };
-            recurse(&mut if_expr.cond, member_at_pos)
-                || recurse_body(&mut if_expr.then_val, member_at_pos)
+            recurse(&mut if_expr.cond, candidates)
+                || recurse_body(&mut if_expr.then_val, candidates)
                 || if_expr.else_ifs.iter_mut().any(|else_if| {
-                    recurse(&mut else_if.cond, member_at_pos) || recurse_body(&mut else_if.then_val, member_at_pos)
+                    recurse(&mut else_if.cond, candidates) || recurse_body(&mut else_if.then_val, candidates)
                 })
-                || recurse_body(&mut if_expr.final_else, member_at_pos)
+                || recurse_body(&mut if_expr.final_else, candidates)
         }
-        BinaryPart::AscribedExpression(ascribed) => recurse(&mut ascribed.expr, member_at_pos),
+        BinaryPart::AscribedExpression(ascribed) => recurse(&mut ascribed.expr, candidates),
     }
 }
 
@@ -7184,6 +7234,90 @@ count = 1
 x = alias::item + count
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_initiated_from_region_tag_reference() {
+        // Renaming from the cursor on `line1` in `r.tags.line1` resolves through the region's
+        // declaration to the sketch it derives from, then renames like a declaration rename.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.line1, s.line2])
+x = r.tags.line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+
+r = region(segments = [s.edgeOne, s.line2])
+x = r.tags.edgeOne
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_initiated_from_region_tag_reference_in_nested_fn() {
+        // The region lives in a nested function while the sketch is at the top level; the tag
+        // reference still resolves through the region to the sketch.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  r = region(segments = [s.line1])
+  return r.tags.line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  r = region(segments = [s.edgeOne])
+  return r.tags.edgeOne
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_from_tag_reference_of_non_region_does_nothing() {
+        // `r` is not a region, so `r.tags.line1` doesn't resolve to any sketch symbol; in
+        // particular the sketch's same-named declaration must not be touched.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = 5
+x = r.tags.line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
     }
 
     /// Helper to create a comment NonCodeNode for tests.
