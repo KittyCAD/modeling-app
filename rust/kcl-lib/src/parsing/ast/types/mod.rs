@@ -1282,25 +1282,17 @@ fn sketch_block_mut_in_body<'a>(body: &'a mut [BodyItem], name: &str) -> Option<
     })
 }
 
-/// Names of variables in this body assigned from a `region(...)` call that references the
-/// given sketch variable, e.g. `region(segments = [s.line1])`, `region(point = [0, 0],
-/// sketch = s)`, or `region(point = s.point1)`. Such regions inherit the sketch block's
-/// declared names as tags (`myRegion.tags.line1`).
-fn region_vars_derived_from(body: &[BodyItem], sketch_name: &str) -> Vec<String> {
-    body.iter()
-        .filter_map(|item| {
-            let BodyItem::VariableDeclaration(decl) = item else {
-                return None;
-            };
-            let Expr::CallExpressionKw(call) = &decl.declaration.init else {
-                return None;
-            };
-            if call.callee.local_ident().map(|ident| ident.inner) != Some("region") {
-                return None;
-            }
-            expr_references_name(&decl.declaration.init, sketch_name).then(|| decl.declaration.id.name.clone())
-        })
-        .collect()
+/// Whether this declaration's value is a `region(...)` call that references the given sketch
+/// variable, e.g. `region(segments = [s.line1])`, `region(point = [0, 0], sketch = s)`, or
+/// `region(point = s.point1)`. Such regions inherit the sketch block's declared names as tags
+/// (`myRegion.tags.line1`). Regions that only reach a variable indirectly (returned from a
+/// helper function, aliased, or passed as a parameter) aren't detected.
+fn is_region_derived_from_sketch(decl: &VariableDeclaration, sketch_name: &str) -> bool {
+    let Expr::CallExpressionKw(call) = &decl.declaration.init else {
+        return false;
+    };
+    call.callee.local_ident().map(|ident| ident.inner) == Some("region")
+        && expr_references_name(&decl.declaration.init, sketch_name)
 }
 
 /// Rename a sketch block symbol within this scope, preferring the innermost scope: first
@@ -1355,14 +1347,20 @@ fn rename_sketch_symbol_in_body(
 
     // Rename references outside the block, within this scope: the sketch value exposes the
     // block's declarations as members (`mySketch.line1`), and regions derived from the sketch
-    // inherit them as tags (`myRegion.tags.line1`). This scope is where the sketch and region
-    // variables are bound, so no rebinding is possible here; only nested bodies can shadow
-    // them, which the recursion handles.
-    let region_names = region_vars_derived_from(body, &sketch_name);
-    let region_names: Vec<&str> = region_names.iter().map(String::as_str).collect();
+    // inherit them as tags (`myRegion.tags.line1`). Regions are discovered as the walk
+    // proceeds, here and in nested scopes, since their `.tags` can only be referenced after
+    // their declaration. This scope is where the sketch and region variables are bound, so no
+    // rebinding is possible here; only nested bodies can shadow them, which the recursion
+    // handles.
+    let mut region_names: Vec<String> = Vec::new();
     for item in body.iter_mut() {
         if let Some(expr) = body_item_expr_mut(item) {
             rename_sketch_member_refs_expr(expr, Some(&sketch_name), &region_names, &old_name, new_name);
+        }
+        if let BodyItem::VariableDeclaration(decl) = &*item
+            && is_region_derived_from_sketch(decl, &sketch_name)
+        {
+            region_names.push(decl.declaration.id.name.clone());
         }
     }
     true
@@ -1509,10 +1507,12 @@ fn rename_sketch_symbol_in_nested_bodies_binary_part(
 /// `<region>.tags.<old>`. Stops tracking a sketch or region name once an item rebinds
 /// (shadows) it, since member references after that refer to the new binding. References
 /// within the rebinding item itself are still renamed, consistent with identifier renames.
+/// Regions derived from the sketch that are declared in this scope are tracked from their
+/// declaration on, as long as the sketch itself is still live here.
 fn rename_sketch_member_refs_in_body(
     body: &mut [BodyItem],
     sketch_name: Option<&str>,
-    region_names: &[&str],
+    region_names: &[String],
     old_name: &str,
     new_name: &str,
 ) {
@@ -1529,13 +1529,21 @@ fn rename_sketch_member_refs_in_body(
             sketch_name = None;
         }
         region_names.retain(|r| !body_item_binds_name(item, r));
+        // Discover regions after the drops, so that a region declaration isn't dropped for
+        // binding its own name.
+        if let Some(s) = sketch_name
+            && let BodyItem::VariableDeclaration(decl) = &*item
+            && is_region_derived_from_sketch(decl, s)
+        {
+            region_names.push(decl.declaration.id.name.clone());
+        }
     }
 }
 
 fn rename_sketch_member_refs_expr(
     expr: &mut Expr,
     sketch_name: Option<&str>,
-    region_names: &[&str],
+    region_names: &[String],
     old_name: &str,
     new_name: &str,
 ) {
@@ -1559,7 +1567,7 @@ fn rename_sketch_member_refs_expr(
             // The function's own name or a parameter can shadow the sketch or region
             // variables for the whole body.
             let sketch_name = sketch_name.filter(|s| !func.binds_name(s));
-            let region_names: Vec<&str> = region_names.iter().copied().filter(|r| !func.binds_name(r)).collect();
+            let region_names: Vec<String> = region_names.iter().filter(|r| !func.binds_name(r)).cloned().collect();
             if sketch_name.is_some() || !region_names.is_empty() {
                 rename_sketch_member_refs_in_body(&mut func.body.body, sketch_name, &region_names, old_name, new_name);
             }
@@ -1639,7 +1647,7 @@ fn rename_sketch_member_refs_expr(
 fn rename_sketch_member_refs_binary_part(
     part: &mut BinaryPart,
     sketch_name: Option<&str>,
-    region_names: &[&str],
+    region_names: &[String],
     old_name: &str,
     new_name: &str,
 ) {
@@ -1722,7 +1730,7 @@ fn rename_sketch_member_refs_binary_part(
 fn rename_sketch_member_ref(
     member: &mut Node<MemberExpression>,
     sketch_name: Option<&str>,
-    region_names: &[&str],
+    region_names: &[String],
     old_name: &str,
     new_name: &str,
 ) {
@@ -1741,7 +1749,7 @@ fn rename_sketch_member_ref(
         Expr::Name(object) => sketch_name.is_some_and(|s| object.local_ident().is_some_and(|ident| ident.inner == s)),
         Expr::MemberExpression(inner) => {
             !inner.computed
-                && matches!(&inner.object, Expr::Name(o) if o.local_ident().is_some_and(|ident| region_names.contains(&ident.inner)))
+                && matches!(&inner.object, Expr::Name(o) if o.local_ident().is_some_and(|ident| region_names.iter().any(|r| r == ident.inner)))
                 && matches!(&inner.property, Expr::Name(p) if p.local_ident().is_some_and(|ident| ident.inner == "tags"))
         }
         _ => false,
@@ -6792,13 +6800,9 @@ x = bar
     }
 
     #[test]
-    fn test_rename_sketch_block_declaration_region_in_nested_fn_limitation() {
-        // Known limitation: regions derived from a sketch are only detected in the scope the
-        // sketch is declared in. A region declared inside a nested function still gets its
-        // direct member references to the sketch renamed (`s.line1`), but its `.tags`
-        // references are not, since the region isn't recognized as derived from the sketch.
-        // If this test starts failing because `r.tags.edgeOne` appears, the limitation was
-        // lifted; update this test and the docs on rename_sketch_block_symbol.
+    fn test_rename_sketch_block_declaration_updates_region_tags_in_nested_fn() {
+        // A region derived from the sketch and declared inside a nested function gets its
+        // `.tags` references renamed, just like its direct member references to the sketch.
         let code = r#"s = sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
 }
@@ -6822,6 +6826,42 @@ fn f() {
 
 fn f() {
   r = region(segments = [s.edgeOne])
+  return r.tags.edgeOne
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_ignores_region_of_shadowed_sketch() {
+        // Inside `f`, the local `s = 5` shadows the sketch before the region is declared, so
+        // the region is derived from the local, not from the sketch being renamed. Nothing
+        // inside `f` refers to the sketch, so nothing there is renamed.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  s = 5
+  r = region(segments = [s.line1])
+  return r.tags.line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f() {
+  s = 5
+  r = region(segments = [s.line1])
   return r.tags.line1
 }
 "#
