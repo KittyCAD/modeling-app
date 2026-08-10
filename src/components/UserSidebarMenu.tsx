@@ -13,7 +13,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { useApp } from '@src/lib/boot'
 import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
@@ -77,8 +77,11 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
           onClick: () => {
             const targetPath =
               filePath !== undefined
-                ? filePath + PATHS.SETTINGS_USER
-                : PATHS.HOME + PATHS.SETTINGS_USER
+                ? appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_USER)
+                : appendRouterSubRouteWithSearch(
+                    PATHS.HOME,
+                    PATHS.SETTINGS_USER
+                  )
             void navigate(targetPath)
           },
         },
@@ -88,8 +91,14 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
           children: 'Keyboard shortcuts',
           onClick: () => {
             const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+              ? appendRouterSubRouteWithSearch(
+                  filePath ?? location.pathname,
+                  PATHS.SETTINGS_KEYBINDINGS
+                )
+              : appendRouterSubRouteWithSearch(
+                  PATHS.HOME,
+                  PATHS.SETTINGS_KEYBINDINGS
+                )
             void navigate(targetPath)
           },
         },

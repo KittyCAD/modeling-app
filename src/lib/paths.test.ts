@@ -1,6 +1,8 @@
 import { APP_NAME } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
+  appendRouterSubRoute,
+  appendRouterSubRouteWithSearch,
   fileNameHasExtension,
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
@@ -8,6 +10,7 @@ import {
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   parseProjectRoute,
+  stripTrailingRouterSubRoute,
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
@@ -359,6 +362,44 @@ describe('testing getRouterSearchFromRequestUrl', () => {
         true
       )
     ).toEqual('?debug=true')
+  })
+})
+
+describe('testing router subroute helpers', () => {
+  it('appends a subroute without creating embedded double slashes', () => {
+    expect(
+      appendRouterSubRoute('/file/%2Ftmp%2Fproject%2Fmain.kcl', '/settings')
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl/settings')
+  })
+
+  it('does not duplicate a trailing subroute', () => {
+    expect(
+      appendRouterSubRoute(
+        '/file/%2Ftmp%2Fproject%2Fmain.kcl/settings',
+        '/settings'
+      )
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl/settings')
+  })
+
+  it('strips repeated trailing subroutes before closing overlays', () => {
+    expect(
+      stripTrailingRouterSubRoute(
+        '/file/%2Ftmp%2Fproject%2Fmain.kcl/settings/settings',
+        '/settings'
+      )
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl')
+  })
+
+  it('preserves search params and hashes when appending a subroute', () => {
+    expect(
+      appendRouterSubRouteWithSearch('/home', '/settings?tab=user#libraries')
+    ).toEqual('/home/settings?tab=user#libraries')
+    expect(
+      appendRouterSubRouteWithSearch(
+        '/file/%2Ftmp%2Fproject%2Fmain.kcl/settings',
+        '/settings?tab=project'
+      )
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl/settings?tab=project')
   })
 })
 

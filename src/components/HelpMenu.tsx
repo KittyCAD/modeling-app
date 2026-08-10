@@ -8,7 +8,7 @@ import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -127,8 +127,14 @@ export function HelpMenu() {
               onClick={() => {
                 const targetPath =
                   filePath !== undefined
-                    ? filePath + PATHS.SETTINGS_KEYBINDINGS
-                    : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+                    ? appendRouterSubRouteWithSearch(
+                        filePath,
+                        PATHS.SETTINGS_KEYBINDINGS
+                      )
+                    : appendRouterSubRouteWithSearch(
+                        PATHS.HOME,
+                        PATHS.SETTINGS_KEYBINDINGS
+                      )
                 void navigate(targetPath)
               }}
               data-testid="keybindings-button"
