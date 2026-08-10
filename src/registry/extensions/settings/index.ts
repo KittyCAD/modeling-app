@@ -6,7 +6,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import type {
   ProjectTitleService,
   ProjectTitleUpdate,
@@ -19,7 +22,6 @@ import {
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
-import { homeProjectActionsService } from '@src/registry/contracts/homeProjects'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -32,6 +34,7 @@ import {
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
+import toast from 'react-hot-toast'
 import { createActor } from 'xstate'
 
 export const settingsExtension = defineRegistryItemFactory((ctx) => {
@@ -46,21 +49,18 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
 
   const projectTitle: ProjectTitleService = {
     updates: projectTitleUpdates,
-    canUpdateTitle: (project) =>
-      project.readWriteAccess &&
-      Boolean(ctx.services.optional(homeProjectActionsService)),
+    canUpdateTitle: (project) => project.readWriteAccess,
     updateTitle: async (project, title) => {
       if (!project.readWriteAccess) {
         return Promise.reject(new Error('This project title cannot be edited.'))
       }
 
-      const actions = ctx.services.optional(homeProjectActionsService)
-      if (!actions) {
-        return Promise.reject(new Error('Project actions are unavailable.'))
-      }
-
-      await actions.renameLocalProject(project, title)
+      const previousName = getProjectDisplayName(project)
+      await writeProjectTitleToProjectToml(project.path, title)
+      invalidateProjectLibraryRealizations()
+      project.title = title
       projectTitleUpdates.value = { projectPath: project.path, title }
+      toast.success(`Successfully renamed "${previousName}" to "${title}"`)
     },
   }
 

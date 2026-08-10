@@ -7,12 +7,8 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
-import {
-  getProjectInfo,
-  writeProjectTitleToProjectToml,
-} from '@src/lib/desktop'
+import { getProjectInfo } from '@src/lib/desktop'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -55,12 +51,12 @@ function homeProjectDisplayNameExists({
 }: {
   entries: readonly HomeProjectEntry[] | undefined
   requestedName: string
-  projectId?: string
+  projectId: string
 }) {
   return Boolean(
     entries?.some(
       (project) =>
-        (projectId === undefined || project.id !== projectId) &&
+        project.id !== projectId &&
         getHomeProjectDisplayName(project) === requestedName
     )
   )
@@ -514,35 +510,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
-      )
-    },
-    renameLocalProject: async (project, requestedName) => {
-      if (!project.readWriteAccess) {
-        return Promise.reject(new Error('This project title cannot be edited.'))
-      }
-
-      const entries = ctx.valueSpecs.get(homeProjectEntriesValueSpec)
-      const projectId = entries.find(
-        (entry) => entry.localProjectPath === project.path
-      )?.id
-      if (
-        homeProjectDisplayNameExists({
-          entries,
-          requestedName,
-          projectId,
-        })
-      ) {
-        const message = `Project with title "${requestedName}" already exists`
-        toast.error(message)
-        return Promise.reject(new Error(message))
-      }
-
-      const previousName = getProjectDisplayName(project)
-      await writeProjectTitleToProjectToml(project.path, requestedName)
-      invalidateProjectLibraryRealizations()
-      project.title = requestedName
-      toast.success(
-        `Successfully renamed "${previousName}" to "${requestedName}"`
       )
     },
     delete: async (project) => {
