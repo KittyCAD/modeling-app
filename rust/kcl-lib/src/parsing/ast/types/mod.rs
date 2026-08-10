@@ -3799,6 +3799,16 @@ impl Name {
         {
             self.name.name = new_name.to_owned();
         }
+        // The head segment of a qualified name refers to a module binding (an import alias),
+        // so renaming that binding must rewrite it too. Later segments are members within the
+        // module and are unaffected by local renames. An absolute path (`::foo::bar`) doesn't
+        // start with a local binding.
+        if !self.abs_path
+            && let Some(head) = self.path.first_mut()
+            && head.name == old_name
+        {
+            head.name = new_name.to_owned();
+        }
     }
 }
 
@@ -7124,6 +7134,54 @@ s2 = sketch(on = XY) {
 r = region(point = s1.circle1.center, sketch = s2)
 a = r.tags.edgeOne
 b = r.tags.circle1
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_module_import_alias_renames_qualified_references() {
+        let code = r#"import "m.kcl" as alias
+
+x = alias::item
+y = alias::helper(alias::item)
+"#;
+        let mut program = parse(code);
+        let pos = code.find("alias").unwrap() + 1;
+
+        program.rename_symbol("mod2", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"import "m.kcl" as mod2
+
+x = mod2::item
+y = mod2::helper(mod2::item)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_variable_does_not_rename_qualified_member_segments() {
+        // `alias::item` refers to `item` inside the module; renaming the local variable
+        // `item` must not touch it.
+        let code = r#"import "m.kcl" as alias
+
+item = 1
+x = alias::item + item
+"#;
+        let mut program = parse(code);
+        let pos = code.find("item = 1").unwrap() + 1;
+
+        program.rename_symbol("count", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"import "m.kcl" as alias
+
+count = 1
+x = alias::item + count
 "#
         );
     }
