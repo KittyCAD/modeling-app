@@ -7,6 +7,8 @@ import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 describe('project session extension', () => {
   let registry: Registry | undefined
 
