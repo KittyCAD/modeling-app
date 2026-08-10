@@ -13,7 +13,11 @@ import {
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import { distance2d, type LineCoords, linesAreParallel } from '@src/lib/utils2d'
+import {
+  distance2d,
+  distancePointToLine2d,
+  linesAreParallel,
+} from '@src/lib/utils2d'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -155,19 +159,6 @@ function getCircularCoords(
   }
 }
 
-function pointToLineDistance(point: Coords2d, line: LineCoords) {
-  const dx = line[1][0] - line[0][0]
-  const dy = line[1][1] - line[0][1]
-  const length = Math.hypot(dx, dy)
-  if (length === 0) {
-    return null
-  }
-
-  return Math.abs(
-    ((point[0] - line[0][0]) * dy - (point[1] - line[0][1]) * dx) / length
-  )
-}
-
 function pointToCircularDistance(
   point: Coords2d,
   circular: { center: Coords2d; radius: number }
@@ -194,11 +185,11 @@ function getCurrentDistanceBetweenSelections(
   const secondCircular = getCircularCoords(objects, secondObject)
 
   if (point1 && secondLine) {
-    return pointToLineDistance(point1, secondLine)
+    return distancePointToLine2d(point1, secondLine)
   }
 
   if (firstLine && point2) {
-    return pointToLineDistance(point2, firstLine)
+    return distancePointToLine2d(point2, firstLine)
   }
 
   if (point1 && secondCircular) {
@@ -210,14 +201,20 @@ function getCurrentDistanceBetweenSelections(
   }
 
   if (firstLine && secondCircular) {
-    const centerDistance = pointToLineDistance(secondCircular.center, firstLine)
+    const centerDistance = distancePointToLine2d(
+      secondCircular.center,
+      firstLine
+    )
     return centerDistance === null
       ? null
       : Math.abs(centerDistance - secondCircular.radius)
   }
 
   if (firstCircular && secondLine) {
-    const centerDistance = pointToLineDistance(firstCircular.center, secondLine)
+    const centerDistance = distancePointToLine2d(
+      firstCircular.center,
+      secondLine
+    )
     return centerDistance === null
       ? null
       : Math.abs(centerDistance - firstCircular.radius)
@@ -232,7 +229,7 @@ function getCurrentDistanceBetweenSelections(
   }
 
   if (firstLine && secondLine && linesAreParallel(firstLine, secondLine)) {
-    return pointToLineDistance(firstLine[0], secondLine)
+    return distancePointToLine2d(firstLine[0], secondLine)
   }
 
   return null
@@ -576,10 +573,11 @@ export const sketchSolveMachine = setup({
               const second = currentSelections[1]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               const secondObject = second === ORIGIN_TARGET ? undefined : second
-              if (
-                (isLineSegment(firstObject) && isLineSegment(secondObject)) ||
-                (isPointSegment(firstObject) && isPointSegment(secondObject))
-              ) {
+              const firstSupportsPlacement =
+                isLineSegment(firstObject) || isPointSegment(firstObject)
+              const secondSupportsPlacement =
+                isLineSegment(secondObject) || isPointSegment(secondObject)
+              if (firstSupportsPlacement && secondSupportsPlacement) {
                 sendToActorIfActive(self, {
                   type: 'equip tool',
                   data: { tool: 'dimensionTool' },

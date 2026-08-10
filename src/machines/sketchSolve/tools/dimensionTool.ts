@@ -15,6 +15,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { toastToolbar } from '@src/lib/toolbarToast'
 import { roundOff } from '@src/lib/utils'
 import {
+  distancePointToLine2d,
   dot2d,
   getCcwSweep,
   getLineIntersection,
@@ -75,7 +76,7 @@ type DimensionToolSelf = ParentSketchSolveSender & {
   send: (event: DimensionToolEvent) => void
 }
 
-type LineSelection = {
+export type LineSelection = {
   type: 'line'
   id: number
   clickPoint: Coords2d
@@ -110,10 +111,18 @@ type DimensionAngleSelection = {
   inverse: boolean
 }
 
-export type DimensionDistanceDraftContext = {
-  point0: PointSelection
-  point1: PointSelection
-}
+export type DimensionDistanceDraftContext =
+  | {
+      kind: 'pointPoint'
+      point0: PointSelection
+      point1: PointSelection
+    }
+  | {
+      kind: 'pointLine'
+      point: PointSelection
+      line: LineSelection
+      distance: number
+    }
 
 type DimensionDraftContext =
   | { type: 'angle'; angle: DimensionAngleDraftContext }
@@ -341,10 +350,11 @@ function pointSelectionFromObject(object: ApiObject | undefined) {
   }
 }
 
-function getInitialPointSelections(
+function getInitialDistanceSelections(
   selectionIds: readonly SketchSolveSelectionId[],
+  selectionCoordinates: SelectionCoordinates,
   objects: ApiObject[]
-): [PointSelection, PointSelection] | null {
+): [DimensionSelection, DimensionSelection] | null {
   if (selectionIds.length !== 2) {
     return null
   }
@@ -355,9 +365,31 @@ function getInitialPointSelections(
     return null
   }
 
-  const first = pointSelectionFromObject(objects[firstId])
-  const second = pointSelectionFromObject(objects[secondId])
-  return first && second ? [first, second] : null
+  const selectionFromId = (id: number): DimensionSelection | null => {
+    const point = pointSelectionFromObject(objects[id])
+    if (point) {
+      return point
+    }
+
+    const linePoints = getLinePoints(objects[id], objects)
+    if (!linePoints) {
+      return null
+    }
+
+    return {
+      type: 'line',
+      id,
+      clickPoint: selectionCoordinates[id] ?? linePoints[0],
+    }
+  }
+
+  const first = selectionFromId(firstId)
+  const second = selectionFromId(secondId)
+  if (!first || !second || (first.type === 'line' && second.type === 'line')) {
+    return null
+  }
+
+  return [first, second]
 }
 
 function getVisibleAngleSelection(
@@ -476,6 +508,11 @@ export function getDimensionDistanceType(
   mousePoint: Coords2d,
   distanceContext: DimensionDistanceDraftContext
 ): DimensionDistanceType {
+  // Axis-specific point-to-line distance is under-specified in KCL.
+  if (distanceContext.kind === 'pointLine') {
+    return 'Distance'
+  }
+
   const point0 = distanceContext.point0.point
   const point1 = distanceContext.point1.point
   const betweenPointsX = isBetween(mousePoint[0], point0[0], point1[0])
@@ -499,21 +536,29 @@ export function buildDimensionDistanceConstraint(
   units: NumericSuffix
 ): ApiDistanceConstraint {
   const type = getDimensionDistanceType(mousePoint, distanceContext)
-  const delta = subVec(
-    distanceContext.point1.point,
-    distanceContext.point0.point
-  )
-  const distance = roundOff(
-    type === 'HorizontalDistance'
-      ? delta[0]
-      : type === 'VerticalDistance'
-        ? delta[1]
-        : length2d(delta)
-  )
+  let distance: number
+  let points: [number, number]
+  if (distanceContext.kind === 'pointLine') {
+    distance = roundOff(distanceContext.distance)
+    points = [distanceContext.point.id, distanceContext.line.id]
+  } else {
+    const delta = subVec(
+      distanceContext.point1.point,
+      distanceContext.point0.point
+    )
+    distance = roundOff(
+      type === 'HorizontalDistance'
+        ? delta[0]
+        : type === 'VerticalDistance'
+          ? delta[1]
+          : length2d(delta)
+    )
+    points = [distanceContext.point0.id, distanceContext.point1.id]
+  }
 
   return {
     type,
-    points: [distanceContext.point0.id, distanceContext.point1.id],
+    points,
     distance: { value: distance, units },
     labelPosition: {
       x: toNumber(mousePoint[0], units),
@@ -807,8 +852,7 @@ async function commitDraftConstraint(
 
 function getClosestDimensionSelection(
   mousePoint: Coords2d,
-  context: DimensionToolContext,
-  requiredType?: DimensionSelection['type']
+  context: DimensionToolContext
 ): DimensionSelection | null {
   const currentSketchObjects = getCurrentSketchObjectsById(
     context.initialObjects,
@@ -818,15 +862,9 @@ function getClosestDimensionSelection(
     mousePoint,
     currentSketchObjects,
     context.sceneInfra
-  ).find(({ apiObject }) => {
-    if (requiredType === 'line') {
-      return isLineSegment(apiObject)
-    }
-    if (requiredType === 'point') {
-      return isPointSegment(apiObject)
-    }
-    return isLineSegment(apiObject) || isPointSegment(apiObject)
-  })?.apiObject
+  ).find(
+    ({ apiObject }) => isLineSegment(apiObject) || isPointSegment(apiObject)
+  )?.apiObject
 
   if (!closestObject) {
     return null
@@ -866,13 +904,40 @@ function getDimensionDraftContext(
     return {
       type: 'distance',
       distance: {
+        kind: 'pointPoint',
         point0: firstSelection,
         point1: secondSelection,
       },
     }
   }
 
-  return null
+  let point: PointSelection
+  let line: LineSelection
+  if (firstSelection.type === 'point' && secondSelection.type === 'line') {
+    point = firstSelection
+    line = secondSelection
+  } else if (
+    firstSelection.type === 'line' &&
+    secondSelection.type === 'point'
+  ) {
+    point = secondSelection
+    line = firstSelection
+  } else {
+    return null
+  }
+
+  const linePoints = getLinePoints(objects[line.id], objects)
+  const distance = linePoints
+    ? distancePointToLine2d(point.point, linePoints)
+    : null
+  if (distance === null) {
+    return null
+  }
+
+  return {
+    type: 'distance',
+    distance: { kind: 'pointLine', point, line, distance },
+  }
 }
 
 function updateSelectedEntities(
@@ -909,7 +974,12 @@ function addDimensionListener({
       context.initialSelectionIds,
       context.initialSelectionCoordinates,
       initialObjects
-    ) ?? getInitialPointSelections(context.initialSelectionIds, initialObjects)
+    ) ??
+    getInitialDistanceSelections(
+      context.initialSelectionIds,
+      context.initialSelectionCoordinates,
+      initialObjects
+    )
   if (initialSelections) {
     const [firstSelection, secondSelection] = initialSelections
     const draftContext = getDimensionDraftContext(
@@ -923,7 +993,9 @@ function addDimensionListener({
       toastToolbar(
         draftContext.type === 'angle'
           ? 'Move mouse to choose sector, then click to place label.'
-          : 'Move mouse to choose distance type, then click to place label.',
+          : draftContext.distance.kind === 'pointPoint'
+            ? 'Move mouse to choose distance type, then click to place label.'
+            : 'Move mouse, then click to place label.',
         {
           id: DIMENSION_PLACEMENT_PROMPT_TOAST_ID,
           duration: Number.POSITIVE_INFINITY,
@@ -957,12 +1029,8 @@ function addDimensionListener({
           updateSelectedEntities(self, [selection])
         }
       } else if (!runtime.draftContext) {
-        // Second click: complete a line pair or point pair and start the draft.
-        const selection = getClosestDimensionSelection(
-          mousePoint,
-          context,
-          runtime.firstSelection.type
-        )
+        // Second click: complete a line/line, point/point, or point/line pair.
+        const selection = getClosestDimensionSelection(mousePoint, context)
         if (selection && selection.id !== runtime.firstSelection.id) {
           const draftContext = getDimensionDraftContext(
             runtime.firstSelection,
@@ -1001,11 +1069,7 @@ function addDimensionListener({
         // After the pair is selected, mouse movement updates the dimension draft.
         requestDraftPreview(runtime, context, self, mousePoint)
       } else {
-        const selection = getClosestDimensionSelection(
-          mousePoint,
-          context,
-          runtime.firstSelection?.type
-        )
+        const selection = getClosestDimensionSelection(mousePoint, context)
         sendParent(self, {
           type: 'update hovered id',
           data: { hoveredId: selection?.id ?? null },

@@ -340,6 +340,7 @@ describe('dimensionTool angle selection', () => {
 
 describe('dimensionTool distance selection', () => {
   const distanceContext: DimensionDistanceDraftContext = {
+    kind: 'pointPoint',
     point0: { type: 'point', id: 1, point: [0, 0] },
     point1: { type: 'point', id: 2, point: [4, 3] },
   }
@@ -376,6 +377,29 @@ describe('dimensionTool distance selection', () => {
         expr: '4',
         is_literal: true,
       },
+    })
+  })
+
+  it('keeps point-to-line dimensions absolute in every cursor region', () => {
+    const pointLineContext: DimensionDistanceDraftContext = {
+      kind: 'pointLine',
+      point: { type: 'point', id: 1, point: [5, 4] },
+      line: { type: 'line', id: 10, clickPoint: [5, 0] },
+      distance: 4,
+    }
+
+    expect(getDimensionDistanceType([5, 8], pointLineContext)).toBe('Distance')
+    expect(
+      buildDimensionDistanceConstraint(pointLineContext, [8, 6], 'Mm')
+    ).toEqual({
+      type: 'Distance',
+      points: [1, 10],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 8, units: 'Mm' },
+        y: { value: 6, units: 'Mm' },
+      },
+      source: { expr: '4', is_literal: true },
     })
   })
 })
@@ -449,6 +473,49 @@ describe('dimensionTool', () => {
     expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
   })
 
+  async function expectPointLineDraft(clicks: [Coords2d, Coords2d]) {
+    const sketch = createSketchApiObject({ id: 0 })
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const point = createPointApiObject({ id: 3, x: 5, y: 4 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      lineStart,
+      lineEnd,
+      point,
+      line,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent(clicks[0]))
+    callbacks.onClick(createMouseEvent(clicks[1]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      points: [3, 10],
+      distance: { value: 4, units: 'Mm' },
+    })
+  }
+
+  it('creates a point-to-line draft after selecting a point then a line', async () => {
+    await expectPointLineDraft([
+      [5, 4],
+      [5, 0],
+    ])
+  })
+
+  it('creates a point-to-line draft after selecting a line then a point', async () => {
+    await expectPointLineDraft([
+      [5, 0],
+      [5, 4],
+    ])
+  })
+
   it('starts distance placement when initialized with two selected points', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
@@ -468,6 +535,38 @@ describe('dimensionTool', () => {
     expect((rustContext.addConstraint as any).mock.calls[0][2].type).toBe(
       'HorizontalDistance'
     )
+  })
+
+  it('starts label placement when initialized with a selected point and line', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const point = createPointApiObject({ id: 3, x: 5, y: 4 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const { actor, sceneInfra, rustContext } = createParentHarness(
+      [sketch, lineStart, lineEnd, point, line],
+      {
+        initialSelectionIds: [10, 3],
+        initialSelectionCoordinates: { 10: [5, 0] },
+      }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onMove(createMouseEvent([8, 6]))
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      points: [3, 10],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 8, units: 'Mm' },
+        y: { value: 6, units: 'Mm' },
+      },
+    })
   })
 
   it('creates a draft labelled angle constraint after selecting two lines', async () => {
