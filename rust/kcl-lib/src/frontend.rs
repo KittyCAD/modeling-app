@@ -264,6 +264,12 @@ pub struct EditDistanceConstraintLabelPositionOptions {
     pub commit_solved_initial_guesses: bool,
 }
 
+/// Options for editing a distance constraint during sketch dragging.
+pub struct EditDistanceConstraintOptions {
+    /// Whether solver-updated initial guesses should be written back to KCL.
+    pub commit_solved_initial_guesses: bool,
+}
+
 /// Options for editing an angle constraint during sketch dragging.
 pub struct EditAngleConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
@@ -428,6 +434,24 @@ impl FrontendState {
             options.anchor_segment_ids,
         )
         .await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
+    /// Edit a distance constraint with optional solver writeback.
+    pub async fn edit_distance_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditDistanceConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_commit_mode = self
+            .next_edit_commits_solver_solutions
+            .replace(options.commit_solved_initial_guesses);
+        let result = SketchApi::edit_distance_constraint(self, ctx, version, sketch, constraint_id, constraint).await;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
         result
     }
@@ -1597,6 +1621,73 @@ impl SketchApi for FrontendState {
             &mut new_ast,
             ExecuteAfterEditOptions {
                 segment_ids_edited: anchor_segment_ids.into_iter().collect(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses,
+            },
+        )
+        .await
+    }
+
+    async fn edit_distance_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Distance(_)
+                    | Constraint::HorizontalDistance(_)
+                    | Constraint::VerticalDistance(_),
+            }
+        ) {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object should be a distance constraint but it was {}",
+                object.kind.human_friendly_kind_with_article(),
+            ))));
+        }
+
+        let (function_name, distance) = match &constraint {
+            Constraint::Distance(distance) => (DISTANCE_FN, distance),
+            Constraint::HorizontalDistance(distance) => (HORIZONTAL_DISTANCE_FN, distance),
+            Constraint::VerticalDistance(distance) => (VERTICAL_DISTANCE_FN, distance),
+            _ => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                    "New constraint should be a distance constraint".to_owned(),
+                )));
+            }
+        };
+
+        let mut new_ast = self.program.ast.clone();
+        let (call, value) = self
+            .distance_constraint_ast_parts(function_name, distance, &mut new_ast)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditDistanceConstraint { call, value },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
                 edit_kind: EditDeleteKind::Edit,
                 commit_solved_initial_guesses,
             },
@@ -5840,6 +5931,10 @@ enum AstMutateCommand {
         call: ast::BinaryPart,
         value: ast::BinaryPart,
     },
+    EditDistanceConstraint {
+        call: ast::BinaryPart,
+        value: ast::BinaryPart,
+    },
     EditDistanceConstraintLabelPosition {
         label_position: ast::Expr,
     },
@@ -6049,6 +6144,10 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
 
 fn is_angle_constraint_call_name(name: &str) -> bool {
     matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
+}
+
+fn is_distance_constraint_call_name(name: &str) -> bool {
+    matches!(name, DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN)
 }
 
 fn is_constraint_call_name(name: &str) -> bool {
@@ -6433,6 +6532,34 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 );
 
                 match (left_is_angle, right_is_angle) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditDistanceConstraint { call, value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_distance = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+                let right_is_distance = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+
+                match (left_is_distance, right_is_distance) {
                     (true, _) => {
                         binary_expr.left = call.clone();
                         binary_expr.right = value.clone();
@@ -11062,6 +11189,84 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_type_and_value() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  distance([line1.start, line1.end]) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+        let label_position = Point2d {
+            x: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (source_delta, scene_delta) = frontend
+            .edit_distance_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Constraint::HorizontalDistance(Distance {
+                    points: vec![point0_id.into(), point1_id.into()],
+                    distance: Number {
+                        value: 4.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: Some(label_position.clone()),
+                    source: Default::default(),
+                }),
+                EditDistanceConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  horizontalDistance([line1.start, line1.end], labelPosition = [2mm, 5mm]) == 4mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::HorizontalDistance(distance) = constraint else {
+            panic!("Expected horizontal distance constraint");
+        };
+        assert_eq!(distance.distance.value, 4.0);
         assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;

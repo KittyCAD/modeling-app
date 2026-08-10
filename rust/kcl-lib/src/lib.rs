@@ -218,6 +218,7 @@ pub mod front {
     pub use crate::frontend::{
         EditAngleConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
+        EditDistanceConstraintOptions,
         EditSegmentsOptions,
         FrontendState,
         SetProgramOutcome,

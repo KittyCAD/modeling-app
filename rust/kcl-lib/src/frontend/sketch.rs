@@ -133,6 +133,15 @@ pub trait SketchApi {
         anchor_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn edit_distance_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     async fn edit_angle_constraint(
         &mut self,
         ctx: &ExecutorContext,
