@@ -4,6 +4,7 @@ import {
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudSync/projectArchive'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CloudSyncConfig,
   ProjectArchiveFile,
@@ -45,7 +46,7 @@ async function cloudFetch(
     headers.set('Authorization', `Bearer ${config.token}`)
   }
 
-  const response = await fetch(`${baseUrl}${targetPath}`, {
+  const response = await fetchWithSessionExpiration(`${baseUrl}${targetPath}`, {
     ...init,
     headers,
     credentials: 'include',
@@ -355,12 +356,14 @@ export async function updateRemoteProject({
   projectId,
   files,
   expectedRevision,
+  entrypointPath,
 }: {
   config: CloudSyncConfig
   projectPath: string
   projectId: string
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
+  entrypointPath?: string
 }) {
   return cloudJson<RemoteProject>(
     config,
@@ -370,20 +373,30 @@ export async function updateRemoteProject({
     ),
     {
       method: 'PUT',
-      body: buildProjectFormData(projectPath, files, expectedRevision),
+      body: buildProjectFormData(projectPath, files, {
+        expectedRevision,
+        entrypointPath,
+      }),
     }
   )
+}
+
+type BuildProjectFormDataOptions = {
+  expectedRevision?: Revision
+  entrypointPath?: string
 }
 
 function buildProjectFormData(
   projectPath: string,
   files: ProjectArchiveFile[],
-  expectedRevision?: Revision
+  options?: Revision | BuildProjectFormDataOptions
 ) {
+  const uploadOptions =
+    typeof options === 'string' ? { expectedRevision: options } : options
   const uploadPayload = prepareProjectFilesForCloudUpload(
     projectPath,
     files,
-    expectedRevision
+    uploadOptions
   )
 
   const formData = new FormData()

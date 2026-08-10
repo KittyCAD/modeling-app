@@ -1,5 +1,5 @@
-import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@src/lib/clientErrors', () => ({
   ClientErrorCode: {
     CloudSyncConflict: 'cloud_sync_conflict',
+    CloudSyncConflictCopyDetected: 'cloud_sync_conflict_copy_detected',
     CloudSyncFailure: 'cloud_sync_failure',
   },
   reportClientError: mocks.reportClientError,
@@ -23,6 +24,7 @@ vi.mock('@src/lib/trap', () => ({
 
 import {
   reportCloudSyncConflict,
+  reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
 
@@ -40,6 +42,21 @@ describe('cloud sync client error reporting', () => {
       code: 'cloud_sync_conflict',
       errorName: 'CloudSyncConflict',
       message: 'Cloud sync conflict: local and remote both changed.',
+      route: '/cloud-sync',
+      extra: {
+        source: 'CloudSyncEngine',
+        operation: 'reconcile-project',
+      },
+    })
+  })
+
+  it('reports legacy conflict-copy detections without project details', () => {
+    reportCloudSyncConflictCopyDetected()
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith({
+      code: 'cloud_sync_conflict_copy_detected',
+      errorName: 'CloudSyncConflictCopyDetected',
+      message: 'Cloud sync "conflict copy" folder detected',
       route: '/cloud-sync',
       extra: {
         source: 'CloudSyncEngine',

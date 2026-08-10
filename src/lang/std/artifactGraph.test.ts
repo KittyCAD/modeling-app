@@ -438,6 +438,48 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
+  it('should preserve the identity of pattern body selections', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-1',
+          patternIndex: 1,
+        },
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-2',
+          patternIndex: 2,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toEqual(selections.graphSelections)
+    }
+  })
+
   it('should coerce edgeCut selection to parent path', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

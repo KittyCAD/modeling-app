@@ -36,6 +36,7 @@ import {
   getSketchCheckpointLimit,
   parse,
   recast,
+  resultIsOk,
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -70,6 +71,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -1039,7 +1041,7 @@ export class KclManager extends File {
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload it.
         if (
-          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
           this.zookeeperHistoryRecordingInProgress
         ) {
           return
@@ -1108,7 +1110,7 @@ export class KclManager extends File {
     diskCode: string
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
    * its file writes land, so file watchers must not reload the active editor
@@ -1349,8 +1351,17 @@ export class KclManager extends File {
     this.setDiagnosticsForCurrentErrors()
   }
 
-  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+  syncSketchSolveOutcome(
+    code: string,
+    sceneGraphDelta: SceneGraphDelta,
+    options: { refreshLintDiagnostics?: boolean } = {}
+  ): void {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
+
+    this.diagnostics = []
+    if (options.refreshLintDiagnostics !== false) {
+      void this.refreshSketchSolveLintDiagnostics(code, execState)
+    }
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1365,6 +1376,33 @@ export class KclManager extends File {
       })
     )
     void this.updateArtifactGraph(execState.artifactGraph)
+  }
+
+  private async refreshSketchSolveLintDiagnostics(
+    code: string,
+    execState: ExecState
+  ): Promise<void> {
+    const instance = await this.systemDeps.wasmInstancePromise
+    const parseResult = parse(code, instance)
+    if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    const diagnostics = await lintAst({
+      ast: parseResult.program,
+      sourceCode: code,
+      instance,
+      rustContext: this.rustContext,
+      legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      directTagFilletMetadata: execState.directTagFilletMetadata,
+      artifactGraph: execState.artifactGraph,
+    })
+
+    if (this.code !== code) {
+      return
+    }
+    this.addDiagnostics(diagnostics)
   }
 
   hasErrors(): boolean {
@@ -2411,6 +2449,7 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
@@ -3715,6 +3754,17 @@ export class KclManager extends File {
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'read_before_write',
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
         return Promise.reject(err)
       }
     }
@@ -3758,6 +3808,19 @@ export class KclManager extends File {
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
+      if (!isPathNotFoundError(err)) {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'write',
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
+      }
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }

@@ -216,7 +216,7 @@ verticalEndMiterTool = extrude(verticalEndMiterRegion, length = -(ironWidth + cs
   |> flipSurface()
 hide(verticalEndMiterSketch)
 
-verticalMitered = subtract(verticalBlank, tools = verticalEndMiterTool, legacyMethod = true)
+verticalMitered = subtract(verticalBlank, tools = verticalEndMiterTool)
 vertical = verticalMitered
   |> rotate(roll = 90deg, yaw = 180deg, global = false)
 
@@ -276,7 +276,7 @@ verticalHoleCutters = patternLinear3d(
   distance = (height - bottomBoltOffset) / verticalHolesNeeded,
   axis = [0, 0, 1],
 )
-verticalWithHoles = subtract(vertical, tools = verticalHoleCutters, legacyMethod = true)
+verticalWithHoles = subtract(vertical, tools = verticalHoleCutters)
 
 // Solver horizontal bracket angle
 horizontalProfileSketch = sketch(on = -XZ) {
@@ -411,7 +411,7 @@ horizontalStartMiterTool = extrude(horizontalStartMiterRegion, length = -(ironWi
   |> flipSurface()
 hide(horizontalStartMiterSketch)
 
-horizontalMitered = subtract(horizontalBlank, tools = horizontalStartMiterTool, legacyMethod = true)
+horizontalMitered = subtract(horizontalBlank, tools = horizontalStartMiterTool)
 horizontal = horizontalMitered
   |> rotate(pitch = 270deg, yaw = -90deg, global = false)
   |> translate(z = height + csgFriendlyOffset, global = true)
@@ -470,7 +470,7 @@ horizontalHoleRegion = region(segments = [
 horizontalHoleSeed = extrude(horizontalHoleRegion, length = ironThickness + csgFriendlyOffset * 2)
 hide(horizontalHoleSketch)
 
-horizontalWithHoles = subtract(horizontal, tools = horizontalHoleSeed, legacyMethod = true)
+horizontalWithHoles = subtract(horizontal, tools = horizontalHoleSeed)
 
 // Solver diagonal strut
 strutProfileSketch = sketch(on = -XZ) {
@@ -594,7 +594,7 @@ strutStartMiterTool = extrude(strutStartMiterRegion, length = -(strutSectionWidt
      )
 hide(strutStartMiterSketch)
 
-strutStartMitered = subtract(strutBlank, tools = strutStartMiterTool, legacyMethod = true)
+strutStartMitered = subtract(strutBlank, tools = strutStartMiterTool)
 
 strutEndMiterRun = strutSectionWidth + csgFriendlyOffset
 strutEndMiterRise = strutEndMiterRun * tan(45deg)
@@ -665,7 +665,7 @@ strutEndMiterTool = extrude(strutEndMiterRegion, length = -(strutSectionWidth + 
      )
 hide(strutEndMiterSketch)
 
-strutMitered = subtract(strutStartMitered, tools = strutEndMiterTool, legacyMethod = true)
+strutMitered = subtract(strutStartMitered, tools = strutEndMiterTool)
 strut = strutMitered
   |> rotate(pitch = 270deg, yaw = -90deg, global = false)
   |> translate(x = -strutLength - csgFriendlyOffset, z = ironWidth - ironThickness, global = true)

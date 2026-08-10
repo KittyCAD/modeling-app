@@ -5,6 +5,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
@@ -63,6 +64,7 @@ export class Connection extends EventTarget {
   unreliableDataChannel: RTCDataChannel | undefined
   mediaStream: MediaStream | undefined
   websocket: WebSocket | undefined
+  apiCallId: string | undefined
   sdpAnswer: RTCSessionDescriptionInit | undefined
 
   // Promises to write sync code and await the multiple levels of
@@ -178,6 +180,7 @@ export class Connection extends EventTarget {
         if (message.errors.length > 0) {
           const firstError = message.errors[0]
           if (firstError.error_code === 'auth_token_invalid') {
+            notifySessionExpired('legacy-engine-websocket')
             callback('auth_token_invalid')
           }
         }
@@ -619,6 +622,9 @@ export class Connection extends EventTarget {
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
       sdpAnswerResolve: this.deferredSdpAnswer.resolve,
       sdpAnswerReject: this.deferredSdpAnswer.reject,
+      setApiCallId: (apiCallId) => {
+        this.apiCallId = apiCallId
+      },
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

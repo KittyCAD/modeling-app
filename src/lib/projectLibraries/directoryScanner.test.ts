@@ -1,3 +1,4 @@
+import { getCloudSyncProjectMetadataIndex } from '@src/lib/cloudSync'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -51,6 +52,10 @@ const mocks = vi.hoisted(() => {
       }),
       mkdirOrNOOP: vi.fn(),
     },
+    cloudSyncDb: {
+      clearOutboxEntriesForProject: vi.fn(),
+      deleteProjectMetadata: vi.fn(),
+    },
     fsZds: {
       cp: vi.fn(),
       dirname: vi.fn(dirname),
@@ -70,12 +75,14 @@ const mocks = vi.hoisted(() => {
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
 vi.mock('@src/lib/cloudSync', () => ({
-  cloudSyncStatus: { value: { enabled: false } },
+  cloudSyncStatus: { value: { enabled: true } },
   getCloudSyncProjectMetadataIndex: vi.fn(async () => new Map()),
   getCloudSyncProjectModifiedTime: vi.fn(
     (_metadata: unknown, modified: number | null) => modified
   ),
 }))
+
+vi.mock('@src/lib/cloudSync/syncDb', () => mocks.cloudSyncDb)
 
 vi.mock('@src/lib/desktop', () => mocks.desktop)
 
@@ -132,15 +139,68 @@ function createProject(overrides: Partial<Project> = {}): Project {
   }
 }
 
+function createLegacyConflictCopyMetadata(conflictCopyPath: string) {
+  const projectName = conflictCopyPath.slice(
+    conflictCopyPath.lastIndexOf('/') + 1
+  )
+  return {
+    schemaVersion: 1,
+    localProjectPath: conflictCopyPath,
+    projectName,
+    remoteProjectId: 'remote-123',
+    hasPendingChanges: false,
+    syncExcluded: {
+      reason: 'conflict-copy',
+      sourceProjectPath: '/projects/normal',
+      remoteProjectId: 'remote-123',
+      createdAt: '2026-07-17T12:00:00.000Z',
+    },
+  } as const
+}
+
 describe('directory project scanner', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(getCloudSyncProjectMetadataIndex).mockResolvedValue(new Map())
     mocks.desktop.canReadWriteDirectory.mockResolvedValue({
       value: true,
       error: undefined,
     })
     mocks.desktop.mkdirOrNOOP.mockResolvedValue(undefined)
     mocks.fsZds.rename.mockResolvedValue(undefined)
+    mocks.fsZds.rm.mockResolvedValue(undefined)
+  })
+
+  it('aggregates non-missing project stat failures', async () => {
+    const statFailure = Object.assign(new Error('Permission denied'), {
+      code: 'EACCES',
+    })
+    const onProjectStatFailures = vi.fn()
+
+    mocks.fsZds.readdir.mockResolvedValue([
+      'missing-project',
+      'blocked-project-one',
+      'blocked-project-two',
+    ])
+    mocks.fsZds.stat.mockImplementation(async (path: string) => {
+      if (path === '/projects/missing-project') {
+        throw mocks.pathNotFound()
+      }
+      throw statFailure
+    })
+
+    const projects = await readProjectsFromProjectDirectory({
+      projectDirectoryPath: '/projects',
+      wasmInstancePromise: Promise.resolve({} as ModuleType),
+      onProjectStatFailures,
+    })
+
+    expect(projects).toEqual([])
+    expect(onProjectStatFailures).toHaveBeenCalledOnce()
+    expect(onProjectStatFailures).toHaveBeenCalledWith({
+      error: statFailure,
+      count: 2,
+    })
   })
 
   it('schedules stale project directory name syncs after the scan returns', async () => {
@@ -189,6 +249,104 @@ describe('directory project scanner', () => {
     await vi.waitFor(() =>
       expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
     )
+  })
+
+  it('deletes legacy cloud conflict-copy projects marked as sync-excluded', async () => {
+    const project = createProject({
+      name: 'normal',
+      path: '/projects/normal',
+    })
+    const conflictCopyPath = '/projects/normal (cloud conflict 20260717T120000)'
+
+    vi.mocked(getCloudSyncProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [conflictCopyPath, createLegacyConflictCopyMetadata(conflictCopyPath)],
+      ])
+    )
+    mocks.fsZds.readdir.mockResolvedValue([
+      'normal',
+      'normal (cloud conflict 20260717T120000)',
+    ])
+    mocks.fsZds.stat.mockImplementation(async (path: string) => {
+      if (path === '/projects/normal') {
+        return dirStat(1)
+      }
+      if (path === conflictCopyPath) {
+        return dirStat(2)
+      }
+      throw mocks.pathNotFound()
+    })
+    mocks.desktop.getProjectInfo.mockResolvedValue(project)
+
+    const projects = await readProjectsFromProjectDirectory({
+      projectDirectoryPath: '/projects',
+      wasmInstancePromise: Promise.resolve({} as ModuleType),
+    })
+
+    expect(projects).toEqual([project])
+    expect(mocks.desktop.getProjectInfo).toHaveBeenCalledWith(
+      '/projects/normal',
+      expect.anything()
+    )
+    expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalledWith(
+      conflictCopyPath,
+      expect.anything()
+    )
+    expect(mocks.fsZds.rm).toHaveBeenCalledWith(conflictCopyPath, {
+      recursive: true,
+    })
+    expect(mocks.cloudSyncDb.clearOutboxEntriesForProject).toHaveBeenCalledWith(
+      conflictCopyPath
+    )
+    expect(mocks.cloudSyncDb.deleteProjectMetadata).toHaveBeenCalledWith(
+      conflictCopyPath
+    )
+  })
+
+  it('keeps legacy cloud conflict-copy metadata when folder deletion fails', async () => {
+    const project = createProject({
+      name: 'normal',
+      path: '/projects/normal',
+    })
+    const conflictCopyPath = '/projects/normal (cloud conflict 20260717T120000)'
+    const deleteError = Object.assign(new Error('EPERM'), { code: 'EPERM' })
+
+    vi.mocked(getCloudSyncProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [conflictCopyPath, createLegacyConflictCopyMetadata(conflictCopyPath)],
+      ])
+    )
+    mocks.fsZds.readdir.mockResolvedValue([
+      'normal',
+      'normal (cloud conflict 20260717T120000)',
+    ])
+    mocks.fsZds.stat.mockImplementation(async (path: string) => {
+      if (path === '/projects/normal') {
+        return dirStat(1)
+      }
+      if (path === conflictCopyPath) {
+        return dirStat(2)
+      }
+      throw mocks.pathNotFound()
+    })
+    mocks.fsZds.rm.mockRejectedValue(deleteError)
+    mocks.desktop.getProjectInfo.mockResolvedValue(project)
+
+    const projects = await readProjectsFromProjectDirectory({
+      projectDirectoryPath: '/projects',
+      wasmInstancePromise: Promise.resolve({} as ModuleType),
+    })
+
+    expect(projects).toEqual([project])
+    expect(mocks.desktop.getProjectInfo).not.toHaveBeenCalledWith(
+      conflictCopyPath,
+      expect.anything()
+    )
+    expect(mocks.trap.reportRejection).toHaveBeenCalledWith(deleteError)
+    expect(
+      mocks.cloudSyncDb.clearOutboxEntriesForProject
+    ).not.toHaveBeenCalled()
+    expect(mocks.cloudSyncDb.deleteProjectMetadata).not.toHaveBeenCalled()
   })
 
   it('batches scheduled directory name sync refreshes', async () => {

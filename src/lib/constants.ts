@@ -90,8 +90,17 @@ export const KCL_DEFAULT_INSTANCES = `3`
 /** The default KCL transform arg value that means no transform */
 export const KCL_DEFAULT_TRANSFORM = `0`
 
+/** The default KCL translation along the x axis */
+export const KCL_DEFAULT_TRANSLATE_X = `5`
+
+/** The default KCL rotation angle */
+export const KCL_DEFAULT_ROTATE_ANGLE = `45deg`
+
 /** The default KCL scale arg value that means no scale */
 export const KCL_DEFAULT_SCALE = `1`
+
+/** The default KCL uniform scale factor */
+export const KCL_DEFAULT_SCALE_FACTOR = `2`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360deg`
@@ -172,6 +181,11 @@ export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'
 export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const ENVIRONMENT_FILE_NAME = 'environment.txt'
+
+/** Predefined Zoo environment base domains */
+export const ZOO_DOMAIN_STAGING = 'dev.zoo.dev'
+export const ZOO_DOMAIN_PRODUCTION = 'zoo.dev'
+export const ZOO_DOMAIN_REGULATED = 'zoogov.dev'
 
 /** Custom error message to match when rejectAllModelCommands is called
  * allows us to match if the execution of executeAst was interrupted
@@ -334,6 +348,8 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+/** React Router state flag that starts desktop sign-in after accepting the session-expired dialog. */
+export const SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY = 'sessionExpiredSignIn'
 /**
  * A query parameter to allow the app to be accessed on mobile devices.
  * Used to test mobile experience as we improve it to be release-able.
@@ -351,7 +367,9 @@ export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
   token: string // authentication token from signing in. Can be empty string
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 /**
@@ -361,7 +379,9 @@ export type EnvironmentConfiguration = {
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -371,12 +391,13 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 // It's so ugh that `uuid` package doesn't export this.
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
-export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
-/** URL query param key we watch for prompt input
+export const LOCAL_STORAGE_ZOOKEEPER_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for Zookeeper prompt input
  *  we should never set this search param from the app,
  *  only read and delete.
  */
-export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
+export const SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'zookeeper-prompt'
+export const LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Number of engine connection retries within a cycle before the application stops automatically trying

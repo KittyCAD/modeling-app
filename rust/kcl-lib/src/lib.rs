@@ -112,6 +112,7 @@ pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
+pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -215,6 +216,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditAngleConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
@@ -226,7 +228,7 @@ pub mod front {
             Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
+            Angle, Arc, ArcCtor, ArcDirection, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
             ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
             Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
             Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,

@@ -1,22 +1,24 @@
 import { ActionButton } from '@src/components/ActionButton'
+import {
+  getEnvironmentLabel,
+  isNonStandardEnvironment,
+} from '@src/components/environment/utils'
 import env from '@src/env'
 import { useApp } from '@src/lib/boot'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export function EnvironmentChip() {
-  let label = env().VITE_ZOO_BASE_DOMAIN
-  const urls = [
+  const label = getEnvironmentLabel(env().VITE_ZOO_BASE_DOMAIN, [
     new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
-    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL ?? ''),
-  ]
-  for (const url of urls) {
-    if (['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname)) {
-      label = `${label} + local`
-    } else if (url.search) {
-      label = `${label} + ${url.search.substring(1)}`
-    }
-  }
+    new URL(env().VITE_ZOOKEEPER_WEBSOCKET_URL ?? ''),
+  ])
+  const textClassName = isNonStandardEnvironment(label, !IS_STAGING_OR_DEBUG)
+    ? 'text-destroy-80 dark:text-destroy-20 hover:text-destroy-90 dark:hover:text-destroy-10 focus:text-destroy-90 dark:focus:text-destroy-10'
+    : 'text-chalkboard-80 dark:text-chalkboard-30 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10'
   return (
-    <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
+    <div
+      className={`flex items-center px-2 py-1 text-xs rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50 ${textClassName}`}
+    >
       <span className="">{label}</span>
     </div>
   )
@@ -99,7 +101,7 @@ export function EnvironmentDescription() {
           </p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
             <span className="flex-1 min-w-0 truncate">
-              {env().VITE_MLEPHANT_WEBSOCKET_URL}
+              {env().VITE_ZOOKEEPER_WEBSOCKET_URL}
             </span>
             <ActionButton
               Element="button"
@@ -110,7 +112,7 @@ export function EnvironmentDescription() {
                     groupId: 'application',
                     name: 'override-zookeeper',
                     argDefaultValues: {
-                      url: env().VITE_MLEPHANT_WEBSOCKET_URL,
+                      url: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
                     },
                   },
                 })

@@ -6072,7 +6072,7 @@ export default {
       },
       {
         "name": "useOriginal",
-        "ty": "boolean",
+        "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
@@ -6509,7 +6509,7 @@ export default {
       {
         "name": "intersectionIndex",
         "ty": "number(_)",
-        "docs": "Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is only used when the `segments` argument is provided.",
+        "docs": "Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is usually only needed when two or more `segments` are provided.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6519,7 +6519,7 @@ export default {
       {
         "name": "direction",
         "ty": "string",
-        "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is only used when the `segments` argument is provided.",
+        "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is usually only needed when two or more `segments` are provided.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6679,7 +6679,7 @@ export default {
     "preferredName": "rotate",
     "qualName": "std::transform::rotate",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6687,8 +6687,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to rotate.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to rotate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -6785,7 +6785,7 @@ export default {
     "preferredName": "scale",
     "qualName": "std::transform::scale",
     "moduleName": "transform",
-    "returnType": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
+    "returnType": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -6793,8 +6793,8 @@ export default {
     "args": [
       {
         "name": "objects",
-        "ty": "[Solid; 1+] | [Sketch; 1+] | ImportedGeometry",
-        "docs": "The solid, sketch, or set of solids or sketches to scale.",
+        "ty": "[Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry",
+        "docs": "The solid, sketch, helix, or set of solids, sketches, or helices to scale.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7153,7 +7153,7 @@ export default {
     "moduleName": "solver",
     "returnType": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "2.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -7163,6 +7163,69 @@ export default {
         "docs": "The two line segments whose relative angle should match the value set with `==`, measured counterclockwise from the first line to the second, modulo 180 degrees. The order of the lines matters.",
         "required": true,
         "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "solver::angleDimension": {
+    "name": "angleDimension",
+    "preferredName": "solver::angleDimension",
+    "qualName": "std::solver::angleDimension",
+    "moduleName": "solver",
+    "returnType": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "lines",
+        "ty": "[Segment; 2]",
+        "docs": "The ordered pair of line segments whose selected angle sector should match the value set with `==`. A line's positive direction runs from its start point to its end point; its negative direction is the reverse.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "sector",
+        "ty": "number(_)",
+        "docs": "Which counterclockwise sweep about the line intersection to constrain: `1`, first line's positive direction to the second line's positive direction; `2`, second positive to first negative; `3`, first negative to second negative; or `4`, second negative to first positive.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "inverse",
+        "ty": "bool",
+        "docs": "Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
@@ -7205,6 +7268,16 @@ export default {
         "ty": "Point2d",
         "docs": "The center of the circle the arc lies on.",
         "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "direction",
+        "ty": "string",
+        "docs": "The direction that the arc sweeps from start to end: `CCW` for counterclockwise or `CW` for clockwise. Defaults to `CCW`.",
+        "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,

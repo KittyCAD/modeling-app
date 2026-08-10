@@ -12662,197 +12662,455 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             "type": "Identifier"
           },
           "init": {
-            "body": [
+            "arguments": [
               {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "on",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "magPocketPlane",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "body": {
+              "commentStart": 0,
+              "end": 0,
+              "items": [
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "center",
+                      "name": "magPocket",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
+                    "init": {
+                      "arguments": [
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
+                          "type": "LabeledArg",
+                          "label": {
                             "commentStart": 0,
                             "end": 0,
-                            "left": {
-                              "argument": {
-                                "abs_path": false,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
                                 "commentStart": 0,
                                 "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "left": {
+                                      "argument": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "magOffset",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "operator": "-",
+                                      "start": 0,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "moduleId": 0,
+                                    "operator": "-",
+                                    "right": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "binBaseLength",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "-",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "binTol",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
                                 "moduleId": 0,
-                                "name": {
+                                "operator": "+",
+                                "right": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "magOuterDiam",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "magOffset",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "+",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "binBaseLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "moduleId": 0,
+                                "operator": "+",
+                                "right": {
+                                  "abs_path": false,
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "name": "magOffset",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "binTol",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Identifier"
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
-                                "path": [],
                                 "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "operator": "-",
-                              "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "moduleId": 0,
-                            "operator": "-",
-                            "right": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "binBaseLength",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "moduleId": 0,
-                          "operator": "-",
-                          "right": {
-                            "abs_path": false,
-                            "commentStart": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
                             "end": 0,
                             "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "binTol",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
                             "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
                         },
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "left": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "magOffset",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "moduleId": 0,
-                            "operator": "+",
-                            "right": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "binBaseLength",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "moduleId": 0,
-                          "operator": "+",
-                          "right": {
-                            "abs_path": false,
+                          "type": "LabeledArg",
+                          "label": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "binTol",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
+                            "name": "center",
                             "start": 0,
-                            "type": "Name",
-                            "type": "Name"
+                            "type": "Identifier"
                           },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "argument": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "magOffset",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "operator": "-",
+                                    "start": 0,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "-",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "binBaseLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "moduleId": 0,
+                                "operator": "-",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "binTol",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "magOffset",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "+",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "binBaseLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "moduleId": 0,
+                                "operator": "+",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "binTol",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
                         }
                       ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "radius",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "callee": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -12861,7 +13119,99 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "magOuterDiam",
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                }
+              ],
+              "moduleId": 0,
+              "start": 0,
+              "type": "Block"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "SketchBlock",
+            "type": "SketchBlock"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "magPocketRegion",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "segments",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "magPocketSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -12869,6 +13219,293 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                         "start": 0,
                         "type": "Name",
                         "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "magPocket",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "region",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "magPocketRegions",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "arcDegrees",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "360deg",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 360.0,
+                    "suffix": "Deg"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "left": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "argument": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "binLength",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        "moduleId": 0,
+                        "operator": "+",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "2",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "moduleId": 0,
+                          "operator": "*",
+                          "right": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "binTol",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 0,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "moduleId": 0,
+                      "operator": "/",
+                      "right": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "raw": "2",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "left": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "binLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "moduleId": 0,
+                        "operator": "+",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "left": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "2",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "moduleId": 0,
+                          "operator": "*",
+                          "right": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "binTol",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 0,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
                       },
                       "moduleId": 0,
                       "operator": "/",
@@ -12889,362 +13526,101 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 0,
+                  ],
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "circle",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
                   "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "magPocketPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
                 }
               },
               {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "arcDegrees",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "360deg",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 360.0,
-                        "suffix": "Deg"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "center",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "elements": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "left": {
-                              "argument": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": "binLength",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "operator": "-",
-                              "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "moduleId": 0,
-                            "operator": "+",
-                            "right": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "2",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "moduleId": 0,
-                              "operator": "*",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": "binTol",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "moduleId": 0,
-                          "operator": "/",
-                          "right": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "raw": "2",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "left": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "binLength",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "moduleId": 0,
-                            "operator": "+",
-                            "right": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "raw": "2",
-                                "start": 0,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "moduleId": 0,
-                              "operator": "*",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": "binTol",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            "start": 0,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          "moduleId": 0,
-                          "operator": "/",
-                          "right": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "raw": "2",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "instances",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "4",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 4.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "rotateDuplicates",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "true",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": true
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "patternCircular2d",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
+                  "name": "instances",
                   "start": 0,
-                  "type": "Name"
+                  "type": "Identifier"
                 },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "4",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 4.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "rotateDuplicates",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "true",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
+                "name": "patternCircular2d",
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              }
-            ],
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
             "start": 0,
-            "type": "PipeExpression",
-            "type": "PipeExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "magPocketRegion",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
           "moduleId": 0,
           "start": 0,
@@ -13343,7 +13719,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "magPocketSketch",
+                "name": "magPocketRegions",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -42543,30 +42919,6 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "51": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "52": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
         "53": [
           {
             "commentStart": 0,
@@ -42591,7 +42943,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "59": [
+        "55": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42603,7 +42955,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "60": [
+        "56": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42639,7 +42991,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "65": [
+        "63": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42651,7 +43003,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "69": [
+        "64": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42663,7 +43015,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "70": [
+        "67": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42699,7 +43051,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "75": [
+        "73": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42711,7 +43063,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "79": [
+        "74": [
           {
             "commentStart": 0,
             "end": 0,
@@ -42723,7 +43075,31 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
             }
           }
         ],
-        "80": [
+        "77": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "81": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "82": [
           {
             "commentStart": 0,
             "end": 0,
