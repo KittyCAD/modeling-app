@@ -999,6 +999,7 @@ impl Program {
             member: member_at_pos.into_inner(),
             tags_member: tags_member_at_pos.into_inner(),
             region: None,
+            std_region_shadowed: false,
         }
     }
 
@@ -1528,6 +1529,11 @@ struct SketchSymbolCandidates {
     /// and the end of the region's declaration. The sketch the region derives from is looked
     /// up among sketch declarations before that position.
     region: Option<(Expr, String, usize)>,
+    /// Whether a user binding named `region` shadows the standard `region` function on the
+    /// lexical path to the position; calls spelled `region(...)` are then not the standard
+    /// function, so no provenance is inferred from them. Maintained with save/restore as the
+    /// resolution enters and leaves scopes.
+    std_region_shadowed: bool,
 }
 
 impl SketchSymbolCandidates {
@@ -1554,13 +1560,21 @@ fn rename_sketch_symbol_in_body(
     pos: usize,
     in_sketch_block: bool,
 ) -> bool {
-    // The innermost scope wins, so a fn-local sketch shadows a same-named outer one.
-    if let Some(item) = body.iter_mut().find(|item| SourceRange::from(&**item).contains(pos))
-        && let Some(expr) = body_item_expr_mut(item)
-        && rename_sketch_symbol_in_nested_bodies(expr, candidates, new_name, pos)
-    {
-        return true;
+    // The innermost scope wins, so a fn-local sketch shadows a same-named outer one. Items
+    // before the one containing the position can rebind `region` for everything inside it;
+    // the flag is restored afterwards since those binders don't apply to enclosing scopes.
+    let saved_region_shadowed = candidates.std_region_shadowed;
+    if let Some(idx) = body.iter().position(|item| SourceRange::from(item).contains(pos)) {
+        if body[..idx].iter().any(|item| body_item_binds_name(item, "region")) {
+            candidates.std_region_shadowed = true;
+        }
+        if let Some(expr) = body_item_expr_mut(&mut body[idx])
+            && rename_sketch_symbol_in_nested_bodies(expr, candidates, new_name, pos)
+        {
+            return true;
+        }
     }
+    candidates.std_region_shadowed = saved_region_shadowed;
 
     // A bare name reference resolves to the last binding before the position. Inside a
     // sketch block's body, only the block's own declaration of that name makes it a rename
@@ -1594,6 +1608,14 @@ fn rename_sketch_symbol_in_body(
                 && decl.declaration.id.name == *region
                 && matches!(&decl.declaration.init, Expr::CallExpressionKw(call)
                     if call.callee.local_ident().map(|ident| ident.inner) == Some("region"))
+                // The call is only the standard `region` if nothing rebinds that name at the
+                // call's site: neither an enclosing scope on the path here nor an earlier
+                // item in this body.
+                && !candidates.std_region_shadowed
+                && !body.iter().any(|item| {
+                    SourceRange::from(item).end() <= SourceRange::from(binder).start()
+                        && body_item_binds_name(item, "region")
+                })
             {
                 candidates.region = Some((
                     decl.declaration.init.clone(),
@@ -1696,16 +1718,29 @@ fn rename_sketch_symbol_in_body(
                 if decl.declaration.id.name == sketch_name && matches!(&decl.declaration.init, Expr::SketchBlock(_)))
         })
         .unwrap_or(0);
+    // Whether the standard `region` function is shadowed: by an enclosing scope on the path
+    // here, by an item before the sketch's declaration, or by an item the walk passes.
+    let mut region_fn_shadowed =
+        candidates.std_region_shadowed || body[..start].iter().any(|item| body_item_binds_name(item, "region"));
     let mut region_names: Vec<String> = Vec::new();
     for item in body[start..].iter_mut() {
         if let Some(expr) = body_item_expr_mut(item) {
-            rename_sketch_member_refs_expr(expr, Some(&sketch_name), &region_names, &old_name, new_name);
+            rename_sketch_member_refs_expr(
+                expr,
+                Some(&sketch_name),
+                &region_names,
+                &old_name,
+                new_name,
+                region_fn_shadowed,
+            );
         }
-        if let BodyItem::VariableDeclaration(decl) = &*item
+        if !region_fn_shadowed
+            && let BodyItem::VariableDeclaration(decl) = &*item
             && is_region_derived_from_sketch(decl, &sketch_name)
         {
             region_names.push(decl.declaration.id.name.clone());
         }
+        region_fn_shadowed |= body_item_binds_name(item, "region");
     }
     true
 }
@@ -1735,11 +1770,18 @@ fn rename_sketch_symbol_in_nested_bodies(
         | Expr::SketchVar(_)
         | Expr::None(_) => false,
         Expr::FunctionExpression(func) => {
+            // A parameter or the function's own name can also rebind `region` for the body;
+            // restored below since it doesn't apply to enclosing scopes.
+            let saved_region_shadowed = candidates.std_region_shadowed;
+            if func.binds_name("region") {
+                candidates.std_region_shadowed = true;
+            }
             let handled = recurse_body(&mut func.body, candidates);
             // A parameter or the function's own name that rebinds a candidate's base name
             // shadows any outer binding; if the reference didn't resolve inside the function,
             // outer scopes must not resolve it either.
             if !handled {
+                candidates.std_region_shadowed = saved_region_shadowed;
                 if candidates.bare_use.as_ref().is_some_and(|name| func.binds_name(name)) {
                     candidates.bare_use = None;
                 }
@@ -1869,28 +1911,33 @@ fn rename_sketch_member_refs_in_body(
     region_names: &[String],
     old_name: &str,
     new_name: &str,
+    std_region_shadowed: bool,
 ) {
     let mut sketch_name = sketch_name;
     let mut region_names = region_names.to_vec();
+    let mut region_fn_shadowed = std_region_shadowed;
     for item in body {
         if sketch_name.is_none() && region_names.is_empty() {
             return;
         }
         if let Some(expr) = body_item_expr_mut(item) {
-            rename_sketch_member_refs_expr(expr, sketch_name, &region_names, old_name, new_name);
+            rename_sketch_member_refs_expr(expr, sketch_name, &region_names, old_name, new_name, region_fn_shadowed);
         }
         if sketch_name.is_some_and(|s| body_item_binds_name(item, s)) {
             sketch_name = None;
         }
         region_names.retain(|r| !body_item_binds_name(item, r));
         // Discover regions after the drops, so that a region declaration isn't dropped for
-        // binding its own name.
-        if let Some(s) = sketch_name
+        // binding its own name. Only calls to the standard `region` function derive; a user
+        // binding of that name shadows it from its item on.
+        if !region_fn_shadowed
+            && let Some(s) = sketch_name
             && let BodyItem::VariableDeclaration(decl) = &*item
             && is_region_derived_from_sketch(decl, s)
         {
             region_names.push(decl.declaration.id.name.clone());
         }
+        region_fn_shadowed |= body_item_binds_name(item, "region");
     }
 }
 
@@ -1900,10 +1947,20 @@ fn rename_sketch_member_refs_expr(
     region_names: &[String],
     old_name: &str,
     new_name: &str,
+    std_region_shadowed: bool,
 ) {
-    let recurse = |e: &mut Expr| rename_sketch_member_refs_expr(e, sketch_name, region_names, old_name, new_name);
+    let recurse = |e: &mut Expr| {
+        rename_sketch_member_refs_expr(e, sketch_name, region_names, old_name, new_name, std_region_shadowed)
+    };
     let recurse_body = |b: &mut Node<Program>| {
-        rename_sketch_member_refs_in_body(&mut b.body, sketch_name, region_names, old_name, new_name)
+        rename_sketch_member_refs_in_body(
+            &mut b.body,
+            sketch_name,
+            region_names,
+            old_name,
+            new_name,
+            std_region_shadowed,
+        )
     };
     match expr {
         Expr::Literal(_)
@@ -1919,11 +1976,19 @@ fn rename_sketch_member_refs_expr(
         }
         Expr::FunctionExpression(func) => {
             // The function's own name or a parameter can shadow the sketch or region
-            // variables for the whole body.
+            // variables, or the standard `region` function, for the whole body.
             let sketch_name = sketch_name.filter(|s| !func.binds_name(s));
             let region_names: Vec<String> = region_names.iter().filter(|r| !func.binds_name(r)).cloned().collect();
             if sketch_name.is_some() || !region_names.is_empty() {
-                rename_sketch_member_refs_in_body(&mut func.body.body, sketch_name, &region_names, old_name, new_name);
+                let region_fn_shadowed = std_region_shadowed || func.binds_name("region");
+                rename_sketch_member_refs_in_body(
+                    &mut func.body.body,
+                    sketch_name,
+                    &region_names,
+                    old_name,
+                    new_name,
+                    region_fn_shadowed,
+                );
             }
         }
         Expr::SketchBlock(sketch_block) => {
@@ -1936,26 +2001,49 @@ fn rename_sketch_member_refs_expr(
                 region_names,
                 old_name,
                 new_name,
+                std_region_shadowed,
             );
         }
         Expr::IfExpression(if_expr) => {
             recurse(&mut if_expr.cond);
             recurse_body(&mut if_expr.then_val);
             for else_if in &mut if_expr.else_ifs {
-                rename_sketch_member_refs_expr(&mut else_if.cond, sketch_name, region_names, old_name, new_name);
+                rename_sketch_member_refs_expr(
+                    &mut else_if.cond,
+                    sketch_name,
+                    region_names,
+                    old_name,
+                    new_name,
+                    std_region_shadowed,
+                );
                 rename_sketch_member_refs_in_body(
                     &mut else_if.then_val.body,
                     sketch_name,
                     region_names,
                     old_name,
                     new_name,
+                    std_region_shadowed,
                 );
             }
             recurse_body(&mut if_expr.final_else);
         }
         Expr::BinaryExpression(bin_expr) => {
-            rename_sketch_member_refs_binary_part(&mut bin_expr.left, sketch_name, region_names, old_name, new_name);
-            rename_sketch_member_refs_binary_part(&mut bin_expr.right, sketch_name, region_names, old_name, new_name);
+            rename_sketch_member_refs_binary_part(
+                &mut bin_expr.left,
+                sketch_name,
+                region_names,
+                old_name,
+                new_name,
+                std_region_shadowed,
+            );
+            rename_sketch_member_refs_binary_part(
+                &mut bin_expr.right,
+                sketch_name,
+                region_names,
+                old_name,
+                new_name,
+                std_region_shadowed,
+            );
         }
         Expr::UnaryExpression(unary_expr) => {
             rename_sketch_member_refs_binary_part(
@@ -1964,6 +2052,7 @@ fn rename_sketch_member_refs_expr(
                 region_names,
                 old_name,
                 new_name,
+                std_region_shadowed,
             );
         }
         Expr::CallExpressionKw(call) => {
@@ -2004,8 +2093,11 @@ fn rename_sketch_member_refs_binary_part(
     region_names: &[String],
     old_name: &str,
     new_name: &str,
+    std_region_shadowed: bool,
 ) {
-    let recurse = |e: &mut Expr| rename_sketch_member_refs_expr(e, sketch_name, region_names, old_name, new_name);
+    let recurse = |e: &mut Expr| {
+        rename_sketch_member_refs_expr(e, sketch_name, region_names, old_name, new_name, std_region_shadowed)
+    };
     match part {
         BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => {}
         BinaryPart::MemberExpression(member) => {
@@ -2014,8 +2106,22 @@ fn rename_sketch_member_refs_binary_part(
             recurse(&mut member.property);
         }
         BinaryPart::BinaryExpression(bin_expr) => {
-            rename_sketch_member_refs_binary_part(&mut bin_expr.left, sketch_name, region_names, old_name, new_name);
-            rename_sketch_member_refs_binary_part(&mut bin_expr.right, sketch_name, region_names, old_name, new_name);
+            rename_sketch_member_refs_binary_part(
+                &mut bin_expr.left,
+                sketch_name,
+                region_names,
+                old_name,
+                new_name,
+                std_region_shadowed,
+            );
+            rename_sketch_member_refs_binary_part(
+                &mut bin_expr.right,
+                sketch_name,
+                region_names,
+                old_name,
+                new_name,
+                std_region_shadowed,
+            );
         }
         BinaryPart::UnaryExpression(unary_expr) => {
             rename_sketch_member_refs_binary_part(
@@ -2024,6 +2130,7 @@ fn rename_sketch_member_refs_binary_part(
                 region_names,
                 old_name,
                 new_name,
+                std_region_shadowed,
             );
         }
         BinaryPart::CallExpressionKw(call) => {
@@ -2056,15 +2163,24 @@ fn rename_sketch_member_refs_binary_part(
                 region_names,
                 old_name,
                 new_name,
+                std_region_shadowed,
             );
             for else_if in &mut if_expr.else_ifs {
-                rename_sketch_member_refs_expr(&mut else_if.cond, sketch_name, region_names, old_name, new_name);
+                rename_sketch_member_refs_expr(
+                    &mut else_if.cond,
+                    sketch_name,
+                    region_names,
+                    old_name,
+                    new_name,
+                    std_region_shadowed,
+                );
                 rename_sketch_member_refs_in_body(
                     &mut else_if.then_val.body,
                     sketch_name,
                     region_names,
                     old_name,
                     new_name,
+                    std_region_shadowed,
                 );
             }
             rename_sketch_member_refs_in_body(
@@ -2073,6 +2189,7 @@ fn rename_sketch_member_refs_binary_part(
                 region_names,
                 old_name,
                 new_name,
+                std_region_shadowed,
             );
         }
         BinaryPart::AscribedExpression(ascribed) => recurse(&mut ascribed.expr),
@@ -7824,6 +7941,83 @@ fn f(s) {
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_ignores_region_call_shadowed_by_user_function() {
+        // `region` here is the user's function, not the standard one, so `r` is not a region
+        // derived from the sketch: renaming the segment updates the sketch member reference
+        // (an ordinary argument) but must not rewrite `r.tags.line1`, and initiating the
+        // rename from that tag reference must do nothing.
+        let code = r#"fn region(segments) {
+  return segments
+}
+s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(segments = [s.line1])
+x = r.tags.line1
+"#;
+
+        // Renaming from the declaration renames the member reference but not the tag.
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+        program.rename_symbol("edgeOne", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn region(segments) {
+  return segments
+}
+s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(segments = [s.edgeOne])
+x = r.tags.line1
+"#
+        );
+
+        // Initiating from the tag reference resolves to nothing.
+        let mut program = parse(code);
+        let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
+        program.rename_symbol("edgeOne", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_ignores_region_call_shadowed_by_param() {
+        // Inside `f`, `region` is the parameter, so the call is not the standard region
+        // function; `r.tags.line1` must not be rewritten.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f(region) {
+  r = region(segments = [s.line1])
+  return r.tags.line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f(region) {
+  r = region(segments = [s.edgeOne])
+  return r.tags.line1
+}
+"#
+        );
     }
 
     /// Helper to create a comment NonCodeNode for tests.
