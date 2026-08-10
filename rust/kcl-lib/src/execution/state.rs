@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -84,6 +85,10 @@ pub(super) struct GlobalState {
     pub mod_loader: ModuleLoader,
     /// Errors and warnings.
     pub issues: Vec<CompilationIssue>,
+    /// If set, use this version only when deciding whether to emit
+    /// `deprecated_since` warnings. Runtime behavior still uses the version
+    /// declared by the KCL program.
+    pub deprecation_version_override: Option<String>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -200,6 +205,17 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
 /// Unified metadata stream for Z0006 and future execution-backed refactors.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -207,6 +223,14 @@ pub struct DirectTagFilletMeta {
 pub enum RefactorMetadata {
     EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
 }
 
 /// Artifact state for a single module.
@@ -446,6 +470,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -579,6 +604,18 @@ impl ExecState {
 
     pub fn issues(&self) -> &[CompilationIssue] {
         &self.global.issues
+    }
+
+    pub(crate) fn deprecation_version(&self) -> &str {
+        self.global
+            .deprecation_version_override
+            .as_deref()
+            .unwrap_or(&self.mod_local.settings.kcl_version)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_deprecation_version_override(&mut self, version: Option<&str>) {
+        self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
     /// Convert to execution outcome when running in WebAssembly.  We want to
@@ -1074,7 +1111,7 @@ impl ExecState {
             .iter()
             .filter_map(|m| match m {
                 RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
-                RefactorMetadata::DirectTagFillet(_) => None,
+                RefactorMetadata::DirectTagFillet(_) | RefactorMetadata::LegacyAngle(_) => None,
             })
             .collect()
     }
@@ -1086,7 +1123,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::LegacyAngle(_) => None,
                 RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
             })
             .collect()
@@ -1267,6 +1304,7 @@ impl GlobalState {
             root_module_artifacts: Default::default(),
             mod_loader: Default::default(),
             issues: Default::default(),
+            deprecation_version_override: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
@@ -1317,6 +1355,16 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .filter_map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => Some(*metadata),
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();

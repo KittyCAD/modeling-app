@@ -183,8 +183,8 @@ strapSleeveInnerSketch = sketch(on = bracketPlane) {
 strapSleeveInnerRegion = region(segments = [strapSleeveInnerSketch.circle1])
 strapSleeveInner = extrude(strapSleeveInnerRegion, length = 0.82, symmetric = true)
 hide(strapSleeveInnerSketch)
-strapSleeve = subtract([strapSleeveOuter], tools = [strapSleeveInner], legacyMethod = true)
-bracketSleeve = subtract([bracketBody], tools = [strapSleeve], legacyMethod = true)
+strapSleeve = subtract([strapSleeveOuter], tools = [strapSleeveInner])
+bracketSleeve = subtract([bracketBody], tools = [strapSleeve])
 
 mountingHolePlane = offsetPlane(XZ, offset = -tankDiameter / 1.9)
 mountingHoleSketch = sketch(on = mountingHolePlane) {
@@ -200,7 +200,7 @@ mountingHolePair = patternLinear3d(
   distance = tankDiameter / 2.25,
   axis = [-1, 0, 0],
 )
-bracket = subtract([bracketSleeve], tools = [mountingHolePair], legacyMethod = true)
+bracket = subtract([bracketSleeve], tools = [mountingHolePair])
   |> appearance(color = "#cd0404")
 
 mountingStrapOuterSketch = sketch(on = bracketPlane) {
@@ -218,7 +218,7 @@ mountingStrapInnerSketch = sketch(on = bracketPlane) {
 mountingStrapInnerRegion = region(segments = [mountingStrapInnerSketch.circle1])
 mountingStrapInner = extrude(mountingStrapInnerRegion, length = 0.77, symmetric = true)
 hide(mountingStrapInnerSketch)
-mountingStrap = subtract([mountingStrapOuter], tools = [mountingStrapInner], legacyMethod = true)
+mountingStrap = subtract([mountingStrapOuter], tools = [mountingStrapInner])
   |> appearance(color = "#210d03")
 
 brackets = patternLinear3d(

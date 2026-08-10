@@ -1,4 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { SessionExpiredDialogHost } from '@src/components/SessionExpiredDialog'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -141,6 +142,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   return (
     <RouteProviderContext.Provider value={{}}>
       {children}
+      <SessionExpiredDialogHost />
     </RouteProviderContext.Provider>
   )
 }

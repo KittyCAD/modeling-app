@@ -42,7 +42,7 @@ sketch002 = sketch(on = XZ) {
   symmetric([line2, line1], axis = line3)
   symmetric([arc2, arc1], axis = line3)
   tangent([arc3, arc1])
-  angle([line1, line2]) == 180 - 30
+  angleDimension(lines = [line1, line2], sector = 2, labelPosition = [0in, 1.16in]) == 30
   tangent([arc5, arc6])
   verticalDistance([line3.start, arc2.center]) == 1
   horizontalDistance([arc1.center, arc2.center]) == .1

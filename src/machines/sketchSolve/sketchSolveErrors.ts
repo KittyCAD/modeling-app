@@ -80,11 +80,35 @@ export function getSketchSolveExecOutcomeIssues(
   return sceneGraphDelta?.exec_outcome?.issues ?? []
 }
 
+export function getSketchSolveBlockingIssues(
+  sceneGraphDelta?: SceneGraphDelta
+): CompilationIssue[] {
+  // angle() has a separate actionable lint, so its deprecation should not
+  // invalidate an otherwise usable sketch. Keep every other issue blocking.
+  const legacyAngleRanges =
+    sceneGraphDelta?.exec_outcome?.refactorMetadata
+      .filter((metadata) => metadata.kind === 'legacyAngle')
+      .map((metadata) => metadata.data.sourceRange) ?? []
+
+  return getSketchSolveExecOutcomeIssues(sceneGraphDelta).filter((issue) => {
+    if (issue.tag !== 'Deprecated') {
+      return true
+    }
+
+    return !legacyAngleRanges.some(
+      (range) =>
+        range[0] === issue.sourceRange[0] &&
+        range[1] === issue.sourceRange[1] &&
+        range[2] === issue.sourceRange[2]
+    )
+  })
+}
+
 export function getSketchSolveExecOutcomeErrorMessage(
   sceneGraphDelta?: SceneGraphDelta,
   fallback = 'Sketch solve failed'
 ): string | null {
-  const issues = getSketchSolveExecOutcomeIssues(sceneGraphDelta)
+  const issues = getSketchSolveBlockingIssues(sceneGraphDelta)
   if (issues.length === 0) {
     return null
   }

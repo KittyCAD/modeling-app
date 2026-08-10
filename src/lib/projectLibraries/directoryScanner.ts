@@ -238,18 +238,25 @@ export function shouldSendProjectFolderReadProgress(
   return !folders?.length
 }
 
+/**
+ * Scans one directory library for concrete project folders. Cloud sync metadata
+ * is used only to enrich local observations with modified/conflict/cloud ID
+ * hints; duplicate detection and cleanup policy are handled after discovery.
+ */
 export async function readProjectsFromProjectDirectory({
   projectDirectoryPath,
   wasmInstancePromise,
   previousProjects,
   signal,
   onProgress,
+  onProjectStatFailures,
 }: {
   projectDirectoryPath: string
   wasmInstancePromise: Promise<ModuleType>
   previousProjects?: Project[]
   signal?: AbortSignal
   onProgress?: (projects: Project[]) => void
+  onProjectStatFailures?: (failure: { error: unknown; count: number }) => void
 }) {
   const projects: Project[] = []
   const canSendProgress = shouldSendProjectFolderReadProgress(previousProjects)
@@ -266,6 +273,8 @@ export async function readProjectsFromProjectDirectory({
     ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
     : new Map()
   const entries: ProjectDirectoryEntry[] = []
+  let firstProjectStatFailure: unknown
+  let projectStatFailureCount = 0
 
   // Gotcha: readdir will list folders even without read/write access to the
   // parent directory path. Each candidate still needs to be stat/read checked.
@@ -281,7 +290,13 @@ export async function readProjectsFromProjectDirectory({
     let stat: Awaited<ReturnType<typeof fsZds.stat>>
     try {
       stat = await fsZds.stat(projectPath)
-    } catch {
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        if (projectStatFailureCount === 0) {
+          firstProjectStatFailure = error
+        }
+        projectStatFailureCount += 1
+      }
       continue
     }
     if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
@@ -298,6 +313,13 @@ export async function readProjectsFromProjectDirectory({
           ),
           stat.mtimeMs
         ) ?? stat.mtimeMs,
+    })
+  }
+
+  if (projectStatFailureCount > 0) {
+    onProjectStatFailures?.({
+      error: firstProjectStatFailure,
+      count: projectStatFailureCount,
     })
   }
 

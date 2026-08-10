@@ -13,6 +13,7 @@ use crate::ExecState;
 use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
+use crate::errors::Tag;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactGraphMermaidExt;
 use crate::execution::EnvironmentRef;
@@ -43,9 +44,12 @@ struct Test {
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
     skip_assert_artifact_graph: bool,
+    /// If set, assert that execution emits exactly this many deprecation warnings.
+    expected_deprecation_warnings: Option<usize>,
 }
 
 const REPO_ROOT: &str = "../..";
+const KCL_SAMPLE_DEPRECATION_VERSION: &str = "2.0";
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -59,6 +63,7 @@ impl Test {
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
             skip_assert_artifact_graph: false,
+            expected_deprecation_warnings: None,
         }
     }
 
@@ -285,11 +290,31 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
-        crate::test_server::execute_and_snapshot_ast(ast.clone(), Some(test.entry_point.clone()), export_step)
+        crate::test_server::execute_and_snapshot_ast(
+            ast.clone(),
+            Some(test.entry_point.clone()),
+            export_step,
+            test.expected_deprecation_warnings
+                .map(|_| KCL_SAMPLE_DEPRECATION_VERSION),
+        )
     })
     .await;
     match exec_res {
         Ok((exec_state, ctx, env_ref, png, step)) => {
+            if let Some(expected_deprecation_warnings) = test.expected_deprecation_warnings {
+                let deprecation_warnings = exec_state
+                    .issues()
+                    .iter()
+                    .filter(|issue| issue.tag == Tag::Deprecated)
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    deprecation_warnings.len(),
+                    expected_deprecation_warnings,
+                    "KCL sample `{}` expected {expected_deprecation_warnings} deprecation warnings, got: {deprecation_warnings:#?}",
+                    test.name,
+                );
+            }
+
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!(

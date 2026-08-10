@@ -1129,7 +1129,9 @@ mod tests {
         let program = Program::parse_no_errs(code).unwrap();
 
         let _ctx = new_context(true, None).await.unwrap();
-        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false, None)
+            .await
+            .unwrap();
         let exec_state = snapshot.0;
         let ctx = snapshot.1;
         let env_ref = snapshot.2;
@@ -1212,7 +1214,9 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
 
         // Execute it using the test server
         let _ctx = new_context(true, None).await.unwrap();
-        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false, None)
+            .await
+            .unwrap();
         let exec_state = snapshot.0;
         let ctx = snapshot.1;
         let env_ref = snapshot.2;
@@ -1479,7 +1483,9 @@ profile001 = startProfile(sketch001, at = [2.25, 4.48])
 
         // Execute it using the test server
         let _ctx = new_context(true, None).await.unwrap();
-        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false, None)
+            .await
+            .unwrap();
         let exec_state = snapshot.0;
         let ctx = snapshot.1;
         let env_ref = snapshot.2;
@@ -1539,7 +1545,9 @@ profile001 = startProfile(sketch001, at = [-3.71, 5.81])
 
         // Execute it using the test server
         let _ctx = new_context(true, None).await.unwrap();
-        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false, None)
+            .await
+            .unwrap();
         let exec_state = snapshot.0;
         let ctx = snapshot.1;
         let env_ref = snapshot.2;
@@ -1585,7 +1593,9 @@ profile001 = startProfile(sketch001, at = [2.0, 3.0])
 
         // Execute it using the test server
         let _ctx = new_context(true, None).await.unwrap();
-        let snapshot = execute_and_snapshot_ast(program.clone(), None, false).await.unwrap();
+        let snapshot = execute_and_snapshot_ast(program.clone(), None, false, None)
+            .await
+            .unwrap();
         let exec_state = snapshot.0;
         let ctx = snapshot.1;
         let env_ref = snapshot.2;

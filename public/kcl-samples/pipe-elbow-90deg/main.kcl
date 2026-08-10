@@ -80,8 +80,7 @@ flangeRegion = region(
 )
 flangeBlank = extrude(flangeRegion, length = -flangeThickness)
 
-boltHoleSketchPlane = startSketchOn(YZ)
-boltHoleSketch = sketch(on = boltHoleSketchPlane) {
+boltHoleSketch = sketch(on = YZ) {
   boltHoleCircle = circle(start = [var 58.5mm, var 63mm], center = [var 53.5mm, var 63mm])
   boltHoleCenterGuide = line(start = [var 0mm, var 63mm], end = [var 53.5mm, var 63mm], construction = true)
   boltHoleOffsetGuide = line(start = [var 0mm, var 0mm], end = [var 0mm, var 63mm], construction = true)

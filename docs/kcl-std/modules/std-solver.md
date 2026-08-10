@@ -47,6 +47,7 @@ functions, because those are what actually constrain the solved result.
 
 * [`solver::ORIGIN`](/docs/kcl-std/consts/std-solver-ORIGIN)
 * [`solver::angle`](/docs/kcl-std/functions/std-solver-angle)
+* [`solver::angleDimension`](/docs/kcl-std/functions/std-solver-angleDimension)
 * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
 * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
 * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
