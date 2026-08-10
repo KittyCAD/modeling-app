@@ -3704,7 +3704,15 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
+        self.add_distance_constraint(sketch, DISTANCE_FN, distance, new_ast)
+    }
+
+    fn distance_constraint_ast_parts(
+        &self,
+        function_name: &str,
+        distance: &Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
         let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
             [pt0, pt1] => [
                 self.coincident_segment_to_ast(pt0, new_ast)?,
@@ -3726,9 +3734,8 @@ impl FrontendState {
             None => Default::default(),
         };
 
-        // Create the distance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
+        let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(function_name)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: vec![pt0_ast, pt1_ast],
@@ -3740,29 +3747,41 @@ impl FrontendState {
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
+        let value = ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Number {
+                value: distance.distance.value,
+                suffix: distance.distance.units,
+            },
+            raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                KclError::refactor(format!(
+                    "Could not format numeric suffix: {:?}",
+                    distance.distance.units
+                ))
+            })?,
             digest: None,
         })));
 
-        // Add the line to the AST of the sketch block.
+        Ok((call, value))
+    }
+
+    fn add_distance_constraint(
+        &mut self,
+        sketch: ObjectId,
+        function_name: &str,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        let (call, value) = self.distance_constraint_ast_parts(function_name, &distance, new_ast)?;
+        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: call,
+            operator: ast::BinaryOperator::Eq,
+            right: value,
+            digest: None,
+        })));
+
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
-            sketch_id,
+            sketch,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
         Ok(sketch_block_ref)
@@ -4184,68 +4203,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Horizontal distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the horizontalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, HORIZONTAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_vertical_distance(
@@ -4254,68 +4212,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Vertical distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the verticalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, VERTICAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_horizontal(
