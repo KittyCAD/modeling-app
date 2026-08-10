@@ -31,7 +31,10 @@ import {
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { getSnappingCandidates } from '@src/machines/sketchSolve/snapping'
+import {
+  type SnappingCandidate,
+  getSnappingCandidates,
+} from '@src/machines/sketchSolve/snapping'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
@@ -91,6 +94,22 @@ export type PointSelection = {
 }
 
 type DimensionSelection = LineSelection | PointSelection
+
+type DimensionSnapCandidate = Omit<SnappingCandidate, 'target'> & {
+  target:
+    | { type: 'line' | 'point'; id: number }
+    | { type: typeof ORIGIN_TARGET }
+}
+
+function isDimensionSnapCandidate(
+  candidate: SnappingCandidate
+): candidate is DimensionSnapCandidate {
+  return (
+    candidate.target.type === 'line' ||
+    candidate.target.type === 'point' ||
+    candidate.target.type === ORIGIN_TARGET
+  )
+}
 
 export type AngleSector = 1 | 2 | 3 | 4
 
@@ -889,12 +908,7 @@ function getClosestDimensionSelection(
     mousePoint,
     currentSketchObjects,
     context.sceneInfra
-  ).find(
-    ({ target }) =>
-      target.type === 'line' ||
-      target.type === 'point' ||
-      target.type === ORIGIN_TARGET
-  )
+  ).find(isDimensionSnapCandidate)
 
   if (!closestCandidate) {
     return null
@@ -902,13 +916,6 @@ function getClosestDimensionSelection(
 
   if (closestCandidate.target.type === ORIGIN_TARGET) {
     return { type: 'point', id: ORIGIN_TARGET, point: [0, 0] }
-  }
-
-  if (
-    closestCandidate.target.type !== 'line' &&
-    closestCandidate.target.type !== 'point'
-  ) {
-    return null
   }
 
   const closestObject = currentSketchObjects[closestCandidate.target.id]
