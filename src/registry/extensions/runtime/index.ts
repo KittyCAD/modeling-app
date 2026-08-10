@@ -5,7 +5,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import env, { getEnvironmentNameFromEnv } from '@src/env'
+import env, {
+  getEnvironmentNameFromEnv,
+  onEnvironmentDomainChange,
+} from '@src/env'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { isDesktop as detectDesktop } from '@src/lib/isDesktop'
 import {
@@ -52,20 +55,23 @@ function readRuntimeInfo(): RuntimeInfo {
 
 export const runtimeExtension = defineRegistryItemFactory(() => {
   const current = signal(readRuntimeInfo())
+  const refresh = () => {
+    current.value = readRuntimeInfo()
+    return current.value
+  }
+  const stopEnvironmentSync = onEnvironmentDomainChange(refresh)
 
   const serviceImpl: RuntimeRegistryService = {
     current,
     get: () => current.value,
-    refresh: () => {
-      current.value = readRuntimeInfo()
-      return current.value
-    },
+    refresh,
   }
 
   return {
     item: defineRuntimeRegistryItem({
       id: 'runtime-extension',
       providesServices: [provideService(runtimeService, serviceImpl)],
+      dispose: stopEnvironmentSync,
     }),
   }
 }, 'runtime-extension')

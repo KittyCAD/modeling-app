@@ -1,7 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type {
-  CloudSyncConfig,
   CloudSyncConflictResolution,
   CloudSyncLocalProject,
   CloudSyncOpenedProject,
@@ -74,9 +73,18 @@ export type CloudProjectRelationshipsRegistryService = {
   relationships: ReadonlySignal<CloudProjectRelationship[]>
 }
 
+/** Runtime inputs registry callers may override before activation policy runs. */
+export type CloudSyncRegistryRuntimeConfig = {
+  token?: string
+  baseUrl?: string
+  environmentName?: string
+  cloudProjectDirectoryPaths?: string[]
+  autoEnrollCloudLibraryProjects?: boolean
+}
+
 export type CloudSyncRegistryService = {
   status: ReadonlySignal<CloudSyncStatus>
-  configure: (config: CloudSyncConfig) => void
+  configure: (config: CloudSyncRegistryRuntimeConfig) => void
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
   setOpenedProject: (project?: CloudSyncOpenedProject) => void

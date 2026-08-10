@@ -48,6 +48,22 @@ export function getEnvironmentNameFromEnv(
 
 /** Store the environment in memory to be accessed during runtime */
 let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
+type EnvironmentDomainChangeListener = () => void
+const environmentDomainChangeListeners =
+  new Set<EnvironmentDomainChangeListener>()
+
+export function onEnvironmentDomainChange(
+  listener: EnvironmentDomainChangeListener
+) {
+  environmentDomainChangeListeners.add(listener)
+  return () => environmentDomainChangeListeners.delete(listener)
+}
+
+function notifyEnvironmentDomainChange() {
+  for (const listener of environmentDomainChangeListeners) {
+    listener()
+  }
+}
 
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
@@ -68,6 +84,7 @@ export const updateEnvironment = (environment: string | null) => {
     }
   }
   console.log('updating environment:', environment)
+  notifyEnvironmentDomainChange()
 }
 
 export const updateEnvironmentKittycadWebSocketUrl = (
