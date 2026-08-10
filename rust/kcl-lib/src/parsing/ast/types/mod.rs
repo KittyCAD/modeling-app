@@ -1282,7 +1282,7 @@ fn sketch_block_mut_in_body<'a>(body: &'a mut [BodyItem], name: &str) -> Option<
     })
 }
 
-/// Whether this declaration's value is a `region(...)` call that references the given sketch
+/// Whether this declaration's value is a `region(...)` call deriving from the given sketch
 /// variable, e.g. `region(segments = [s.line1])`, `region(point = [0, 0], sketch = s)`, or
 /// `region(point = s.point1)`. Such regions inherit the sketch block's declared names as tags
 /// (`myRegion.tags.line1`). Regions that only reach a variable indirectly (returned from a
@@ -1291,8 +1291,24 @@ fn is_region_derived_from_sketch(decl: &VariableDeclaration, sketch_name: &str) 
     let Expr::CallExpressionKw(call) = &decl.declaration.init else {
         return false;
     };
-    call.callee.local_ident().map(|ident| ident.inner) == Some("region")
-        && expr_references_name(&decl.declaration.init, sketch_name)
+    if call.callee.local_ident().map(|ident| ident.inner) != Some("region") {
+        return false;
+    }
+    let arg_with_label = |label: &str| {
+        call.arguments
+            .iter()
+            .find(|arg| arg.label.as_ref().is_some_and(|l| l.name == label))
+            .map(|arg| &arg.arg)
+    };
+    // An explicit `sketch` argument determines which sketch the region belongs to; other
+    // arguments may reference other sketches without the region deriving from them (e.g. a
+    // point coordinate taken from another sketch's geometry).
+    if let Some(sketch_arg) = arg_with_label("sketch") {
+        return expr_references_name(sketch_arg, sketch_name);
+    }
+    ["point", "segments"]
+        .iter()
+        .any(|label| arg_with_label(label).is_some_and(|arg| expr_references_name(arg, sketch_name)))
 }
 
 /// Rename a sketch block symbol within this scope, preferring the innermost scope: first
@@ -7050,6 +7066,64 @@ fn f() {
   b = s.localLine
   return [a, b]
 }
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_region_with_explicit_sketch_arg_derives_from_that_sketch_only() {
+        // The region's provenance is the explicit `sketch` argument (s2); the point taken
+        // from s1's geometry doesn't make the region derive from s1.
+        let code = r#"s1 = sketch(on = XY) {
+  circle1 = circle(center = [var 0, var 0], diameter = var 2)
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.circle1.center, sketch = s2)
+a = r.tags.line1
+b = r.tags.circle1
+"#;
+
+        // Renaming s1's segment updates its member references but not r's tags, since r is
+        // not derived from s1.
+        let mut program = parse(code);
+        let pos = code.find("circle1").unwrap() + 1;
+        program.rename_symbol("loop1", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  loop1 = circle(center = [var 0, var 0], diameter = var 2)
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.loop1.center, sketch = s2)
+a = r.tags.line1
+b = r.tags.circle1
+"#
+        );
+
+        // Renaming s2's segment updates r's tags, since r derives from s2.
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+        program.rename_symbol("edgeOne", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  circle1 = circle(center = [var 0, var 0], diameter = var 2)
+}
+s2 = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.circle1.center, sketch = s2)
+a = r.tags.edgeOne
+b = r.tags.circle1
 "#
         );
     }
