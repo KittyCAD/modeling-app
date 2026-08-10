@@ -338,8 +338,15 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
           LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE
       )
       const executionMetrics = await getExecutionMetrics()
-      expect(executionMetrics?.synchronousPublications).toBe(0)
-      expect(executionMetrics?.totalPublications).toBeGreaterThan(0)
+      expect(executionMetrics).not.toBeNull()
+      if (!executionMetrics) {
+        throw new Error('Live operation publication metrics were not recorded')
+      }
+      expect(executionMetrics.synchronousPublications).toBe(0)
+      expect(executionMetrics.totalPublications).toBeGreaterThan(0)
+      expect(executionMetrics.totalPublications * 2).toBeLessThan(
+        executionMetrics.mountedFeatureTreeCallbackCount
+      )
       expect(
         await page.evaluate(
           () => window.app.singletons.kclManager.errors.length

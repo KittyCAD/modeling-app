@@ -2455,6 +2455,7 @@ export class KclManager extends File {
     }
     if (this.isExecuting) {
       this.executeIsStale = args
+      this.cancelAllExecutions()
 
       // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
@@ -2465,6 +2466,14 @@ export class KclManager extends File {
       return
     }
 
+    try {
+      await this.executeAstOnce(args)
+    } finally {
+      this.isExecuting = false
+    }
+  }
+
+  private async executeAstOnce(args: ExecuteArgs): Promise<void> {
     const ast = args.ast || this.ast
     markOnce('code/startExecuteAst')
 
@@ -2518,8 +2527,6 @@ export class KclManager extends File {
         })
       }
     }
-
-    this.isExecuting = false
 
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {

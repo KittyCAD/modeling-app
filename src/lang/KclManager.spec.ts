@@ -86,7 +86,6 @@ function createLiveOperation(name: string, index: number): Operation {
 type LiveOperationTestApi = {
   _cancelTokens: Map<number, boolean>
   beginLiveOperationUpdates(executionId: number): void
-  endLiveOperationUpdates(executionId: number): void
   createExecutionCallbacks(executionId: number): ExecCallbacks
   dispatchUpdateOperations(operations: Operation[]): void
 }
@@ -195,37 +194,111 @@ describe('KclManager live operation updates', () => {
     expect(kclManager.operationsByModule.map[0]).toEqual([authoritative])
   })
 
-  it('keeps queued updates when the previous execution ends', async () => {
+  it('resets execution state when final publication throws', async () => {
+    vi.useFakeTimers()
+    const { kclManager } = createKclManagerTestHarness()
+    const liveOperations = liveOperationTestApi(kclManager)
+    const authoritative = createLiveOperation('authoritative', 0)
+    const finalExecState = {
+      ...kclManager.execState,
+      operations: { map: { 0: [authoritative] } },
+    }
+
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
+      finalExecState
+    )
+    vi.spyOn(liveOperations, 'dispatchUpdateOperations').mockImplementation(
+      (operations) => {
+        if (operations.length > 0) {
+          throw new Error('final publication failed')
+        }
+      }
+    )
+
+    await expect(
+      kclManager.executeAst({ ast: createEmptyAst(), executionId: 402 })
+    ).rejects.toThrow('final publication failed')
+    expect(kclManager.isExecuting).toBe(false)
+  })
+
+  it('does not publish cancelled results after a queued execution starts', async () => {
     vi.useFakeTimers()
     const { kclManager } = createKclManagerTestHarness()
     const liveOperations = liveOperationTestApi(kclManager)
     const dispatchSpy = vi.spyOn(liveOperations, 'dispatchUpdateOperations')
+    const staleLive = createLiveOperation('staleLive', 0)
+    const staleFinal = createLiveOperation('staleFinal', 1)
+    const currentLive = createLiveOperation('currentLive', 2)
+    const currentFinal = createLiveOperation('currentFinal', 3)
+    const staleExecState = {
+      ...kclManager.execState,
+      operations: { map: { 0: [staleFinal] } },
+    }
+    const currentExecState = {
+      ...kclManager.execState,
+      operations: { map: { 0: [currentFinal] } },
+    }
+    const staleExecution = createDeferred<typeof staleExecState>()
+    const currentExecution = createDeferred<typeof currentExecState>()
+    let executionIndex = 0
 
-    liveOperations.beginLiveOperationUpdates(201)
-    const staleCallbacks = liveOperations.createExecutionCallbacks(201)
-    staleCallbacks.onOperation({
-      moduleId: 1,
-      operation: createLiveOperation('stale', 0),
-      index: 0,
+    kclManager.engineCommandManager.started = true
+    const executeSpy = vi
+      .spyOn(kclManager.rustContext, 'execute')
+      .mockImplementation(async (_ast, _settings, _path, callbacks) => {
+        const currentExecutionIndex = executionIndex
+        executionIndex += 1
+        if (currentExecutionIndex === 0) {
+          callbacks?.onOperation({
+            moduleId: 0,
+            operation: staleLive,
+            index: 0,
+          })
+          return staleExecution.promise
+        }
+
+        callbacks?.onOperation({
+          moduleId: 0,
+          operation: currentLive,
+          index: 0,
+        })
+        return currentExecution.promise
+      })
+
+    const firstExecution = kclManager.executeAst({
+      ast: createEmptyAst(),
+      executionId: 201,
+    })
+    await flushPromises()
+    expect(executeSpy).toHaveBeenCalledTimes(1)
+
+    await kclManager.executeAst({
+      ast: createEmptyAst(),
+      executionId: 202,
+    })
+    expect(executeSpy).toHaveBeenCalledTimes(1)
+    expect(liveOperations._cancelTokens.get(201)).toBe(true)
+
+    staleExecution.resolve(staleExecState)
+    await vi.waitFor(() => {
+      expect(executeSpy).toHaveBeenCalledTimes(2)
+    })
+    await firstExecution
+
+    expect(kclManager.isExecuting).toBe(true)
+    expect(kclManager.execState).not.toBe(staleExecState)
+    expect(dispatchSpy).not.toHaveBeenCalledWith([staleFinal])
+
+    currentExecution.resolve(currentExecState)
+    await vi.waitFor(() => {
+      expect(kclManager.isExecuting).toBe(false)
     })
 
-    liveOperations.beginLiveOperationUpdates(202)
-    dispatchSpy.mockClear()
-    const currentCallbacks = liveOperations.createExecutionCallbacks(202)
-    currentCallbacks.onOperation({
-      moduleId: 2,
-      operation: createLiveOperation('current', 0),
-      index: 0,
-    })
-    liveOperations.endLiveOperationUpdates(201)
-
-    await vi.advanceTimersByTimeAsync(LIVE_OPERATION_FLUSH_INTERVAL_MS)
-
-    expect(kclManager.operationsByModule.map[1]).toBeUndefined()
-    expect(kclManager.operationsByModule.map[2]?.[0]).toMatchObject({
-      name: 'current',
-    })
-    expect(dispatchSpy).toHaveBeenCalledTimes(1)
+    expect(kclManager.execState).toBe(currentExecState)
+    expect(kclManager.operationsByModule).toBe(currentExecState.operations)
+    expect(dispatchSpy).toHaveBeenLastCalledWith([currentFinal])
+    expect(dispatchSpy).not.toHaveBeenCalledWith([staleFinal])
   })
 
   it('drops queued callbacks after cancellation or close', async () => {
