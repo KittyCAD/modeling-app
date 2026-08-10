@@ -367,7 +367,7 @@ describe('dimensionTool distance selection', () => {
       buildDimensionDistanceConstraint(distanceContext, [2, 5], 'Mm')
     ).toEqual({
       type: 'HorizontalDistance',
-      points: [1, 2],
+      segments: [1, 2],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 2, units: 'Mm' },
@@ -393,7 +393,7 @@ describe('dimensionTool distance selection', () => {
       buildDimensionDistanceConstraint(pointLineContext, [8, 6], 'Mm')
     ).toEqual({
       type: 'Distance',
-      points: [1, 10],
+      segments: [1, 10],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 8, units: 'Mm' },
@@ -415,7 +415,7 @@ describe('dimensionTool distance selection', () => {
       buildDimensionDistanceConstraint(lineLineContext, [5, 7], 'Mm')
     ).toEqual({
       type: 'Distance',
-      points: [10, 11],
+      segments: [10, 11],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 5, units: 'Mm' },
@@ -447,7 +447,7 @@ describe('dimensionTool', () => {
     )
     expect((rustContext.addConstraint as any).mock.calls[0][2]).toEqual({
       type: 'Distance',
-      points: [1, 2],
+      segments: [1, 2],
       distance: { value: 5, units: 'Mm' },
       labelPosition: {
         x: { value: 4, units: 'Mm' },
@@ -465,7 +465,7 @@ describe('dimensionTool', () => {
       (rustContext.editDistanceConstraint as any).mock.calls[0][3]
     ).toEqual({
       type: 'HorizontalDistance',
-      points: [1, 2],
+      segments: [1, 2],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 2, units: 'Mm' },
@@ -483,7 +483,7 @@ describe('dimensionTool', () => {
       (rustContext.editDistanceConstraint as any).mock.calls[1][3]
     ).toEqual({
       type: 'VerticalDistance',
-      points: [1, 2],
+      segments: [1, 2],
       distance: { value: 3, units: 'Mm' },
       labelPosition: {
         x: { value: 6, units: 'Mm' },
@@ -519,7 +519,7 @@ describe('dimensionTool', () => {
     )
     expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
       type: 'Distance',
-      points: [3, 10],
+      segments: [3, 10],
       distance: { value: 4, units: 'Mm' },
     })
   }
@@ -566,7 +566,7 @@ describe('dimensionTool', () => {
     )
     expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
       type: 'Distance',
-      points: [10, 11],
+      segments: [10, 11],
       distance: { value: 4, units: 'Mm' },
     })
   })
@@ -615,7 +615,7 @@ describe('dimensionTool', () => {
 
     expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
       type: 'Distance',
-      points: [3, 10],
+      segments: [3, 10],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 8, units: 'Mm' },
@@ -649,7 +649,7 @@ describe('dimensionTool', () => {
 
     expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
       type: 'Distance',
-      points: [10, 11],
+      segments: [10, 11],
       distance: { value: 4, units: 'Mm' },
       labelPosition: {
         x: { value: 5, units: 'Mm' },

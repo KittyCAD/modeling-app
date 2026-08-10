@@ -281,7 +281,7 @@ export function getDistanceEndPoints(
   objects: ApiObject[]
 ) {
   const constraint = obj.kind.constraint
-  const [p1Id, p2Id] = constraint.points
+  const [p1Id, p2Id] = constraint.segments
   const endpoints = getDistanceConstraintEndpointPositions(p1Id, p2Id, objects)
 
   if (endpoints) {

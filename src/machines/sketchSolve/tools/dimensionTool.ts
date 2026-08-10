@@ -547,13 +547,13 @@ export function buildDimensionDistanceConstraint(
 ): ApiDistanceConstraint {
   const type = getDimensionDistanceType(mousePoint, distanceContext)
   let distance: number
-  let points: [number, number]
+  let constraintSegmentIds: [number, number]
   if (distanceContext.kind === 'pointLine') {
     distance = roundOff(distanceContext.distance)
-    points = [distanceContext.point.id, distanceContext.line.id]
+    constraintSegmentIds = [distanceContext.point.id, distanceContext.line.id]
   } else if (distanceContext.kind === 'lineLine') {
     distance = roundOff(distanceContext.distance)
-    points = [distanceContext.line0.id, distanceContext.line1.id]
+    constraintSegmentIds = [distanceContext.line0.id, distanceContext.line1.id]
   } else {
     const delta = subVec(
       distanceContext.point1.point,
@@ -566,12 +566,15 @@ export function buildDimensionDistanceConstraint(
           ? delta[1]
           : length2d(delta)
     )
-    points = [distanceContext.point0.id, distanceContext.point1.id]
+    constraintSegmentIds = [
+      distanceContext.point0.id,
+      distanceContext.point1.id,
+    ]
   }
 
   return {
     type,
-    points,
+    segments: constraintSegmentIds,
     distance: { value: distance, units },
     labelPosition: {
       x: toNumber(mousePoint[0], units),
@@ -624,7 +627,7 @@ function getDraftKey(constraint: ApiDimensionConstraint) {
 
   return [
     constraint.type,
-    constraint.points.join(','),
+    constraint.segments.join(','),
     constraint.distance.value,
     constraint.labelPosition?.x.value ?? '',
     constraint.labelPosition?.y.value ?? '',

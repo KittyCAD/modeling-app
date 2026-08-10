@@ -3800,15 +3800,15 @@ impl FrontendState {
         distance: &Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+        let [segment0_ast, segment1_ast] = match distance.segments.as_slice() {
             [pt0, pt1] => [
                 self.coincident_segment_to_ast(pt0, new_ast)?,
                 self.coincident_segment_to_ast(pt1, new_ast)?,
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
+                    "Distance constraint must have exactly 2 segments, got {}",
+                    distance.segments.len()
                 )));
             }
         };
@@ -3825,7 +3825,7 @@ impl FrontendState {
             callee: ast::Node::no_src(ast_sketch2_name(function_name)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
+                    elements: vec![segment0_ast, segment1_ast],
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -4904,7 +4904,7 @@ impl FrontendState {
             };
             let depends_on_segment = match constraint {
                 Constraint::Coincident(c) => c.segment_ids().any(segment_or_owner_matches),
-                Constraint::Distance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::Distance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Fixed(fixed) => fixed
                     .points
                     .iter()
@@ -4914,8 +4914,8 @@ impl FrontendState {
                 Constraint::EqualRadius(equal_radius) => {
                     equal_radius.input.iter().copied().any(segment_or_owner_matches)
                 }
-                Constraint::HorizontalDistance(d) => d.point_ids().any(segment_or_owner_matches),
-                Constraint::VerticalDistance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::HorizontalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
+                Constraint::VerticalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Horizontal(h) => match h {
                     Horizontal::Line { line } => segment_or_owner_matches(*line),
                     Horizontal::Points { points } => points.iter().any(|point| match point {
@@ -11025,7 +11025,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11085,7 +11085,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11139,7 +11139,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11231,7 +11231,7 @@ sketch(on = XY) {
                 sketch_id,
                 constraint_id,
                 Constraint::HorizontalDistance(Distance {
-                    points: vec![point0_id.into(), point1_id.into()],
+                    segments: vec![point0_id.into(), point1_id.into()],
                     distance: Number {
                         value: 4.0,
                         units: NumericSuffix::Mm,
@@ -11815,7 +11815,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), line_id.into()],
+            segments: vec![point_id.into(), line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -11879,7 +11879,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), arc_id.into()],
+            segments: vec![point_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11932,7 +11932,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![arc_id.into(), ConstraintSegment::ORIGIN],
+            segments: vec![arc_id.into(), ConstraintSegment::ORIGIN],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11984,7 +11984,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![ConstraintSegment::ORIGIN, line_id.into()],
+            segments: vec![ConstraintSegment::ORIGIN, line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12048,7 +12048,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_id.into(), circle_id.into()],
+            segments: vec![line_id.into(), circle_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12113,7 +12113,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![circle_id.into(), arc_id.into()],
+            segments: vec![circle_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12167,7 +12167,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12225,7 +12225,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12282,7 +12282,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::HorizontalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -12543,7 +12543,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::VerticalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,

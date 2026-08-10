@@ -295,7 +295,7 @@ async function addAxisDistanceConstraint(
     {
       type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
       distance: { value: distance, units },
-      points: segmentsToConstrain.map(
+      segments: segmentsToConstrain.map(
         (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
       ),
       source: {
@@ -700,7 +700,7 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Distance',
                 distance: { value: distance, units },
-                points: pointsForDistance,
+                segments: pointsForDistance,
                 source: {
                   expr: distance.toString(),
                   is_literal: true,

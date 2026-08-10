@@ -402,14 +402,14 @@ fn rewrite_constraint_with_map(
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
         })),
         Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
-            points: rewrite_constraint_segments(&distance.points, rewrite_map),
+            segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
             distance: distance.distance,
             label_position: distance.label_position.clone(),
             source: distance.source.clone(),
         })),
         Constraint::HorizontalDistance(distance) => {
             Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -417,7 +417,7 @@ fn rewrite_constraint_with_map(
         }
         Constraint::VerticalDistance(distance) => {
             Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -3722,7 +3722,7 @@ fn spline_constraint_ids_to_delete(
             Constraint::Distance(distance)
             | Constraint::HorizontalDistance(distance)
             | Constraint::VerticalDistance(distance)
-                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) =>
+                if distance.segment_ids().any(|id| spline_control_ids.contains(&id)) =>
             {
                 deletions.insert(obj.id);
             }
@@ -3815,7 +3815,7 @@ pub(crate) fn build_trim_plan(
             // even when this segment is trimmed. Only constraints that measure distances between
             // points on the same segment (e.g., segment length constraints) should be deleted.
             let points_owned_by_segment: Vec<bool> = distance
-                .point_ids()
+                .segment_ids()
                 .map(|point_id| {
                     if let Some(point_obj) = objects.iter().find(|o| o.id == point_id)
                         && let ObjectKind::Segment { segment } = &point_obj.kind
@@ -5129,7 +5129,7 @@ pub(crate) fn build_trim_plan(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.contains_point(center_id)
+                    && distance.contains_segment(center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -5804,7 +5804,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             migrated_constraints.push(Constraint::Coincident(migrated_coincident));
                         }
                         Constraint::Distance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5812,7 +5812,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::HorizontalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5820,7 +5820,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::VerticalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5932,7 +5932,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.contains_point(original_center_id)
+                            && distance.contains_segment(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -6293,8 +6293,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.contains_point(original_start_id);
-                        let references_end = distance.contains_point(original_end_id);
+                        let references_start = distance.contains_segment(original_start_id);
+                        let references_end = distance.contains_segment(original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push((
@@ -6310,7 +6310,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, label_position, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                            points: vec![original_start_id.into(), new_segment_end_point_id.into()],
+                            segments: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             label_position,
                             source,

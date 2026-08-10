@@ -601,7 +601,7 @@ impl From<ObjectId> for ConstraintSegment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
-    pub points: Vec<ConstraintSegment>,
+    pub segments: Vec<ConstraintSegment>,
     pub distance: Number,
     #[serde(rename = "labelPosition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -612,15 +612,15 @@ pub struct Distance {
 }
 
 impl Distance {
-    pub fn point_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
-        self.points.iter().filter_map(|point| match point {
+    pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+        self.segments.iter().filter_map(|segment| match segment {
             ConstraintSegment::Segment(id) => Some(*id),
             ConstraintSegment::Origin(_) => None,
         })
     }
 
-    pub fn contains_point(&self, point_id: ObjectId) -> bool {
-        self.point_ids().any(|id| id == point_id)
+    pub fn contains_segment(&self, segment_id: ObjectId) -> bool {
+        self.segment_ids().any(|id| id == segment_id)
     }
 }
 
