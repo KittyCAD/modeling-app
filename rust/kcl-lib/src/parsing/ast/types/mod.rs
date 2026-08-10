@@ -832,13 +832,16 @@ impl Program {
             match item {
                 BodyItem::ImportStatement(stmt) => {
                     if let Some(var_old_name) = stmt.rename_symbol(new_name, pos) {
-                        old_name = Some(var_old_name);
+                        // A whole-module import (`import "m.kcl" as alias`) binds in the
+                        // module namespace; list imports bind ordinary values.
+                        let is_module = matches!(&stmt.selector, ImportSelector::None { .. });
+                        old_name = Some((var_old_name, is_module));
                         break;
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
-                        old_name = Some(var_old_name);
+                        old_name = Some((var_old_name, false));
                         break;
                     }
                 }
@@ -846,9 +849,18 @@ impl Program {
             }
         }
 
-        if let Some(old_name) = old_name {
-            // Now rename all the identifiers in the rest of the program.
+        if let Some((old_name, is_module)) = old_name {
+            // Rename bare references. The executor resolves a bare name to the value
+            // namespace first and falls back to the module namespace, so the same
+            // shadow-aware walk applies to a module's bare references: they stop being the
+            // module's at a value binding of the same name.
             self.rename_identifiers(&old_name, new_name);
+            if is_module {
+                // Qualified references (`old::item`) resolve in the module namespace, which
+                // has no nested scopes (the executor rejects non-root imports), so rename
+                // heads everywhere.
+                rename_module_refs_in_body(&mut self.body, &old_name, new_name);
+            }
             return;
         }
 
@@ -1232,6 +1244,135 @@ fn rename_identifiers_in_body(body: &mut [BodyItem], old_name: &str, new_name: &
         if body_item_binds_name(item, old_name) {
             return;
         }
+    }
+}
+
+/// Rename the head segments of qualified names (`old::item` becomes `new::item`) throughout
+/// the body, including every nested scope. The executor resolves qualified heads in the
+/// module namespace, where imports may only appear at the file's root, so unlike value
+/// renames no shadow tracking is needed.
+fn rename_module_refs_in_body(body: &mut [BodyItem], old_name: &str, new_name: &str) {
+    for item in body {
+        if let Some(expr) = body_item_expr_mut(item) {
+            rename_module_refs_expr(expr, old_name, new_name);
+        }
+    }
+}
+
+fn rename_module_refs_expr(expr: &mut Expr, old_name: &str, new_name: &str) {
+    let recurse = |e: &mut Expr| rename_module_refs_expr(e, old_name, new_name);
+    match expr {
+        Expr::Literal(_) | Expr::TagDeclarator(_) | Expr::PipeSubstitution(_) | Expr::SketchVar(_) | Expr::None(_) => {}
+        Expr::Name(name) => name.rename_module_head(old_name, new_name),
+        Expr::MemberExpression(member) => {
+            recurse(&mut member.object);
+            recurse(&mut member.property);
+        }
+        Expr::FunctionExpression(func) => rename_module_refs_in_body(&mut func.body.body, old_name, new_name),
+        Expr::CallExpressionKw(call) => {
+            call.callee.rename_module_head(old_name, new_name);
+            if let Some(unlabeled) = &mut call.unlabeled {
+                recurse(unlabeled);
+            }
+            for arg in &mut call.arguments {
+                recurse(&mut arg.arg);
+            }
+        }
+        Expr::PipeExpression(pipe) => {
+            for e in &mut pipe.body {
+                recurse(e);
+            }
+        }
+        Expr::ArrayExpression(array) => {
+            for e in &mut array.elements {
+                recurse(e);
+            }
+        }
+        Expr::ArrayRangeExpression(range) => {
+            recurse(&mut range.start_element);
+            recurse(&mut range.end_element);
+        }
+        Expr::ObjectExpression(obj) => {
+            for property in &mut obj.properties {
+                recurse(&mut property.value);
+            }
+        }
+        Expr::BinaryExpression(bin_expr) => {
+            rename_module_refs_binary_part(&mut bin_expr.left, old_name, new_name);
+            rename_module_refs_binary_part(&mut bin_expr.right, old_name, new_name);
+        }
+        Expr::UnaryExpression(unary_expr) => {
+            rename_module_refs_binary_part(&mut unary_expr.argument, old_name, new_name)
+        }
+        Expr::IfExpression(if_expr) => {
+            recurse(&mut if_expr.cond);
+            rename_module_refs_in_body(&mut if_expr.then_val.body, old_name, new_name);
+            for else_if in &mut if_expr.else_ifs {
+                rename_module_refs_expr(&mut else_if.cond, old_name, new_name);
+                rename_module_refs_in_body(&mut else_if.then_val.body, old_name, new_name);
+            }
+            rename_module_refs_in_body(&mut if_expr.final_else.body, old_name, new_name);
+        }
+        Expr::LabelledExpression(labeled) => recurse(&mut labeled.expr),
+        Expr::AscribedExpression(ascribed) => recurse(&mut ascribed.expr),
+        Expr::SketchBlock(sketch_block) => {
+            for arg in &mut sketch_block.arguments {
+                recurse(&mut arg.arg);
+            }
+            rename_module_refs_in_body(&mut sketch_block.body.items, old_name, new_name);
+        }
+    }
+}
+
+fn rename_module_refs_binary_part(part: &mut BinaryPart, old_name: &str, new_name: &str) {
+    let recurse = |e: &mut Expr| rename_module_refs_expr(e, old_name, new_name);
+    match part {
+        BinaryPart::Literal(_) | BinaryPart::SketchVar(_) => {}
+        BinaryPart::Name(name) => name.rename_module_head(old_name, new_name),
+        BinaryPart::BinaryExpression(bin_expr) => {
+            rename_module_refs_binary_part(&mut bin_expr.left, old_name, new_name);
+            rename_module_refs_binary_part(&mut bin_expr.right, old_name, new_name);
+        }
+        BinaryPart::UnaryExpression(unary_expr) => {
+            rename_module_refs_binary_part(&mut unary_expr.argument, old_name, new_name)
+        }
+        BinaryPart::CallExpressionKw(call) => {
+            call.callee.rename_module_head(old_name, new_name);
+            if let Some(unlabeled) = &mut call.unlabeled {
+                recurse(unlabeled);
+            }
+            for arg in &mut call.arguments {
+                recurse(&mut arg.arg);
+            }
+        }
+        BinaryPart::MemberExpression(member) => {
+            recurse(&mut member.object);
+            recurse(&mut member.property);
+        }
+        BinaryPart::ArrayExpression(array) => {
+            for e in &mut array.elements {
+                recurse(e);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(range) => {
+            recurse(&mut range.start_element);
+            recurse(&mut range.end_element);
+        }
+        BinaryPart::ObjectExpression(obj) => {
+            for property in &mut obj.properties {
+                recurse(&mut property.value);
+            }
+        }
+        BinaryPart::IfExpression(if_expr) => {
+            recurse(&mut if_expr.cond);
+            rename_module_refs_in_body(&mut if_expr.then_val.body, old_name, new_name);
+            for else_if in &mut if_expr.else_ifs {
+                rename_module_refs_expr(&mut else_if.cond, old_name, new_name);
+                rename_module_refs_in_body(&mut else_if.then_val.body, old_name, new_name);
+            }
+            rename_module_refs_in_body(&mut if_expr.final_else.body, old_name, new_name);
+        }
+        BinaryPart::AscribedExpression(ascribed) => recurse(&mut ascribed.expr),
     }
 }
 
@@ -1905,7 +2046,10 @@ fn body_item_binds_name(item: &BodyItem, name: &str) -> bool {
     match item {
         BodyItem::ImportStatement(import) => match &import.selector {
             ImportSelector::List { items } => items.iter().any(|item| item.identifier() == name),
-            ImportSelector::None { .. } => import.module_name().as_deref() == Some(name),
+            // A whole-module import binds in the module namespace, which the executor keeps
+            // separate from ordinary values (modules are stored under a prefix and resolved
+            // as a fallback), so it doesn't shadow value bindings.
+            ImportSelector::None { .. } => false,
             // A glob import binds an unknowable set of names; treat it as binding none rather
             // than stopping every rename that crosses it.
             ImportSelector::Glob(_) => false,
@@ -3835,16 +3979,22 @@ impl Name {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
+    /// Rename this name if it is a bare (unqualified) reference to the old name. The head of
+    /// a qualified name (`foo::item`) is deliberately not touched: the executor resolves it
+    /// in the module namespace, which is separate from ordinary values, so a value rename
+    /// must not rewrite it. See [rename_module_refs_in_body] for the module namespace.
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if let Some(n) = self.local_ident()
             && n.inner == old_name
         {
             self.name.name = new_name.to_owned();
         }
-        // The head segment of a qualified name refers to a module binding (an import alias),
-        // so renaming that binding must rewrite it too. Later segments are members within the
-        // module and are unaffected by local renames. An absolute path (`::foo::bar`) doesn't
-        // start with a local binding.
+    }
+
+    /// Rename the head segment of a qualified name (`foo::item`), which the executor resolves
+    /// in the module namespace. Later segments are members within the module. An absolute
+    /// path (`::foo::bar`) doesn't start with a module binding of this file.
+    fn rename_module_head(&mut self, old_name: &str, new_name: &str) {
         if !self.abs_path
             && let Some(head) = self.path.first_mut()
             && head.name == old_name
@@ -7318,7 +7468,8 @@ x = r.tags.line1
     fn test_rename_stops_at_shadowing_import() {
         // The import rebinds `foo` inside `f`: the use before it refers to the outer variable
         // and is renamed; the import itself (a binder, not a use) and the use after it are
-        // not.
+        // not. Grammar-level coverage only: the executor rejects non-root imports, so this
+        // shadowing can't occur in executable code.
         let code = r#"foo = 1
 
 fn f() {
@@ -7349,9 +7500,11 @@ result = bar
     }
 
     #[test]
-    fn test_rename_stops_at_shadowing_module_import() {
-        // Same as above for a module import: `import "foo.kcl"` binds the implicit module
-        // name `foo`.
+    fn test_rename_value_passes_through_module_import() {
+        // A module import binds in the module namespace, not the value namespace, so
+        // renaming the value `foo` neither stops at `import "foo.kcl"` nor rewrites the
+        // qualified head `foo::item`, which refers to the module. Grammar-level coverage
+        // only: the executor rejects non-root imports.
         let code = r#"foo = 1
 
 fn f() {
@@ -7375,6 +7528,63 @@ fn f() {
   return foo::item
 }
 result = bar
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_value_leaves_same_named_module_alone() {
+        // A value and a module can share a spelling: the executor stores modules separately
+        // and resolves qualified heads in the module namespace. Renaming the value must not
+        // rewrite `foo::item`.
+        let code = r#"import "m.kcl" as foo
+
+foo = 1
+x = foo + foo::item
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo = 1").unwrap() + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"import "m.kcl" as foo
+
+bar = 1
+x = bar + foo::item
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_module_alias_leaves_same_named_value_alone() {
+        // Renaming the module alias rewrites qualified heads everywhere and bare references
+        // that resolve to the module (the executor falls back to the module namespace for a
+        // bare name with no value binding, so `pre = foo` before the value declaration is the
+        // module). The value declaration and bare references after it stay.
+        let code = r#"import "m.kcl" as foo
+
+a = foo::item
+pre = foo
+foo = 1
+b = foo + foo::item
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("m2", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"import "m.kcl" as m2
+
+a = m2::item
+pre = m2
+foo = 1
+b = foo + m2::item
 "#
         );
     }
