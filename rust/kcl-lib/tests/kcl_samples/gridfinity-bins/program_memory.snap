@@ -3,13 +3,46 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing gridfinity-bins.kcl
 ---
 {
-  "__sketch_111_on": {
+  "__sketch_110_on": {
     "type": "Plane",
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 110,
+      "objectId": 109,
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": -1.0,
+        "y": -0.0,
+        "z": -0.0,
+        "units": "mm"
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "zAxis": {
+        "x": -0.0,
+        "y": -0.0,
+        "z": -1.0,
+        "units": "mm"
+      }
+    }
+  },
+  "__sketch_115_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 114,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -17929,10 +17962,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7065,
-            "end": 7070,
+            "commentStart": 7257,
+            "end": 7262,
             "moduleId": 0,
-            "start": 7065,
+            "start": 7257,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -17943,10 +17976,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7141,
-            "end": 7145,
+            "commentStart": 7333,
+            "end": 7337,
             "moduleId": 0,
-            "start": 7141,
+            "start": 7333,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -17957,10 +17990,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7292,
-            "end": 7297,
+            "commentStart": 7484,
+            "end": 7489,
             "moduleId": 0,
-            "start": 7292,
+            "start": 7484,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -17971,10 +18004,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7413,
-            "end": 7417,
+            "commentStart": 7605,
+            "end": 7609,
             "moduleId": 0,
-            "start": 7413,
+            "start": 7605,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -17985,10 +18018,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7572,
-            "end": 7577,
+            "commentStart": 7764,
+            "end": 7769,
             "moduleId": 0,
-            "start": 7572,
+            "start": 7764,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -17999,10 +18032,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7694,
-            "end": 7698,
+            "commentStart": 7886,
+            "end": 7890,
             "moduleId": 0,
-            "start": 7694,
+            "start": 7886,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -18013,10 +18046,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7848,
-            "end": 7853,
+            "commentStart": 8040,
+            "end": 8045,
             "moduleId": 0,
-            "start": 7848,
+            "start": 8040,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -18027,10 +18060,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7963,
-            "end": 7967,
+            "commentStart": 8155,
+            "end": 8159,
             "moduleId": 0,
-            "start": 7963,
+            "start": 8155,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -18052,10 +18085,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7065,
-              "end": 7070,
+              "commentStart": 7257,
+              "end": 7262,
               "moduleId": 0,
-              "start": 7065,
+              "start": 7257,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -18082,10 +18115,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7141,
-              "end": 7145,
+              "commentStart": 7333,
+              "end": 7337,
               "moduleId": 0,
-              "start": 7141,
+              "start": 7333,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -18106,10 +18139,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.75
             ],
             "tag": {
-              "commentStart": 7292,
-              "end": 7297,
+              "commentStart": 7484,
+              "end": 7489,
               "moduleId": 0,
-              "start": 7292,
+              "start": 7484,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -18136,10 +18169,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7413,
-              "end": 7417,
+              "commentStart": 7605,
+              "end": 7609,
               "moduleId": 0,
-              "start": 7413,
+              "start": 7605,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -18160,10 +18193,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 7572,
-              "end": 7577,
+              "commentStart": 7764,
+              "end": 7769,
               "moduleId": 0,
-              "start": 7572,
+              "start": 7764,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -18190,10 +18223,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7694,
-              "end": 7698,
+              "commentStart": 7886,
+              "end": 7890,
               "moduleId": 0,
-              "start": 7694,
+              "start": 7886,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -18214,10 +18247,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
               122.25
             ],
             "tag": {
-              "commentStart": 7848,
-              "end": 7853,
+              "commentStart": 8040,
+              "end": 8045,
               "moduleId": 0,
-              "start": 7848,
+              "start": 8040,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -18244,10 +18277,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             ],
             "radius": 3.75,
             "tag": {
-              "commentStart": 7963,
-              "end": 7967,
+              "commentStart": 8155,
+              "end": 8159,
               "moduleId": 0,
-              "start": 7963,
+              "start": 8155,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -18263,7 +18296,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 110,
+          "objectId": 114,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -18375,7 +18408,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 110,
+      "objectId": 114,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -18418,10 +18451,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7065,
-            "end": 7070,
+            "commentStart": 7257,
+            "end": 7262,
             "moduleId": 0,
-            "start": 7065,
+            "start": 7257,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -18448,10 +18481,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7141,
-            "end": 7145,
+            "commentStart": 7333,
+            "end": 7337,
             "moduleId": 0,
-            "start": 7141,
+            "start": 7333,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -18472,10 +18505,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             3.75
           ],
           "tag": {
-            "commentStart": 7292,
-            "end": 7297,
+            "commentStart": 7484,
+            "end": 7489,
             "moduleId": 0,
-            "start": 7292,
+            "start": 7484,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -18502,10 +18535,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7413,
-            "end": 7417,
+            "commentStart": 7605,
+            "end": 7609,
             "moduleId": 0,
-            "start": 7413,
+            "start": 7605,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -18526,10 +18559,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             126.0
           ],
           "tag": {
-            "commentStart": 7572,
-            "end": 7577,
+            "commentStart": 7764,
+            "end": 7769,
             "moduleId": 0,
-            "start": 7572,
+            "start": 7764,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -18556,10 +18589,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7694,
-            "end": 7698,
+            "commentStart": 7886,
+            "end": 7890,
             "moduleId": 0,
-            "start": 7694,
+            "start": 7886,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -18580,10 +18613,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
             122.25
           ],
           "tag": {
-            "commentStart": 7848,
-            "end": 7853,
+            "commentStart": 8040,
+            "end": 8045,
             "moduleId": 0,
-            "start": 7848,
+            "start": 8040,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -18610,10 +18643,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
           ],
           "radius": 3.75,
           "tag": {
-            "commentStart": 7963,
-            "end": 7967,
+            "commentStart": 8155,
+            "end": 8159,
             "moduleId": 0,
-            "start": 7963,
+            "start": 8155,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -18629,7 +18662,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 110,
+        "objectId": 114,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -18731,7 +18764,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 118,
+                "objectId": 122,
                 "kind": {
                   "arc": {
                     "start": [
@@ -18826,9 +18859,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 115,
-                    "end_object_id": 116,
-                    "center_object_id": 117,
+                    "start_object_id": 119,
+                    "end_object_id": 120,
+                    "center_object_id": 121,
                     "start_freedom": "Fixed",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -18839,7 +18872,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -18883,7 +18916,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 127,
+                "objectId": 131,
                 "kind": {
                   "arc": {
                     "start": [
@@ -18978,9 +19011,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 124,
-                    "end_object_id": 125,
-                    "center_object_id": 126,
+                    "start_object_id": 128,
+                    "end_object_id": 129,
+                    "center_object_id": 130,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -18991,7 +19024,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19035,7 +19068,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 136,
+                "objectId": 140,
                 "kind": {
                   "arc": {
                     "start": [
@@ -19130,9 +19163,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 133,
-                    "end_object_id": 134,
-                    "center_object_id": 135,
+                    "start_object_id": 137,
+                    "end_object_id": 138,
+                    "center_object_id": 139,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "center_freedom": "Free",
@@ -19143,7 +19176,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19187,7 +19220,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 145,
+                "objectId": 149,
                 "kind": {
                   "arc": {
                     "start": [
@@ -19282,9 +19315,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 142,
-                    "end_object_id": 143,
-                    "center_object_id": 144,
+                    "start_object_id": 146,
+                    "end_object_id": 147,
+                    "center_object_id": 148,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "center_freedom": "Fixed",
@@ -19295,7 +19328,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19339,7 +19372,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 150,
+                "objectId": 154,
                 "kind": {
                   "line": {
                     "start": [
@@ -19405,8 +19438,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "construction": true
                     },
-                    "start_object_id": 148,
-                    "end_object_id": 149,
+                    "start_object_id": 152,
+                    "end_object_id": 153,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": true
@@ -19416,7 +19449,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19460,7 +19493,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 155,
+                "objectId": 159,
                 "kind": {
                   "line": {
                     "start": [
@@ -19526,8 +19559,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       },
                       "construction": true
                     },
-                    "start_object_id": 153,
-                    "end_object_id": 154,
+                    "start_object_id": 157,
+                    "end_object_id": 158,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": true
@@ -19537,7 +19570,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19581,7 +19614,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 114,
+                "objectId": 118,
                 "kind": {
                   "line": {
                     "start": [
@@ -19646,8 +19679,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 112,
-                    "end_object_id": 113,
+                    "start_object_id": 116,
+                    "end_object_id": 117,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
                     "construction": false
@@ -19657,7 +19690,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19701,7 +19734,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 122,
+                "objectId": 126,
                 "kind": {
                   "line": {
                     "start": [
@@ -19766,8 +19799,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 120,
-                    "end_object_id": 121,
+                    "start_object_id": 124,
+                    "end_object_id": 125,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -19777,7 +19810,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19821,7 +19854,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 131,
+                "objectId": 135,
                 "kind": {
                   "line": {
                     "start": [
@@ -19886,8 +19919,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 129,
-                    "end_object_id": 130,
+                    "start_object_id": 133,
+                    "end_object_id": 134,
                     "start_freedom": "Free",
                     "end_freedom": "Free",
                     "construction": false
@@ -19897,7 +19930,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -19941,7 +19974,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 140,
+                "objectId": 144,
                 "kind": {
                   "line": {
                     "start": [
@@ -20006,8 +20039,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         }
                       }
                     },
-                    "start_object_id": 138,
-                    "end_object_id": 139,
+                    "start_object_id": 142,
+                    "end_object_id": 143,
                     "start_freedom": "Free",
                     "end_freedom": "Fixed",
                     "construction": false
@@ -20017,7 +20050,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
-                  "objectId": 110,
+                  "objectId": 114,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -20073,10 +20106,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7065,
-                    "end": 7070,
+                    "commentStart": 7257,
+                    "end": 7262,
                     "moduleId": 0,
-                    "start": 7065,
+                    "start": 7257,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -20103,10 +20136,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7141,
-                    "end": 7145,
+                    "commentStart": 7333,
+                    "end": 7337,
                     "moduleId": 0,
-                    "start": 7141,
+                    "start": 7333,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -20127,10 +20160,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     3.75
                   ],
                   "tag": {
-                    "commentStart": 7292,
-                    "end": 7297,
+                    "commentStart": 7484,
+                    "end": 7489,
                     "moduleId": 0,
-                    "start": 7292,
+                    "start": 7484,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -20157,10 +20190,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7413,
-                    "end": 7417,
+                    "commentStart": 7605,
+                    "end": 7609,
                     "moduleId": 0,
-                    "start": 7413,
+                    "start": 7605,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -20181,10 +20214,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     126.0
                   ],
                   "tag": {
-                    "commentStart": 7572,
-                    "end": 7577,
+                    "commentStart": 7764,
+                    "end": 7769,
                     "moduleId": 0,
-                    "start": 7572,
+                    "start": 7764,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -20211,10 +20244,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7694,
-                    "end": 7698,
+                    "commentStart": 7886,
+                    "end": 7890,
                     "moduleId": 0,
-                    "start": 7694,
+                    "start": 7886,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -20235,10 +20268,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     122.25
                   ],
                   "tag": {
-                    "commentStart": 7848,
-                    "end": 7853,
+                    "commentStart": 8040,
+                    "end": 8045,
                     "moduleId": 0,
-                    "start": 7848,
+                    "start": 8040,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -20265,10 +20298,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   ],
                   "radius": 3.75,
                   "tag": {
-                    "commentStart": 7963,
-                    "end": 7967,
+                    "commentStart": 8155,
+                    "end": 8159,
                     "moduleId": 0,
-                    "start": 7963,
+                    "start": 8155,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -20284,7 +20317,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "Custom",
-                "objectId": 110,
+                "objectId": 114,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -21836,6 +21869,11 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": "degrees"
     }
   },
+  "magPocket": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "magPocket"
+  },
   "magPocketCutters": {
     "type": "HomArray",
     "value": [
@@ -21850,7 +21888,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 5726,
+                "end": 5735,
+                "moduleId": 0,
+                "start": 5726,
+                "type": "TagDeclarator",
+                "value": "magPocket"
+              },
               "type": "extrudeArc"
             }
           ],
@@ -21874,7 +21919,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   8.0
                 ],
                 "radius": 3.25,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5726,
+                  "end": 5735,
+                  "moduleId": 0,
+                  "start": 5726,
+                  "type": "TagDeclarator",
+                  "value": "magPocket"
+                },
                 "to": [
                   -4.75,
                   8.0
@@ -21930,8 +21982,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "magPocket": {
+                "type": "TagIdentifier",
+                "value": "magPocket"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -21967,7 +22026,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   8.0
                 ],
                 "radius": 3.25,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5726,
+                  "end": 5735,
+                  "moduleId": 0,
+                  "start": 5726,
+                  "type": "TagDeclarator",
+                  "value": "magPocket"
+                },
                 "to": [
                   -4.75,
                   8.0
@@ -22023,8 +22089,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "magPocket": {
+                "type": "TagIdentifier",
+                "value": "magPocket"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -22060,7 +22133,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   8.0
                 ],
                 "radius": 3.25,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5726,
+                  "end": 5735,
+                  "moduleId": 0,
+                  "start": 5726,
+                  "type": "TagDeclarator",
+                  "value": "magPocket"
+                },
                 "to": [
                   -4.75,
                   8.0
@@ -22116,8 +22196,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "magPocket": {
+                "type": "TagIdentifier",
+                "value": "magPocket"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -22153,7 +22240,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   8.0
                 ],
                 "radius": 3.25,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5726,
+                  "end": 5735,
+                  "moduleId": 0,
+                  "start": 5726,
+                  "type": "TagDeclarator",
+                  "value": "magPocket"
+                },
                 "to": [
                   -4.75,
                   8.0
@@ -22209,8 +22303,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "magPocket": {
+                "type": "TagIdentifier",
+                "value": "magPocket"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -22254,7 +22355,103 @@ description: Variables in memory after executing gridfinity-bins.kcl
       }
     }
   },
-  "magPocketSketch": {
+  "magPocketRegion": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -8.0,
+            8.0
+          ],
+          "from": [
+            -4.75,
+            8.0
+          ],
+          "radius": 3.25,
+          "tag": {
+            "commentStart": 5726,
+            "end": 5735,
+            "moduleId": 0,
+            "start": 5726,
+            "type": "TagDeclarator",
+            "value": "magPocket"
+          },
+          "to": [
+            -4.75,
+            8.0
+          ],
+          "type": "Circle",
+          "units": "mm"
+        }
+      ],
+      "on": {
+        "artifactId": "[uuid]",
+        "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 109,
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "type": "plane",
+        "xAxis": {
+          "x": -1.0,
+          "y": -0.0,
+          "z": -0.0,
+          "units": "mm"
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": "mm"
+        },
+        "zAxis": {
+          "x": -0.0,
+          "y": -0.0,
+          "z": -1.0,
+          "units": "mm"
+        }
+      },
+      "start": {
+        "from": [
+          -4.75,
+          8.0
+        ],
+        "to": [
+          -4.75,
+          8.0
+        ],
+        "units": "mm",
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "magPocket": {
+          "type": "TagIdentifier",
+          "value": "magPocket"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
+      "units": "mm"
+    }
+  },
+  "magPocketRegions": {
     "type": "HomArray",
     "value": [
       {
@@ -22278,7 +22475,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 8.0
               ],
               "radius": 3.25,
-              "tag": null,
+              "tag": {
+                "commentStart": 5726,
+                "end": 5735,
+                "moduleId": 0,
+                "start": 5726,
+                "type": "TagDeclarator",
+                "value": "magPocket"
+              },
               "to": [
                 -4.75,
                 8.0
@@ -22334,8 +22538,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             }
           },
+          "tags": {
+            "magPocket": {
+              "type": "TagIdentifier",
+              "value": "magPocket"
+            }
+          },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         }
       },
@@ -22360,7 +22571,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 8.0
               ],
               "radius": 3.25,
-              "tag": null,
+              "tag": {
+                "commentStart": 5726,
+                "end": 5735,
+                "moduleId": 0,
+                "start": 5726,
+                "type": "TagDeclarator",
+                "value": "magPocket"
+              },
               "to": [
                 -4.75,
                 8.0
@@ -22416,8 +22634,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             }
           },
+          "tags": {
+            "magPocket": {
+              "type": "TagIdentifier",
+              "value": "magPocket"
+            }
+          },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         }
       },
@@ -22442,7 +22667,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 8.0
               ],
               "radius": 3.25,
-              "tag": null,
+              "tag": {
+                "commentStart": 5726,
+                "end": 5735,
+                "moduleId": 0,
+                "start": 5726,
+                "type": "TagDeclarator",
+                "value": "magPocket"
+              },
               "to": [
                 -4.75,
                 8.0
@@ -22498,8 +22730,15 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             }
           },
+          "tags": {
+            "magPocket": {
+              "type": "TagIdentifier",
+              "value": "magPocket"
+            }
+          },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         }
       },
@@ -22524,7 +22763,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 8.0
               ],
               "radius": 3.25,
-              "tag": null,
+              "tag": {
+                "commentStart": 5726,
+                "end": 5735,
+                "moduleId": 0,
+                "start": 5726,
+                "type": "TagDeclarator",
+                "value": "magPocket"
+              },
               "to": [
                 -4.75,
                 8.0
@@ -22580,12 +22826,247 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "sourceRange": []
             }
           },
+          "tags": {
+            "magPocket": {
+              "type": "TagIdentifier",
+              "value": "magPocket"
+            }
+          },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
+          "originSketchId": "[uuid]",
           "units": "mm"
         }
       }
     ]
+  },
+  "magPocketSketch": {
+    "type": "Object",
+    "value": {
+      "magPocket": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 113,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": -4.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 8.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -8.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 8.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": -4.75,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 8.0,
+                          "units": "None"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Number",
+                          "value": -8.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 8.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 111,
+                    "center_object_id": 112,
+                    "start_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 109,
+                  "origin": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": -1.0,
+                    "y": -0.0,
+                    "z": -0.0,
+                    "units": "mm"
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "zAxis": {
+                    "x": -0.0,
+                    "y": -0.0,
+                    "z": -1.0,
+                    "units": "mm"
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "magPocket"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    -8.0,
+                    8.0
+                  ],
+                  "from": [
+                    -4.75,
+                    8.0
+                  ],
+                  "radius": 3.25,
+                  "tag": {
+                    "commentStart": 5726,
+                    "end": 5735,
+                    "moduleId": 0,
+                    "start": 5726,
+                    "type": "TagDeclarator",
+                    "value": "magPocket"
+                  },
+                  "to": [
+                    -4.75,
+                    8.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 109,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": -1.0,
+                  "y": -0.0,
+                  "z": -0.0,
+                  "units": "mm"
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "zAxis": {
+                  "x": -0.0,
+                  "y": -0.0,
+                  "z": -1.0,
+                  "units": "mm"
+                }
+              },
+              "start": {
+                "from": [
+                  -4.75,
+                  8.0
+                ],
+                "to": [
+                  -4.75,
+                  8.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "magPocket": {
+                  "type": "TagIdentifier",
+                  "value": "magPocket"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      }
+    },
+    "constrainable": false
   },
   "secondStep": {
     "type": "Number",

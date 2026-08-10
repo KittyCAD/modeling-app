@@ -6,6 +6,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
 import { mark } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
@@ -96,6 +97,7 @@ export const createOnWebSocketMessage = ({
   webrtcStatsCollector,
   sdpAnswerResolve,
   sdpAnswerReject,
+  setApiCallId,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -110,6 +112,7 @@ export const createOnWebSocketMessage = ({
   webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
+  setApiCallId: (apiCallId: string) => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -147,6 +150,7 @@ export const createOnWebSocketMessage = ({
 
       const firstError = message.errors[0]
       if (firstError.error_code === 'auth_token_invalid') {
+        notifySessionExpired('engine-websocket')
         disconnectAll()
       }
 
@@ -180,6 +184,7 @@ export const createOnWebSocketMessage = ({
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
+        setApiCallId(apiCallId)
         mark('code/apiCallId', {
           name: 'code/apiCallId',
           startTime: performance.now(),

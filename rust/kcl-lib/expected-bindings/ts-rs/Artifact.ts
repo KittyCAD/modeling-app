@@ -200,6 +200,11 @@ export type PrimitiveFace = { id: ArtifactId, solidId: ArtifactId, codeRef: Code
 
 export type Segment = { id: ArtifactId, pathId: ArtifactId, 
 /**
+ * The original segment this segment was cloned from, if any. For clones
+ * of clones, this continues to point to the originating segment.
+ */
+sourceSegmentId?: ArtifactId | null, 
+/**
  * If this artifact is a segment in a region, the segment in the original
  * sketch that this was derived from.
  */
@@ -251,6 +256,11 @@ export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef:
  * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
  */
 export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId: ArtifactId, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
+/**
+ * The original sweep this body was cloned from, if any. For clones of
+ * clones, this continues to point to the originating sweep.
+ */
+sourceSweepId?: ArtifactId | null, 
 /**
  * ID of trajectory path for sweep, if any
  * Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which

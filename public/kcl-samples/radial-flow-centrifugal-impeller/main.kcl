@@ -19,8 +19,7 @@ bladeThickness = 3
 rootR = hubOd / 2 + 10
 
 // root rectangle (leading edge)
-leadSketch = startSketchOn(XY)
-leadRect = sketch(on = leadSketch) {
+leadRect = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
   line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
   coincident([line1.end, line2.start])
@@ -38,8 +37,7 @@ leadRect = sketch(on = leadSketch) {
 
 // tip rectangle (trailing edge, rotated by sweepDeg)
 trailPlane = offsetPlane(XY, offset = bladeHeight) // lift by bladeHeight to give sheet thickness
-trailSketch = startSketchOn(trailPlane)
-trailRect = sketch(on = trailSketch) {
+trailRect = sketch(on = trailPlane) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 3mm, var 0mm])
   line2 = line(start = [var 3mm, var 0mm], end = [var 3mm, var 35mm])
   coincident([line1.end, line2.start])
@@ -76,8 +74,7 @@ blades = patternCircular3d(
 )
 
 // back-plate disk
-diskSketch = startSketchOn(XY)
-diskCircle = sketch(on = diskSketch) {
+diskCircle = sketch(on = XY) {
   circle1 = circle(start = [var 112.5mm, var 0mm], center = [var -37.5mm, var 0mm])
   diameter(circle1) == od
 }
@@ -85,8 +82,7 @@ region001 = region(segments = [diskCircle.circle1])
 backPlate = extrude(region001, length = -baseThick)
 
 // hub solid
-hubSketch = startSketchOn(backPlate, face = END)
-hubCircle = sketch(on = hubSketch) {
+hubCircle = sketch(on = faceOf(backPlate, face = END)) {
   circle1 = circle(start = [var 30mm, var 0mm], center = [var -10mm, var 0mm])
   diameter(circle1) == hubOd
 }
@@ -94,8 +90,7 @@ region002 = region(segments = [hubCircle.circle1])
 hub = extrude(region002, length = hubHeight)
 
 // bore hole
-boreSketch = startSketchOn(offsetPlane(XY, offset = -baseThick * 2))
-boreCircle = sketch(on = boreSketch) {
+boreCircle = sketch(on = offsetPlane(XY, offset = -baseThick * 2)) {
   circle1 = circle(start = [var 22.5mm, var 0mm], center = [var -7.5mm, var 0mm])
   diameter(circle1) == boreDia
 }
