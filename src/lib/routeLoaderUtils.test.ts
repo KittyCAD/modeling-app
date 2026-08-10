@@ -1,4 +1,5 @@
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { readProjectLibraryRealizationsInvalidation } from '@src/lib/projectLibraries/registry/invalidation'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
@@ -110,6 +111,8 @@ describe('route loaders', () => {
 
   it('loads Home project state without touching the demo-project flow', () => {
     const { app, closeProject } = createAppWithWebHomeFeature(true)
+    const invalidationBefore =
+      readProjectLibraryRealizationsInvalidation().global
 
     const result = loadHomeProjects(app)
 
@@ -117,6 +120,9 @@ describe('route loaders', () => {
     expect(app.systemIOActor.send).toHaveBeenCalledWith({
       type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
     })
+    expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+      invalidationBefore + 1
+    )
     expect(closeProject).toHaveBeenCalled()
     expect(app.settings.actor.send).toHaveBeenCalledWith({
       type: 'clear.project',

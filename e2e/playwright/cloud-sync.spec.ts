@@ -40,9 +40,11 @@ test(
   'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
+    const remoteProjectId = '00000000-0000-4000-8000-000000000001'
+    const updatedProjectTitle = 'Updated remote empty one'
     const remoteProjects: CloudProject[] = [
       {
-        id: 'remote-empty-one',
+        id: remoteProjectId,
         title: 'Remote empty one',
         revision: 'remote-empty-one-rev-1',
         updatedAt: '2026-06-02T20:00:00.000Z',
@@ -127,7 +129,7 @@ test(
     await openHomeProject(page, 'Remote empty one')
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(['remote-empty-one'])
+      .toEqual([remoteProjectId])
     await expectProjectFileRoute(page)
 
     const localFiles = await readOpfsTextFiles(page, {
@@ -137,20 +139,29 @@ test(
 
     expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
     expect(localFiles.remoteOneToml).toContain(
-      'project_id = "remote-empty-one"'
+      `project_id = "${remoteProjectId}"`
     )
+
+    await page.getByTestId('project-sidebar-toggle').click()
+    await page.getByTestId('project-settings').click()
+    const titleInput = page.getByTestId('project-title-setting')
+    await expect(titleInput).toHaveValue('Remote empty one')
+    await titleInput.fill(updatedProjectTitle)
+    await titleInput.press('Enter')
+    await expect(page.getByText('Successfully renamed')).toBeVisible()
+    await page.getByTestId('settings-close-button').click()
 
     const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
     remoteListGate.hold()
 
-    await page.goto('/')
+    await page.getByTestId('app-logo').click()
     await expectCloudSyncHomeReady(page)
     await expect
       .poll(() => projectTitles(page), { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(expect.arrayContaining(['Remote empty one']))
+      .toEqual(expect.arrayContaining([updatedProjectTitle]))
     await expect
       .poll(async () => (await projectTitles(page))[0])
-      .toBe('Remote empty one')
+      .toBe(updatedProjectTitle)
     expect(apiCalls.remoteListResponses).toBe(
       remoteListResponsesAfterMaterialization
     )
