@@ -134,7 +134,7 @@ test.describe(
       const projectSettings = settingsToToml({
         settings: {
           meta: {
-            // BUG: IF YOU DON'T INCLUDE THIS MLEPHANT SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+            // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
             id: uuidv4(),
           },
           modeling: {
@@ -219,7 +219,7 @@ test.describe(
       const projectSettings = settingsToToml({
         settings: {
           meta: {
-            // BUG: IF YOU DON'T INCLUDE THIS MLEPHANT SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
+            // BUG: IF YOU DON'T INCLUDE THIS ZOOKEEPER SEEMS TO DELETE YOUR PROJECT SETTINGS FILE NEAT.
             id: uuidv4(),
           },
           modeling: {

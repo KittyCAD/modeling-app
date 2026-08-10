@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_module_prelude.kcl
+---
+// Pins the prelude wiring for std::view: the namespaced spelling works with
+// no import line, for every enum the module declares. This is the route the
+// named-views constructors will rely on (M01 decision 17).
+@settings(experimentalFeatures = allow)
+
+orientation = view::Orientation::Isometric
+baseline = view::Visibility::Hide
+projection = view::Projection::Orthographic

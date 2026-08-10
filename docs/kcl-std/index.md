@@ -293,3 +293,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`mm`](/docs/kcl-std/types/std-types-mm)
   * [`rad`](/docs/kcl-std/types/std-types-rad)
   * [`yd`](/docs/kcl-std/types/std-types-yd)
+* [**std::view**](/docs/kcl-std/modules/std-view) Experimental
+  * [`view::Orientation`](/docs/kcl-std/types/std-view-Orientation) Experimental
+  * [`view::Projection`](/docs/kcl-std/types/std-view-Projection) Experimental
+  * [`view::Visibility`](/docs/kcl-std/types/std-view-Visibility) Experimental

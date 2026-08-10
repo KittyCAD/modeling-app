@@ -1041,7 +1041,7 @@ export class KclManager extends File {
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload it.
         if (
-          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
           this.zookeeperHistoryRecordingInProgress
         ) {
           return
@@ -1110,7 +1110,7 @@ export class KclManager extends File {
     diskCode: string
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
    * its file writes land, so file watchers must not reload the active editor

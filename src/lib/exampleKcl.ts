@@ -470,7 +470,7 @@ startSketchOn(offsetPlane(XY, offset = 21))
  * concatenating the individual parts together. If the original axial-fan
  * KCL sample is updated, it can lead to breaking this export.
  */
-export const browserAxialFanAfterTextToCad = `
+export const browserAxialFanAfterZookeeper = `
 ${modifiedFanHousingBrowser}
 
 // Fan

@@ -59,7 +59,7 @@ const preferredWorkflowPaneMap: Record<
   OnboardingWorkflowPreference,
   DefaultLayoutPaneID[]
 > = {
-  ai: [DefaultLayoutPaneID.TTC],
+  ai: [DefaultLayoutPaneID.Zookeeper],
   code: [
     DefaultLayoutPaneID.Code,
     DefaultLayoutPaneID.Files,
