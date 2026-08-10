@@ -5,9 +5,8 @@ use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::SegmentDragAnchor;
 use kcl_lib::front::ConstraintLabelPositionEdit;
-use kcl_lib::front::EditAngleConstraintOptions;
+use kcl_lib::front::EditConstraintOptions;
 use kcl_lib::front::EditDistanceConstraintLabelPositionOptions;
-use kcl_lib::front::EditDistanceConstraintOptions;
 use kcl_lib::front::EditSegmentsOptions;
 use kcl_lib::front::Error;
 use kcl_lib::front::ExistingSegmentCtor;
@@ -675,7 +674,7 @@ impl Context {
                 sketch,
                 constraint_id,
                 angle,
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: commit_solver_results,
                 },
             )
@@ -750,7 +749,7 @@ impl Context {
                 sketch,
                 constraint_id,
                 constraint,
-                EditDistanceConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: commit_solver_results,
                 },
             )

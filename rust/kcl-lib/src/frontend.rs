@@ -264,14 +264,8 @@ pub struct EditDistanceConstraintLabelPositionOptions {
     pub commit_solved_initial_guesses: bool,
 }
 
-/// Options for editing a distance constraint during sketch dragging.
-pub struct EditDistanceConstraintOptions {
-    /// Whether solver-updated initial guesses should be written back to KCL.
-    pub commit_solved_initial_guesses: bool,
-}
-
-/// Options for editing an angle constraint during sketch dragging.
-pub struct EditAngleConstraintOptions {
+/// Options for editing a constraint during sketch dragging.
+pub struct EditConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -446,7 +440,7 @@ impl FrontendState {
         sketch: ObjectId,
         constraint_id: ObjectId,
         constraint: Constraint,
-        options: EditDistanceConstraintOptions,
+        options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         let previous_commit_mode = self
             .next_edit_commits_solver_solutions
@@ -464,7 +458,7 @@ impl FrontendState {
         sketch: ObjectId,
         constraint_id: ObjectId,
         angle: Angle,
-        options: EditAngleConstraintOptions,
+        options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
         let previous_commit_mode = self
             .next_edit_commits_solver_solutions
@@ -11243,7 +11237,7 @@ sketch(on = XY) {
                     label_position: Some(label_position.clone()),
                     source: Default::default(),
                 }),
-                EditDistanceConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11458,7 +11452,7 @@ sketch(on = XY) {
                     label_position: Some(label_position.clone()),
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11532,7 +11526,7 @@ sketch(on = XY) {
                     label_position: None,
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
