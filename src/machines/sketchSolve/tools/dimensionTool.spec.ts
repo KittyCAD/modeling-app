@@ -8,10 +8,13 @@ import type {
   SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
-  type DimensionAngleDraftContext,
   buildDimensionAngleConstraint,
+  buildDimensionDistanceConstraint,
+  type DimensionAngleDraftContext,
+  type DimensionDistanceDraftContext,
   machine as dimensionTool,
   getDimensionAngleSelection,
+  getDimensionDistanceType,
 } from '@src/machines/sketchSolve/tools/dimensionTool'
 import {
   createLineApiObject,
@@ -41,7 +44,7 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
   }
 }
 
-function createAngleConstraintObject({
+function createConstraintObject({
   id,
   constraint,
 }: {
@@ -84,6 +87,7 @@ function createParentHarness(
   } = {}
 ) {
   const sceneInfra = createMockSceneInfra()
+  sceneInfra.getClientSceneScaleFactor = vi.fn(() => 0.1)
   const rustContext = createMockRustContext()
   const kclManager = createMockKclManager()
   const events: Array<{ type: string; data?: unknown }> = []
@@ -94,7 +98,7 @@ function createParentHarness(
     const constraintId = nextConstraintId++
     currentObjects = [
       ...currentObjects,
-      createAngleConstraintObject({ id: constraintId, constraint }),
+      createConstraintObject({ id: constraintId, constraint }),
     ]
 
     return {
@@ -107,7 +111,7 @@ function createParentHarness(
     async (_version, _sketchId, constraintId, constraint) => {
       currentObjects = currentObjects.map((object) =>
         object.id === constraintId
-          ? createAngleConstraintObject({ id: constraintId, constraint })
+          ? createConstraintObject({ id: constraintId, constraint })
           : object
       )
 
@@ -118,6 +122,21 @@ function createParentHarness(
       }
     }
   ) as typeof rustContext.editAngleConstraint
+  rustContext.editDistanceConstraint = vi.fn(
+    async (_version, _sketchId, constraintId, constraint) => {
+      currentObjects = currentObjects.map((object) =>
+        object.id === constraintId
+          ? createConstraintObject({ id: constraintId, constraint })
+          : object
+      )
+
+      return {
+        kclSource: { text: '' },
+        sceneGraphDelta: createSceneGraphDelta(currentObjects),
+        checkpointId: null,
+      }
+    }
+  ) as typeof rustContext.editDistanceConstraint
   rustContext.deleteObjects = vi.fn(
     async (_version, _sketchId, constraintIds) => {
       currentObjects = currentObjects.filter(
@@ -319,7 +338,138 @@ describe('dimensionTool angle selection', () => {
   })
 })
 
+describe('dimensionTool distance selection', () => {
+  const distanceContext: DimensionDistanceDraftContext = {
+    point0: { type: 'point', id: 1, point: [0, 0] },
+    point1: { type: 'point', id: 2, point: [4, 3] },
+  }
+
+  it('maps cursor regions to absolute, horizontal, and vertical distance', () => {
+    expect(getDimensionDistanceType([2, 5], distanceContext)).toBe(
+      'HorizontalDistance'
+    )
+    expect(getDimensionDistanceType([2, -2], distanceContext)).toBe(
+      'HorizontalDistance'
+    )
+    expect(getDimensionDistanceType([6, 1], distanceContext)).toBe(
+      'VerticalDistance'
+    )
+    expect(getDimensionDistanceType([-2, 1], distanceContext)).toBe(
+      'VerticalDistance'
+    )
+    expect(getDimensionDistanceType([2, 1], distanceContext)).toBe('Distance')
+    expect(getDimensionDistanceType([6, 5], distanceContext)).toBe('Distance')
+  })
+
+  it('builds the selected distance type with its value and label position', () => {
+    expect(
+      buildDimensionDistanceConstraint(distanceContext, [2, 5], 'Mm')
+    ).toEqual({
+      type: 'HorizontalDistance',
+      points: [1, 2],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 2, units: 'Mm' },
+        y: { value: 5, units: 'Mm' },
+      },
+      source: {
+        expr: '4',
+        is_literal: true,
+      },
+    })
+  })
+})
+
 describe('dimensionTool', () => {
+  it('creates and edits one smart distance draft after selecting two points', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      point0,
+      point1,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([0, 0]))
+    callbacks.onClick(createMouseEvent([4, 3]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toEqual({
+      type: 'Distance',
+      points: [1, 2],
+      distance: { value: 5, units: 'Mm' },
+      labelPosition: {
+        x: { value: 4, units: 'Mm' },
+        y: { value: 3, units: 'Mm' },
+      },
+      source: { expr: '5', is_literal: true },
+    })
+
+    callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 1
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[0][3]
+    ).toEqual({
+      type: 'HorizontalDistance',
+      points: [1, 2],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 2, units: 'Mm' },
+        y: { value: 5, units: 'Mm' },
+      },
+      source: { expr: '4', is_literal: true },
+    })
+
+    callbacks.onClick(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 2
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[1][3]
+    ).toEqual({
+      type: 'VerticalDistance',
+      points: [1, 2],
+      distance: { value: 3, units: 'Mm' },
+      labelPosition: {
+        x: { value: 6, units: 'Mm' },
+        y: { value: 1, units: 'Mm' },
+      },
+      source: { expr: '3', is_literal: true },
+    })
+    expect((rustContext.addConstraint as any).mock.calls).toHaveLength(1)
+    expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
+  })
+
+  it('starts distance placement when initialized with two selected points', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext } = createParentHarness(
+      [sketch, point0, point1],
+      { initialSelectionIds: [1, 2] }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls[0][2].type).toBe(
+      'HorizontalDistance'
+    )
+  })
+
   it('creates a draft labelled angle constraint after selecting two lines', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const origin = createPointApiObject({ id: 1, x: 0, y: 0 })
@@ -337,7 +487,7 @@ describe('dimensionTool', () => {
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
     callbacks.onClick(createMouseEvent([8, 0]))
-    callbacks.onClick(createMouseEvent([5, 8.660254037844386]))
+    callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(
       actor,
@@ -351,8 +501,8 @@ describe('dimensionTool', () => {
       sector: 1,
       inverse: false,
       labelPosition: {
-        x: { value: 5, units: 'Mm' },
-        y: { value: 8.66, units: 'Mm' },
+        x: { value: 2.5, units: 'Mm' },
+        y: { value: 4.33, units: 'Mm' },
       },
       source: {
         expr: '60deg',
@@ -371,6 +521,13 @@ describe('dimensionTool', () => {
     await waitFor(
       actor,
       () => (rustContext.editAngleConstraint as any).mock.calls.length === 1
+    )
+    await waitFor(actor, () =>
+      events.some(
+        (event) =>
+          event.type === 'update hovered id' &&
+          (event.data as { hoveredId?: number } | undefined)?.hoveredId === 30
+      )
     )
 
     expect((rustContext.addConstraint as any).mock.calls).toHaveLength(1)
@@ -426,7 +583,7 @@ describe('dimensionTool', () => {
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
     callbacks.onClick(createMouseEvent([8, 0]))
-    callbacks.onClick(createMouseEvent([5, 8.660254037844386]))
+    callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(
       actor,

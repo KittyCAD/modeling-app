@@ -13,7 +13,7 @@ import {
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import { type LineCoords, distance2d, linesAreParallel } from '@src/lib/utils2d'
+import { distance2d, type LineCoords, linesAreParallel } from '@src/lib/utils2d'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -62,11 +62,11 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
-import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import {
   type ConstraintToolName,
   constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
@@ -576,16 +576,9 @@ export const sketchSolveMachine = setup({
               const second = currentSelections[1]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               const secondObject = second === ORIGIN_TARGET ? undefined : second
-              const currentDistance = getCurrentDistanceBetweenSelections(
-                first,
-                second,
-                objects
-              )
-              if (currentDistance !== null) {
-                distance = roundOff(currentDistance)
-              } else if (
-                isLineSegment(firstObject) &&
-                isLineSegment(secondObject)
+              if (
+                (isLineSegment(firstObject) && isLineSegment(secondObject)) ||
+                (isPointSegment(firstObject) && isPointSegment(secondObject))
               ) {
                 sendToActorIfActive(self, {
                   type: 'equip tool',
@@ -593,28 +586,15 @@ export const sketchSolveMachine = setup({
                   keepSelection,
                 })
                 return
-              } else if (
-                isPointSegment(firstObject) &&
-                isPointSegment(secondObject)
-              ) {
-                // the units of these points will have already been normalized to the user's default units
-                // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
-                const point1 = {
-                  x: firstObject.kind.segment.position.x,
-                  y: firstObject.kind.segment.position.y,
-                }
-                const point2 = {
-                  x: secondObject.kind.segment.position.x,
-                  y: secondObject.kind.segment.position.y,
-                }
-                const distanceResult = distanceBetweenPoint2DExpr(
-                  point1,
-                  point2,
-                  await context.kclManager.wasmInstancePromise
-                )
-                if (!(distanceResult instanceof Error)) {
-                  distance = roundOff(distanceResult.distance)
-                }
+              }
+
+              const currentDistance = getCurrentDistanceBetweenSelections(
+                first,
+                second,
+                objects
+              )
+              if (currentDistance !== null) {
+                distance = roundOff(currentDistance)
               } else {
                 const point1 = getSelectionPointCoords(first)
                 const point2 = getSelectionPointCoords(second)
