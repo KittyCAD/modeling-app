@@ -1513,6 +1513,7 @@ impl SketchApi for FrontendState {
         Ok((final_src_delta, scene_graph_delta))
     }
 
+    // Edit only the value, e.g. `distance(...) == 5mm` to `distance(...) == 7mm`.
     async fn edit_constraint(
         &mut self,
         ctx: &ExecutorContext,
@@ -1622,6 +1623,7 @@ impl SketchApi for FrontendState {
         .await
     }
 
+    // Replace a distance-family call and value, e.g. `distance(...) == 5mm` to `verticalDistance(...) == -6mm`.
     async fn edit_distance_constraint(
         &mut self,
         ctx: &ExecutorContext,
