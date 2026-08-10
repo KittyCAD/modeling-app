@@ -3355,9 +3355,11 @@ impl Node<VariableDeclaration> {
         if declaration_source_range.contains(pos) {
             let old_name = std::mem::replace(&mut self.declaration.id.name, new_name.to_string());
             // A function declaration `fn foo() {}` also records its name on the function
-            // expression; keep it in sync.
+            // expression; keep it in sync. A named function expression assigned to a variable
+            // (`foo = fn bar() {}`) is a distinct binding and is left alone.
             if let Expr::FunctionExpression(func) = &mut self.declaration.init
                 && let Some(fn_name) = &mut func.name
+                && fn_name.name == old_name
             {
                 fn_name.name = new_name.to_string();
             }
@@ -3407,6 +3409,21 @@ impl VariableDeclaration {
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        // The declaration that was just renamed (its id is already the new name): the variable
+        // is not bound inside its own initializer, since the value is created before the
+        // variable is bound, so references to the old name there are not to this variable. The
+        // exception is the `fn foo() {}` sugar, whose function name is kept in sync with the
+        // declaration id; references in its body are the recursive binding and are renamed
+        // along with it.
+        if self.declaration.id.name == new_name {
+            let is_fn_sugar = matches!(
+                &self.declaration.init,
+                Expr::FunctionExpression(func) if func.name.as_ref().is_some_and(|n| n.name == new_name)
+            );
+            if !is_fn_sugar {
+                return;
+            }
+        }
         self.declaration.init.rename_identifiers(old_name, new_name);
     }
 
@@ -6864,6 +6881,33 @@ fn f() {
   r = region(segments = [s.line1])
   return r.tags.line1
 }
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_variable_with_named_fn_initializer_leaves_fn_name_alone() {
+        // `foo` and `bar` are distinct bindings: `foo` is the variable, `bar` is the
+        // function's own recursive name, bound only inside its body. Renaming `foo` must not
+        // touch `bar`, and must not rename anything inside the body, where `foo` is not bound
+        // (the function value is created before `foo` is bound).
+        let code = r#"foo = fn bar(n) {
+  return bar(n) + foo
+}
+result = foo(1)
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("baz", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"baz = fn bar(n) {
+  return bar(n) + foo
+}
+result = baz(1)
 "#
         );
     }
