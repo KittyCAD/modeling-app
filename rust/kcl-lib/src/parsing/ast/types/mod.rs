@@ -917,7 +917,7 @@ impl Program {
         if candidates.is_empty() {
             return false;
         }
-        rename_sketch_symbol_in_body(&mut self.body, &mut candidates, new_name, pos)
+        rename_sketch_symbol_in_body(&mut self.body, &mut candidates, new_name, pos, false)
     }
 
     /// Find what `pos` is on, as candidates for resolving a sketch block symbol: the
@@ -928,9 +928,11 @@ impl Program {
         use crate::walk::Node as WalkNode;
         use crate::walk::Walker;
 
-        let ident_at_pos = std::cell::RefCell::new(None::<String>);
+        let decl_id_at_pos = std::cell::RefCell::new(None::<String>);
+        let bare_use_at_pos = std::cell::RefCell::new(None::<String>);
         let member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
         let tags_member_at_pos = std::cell::RefCell::new(None::<(String, String)>);
+        let pos_is_member_property = std::cell::Cell::new(false);
         let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
             match node {
                 // Only a reference (a bare name) or a declaration's id can identify a sketch
@@ -941,12 +943,12 @@ impl Program {
                     if SourceRange::from(name).contains(pos)
                         && let Some(local) = name.local_ident()
                     {
-                        *ident_at_pos.borrow_mut() = Some(local.inner.to_owned());
+                        *bare_use_at_pos.borrow_mut() = Some(local.inner.to_owned());
                     }
                 }
                 WalkNode::VariableDeclarator(decl) => {
                     if SourceRange::from(&decl.id).contains(pos) {
-                        *ident_at_pos.borrow_mut() = Some(decl.id.name.clone());
+                        *decl_id_at_pos.borrow_mut() = Some(decl.id.name.clone());
                     }
                 }
                 WalkNode::MemberExpression(member) => {
@@ -955,6 +957,10 @@ impl Program {
                         && SourceRange::from(&**property).contains(pos)
                         && let Some(property) = property.local_ident()
                     {
+                        // The name at the position is a field or tag access, not a bare
+                        // reference; the member and tags candidates below carry it when the
+                        // object shape is recognized.
+                        pos_is_member_property.set(true);
                         match &member.object {
                             Expr::Name(object) => {
                                 if let Some(object) = object.local_ident() {
@@ -984,7 +990,12 @@ impl Program {
             let _ = finder.walk(WalkNode::from(item));
         }
         SketchSymbolCandidates {
-            ident: ident_at_pos.into_inner(),
+            decl_id: decl_id_at_pos.into_inner(),
+            bare_use: if pos_is_member_property.get() {
+                None
+            } else {
+                bare_use_at_pos.into_inner()
+            },
             member: member_at_pos.into_inner(),
             tags_member: tags_member_at_pos.into_inner(),
             region: None,
@@ -1497,8 +1508,11 @@ fn region_call_derives_from(init: &Expr, sketch_name: &str) -> bool {
 /// shadows what it refers to, so that outer scopes don't match a reference that doesn't
 /// resolve to their declarations.
 struct SketchSymbolCandidates {
-    /// A bare identifier at the position: a declaration or use inside a sketch block.
-    ident: Option<String>,
+    /// The position is on the id of a variable declaration; a rename target only if that
+    /// declaration is a direct item of a sketch block.
+    decl_id: Option<String>,
+    /// A bare name reference at the position.
+    bare_use: Option<String>,
     /// A member reference `x.prop` with the position on `prop`: (object, property).
     member: Option<(String, String)>,
     /// A region tag reference `r.tags.prop` with the position on `prop`: (region, property).
@@ -1511,7 +1525,11 @@ struct SketchSymbolCandidates {
 
 impl SketchSymbolCandidates {
     fn is_empty(&self) -> bool {
-        self.ident.is_none() && self.member.is_none() && self.tags_member.is_none() && self.region.is_none()
+        self.decl_id.is_none()
+            && self.bare_use.is_none()
+            && self.member.is_none()
+            && self.tags_member.is_none()
+            && self.region.is_none()
     }
 }
 
@@ -1527,6 +1545,7 @@ fn rename_sketch_symbol_in_body(
     candidates: &mut SketchSymbolCandidates,
     new_name: &str,
     pos: usize,
+    in_sketch_block: bool,
 ) -> bool {
     // The innermost scope wins, so a fn-local sketch shadows a same-named outer one.
     if let Some(item) = body.iter_mut().find(|item| SourceRange::from(&**item).contains(pos))
@@ -1534,6 +1553,26 @@ fn rename_sketch_symbol_in_body(
         && rename_sketch_symbol_in_nested_bodies(expr, candidates, new_name, pos)
     {
         return true;
+    }
+
+    // A bare name reference resolves to the last binding before the position. Inside a
+    // sketch block's body, only the block's own declaration of that name makes it a rename
+    // target (matched by the enclosing scope, which knows the sketch variable); any other
+    // binding, or no binding at all inside the block, means the reference is not to the
+    // block's declaration.
+    if let Some(name) = candidates.bare_use.as_ref() {
+        let last_binder = body
+            .iter()
+            .rfind(|item| SourceRange::from(&**item).end() <= pos && body_item_binds_name(item, name));
+        let binder_is_own_decl = matches!(last_binder, Some(BodyItem::VariableDeclaration(decl))
+            if decl.declaration.id.name == *name);
+        if in_sketch_block {
+            if !binder_is_own_decl {
+                candidates.bare_use = None;
+            }
+        } else if last_binder.is_some() {
+            candidates.bare_use = None;
+        }
     }
 
     // A region tag reference like `r.tags.line1` resolves through the last binding of the
@@ -1597,9 +1636,23 @@ fn rename_sketch_symbol_in_body(
             }
         }
     }
-    // Or a declaration or use inside a sketch block declared in this body.
+    // Or the id of a declaration that is a direct item of a sketch block declared in this
+    // body. Declarations nested deeper (e.g. a local inside a function inside the block) are
+    // different symbols and don't match.
     let target = target.or_else(|| {
-        let name = candidates.ident.as_deref()?;
+        candidates.decl_id.as_ref()?;
+        sketch_blocks_in_body(body).find_map(|(sketch_name, block)| {
+            block.items.iter().find_map(|item| match item {
+                BodyItem::VariableDeclaration(decl) if SourceRange::from(&decl.declaration.id).contains(pos) => {
+                    Some((sketch_name.to_owned(), decl.declaration.id.name.clone()))
+                }
+                _ => None,
+            })
+        })
+    });
+    // ...or a bare use inside a sketch block declared in this body.
+    let target = target.or_else(|| {
+        let name = candidates.bare_use.as_deref()?;
         sketch_blocks_in_body(body)
             .find(|(_, block)| block.as_source_range().contains(pos) && block_declares_name(block, name))
             .map(|(sketch_name, _)| (sketch_name.to_owned(), name.to_owned()))
@@ -1665,7 +1718,7 @@ fn rename_sketch_symbol_in_nested_bodies(
     let recurse =
         |e: &mut Expr, c: &mut SketchSymbolCandidates| rename_sketch_symbol_in_nested_bodies(e, c, new_name, pos);
     let recurse_body = |b: &mut Node<Program>, c: &mut SketchSymbolCandidates| {
-        b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos)
+        b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos, false)
     };
     match expr {
         Expr::Literal(_)
@@ -1680,6 +1733,9 @@ fn rename_sketch_symbol_in_nested_bodies(
             // shadows any outer binding; if the reference didn't resolve inside the function,
             // outer scopes must not resolve it either.
             if !handled {
+                if candidates.bare_use.as_ref().is_some_and(|name| func.binds_name(name)) {
+                    candidates.bare_use = None;
+                }
                 if candidates
                     .member
                     .as_ref()
@@ -1703,7 +1759,7 @@ fn rename_sketch_symbol_in_nested_bodies(
                 .iter_mut()
                 .any(|arg| recurse(&mut arg.arg, candidates))
                 || (sketch_block.body.as_source_range().contains(pos)
-                    && rename_sketch_symbol_in_body(&mut sketch_block.body.items, candidates, new_name, pos))
+                    && rename_sketch_symbol_in_body(&mut sketch_block.body.items, candidates, new_name, pos, true))
         }
         Expr::IfExpression(if_expr) => {
             recurse(&mut if_expr.cond, candidates)
@@ -1769,7 +1825,7 @@ fn rename_sketch_symbol_in_nested_bodies_binary_part(
         BinaryPart::ObjectExpression(obj) => obj.properties.iter_mut().any(|p| recurse(&mut p.value, candidates)),
         BinaryPart::IfExpression(if_expr) => {
             let recurse_body = |b: &mut Node<Program>, c: &mut SketchSymbolCandidates| {
-                b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos)
+                b.as_source_range().contains(pos) && rename_sketch_symbol_in_body(&mut b.body, c, new_name, pos, false)
             };
             recurse(&mut if_expr.cond, candidates)
                 || recurse_body(&mut if_expr.then_val, candidates)
@@ -7647,6 +7703,85 @@ a = r.tags.point1
 b = r.tags.line1
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_from_unrelated_member_property_in_block_does_nothing() {
+        // `cfg.line1` is a field access on an unrelated object. Even though the position is
+        // inside a sketch block that declares `line1`, it is not a reference to the block's
+        // declaration.
+        let code = r#"cfg = { line1 = 1 }
+s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  point1 = point(at = [cfg.line1, var 0])
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("cfg.line1, var 0").unwrap() + "cfg.".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_from_param_use_in_nested_fn_inside_block_does_nothing() {
+        // The `line1` under the cursor is the parameter of the nested function, not the
+        // block's declaration.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  helper = fn(line1) {
+    return line1
+  }
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("return line1").unwrap() + "return ".len() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_from_local_decl_in_nested_fn_inside_block_does_nothing() {
+        // The declaration under the cursor is a local of the nested function, not a direct
+        // item of the sketch block, so it is a different symbol from the block's `line1`.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  helper = fn() {
+    line1 = 5
+    return line1
+  }
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = 5").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_from_use_before_declaration_in_block_does_nothing() {
+        // The executor evaluates block items in order, so a reference before the declaration
+        // doesn't resolve to it; rename doesn't target the declaration from there.
+        let code = r#"s = sketch(on = XY) {
+  coincident([line1.end, line1.start])
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1.end").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
     }
 
     /// Helper to create a comment NonCodeNode for tests.
