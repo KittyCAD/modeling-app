@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+import { signal } from '@preact/signals-core'
 import type * as ReactRouterDom from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
 
@@ -22,6 +23,15 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     registry: {
       get: () => ({
+        getProject: () => undefined,
+        location: signal({
+          hash: '',
+          key: 'test',
+          pathname: '/home',
+          search: '',
+          state: null,
+        }),
+        navigate: mocks.navigate,
         onFileClose: mocks.lspFileClose,
         onFileOpen: mocks.lspFileOpen,
       }),

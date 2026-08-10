@@ -31,7 +31,7 @@ import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
   type ProjectLibrary,
@@ -526,13 +526,19 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(appendRouterSubRouteWithSearch(PATHS.HOME, PATHS.SETTINGS))
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(
+        appendRouterSubRouteWithSearch(PATHS.HOME, PATHS.SETTINGS_KEYBINDINGS)
+      )
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(
+        `${appendRouterSubRouteWithSearch(PATHS.HOME, PATHS.SETTINGS_USER)}#defaultUnit`
+      )
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#libraries`)
+      void navigate(
+        `${appendRouterSubRouteWithSearch(PATHS.HOME, PATHS.SETTINGS_USER)}#libraries`
+      )
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (
@@ -950,7 +956,10 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
         </div>
         <ActionButton
           Element="link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+          to={`${appendRouterSubRouteWithSearch(
+            PATHS.HOME,
+            PATHS.SETTINGS_USER
+          )}#libraries`}
           iconStart={{
             icon: 'plus',
             bgClassName: '!bg-transparent',

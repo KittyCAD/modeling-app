@@ -522,6 +522,33 @@ describe('testing router sub-routes', () => {
       )
     ).toEqual('/file/%2Fprojects%2Fsettings%2Fmain.kcl')
   })
+
+  it('appends a sub-route without creating embedded double slashes', () => {
+    expect(
+      appendRouterSubRoute('/file/%2Ftmp%2Fproject%2Fmain.kcl', '/settings')
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl/settings')
+  })
+
+  it('strips repeated trailing sub-routes before closing overlays', () => {
+    expect(
+      stripTrailingRouterSubRoute(
+        '/file/%2Ftmp%2Fproject%2Fmain.kcl/settings/settings',
+        '/settings'
+      )
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl')
+  })
+
+  it('preserves search params and hashes when appending a sub-route', () => {
+    expect(
+      appendRouterSubRouteWithSearch('/home', '/settings?tab=user#libraries')
+    ).toEqual('/home/settings?tab=user#libraries')
+    expect(
+      appendRouterSubRouteWithSearch(
+        '/file/%2Ftmp%2Fproject%2Fmain.kcl/settings',
+        '/settings?tab=project'
+      )
+    ).toEqual('/file/%2Ftmp%2Fproject%2Fmain.kcl/settings?tab=project')
+  })
 })
 
 describe('testing fileNameHasExtension', () => {
