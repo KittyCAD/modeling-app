@@ -1397,13 +1397,20 @@ fn block_declares_name(block: &Block, name: &str) -> bool {
 
 /// Whether the expression contains any reference to the given name.
 fn expr_references_name(expr: &Expr, name: &str) -> bool {
+    expr_references_name_where(expr, |n| n == name)
+}
+
+/// Whether the expression contains a reference to any name matching the predicate. Member
+/// properties are visited too, so this over-approximates references; callers use it in the
+/// conservative direction (refusing a rename rather than misapplying one).
+fn expr_references_name_where(expr: &Expr, pred: impl Fn(&str) -> bool) -> bool {
     use crate::walk::Node as WalkNode;
     use crate::walk::Walker;
 
     let found = std::cell::Cell::new(false);
     let finder = |node: WalkNode<'_>| -> Result<bool, anyhow::Error> {
         if let WalkNode::Name(n) = node
-            && n.local_ident().is_some_and(|ident| ident.inner == name)
+            && n.local_ident().is_some_and(|ident| pred(ident.inner))
         {
             found.set(true);
             // Stop walking.
@@ -1749,6 +1756,18 @@ fn rename_sketch_symbol_in_nested_bodies(
                     .is_some_and(|(region, _)| func.binds_name(region))
                 {
                     candidates.tags_member = None;
+                }
+                // A resolved region's initializer references names that meant the function's
+                // bindings inside it (e.g. `region(segments = [s.line1])` where `s` is a
+                // parameter); outer scopes' same-named sketches are different bindings, and
+                // the runtime provenance is whatever was passed in. Over-approximates by
+                // matching any referenced name, which only refuses more renames.
+                if candidates
+                    .region
+                    .as_ref()
+                    .is_some_and(|(init, _, _)| expr_references_name_where(init, |name| func.binds_name(name)))
+                {
+                    candidates.region = None;
                 }
             }
             handled
@@ -7777,6 +7796,29 @@ s = sketch(on = XY) {
 "#;
         let mut program = parse(code);
         let pos = code.find("line1.end").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_from_tag_reference_with_param_shadowed_sketch_does_nothing() {
+        // The region derives from the parameter `s`, not the outer sketch of the same name;
+        // at runtime its tags come from whatever argument is passed to `f`. Renaming from the
+        // tag reference must not touch the outer sketch.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+fn f(s) {
+  r = region(segments = [s.line1])
+  return r.tags.line1
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
 
         program.rename_symbol("edgeOne", pos);
 
