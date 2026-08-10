@@ -35,6 +35,15 @@ export async function navigateToProjectFile({
 }) {
   const session = app.registry.get(projectSession)
   const project = session.getProject()
+  const router = app.registry.get(routerService)
+  const targetPath = joinRouterPaths(
+    PATHS.FILE,
+    safeEncodeForRouterPaths(filePath),
+    subRoute
+  )
+
+  await router.navigate(targetPath)
+
   if (openFile && project && isPathAtOrUnder(filePath, project.path)) {
     await session.openFile({
       path: filePath,
@@ -42,11 +51,6 @@ export async function navigateToProjectFile({
     })
   }
 
-  await app.registry
-    .get(routerService)
-    .navigate(
-      joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(filePath), subRoute)
-    )
   onProjectLoaderComplete?.()
 }
 

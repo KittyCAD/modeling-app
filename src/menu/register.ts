@@ -1,6 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
-import { PATHS } from '@src/lib/paths'
+import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -101,25 +101,33 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER)
+      void navigate(
+        appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_USER)
+      )
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(
+        appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_KEYBINDINGS)
+      )
     } else if (data.menuLabel === 'Edit.Change project directory') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#libraries')
+      void navigate(
+        `${appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_USER)}#libraries`
+      )
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_PROJECT)
+      void navigate(
+        appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_PROJECT)
+      )
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -140,7 +148,9 @@ export function modelingMenuCallbackMostActions({
         console.warn('filePath is undefined')
         return
       }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+      void navigate(
+        `${appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_USER)}#defaultUnit`
+      )
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({

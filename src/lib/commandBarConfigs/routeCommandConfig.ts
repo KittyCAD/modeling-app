@@ -1,7 +1,11 @@
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 import type { Command } from '@src/lib/commandTypes'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
+import {
+  appendRouterSubRouteWithSearch,
+  PATHS,
+  webSafeJoin,
+} from '@src/lib/paths'
 
 export function createRouteCommands(
   navigate: NavigateFunction,
@@ -45,8 +49,8 @@ export function createRouteCommands(
     needsReview: false,
     onSubmit: (_data) => {
       const path = location.pathname.includes(PATHS.FILE)
-        ? filePath + PATHS.SETTINGS + '?tab=project'
-        : PATHS.HOME + PATHS.SETTINGS
+        ? appendRouterSubRouteWithSearch(filePath, PATHS.SETTINGS_PROJECT)
+        : appendRouterSubRouteWithSearch(PATHS.HOME, PATHS.SETTINGS)
       void navigate(path)
     },
   }

@@ -1,7 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { appendRouterSubRouteWithSearch, PATHS } from '@src/lib/paths'
 import {
   formatProjectLibraryPathForDisplay,
   type ProjectLibrary,
@@ -113,7 +113,10 @@ export function HomeHeader({
           Loaded from{' '}
           <Link
             data-testid="project-directory-settings-link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+            to={`${appendRouterSubRouteWithSearch(
+              PATHS.HOME,
+              PATHS.SETTINGS_USER
+            )}#libraries`}
             className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
           >
             {formatProjectLibraryPathForDisplay(library)}
@@ -141,7 +144,10 @@ export function HomeHeader({
               <p className="">{errorMessage(readWriteProjectDir.error)}</p>
               <Link
                 data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                to={`${appendRouterSubRouteWithSearch(
+                  PATHS.HOME,
+                  PATHS.SETTINGS_USER
+                )}#libraries`}
                 className="py-1 text-white underline underline-offset-2 text-sm"
               >
                 Manage Project Libraries
