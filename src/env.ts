@@ -7,7 +7,7 @@ export function generateDomainsFromBaseDomain(baseDomain: string | undefined) {
     API_URL: `https://api.${normalizedBaseDomain}`,
     SITE_URL: `https://${normalizedBaseDomain}`,
     KITTYCAD_WEBSOCKET_URL: `wss://api.${normalizedBaseDomain}/ws/modeling/commands`,
-    MLEPHANT_WEBSOCKET_URL: `wss://api.${normalizedBaseDomain}/ws/ml/copilot`,
+    ZOOKEEPER_WEBSOCKET_URL: `wss://api.${normalizedBaseDomain}/ws/ml/copilot`,
     APP_URL: `https://app.${normalizedBaseDomain}`,
   }
 }
@@ -17,7 +17,9 @@ export type EnvironmentVariables = {
   readonly VITE_ZOO_BASE_DOMAIN: string | undefined
   readonly VITE_ZOO_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_WEBSOCKET_URL: string | undefined
-  readonly VITE_MLEPHANT_WEBSOCKET_URL: string | undefined
+  readonly VITE_ZOOKEEPER_WEBSOCKET_URL: string | undefined
+  /** Legacy name accepted for existing local environments. */
+  readonly VITE_MLEPHANT_WEBSOCKET_URL?: string | undefined
   readonly VITE_ZOO_API_TOKEN: string | undefined
   readonly VITE_ZOO_SITE_BASE_URL: string | undefined
   readonly VITE_ZOO_SITE_APP_URL: string | undefined
@@ -78,13 +80,13 @@ export const updateEnvironmentKittycadWebSocketUrl = (
   }
 }
 
-export const updateEnvironmentMlephantWebSocketUrl = (
+export const updateEnvironmentZookeeperWebSocketUrl = (
   environmentName: string,
-  mlephantWebSocketUrl: string
+  zookeeperWebSocketUrl: string
 ) => {
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
-    ENVIRONMENT.mlephantWebSocketUrl = mlephantWebSocketUrl
+    ENVIRONMENT.zookeeperWebSocketUrl = zookeeperWebSocketUrl
   }
 }
 
@@ -94,6 +96,7 @@ const getEnvironmentFromThisFile = (baseDomain: string | undefined) => {
     ENVIRONMENT || {
       domain: baseDomain ?? '',
       kittycadWebSocketUrl: undefined,
+      zookeeperWebSocketUrl: undefined,
       mlephantWebSocketUrl: undefined,
     }
   )
@@ -141,15 +144,20 @@ export default (): EnvironmentVariables => {
   const windowElectronProcessEnvOnly = windowElectronProcessEnv()
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
+  const environmentVariablesSource = env as EnvironmentVariables & {
+    VITE_KITTYCAD_API_TOKEN?: string | undefined
+  }
   const zooApiBaseUrl =
-    'VITE_ZOO_API_BASE_URL' in env ? env.VITE_ZOO_API_BASE_URL : undefined
+    'VITE_ZOO_API_BASE_URL' in environmentVariablesSource
+      ? environmentVariablesSource.VITE_ZOO_API_BASE_URL
+      : undefined
 
-  let BASE_DOMAIN = env.VITE_ZOO_BASE_DOMAIN
+  let BASE_DOMAIN = environmentVariablesSource.VITE_ZOO_BASE_DOMAIN
   let {
     API_URL,
     SITE_URL,
     KITTYCAD_WEBSOCKET_URL,
-    MLEPHANT_WEBSOCKET_URL,
+    ZOOKEEPER_WEBSOCKET_URL,
     APP_URL,
   } = generateDomainsFromBaseDomain(BASE_DOMAIN)
 
@@ -169,7 +177,7 @@ export default (): EnvironmentVariables => {
     API_URL = environmentDomains.API_URL
     SITE_URL = environmentDomains.SITE_URL
     KITTYCAD_WEBSOCKET_URL = environmentDomains.KITTYCAD_WEBSOCKET_URL
-    MLEPHANT_WEBSOCKET_URL = environmentDomains.MLEPHANT_WEBSOCKET_URL
+    ZOOKEEPER_WEBSOCKET_URL = environmentDomains.ZOOKEEPER_WEBSOCKET_URL
     APP_URL = environmentDomains.APP_URL
     BASE_DOMAIN = environment.domain
   }
@@ -181,34 +189,44 @@ export default (): EnvironmentVariables => {
     API_URL = zooApiBaseUrl
   }
   if (
-    env.VITE_KITTYCAD_WEBSOCKET_URL &&
-    env.VITE_KITTYCAD_WEBSOCKET_URL !== 'undefined'
+    environmentVariablesSource.VITE_KITTYCAD_WEBSOCKET_URL &&
+    environmentVariablesSource.VITE_KITTYCAD_WEBSOCKET_URL !== 'undefined'
   ) {
-    KITTYCAD_WEBSOCKET_URL = env.VITE_KITTYCAD_WEBSOCKET_URL
+    KITTYCAD_WEBSOCKET_URL =
+      environmentVariablesSource.VITE_KITTYCAD_WEBSOCKET_URL
   }
-  if (
-    env.VITE_MLEPHANT_WEBSOCKET_URL &&
-    env.VITE_MLEPHANT_WEBSOCKET_URL !== 'undefined'
-  ) {
-    MLEPHANT_WEBSOCKET_URL = env.VITE_MLEPHANT_WEBSOCKET_URL
+  const envZookeeperWebSocketUrl =
+    environmentVariablesSource.VITE_ZOOKEEPER_WEBSOCKET_URL &&
+    environmentVariablesSource.VITE_ZOOKEEPER_WEBSOCKET_URL !== 'undefined'
+      ? environmentVariablesSource.VITE_ZOOKEEPER_WEBSOCKET_URL
+      : environmentVariablesSource.VITE_MLEPHANT_WEBSOCKET_URL &&
+          environmentVariablesSource.VITE_MLEPHANT_WEBSOCKET_URL !== 'undefined'
+        ? environmentVariablesSource.VITE_MLEPHANT_WEBSOCKET_URL
+        : undefined
+  if (envZookeeperWebSocketUrl) {
+    ZOOKEEPER_WEBSOCKET_URL = envZookeeperWebSocketUrl
   }
 
   // Allow the in-app settings to override local WebSocket URLs
   if (environment.kittycadWebSocketUrl) {
     KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
   }
-  if (environment.mlephantWebSocketUrl) {
-    MLEPHANT_WEBSOCKET_URL = environment.mlephantWebSocketUrl
+  const environmentZookeeperWebSocketUrl =
+    environment.zookeeperWebSocketUrl ?? environment.mlephantWebSocketUrl
+  if (environmentZookeeperWebSocketUrl) {
+    ZOOKEEPER_WEBSOCKET_URL = environmentZookeeperWebSocketUrl
   }
 
   const environmentVariables: EnvironmentVariables = {
-    NODE_ENV: env.NODE_ENV || viteOnly.MODE || undefined,
+    NODE_ENV: environmentVariablesSource.NODE_ENV || viteOnly.MODE || undefined,
     VITE_ZOO_BASE_DOMAIN: BASE_DOMAIN || undefined,
     VITE_ZOO_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_WEBSOCKET_URL: KITTYCAD_WEBSOCKET_URL || undefined,
-    VITE_MLEPHANT_WEBSOCKET_URL: MLEPHANT_WEBSOCKET_URL || undefined,
+    VITE_ZOOKEEPER_WEBSOCKET_URL: ZOOKEEPER_WEBSOCKET_URL || undefined,
     VITE_ZOO_API_TOKEN:
-      env.VITE_ZOO_API_TOKEN || env.VITE_KITTYCAD_API_TOKEN || undefined,
+      environmentVariablesSource.VITE_ZOO_API_TOKEN ||
+      environmentVariablesSource.VITE_KITTYCAD_API_TOKEN ||
+      undefined,
     VITE_ZOO_SITE_BASE_URL: SITE_URL || undefined,
     VITE_ZOO_SITE_APP_URL: APP_URL || undefined,
   }

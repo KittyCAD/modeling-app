@@ -12,20 +12,20 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
+import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import {
   useProjectIdToConversationId,
-  useWatchForNewFileRequestsFromMlEphant,
-} from '@src/lib/zookeeper/components/MlEphantConversationPaneHooks'
+  useWatchForNewFileRequestsFromZookeeper,
+} from '@src/lib/zookeeper/components/ZookeeperConversationPaneHooks'
 import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
 import {
-  MlEphantConversationToMarkdown,
-  type MlEphantManagerActor,
-  MlEphantManagerReactContext,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
+  ZookeeperManagerReactContext,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
@@ -36,7 +36,7 @@ import {
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
-  prepareMlEphantNewFileRequest,
+  prepareZookeeperNewFileRequest,
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
@@ -88,24 +88,26 @@ function getZookeeperChangedFilePreviousCode(
   return previousCode === false ? undefined : previousCode
 }
 
-export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
+export function ZookeeperConversationPaneWrapper(
+  props: AreaTypeComponentProps
+) {
   const { auth } = useApp()
   const token = auth.useToken()
 
   return (
-    <MlEphantManagerReactContext.Provider
+    <ZookeeperManagerReactContext.Provider
       options={{
         input: {
           apiToken: token,
         },
       }}
     >
-      <MlEphantConversationPaneInner {...props} />
-    </MlEphantManagerReactContext.Provider>
+      <ZookeeperConversationPaneInner {...props} />
+    </ZookeeperManagerReactContext.Provider>
   )
 }
 
-function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
+function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
@@ -119,32 +121,32 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     theProject,
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
-  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
 
   useEffect(() => {
     const updatePromptRunning = (
-      snapshot: ReturnType<typeof mlEphantManagerActor.getSnapshot>
+      snapshot: ReturnType<typeof zookeeperManagerActor.getSnapshot>
     ) => {
       zookeeperPromptRunningSignal.value = snapshot.context.awaitingResponse
     }
 
-    updatePromptRunning(mlEphantManagerActor.getSnapshot())
-    const subscription = mlEphantManagerActor.subscribe(updatePromptRunning)
+    updatePromptRunning(zookeeperManagerActor.getSnapshot())
+    const subscription = zookeeperManagerActor.subscribe(updatePromptRunning)
 
     return () => {
       subscription.unsubscribe()
       zookeeperPromptRunningSignal.value = false
     }
-  }, [mlEphantManagerActor])
+  }, [zookeeperManagerActor])
 
   useEffect(() => {
     if (!IS_STAGING_OR_DEBUG) return
 
-    app.debug.mlEphantManagerActor = mlEphantManagerActor
+    app.debug.zookeeperManagerActor = zookeeperManagerActor
 
     return () => {
-      if (app.debug.mlEphantManagerActor === mlEphantManagerActor) {
-        delete app.debug.mlEphantManagerActor
+      if (app.debug.zookeeperManagerActor === zookeeperManagerActor) {
+        delete app.debug.zookeeperManagerActor
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
@@ -157,17 +159,17 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     reservePendingZookeeperHistoryWrite,
   } = useZookeeperEditPatchHistory({
     kclManager,
-    mlEphantManagerActor,
+    zookeeperManagerActor,
   })
   const zookeeperFileRequestQueue = useRef<Promise<void>>(Promise.resolve())
 
-  useWatchForNewFileRequestsFromMlEphant(
-    mlEphantManagerActor,
+  useWatchForNewFileRequestsFromZookeeper(
+    zookeeperManagerActor,
     kclManager.engineCommandManager,
     (requestProps) => {
       const activeFilePath =
         requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
-      const payload = prepareMlEphantNewFileRequest({
+      const payload = prepareZookeeperNewFileRequest({
         ...requestProps,
         fallbackFilePath: activeFilePath,
       })
@@ -253,7 +255,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                   })
                 }
                 await waitForIdleState({ systemIOActor })
-                kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+                kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
                 systemIOActor.send({
                   type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
                   data: {
@@ -379,7 +381,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
   // Save the conversation id for the project id if necessary.
   useProjectIdToConversationId(
-    mlEphantManagerActor,
+    zookeeperManagerActor,
     zookeeperConversationStore,
     settingsValues
   )
@@ -401,11 +403,11 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         icon="sparkles"
         title="Zookeeper"
         onClose={props.onClose}
-        Menu={MlEphantConversationMenu}
+        Menu={ZookeeperConversationMenu}
       />
-      <MlEphantConversationPane
+      <ZookeeperConversationPane
         {...{
-          mlEphantManagerActor: mlEphantManagerActor,
+          zookeeperManagerActor: zookeeperManagerActor,
           conversationStore: zookeeperConversationStore,
           kclManager,
           contextModeling,
@@ -445,10 +447,10 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
 function useZookeeperEditPatchHistory({
   kclManager,
-  mlEphantManagerActor,
+  zookeeperManagerActor,
 }: {
   kclManager: KclManager
-  mlEphantManagerActor: MlEphantManagerActor
+  zookeeperManagerActor: ZookeeperManagerActor
 }) {
   const pendingZookeeperHistoryByExchange = useRef(
     new Map<number, PendingZookeeperHistory>()
@@ -697,7 +699,7 @@ function useZookeeperEditPatchHistory({
   )
 
   useFlushZookeeperHistoryOnResponseEnd(
-    mlEphantManagerActor,
+    zookeeperManagerActor,
     pendingZookeeperHistoryByExchange,
     tryFlushPendingZookeeperHistory
   )
@@ -957,7 +959,7 @@ function createPendingZookeeperHistory(): PendingZookeeperHistory {
 }
 
 function useFlushZookeeperHistoryOnResponseEnd(
-  mlEphantManagerActor: MlEphantManagerActor,
+  zookeeperManagerActor: ZookeeperManagerActor,
   pendingZookeeperHistoryByExchange: MutableRefObject<
     Map<number, PendingZookeeperHistory>
   >,
@@ -965,7 +967,7 @@ function useFlushZookeeperHistoryOnResponseEnd(
 ) {
   useEffect(() => {
     let lastId: number | undefined
-    const subscription = mlEphantManagerActor.subscribe((next) => {
+    const subscription = zookeeperManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
@@ -985,14 +987,14 @@ function useFlushZookeeperHistoryOnResponseEnd(
       subscription.unsubscribe()
     }
   }, [
-    mlEphantManagerActor,
+    zookeeperManagerActor,
     pendingZookeeperHistoryByExchange,
     tryFlushPendingZookeeperHistory,
   ])
 }
 
-export const MlEphantConversationMenu = () => {
-  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+export const ZookeeperConversationMenu = () => {
+  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
 
   return (
     <HeaderMenu>
@@ -1000,8 +1002,8 @@ export const MlEphantConversationMenu = () => {
         <button
           type="button"
           onClick={() => {
-            const context = mlEphantManagerActor.getSnapshot().context
-            const md = MlEphantConversationToMarkdown(context.conversation)
+            const context = zookeeperManagerActor.getSnapshot().context
+            const md = ZookeeperConversationToMarkdown(context.conversation)
             const blob = new Blob([new TextEncoder().encode(md)], {
               type: 'text/markdown',
             })

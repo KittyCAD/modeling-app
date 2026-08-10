@@ -1,24 +1,24 @@
 import {
-  MlEphantConversation,
+  ZookeeperConversation,
   type QueuedMessage,
-} from '@src/lib/zookeeper/components/MlEphantConversation'
-import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
+import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
-import type { MlCopilotModeId } from '@src/lib/zookeeper/mlEphantManagerMachine'
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
@@ -28,18 +28,18 @@ import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
-type MlEphantConversationPaneUser = {
+type ZookeeperConversationPaneUser = {
   block_message?: string
   image?: string
 }
 
 // Defined outside of React o prevent rerenders
 const awaitingResponseSelector = (
-  snapshot: SnapshotFrom<MlEphantManagerActor>
+  snapshot: SnapshotFrom<ZookeeperManagerActor>
 ) => snapshot.context.awaitingResponse
 
-export const MlEphantConversationPane = (props: {
-  mlEphantManagerActor: MlEphantManagerActor
+export const ZookeeperConversationPane = (props: {
+  zookeeperManagerActor: ZookeeperManagerActor
   conversationStore: ZookeeperConversationStore
   kclManager: KclManager
   theProject: Project | undefined
@@ -50,7 +50,7 @@ export const MlEphantConversationPane = (props: {
   sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
-  user?: MlEphantConversationPaneUser
+  user?: ZookeeperConversationPaneUser
   showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
@@ -75,41 +75,41 @@ export const MlEphantConversationPane = (props: {
     loaderFileRef.current = props.loaderFile
   })
 
-  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+  let conversation = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.conversation
   })
 
-  const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
+  const abruptlyClosed = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
-  const setupFailed = useSelector(props.mlEphantManagerActor, (actor) => {
+  const setupFailed = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.setupFailed
   })
-  const closeReason = useSelector(props.mlEphantManagerActor, (actor) => {
+  const closeReason = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.closeReason
   })
-  const conversationId = useSelector(props.mlEphantManagerActor, (actor) => {
+  const conversationId = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.conversationId
   })
-  const isSettingUp = useSelector(props.mlEphantManagerActor, (actor) => {
-    return actor.matches(MlEphantManagerStates.Setup)
+  const isSettingUp = useSelector(props.zookeeperManagerActor, (actor) => {
+    return actor.matches(ZookeeperManagerStates.Setup)
   })
-  const isReady = useSelector(props.mlEphantManagerActor, (actor) => {
-    return actor.matches(MlEphantManagerStates.Ready)
+  const isReady = useSelector(props.zookeeperManagerActor, (actor) => {
+    return actor.matches(ZookeeperManagerStates.Ready)
   })
 
   const isPromptRunning = useSelector(
-    props.mlEphantManagerActor,
+    props.zookeeperManagerActor,
     awaitingResponseSelector
   )
-  const modeOptions = useSelector(props.mlEphantManagerActor, (actor) => {
+  const modeOptions = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.modeOptions
   })
   const attachmentsLoadedForCurrentPrompt = useSelector(
-    props.mlEphantManagerActor,
+    props.zookeeperManagerActor,
     (actor) => actor.context.attachmentsLoadedForCurrentPrompt
   )
-  const defaultMode = useSelector(props.mlEphantManagerActor, (actor) => {
+  const defaultMode = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.defaultMode
   })
   const initialMlCopilotMode =
@@ -118,7 +118,7 @@ export const MlEphantConversationPane = (props: {
     defaultMode
 
   if (
-    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
+    props.zookeeperManagerActor.getSnapshot().matches(S.Await) &&
     !abruptlyClosed
   ) {
     conversation = undefined
@@ -148,10 +148,10 @@ export const MlEphantConversationPane = (props: {
     })
 
     // Only on initial project creation do we call the create endpoint, which
-    // has more data for initial creations. Improvements to the TTC service
+    // has more data for initial creations. Improvements to the Zookeeper service
     // will close this gap in performance.
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.MessageSend,
+    props.zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.MessageSend,
       prompt: request,
       projectForPromptOutput: project,
       applicationProjectDirectory: getParentAbsolutePath(project.path),
@@ -179,7 +179,7 @@ export const MlEphantConversationPane = (props: {
 
     const currentProjectPath = props.theProject?.path
     const actorConversationId =
-      props.mlEphantManagerActor.getSnapshot().context.conversationId
+      props.zookeeperManagerActor.getSnapshot().context.conversationId
     const actorConversationMatchesCurrentProject =
       actorConversationProjectPath.current === currentProjectPath
     const savedProjectConversationLookupIsCurrent =
@@ -197,16 +197,16 @@ export const MlEphantConversationPane = (props: {
 
     reconnectAfterSavedConversationLookup.current = false
     actorConversationProjectPath.current = currentProjectPath
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.CacheSetupAndConnect,
-      refParentSend: props.mlEphantManagerActor.send,
+    props.zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: props.zookeeperManagerActor.send,
       conversationId:
         actorConversationMatchesCurrentProject &&
         actorConversationId !== undefined
           ? actorConversationId
           : savedProjectConversationId.current,
     })
-  }, [props.mlEphantManagerActor, props.theProject?.path])
+  }, [props.zookeeperManagerActor, props.theProject?.path])
 
   const onReconnect = useCallback(() => {
     setShowManualConnect(false)
@@ -218,13 +218,13 @@ export const MlEphantConversationPane = (props: {
       close: () => {
         reconnectAfterSavedConversationLookup.current = false
         setShowManualConnect(true)
-        props.mlEphantManagerActor.send({
-          type: MlEphantManagerTransitions.NetworkOffline,
+        props.zookeeperManagerActor.send({
+          type: ZookeeperManagerTransitions.NetworkOffline,
         })
       },
       connect: onReconnect,
     }),
-    [onReconnect, props.mlEphantManagerActor]
+    [onReconnect, props.zookeeperManagerActor]
   )
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
 
@@ -232,10 +232,10 @@ export const MlEphantConversationPane = (props: {
     if (typeof navigator === 'undefined' || navigator.onLine) {
       return
     }
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.NetworkOffline,
+    props.zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.NetworkOffline,
     })
-  }, [props.mlEphantManagerActor])
+  }, [props.zookeeperManagerActor])
 
   useEffect(() => {
     if (
@@ -260,8 +260,8 @@ export const MlEphantConversationPane = (props: {
   ])
 
   const onCancel = () => {
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.Cancel,
+    props.zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.Cancel,
     })
   }
 
@@ -299,7 +299,7 @@ export const MlEphantConversationPane = (props: {
     sendBillingUpdate,
     sendBillingUsageEnded,
     sendBillingUsageStarted,
-    mlEphantManagerActor,
+    zookeeperManagerActor,
   } = props
   const onSteer = useCallback(
     (id: string) => {
@@ -309,11 +309,11 @@ export const MlEphantConversationPane = (props: {
       steeredId.current = id
       // Interrupt the current prompt; when the response completes,
       // the auto-submit effect sends the steered message.
-      mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.Interrupt,
+      zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.Interrupt,
       })
     },
-    [mlEphantManagerActor]
+    [zookeeperManagerActor]
   )
 
   // Auto-submit the next queued message when current processing completes.
@@ -394,7 +394,9 @@ export const MlEphantConversationPane = (props: {
     savedProjectConversationLookupLoaded.current = true
     savedProjectConversationId.current = undefined
 
-    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
+    let sub:
+      | ReturnType<typeof props.zookeeperManagerActor.subscribe>
+      | undefined
     const startFreshConversation = () => {
       sub?.unsubscribe()
       if (!isCurrentClearOperation() || !isClearingChat.current) {
@@ -402,25 +404,25 @@ export const MlEphantConversationPane = (props: {
       }
 
       actorConversationProjectPath.current = props.theProject?.path
-      props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: props.mlEphantManagerActor.send,
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.zookeeperManagerActor.send,
         conversationId: undefined,
       })
       isClearingChat.current = false
       setIsClearingChatPending(false)
     }
 
-    sub = props.mlEphantManagerActor.subscribe((next) => {
+    sub = props.zookeeperManagerActor.subscribe((next) => {
       if (next.matches(S.Await)) {
         startFreshConversation()
       }
     })
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ConversationClose,
+    props.zookeeperManagerActor.send({
+      type: ZookeeperManagerTransitions.ConversationClose,
     })
 
-    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+    if (props.zookeeperManagerActor.getSnapshot().matches(S.Await)) {
       startFreshConversation()
     }
   }
@@ -447,12 +449,12 @@ export const MlEphantConversationPane = (props: {
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
       props.theProject !== undefined &&
-      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
+      props.zookeeperManagerActor.getSnapshot().context.abruptlyClosed === false
     ) {
       actorConversationProjectPath.current = props.theProject.path
-      props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: props.mlEphantManagerActor.send,
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.zookeeperManagerActor.send,
         conversationId,
       })
     }
@@ -464,16 +466,16 @@ export const MlEphantConversationPane = (props: {
     isClearingChat.current = false
     setIsClearingChatPending(false)
 
-    const subscriptionMlEphantManagerActor =
-      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
+    const subscriptionZookeeperManagerActor =
+      props.zookeeperManagerActor.subscribe((zookeeperManagerActorSnapshot) => {
         const isProcessing =
-          (mlEphantManagerActorSnapshot.matches({
-            [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Request]: S.Await,
+          (zookeeperManagerActorSnapshot.matches({
+            [ZookeeperManagerStates.Ready]: {
+              [ZookeeperManagerStates.Request]: S.Await,
             },
-          }) || mlEphantManagerActorSnapshot.value === S.Await) === false
+          }) || zookeeperManagerActorSnapshot.value === S.Await) === false
 
-        const { context } = mlEphantManagerActorSnapshot
+        const { context } = zookeeperManagerActorSnapshot
 
         if (
           isClearingChat.current &&
@@ -485,8 +487,8 @@ export const MlEphantConversationPane = (props: {
         }
 
         if (
-          mlEphantManagerActorSnapshot.matches(
-            MlEphantManagerStates.WaitForContinueCheck
+          zookeeperManagerActorSnapshot.matches(
+            ZookeeperManagerStates.WaitForContinueCheck
           ) &&
           props.theProject !== undefined
         ) {
@@ -499,8 +501,8 @@ export const MlEphantConversationPane = (props: {
             fileNames: props.kclManager.execState.filenames,
             projectContext: project,
           }).then((projectFiles) => {
-            props.mlEphantManagerActor.send({
-              type: MlEphantManagerStates.ContinueCheck,
+            props.zookeeperManagerActor.send({
+              type: ZookeeperManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
               activeFile: currentLoaderFile
@@ -575,7 +577,7 @@ export const MlEphantConversationPane = (props: {
       clearChatOperationGeneration.current += 1
       isClearingChat.current = false
       reconnectAfterSavedConversationLookup.current = false
-      subscriptionMlEphantManagerActor.unsubscribe()
+      subscriptionZookeeperManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.meta.id.current, props.theProject?.path])
@@ -583,13 +585,13 @@ export const MlEphantConversationPane = (props: {
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
   useEffect(() => {
-    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ML_PROMPT_KEY)
+    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
     if (ttcPromptParam) {
       setDefaultPrompt(ttcPromptParam)
 
       // Now clear that param
       const newSearchParams = new URLSearchParams(searchParams)
-      newSearchParams.delete(SEARCH_PARAM_ML_PROMPT_KEY)
+      newSearchParams.delete(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
       setSearchParams(newSearchParams, { replace: true })
     }
   }, [searchParams, setSearchParams])
@@ -621,7 +623,7 @@ export const MlEphantConversationPane = (props: {
   ])
 
   return (
-    <MlEphantConversation
+    <ZookeeperConversation
       isLoading={conversation === undefined}
       isLoadingAttachments={isLoadingAttachments}
       contexts={[
@@ -630,8 +632,8 @@ export const MlEphantConversationPane = (props: {
       conversation={conversation}
       welcomeMessage={
         // Replace this local component with a remote-authored content source
-        // later. `MlEphantConversation` already handles placement and ordering.
-        <MlEphantConversationWelcome />
+        // later. `ZookeeperConversation` already handles placement and ordering.
+        <ZookeeperConversationWelcome />
       }
       onProcess={(
         request: string,

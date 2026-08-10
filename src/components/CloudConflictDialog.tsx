@@ -1,4 +1,5 @@
 import { Dialog } from '@headlessui/react'
+import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import {
@@ -14,6 +15,7 @@ import {
   getCloudSyncProjectMetadataIndex,
   isCloudSyncConflictRevisionChangedError,
   loadCloudSyncProjectConflictInspection,
+  retryCloudSync,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
 import {
@@ -21,6 +23,7 @@ import {
   type ConflictFileStatus,
   type ConflictInspection,
 } from '@src/lib/cloudSync/conflictInspection'
+import { formatDateTime, formatOptionalDateTime } from '@src/lib/dateTime'
 import fsZds from '@src/lib/fs-zds'
 import type { ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
@@ -35,21 +38,40 @@ type CloudConflictDialogProps = {
   onResolved?: () => void
 }
 
+type CloudConflictDialogRequest = {
+  projectPath: string
+  projectName?: string
+}
+
+type CloudSyncErrorDialogRequest = {
+  title: string
+  message: string
+  projectName?: string
+  occurredAt?: string
+}
+
 type ConflictInspectionState =
   | { status: 'loading' }
   | { status: 'ready'; inspection: ConflictInspection }
   | { status: 'error'; message: string }
 
-function messageFromError(error: unknown) {
-  return error instanceof Error ? error.message : String(error)
+const cloudConflictDialogRequest = signal<CloudConflictDialogRequest | null>(
+  null
+)
+const cloudSyncErrorDialogRequest = signal<CloudSyncErrorDialogRequest | null>(
+  null
+)
+
+export function openCloudConflictDialog(request: CloudConflictDialogRequest) {
+  cloudConflictDialogRequest.value = request
 }
 
-function formatDateTime(dateTimeMs: number | undefined) {
-  if (dateTimeMs === undefined || Number.isNaN(dateTimeMs)) {
-    return 'Unknown'
-  }
+export function openCloudSyncErrorDialog(request: CloudSyncErrorDialogRequest) {
+  cloudSyncErrorDialogRequest.value = request
+}
 
-  return new Date(dateTimeMs).toLocaleString()
+function messageFromError(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
 }
 
 function conflictStatusLabel(status: ConflictFileStatus) {
@@ -531,5 +553,145 @@ export function CloudConflictDialog({
         </Dialog.Panel>
       </div>
     </Dialog>
+  )
+}
+
+function CloudSyncErrorDialog({
+  request,
+  onDismiss,
+}: {
+  request: CloudSyncErrorDialogRequest
+  onDismiss: () => void
+}) {
+  const formattedTime = formatOptionalDateTime(request.occurredAt)
+
+  return (
+    <Dialog
+      open={true}
+      onClose={onDismiss}
+      className="fixed inset-0 z-50 overflow-y-auto p-4"
+    >
+      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/80 dark:bg-chalkboard-110/40" />
+      <div className="relative flex min-h-full items-center justify-center">
+        <Dialog.Panel
+          className="relative flex w-[min(92vw,34rem)] flex-col rounded border border-destroy-40 bg-chalkboard-10 shadow-lg dark:border-destroy-80 dark:bg-chalkboard-100"
+          data-testid="cloud-sync-error-dialog"
+        >
+          <div className="flex items-center justify-between gap-4 border-b border-chalkboard-20 p-4 dark:border-chalkboard-70">
+            <div className="min-w-0 flex-1">
+              <Dialog.Title as="h2" className="text-xl font-bold">
+                {request.title}
+              </Dialog.Title>
+            </div>
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="m-0 border-none p-0 bg-destroy-10/20 hover:bg-destroy-10 focus:bg-destroy-10 focus:outline-none focus:ring-0 dark:bg-destroy-80/20 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+              data-testid="cloud-sync-error-close-button"
+            >
+              <CustomIcon name="close" className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="space-y-4 p-4 text-sm">
+            <Dialog.Description as="div" className="space-y-2">
+              {request.projectName && (
+                <p className="break-words">
+                  Cloud sync hit an error for{' '}
+                  <span className="font-medium">{request.projectName}</span>.
+                </p>
+              )}
+              {formattedTime && (
+                <p className="text-chalkboard-70 dark:text-chalkboard-40">
+                  Last reported {formattedTime}
+                </p>
+              )}
+            </Dialog.Description>
+
+            <p className="whitespace-pre-wrap break-words rounded border border-destroy-40 bg-destroy-10/50 px-3 py-2 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
+              {request.message}
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-2 border-t border-chalkboard-20 p-4 dark:border-chalkboard-70">
+            <ActionButton
+              Element="button"
+              type="button"
+              iconStart={{
+                icon: 'refresh',
+                size: 'sm',
+                className: 'p-1',
+                bgClassName: '!bg-transparent dark:!bg-transparent',
+              }}
+              onClick={() => {
+                retryCloudSync()
+                onDismiss()
+              }}
+              className="bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90"
+              data-testid="cloud-sync-error-retry-button"
+            >
+              Retry cloud sync
+            </ActionButton>
+          </div>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  )
+}
+
+export function CloudConflictDialogHost({
+  resolvedTheme,
+}: {
+  resolvedTheme: ResolvedTheme
+}) {
+  useSignals()
+  const conflictDialog = cloudConflictDialogRequest.value
+
+  useEffect(() => {
+    return () => {
+      cloudConflictDialogRequest.value = null
+    }
+  }, [])
+
+  if (!conflictDialog) {
+    return null
+  }
+
+  return (
+    <CloudConflictDialog
+      projectPath={conflictDialog.projectPath}
+      projectName={conflictDialog.projectName}
+      resolvedTheme={resolvedTheme}
+      onDismiss={() => {
+        cloudConflictDialogRequest.value = null
+      }}
+      onResolved={() => {
+        cloudConflictDialogRequest.value = null
+      }}
+    />
+  )
+}
+
+export function CloudSyncErrorDialogHost() {
+  useSignals()
+  const errorDialog = cloudSyncErrorDialogRequest.value
+
+  useEffect(() => {
+    return () => {
+      cloudSyncErrorDialogRequest.value = null
+    }
+  }, [])
+
+  if (!errorDialog) {
+    return null
+  }
+
+  return (
+    <CloudSyncErrorDialog
+      request={errorDialog}
+      onDismiss={() => {
+        cloudSyncErrorDialogRequest.value = null
+      }}
+    />
   )
 }

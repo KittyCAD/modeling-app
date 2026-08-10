@@ -2,7 +2,9 @@
 /// This can be used for model-based definition (MBD).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
 
 /// GD&T datum feature.
 ///
