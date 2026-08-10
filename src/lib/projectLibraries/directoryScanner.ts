@@ -4,7 +4,8 @@ import {
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
 import {
-  clearOutboxEntriesForProject,
+  clearLegacyConflictCopyReferences,
+  clearOutboxEntriesTouchingProject,
   deleteProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
@@ -228,7 +229,8 @@ async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
     }
   }
 
-  await clearOutboxEntriesForProject(projectPath)
+  await clearOutboxEntriesTouchingProject(projectPath)
+  await clearLegacyConflictCopyReferences(projectPath)
   await deleteProjectMetadata(projectPath)
 }
 
