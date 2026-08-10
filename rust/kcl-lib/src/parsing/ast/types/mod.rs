@@ -1312,7 +1312,14 @@ fn is_region_derived_from_sketch(decl: &VariableDeclaration, sketch_name: &str) 
 }
 
 /// Whether this expression is a `region(...)` call deriving from the given sketch variable.
-/// See [is_region_derived_from_sketch].
+/// Mirrors the executor's provenance rules (see `region_from_point` in std::sketch):
+/// - `segments = [...]`: the region derives from the segments' sketches. (The executor
+///   rejects a `sketch` argument alongside segments.)
+/// - `point = <segment>`: a solved point segment carries its own sketch, and the executor
+///   ignores any `sketch` argument. Syntactically, a point argument of the form `base.name`
+///   (a member of a bare name) is treated as a segment of `base`.
+/// - `point = [x, y]` or any deeper expression (e.g. `s.circle1.center`, a coordinate taken
+///   from geometry): 2D coordinates; the `sketch` argument determines the sketch.
 fn region_call_derives_from(init: &Expr, sketch_name: &str) -> bool {
     let Expr::CallExpressionKw(call) = init else {
         return false;
@@ -1326,15 +1333,22 @@ fn region_call_derives_from(init: &Expr, sketch_name: &str) -> bool {
             .find(|arg| arg.label.as_ref().is_some_and(|l| l.name == label))
             .map(|arg| &arg.arg)
     };
-    // An explicit `sketch` argument determines which sketch the region belongs to; other
-    // arguments may reference other sketches without the region deriving from them (e.g. a
-    // point coordinate taken from another sketch's geometry).
+    if let Some(segments) = arg_with_label("segments") {
+        return expr_references_name(segments, sketch_name);
+    }
+    let point = arg_with_label("point");
+    // A point segment like `s.point1`: the segment's sketch is the provenance, and the
+    // executor ignores any `sketch` argument.
+    if let Some(Expr::MemberExpression(member)) = point
+        && !member.computed
+        && let Expr::Name(base) = &member.object
+    {
+        return base.local_ident().is_some_and(|ident| ident.inner == sketch_name);
+    }
     if let Some(sketch_arg) = arg_with_label("sketch") {
         return expr_references_name(sketch_arg, sketch_name);
     }
-    ["point", "segments"]
-        .iter()
-        .any(|label| arg_with_label(label).is_some_and(|arg| expr_references_name(arg, sketch_name)))
+    point.is_some_and(|arg| expr_references_name(arg, sketch_name))
 }
 
 /// What the rename position points at, as candidates for resolving a sketch block symbol.
@@ -7110,8 +7124,10 @@ fn f() {
 
     #[test]
     fn test_rename_region_with_explicit_sketch_arg_derives_from_that_sketch_only() {
-        // The region's provenance is the explicit `sketch` argument (s2); the point taken
-        // from s1's geometry doesn't make the region derive from s1.
+        // Mirrors the executor's coordinate branch (see region_from_point in std::sketch):
+        // `s1.circle1.center` is a 2D coordinate taken from s1's geometry, not a segment, so
+        // the explicit `sketch` argument (s2) determines the region's provenance and the
+        // region does not derive from s1.
         let code = r#"s1 = sketch(on = XY) {
   circle1 = circle(center = [var 0, var 0], diameter = var 2)
 }
@@ -7359,6 +7375,66 @@ fn f() {
   return foo::item
 }
 result = bar
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_region_point_segment_provenance_overrides_sketch_arg() {
+        // Mirrors the executor: when `point` is a point segment (`s1.point1`), the region
+        // derives from that segment's sketch and the `sketch` argument is ignored (see
+        // region_from_point in std::sketch). This region call is executor-shaped: a segment
+        // point plus a (dead) sketch argument.
+        let code = r#"s1 = sketch(on = XY) {
+  point1 = point(at = [var 1, var 1])
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.point1, sketch = s2)
+a = r.tags.point1
+b = r.tags.line1
+"#;
+
+        // Renaming s1's point segment updates r's tags: r derives from s1.
+        let mut program = parse(code);
+        let pos = code.find("point1").unwrap() + 1;
+        program.rename_symbol("anchor", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  anchor = point(at = [var 1, var 1])
+}
+s2 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.anchor, sketch = s2)
+a = r.tags.anchor
+b = r.tags.line1
+"#
+        );
+
+        // Renaming s2's segment does not touch r's tags: the sketch argument is dead when
+        // the point is a segment, so r does not derive from s2.
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+        program.rename_symbol("edgeOne", pos);
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s1 = sketch(on = XY) {
+  point1 = point(at = [var 1, var 1])
+}
+s2 = sketch(on = XY) {
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+}
+
+r = region(point = s1.point1, sketch = s2)
+a = r.tags.point1
+b = r.tags.line1
 "#
         );
     }
