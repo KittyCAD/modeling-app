@@ -20,6 +20,7 @@ import {
   getCcwSweep,
   getLineIntersection,
   length2d,
+  linesAreParallel,
   normalizeVec,
   scaleVec,
   subVec,
@@ -121,6 +122,12 @@ export type DimensionDistanceDraftContext =
       kind: 'pointLine'
       point: PointSelection
       line: LineSelection
+      distance: number
+    }
+  | {
+      kind: 'lineLine'
+      line0: LineSelection
+      line1: LineSelection
       distance: number
     }
 
@@ -385,7 +392,7 @@ function getInitialDistanceSelections(
 
   const first = selectionFromId(firstId)
   const second = selectionFromId(secondId)
-  if (!first || !second || (first.type === 'line' && second.type === 'line')) {
+  if (!first || !second) {
     return null
   }
 
@@ -508,8 +515,11 @@ export function getDimensionDistanceType(
   mousePoint: Coords2d,
   distanceContext: DimensionDistanceDraftContext
 ): DimensionDistanceType {
-  // Axis-specific point-to-line distance is under-specified in KCL.
-  if (distanceContext.kind === 'pointLine') {
+  // Axis-specific distances involving lines are under-specified in KCL.
+  if (
+    distanceContext.kind === 'pointLine' ||
+    distanceContext.kind === 'lineLine'
+  ) {
     return 'Distance'
   }
 
@@ -541,6 +551,9 @@ export function buildDimensionDistanceConstraint(
   if (distanceContext.kind === 'pointLine') {
     distance = roundOff(distanceContext.distance)
     points = [distanceContext.point.id, distanceContext.line.id]
+  } else if (distanceContext.kind === 'lineLine') {
+    distance = roundOff(distanceContext.distance)
+    points = [distanceContext.line0.id, distanceContext.line1.id]
   } else {
     const delta = subVec(
       distanceContext.point1.point,
@@ -897,7 +910,28 @@ function getDimensionDraftContext(
       secondSelection,
       objects
     )
-    return angle ? { type: 'angle', angle } : null
+    if (angle) {
+      return { type: 'angle', angle }
+    }
+
+    const line0 = getLinePoints(objects[firstSelection.id], objects)
+    const line1 = getLinePoints(objects[secondSelection.id], objects)
+    if (!line0 || !line1 || !linesAreParallel(line0, line1)) {
+      return null
+    }
+
+    const distance = distancePointToLine2d(line0[0], line1)
+    return distance === null
+      ? null
+      : {
+          type: 'distance',
+          distance: {
+            kind: 'lineLine',
+            line0: firstSelection,
+            line1: secondSelection,
+            distance,
+          },
+        }
   }
 
   if (firstSelection.type === 'point' && secondSelection.type === 'point') {

@@ -402,6 +402,28 @@ describe('dimensionTool distance selection', () => {
       source: { expr: '4', is_literal: true },
     })
   })
+
+  it('builds an absolute distance between parallel lines', () => {
+    const lineLineContext: DimensionDistanceDraftContext = {
+      kind: 'lineLine',
+      line0: { type: 'line', id: 10, clickPoint: [5, 0] },
+      line1: { type: 'line', id: 11, clickPoint: [5, 4] },
+      distance: 4,
+    }
+
+    expect(
+      buildDimensionDistanceConstraint(lineLineContext, [5, 7], 'Mm')
+    ).toEqual({
+      type: 'Distance',
+      points: [10, 11],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 5, units: 'Mm' },
+        y: { value: 7, units: 'Mm' },
+      },
+      source: { expr: '4', is_literal: true },
+    })
+  })
 })
 
 describe('dimensionTool', () => {
@@ -516,6 +538,39 @@ describe('dimensionTool', () => {
     ])
   })
 
+  it('creates a distance draft after selecting two parallel lines', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const line0Start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line1Start = createPointApiObject({ id: 3, x: 0, y: 4 })
+    const line1End = createPointApiObject({ id: 4, x: 10, y: 4 })
+    const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const line1 = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      line0Start,
+      line0End,
+      line1Start,
+      line1End,
+      line0,
+      line1,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([5, 0]))
+    callbacks.onClick(createMouseEvent([5, 4]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      points: [10, 11],
+      distance: { value: 4, units: 'Mm' },
+    })
+  })
+
   it('starts distance placement when initialized with two selected points', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
@@ -565,6 +620,40 @@ describe('dimensionTool', () => {
       labelPosition: {
         x: { value: 8, units: 'Mm' },
         y: { value: 6, units: 'Mm' },
+      },
+    })
+  })
+
+  it('starts distance placement when initialized with two parallel lines', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const line0Start = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+    const line1Start = createPointApiObject({ id: 3, x: 0, y: 4 })
+    const line1End = createPointApiObject({ id: 4, x: 10, y: 4 })
+    const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const line1 = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const { actor, sceneInfra, rustContext } = createParentHarness(
+      [sketch, line0Start, line0End, line1Start, line1End, line0, line1],
+      {
+        initialSelectionIds: [10, 11],
+        initialSelectionCoordinates: { 10: [5, 0], 11: [5, 4] },
+      }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onMove(createMouseEvent([5, 7]))
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      points: [10, 11],
+      distance: { value: 4, units: 'Mm' },
+      labelPosition: {
+        x: { value: 5, units: 'Mm' },
+        y: { value: 7, units: 'Mm' },
       },
     })
   })
