@@ -809,23 +809,16 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.peerConnection.connectionState !== 'closed') {
-      EngineDebugger.addLog({
-        label: 'connection',
-        message: 'disconnectPeerConnection',
-        metadata: { id: this.id },
-      })
-      this.peerConnection.close()
-    } else {
-      EngineDebugger.addLog({
-        label: 'connection',
-        message: 'disconnectPeerConnection',
-        metadata: {
-          id: this.id,
-          connectionState: this.peerConnection.connectionState,
-        },
-      })
-    }
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'disconnectPeerConnection',
+      metadata: {
+        id: this.id,
+        connectionState: this.peerConnection.connectionState,
+      },
+    })
+
+    this.peerConnection.close()
   }
 
   removeAllEventListeners() {
