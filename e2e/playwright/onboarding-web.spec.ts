@@ -1,5 +1,6 @@
 import {
   type CloudProject,
+  createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
   readOpfsTextFiles,
@@ -43,8 +44,10 @@ test(
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = []
     const remoteRevisions = new Map<string, number>()
+    const remoteListGate = createRemoteListGate()
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
+      remoteListGate,
       createProject: () => {
         const index = remoteProjects.length
         const id = TUTORIAL_PROJECT_IDS[index]
@@ -84,8 +87,6 @@ test(
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
 
     await replayOnboardingFromSettings(page, 'tutorial-project')
-    await expect.poll(() => apiCalls.creates.length).toBe(1)
-    expect(apiCalls.creates[0]).toContain('tutorial-project')
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
@@ -94,6 +95,38 @@ test(
         return files.main
       })
       .toContain('plateLength = 10')
+
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+    await expect.poll(() => page.url()).not.toContain('/onboarding')
+    await page.getByTestId('app-logo').click()
+    await expect(
+      page.getByRole('heading', {
+        name: /^(Project Libraries|Personal Cloud)$/,
+      })
+    ).toBeVisible()
+    const tutorialProjectLink = page.getByTestId('project-link').filter({
+      has: page
+        .getByTestId('project-title')
+        .filter({ hasText: /^tutorial-project$/ }),
+    })
+    await expect(tutorialProjectLink).toHaveCount(1)
+    await expect(
+      tutorialProjectLink.getByTestId('project-file-count')
+    ).toHaveText('1')
+    remoteListGate.release()
+    await expect.poll(() => apiCalls.creates.length).toBe(1)
+    expect(apiCalls.creates[0]).toContain('tutorial-project')
+    await expect
+      .poll(() => apiCalls.remoteListResponses)
+      .toBeGreaterThanOrEqual(1)
+    await expect(tutorialProjectLink).toHaveCount(1)
+    await expect(
+      tutorialProjectLink.getByTestId('project-file-count')
+    ).toHaveText('1')
+    await tutorialProjectLink.click()
+    await expect(page).toHaveURL(/tutorial-project%2Fmain\.kcl$/)
+
     await page.evaluate(async (mainPath) => {
       await window.fsZds.writeFile(
         mainPath,
