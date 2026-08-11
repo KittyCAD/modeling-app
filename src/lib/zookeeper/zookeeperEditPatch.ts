@@ -1,10 +1,10 @@
 import type { MlToolResult } from '@kittycad/lib'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
+  type StructuredPatch,
   applyPatch,
   createTwoFilesPatch,
   parsePatch,
-  type StructuredPatch,
 } from 'diff'
 
 export type ZookeeperCreatedPatchFile = {
@@ -62,24 +62,6 @@ export function getZookeeperEditPatchFromToolOutput(
 
 export function isZookeeperProjectEntrypointPath(path: string) {
   return normalizeZookeeperPatchPath(path) === PROJECT_ENTRYPOINT
-}
-
-export function getZookeeperEditPatchToastMessage(
-  patch: ZookeeperEditPatch
-): string | undefined {
-  const changedFileCount = new Set(
-    (patch.changed_files ?? []).map((file) =>
-      normalizeZookeeperPatchPath(file.path)
-    )
-  ).size
-
-  if (changedFileCount === 0) {
-    return
-  }
-
-  return `Successfully updated ${changedFileCount} ${
-    changedFileCount === 1 ? 'file' : 'files'
-  }`
 }
 
 export function mergeZookeeperEditPatches(

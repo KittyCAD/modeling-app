@@ -359,7 +359,7 @@ const sharedBulkDeleteWorkflow = async ({
 }) => {
   if (!input.context.folders) {
     console.warn('no folders')
-    return 0
+    return
   }
 
   const project = input.context.folders.find(
@@ -790,7 +790,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
-            showSuccessToast?: boolean
           }
         }) => {
           try {
@@ -841,10 +840,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               fileName: input.requestedFileNameWithExtension || '',
               subRoute: input.requestedSubRoute || '',
               shouldNavigate,
-              showSuccessToast: input.showSuccessToast,
-              // Patch-backed edits suppress these per-write success toasts and
-              // publish one aggregate toast when the Zookeeper stream ends.
-              // Keep the stable id for patchless results and errors.
+              // Zookeeper streams cumulative edit patches, so one edit triggers
+              // several of these bulk writes back-to-back. Sharing a toast id
+              // collapses the otherwise-identical success toasts into one.
               toastId: ZOOKEEPER_FILE_WRITE_TOAST_ID,
               ...(shouldNavigate && input.onSuccess
                 ? { onProjectLoaderComplete: input.onSuccess }
