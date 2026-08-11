@@ -97,6 +97,21 @@ export function getDefaultDirectoryProjectLibraryPath(
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
 
+/**
+ * Return the local storage root used by legacy System IO workflows.
+ * Directory libraries take precedence, while cloud libraries provide their
+ * local materialization path when web has replaced the default directory.
+ */
+export function getDefaultLocalProjectLibraryPath(
+  libraries: readonly ProjectLibrarySetting[] | undefined
+) {
+  return (
+    getDefaultDirectoryProjectLibraryPath(libraries) ??
+    libraries?.find((library) => library.type === CLOUD_PROJECT_LIBRARY_TYPE)
+      ?.path
+  )
+}
+
 export function normalizeLibraryPath(path: string) {
   return path.replaceAll('\\', '/').replace(/\/+$/g, '')
 }

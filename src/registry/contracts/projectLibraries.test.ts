@@ -7,6 +7,7 @@ import {
   getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
+  getDefaultLocalProjectLibraryPath,
   getProjectLibraryIdFromSetting,
   LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
   moveProjectLibrarySetting,
@@ -213,6 +214,36 @@ describe('project library settings', () => {
   test('allows the project libraries setting to be absent', () => {
     expect(getDefaultDirectoryProjectLibraryPath(undefined)).toBeUndefined()
     expect(getDefaultDirectoryProjectLibrarySetting(undefined)).toBeUndefined()
+    expect(getDefaultLocalProjectLibraryPath(undefined)).toBeUndefined()
+  })
+
+  test('uses a cloud materialization path when no directory library exists', () => {
+    expect(
+      getDefaultLocalProjectLibraryPath([
+        {
+          title: 'Personal Cloud',
+          path: '/documents/zoo-modeling-app-projects',
+          type: 'cloud',
+        },
+      ])
+    ).toBe('/documents/zoo-modeling-app-projects')
+  })
+
+  test('prefers a directory library over a cloud materialization path', () => {
+    expect(
+      getDefaultLocalProjectLibraryPath([
+        {
+          title: 'Personal Cloud',
+          path: '/documents/zoo-modeling-app-projects',
+          type: 'cloud',
+        },
+        {
+          title: 'Client Projects',
+          path: '/client-projects',
+          type: 'directory',
+        },
+      ])
+    ).toBe('/client-projects')
   })
 
   test('finds the most specific directory library containing a project path', () => {

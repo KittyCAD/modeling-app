@@ -16,7 +16,10 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  getDefaultLocalProjectLibraryPath,
+} from '@src/lib/projectLibraries'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -50,6 +53,9 @@ export function SystemIOMachineLogicListener() {
     getDefaultDirectoryProjectLibraryPath(
       settingsValues.app.libraries.current
     ) || ''
+  const defaultLocalProjectLibraryPath =
+    getDefaultLocalProjectLibraryPath(settingsValues.app.libraries.current) ||
+    ''
   const { pathname } = useLocation()
 
   function safestNavigateToFile({
@@ -74,7 +80,7 @@ export function SystemIOMachineLogicListener() {
       filePathWithExtension = decodeURIComponent(encodedURI)
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
-        defaultDirectoryLibraryPath
+        defaultLocalProjectLibraryPath
       )
     }
 
@@ -217,12 +223,12 @@ export function SystemIOMachineLogicListener() {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
-            requestedProjectDirectoryPath: defaultDirectoryLibraryPath,
+            requestedProjectDirectoryPath: defaultLocalProjectLibraryPath,
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [defaultDirectoryLibraryPath, pathname])
+    }, [defaultLocalProjectLibraryPath, pathname])
   }
 
   const useDefaultProjectName = () => {
