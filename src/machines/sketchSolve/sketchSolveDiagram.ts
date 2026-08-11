@@ -359,7 +359,10 @@ export const sketchSolveMachine = setup({
     },
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
-      return { pendingToolName: event.data.tool }
+      return {
+        pendingToolName: event.data.tool,
+        pendingToolKeepSelection: event.keepSelection ?? false,
+      }
     }),
     'constrain draft line': ({ context, event }) => {
       assertEvent(event, 'equip tool')
@@ -426,6 +429,15 @@ export const sketchSolveMachine = setup({
       selectionCoordinates: {},
       duringAreaSelectIds: [],
     }),
+    'clear selection after tool completion': assign(({ context }) =>
+      context.keepSelectionAfterToolCompletion
+        ? { duringAreaSelectIds: [] }
+        : {
+            selectedIds: [],
+            selectionCoordinates: {},
+            duringAreaSelectIds: [],
+          }
+    ),
     'toggle non-visual constraints': assign(({ context }) => ({
       showNonVisualConstraints: !context.showNonVisualConstraints,
     })),
@@ -438,6 +450,7 @@ export const sketchSolveMachine = setup({
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
+      keepSelectionAfterToolCompletion: false,
     }),
     'update selected ids': assign(updateSelectedIds),
     'update selected ids from code selection': assign(
@@ -473,6 +486,7 @@ export const sketchSolveMachine = setup({
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
+      keepSelectionAfterToolCompletion: false,
       selectedIds: [],
       selectionCoordinates: {},
       duringAreaSelectIds: [],
@@ -1068,7 +1082,7 @@ export const sketchSolveMachine = setup({
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
           actions: [
-            'clear selection',
+            'clear selection after tool completion',
             'update selected code highlight',
             'refresh selection styling',
             'clear child tool',

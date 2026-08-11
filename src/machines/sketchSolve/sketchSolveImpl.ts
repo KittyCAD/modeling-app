@@ -235,6 +235,8 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
+  pendingToolKeepSelection?: boolean
+  keepSelectionAfterToolCompletion: boolean
   selectedIds: Array<SketchSolveSelectionId>
   selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>
@@ -1608,11 +1610,14 @@ export function spawnTool(
 ): Partial<SketchSolveContext> {
   // Determine which tool to spawn based on event type
   let nameOfToolToSpawn: EquipTool
+  let keepSelection = false
 
   if (event.type === 'equip tool') {
     nameOfToolToSpawn = event.data.tool
+    keepSelection = event.keepSelection ?? false
   } else if (event.type === CHILD_TOOL_DONE_EVENT && context.pendingToolName) {
     nameOfToolToSpawn = context.pendingToolName
+    keepSelection = context.pendingToolKeepSelection ?? false
   } else {
     console.error('Cannot determine tool to spawn')
     return {}
@@ -1632,6 +1637,7 @@ export function spawnTool(
       initialObjects:
         context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
+      keepSelection,
     },
   })
 
@@ -1639,6 +1645,8 @@ export function spawnTool(
     sketchSolveToolName: nameOfToolToSpawn,
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
+    pendingToolKeepSelection: undefined,
+    keepSelectionAfterToolCompletion: keepSelection,
   }
 }
 
@@ -1668,6 +1676,7 @@ export type ToolInput = {
   initialSelectionCoordinates?: SelectionCoordinates
   initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
+  keepSelection?: boolean
 }
 
 const toolVariants: Record<string, string> = {

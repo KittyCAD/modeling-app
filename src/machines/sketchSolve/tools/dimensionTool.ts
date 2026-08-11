@@ -53,6 +53,7 @@ type DimensionToolContext = {
   initialSelectionIds: SketchSolveSelectionId[]
   initialSelectionCoordinates: SelectionCoordinates
   initialObjects: ApiObject[]
+  keepSelection: boolean
   runtime: DraftRuntime
 }
 
@@ -65,6 +66,7 @@ type DimensionToolInput = {
   initialSelectionCoordinates?: SelectionCoordinates
   initialObjects?: ApiObject[]
   sceneGraphDelta?: SceneGraphDelta
+  keepSelection?: boolean
 }
 
 type DimensionToolEvent =
@@ -882,7 +884,9 @@ async function commitDraftConstraint(
     sendParent(self, { type: 'clear draft entities' })
     sendParent(self, {
       type: 'update selected ids',
-      data: { selectedIds: [], duringAreaSelectIds: [] },
+      data: context.keepSelection
+        ? { duringAreaSelectIds: [] }
+        : { selectedIds: [], duringAreaSelectIds: [] },
     })
     sendParent(self, {
       type: 'update hovered id',
@@ -1190,6 +1194,7 @@ export const machine = setup({
     initialSelectionCoordinates: input.initialSelectionCoordinates ?? {},
     initialObjects:
       input.initialObjects ?? input.sceneGraphDelta?.new_graph.objects ?? [],
+    keepSelection: input.keepSelection ?? false,
     runtime: createRuntime(),
   }),
   id: 'Dimension tool',

@@ -85,6 +85,7 @@ function createParentHarness(
   options: {
     initialSelectionIds?: SketchSolveSelectionId[]
     initialSelectionCoordinates?: SelectionCoordinates
+    keepSelection?: boolean
   } = {}
 ) {
   const sceneInfra = createMockSceneInfra()
@@ -211,6 +212,7 @@ function createParentHarness(
             initialSelectionIds: options.initialSelectionIds,
             initialSelectionCoordinates: options.initialSelectionCoordinates,
             initialObjects: sceneGraphDelta.new_graph.objects,
+            keepSelection: options.keepSelection,
           },
         },
       },
@@ -630,6 +632,42 @@ describe('dimensionTool', () => {
     expect((rustContext.addConstraint as any).mock.calls[0][2].type).toBe(
       'HorizontalDistance'
     )
+  })
+
+  it('keeps entities selected after picking them and committing when requested', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext, events } = createParentHarness(
+      [sketch, point0, point1],
+      { keepSelection: true }
+    )
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([0, 0]))
+    callbacks.onClick(createMouseEvent([4, 3]))
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+
+    callbacks.onClick(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () =>
+        events.filter((event) => event.type === 'update selected ids')
+          .length === 3
+    )
+
+    expect((rustContext.editDistanceConstraint as any).mock.calls).toHaveLength(
+      1
+    )
+    const selectionUpdates = events.filter(
+      (event) => event.type === 'update selected ids'
+    )
+    expect(selectionUpdates.at(-1)?.data).toEqual({
+      duringAreaSelectIds: [],
+    })
   })
 
   it('starts distance placement with a preselected origin and point', async () => {

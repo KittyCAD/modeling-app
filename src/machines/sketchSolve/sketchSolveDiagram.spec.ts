@@ -103,6 +103,27 @@ describe('sketchSolveMachine selection clearing', () => {
     expect(actor.getSnapshot().context.duringAreaSelectIds).toEqual([])
   })
 
+  it('keeps the selection when the equipped child tool requests it', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    const { actor } = createSketchSolveHarness()
+
+    actor.send({
+      type: 'equip tool',
+      data: { tool: 'dimensionTool' },
+      keepSelection: true,
+    })
+    actor.send({
+      type: 'update selected ids',
+      data: { selectedIds: [10], duringAreaSelectIds: [11] },
+    })
+
+    actor.send({ type: CHILD_TOOL_DONE_EVENT })
+
+    expect(actor.getSnapshot().matches('move and select')).toBe(true)
+    expect(actor.getSnapshot().context.selectedIds).toEqual([10])
+    expect(actor.getSnapshot().context.duringAreaSelectIds).toEqual([])
+  })
+
   it('clears the selection when constraint editing stops', () => {
     const { actor } = createSketchSolveHarness()
 
