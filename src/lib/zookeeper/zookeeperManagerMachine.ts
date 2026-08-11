@@ -53,7 +53,7 @@ type TypeVariant<T, U = T> = U extends T ? keyof U : never
 type MlCopilotListModesRequest = { type: 'list_modes' }
 export type MlCopilotModeId = string
 
-type MlCopilotUserRequest = Omit<
+type MlCopilotWireUserRequest = Omit<
   Extract<MlCopilotClientMessage, { type: 'user' }>,
   'mode'
 > & {
@@ -63,6 +63,64 @@ type MlCopilotUserRequest = Omit<
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
+}
+
+export type ZookeeperConversationAttachment = Pick<
+  MlCopilotFile,
+  'name' | 'mimetype'
+>
+
+export type ZookeeperConversationUserRequest = Omit<
+  MlCopilotWireUserRequest,
+  'current_files' | 'additional_files'
+> & {
+  additional_files?: ZookeeperConversationAttachment[]
+}
+
+function toZookeeperConversationAttachment(
+  attachment: unknown
+): ZookeeperConversationAttachment | null {
+  if (typeof attachment !== 'object' || attachment === null) return null
+  if (
+    !('name' in attachment) ||
+    typeof attachment.name !== 'string' ||
+    !('mimetype' in attachment) ||
+    typeof attachment.mimetype !== 'string'
+  ) {
+    return null
+  }
+
+  return {
+    name: attachment.name,
+    mimetype: attachment.mimetype,
+  }
+}
+
+export function toZookeeperConversationUserRequest(
+  request: MlCopilotWireUserRequest
+): ZookeeperConversationUserRequest {
+  const {
+    current_files: _currentFiles,
+    additional_files: additionalFiles,
+    ...conversationRequest
+  } = request
+  const conversationAttachments = isArray(additionalFiles)
+    ? additionalFiles
+        .map(toZookeeperConversationAttachment)
+        .filter(
+          (attachment): attachment is ZookeeperConversationAttachment =>
+            attachment !== null
+        )
+    : undefined
+
+  return {
+    ...conversationRequest,
+    ...(conversationAttachments === undefined
+      ? {}
+      : {
+          additional_files: conversationAttachments,
+        }),
+  }
 }
 
 export const createZookeeperCorrelation = (
@@ -78,17 +136,6 @@ type MlCopilotProjectContextRequest = Extract<
 > & {
   active_file?: string
 }
-
-type MlCopilotClientMessageWithDiscoveredMode =
-  | Exclude<MlCopilotClientMessage, { type: 'user' }>
-  | MlCopilotUserRequest
-
-type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
-  T extends {
-    type: 'user'
-  }
-    ? T
-    : never
 
 export interface MlCopilotModeOption {
   id: MlCopilotModeId
@@ -174,10 +221,15 @@ export function parseMlCopilotModesResult(
   }
 }
 
-export function isMlCopilotUserRequest(
-  x: unknown
-): x is MlCopilotClientMessageUser {
-  return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
+function isMlCopilotWireUserRequest(x: unknown): x is MlCopilotWireUserRequest {
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'type' in x &&
+    x.type === 'user' &&
+    'content' in x &&
+    typeof x.content === 'string'
+  )
 }
 
 export enum ZookeeperManagerStates {
@@ -323,7 +375,7 @@ export type ZookeeperManagerEvents =
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
   // ever having requested anything - such as on WebSocket 'open'.
-  request?: MlCopilotClientMessageWithDiscoveredMode
+  request?: ZookeeperConversationUserRequest
 
   // A response may not necessarily ever come back! (Thus list remains empty.)
   // It's possible a request triggers multiple responses, such as reasoning,
@@ -511,6 +563,32 @@ function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
 }
 
+function compactRetainedResponses(
+  responses: readonly MlCopilotServerMessage[]
+): MlCopilotServerMessage[] {
+  return responses.filter(
+    (response) =>
+      !('tool_output' in response) && !('project_updated' in response)
+  )
+}
+
+function copyConversationWithoutConsumedResponses(
+  conversation: Conversation | undefined
+): Conversation {
+  const exchanges = Array.from(conversation?.exchanges ?? [])
+  const lastExchangeIndex = exchanges.length - 1
+  const lastExchange = exchanges[lastExchangeIndex]
+
+  if (lastExchange !== undefined) {
+    exchanges[lastExchangeIndex] = {
+      ...lastExchange,
+      responses: compactRetainedResponses(lastExchange.responses),
+    }
+  }
+
+  return { exchanges }
+}
+
 function isAttachmentsLoadedMessage(
   response: unknown
 ): response is { attachments_loaded: object } {
@@ -541,10 +619,8 @@ export const ZookeeperConversationToMarkdown = (
     let entry = ''
     let reason = ''
     if (exchange.request) {
-      if ('content' in exchange.request) {
-        entry += '## You:\n\n'
-        entry += exchange.request.content + '\n\n'
-      }
+      entry += '## You:\n\n'
+      entry += exchange.request.content + '\n\n'
     }
     for (const response of exchange.responses) {
       if ('reasoning' in response) {
@@ -845,8 +921,8 @@ export const zookeeperManagerMachine = setup({
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
           activeExchangeStartedAt:
-            context.conversation?.exchanges.findLast((exchange) =>
-              isMlCopilotUserRequest(exchange.request)
+            context.conversation?.exchanges.findLast(
+              (exchange) => exchange.request !== undefined
             )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt,
         },
       }
@@ -1107,10 +1183,17 @@ export const zookeeperManagerMachine = setup({
             // If it's a replay, we'll unravel it and process as if they are real
             // messages being sent from the server.
             if ('replay' in response) {
-              for (let byteMessage of response.replay.messages) {
-                const data: Uint8Array = Uint8Array.from(
-                  Object.values(byteMessage)
-                )
+              const replayMessages = response.replay.messages
+              for (
+                let messageIndex = 0;
+                messageIndex < replayMessages.length;
+                messageIndex += 1
+              ) {
+                const data = Uint8Array.from(replayMessages[messageIndex])
+                // The replay envelope can contain many large JSON messages.
+                // Release each msgpack-decoded number array before parsing the
+                // next one instead of retaining the whole envelope at peak.
+                replayMessages[messageIndex] = []
                 const responseReplay: unknown = Object.freeze(
                   JSON.parse(new TextDecoder().decode(data))
                 )
@@ -1119,13 +1202,25 @@ export const zookeeperManagerMachine = setup({
                 // Don't show deltas because they are aggregated in the end_of_stream
                 if ('delta' in responseReplay) continue
 
+                // Live tool outputs are consumed by the file-write hook, while
+                // project_updated messages are control messages. Replay does
+                // not re-run either path, and the transcript renders neither,
+                // so retaining their project-sized payloads only costs memory.
+                if (
+                  'tool_output' in responseReplay ||
+                  'project_updated' in responseReplay
+                ) {
+                  continue
+                }
+
                 if (
                   'type' in responseReplay &&
                   responseReplay.type === 'user'
                 ) {
-                  if (isMlCopilotUserRequest(responseReplay)) {
+                  if (isMlCopilotWireUserRequest(responseReplay)) {
                     maybeReplayedExchanges.push({
-                      request: responseReplay,
+                      request:
+                        toZookeeperConversationUserRequest(responseReplay),
                       responses: [],
                       deltasAggregated: '',
                     })
@@ -1158,7 +1253,7 @@ export const zookeeperManagerMachine = setup({
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
               const activeExchange = maybeReplayedExchanges.findLast(
-                (exchange) => isMlCopilotUserRequest(exchange.request)
+                (exchange) => exchange.request !== undefined
               )
               if (activeExchange) {
                 activeExchange.startedAt =
@@ -1291,7 +1386,7 @@ export const zookeeperManagerMachine = setup({
           ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
           : undefined
 
-      const request: MlCopilotUserRequest = {
+      const wireRequest: MlCopilotWireUserRequest = {
         type: 'user',
         ...createZookeeperCorrelation(event.engineCommandManager.apiCallId),
         content: requestData.body.prompt ?? '',
@@ -1307,14 +1402,14 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      context.ws.send(JSON.stringify(request))
+      context.ws.send(JSON.stringify(wireRequest))
 
       const conversation: Conversation = {
         exchanges: Array.from(context.conversation.exchanges),
       }
 
       conversation.exchanges.push({
-        request,
+        request: toZookeeperConversationUserRequest(wireRequest),
         responses: [],
         deltasAggregated: '',
         startedAt: new Date(),
@@ -1636,14 +1731,57 @@ export const zookeeperManagerMachine = setup({
                       ZookeeperManagerTransitions.ResponseReceive,
                     ])
 
+                    // A tool output is needed until subscribers consume its
+                    // file edits. Actor subscribers run synchronously, so the
+                    // next response is the earliest safe point to release it.
+                    // Clone the last exchange so older snapshots stay immutable.
+                    const conversation =
+                      copyConversationWithoutConsumedResponses(
+                        context.conversation
+                      )
+
+                    // This is a control message containing a full project
+                    // snapshot. The client does not render or otherwise
+                    // consume it, so never retain it in conversation state.
+                    if ('project_updated' in event.response) {
+                      return { conversation }
+                    }
+
+                    if (isAttachmentsLoadedMessage(event.response)) {
+                      return {
+                        conversation,
+                        lastMessageId: (context.lastMessageId ?? -1) + 1,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        awaitingResponse: context.awaitingResponse,
+                        pendingBackendShutdown: context.pendingBackendShutdown,
+                      }
+                    }
+
+                    // This sucks but must be done because we can't
+                    // enumerate the message types.
+                    const r = event.response
+                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
+                      'info',
+                      'error',
+                      'end_of_stream',
+                      'session_data',
+                      'conversation_id',
+                      'delta',
+                      'tool_output',
+                      'reasoning',
+                      'replay',
+                      'files',
+                    ]
+                    const lastMessageType:
+                      | TypeVariant<MlCopilotServerMessage>
+                      | undefined = ts.find((t) => t in r)
+
+                    // Defensive: possible we hit messages we don't handle -
+                    // don't add to context!
+                    if (lastMessageType === undefined) return { conversation }
+
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
                     const responseComplete = isResponseComplete(event.response)
-
-                    const conversation: Conversation = {
-                      exchanges: Array.from(
-                        context.conversation?.exchanges ?? []
-                      ),
-                    }
 
                     // Errors are considered their own
                     // exchanges because they have no end_of_stream signal.
@@ -1665,58 +1803,28 @@ export const zookeeperManagerMachine = setup({
                       }
                     }
 
-                    if (isAttachmentsLoadedMessage(event.response)) {
-                      return {
-                        lastMessageId,
-                        attachmentsLoadedForCurrentPrompt: true,
-                        awaitingResponse: context.awaitingResponse,
-                        pendingBackendShutdown: responseComplete
-                          ? false
-                          : context.pendingBackendShutdown,
-                      }
-                    }
+                    const lastExchangeIndex = conversation.exchanges.length - 1
+                    const existingLastExchange =
+                      conversation.exchanges[lastExchangeIndex]
+                    let lastExchange: Exchange | undefined
 
-                    let lastExchange: Exchange | undefined =
-                      conversation.exchanges[conversation.exchanges.length - 1]
-
-                    if (lastExchange === undefined) {
+                    if (existingLastExchange === undefined) {
                       lastExchange = {
                         responses: [event.response],
                         deltasAggregated: '',
                       }
                       conversation.exchanges.push(lastExchange)
+                    } else {
+                      lastExchange = existingLastExchange
 
                       // OPTIMIZATION: `delta` responses are aggregated instead
                       // of being included in the responses list.
-                    } else if ('delta' in event.response) {
-                      lastExchange.deltasAggregated +=
-                        event.response.delta.delta
-                    } else {
-                      lastExchange.responses.push(event.response)
-                    }
-
-                    // This sucks but must be done because we can't
-                    // enumerate the message types.
-                    const r = event.response
-                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
-                      'info',
-                      'error',
-                      'end_of_stream',
-                      'session_data',
-                      'conversation_id',
-                      'delta',
-                      'tool_output',
-                      'reasoning',
-                      'replay',
-                    ]
-                    const lastMessageType:
-                      | TypeVariant<MlCopilotServerMessage>
-                      | undefined = ts.find((t) => t in r)
-
-                    // Defensive: possible we hit messages we don't handle -
-                    // don't add to context!
-                    if (lastMessageType === undefined) {
-                      return context
+                      if ('delta' in event.response) {
+                        lastExchange.deltasAggregated +=
+                          event.response.delta.delta
+                      } else {
+                        lastExchange.responses.push(event.response)
+                      }
                     }
 
                     return {

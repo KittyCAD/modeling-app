@@ -1,4 +1,4 @@
-import type { ClientErrorReport } from '@kittycad/lib'
+import type { ClientErrorReport, MlCopilotServerMessage } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
@@ -14,6 +14,7 @@ import {
   zookeeperManagerMachine,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
+  toZookeeperConversationUserRequest,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
@@ -131,6 +132,103 @@ describe('createZookeeperCorrelation', () => {
     expect(createZookeeperCorrelation(undefined)).not.toHaveProperty(
       'engine_api_call_id'
     )
+  })
+})
+
+describe('toZookeeperConversationUserRequest', () => {
+  it('keeps display metadata without retaining project or attachment bytes', () => {
+    const currentFiles = {
+      'main.kcl': [1, 2, 3],
+      'reference.step': [4, 5, 6],
+    }
+    const attachmentData = [7, 8, 9]
+    const wireRequest = {
+      type: 'user' as const,
+      content: 'Use the attached reference',
+      current_files: currentFiles,
+      additional_files: [
+        {
+          name: 'reference.png',
+          mimetype: 'image/png',
+          data: attachmentData,
+          data_ref: 'attachments/reference.png',
+          metadata: { source: 'upload' },
+        },
+      ],
+      mode: 'custom-mode',
+      active_file: 'main.kcl',
+      project_name: 'memory-test',
+      correlation_id: 'correlation-id',
+      engine_api_call_id: 'engine-api-call-id',
+    }
+
+    const conversationRequest = toZookeeperConversationUserRequest(wireRequest)
+
+    expect(conversationRequest).toStrictEqual({
+      type: 'user',
+      content: 'Use the attached reference',
+      additional_files: [
+        {
+          name: 'reference.png',
+          mimetype: 'image/png',
+        },
+      ],
+      mode: 'custom-mode',
+      active_file: 'main.kcl',
+      project_name: 'memory-test',
+      correlation_id: 'correlation-id',
+      engine_api_call_id: 'engine-api-call-id',
+    })
+    expect(conversationRequest).not.toHaveProperty('current_files')
+    expect(conversationRequest.additional_files?.[0]).not.toHaveProperty('data')
+
+    expect(wireRequest.current_files).toBe(currentFiles)
+    expect(wireRequest.additional_files[0]?.data).toBe(attachmentData)
+  })
+
+  it('drops malformed attachment metadata without dropping the request', () => {
+    const malformedRequest = {
+      type: 'user',
+      content: 'Keep this prompt',
+      current_files: {
+        'main.kcl': [1, 2, 3],
+      },
+      additional_files: [
+        null,
+        {},
+        { name: 1, mimetype: 'image/png' },
+        { name: 'missing-mimetype.png', mimetype: null },
+        {
+          name: 'valid.png',
+          mimetype: 'image/png',
+          data: [4, 5, 6],
+        },
+      ],
+    } as unknown as Parameters<typeof toZookeeperConversationUserRequest>[0]
+
+    expect(toZookeeperConversationUserRequest(malformedRequest)).toStrictEqual({
+      type: 'user',
+      content: 'Keep this prompt',
+      additional_files: [
+        {
+          name: 'valid.png',
+          mimetype: 'image/png',
+        },
+      ],
+    })
+
+    for (const additionalFiles of [null, { name: 'not-an-array' }]) {
+      const request = {
+        type: 'user',
+        content: 'Keep this prompt too',
+        additional_files: additionalFiles,
+      } as unknown as Parameters<typeof toZookeeperConversationUserRequest>[0]
+
+      expect(toZookeeperConversationUserRequest(request)).toStrictEqual({
+        type: 'user',
+        content: 'Keep this prompt too',
+      })
+    }
   })
 })
 
@@ -284,6 +382,136 @@ describe('zookeeperManagerMachine', () => {
   describe('Setup', () => {
     beforeEach(() => {
       stubClientErrorFetch()
+    })
+
+    it('does not retain project or attachment bytes from replayed requests', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+
+        const replayedRequest = {
+          type: 'user',
+          content: 'Use this reference',
+          current_files: {
+            'main.kcl': [1, 2, 3],
+          },
+          additional_files: [
+            {
+              name: 'reference.png',
+              mimetype: 'image/png',
+              data: [4, 5, 6],
+              metadata: { source: 'upload' },
+            },
+          ],
+          correlation_id: 'correlation-id',
+        }
+        const replayedToolOutput = {
+          tool_output: {
+            result: {
+              type: 'edit_kcl_code',
+              status_code: 200,
+              outputs: {
+                'main.kcl': 'cube() |> fillet(radius = 2)',
+              },
+            },
+          },
+        } satisfies MlCopilotServerMessage
+        const replayedProjectUpdate = {
+          project_updated: {
+            files: {
+              'main.kcl': 'cube() |> fillet(radius = 2)',
+            },
+          },
+        }
+        const replayedEndOfStream = {
+          end_of_stream: {
+            whole_response: 'Done.',
+          },
+        }
+        const malformedReplayedRequest = {
+          type: 'user',
+          content: 'Keep this older prompt',
+          additional_files: null,
+        }
+        const malformedReplayEndOfStream = {
+          end_of_stream: {
+            whole_response: 'Also done.',
+          },
+        }
+        const encodeReplayMessage = (message: unknown) =>
+          Array.from(new TextEncoder().encode(JSON.stringify(message)))
+        socket.receive({
+          replay: {
+            messages: [
+              encodeReplayMessage(replayedRequest),
+              encodeReplayMessage(replayedToolOutput),
+              encodeReplayMessage(replayedProjectUpdate),
+              encodeReplayMessage(replayedEndOfStream),
+              encodeReplayMessage(malformedReplayedRequest),
+              encodeReplayMessage(malformedReplayEndOfStream),
+            ],
+          },
+        })
+        socket.receive({
+          conversation_id: {
+            conversation_id: 'conversation-id',
+          },
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        const request =
+          actor.getSnapshot().context.conversation?.exchanges[0]?.request
+        expect(request).toStrictEqual({
+          type: 'user',
+          content: 'Use this reference',
+          additional_files: [
+            {
+              name: 'reference.png',
+              mimetype: 'image/png',
+            },
+          ],
+          correlation_id: 'correlation-id',
+        })
+        expect(request).not.toHaveProperty('current_files')
+        expect(request?.additional_files?.[0]).not.toHaveProperty('data')
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[0]?.responses
+        ).toStrictEqual([replayedEndOfStream])
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[1]
+        ).toStrictEqual({
+          request: {
+            type: 'user',
+            content: 'Keep this older prompt',
+          },
+          responses: [malformedReplayEndOfStream],
+          deltasAggregated: 'Also done.',
+          startedAt: undefined,
+        })
+      } finally {
+        actor.stop()
+      }
     })
 
     it('stops retrying and exposes a recoverable failure after repeated setup errors', async () => {
@@ -711,6 +939,345 @@ describe('zookeeperManagerMachine', () => {
       ])
 
       actor.stop()
+    })
+  })
+
+  describe('MessageSend', () => {
+    it('sends full wire bytes but retains only conversation metadata', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        actor.send({
+          type: ZookeeperManagerStates.ContinueCheck,
+          projectName: 'memory-test',
+          projectFiles: [],
+          activeFile: 'main.kcl',
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.Ready)
+        )
+
+        const projectFileBytes = Array.from(new TextEncoder().encode('cube()'))
+        const attachmentBytes = new Uint8Array([7, 8, 9])
+        const messageSendEvent = {
+          type: ZookeeperManagerTransitions.MessageSend,
+          prompt: 'Use the attached reference',
+          projectForPromptOutput: { name: 'memory-test' },
+          applicationProjectDirectory: '/projects',
+          fileSelectedDuringPrompting: {
+            entry: {
+              path: '/projects/memory-test/main.kcl',
+              name: 'main.kcl',
+              children: null,
+            },
+            content: 'cube()',
+          },
+          projectFiles: [
+            {
+              type: 'kcl',
+              relPath: 'main.kcl',
+              absPath: '/projects/memory-test/main.kcl',
+              fileContents: 'cube()',
+              execStateFileNamesIndex: 0,
+            },
+          ],
+          selections: null,
+          artifactGraph: new Map(),
+          kclManager: {},
+          engineCommandManager: { apiCallId: 'engine-api-call-id' },
+          wasmInstance: {},
+          mode: 'custom-mode',
+          additionalFiles: [
+            {
+              name: 'reference.png',
+              type: 'image/png',
+              arrayBuffer: async () => attachmentBytes.slice().buffer,
+            },
+          ],
+        } as unknown as Extract<
+          ZookeeperManagerEvents,
+          { type: ZookeeperManagerTransitions.MessageSend }
+        >
+
+        actor.send(messageSendEvent)
+        await waitFor(actor, (state) => state.context.awaitingResponse)
+
+        expect(ws.sentPayloads).toHaveLength(1)
+        const wireRequest = JSON.parse(ws.sentPayloads[0])
+        expect(wireRequest).toMatchObject({
+          type: 'user',
+          content: 'Use the attached reference',
+          project_name: 'memory-test',
+          active_file: 'main.kcl',
+          mode: 'custom-mode',
+          engine_api_call_id: 'engine-api-call-id',
+          current_files: {
+            'main.kcl': projectFileBytes,
+          },
+          additional_files: [
+            {
+              name: 'reference.png',
+              mimetype: 'image/png',
+              data: Array.from(attachmentBytes),
+            },
+          ],
+        })
+
+        const conversationRequest =
+          actor.getSnapshot().context.conversation?.exchanges[0]?.request
+        expect(conversationRequest).toMatchObject({
+          type: 'user',
+          content: 'Use the attached reference',
+          project_name: 'memory-test',
+          active_file: 'main.kcl',
+          mode: 'custom-mode',
+          engine_api_call_id: 'engine-api-call-id',
+          additional_files: [
+            {
+              name: 'reference.png',
+              mimetype: 'image/png',
+            },
+          ],
+        })
+        expect(conversationRequest).not.toHaveProperty('current_files')
+        expect(conversationRequest?.additional_files?.[0]).not.toHaveProperty(
+          'data'
+        )
+      } finally {
+        actor.stop()
+      }
+    })
+  })
+
+  describe('ResponseReceive', () => {
+    const createReadyActor = async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws,
+            conversation: { exchanges: [] },
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: '',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'memory-test',
+        projectFiles: [],
+        activeFile: 'main.kcl',
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      return actor
+    }
+
+    it('drops project snapshots and consumed tool outputs without mutating older snapshots', async () => {
+      const actor = await createReadyActor()
+      const observedToolOutputs: MlCopilotServerMessage[] = []
+      const subscription = actor.subscribe((snapshot) => {
+        const lastExchange = snapshot.context.conversation?.exchanges.at(-1)
+        const lastResponse = lastExchange?.responses.at(-1)
+        if (lastResponse && 'tool_output' in lastResponse) {
+          observedToolOutputs.push(lastResponse)
+        }
+      })
+      const filesResponse = {
+        files: {
+          files: [
+            {
+              name: 'preview.png',
+              mimetype: 'image/png',
+              data: [1, 2, 3],
+            },
+          ],
+        },
+      } satisfies MlCopilotServerMessage
+      const projectUpdatedResponse = {
+        project_updated: {
+          files: {
+            'main.kcl': 'large project snapshot',
+          },
+        },
+      } satisfies MlCopilotServerMessage
+      const toolOutputResponse = {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 200,
+            outputs: {
+              'main.kcl': 'updated project snapshot',
+            },
+          },
+        },
+      } satisfies MlCopilotServerMessage
+      const endOfStreamResponse = {
+        end_of_stream: {
+          whole_response: 'Done.',
+        },
+      } satisfies MlCopilotServerMessage
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: filesResponse,
+        })
+
+        const snapshotBeforeProjectUpdate =
+          actor.getSnapshot().context.conversation
+        expect(
+          snapshotBeforeProjectUpdate?.exchanges[0]?.responses
+        ).toStrictEqual([filesResponse])
+        expect(actor.getSnapshot().context.lastMessageType).toBe('files')
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: projectUpdatedResponse,
+        })
+
+        expect(
+          snapshotBeforeProjectUpdate?.exchanges[0]?.responses
+        ).toStrictEqual([filesResponse])
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[0]?.responses
+        ).toStrictEqual([filesResponse])
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: toolOutputResponse,
+        })
+
+        const snapshotWithToolOutput = actor.getSnapshot().context.conversation
+        expect(snapshotWithToolOutput?.exchanges[0]?.responses).toStrictEqual([
+          filesResponse,
+          toolOutputResponse,
+        ])
+        expect(observedToolOutputs).toStrictEqual([toolOutputResponse])
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: endOfStreamResponse,
+        })
+
+        expect(snapshotWithToolOutput?.exchanges[0]?.responses).toStrictEqual([
+          filesResponse,
+          toolOutputResponse,
+        ])
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[0]?.responses
+        ).toStrictEqual([filesResponse, endOfStreamResponse])
+        expect(observedToolOutputs).toStrictEqual([toolOutputResponse])
+      } finally {
+        subscription.unsubscribe()
+        actor.stop()
+      }
+    })
+
+    it('releases a tool output before recording a terminal error', async () => {
+      const actor = await createReadyActor()
+      const reasoningResponse = {
+        reasoning: {
+          type: 'text',
+          content: 'Working on it.',
+        },
+      } satisfies MlCopilotServerMessage
+      const toolOutputResponse = {
+        tool_output: {
+          result: {
+            type: 'edit_kcl_code',
+            status_code: 200,
+            outputs: {
+              'main.kcl': 'updated project snapshot',
+            },
+          },
+        },
+      } satisfies MlCopilotServerMessage
+      const errorResponse = {
+        error: {
+          detail: 'The stream failed.',
+        },
+      } satisfies MlCopilotServerMessage
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: reasoningResponse,
+        })
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: toolOutputResponse,
+        })
+
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges[0]?.responses
+        ).toStrictEqual([reasoningResponse, toolOutputResponse])
+
+        actor.send({
+          type: ZookeeperManagerTransitions.ResponseReceive,
+          response: errorResponse,
+        })
+
+        expect(
+          actor.getSnapshot().context.conversation?.exchanges
+        ).toStrictEqual([
+          {
+            responses: [reasoningResponse],
+            deltasAggregated: '',
+          },
+          {
+            responses: [errorResponse],
+            deltasAggregated: '',
+          },
+        ])
+      } finally {
+        actor.stop()
+      }
     })
   })
 

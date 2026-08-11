@@ -4,9 +4,9 @@ import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
-import {
-  type Exchange,
-  isMlCopilotUserRequest,
+import type {
+  Exchange,
+  ZookeeperConversationUserRequest,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import ms from 'ms'
 import {
@@ -147,7 +147,6 @@ export const ExchangeCardStatus = (props: {
   updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
-  const [triggerRender, setTriggerRender] = useState<number>(0)
   const thinker = (
     <Thinking
       thoughts={props.responses}
@@ -159,20 +158,6 @@ export const ExchangeCardStatus = (props: {
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
   const isEndOfStream = isExchangeComplete(props.responses)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTriggerRender(triggerRender + 1)
-    }, 500)
-
-    if (isEndOfStream) {
-      clearInterval(i)
-    }
-
-    return () => {
-      clearInterval(i)
-    }
-  }, [triggerRender, isEndOfStream])
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
@@ -197,7 +182,7 @@ export const ExchangeCardStatus = (props: {
   ) : (
     <div className="relative">
       {thinker}
-      {props.updatedAt && (
+      {(props.updatedAt || isEndOfStream) && (
         <div className="text-chalkboard-70 p-2 pb-0">
           {timeReasonedFor ? (
             <>Reasoned for {ms(timeReasonedFor, { long: true })}</>
@@ -228,7 +213,7 @@ export const AvatarUser = (props: { src?: string }) => {
   )
 }
 
-type RequestCardProps = Exchange['request'] & {
+type RequestCardProps = ZookeeperConversationUserRequest & {
   userAvatar?: ReactNode
 }
 
@@ -275,10 +260,6 @@ export const ChatBubble = (props: {
 
 export const RequestCard = (props: RequestCardProps) => {
   const [showAllAttachments, setShowAllAttachments] = useState(false)
-
-  if (!isMlCopilotUserRequest(props)) {
-    return null
-  }
 
   const additionalFiles = props.additional_files ?? []
   const hasHiddenAttachments = additionalFiles.length > MAX_VISIBLE_ATTACHMENTS
@@ -450,8 +431,12 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
+  const isEndOfStream = isExchangeComplete(props.responses)
+  const isActivelyReasoning = props.isLastResponse && !isEndOfStream
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
+  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(
+    () => isActivelyReasoning
+  )
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
@@ -462,22 +447,24 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }
 
   useEffect(() => {
+    if (!isActivelyReasoning) {
+      return
+    }
     setUpdatedAt(new Date())
-  }, [props.responses.length])
-
-  const isEndOfStream = isExchangeComplete(props.responses)
+  }, [props.responses.length, isActivelyReasoning])
 
   useEffect(() => {
+    if (!isActivelyReasoning) {
+      return
+    }
+
     const id = setInterval(() => {
-      if (isEndOfStream) {
-        clearInterval(id)
-      }
       setUpdatedAt(new Date())
     }, 1000)
     return () => {
       clearInterval(id)
     }
-  }, [isEndOfStream])
+  }, [isActivelyReasoning])
 
   if (isEndOfStream) {
     const endOfStreamResponse = getEndOfStreamResponse(props.responses)
@@ -487,10 +474,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }
 
   useEffect(() => {
-    if (isEndOfStream) {
+    if (!isActivelyReasoning) {
       setShowFullReasoning(false)
     }
-  }, [isEndOfStream])
+  }, [isActivelyReasoning])
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
@@ -501,7 +488,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       <div className="p-7 text-chalkboard-70 text-center">
         {ms(Date.now() - startedAt.getTime(), { long: true })} ago
       </div>
-      {isMlCopilotUserRequest(props.request) && (
+      {props.request && (
         <RequestCard
           {...props.request}
           userAvatar={<AvatarUser src={props.userAvatar} />}

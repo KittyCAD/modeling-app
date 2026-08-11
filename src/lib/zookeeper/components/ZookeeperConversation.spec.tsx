@@ -6,6 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const bootMockState = vi.hoisted<{
@@ -350,7 +351,6 @@ describe('ZookeeperConversation', () => {
                   {
                     name: 'front-view.png',
                     mimetype: 'image/png',
-                    data: [],
                   },
                 ],
               },
@@ -677,6 +677,199 @@ describe('ZookeeperConversation', () => {
     }
   )
 
+  test('does not render completed historical reasoning until it is expanded', () => {
+    const getReasoning = vi.fn(() => ({
+      type: 'text' as const,
+      content: 'A large historical reasoning response',
+    }))
+    const lazyReasoningResponse = {}
+    Object.defineProperty(lazyReasoningResponse, 'reasoning', {
+      enumerable: true,
+      get: getReasoning,
+    })
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a bracket',
+          },
+          responses: [
+            lazyReasoningResponse as MlCopilotServerMessage,
+            {
+              end_of_stream: {
+                whole_response: 'Done.',
+                started_at: '2026-07-15T12:00:00.000Z',
+                completed_at: '2026-07-15T12:01:00.000Z',
+              },
+            },
+          ],
+          deltasAggregated: 'Done.',
+        },
+      ],
+    }
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(getReasoning).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByText('See reasoning'))
+
+    expect(getReasoning).toHaveBeenCalled()
+    expect(
+      screen.getByText('A large historical reasoning response')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Reasoned for 1 minute')).toBeInTheDocument()
+  })
+
+  test('keeps interrupted historical reasoning lazy without background timers', () => {
+    vi.useFakeTimers()
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
+    const getReasoning = vi.fn(() => ({
+      type: 'text' as const,
+      content: 'Reasoning from an interrupted turn',
+    }))
+    const lazyReasoningResponse = {}
+    Object.defineProperty(lazyReasoningResponse, 'reasoning', {
+      enumerable: true,
+      get: getReasoning,
+    })
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a bracket',
+          },
+          responses: [lazyReasoningResponse as MlCopilotServerMessage],
+          deltasAggregated: '',
+        },
+        {
+          responses: [
+            {
+              error: {
+                detail: 'The turn was interrupted.',
+              },
+            },
+          ],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    try {
+      render(
+        <ZookeeperConversation
+          isLoading={false}
+          conversation={conversation}
+          onProcess={vi.fn()}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={false}
+          hasPromptCompleted={true}
+          contexts={[]}
+          isProcessing={false}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+        />
+      )
+
+      expect(getReasoning).not.toHaveBeenCalled()
+      expect(vi.getTimerCount()).toBe(0)
+
+      fireEvent.click(screen.getByText('See reasoning'))
+
+      expect(getReasoning).toHaveBeenCalled()
+      expect(
+        screen.getByText('Reasoning from an interrupted turn')
+      ).toBeInTheDocument()
+      expect(
+        setIntervalSpy.mock.calls.filter(([, delay]) => delay === 1000)
+      ).toHaveLength(0)
+    } finally {
+      setIntervalSpy.mockRestore()
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
+
+  test('collapses active reasoning and stops its timer when it becomes historical', () => {
+    vi.useFakeTimers()
+    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval')
+    const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval')
+    const responses: MlCopilotServerMessage[] = [
+      {
+        reasoning: {
+          type: 'text',
+          content: 'Reasoning from the active turn',
+        },
+      },
+    ]
+    const exchangeProps = {
+      request: { type: 'user' as const, content: 'Render an assembly' },
+      responses,
+      deltasAggregated: '',
+      onClickClearChat: () => {},
+    }
+
+    try {
+      const { rerender } = render(
+        <ExchangeCard {...exchangeProps} isLastResponse={true} />
+      )
+
+      expect(
+        screen.getAllByText('Reasoning from the active turn')
+      ).not.toHaveLength(0)
+      const oneSecondIntervalIndex = setIntervalSpy.mock.calls.findIndex(
+        ([, delay]) => delay === 1000
+      )
+      expect(oneSecondIntervalIndex).not.toBe(-1)
+      const oneSecondInterval =
+        setIntervalSpy.mock.results[oneSecondIntervalIndex]?.value
+
+      rerender(<ExchangeCard {...exchangeProps} isLastResponse={false} />)
+
+      expect(
+        screen.queryByText('Reasoning from the active turn')
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('See reasoning')).toBeInTheDocument()
+      expect(clearIntervalSpy).toHaveBeenCalledWith(oneSecondInterval)
+
+      fireEvent.click(screen.getByText('See reasoning'))
+      expect(
+        screen.getByText('Reasoning from the active turn')
+      ).toBeInTheDocument()
+      expect(
+        setIntervalSpy.mock.calls.filter(([, delay]) => delay === 1000)
+      ).toHaveLength(1)
+    } finally {
+      setIntervalSpy.mockRestore()
+      clearIntervalSpy.mockRestore()
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
+
   test('preserves active reasoning time when its exchange remounts', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
@@ -781,12 +974,10 @@ describe('ZookeeperConversation', () => {
               {
                 name: 'front-view.png',
                 mimetype: 'image/png',
-                data: [1, 2, 3],
               },
               {
                 name: 'requirements.pdf',
                 mimetype: 'application/pdf',
-                data: [4, 5, 6],
               },
             ],
           },
@@ -843,17 +1034,14 @@ describe('ZookeeperConversation', () => {
               {
                 name: 'front-view.png',
                 mimetype: 'image/png',
-                data: [1, 2, 3],
               },
               {
                 name: 'requirements.pdf',
                 mimetype: 'application/pdf',
-                data: [4, 5, 6],
               },
               {
                 name: 'side-view.jpg',
                 mimetype: 'image/jpeg',
-                data: [7, 8, 9],
               },
             ],
           },
