@@ -500,15 +500,26 @@ export class SceneEntities {
     const gridRenderer = this.axisGroup?.children.find(
       (child) => child instanceof InfiniteGridRenderer
     )
-    if (!gridRenderer) return
-
     const settings = this.getSettings?.()
+    const showSketchGrid = settings?.modeling.showSketchGrid.current ?? false
+    const xAxis = this.axisGroup?.getObjectByName(X_AXIS)
+    const yAxis = this.axisGroup?.getObjectByName(Y_AXIS)
+    if (xAxis) {
+      xAxis.visible = showSketchGrid
+    }
+    if (yAxis) {
+      yAxis.visible = showSketchGrid
+    }
+
+    if (!gridRenderer) {
+      return
+    }
     if (!settings) {
       gridRenderer.visible = false
       console.error('Settings not available for grid update')
       return
     }
-    if (!settings.modeling.showSketchGrid.current) {
+    if (!showSketchGrid) {
       gridRenderer.visible = false
       return
     }

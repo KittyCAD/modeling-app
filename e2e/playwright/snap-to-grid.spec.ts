@@ -327,8 +327,18 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
             (child) => child.name === 'InfiniteGridRenderer'
           )?.visible
       )
+    const sketchAxesVisibility = () =>
+      page.evaluate(() => {
+        const axisGroup =
+          window.app.singletons.kclManager.sceneEntitiesManager.axisGroup
+        return {
+          x: axisGroup?.getObjectByName('xAxis')?.visible,
+          y: axisGroup?.getObjectByName('yAxis')?.visible,
+        }
+      })
 
     await expect.poll(sketchGridVisible).toBe(false)
+    await expect.poll(sketchAxesVisibility).toEqual({ x: false, y: false })
 
     const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
       format: 'ratio',
@@ -356,6 +366,17 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
     await showSketchGrid.click()
     await expect.poll(sketchGridEnabled).toBe(true)
     await expect.poll(sketchGridVisible).toBe(true)
+    await expect.poll(sketchAxesVisibility).toEqual({ x: true, y: true })
+
+    await setBooleanSetting('show sketch grid', 'Off')
+    await expect.poll(sketchGridEnabled).toBe(false)
+    await expect.poll(sketchGridVisible).toBe(false)
+    await expect.poll(sketchAxesVisibility).toEqual({ x: false, y: false })
+
+    await setBooleanSetting('show sketch grid', 'On')
+    await expect.poll(sketchGridEnabled).toBe(true)
+    await expect.poll(sketchGridVisible).toBe(true)
+    await expect.poll(sketchAxesVisibility).toEqual({ x: true, y: true })
 
     await page.evaluate(async () => {
       const kclManager = window.app.singletons.kclManager
