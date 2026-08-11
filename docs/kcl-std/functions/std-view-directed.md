@@ -27,21 +27,24 @@ against the model it is showing, so one view value is valid for any model.
 view is constructed, so their magnitudes carry no information and zoom
 comes from `distance`. Each must be a non-zero vector, and they must not
 be parallel or nearly parallel to each other; such arguments are errors.
+Any angle above roughly 0.00006 degrees between the two is accepted, so
+only vectors that are parallel to within a rounding error are rejected.
+When that happens, choose an `up` that does not lie along `direction`.
 
 Every argument you pass must be a finite number; an infinite or undefined
 value, such as one produced by dividing by zero, is an error rather than
 a stored value no consumer could use.
 
 Lengths are recorded in millimeters whatever unit you write them in, so
-`distance = 2inch` is stored as 50.8mm. The view means the same thing
-either way; a tool that reads the view back reports millimeters.
+`distance = 2inch` is stored as 50.8mm, and a `target` coordinate is
+converted the same way. The view means the same thing either way; a tool
+that reads the view back reports millimeters. `direction` and `up` carry
+no unit at all, because only their ratio matters.
 
 A `distance` is a separation, so it must be greater than zero. Zero would
 put the camera on the point it looks at, and a negative value would put it
 behind that point; both are errors rather than a camera nobody can
-resolve. A `target` is a point, so its coordinates may be negative. This
-applies to `target` as well; `direction` and `up` carry no unit at all,
-because only their ratio matters.
+resolve. A `target` is a point, so its coordinates may be negative.
 
 ### Arguments
 

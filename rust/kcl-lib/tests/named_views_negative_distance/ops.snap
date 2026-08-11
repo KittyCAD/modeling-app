@@ -3,50 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed named_views_negative_distance.kcl
 ---
 {
-  "rust/kcl-lib/tests/named_views_negative_distance/input.kcl": [
-    {
-      "type": "StdLibCall",
-      "name": "view::oriented",
-      "unlabeledArg": {
-        "value": {
-          "type": "Enum",
-          "enum_name": "Orientation",
-          "variant": "Front"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "distance": {
-          "value": {
-            "type": "Number",
-            "value": -50.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": [],
-      "isError": true
-    }
-  ],
   "std::math": [
     {
       "type": "VariableDeclaration",

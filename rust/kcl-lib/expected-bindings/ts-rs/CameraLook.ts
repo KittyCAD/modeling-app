@@ -4,7 +4,6 @@ import type { Point3d } from "./Point3d";
 
 /**
  * Where the camera looks from: one variant per constructor function, so a
- * value can never carry both a curated orientation and a custom direction
- * (M01 decision 15).
+ * value can never carry both a curated orientation and a custom direction.
  */
 export type CameraLook = { "type": "oriented", orientation: Orientation, } | { "type": "directed", direction: Point3d, up: Point3d, };

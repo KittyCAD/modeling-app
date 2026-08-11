@@ -9,19 +9,23 @@ import type { TyF64 } from "./TyF64";
  *
  * Fields the author omitted stay absent in the value: the consumer that
  * activates the view resolves them against the model it is showing, so the
- * same value is valid for any model. Construction goes through the
- * validating constructors that arrive with the `view::oriented` and
- * `view::directed` implementations; fields stay private so a value cannot
- * bypass that validation.
+ * same value is valid for any model. Construction goes through
+ * [`CameraView::oriented`] and [`CameraView::directed`]; fields stay private
+ * so a value cannot bypass the validation those constructors apply.
+ *
+ * Every length is stored in millimeters, whatever unit the author wrote.
+ * More than one consumer reads these values and some of them become engine
+ * commands, which are in millimeters, so one canonical unit removes the
+ * conversion convention those consumers would otherwise have to share.
  */
 export type CameraView = { look: CameraLook, 
 /**
- * The point the camera looks at. `None` means: center on the bounds of
- * the model at activation.
+ * The point the camera looks at, in millimeters. `None` means: center on
+ * the bounds of the model at activation.
  */
 target: Point3d | null, 
 /**
- * The distance from the camera to the target. `None` means: fit the
- * model at activation. Carries the author's numeric unit.
+ * The distance from the camera to the target, in millimeters. `None`
+ * means: fit the model at activation.
  */
 distance: TyF64 | null, projection: Projection, };
