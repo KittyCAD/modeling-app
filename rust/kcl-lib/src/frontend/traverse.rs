@@ -203,8 +203,10 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::FunctionExpression(node) => {
-            let body = &mut node.body.inner;
-            ret = dfs_mut_body(&mut body.body, &mut body.non_code_meta, visitor, ret);
+            // The function body is visited as a program node, like
+            // if-expression branch blocks, so that scope-tracking visitors
+            // can set up and tear down a scope for it.
+            ret = dfs_mut_program(&mut node.body, visitor);
             if ret.is_break() {
                 return ret;
             }
@@ -556,4 +558,345 @@ fn pre_comments_to_non_code_nodes(comments: &[String]) -> Vec<ast::Node<ast::Non
         i += 1;
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use std::collections::HashSet;
+
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+    use crate::SourceRange;
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum Event {
+        Enter(&'static str, Option<SourceRange>),
+        Exit(&'static str, Option<SourceRange>),
+    }
+
+    impl Event {
+        /// Render as "enter Kind" or "exit Kind", without the source range.
+        fn kind(&self) -> String {
+            match self {
+                Event::Enter(kind, _) => format!("enter {kind}"),
+                Event::Exit(kind, _) => format!("exit {kind}"),
+            }
+        }
+    }
+
+    /// A visitor that records the order of visit and finish calls, optionally
+    /// breaking when entering the nth node of a given kind.
+    #[derive(Default)]
+    struct EventVisitor {
+        events: Vec<Event>,
+        /// When Some((kind, n)), return `ControlFlow::Break` when entering
+        /// the nth (1-based) node of the given kind.
+        break_on: Option<(&'static str, usize)>,
+        enter_counts: HashMap<&'static str, usize>,
+    }
+
+    impl Visitor for EventVisitor {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue> {
+            let kind = kind_str(&node);
+            let range = SourceRange::try_from(&node).ok();
+            self.events.push(Event::Enter(kind, range));
+            let count = self.enter_counts.entry(kind).and_modify(|c| *c += 1).or_insert(1);
+            if self.break_on == Some((kind, *count)) {
+                return TraversalReturn::new_break(());
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, node: NodeMut) {
+            let kind = kind_str(&node);
+            let range = SourceRange::try_from(&node).ok();
+            self.events.push(Event::Exit(kind, range));
+        }
+    }
+
+    fn kind_str(node: &NodeMut) -> &'static str {
+        match node {
+            NodeMut::Program(_) => "Program",
+            NodeMut::ImportStatement(_) => "ImportStatement",
+            NodeMut::ExpressionStatement(_) => "ExpressionStatement",
+            NodeMut::VariableDeclaration(_) => "VariableDeclaration",
+            NodeMut::TypeDeclaration(_) => "TypeDeclaration",
+            NodeMut::ReturnStatement(_) => "ReturnStatement",
+            NodeMut::VariableDeclarator(_) => "VariableDeclarator",
+            NodeMut::NumericLiteral(_) => "NumericLiteral",
+            NodeMut::Literal(_) => "Literal",
+            NodeMut::TagDeclarator(_) => "TagDeclarator",
+            NodeMut::Identifier(_) => "Identifier",
+            NodeMut::Name(_) => "Name",
+            NodeMut::BinaryExpression(_) => "BinaryExpression",
+            NodeMut::FunctionExpression(_) => "FunctionExpression",
+            NodeMut::CallExpressionKw(_) => "CallExpressionKw",
+            NodeMut::PipeExpression(_) => "PipeExpression",
+            NodeMut::PipeSubstitution(_) => "PipeSubstitution",
+            NodeMut::ArrayExpression(_) => "ArrayExpression",
+            NodeMut::ArrayRangeExpression(_) => "ArrayRangeExpression",
+            NodeMut::ObjectExpression(_) => "ObjectExpression",
+            NodeMut::MemberExpression(_) => "MemberExpression",
+            NodeMut::UnaryExpression(_) => "UnaryExpression",
+            NodeMut::IfExpression(_) => "IfExpression",
+            NodeMut::ElseIf(_) => "ElseIf",
+            NodeMut::LabelledExpression(_) => "LabelledExpression",
+            NodeMut::AscribedExpression(_) => "AscribedExpression",
+            NodeMut::SketchBlock(_) => "SketchBlock",
+            NodeMut::Block(_) => "Block",
+            NodeMut::SketchVar(_) => "SketchVar",
+            NodeMut::Parameter(_) => "Parameter",
+            NodeMut::ObjectProperty(_) => "ObjectProperty",
+            NodeMut::KclNone(_) => "KclNone",
+        }
+    }
+
+    fn traverse(code: &str) -> (ControlFlow<(), ()>, Vec<Event>) {
+        traverse_with_break(code, None)
+    }
+
+    fn traverse_with_break(code: &str, break_on: Option<(&'static str, usize)>) -> (ControlFlow<(), ()>, Vec<Event>) {
+        let mut program = crate::parsing::top_level_parse(code).unwrap();
+        let mut visitor = EventVisitor {
+            break_on,
+            ..Default::default()
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        (control_flow, visitor.events)
+    }
+
+    fn event_kinds(events: &[Event]) -> Vec<String> {
+        events.iter().map(Event::kind).collect()
+    }
+
+    fn kinds(expected: &[&str]) -> Vec<String> {
+        expected.iter().map(|s| (*s).to_owned()).collect()
+    }
+
+    /// Assert that enter/exit events nest like balanced brackets, i.e. each
+    /// node's exit comes after all of its children's exits, every entered
+    /// node is exited, and no node is entered more than once. This is what a
+    /// visitor that sets up state in visit() and tears it down in finish()
+    /// relies on.
+    fn assert_balanced_and_unique(events: &[Event]) {
+        let mut stack: Vec<(&'static str, Option<SourceRange>)> = Vec::new();
+        let mut entered: HashSet<(&'static str, Option<SourceRange>)> = HashSet::new();
+        for event in events {
+            match event {
+                Event::Enter(kind, range) => {
+                    assert!(
+                        entered.insert((kind, *range)),
+                        "node visited more than once: {kind} {range:?}"
+                    );
+                    stack.push((kind, *range));
+                }
+                Event::Exit(kind, range) => {
+                    let top = stack
+                        .pop()
+                        .unwrap_or_else(|| panic!("finish without a matching visit: {kind} {range:?}"));
+                    assert_eq!(
+                        top,
+                        (*kind, *range),
+                        "finish does not match the most recently entered node"
+                    );
+                }
+            }
+        }
+        assert!(stack.is_empty(), "nodes entered but never finished: {stack:?}");
+    }
+
+    #[test]
+    fn statements_and_expressions_pair_visit_and_finish_in_order() {
+        let (control_flow, events) = traverse(
+            "\
+x = 1 + 2 * 3
+foo(x)
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Literal",
+                "exit Literal",
+                "exit BinaryExpression",
+                "exit BinaryExpression",
+                "exit VariableDeclaration",
+                "enter ExpressionStatement",
+                "enter CallExpressionKw",
+                "enter Name",
+                "exit Name",
+                "exit CallExpressionKw",
+                "exit ExpressionStatement",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn if_expression_branch_blocks_are_traversed_as_programs() {
+        let (control_flow, events) = traverse("y = if true { 1 } else { 2 }\n");
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter IfExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Program",
+                "enter ExpressionStatement",
+                "enter Literal",
+                "exit Literal",
+                "exit ExpressionStatement",
+                "exit Program",
+                "enter Program",
+                "enter ExpressionStatement",
+                "enter Literal",
+                "exit Literal",
+                "exit ExpressionStatement",
+                "exit Program",
+                "exit IfExpression",
+                "exit VariableDeclaration",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn function_body_is_traversed_as_a_program() {
+        let (control_flow, events) = traverse(
+            "\
+fn add(a, b) {
+  return a + b
+}
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter FunctionExpression",
+                "enter Program",
+                "enter ReturnStatement",
+                "enter BinaryExpression",
+                "enter Name",
+                "exit Name",
+                "enter Name",
+                "exit Name",
+                "exit BinaryExpression",
+                "exit ReturnStatement",
+                "exit Program",
+                "exit FunctionExpression",
+                "exit VariableDeclaration",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn every_node_is_visited_once_with_balanced_nesting() {
+        let (control_flow, events) = traverse(
+            "\
+x = 1 + 2 * 3
+arr = [x, 2]
+obj = { a = x, b = 2 }
+m = obj.a
+u = -x
+piped = x |> foo(%)
+r = if x > 1 { 1 } else if x > 0 { 2 } else { 3 }
+fn f(a) {
+  return a
+}
+c = f(1)
+sk = sketch() {
+  p = var 1.5
+}
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        let count = |kind: &str| {
+            events
+                .iter()
+                .filter(|e| matches!(e, Event::Enter(k, _) if *k == kind))
+                .count()
+        };
+        // The top-level program, three if-expression branch blocks, and the
+        // function body.
+        assert_eq!(count("Program"), 5);
+        assert_eq!(count("SketchBlock"), 1);
+        assert_eq!(count("SketchVar"), 1);
+        // The sketch var's initial value.
+        assert_eq!(count("NumericLiteral"), 1);
+        assert_eq!(count("PipeSubstitution"), 1);
+        // Object property keys are visited as identifiers.
+        assert_eq!(count("Identifier"), 2);
+    }
+
+    #[test]
+    fn break_aborts_traversal_immediately() {
+        let (control_flow, events) = traverse_with_break(
+            "\
+x = 1 + 2
+y = 3
+",
+            // Break when entering the literal 2.
+            Some(("Literal", 2)),
+        );
+        assert!(control_flow.is_break());
+        // No finish() for the node that broke or any of its ancestors, and no
+        // visits after the break.
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Literal",
+            ]),
+        );
+    }
+
+    #[test]
+    fn break_when_entering_if_branch_block_aborts() {
+        let (control_flow, events) = traverse_with_break(
+            "y = if true { 1 } else { 2 }\n",
+            // Break when entering the then-branch block.
+            Some(("Program", 2)),
+        );
+        assert!(control_flow.is_break());
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter IfExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Program",
+            ]),
+        );
+    }
 }
