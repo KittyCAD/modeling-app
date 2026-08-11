@@ -1,10 +1,10 @@
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
-  type ZookeeperEditPatch,
   applyZookeeperEditPatch,
   mergeZookeeperEditPatches,
+  type ZookeeperEditPatch,
 } from '@src/lib/zookeeper/editorPlugin'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import { getZookeeperEditPatchToastMessage } from '@src/lib/zookeeper/zookeeperEditPatch'
 import { createTwoFilesPatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -152,6 +152,37 @@ describe('Zookeeper history patch replay', () => {
         },
       ],
     })
+  })
+
+  it('does not report a streamed file creation that is deleted before the edit ends', () => {
+    const createdPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: 'temporary.kcl',
+          status: 'created',
+          contents: 'temporary = true\n',
+        },
+      ],
+    }
+    const deletedPatch: ZookeeperEditPatch = {
+      run_id: 'run-1',
+      changed_files: [
+        {
+          path: './temporary.kcl',
+          status: 'deleted',
+          previous_contents: 'temporary = true\n',
+        },
+      ],
+    }
+
+    expect(getZookeeperEditPatchToastMessage(createdPatch)).toBe(
+      'Successfully updated 1 file'
+    )
+    const mergedPatch = mergeZookeeperEditPatches(createdPatch, deletedPatch)
+
+    expect(mergedPatch.changed_files).toEqual([])
+    expect(getZookeeperEditPatchToastMessage(mergedPatch)).toBeUndefined()
   })
 
   it('replays create, modify, and delete changes locally', async () => {

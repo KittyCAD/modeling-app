@@ -20,6 +20,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
+  normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -433,15 +434,6 @@ export const prepareZookeeperNewFileRequest = ({
   const outputsRecord: Record<string, string> = {
     ...(toolOutput.outputs ?? {}),
   }
-  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord).map(
-    ([relativePath, fileContents]) => {
-      return {
-        requestedCode: fileContents,
-        requestedFileName: relativePath,
-        requestedProjectName: projectNameCurrentlyOpened,
-      }
-    }
-  )
 
   // getFilePathRelativeToProject intentionally keeps the leading separator
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
@@ -464,6 +456,27 @@ export const prepareZookeeperNewFileRequest = ({
         ),
       }
     : undefined
+  // `outputs` is the resulting project state. When patch metadata is present,
+  // write only the files that the edit actually created or modified.
+  const changedFileWritePaths =
+    zookeeperEditPatch?.changed_files === undefined
+      ? undefined
+      : new Set(
+          zookeeperEditPatch.changed_files
+            .filter((file) => file.status !== 'deleted')
+            .map((file) => normalizeZookeeperPatchPath(file.path))
+        )
+  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord)
+    .filter(
+      ([relativePath]) =>
+        changedFileWritePaths === undefined ||
+        changedFileWritePaths.has(normalizeZookeeperPatchPath(relativePath))
+    )
+    .map(([relativePath, fileContents]) => ({
+      requestedCode: fileContents,
+      requestedFileName: relativePath,
+      requestedProjectName: projectNameCurrentlyOpened,
+    }))
   const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
 
   for (const file of filesToDelete) {

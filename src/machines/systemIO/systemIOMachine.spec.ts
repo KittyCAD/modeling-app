@@ -20,6 +20,7 @@ import {
   buildTheWorldAndNoEngineConnection,
   createTestWasmRegistryItem,
 } from '@src/unitTestUtils'
+import toast from 'react-hot-toast'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -327,6 +328,54 @@ describe('systemIOMachine - XState', () => {
           requestedFileNameBefore
         )
         actor.stop()
+      })
+      it('suppresses per-write success toasts when the caller owns the summary', async () => {
+        const toastSuccess = vi
+          .spyOn(toast, 'success')
+          .mockImplementation(() => 'toast-id')
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'Successfully overwrote 10 files, 0 deleted',
+                  projectName: input.requestedProjectName,
+                  fileName: input.requestedFileNameWithExtension,
+                  subRoute: '',
+                  shouldNavigate: false,
+                  showSuccessToast: input.showSuccessToast,
+                })),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'demo-project',
+              requestedFileNameWithExtension: 'main.kcl',
+              showSuccessToast: false,
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(toastSuccess).not.toHaveBeenCalled()
+        } finally {
+          actor.stop()
+          toastSuccess.mockRestore()
+        }
       })
     })
     describe('when reading projects', () => {

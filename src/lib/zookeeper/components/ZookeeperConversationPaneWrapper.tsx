@@ -9,6 +9,7 @@ import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
+import { ZOOKEEPER_FILE_WRITE_TOAST_ID } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -28,6 +29,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
+  getZookeeperEditPatchToastMessage,
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
   type ZookeeperEditPatch,
@@ -43,6 +45,7 @@ import {
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import toast from 'react-hot-toast'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -161,6 +164,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
     kclManager,
     zookeeperManagerActor,
   })
+  const {
+    completePendingZookeeperFileWriteToast,
+    failPendingZookeeperFileWriteToast,
+    reservePendingZookeeperFileWriteToast,
+  } = useZookeeperFileWriteToast(zookeeperManagerActor)
   const zookeeperFileRequestQueue = useRef<Promise<void>>(Promise.resolve())
 
   useWatchForNewFileRequestsFromZookeeper(
@@ -179,6 +187,17 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
       }
 
       const exchangeId = requestProps.exchangeId ?? 0
+      const shouldAggregateZookeeperFileWriteToast =
+        payload.zookeeperEditPatch?.changed_files !== undefined
+      if (
+        shouldAggregateZookeeperFileWriteToast &&
+        payload.zookeeperEditPatch
+      ) {
+        reservePendingZookeeperFileWriteToast({
+          exchangeId,
+          patch: payload.zookeeperEditPatch,
+        })
+      }
       const activeRelativePath =
         project?.path && activeFilePath
           ? normalizeKCLFileDeletePath(
@@ -231,11 +250,21 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
               let requestSettled = false
               let historyWriteCompleted = !shouldRecordZookeeperHistory
               let postWriteCompleted = !shouldRecordZookeeperHistory
+              let toastWriteSettled = !shouldAggregateZookeeperFileWriteToast
               const settleRequest = () => {
                 if (requestSettled) return
                 if (!historyWriteCompleted || !postWriteCompleted) return
                 requestSettled = true
                 resolve()
+              }
+              const settleToastWrite = (failed: boolean) => {
+                if (toastWriteSettled) return
+                toastWriteSettled = true
+                if (failed) {
+                  failPendingZookeeperFileWriteToast({ exchangeId })
+                  return
+                }
+                completePendingZookeeperFileWriteToast({ exchangeId })
               }
 
               void (async () => {
@@ -265,7 +294,9 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     requestedProjectName: payload.requestedProjectName,
                     requestedFileNameWithExtension:
                       payload.requestedFileNameWithExtension ?? '',
+                    showSuccessToast: !shouldAggregateZookeeperFileWriteToast,
                     onFileSystemError: () => {
+                      settleToastWrite(true)
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
                       }
@@ -274,6 +305,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
+                      settleToastWrite(false)
                       if (historyRecorded) {
                         historyWriteCompleted = true
                         settleRequest()
@@ -366,6 +398,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                 if (pendingHistoryReserved || pendingHistoryStarted) {
                   cancelPendingZookeeperHistoryWrite({ exchangeId })
                 }
+                settleToastWrite(true)
                 console.error(
                   'Failed to process Zookeeper file request.',
                   error
@@ -709,6 +742,120 @@ function useZookeeperEditPatchHistory({
     cancelPendingZookeeperHistoryWrite,
     completePendingZookeeperHistoryWrite,
     reservePendingZookeeperHistoryWrite,
+  }
+}
+
+type PendingZookeeperFileWriteToast = {
+  failed: boolean
+  outstandingWrites: number
+  patch: ZookeeperEditPatch
+  streamEnded: boolean
+}
+
+type PendingZookeeperFileWriteToastProps = {
+  exchangeId: number
+}
+
+function useZookeeperFileWriteToast(
+  zookeeperManagerActor: ZookeeperManagerActor
+) {
+  const pendingByExchange = useRef(
+    new Map<number, PendingZookeeperFileWriteToast>()
+  )
+
+  const tryFlushPendingToast = useCallback((exchangeId: number) => {
+    const pending = pendingByExchange.current.get(exchangeId)
+    if (!pending?.streamEnded || pending.outstandingWrites > 0) {
+      return
+    }
+
+    pendingByExchange.current.delete(exchangeId)
+    if (pending.failed) {
+      return
+    }
+
+    const message = getZookeeperEditPatchToastMessage(pending.patch)
+    if (message) {
+      toast.success(message, { id: ZOOKEEPER_FILE_WRITE_TOAST_ID })
+    }
+  }, [])
+
+  const reservePendingZookeeperFileWriteToast = useCallback(
+    ({
+      exchangeId,
+      patch,
+    }: PendingZookeeperFileWriteToastProps & { patch: ZookeeperEditPatch }) => {
+      const pending = pendingByExchange.current.get(exchangeId)
+      pendingByExchange.current.set(exchangeId, {
+        failed: pending?.failed ?? false,
+        outstandingWrites: (pending?.outstandingWrites ?? 0) + 1,
+        patch: pending
+          ? mergeZookeeperEditPatches(pending.patch, patch)
+          : patch,
+        streamEnded: pending?.streamEnded ?? false,
+      })
+    },
+    []
+  )
+
+  const settlePendingZookeeperFileWriteToast = useCallback(
+    (exchangeId: number, failed: boolean) => {
+      const pending = pendingByExchange.current.get(exchangeId)
+      if (!pending) {
+        return
+      }
+
+      pending.failed = pending.failed || failed
+      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
+      pendingByExchange.current.set(exchangeId, pending)
+      tryFlushPendingToast(exchangeId)
+    },
+    [tryFlushPendingToast]
+  )
+
+  const completePendingZookeeperFileWriteToast = useCallback(
+    ({ exchangeId }: PendingZookeeperFileWriteToastProps) => {
+      settlePendingZookeeperFileWriteToast(exchangeId, false)
+    },
+    [settlePendingZookeeperFileWriteToast]
+  )
+
+  const failPendingZookeeperFileWriteToast = useCallback(
+    ({ exchangeId }: PendingZookeeperFileWriteToastProps) => {
+      settlePendingZookeeperFileWriteToast(exchangeId, true)
+    },
+    [settlePendingZookeeperFileWriteToast]
+  )
+
+  useEffect(() => {
+    const pendingToasts = pendingByExchange.current
+    let lastId: number | undefined
+    const subscription = zookeeperManagerActor.subscribe((next) => {
+      if (next.context.lastMessageId === lastId) return
+      lastId = next.context.lastMessageId
+
+      if (next.context.lastMessageType !== 'end_of_stream') return
+      const exchangeId = (next.context.conversation?.exchanges.length ?? 0) - 1
+      if (exchangeId < 0) return
+
+      const pending = pendingToasts.get(exchangeId)
+      if (!pending) return
+
+      pending.streamEnded = true
+      pendingToasts.set(exchangeId, pending)
+      tryFlushPendingToast(exchangeId)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+      pendingToasts.clear()
+    }
+  }, [zookeeperManagerActor, tryFlushPendingToast])
+
+  return {
+    completePendingZookeeperFileWriteToast,
+    failPendingZookeeperFileWriteToast,
+    reservePendingZookeeperFileWriteToast,
   }
 }
 

@@ -1,6 +1,5 @@
 import type { MlToolResult } from '@kittycad/lib'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
-import fsZds from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   collectProjectFiles,
@@ -147,6 +146,7 @@ describe('System IO Utils', () => {
         project_name: 'some-project',
         outputs: {
           'main.kcl': 'cube = 1',
+          'legacy-output.kcl': 'legacy = true',
         },
       },
     })
@@ -157,8 +157,72 @@ describe('System IO Utils', () => {
         requestedCode: 'cube = 1',
         requestedProjectName: 'some-project',
       },
+      {
+        requestedFileName: 'legacy-output.kcl',
+        requestedCode: 'legacy = true',
+        requestedProjectName: 'some-project',
+      },
     ])
     expect(preparedPayload?.filesToDelete).toEqual([])
+  })
+
+  it('writes only files identified as changed by a Zookeeper edit patch', () => {
+    const toolOutput: EditKclCodeToolResultWithLocalPatch = {
+      status_code: 200,
+      type: 'edit_kcl_code',
+      project_name: 'some-project',
+      outputs: {
+        'main.kcl': 'width = 10',
+        'unchanged.kcl': 'unchanged = true',
+        'nested/new.kcl': 'newPart = true',
+      },
+      zookeeper_edit_patch: {
+        run_id: 'run-filter-writes',
+        changed_files: [
+          {
+            path: './main.kcl',
+            status: 'modified',
+            diff: '--- a/main.kcl\n+++ b/main.kcl\n@@ -1 +1 @@\n-width = 5\n+width = 10\n',
+          },
+          {
+            path: 'nested\\new.kcl',
+            status: 'created',
+            contents: 'newPart = true',
+          },
+          {
+            path: 'old.kcl',
+            status: 'deleted',
+            previous_contents: 'old = true',
+          },
+        ],
+      },
+    }
+
+    const preparedPayload = prepareZookeeperNewFileRequest({
+      projectNameCurrentlyOpened: 'some-project',
+      fileFocusedOnInEditor: {
+        name: 'main.kcl',
+        path: '/some-project/main.kcl',
+        children: null,
+      },
+      toolOutput: asMlToolResult(toolOutput),
+    })
+
+    expect(preparedPayload?.files).toEqual([
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: 'width = 10',
+        requestedProjectName: 'some-project',
+      },
+      {
+        requestedFileName: 'nested/new.kcl',
+        requestedCode: 'newPart = true',
+        requestedProjectName: 'some-project',
+      },
+    ])
+    expect(preparedPayload?.filesToDelete).toEqual([
+      { requestedFileName: 'old.kcl' },
+    ])
   })
 
   it('collects project files from disk and excludes .gitignore patterns', async () => {

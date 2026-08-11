@@ -1,13 +1,28 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
+  type ZookeeperSnapshot = {
+    context: {
+      awaitingResponse?: boolean
+      conversation?: { exchanges: unknown[] }
+      lastMessageId?: number
+      lastMessageType?: string
+    }
+  }
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
-  const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const zookeeperSubscribers: Array<(snapshot: ZookeeperSnapshot) => void> = []
+  const zookeeperSubscribe = vi.fn(
+    (subscriber: (snapshot: ZookeeperSnapshot) => void) => {
+      zookeeperSubscribers.push(subscriber)
+      return { unsubscribe: vi.fn() }
+    }
+  )
+  const toastSuccess = vi.fn()
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -15,6 +30,7 @@ const mocks = vi.hoisted(() => {
     code: 'initial code',
     engineCommandManager: {},
     path: '/workspace/demo/main.kcl',
+    restoreEditorHistoryState: vi.fn(),
     zookeeperHistoryRecordingInProgress: false,
     addGlobalHistoryEvent: vi.fn(),
     addGlobalHistoryEventWithCodeChange: vi.fn(),
@@ -23,7 +39,9 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
+    toastSuccess,
     zookeeperSubscribe,
+    zookeeperSubscribers,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
@@ -139,30 +157,54 @@ vi.mock('@src/routes/utils', () => ({
   IS_STAGING_OR_DEBUG: false,
 }))
 
-function patchBackedZookeeperEdit(code: string) {
+vi.mock('react-hot-toast', () => ({
+  default: {
+    dismiss: vi.fn(),
+    error: vi.fn(),
+    loading: vi.fn(),
+    success: mocks.toastSuccess,
+  },
+}))
+
+function patchBackedZookeeperEdit(
+  code: string,
+  path = 'main.kcl',
+  status: 'created' | 'modified' = 'created'
+) {
   return {
     type: 'edit_kcl_code',
     status_code: 201,
     project_name: 'demo',
     outputs: {
-      'main.kcl': code,
+      [path]: code,
+      'unchanged.kcl': 'unchanged = true',
     },
     zookeeper_edit_patch: {
       run_id: 'run-1',
       changed_files: [
-        {
-          path: 'main.kcl',
-          status: 'created',
-          contents: code,
-        },
+        status === 'created'
+          ? {
+              path,
+              status: 'created',
+              contents: code,
+            }
+          : {
+              path,
+              status: 'modified',
+              diff: `--- a/${path}\n+++ b/${path}\n`,
+            },
       ],
     },
   }
 }
 
-function emitZookeeperFileRequest(code: string) {
+function emitZookeeperFileRequest(
+  code: string,
+  path = 'main.kcl',
+  status: 'created' | 'modified' = 'created'
+) {
   mocks.watchCallback?.({
-    toolOutput: patchBackedZookeeperEdit(code),
+    toolOutput: patchBackedZookeeperEdit(code, path, status),
     projectNameCurrentlyOpened: 'demo',
     fileFocusedOnInEditor: {
       name: 'main.kcl',
@@ -173,6 +215,21 @@ function emitZookeeperFileRequest(code: string) {
   })
 }
 
+function emitEndOfStream() {
+  for (const subscriber of mocks.zookeeperSubscribers) {
+    subscriber({
+      context: {
+        awaitingResponse: false,
+        conversation: {
+          exchanges: [{ responses: [], deltasAggregated: '' }],
+        },
+        lastMessageId: 999,
+        lastMessageType: 'end_of_stream',
+      },
+    })
+  }
+}
+
 async function flushQueuedWork() {
   await Promise.resolve()
   await Promise.resolve()
@@ -180,11 +237,16 @@ async function flushQueuedWork() {
 }
 
 describe('ZookeeperConversationPaneWrapper', () => {
-  test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
+  beforeEach(() => {
     mocks.systemIOSend.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
-    mocks.kclManager.path = '/workspace/demo/main.kcl'
+    mocks.toastSuccess.mockClear()
+    mocks.zookeeperSubscribers.length = 0
     mocks.watchCallback = undefined
+  })
+
+  test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
 
     render(
       <ZookeeperConversationPaneWrapper
@@ -243,10 +305,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
   })
 
   test('does not refresh a file that is no longer active or stall later edits', async () => {
-    mocks.systemIOSend.mockClear()
-    mocks.kclManager.updateCodeEditor.mockClear()
     mocks.kclManager.path = '/workspace/demo/main.kcl'
-    mocks.watchCallback = undefined
 
     render(
       <ZookeeperConversationPaneWrapper
@@ -273,5 +332,82 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     emitZookeeperFileRequest('final code')
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
+  test('reports one success toast for the effective files changed across a streamed edit', async () => {
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
+
+    render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    emitZookeeperFileRequest('main = 2', 'main.kcl', 'modified')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+
+    emitZookeeperFileRequest('side = true', 'side.kcl', 'created')
+    emitEndOfStream()
+    expect(mocks.toastSuccess).not.toHaveBeenCalled()
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.files).toEqual([
+      expect.objectContaining({ requestedFileName: 'main.kcl' }),
+    ])
+    expect(firstRequest.showSuccessToast).toBe(false)
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    expect(secondRequest.files).toEqual([
+      expect.objectContaining({ requestedFileName: 'side.kcl' }),
+    ])
+    expect(secondRequest.showSuccessToast).toBe(false)
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
+
+    await waitFor(() =>
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        'Successfully updated 2 files',
+        { id: 'zookeeper-file-write-toast' }
+      )
+    )
+    expect(mocks.toastSuccess).toHaveBeenCalledTimes(1)
+  })
+
+  test('does not replace a file-write error with a late success toast', async () => {
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
+
+    render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    emitZookeeperFileRequest('main = 2', 'main.kcl', 'modified')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+    emitEndOfStream()
+
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    request.onFileSystemError()
+    await flushQueuedWork()
+
+    expect(mocks.toastSuccess).not.toHaveBeenCalled()
   })
 })
