@@ -1045,7 +1045,6 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectName,
           requestedProjectTitle,
           initialKclFile,
-          reuseExistingProject,
         }) => {
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
@@ -1059,7 +1058,6 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             requestedProjectTitle,
             wasmInstancePromise,
             initialKclFile,
-            reuseExistingProject,
           })
 
           if (cloudSyncStatus.value.enabled) {

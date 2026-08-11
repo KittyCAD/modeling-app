@@ -361,7 +361,6 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
             fileName: initialKclFile.requestedFileName,
             code: initialKclFile.requestedCode,
           },
-          reuseExistingProject: true,
         })
       )
         .then((project) => {

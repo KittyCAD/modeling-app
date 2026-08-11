@@ -641,7 +641,6 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
         requestedProjectName,
         requestedProjectTitle,
         initialKclFile,
-        reuseExistingProject,
       }) => {
         const wasmInstancePromise = getWasmPromise()
         if (wasmInstancePromise instanceof Error) {
@@ -654,7 +653,6 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectTitle,
           wasmInstancePromise,
           initialKclFile,
-          reuseExistingProject,
         })
         refreshLocalProjectRealizations(library)
 

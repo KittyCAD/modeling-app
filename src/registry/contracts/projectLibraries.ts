@@ -144,7 +144,6 @@ export interface ProjectLibraryCreateProjectInput {
     fileName: string
     code: string
   }
-  reuseExistingProject?: boolean
 }
 
 export interface ProjectLibraryProjectInput {

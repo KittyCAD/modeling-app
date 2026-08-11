@@ -1,5 +1,6 @@
 import {
   type CloudProject,
+  opfsPathExists,
   PROJECT_DIR,
   readOpfsTextFiles,
   routeCloudProjects,
@@ -8,9 +9,15 @@ import { setup } from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
-const TUTORIAL_PROJECT_ID = '12902000-0000-4000-8000-000000000001'
+const TUTORIAL_PROJECT_IDS = [
+  '12902000-0000-4000-8000-000000000001',
+  '12902000-0000-4000-8000-000000000002',
+] as const
 
-async function replayOnboardingFromSettings(page: Page) {
+async function replayOnboardingFromSettings(
+  page: Page,
+  expectedProjectName: string
+) {
   await page.goto('/')
   await expect(
     page.getByRole('heading', {
@@ -24,43 +31,59 @@ async function replayOnboardingFromSettings(page: Page) {
   ).toBeVisible()
   await page.getByRole('button', { name: 'Replay onboarding' }).click()
 
-  await expect(page).toHaveURL(/tutorial-project%2Fmain\.kcl\/onboarding\//)
+  await expect(page).toHaveURL(
+    new RegExp(`${expectedProjectName}%2Fmain\\.kcl/onboarding/`)
+  )
   await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible()
 }
 
 test(
-  'Replay onboarding creates and reuses the Personal Cloud tutorial',
+  'Replay onboarding creates a deduplicated Personal Cloud tutorial',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = []
-    let remoteRevision = 1
+    const remoteRevisions = new Map<string, number>()
     const { calls: apiCalls } = await routeCloudProjects(context, {
       remoteProjects,
       createProject: () => {
+        const index = remoteProjects.length
+        const id = TUTORIAL_PROJECT_IDS[index]
+        if (!id) {
+          throw new Error('Unexpected extra tutorial project creation.')
+        }
+        const title =
+          index === 0 ? 'tutorial-project' : `tutorial-project-${index}`
         const project = {
-          id: TUTORIAL_PROJECT_ID,
-          title: 'tutorial-project',
-          revision: 'tutorial-project-rev-1',
+          id,
+          title,
+          revision: `${id}-rev-1`,
           files: {},
         }
         remoteProjects.push(project)
+        remoteRevisions.set(id, 1)
         return project
       },
       updateProject: ({ projectId }) => {
-        remoteRevision += 1
-        const revision = `tutorial-project-rev-${remoteRevision}`
-        if (remoteProjects[0]) {
-          remoteProjects[0].revision = revision
+        const project = remoteProjects.find(({ id }) => id === projectId)
+        if (!project) {
+          return undefined
         }
+        const revision = (remoteRevisions.get(project.id) ?? 1) + 1
+        remoteRevisions.set(project.id, revision)
+        project.revision = `${project.id}-rev-${revision}`
         return {
           status: 200,
-          body: { id: projectId, title: 'tutorial-project', revision },
+          body: {
+            id: project.id,
+            title: project.title,
+            revision: project.revision,
+          },
         }
       },
     })
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
 
-    await replayOnboardingFromSettings(page)
+    await replayOnboardingFromSettings(page, 'tutorial-project')
     await expect.poll(() => apiCalls.creates.length).toBe(1)
     await page.evaluate(async (mainPath) => {
       await window.fsZds.writeFile(
@@ -69,21 +92,55 @@ test(
       )
     }, `${PROJECT_DIR}/tutorial-project/main.kcl`)
     await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(1)
-    await replayOnboardingFromSettings(page)
 
-    const tutorialFiles = await readOpfsTextFiles(page, {
-      main: `${PROJECT_DIR}/tutorial-project/main.kcl`,
-      settings: `${PROJECT_DIR}/tutorial-project/project.toml`,
-    })
-    expect(tutorialFiles.main).toContain('plateLength = 10')
-    await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(2)
+    await replayOnboardingFromSettings(page, 'tutorial-project-1')
+    await expect.poll(() => apiCalls.creates.length).toBe(2)
+    expect(apiCalls.creates[1]).toContain('tutorial-project-1')
+
+    await page.getByTestId('onboarding-next').click()
+    await expect(page).toHaveURL(
+      /tutorial-project-1%2Fblank\.kcl\/onboarding\/desktop\/scene/
+    )
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/tutorial-project-1/blank.kcl`)
+      )
+      .toBe(true)
+    expect(
+      await opfsPathExists(page, `${PROJECT_DIR}/tutorial-project/blank.kcl`)
+    ).toBe(false)
+
+    await page.goto(
+      `/file/${encodeURIComponent(
+        `${PROJECT_DIR}/tutorial-project-1/main.kcl`
+      )}/onboarding/desktop/prompt-to-edit-result`
+    )
+    await expect(page).toHaveURL(
+      /tutorial-project-1%2Fmain\.kcl\/onboarding\/desktop\/prompt-to-edit-result/
+    )
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
-          settings: `${PROJECT_DIR}/tutorial-project/project.toml`,
+          replayMain: `${PROJECT_DIR}/tutorial-project-1/main.kcl`,
         })
-        return files.settings
+        return files.replayMain
       })
-      .toContain(`project_id = "${TUTORIAL_PROJECT_ID}"`)
+      .toContain('plateLength = 12')
+
+    const tutorialFiles = await readOpfsTextFiles(page, {
+      originalMain: `${PROJECT_DIR}/tutorial-project/main.kcl`,
+      originalSettings: `${PROJECT_DIR}/tutorial-project/project.toml`,
+      replayMain: `${PROJECT_DIR}/tutorial-project-1/main.kcl`,
+      replaySettings: `${PROJECT_DIR}/tutorial-project-1/project.toml`,
+    })
+    expect(tutorialFiles.originalMain).toBe('changed = true')
+    expect(tutorialFiles.replayMain).toContain('plateLength = 12')
+    expect(tutorialFiles.originalSettings).toContain(
+      `project_id = "${TUTORIAL_PROJECT_IDS[0]}"`
+    )
+    expect(tutorialFiles.replaySettings).toContain(
+      `project_id = "${TUTORIAL_PROJECT_IDS[1]}"`
+    )
+    expect(apiCalls.creates).toHaveLength(2)
   }
 )

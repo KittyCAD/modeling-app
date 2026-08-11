@@ -1,9 +1,6 @@
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
-import {
-  ONBOARDING_PROJECT_NAME,
-  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
-} from '@src/lib/constants'
+import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
@@ -58,9 +55,13 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
+function useOnboardingProjectName() {
+  return useApp().project?.name
+}
+
 function Welcome() {
-  const app = useApp()
   const { systemIOActor } = useApp()
+  const projectName = useOnboardingProjectName()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -68,11 +69,14 @@ function Welcome() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: app.project?.name || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -80,7 +84,7 @@ function Welcome() {
         ),
       },
     })
-  }, [systemIOActor, app.project?.name])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -101,6 +105,7 @@ function Welcome() {
 
 function Scene() {
   const { systemIOActor } = useApp()
+  const projectName = useOnboardingProjectName()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -108,15 +113,18 @@ function Scene() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileNameWithExtension: 'blank.kcl',
         files: [
           {
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedFileName: 'blank.kcl',
             requestedCode: '',
           },
@@ -128,7 +136,7 @@ function Scene() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -240,6 +248,7 @@ function ZookeeperPrompt() {
 
 function FeatureTreePane() {
   const { systemIOActor } = useApp()
+  const projectName = useOnboardingProjectName()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -252,10 +261,13 @@ function FeatureTreePane() {
 
   // navigate to the "generated" file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: generatedFileName,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -263,7 +275,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -374,6 +386,7 @@ function OtherPanes() {
 
 function PromptToEdit() {
   const { systemIOActor } = useApp()
+  const projectName = useOnboardingProjectName()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the zookeeper button if it's present
@@ -382,10 +395,13 @@ function PromptToEdit() {
   // Open the zookeeper pane
   // Navigate to the sample file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -393,7 +409,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -491,6 +507,7 @@ function PromptToEditPrompt() {
 
 function PromptToEditResult() {
   const { systemIOActor } = useApp()
+  const projectName = useOnboardingProjectName()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -498,15 +515,18 @@ function PromptToEditResult() {
   useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         files: [
           {
             requestedFileName: 'main.kcl',
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedCode: modifiedColdPlate,
           },
         ],
@@ -517,7 +537,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
