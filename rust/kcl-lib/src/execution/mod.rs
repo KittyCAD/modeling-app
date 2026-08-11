@@ -2197,6 +2197,13 @@ impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
     }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
+    }
 }
 
 /// There are several places where we want to traverse a KCL program or find a symbol in it,

@@ -20,7 +20,11 @@ use crate::std::args::TyF64;
 /// Create a camera view that looks at the model from a standard orientation.
 pub async fn oriented(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // The declared KCL signature has already coerced every argument, so the
-    // runtime types passed here only convert, they do not validate.
+    // runtime types passed here only convert, they do not validate. Enum
+    // coercion is nominal, so an `any` runtime type still cannot let a
+    // different enum through; `wrongly_typed_arguments_are_rejected` pins
+    // that, because the fallback if it stopped holding is an internal error
+    // rather than a diagnostic the author can act on.
     let orientation: Orientation = args.get_unlabeled_kw_arg("orientation", &RuntimeType::any(), exec_state)?;
     let target: Option<[TyF64; 3]> = args.get_kw_arg_opt("target", &RuntimeType::point3d(), exec_state)?;
     let distance: Option<TyF64> = args.get_kw_arg_opt("distance", &RuntimeType::length(), exec_state)?;
@@ -40,7 +44,11 @@ pub async fn oriented(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// Create a camera view that looks along a custom direction.
 pub async fn directed(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // The declared KCL signature has already coerced every argument, so the
-    // runtime types passed here only convert, they do not validate.
+    // runtime types passed here only convert, they do not validate. Enum
+    // coercion is nominal, so an `any` runtime type still cannot let a
+    // different enum through; `wrongly_typed_arguments_are_rejected` pins
+    // that, because the fallback if it stopped holding is an internal error
+    // rather than a diagnostic the author can act on.
     let direction: [TyF64; 3] = args.get_unlabeled_kw_arg("direction", &RuntimeType::point3d(), exec_state)?;
     let up: Option<[TyF64; 3]> = args.get_kw_arg_opt("up", &RuntimeType::point3d(), exec_state)?;
     let target: Option<[TyF64; 3]> = args.get_kw_arg_opt("target", &RuntimeType::point3d(), exec_state)?;
@@ -133,6 +141,15 @@ mod tests {
         }
     }
 
+    /// Runs `code` WITHOUT the experimental opt-in and returns the diagnostics
+    /// it reports. Experimental use is recorded as a non-fatal issue rather
+    /// than a returned error, so the program still executes and the issue list
+    /// is the only place the gate is visible.
+    async fn issues_without_opt_in(code: &str) -> Vec<String> {
+        let result = parse_execute(code).await.expect("experimental use is not fatal");
+        result.issues().iter().map(|issue| issue.message.clone()).collect()
+    }
+
     /// Every rejected argument reports which argument to change. Each case
     /// pairs the offending call with the message the author sees.
     #[tokio::test(flavor = "multi_thread")]
@@ -177,6 +194,74 @@ mod tests {
         assert_eq!(
             execution_error("v = view::directed([0, 0, 1])").await,
             "`direction` and `up` must not be parallel or nearly parallel."
+        );
+    }
+
+    /// An argument of the wrong type is rejected by the declared signature,
+    /// before either function runs.
+    ///
+    /// This is what lets the implementations read `orientation` and
+    /// `projection` with an `any` runtime type: enum coercion is nominal, so
+    /// the signature admits only the enum it names. Were that to stop
+    /// holding, the value would reach `FromKclValue` and fail there, and the
+    /// author would get "Mismatch between type coercion and value extraction
+    /// (this isn't your fault)" from `std/args.rs` instead of a diagnostic
+    /// naming the argument. The point of these cases is that the good message
+    /// is the one that appears.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn wrongly_typed_arguments_are_rejected() {
+        // A value of an unrelated type.
+        assert_eq!(
+            execution_error(r#"v = view::oriented("Front")"#).await,
+            "The input argument of `view::oriented` requires a value with type `Orientation`, but found a value with type `string`."
+        );
+        // A different enum from the same module. Nominal coercion rejects it
+        // even though `any` was requested.
+        assert_eq!(
+            execution_error("v = view::oriented(view::Projection::Perspective)").await,
+            "The input argument of `view::oriented` requires a value with type `Orientation`, but found a value of enum `Projection` (with type `Projection`)."
+        );
+        // A user-defined enum declaring a variant of the same name. Coercion
+        // compares the declaring type, not the variant spelling.
+        assert_eq!(
+            execution_error("type MyOrientation { | Front }\nv = view::oriented(MyOrientation::Front)").await,
+            "The input argument of `view::oriented` requires a value with type `Orientation`, but found a value of enum `MyOrientation` (with type `MyOrientation`)."
+        );
+        // A labeled argument, which reports in its own wording.
+        assert_eq!(
+            execution_error("v = view::oriented(view::Orientation::Front, projection = view::Orientation::Top)").await,
+            "projection requires a value with type `Projection`, but found a value of enum `Orientation` (with type `Orientation`)."
+        );
+        // The same protection covers the non-enum arguments.
+        assert_eq!(
+            execution_error(r#"v = view::directed("nope")"#).await,
+            "The input argument of `view::directed` requires a value with type `Point3d`, but found a value with type `string`."
+        );
+    }
+
+    /// Calling either constructor without the experimental opt-in is
+    /// reported, whether or not the call mentions an enum.
+    ///
+    /// The sim test `named_views_module_requires_opt_in` covers the other
+    /// half of the gate, a bare enum variant. This covers the functions
+    /// themselves: `view::directed` with a plain vector names no enum, so the
+    /// only thing gating it is its own `@(experimental = true)`. Named views
+    /// stay unreleasable until enums stabilise precisely because a consumer
+    /// must opt in, so the gate silently lapsing is the failure to catch.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn calling_a_constructor_requires_the_experimental_opt_in() {
+        assert!(
+            issues_without_opt_in("v = view::directed([0, 1, -2])")
+                .await
+                .contains(&"Use of `view::directed` is experimental and may change or be removed.".to_owned())
+        );
+
+        // This call also uses an enum variant, so it reports both halves of
+        // the gate; the function's own diagnostic is the one asserted here.
+        assert!(
+            issues_without_opt_in("v = view::oriented(view::Orientation::Front)")
+                .await
+                .contains(&"Use of `view::oriented` is experimental and may change or be removed.".to_owned())
         );
     }
 
