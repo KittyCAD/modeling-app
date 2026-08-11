@@ -85,11 +85,7 @@ export async function syncProjectDirectoryNameFromTitle({
   projectDirectoryEntryNames: Iterable<string>
 }) {
   const title = project.title?.trim()
-  // Title changes are metadata changes. Only migrate legacy cloud directories
-  // that still use the remote project ID; established paths must stay stable.
-  const isLegacyIdBasedDirectory =
-    Boolean(project.cloudProjectId) && project.name === project.cloudProjectId
-  if (!title || !project.readWriteAccess || !isLegacyIdBasedDirectory) {
+  if (!title || !project.readWriteAccess) {
     return undefined
   }
 

@@ -635,15 +635,13 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
     folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
-    let projectPath = ''
     await folderSetupFn(async (dir) => {
-      projectPath = `${dir}/${projectName}`
-      await fs.mkdir(projectPath, { recursive: true })
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
       const testFileData = await nodeFs.readFile(
         'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
       )
       await fs.writeFile(
-        `${projectPath}/main.kcl`,
+        `${dir}/${projectName}/main.kcl`,
         new Uint8Array(testFileData)
       )
     })
@@ -690,7 +688,6 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
 
       await expect(page.getByText('Successfully renamed').last()).toBeVisible()
       await expect(projectSidebarToggle).toContainText(commandProjectTitle)
-      expect(await fs.stat(projectPath)).toBeDefined()
     })
   })
 

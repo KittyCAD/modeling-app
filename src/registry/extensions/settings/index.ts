@@ -9,7 +9,6 @@ import { signal } from '@preact/signals-core'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import type {
   ProjectTitleService,
   ProjectTitleUpdate,
@@ -57,7 +56,6 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
 
       const previousName = getProjectDisplayName(project)
       await writeProjectTitleToProjectToml(project.path, title)
-      invalidateProjectLibraryRealizations()
       project.title = title
       projectTitleUpdates.value = { projectPath: project.path, title }
       toast.success(`Successfully renamed "${previousName}" to "${title}"`)

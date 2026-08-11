@@ -128,7 +128,6 @@ function createProject(overrides: Partial<Project> = {}): Project {
   return {
     name,
     path,
-    cloudProjectId: overrides.cloudProjectId ?? name,
     title: 'My Cool Project',
     children: [],
     default_file: `${path}/main.kcl`,
@@ -393,22 +392,6 @@ describe('directory project scanner', () => {
     await vi.waitFor(() =>
       expect(onProjectDirectoriesRenamed).toHaveBeenCalledTimes(1)
     )
-  })
-
-  it('does not rename a local project directory after its title changes', async () => {
-    const targetProjectDirectoryName = await syncProjectDirectoryNameFromTitle({
-      project: createProject({
-        name: 'stable-project-directory',
-        path: '/projects/stable-project-directory',
-        cloudProjectId: undefined,
-        title: 'Updated project title',
-      }),
-      projectDirectoryEntryNames: ['stable-project-directory'],
-    })
-
-    expect(targetProjectDirectoryName).toBeUndefined()
-    expect(mocks.fsZds.rename).not.toHaveBeenCalled()
-    expect(mocks.fsZds.stat).not.toHaveBeenCalled()
   })
 
   it('reports rename failures without stopping the batch or risking project data', async () => {
