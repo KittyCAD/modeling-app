@@ -1,0 +1,23 @@
+// Pins that an offset plane is engine-addressable by the id hide() sends
+// (a plane's engine id and artifact id are the same uuid; the client also
+// drives default-plane visibility with this same command). The rendered
+// snapshot must show the anchor box and at most ONE plane: the one at
+// offset 20.
+planeVisible = offsetPlane(XY, offset = 20)
+
+planeHidden = offsetPlane(XY, offset = 40)
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 20, var 0], end = [var 30, var 0])
+  line2 = line(start = [var 30, var 0], end = [var 30, var 10])
+  line3 = line(start = [var 30, var 10], end = [var 20, var 10])
+  line4 = line(start = [var 20, var 10], end = [var 20, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [25, 5], sketch = anchorSketch), length = 10)
+
+hide(planeHidden)
