@@ -1,0 +1,42 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_oriented.kcl
+---
+{
+  "full": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "oriented",
+        "orientation": "Front"
+      },
+      "target": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "distance": {
+        "n": 500.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "projection": "Perspective"
+    }
+  },
+  "minimal": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "oriented",
+        "orientation": "Isometric"
+      },
+      "target": null,
+      "distance": null,
+      "projection": "Orthographic"
+    }
+  }
+}

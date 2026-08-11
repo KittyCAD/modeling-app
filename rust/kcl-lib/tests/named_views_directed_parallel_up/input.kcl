@@ -1,0 +1,7 @@
+// Pins the strict-error decision for view::directed: a direction parallel
+// to the up vector leaves no plane to build the camera basis from, so the
+// call errors instead of applying a fallback. The vectors differ in
+// magnitude and sign; parallelism is checked on the normalized vectors.
+@settings(experimentalFeatures = allow)
+
+bad = view::directed([0, 0, 5], up = [0, 0, -1])

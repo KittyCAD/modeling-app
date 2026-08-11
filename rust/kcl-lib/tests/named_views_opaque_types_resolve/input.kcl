@@ -1,0 +1,18 @@
+// Pins that the opaque std::view types resolve in function signatures at
+// definition time, before any constructor for them exists. A resolution
+// failure would error at the declaration, so executing the declarations is
+// the whole test. Type annotations only parse as bare identifiers (parser.rs
+// `PrimitiveType::Named` holds an `Identifier`), so the namespaced spelling
+// `view::CameraView` is unwritable in a signature and an explicit import is
+// the only route to these types from user code.
+@settings(experimentalFeatures = allow)
+
+import CameraView, NamedView from "std::view"
+
+fn acceptsCamera(@camera: CameraView) {
+  return 0
+}
+
+fn passesNamed(@input: NamedView): NamedView {
+  return input
+}
