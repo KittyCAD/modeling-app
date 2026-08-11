@@ -26,7 +26,7 @@ export function HelpMenu() {
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
-  const resetOnboardingWorkflow = () => {
+  const replayOnboardingWorkflow = () => {
     const props = {
       app,
       onboardingStatus: onboardingStartPath,
@@ -41,7 +41,7 @@ export function HelpMenu() {
 
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'Help.Replay onboarding tutorial') {
-      resetOnboardingWorkflow()
+      replayOnboardingWorkflow()
     }
   }
   useMenuListener(cb)
@@ -143,7 +143,7 @@ export function HelpMenu() {
               as="button"
               onClick={() => {
                 close()
-                resetOnboardingWorkflow()
+                replayOnboardingWorkflow()
               }}
             >
               Replay onboarding tutorial

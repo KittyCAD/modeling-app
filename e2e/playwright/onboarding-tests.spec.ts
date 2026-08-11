@@ -76,7 +76,7 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       })
     })
 
-    await test.step('Resetting onboarding from inside project should always overwrite `tutorial-project`', async () => {
+    await test.step('Replaying onboarding from settings creates a deduplicated project', async () => {
       await test.step('Reset onboarding from settings', async () => {
         await userMenuButton.click()
         await userMenuSettingsButton.click()
@@ -89,7 +89,7 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       })
 
       await test.step('Gets to the onboarding start', async () => {
-        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(toolbar.projectName).toHaveText('tutorial-project-1')
         await expect(tutorialWelcomeHeading).toBeVisible()
       })
 
@@ -99,22 +99,25 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
 
-      await test.step("Verify an additional project wasn't created", async () => {
+      await test.step('Verify the replay project was created', async () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
-          projectCards: [{ title: 'tutorial-project', fileCount: 2 }],
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 2 },
+            { title: 'tutorial-project-1', fileCount: 1 },
+          ],
           sortBy: 'last-modified-desc',
         })
       })
     })
 
-    await test.step('Resetting onboarding from home help menu overwrites the `tutorial-project`', async () => {
+    await test.step('Replaying onboarding from Help creates another deduplicated project', async () => {
       await helpMenuButton.click()
       await helpMenuRestartOnboardingButton.click()
 
       await test.step('Gets to the onboarding start', async () => {
-        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(toolbar.projectName).toHaveText('tutorial-project-2')
         await expect(tutorialWelcomeHeading).toBeVisible()
       })
 
@@ -124,11 +127,15 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
         await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
 
-      await test.step('Verify no new projects were created', async () => {
+      await test.step('Verify another replay project was created', async () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
-          projectCards: [{ title: 'tutorial-project', fileCount: 2 }],
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 2 },
+            { title: 'tutorial-project-1', fileCount: 1 },
+            { title: 'tutorial-project-2', fileCount: 1 },
+          ],
           sortBy: 'last-modified-desc',
         })
       })
