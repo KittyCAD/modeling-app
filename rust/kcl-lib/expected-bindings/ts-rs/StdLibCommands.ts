@@ -6072,7 +6072,7 @@ export default {
       },
       {
         "name": "useOriginal",
-        "ty": "boolean",
+        "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,

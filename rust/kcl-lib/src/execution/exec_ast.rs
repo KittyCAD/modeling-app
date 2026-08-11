@@ -1899,6 +1899,13 @@ impl ExecutorContext {
                     )
                 };
 
+                // Resolve the signature's type names now, in the scope where
+                // the declaration is written. Call sites consume the stored
+                // resolutions and never look type names up themselves.
+                if let KclValue::Function { value, .. } = &mut closure {
+                    value.resolve_signature_types(exec_state)?;
+                }
+
                 // If the function expression has a name, i.e. `fn name() {}`,
                 // bind it in the current scope.
                 if let Some(fn_name) = &function_expression.name {

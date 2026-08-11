@@ -4881,6 +4881,177 @@ type Color { | Red | Green | Red }
         }
     }
 
+    // The next five tests pin lexical resolution of signature types: a type
+    // name written in a function signature resolves in the scope where the
+    // declaration executes, never in the caller's scope. Before
+    // definition-time resolution, signature types were looked up at each call
+    // in the caller's environment, so a std or user module whose exported
+    // types a caller had not imported under their bare names was uncallable.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_declaring_module() {
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        // The caller can reach `colors::Color` but never binds the bare name
+        // `Color`, so resolving the signature in the caller's scope would fail.
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_under_import_alias() {
+        // An import alias renames the caller's binding for the module. The
+        // declaring module's scope is unaffected, so the signature must
+        // resolve identically under any alias.
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_ignore_caller_scope() {
+        // `broken.kcl` names a type it does not define. The caller defines
+        // that name, which caller-scope resolution would have used. The
+        // declaration must fail when the module loads, without consulting the
+        // caller's binding.
+        let broken = (
+            "broken.kcl",
+            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+
+        let err = execute_with_modules(main, &[broken]).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Missing"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_reject_forward_reference() {
+        // Resolution happens when the declaration executes, so a type declared
+        // later in the file is not visible. The function is never called; the
+        // error must surface at the declaration itself.
+        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+
+        let err = parse_execute(main).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Later"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_enclosing_scope() {
+        // The declaring scope is the closure's scope, not merely the declaring
+        // module: the anonymous function's signature must see the alias in the
+        // enclosing function body. Caller-scope resolution would use the
+        // module-level `Width = string` and fail to coerce `42`.
+        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+
+        let result = parse_execute(main).await.unwrap();
+        let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold a number");
+        };
+        assert_eq!(value, 42.0);
+    }
+
+    // Pins that numeric types in signatures are settings-independent, so
+    // definition-time resolution changed nothing for them: in type
+    // annotations, bare `number` maps to `Any` before the settings-reading
+    // path, and every explicit suffix maps to a settings-free type. A literal
+    // argument therefore takes its unit from the CALLER's module defaults;
+    // the declaring module's defaults (`in` here) must never leak in. If a
+    // future change makes a signature's number type depend on module default
+    // units, the declaring-module scope of definition-time resolution starts
+    // to matter and this pin fails.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_number_types_ignore_module_default_units() {
+        let units_in = (
+            "units_in.kcl",
+            "@settings(defaultLengthUnit = in)\nexport fn passThrough(@x: number(Length)) {\n  return x\n}\n",
+        );
+        // The caller's default length unit is mm (the test default), so the
+        // unitless literal is 42 mm by the time it reaches the parameter.
+        let main = "import \"units_in.kcl\"\na = units_in::passThrough(42)\nb = units_in::passThrough(42mm)\nc = units_in::passThrough(42in)\n";
+
+        let result = execute_with_modules(main, &[units_in]).await.unwrap();
+        for (name, expected_ty) in [
+            // The unitless literal keeps its `Default` type, and that type
+            // records the CALLER's module settings. Declaring-module leakage
+            // would show here as `len: Inches`.
+            //
+            // That the coercion to `number(Length)` leaves the type as
+            // `Default` rather than concretizing it to `Known(Millimeters)`
+            // is pre-existing coercion behavior which this test observes but
+            // does not endorse. If coercion later concretizes, update the
+            // expected type; the pin here is the settings provenance.
+            (
+                "a",
+                kcl_api::NumericType::Default {
+                    len: kcl_api::UnitLength::Millimeters,
+                    angle: kcl_api::UnitAngle::Degrees,
+                },
+            ),
+            (
+                "b",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Millimeters)),
+            ),
+            (
+                "c",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Inches)),
+            ),
+        ] {
+            let KclValue::Number { value, ty, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            else {
+                panic!("`{name}` should hold a number");
+            };
+            assert_eq!(value, 42.0, "`{name}` should keep its magnitude");
+            assert_eq!(ty, expected_ty, "`{name}` should keep the caller-side unit context");
+        }
+    }
+
+    // Pins the sharpest shadowing case, from a hand-written example during
+    // review: BOTH scopes define the same type name with different meanings,
+    // so the test observes which one the signature uses, not merely whether a
+    // name is present. `m1.kcl`'s `A` is `string` and is NOT exported; the
+    // caller's own `A` is `number(mm)`. The signature must use m1's `A`, so
+    // passing `2mm` is a type error. Caller-scope resolution would have used
+    // the caller's `A` and accepted the call.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
+        let m1 = (
+            "m1.kcl",
+            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+        );
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+
+        let err = execute_with_modules(main, &[m1]).await.unwrap_err();
+        assert_eq!(
+            err.message(),
+            "The input argument of `test` requires a value with type `A`, but found a number (mm) (with type `number(mm)`)."
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_bad_variant_paths() {
         let allow = "@settings(experimentalFeatures = allow)\n";

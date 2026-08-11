@@ -52,7 +52,7 @@ import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
+import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -60,7 +60,7 @@ import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
@@ -114,7 +114,7 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   },
 ]
 
-describe('MlEphantConversation', () => {
+describe('ZookeeperConversation', () => {
   beforeEach(() => {
     configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
@@ -142,7 +142,7 @@ describe('MlEphantConversation', () => {
       onRemoveFromQueue: () => {},
       onSteer: () => {},
     }
-    const { rerender } = render(<MlEphantConversation {...recoveryProps} />)
+    const { rerender } = render(<ZookeeperConversation {...recoveryProps} />)
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       "Zookeeper couldn't load this conversation after 3 attempts."
@@ -167,13 +167,13 @@ describe('MlEphantConversation', () => {
     expect(onReconnect).toHaveBeenCalledTimes(1)
     expect(onClickClearChat).toHaveBeenCalledTimes(1)
 
-    rerender(<MlEphantConversation {...recoveryProps} isClearingChat={true} />)
+    rerender(<ZookeeperConversation {...recoveryProps} isClearingChat={true} />)
 
     expect(screen.getByRole('button', { name: 'Reconnect' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Clearing...' })).toBeDisabled()
 
     rerender(
-      <MlEphantConversation
+      <ZookeeperConversation
         {...recoveryProps}
         connectionError="Zookeeper couldn't connect after 3 attempts."
         canClearChat={false}
@@ -189,7 +189,7 @@ describe('MlEphantConversation', () => {
 
   test('shows setup progress while loading a conversation', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={true}
         conversation={undefined}
         loadingMessage="Connecting to Zookeeper (attempt 2 of 3)..."
@@ -241,7 +241,7 @@ describe('MlEphantConversation', () => {
       hasPromptCompleted = true
     ) => {
       return (
-        <MlEphantConversation
+        <ZookeeperConversation
           isLoading={false}
           conversation={conversation}
           onProcess={handleProcess}
@@ -337,7 +337,7 @@ describe('MlEphantConversation', () => {
 
   test('shows an attachments loading indicator while attachment processing is in progress', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         isLoadingAttachments={true}
         conversation={{
@@ -382,7 +382,7 @@ describe('MlEphantConversation', () => {
   test('omits mode while server mode metadata is unavailable', () => {
     const handleProcess = vi.fn()
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -416,7 +416,7 @@ describe('MlEphantConversation', () => {
   test('resets a local mode pick when the mode scope changes', () => {
     const handleProcess = vi.fn()
     const renderConversation = (modeScopeKey: string) => (
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -468,7 +468,7 @@ describe('MlEphantConversation', () => {
     ]
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -516,7 +516,7 @@ describe('MlEphantConversation', () => {
     ]
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -573,7 +573,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -633,7 +633,7 @@ describe('MlEphantConversation', () => {
       }
 
       render(
-        <MlEphantConversation
+        <ZookeeperConversation
           isLoading={false}
           conversation={conversation}
           onProcess={vi.fn()}
@@ -746,7 +746,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -797,7 +797,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -864,7 +864,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -909,7 +909,7 @@ describe('MlEphantConversation', () => {
     const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         onProcess={vi.fn()}
         onClickClearChat={() => {}}
@@ -942,7 +942,7 @@ describe('MlEphantConversation', () => {
 
   test('renders a provided welcome message when the conversation is empty', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         welcomeMessage={
@@ -971,7 +971,7 @@ describe('MlEphantConversation', () => {
 
   test('renders a provided welcome message above conversation exchanges', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{
           exchanges: [
@@ -1023,7 +1023,7 @@ describe('MlEphantConversation', () => {
 
   test('renders the Makeathon announcement in the Zookeeper pane', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -1056,7 +1056,7 @@ describe('MlEphantConversation', () => {
 
   test('does not render the Makeathon announcement when hidden', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -1082,7 +1082,7 @@ describe('MlEphantConversation', () => {
 
   test('dismisses the Makeathon announcement and persists the choice', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -1122,7 +1122,7 @@ describe('MlEphantConversation', () => {
     )
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -1159,7 +1159,7 @@ describe('MlEphantConversation', () => {
     const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
         <>
-          <MlEphantConversation
+          <ZookeeperConversation
             isLoading={false}
             conversation={{ exchanges: [] }}
             onProcess={handleProcess}

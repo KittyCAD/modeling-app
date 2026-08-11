@@ -3,7 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -131,11 +131,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
-    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(

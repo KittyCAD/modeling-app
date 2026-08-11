@@ -17,7 +17,7 @@ import type {
   Exchange,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   activateZoodleRuntimeExtension,
@@ -40,10 +40,10 @@ export interface QueuedMessage {
   attachments: File[]
 }
 
-export interface MlEphantConversationProps {
+export interface ZookeeperConversationProps {
   isLoading: boolean
   conversation?: Conversation
-  contexts: MlEphantManagerPromptContext[]
+  contexts: ZookeeperManagerPromptContext[]
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
@@ -167,7 +167,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
   )
 }
 
-export interface MlEphantExtraInputsProps {
+export interface ZookeeperExtraInputsProps {
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
@@ -178,7 +178,7 @@ export interface MlEphantExtraInputsProps {
   modeOptions?: MlCopilotModeOption[]
 }
 
-export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
+export const ZookeeperExtraInputs = (props: ZookeeperExtraInputsProps) => {
   const currentMode = getSelectableModeOption(props.mode, props.modeOptions)
   const modeOptions = props.modeOptions ?? []
 
@@ -249,7 +249,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
 export const DummyContent = 'o|-<'
 
-export type MlEphantManagerPromptContext =
+export type ZookeeperManagerPromptContext =
   | {
       type: 'selections'
       data: Selections
@@ -259,14 +259,14 @@ export type MlEphantManagerPromptContext =
       data: typeof DummyContent
     }
 
-export interface MlEphantContextsProps {
-  contexts: MlEphantManagerPromptContext[]
+export interface ZookeeperContextsProps {
+  contexts: ZookeeperManagerPromptContext[]
 }
 
-interface MlEphantConversationInputProps {
-  onProcess: MlEphantConversationProps['onProcess']
-  onCancel: MlEphantConversationProps['onCancel']
-  hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
+interface ZookeeperConversationInputProps {
+  onProcess: ZookeeperConversationProps['onProcess']
+  onCancel: ZookeeperConversationProps['onCancel']
+  hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
@@ -280,8 +280,8 @@ interface MlEphantConversationInputProps {
   modeScopeKey?: string
 }
 
-export const MlEphantConversationInput = (
-  props: MlEphantConversationInputProps
+export const ZookeeperConversationInput = (
+  props: ZookeeperConversationInputProps
 ) => {
   const { registry } = useApp()
   const refDiv = useRef<HTMLTextAreaElement>(null)
@@ -584,7 +584,7 @@ export const MlEphantConversationInput = (
           className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-1"
           data-testid="ml-ephant-composer-actions"
         >
-          <MlEphantExtraInputs
+          <ZookeeperExtraInputs
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -655,7 +655,7 @@ const StarterCard = ({ text }: { text: string }) => {
   )
 }
 
-export const MlEphantConversation = (props: MlEphantConversationProps) => {
+export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
   const hasMessages = exchangesLength > 0
@@ -864,7 +864,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             </div>
           ) : null}
           <div className="border-t b-4">
-            <MlEphantConversationInput
+            <ZookeeperConversationInput
               disabled={
                 Boolean(props.blockedReason) ||
                 props.disabled ||
