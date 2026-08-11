@@ -1044,6 +1044,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           library,
           requestedProjectName,
           requestedProjectTitle,
+          initialKclFile,
         }) => {
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
@@ -1056,7 +1057,9 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             requestedProjectName,
             requestedProjectTitle,
             wasmInstancePromise,
+            initialKclFile,
           })
+          refreshLocalCloudProjectEntries()
 
           if (cloudSyncStatus.value.enabled) {
             await ctx.services

@@ -10,10 +10,9 @@ import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-head
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
-import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { KclManager } from '@src/lang/KclManager'
+import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -34,15 +33,19 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import {
+  PATHS,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import {
+  DEFAULT_PROJECT_LIBRARY_ID,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+} from '@src/lib/projectLibraries'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
-import { err, reportRejection } from '@src/lib/trap'
+import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 
 // Get the 1-indexed step number of the current onboarding step
@@ -320,41 +323,96 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
+  app: Pick<App, 'getCreateProjectLibraryTargets'>
   onboardingStatus: OnboardingStatus
-  kclManager: KclManager
-  systemIOActor: SystemIOActor
-  settingsActor: SettingsActorType
   navigate: NavigateFunction
-  executingPath?: string
 }
 
-export const ERROR_MUST_WARN = 'Must warn user before overwrite'
+let pendingOnboardingStart: Promise<void> | undefined
+
+async function createOnboardingProject(
+  deps: OnboardingUtilDeps,
+  onboardingStatus: OnboardingStatus
+) {
+  const targets = deps.app.getCreateProjectLibraryTargets()
+  const isDesktopApp = typeof window !== 'undefined' && Boolean(window.electron)
+  const preferredLibraryId = isDesktopApp
+    ? DEFAULT_PROJECT_LIBRARY_ID
+    : PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+  const projectLibraryTarget =
+    targets.find((target) => target.library.id === preferredLibraryId) ??
+    (isDesktopApp
+      ? targets.find(
+          (target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+        )
+      : undefined) ??
+    targets[0]
+
+  if (!projectLibraryTarget) {
+    return Promise.reject(
+      new Error('No writable project library is available for onboarding.')
+    )
+  }
+
+  const initialKclFile = coldPlateParts[0]
+  const project = await projectLibraryTarget.createProject.run({
+    library: projectLibraryTarget.library,
+    requestedProjectName: ONBOARDING_PROJECT_NAME,
+    requestedProjectTitle: ONBOARDING_PROJECT_NAME,
+    // Write the tutorial before cloud enrollment can observe a blank project.
+    initialKclFile: {
+      fileName: initialKclFile.requestedFileName,
+      code: initialKclFile.requestedCode,
+    },
+  })
+
+  if (!project?.default_file) {
+    return Promise.reject(new Error('Unable to create the onboarding project.'))
+  }
+
+  await deps.navigate(
+    joinRouterPaths(
+      PATHS.FILE,
+      safeEncodeForRouterPaths(project.default_file),
+      PATHS.ONBOARDING,
+      onboardingStatus
+    )
+  )
+}
+
+export function reportOnboardingStartFailure(reason: unknown) {
+  const error =
+    reason instanceof Error
+      ? reason
+      : new Error(`Unable to start onboarding: ${String(reason)}`)
+  trap(error, {
+    altErr: new Error(
+      'Unable to start the onboarding tutorial. Please try again.'
+    ),
+  })
+}
 
 /**
  * Accept to begin the onboarding tutorial,
  */
-export function acceptOnboarding(deps: OnboardingUtilDeps) {
+export function acceptOnboarding(deps: OnboardingUtilDeps): Promise<void> {
   // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
     : deps.onboardingStatus
 
-  /**
-   * Bulk create the tutorial sample and navigate to the project.
-   */
-  deps.systemIOActor.send({
-    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-    data: {
-      files: coldPlateParts.map((part) => ({
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
-        ...part,
-      })),
-      // Make a unique tutorial project each time
-      override: true,
-      requestedProjectName: ONBOARDING_PROJECT_NAME,
-      requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
-    },
+  if (pendingOnboardingStart) {
+    return pendingOnboardingStart
+  }
+
+  const start = createOnboardingProject(deps, onboardingStatus)
+  const trackedStart = start.finally(() => {
+    if (pendingOnboardingStart === trackedStart) {
+      pendingOnboardingStart = undefined
+    }
   })
+  pendingOnboardingStart = trackedStart
+  return trackedStart
 }
 
 export function needsToOnboard(
@@ -441,8 +499,9 @@ export function TutorialRequestToast(
   const { settings } = useApp()
   function onSelectWorkflow(preference: OnboardingWorkflowPreference) {
     rememberedOnboardingWorkflowPreference = preference
-    acceptOnboarding(props)
-    toast.dismiss(ONBOARDING_TOAST_ID)
+    void acceptOnboarding(props)
+      .then(() => toast.dismiss(ONBOARDING_TOAST_ID))
+      .catch(reportOnboardingStartFailure)
   }
 
   return (
@@ -527,74 +586,6 @@ export function TutorialRequestToast(
             click here.
           </a>
         </p>
-      </div>
-    </div>
-  )
-}
-
-/**
- * Helper function to catch the `ERROR_MUST_WARN` error from
- * `acceptOnboarding` and show a warning toast.
- */
-export async function catchOnboardingWarnError(
-  err: Error,
-  props: OnboardingUtilDeps
-) {
-  if (err instanceof Error && err.message === ERROR_MUST_WARN) {
-    toast.success(TutorialWebConfirmationToast(props), {
-      id: ONBOARDING_TOAST_ID,
-      duration: Number.POSITIVE_INFINITY,
-      icon: null,
-    })
-  } else {
-    toast.dismiss(ONBOARDING_TOAST_ID)
-    return reportRejection(err)
-  }
-}
-
-export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
-  function onAccept() {
-    toast.dismiss(ONBOARDING_TOAST_ID)
-    acceptOnboarding(props)
-  }
-
-  return (
-    <div
-      data-testid="onboarding-toast-confirmation"
-      className="flex items-center gap-6 min-w-80"
-    >
-      <Logo className="w-auto h-8 flex-none" />
-      <div className="flex flex-col justify-between gap-6">
-        <section>
-          <h2>The welcome tutorial resets your code in the browser</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            We see you have some of your own code written in this project.
-            Please save it somewhere else before continuing the onboarding.
-          </p>
-        </section>
-        <div className="flex justify-between gap-8">
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'close',
-            }}
-            data-negative-button="dismiss"
-            name="dismiss"
-            onClick={() => onDismissOnboardingInvite(props.settingsActor)}
-          >
-            I'll save it
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'checkmark',
-            }}
-            name="accept"
-            onClick={onAccept}
-          >
-            Overwrite and begin
-          </ActionButton>
-        </div>
       </div>
     </div>
   )
