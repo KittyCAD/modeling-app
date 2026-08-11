@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_loft.kcl
+---
+// Pins that a solid lofted from solved-sketch regions is engine-addressable
+// by the id hide() sends
+// (for loft that id is the loft command id itself). The rendered snapshot
+// must show the anchor box and no cone. The two section circles remain
+// visible as wireframe outlines: V2 sketches are scene objects of their own,
+// and hiding the solid does not hide them.
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 6, var 0], center = [var 0, var 0])
+}
+
+sketch002 = sketch(on = offsetPlane(XY, offset = 12)) {
+  circle1 = circle(start = [var 2, var 0], center = [var 0, var 0])
+}
+
+coneHidden = loft([
+  region(point = [0, 0], sketch = sketch001),
+  region(point = [0, 0], sketch = sketch002)
+])
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 20, var 0], end = [var 30, var 0])
+  line2 = line(start = [var 30, var 0], end = [var 30, var 10])
+  line3 = line(start = [var 30, var 10], end = [var 20, var 10])
+  line4 = line(start = [var 20, var 10], end = [var 20, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [25, 5], sketch = anchorSketch), length = 10)
+
+hide(coneHidden)
