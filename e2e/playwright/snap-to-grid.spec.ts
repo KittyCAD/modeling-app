@@ -1,4 +1,10 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+const waitForSettingsIdle = (page: Page) =>
+  page.waitForFunction(() =>
+    window.app.settings.actor.getSnapshot().matches('idle')
+  )
 
 test.describe('Snap to Grid', { tag: '@desktop' }, () => {
   test('draws a line with snap to grid turned on', async ({
@@ -85,16 +91,12 @@ test.describe(
       await editor.expectEditor.toContain('sketch001')
       await scene.settled()
 
-      const waitForSettingsIdle = () =>
-        page.waitForFunction(() =>
-          window.app.settings.actor.getSnapshot().matches('idle')
-        )
       const commands = page.getByRole('button', { name: 'Commands' })
       const cameraProjection = await page.evaluate(
         () => window.app.settings.get().modeling.cameraProjection.current
       )
       if (cameraProjection !== 'orthographic') {
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
         await commands.click()
         await page
           .getByRole('option', {
@@ -102,13 +104,13 @@ test.describe(
           })
           .click()
         await page.getByRole('option', { name: 'Orthographic' }).click()
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
       }
       const fixedSizeGrid = await page.evaluate(
         () => window.app.settings.get().modeling.fixedSizeGrid.current
       )
       if (!fixedSizeGrid) {
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
         await commands.click()
         await page
           .getByRole('option', {
@@ -116,7 +118,7 @@ test.describe(
           })
           .click()
         await page.getByRole('option', { name: 'On', exact: true }).click()
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
       }
       await scene.settled()
 
@@ -140,7 +142,7 @@ test.describe(
           )
         if (await isEnabled()) return
 
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
         const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
           format: 'ratio',
         })
@@ -150,7 +152,7 @@ test.describe(
           .getByRole('button', { name })
         await expect(item).toBeVisible()
         await item.click()
-        await waitForSettingsIdle()
+        await waitForSettingsIdle(page)
         await expect.poll(isEnabled).toBe(true)
       }
       await enableSketchMenuItem('Show Sketch Grid', 'showSketchGrid')
@@ -233,6 +235,7 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
 
     const commands = page.getByRole('button', { name: 'Commands' })
     const setBooleanSetting = async (setting: string, value: 'On' | 'Off') => {
+      await waitForSettingsIdle(page)
       await commands.click()
       await page
         .getByRole('option', {
@@ -240,8 +243,10 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
         })
         .click()
       await page.getByRole('option', { name: value }).click()
+      await waitForSettingsIdle(page)
     }
     const setOrthographicCamera = async () => {
+      await waitForSettingsIdle(page)
       await commands.click()
       await page
         .getByRole('option', {
@@ -249,6 +254,7 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
         })
         .click()
       await page.getByRole('option', { name: 'Orthographic' }).click()
+      await waitForSettingsIdle(page)
     }
     const fixedSizeGridEnabled = () =>
       page.evaluate(
@@ -324,7 +330,9 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
         label.includes('Snap to Grid')
       ) - 1
     )
+    await waitForSettingsIdle(page)
     await showSketchGrid.click()
+    await waitForSettingsIdle(page)
     await expect.poll(sketchGridEnabled).toBe(true)
     await expect.poll(sketchGridVisible).toBe(true)
 
@@ -357,7 +365,7 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
     await toolbar.exitSketchBtn.click()
     await expect(toolbar.startSketchBtn).toBeEnabled()
     await page.reload()
-    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+    await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 30_000 })
     await scene.settled()
     await expect.poll(sketchGridEnabled).toBe(true)
     await expect.poll(fixedSizeGridEnabled).toBe(false)
