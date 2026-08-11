@@ -7,6 +7,7 @@ import {
   addFillet,
   deleteEdgeTreatment,
   retrieveEdgeSelectionsFromOpArgs,
+  retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
@@ -1173,6 +1174,63 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
   })
 
   describe('Testing retrieveEdgeSelectionsFromOpArgs', () => {
+    it('preserves edge disambiguators when recovering a single edge reference', async () => {
+      const { artifactGraph } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(segment).toBeDefined()
+      if (!segment || segment.type !== 'segment') return
+      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+      if (err(commonFaces)) throw commonFaces
+      expect(commonFaces).toHaveLength(2)
+      const endFaceIds = [crypto.randomUUID(), crypto.randomUUID()]
+
+      const selections = retrieveEdgeSelectionsFromSingleEdgeRef(
+        {
+          value: {
+            type: 'Object',
+            value: {
+              sideFaces: {
+                type: 'Array',
+                value: commonFaces.map((face) => ({
+                  type: 'Uuid' as const,
+                  value: face.id,
+                })),
+              },
+              endFaces: {
+                type: 'Array',
+                value: endFaceIds.map((value) => ({
+                  type: 'Uuid' as const,
+                  value,
+                })),
+              },
+              index: {
+                type: 'Number',
+                value: 3,
+                ty: { type: 'Unknown' },
+              },
+            },
+          },
+          sourceRange: topLevelRange(0, 0),
+        },
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.graphSelections).toHaveLength(1)
+      expect(selections.graphSelections[0].entityRef).toEqual({
+        type: 'edge',
+        side_faces: commonFaces.map((face) => face.id),
+        end_faces: endFaceIds,
+        index: 3,
+      })
+    })
+
     it('should retrieve graph and primitive edge selections from mixed tags', async () => {
       const code = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])

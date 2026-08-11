@@ -818,7 +818,13 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [region001.tags.line3, capEnd001] },
+          axis = {
+            sideFaces = [region001.tags.line3, capEnd001],
+            endFaces = [
+              region001.tags.line1,
+              region001.tags.line2
+            ]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -2930,7 +2936,11 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [capEnd001, region001.tags.line1],
+    endFaces = [
+      region001.tags.line3,
+      region001.tags.line2
+    ]
   },
   bodyType = SURFACE,
 )`

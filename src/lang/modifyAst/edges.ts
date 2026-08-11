@@ -3644,11 +3644,8 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (edgeRefArg.value.type !== 'Object' || !edgeRefArg.value.value) {
     return new Error('edgeRef argument is not an object')
   }
-  // Selection recovery intentionally uses only side faces. `endFaces` and
-  // `index` are engine disambiguators for executing the edge specifier, while
-  // this path only needs to map the stdlib argument back to a selectable graph
-  // artifact for editing.
-  const facesProp = edgeRefArg.value.value.sideFaces
+  const edgeRef = edgeRefArg.value.value
+  const facesProp = edgeRef.sideFaces ?? edgeRef.side_faces
   if (facesProp?.type !== 'Array') {
     return new Error('edgeRef has no sideFaces array')
   }
@@ -3669,7 +3666,21 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (!codeRefs?.length) {
     return new Error('Edge artifact has no codeRef')
   }
-  const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
+  const endFacesProp = edgeRef.endFaces ?? edgeRef.end_faces
+  const endFaceIds =
+    endFacesProp?.type === 'Array'
+      ? endFacesProp.value
+          .map(faceRefToArtifactId)
+          .filter((id): id is string => Boolean(id))
+      : []
+  const index =
+    edgeRef.index?.type === 'Number' ? edgeRef.index.value : undefined
+  const entityRef: EntityReference = {
+    type: 'edge',
+    side_faces: faceIds,
+    ...(endFaceIds.length > 0 ? { end_faces: endFaceIds } : {}),
+    ...(index !== undefined ? { index } : {}),
+  }
   return {
     graphSelections: [{ entityRef, codeRef: codeRefs[0] }],
     otherSelections: [],
