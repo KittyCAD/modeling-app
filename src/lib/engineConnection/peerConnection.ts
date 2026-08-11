@@ -181,7 +181,8 @@ export function createOnConnectionStateChange({
     /**
      * `disconnected` can be transient, so give this peer connection one grace
      * period to recover. Each subsequent concrete state owns canceling that
-     * timer. If no state change occurs, the timeout tears the peer down.
+     * timer, and the owning Connection cancels it during any other teardown.
+     * If neither occurs, the timeout tears the peer down.
      */
     switch (peerConnection?.connectionState) {
       // From what I understand, only after have we done the ICE song and
@@ -220,7 +221,7 @@ export function createOnConnectionStateChange({
     }
   }
 
-  return onConnectionStateChange
+  return { onConnectionStateChange, clearDisconnectedTimeout }
 }
 
 export function createOnTrack({

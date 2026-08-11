@@ -13,17 +13,23 @@ const setup = () => {
   const peerConnection = new TestPeerConnection()
   const dispatchEvent = vi.fn(() => true)
   const tearDownManager = vi.fn()
-  const onConnectionStateChange = createOnConnectionStateChange({
-    dispatchEvent,
-    connection: { mediaStream: new MediaStream() } as Connection,
-    tearDownManager,
-  })
+  const { onConnectionStateChange, clearDisconnectedTimeout } =
+    createOnConnectionStateChange({
+      dispatchEvent,
+      connection: { mediaStream: new MediaStream() } as Connection,
+      tearDownManager,
+    })
   peerConnection.addEventListener(
     'connectionstatechange',
     onConnectionStateChange
   )
 
-  return { peerConnection, dispatchEvent, tearDownManager }
+  return {
+    peerConnection,
+    dispatchEvent,
+    tearDownManager,
+    clearDisconnectedTimeout,
+  }
 }
 
 describe('createOnConnectionStateChange', () => {
@@ -57,5 +63,17 @@ describe('createOnConnectionStateChange', () => {
     expect(tearDownManager).toHaveBeenCalledWith({
       peerConnectionDisconnected: true,
     })
+  })
+
+  it('cancels a pending teardown when the connection is cleaned up', () => {
+    const { peerConnection, tearDownManager, clearDisconnectedTimeout } =
+      setup()
+
+    peerConnection.connectionState = 'disconnected'
+    peerConnection.dispatchEvent(new Event('connectionstatechange'))
+    clearDisconnectedTimeout()
+    vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
+
+    expect(tearDownManager).not.toHaveBeenCalled()
   })
 })
