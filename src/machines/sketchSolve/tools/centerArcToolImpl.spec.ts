@@ -159,6 +159,53 @@ function createArcApiObject({
   }
 }
 
+function createGridArcFinalizationFixture(checkpointId?: number) {
+  const rustContext = createMockRustContext()
+  const kclManager = createMockKclManager()
+  const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+  const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+  const currentArc = createArcApiObject({
+    id: 4,
+    center: 1,
+    start: 2,
+    end: 3,
+    startX: 10,
+    startY: 0,
+  })
+  const inputSceneGraphDelta = createSceneGraphDelta(
+    [
+      createPointApiObject({ id: 1, x: 0, y: 0 }),
+      createPointApiObject({ id: 2, x: 10, y: 0 }),
+      createPointApiObject({ id: 3, x: 10, y: 0 }),
+      currentArc,
+    ],
+    [1, 2, 3, 4]
+  )
+  const editResult = {
+    kclSource: { text: 'edit' },
+    sceneGraphDelta: createSceneGraphDelta(
+      [
+        createPointApiObject({ id: 1, x: 0, y: 0 }),
+        createPointApiObject({ id: 2, x: 10, y: 0 }),
+        createPointApiObject({ id: 3, x: 0, y: 10 }),
+        currentArc,
+      ],
+      [4]
+    ),
+    ...(checkpointId === undefined ? {} : { checkpointId }),
+  }
+  editSegmentsSpy.mockResolvedValue(editResult)
+
+  return {
+    rustContext,
+    kclManager,
+    editSegmentsSpy,
+    addConstraintSpy,
+    inputSceneGraphDelta,
+    editResult,
+  }
+}
+
 describe('centerArcToolImpl', () => {
   describe('getArcPointIdsForSegment', () => {
     it('returns center, start, and end point ids for the active draft arc', () => {
@@ -620,41 +667,14 @@ describe('centerArcToolImpl', () => {
     )
 
     it('checkpoints the final edit directly when endpoints only snap to the grid', async () => {
-      const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
-      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
-      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
-      const currentArc = createArcApiObject({
-        id: 4,
-        center: 1,
-        start: 2,
-        end: 3,
-        startX: 10,
-        startY: 0,
-      })
-      const inputSceneGraphDelta = createSceneGraphDelta(
-        [
-          createPointApiObject({ id: 1, x: 0, y: 0 }),
-          createPointApiObject({ id: 2, x: 10, y: 0 }),
-          createPointApiObject({ id: 3, x: 10, y: 0 }),
-          currentArc,
-        ],
-        [1, 2, 3, 4]
-      )
-      const editResult = {
-        kclSource: { text: 'grid-snapped-edit' },
-        sceneGraphDelta: createSceneGraphDelta(
-          [
-            createPointApiObject({ id: 1, x: 0, y: 0 }),
-            createPointApiObject({ id: 2, x: 10, y: 0 }),
-            createPointApiObject({ id: 3, x: 0, y: 10 }),
-            currentArc,
-          ],
-          [4]
-        ),
-        checkpointId: 42,
-      }
-      editSegmentsSpy.mockResolvedValue(editResult)
+      const {
+        rustContext,
+        kclManager,
+        editSegmentsSpy,
+        addConstraintSpy,
+        inputSceneGraphDelta,
+        editResult,
+      } = createGridArcFinalizationFixture(42)
 
       const result = await finalizeArcActor({
         input: {
@@ -676,39 +696,13 @@ describe('centerArcToolImpl', () => {
     })
 
     it('queues only constraint-bearing targets after a grid-snapped endpoint', async () => {
-      const rustContext = createMockRustContext()
-      const kclManager = createMockKclManager()
-      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
-      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
-      const currentArc = createArcApiObject({
-        id: 4,
-        center: 1,
-        start: 2,
-        end: 3,
-        startX: 10,
-        startY: 0,
-      })
-      const inputSceneGraphDelta = createSceneGraphDelta(
-        [
-          createPointApiObject({ id: 1, x: 0, y: 0 }),
-          createPointApiObject({ id: 2, x: 10, y: 0 }),
-          createPointApiObject({ id: 3, x: 10, y: 0 }),
-          currentArc,
-        ],
-        [1, 2, 3, 4]
-      )
-      editSegmentsSpy.mockResolvedValue({
-        kclSource: { text: 'edit' },
-        sceneGraphDelta: createSceneGraphDelta(
-          [
-            createPointApiObject({ id: 1, x: 0, y: 0 }),
-            createPointApiObject({ id: 2, x: 10, y: 0 }),
-            createPointApiObject({ id: 3, x: 0, y: 10 }),
-            currentArc,
-          ],
-          [4]
-        ),
-      })
+      const {
+        rustContext,
+        kclManager,
+        editSegmentsSpy,
+        addConstraintSpy,
+        inputSceneGraphDelta,
+      } = createGridArcFinalizationFixture()
       addConstraintSpy.mockResolvedValue({
         kclSource: { text: 'point-snap' },
         sceneGraphDelta: createSceneGraphDelta([], [20]),

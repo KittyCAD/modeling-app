@@ -7,7 +7,6 @@ import {
   ExtrudeGeometry,
   Group,
   LineCurve3,
-  Material,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -196,24 +195,16 @@ type DraftSegment = 'line' | 'tangentialArc'
 type Vec3Array = [number, number, number]
 
 function setAxisVisualVisibility(axis: Object3D | undefined, visible: boolean) {
-  if (!(axis instanceof Mesh)) {
+  if (
+    !(axis instanceof Mesh) ||
+    !(axis.material instanceof MeshBasicMaterial)
+  ) {
     return
   }
 
   // Keep the mesh raycastable while hiding only its rendered material.
   axis.visible = true
-  if (axis.material instanceof Material) {
-    axis.material.visible = visible
-    return
-  }
-  if (isArray(axis.material)) {
-    axis.material.forEach((material) => {
-      if (!(material instanceof Material)) {
-        return
-      }
-      material.visible = visible
-    })
-  }
+  axis.material.visible = visible
 }
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.

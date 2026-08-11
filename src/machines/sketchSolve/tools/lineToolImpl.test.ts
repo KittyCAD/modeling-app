@@ -1,65 +1,54 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
 import {
   animateDraftSegmentListener,
   type ToolActionArgs,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
-import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { OrthographicCamera, Vector2 } from 'three'
-import { describe, expect, it, vi } from 'vitest'
+import {
+  createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
+  createSceneGraphDelta,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { Vector2 } from 'three'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({}),
 }))
 
+vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
+  clearToolSnappingState: vi.fn(),
+  getBestSnappingCandidate: vi.fn(() => ({
+    target: { type: 'grid' },
+    distance: 0,
+    position: [20.25, 30.5],
+  })),
+  sendHoveredSnappingCandidate: vi.fn(),
+  updateToolSnappingPreview: vi.fn(),
+}))
+
+afterEach(() => {
+  vi.clearAllMocks()
+  vi.unstubAllGlobals()
+})
+
 describe('animateDraftSegmentListener', () => {
   it('moves the line draft point to the snapped grid position', async () => {
     let onMove: ((args: unknown) => Promise<void>) | undefined
-    const sceneInfra = {
-      setCallbacks: vi.fn((callbacks) => {
-        onMove = callbacks.onMove
-      }),
-      scene: {
-        getObjectByName: vi.fn(() => null),
-      },
-      getClientSceneScaleFactor: vi.fn(() => 1),
-      camControls: {
-        camera: new OrthographicCamera(),
-      },
-      getPixelsPerBaseUnit: vi.fn(() => 100),
-    } as unknown as SceneInfra
-    const editSegments = vi.fn().mockResolvedValue({
-      kclSource: { text: 'updated' },
-      sceneGraphDelta: createSceneGraphDelta([]),
+    const sceneInfra = createMockSceneInfra()
+    vi.mocked(sceneInfra.setCallbacks).mockImplementation((callbacks) => {
+      onMove = callbacks.onMove as typeof onMove
     })
-    const rustContext = {
-      editSegments,
-      settingsActor: {},
-    } as unknown as RustContext
+    const rustContext = createMockRustContext()
+    const editSegments = vi
+      .spyOn(rustContext, 'editSegments')
+      .mockResolvedValue({
+        kclSource: { text: 'updated' },
+        sceneGraphDelta: createSceneGraphDelta([]),
+      })
     const self = {
       send: vi.fn(),
       _parent: {
         send: vi.fn(),
-        getSnapshot: () => ({
-          context: {
-            rustContext: {
-              settingsActor: {
-                getSnapshot: () => ({
-                  context: {
-                    modeling: {
-                      snapToGrid: { current: true },
-                      fixedSizeGrid: { current: true },
-                      majorGridSpacing: { current: 2 },
-                      minorGridsPerMajor: { current: 4 },
-                      snapsPerMinor: { current: 2 },
-                    },
-                  },
-                }),
-              },
-            },
-          },
-        }),
       },
     }
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
@@ -73,9 +62,7 @@ describe('animateDraftSegmentListener', () => {
         draftPointId: 7,
         sceneInfra,
         rustContext,
-        kclManager: {
-          fileSettings: { defaultLengthUnit: 'Mm' },
-        } as unknown as KclManager,
+        kclManager: createMockKclManager(),
         sketchId: 0,
       },
     } as unknown as ToolActionArgs)

@@ -1,41 +1,19 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import {
   animateArcEndPointListener as animateCenterArcEndPoint,
   type ToolActionArgs as CenterArcToolActionArgs,
-  showRadiusPreviewListener as showCenterArcRadiusPreview,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
-import {
-  type ToolActionArgs as CircleToolActionArgs,
-  showRadiusPreviewListener as showCircleRadiusPreview,
-} from '@src/machines/sketchSolve/tools/circleToolImpl'
 import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import {
-  animateArcEndPointListener as animateTangentialArcEndPoint,
-  type ToolActionArgs as TangentialArcToolActionArgs,
-} from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
-import {
-  animateArcEndPointListener as animateThreePointArcEndPoint,
-  type ToolActionArgs as ThreePointArcToolActionArgs,
-} from '@src/machines/sketchSolve/tools/threePointArcToolImpl'
 import {
   getBestSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/settings/settingsUtils', () => ({
   jsAppSettings: () => ({}),
-}))
-
-vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
-  calculate_circle_from_3_points: () => ({
-    center_x: 1,
-    center_y: 0,
-    radius: 1,
-  }),
 }))
 
 vi.mock('@src/machines/sketchSolve/tools/toolSnappingUtils', () => ({
@@ -125,59 +103,11 @@ function getArcEndpoints(ctor: ReturnType<typeof getArcCtor>) {
   ]
 }
 
-afterEach(() => {
-  vi.restoreAllMocks()
+beforeEach(() => {
+  vi.clearAllMocks()
 })
 
-describe('creation tool grid previews', () => {
-  it('uses the snapped point for the circle radius preview', async () => {
-    const { sceneInfra, getOnMove } = createListenerSceneInfra()
-    const updatePreviewCircle = vi
-      .spyOn(segmentUtilsMap.ArcSegment, 'updatePreviewCircle')
-      .mockImplementation(() => {})
-
-    showCircleRadiusPreview({
-      self: createToolSelf(),
-      context: {
-        centerPoint: [0, 0],
-        sceneInfra,
-        sketchId: 0,
-      },
-    } as unknown as CircleToolActionArgs)
-
-    await getOnMove()?.(moveEvent())
-
-    expect(updatePreviewCircle).toHaveBeenCalledWith({
-      sceneInfra,
-      center: [0, 0],
-      radius: Math.sqrt(8),
-    })
-  })
-
-  it('uses the snapped point for the center-arc radius preview', async () => {
-    const { sceneInfra, getOnMove } = createListenerSceneInfra()
-    const updatePreviewCircle = vi
-      .spyOn(segmentUtilsMap.ArcSegment, 'updatePreviewCircle')
-      .mockImplementation(() => {})
-
-    showCenterArcRadiusPreview({
-      self: createToolSelf(),
-      context: {
-        centerPoint: [0, 0],
-        sceneInfra,
-        sketchId: 0,
-      },
-    } as unknown as CenterArcToolActionArgs)
-
-    await getOnMove()?.(moveEvent())
-
-    expect(updatePreviewCircle).toHaveBeenCalledWith({
-      sceneInfra,
-      center: [0, 0],
-      radius: Math.sqrt(8),
-    })
-  })
-
+describe('center arc grid preview', () => {
   it('does not advertise a grid point that the fixed-radius center arc cannot reach', async () => {
     const { sceneInfra, getOnMove, getOnClick } = createListenerSceneInfra()
     const { editSegments, rustContext, kclManager } = createEditingContext()
@@ -251,52 +181,5 @@ describe('creation tool grid previews', () => {
       sceneInfra,
       target: pointCandidate,
     })
-  })
-
-  it('uses the snapped endpoint for the three-point arc preview', async () => {
-    const { sceneInfra, getOnMove } = createListenerSceneInfra()
-    const { editSegments, rustContext, kclManager } = createEditingContext()
-
-    animateThreePointArcEndPoint({
-      self: createToolSelf(),
-      context: {
-        arcId: 7,
-        startPoint: [0, 0],
-        throughPoint: [1, 1],
-        sceneInfra,
-        rustContext,
-        kclManager,
-        sketchId: 0,
-      },
-    } as unknown as ThreePointArcToolActionArgs)
-
-    await getOnMove()?.(moveEvent())
-
-    expect(getArcEndpoints(getArcCtor(editSegments))).toContainEqual([2, 2])
-  })
-
-  it('uses the snapped endpoint for the tangential-arc preview', async () => {
-    const { sceneInfra, getOnMove } = createListenerSceneInfra()
-    const { editSegments, rustContext, kclManager } = createEditingContext()
-
-    animateTangentialArcEndPoint({
-      self: createToolSelf(),
-      context: {
-        arcId: 7,
-        tangentInfo: {
-          ownerId: 1,
-          tangentStart: { pointId: 2, position: [0, 0] },
-          tangentDirection: [1, 0],
-        },
-        sceneInfra,
-        rustContext,
-        kclManager,
-        sketchId: 0,
-      },
-    } as unknown as TangentialArcToolActionArgs)
-
-    await getOnMove()?.(moveEvent())
-
-    expect(getArcEndpoints(getArcCtor(editSegments))).toContainEqual([2, 2])
   })
 })

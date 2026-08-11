@@ -10,10 +10,6 @@ import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import { emptyOperationsByModule } from '@src/lang/wasm'
-import {
-  createSettings,
-  type SettingsType,
-} from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import { isArray } from '@src/lib/utils'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
@@ -194,7 +190,6 @@ function setUpMoveToolCallbacks({
   showNonVisualConstraints = false,
   constraintHoverPopups = [],
   getSceneObjectByName,
-  settingsContext,
 }: {
   apiObjects?: ApiObject[]
   hoveredId?: number | null
@@ -207,7 +202,6 @@ function setUpMoveToolCallbacks({
     position: [number, number]
   }>
   getSceneObjectByName?: (name: string) => unknown
-  settingsContext?: SettingsType
 }) {
   let callbacks: Record<string, unknown> = {}
   const getObjectByName = vi.fn(
@@ -239,7 +233,6 @@ function setUpMoveToolCallbacks({
     },
     getPlaneIntersectPoint: vi.fn(() => planeIntersectPoint),
     getClientSceneScaleFactor: vi.fn(() => 1),
-    getPixelsPerBaseUnit: vi.fn(() => 100),
     baseUnitMultiplier: 1,
     isAreaSelectActive,
   } as unknown as SceneInfra
@@ -306,7 +299,9 @@ function setUpMoveToolCallbacks({
       settingsActor: {
         send: vi.fn(),
         getSnapshot: vi.fn(() => ({
-          context: settingsContext ?? { app: {} },
+          context: {
+            app: {},
+          },
         })),
       },
     },
@@ -317,8 +312,6 @@ function setUpMoveToolCallbacks({
       currentSketchCheckpointId: 99,
     },
   }
-
-  Object.assign(snapshot.context, { rustContext: context.rustContext })
 
   setUpOnDragAndSelectionClickCallbacks({ self, context } as any)
 
@@ -1443,109 +1436,6 @@ describe('createOnDragCallback', () => {
     // This ensures state is always clean after drag ends
     expect(invalidateDragSession).toHaveBeenCalledTimes(1)
     expect(setDraggedEntityId).toHaveBeenCalledWith(null)
-  })
-
-  it('previews and commits a dragged point on the grid without adding a constraint', async () => {
-    const settingsContext = createSettings()
-    settingsContext.modeling.snapToGrid.project = true
-    settingsContext.modeling.fixedSizeGrid.project = true
-    settingsContext.modeling.majorGridSpacing.project = 1
-    settingsContext.modeling.minorGridsPerMajor.project = 4
-    settingsContext.modeling.snapsPerMinor.project = 1
-
-    const draggedPoint = createPointApiObject({ id: 2, x: 20, y: 20 })
-    const snappedPoint = createPointApiObject({ id: 2, x: 20, y: 22.25 })
-    const snappedSceneGraphDelta = createSceneGraphDelta([
-      createSketchApiObject({ id: 0 }),
-      snappedPoint,
-    ])
-    const {
-      onMouseDownSelection,
-      onDragStart,
-      onDrag,
-      onDragEnd,
-      rustContext,
-      send,
-    } = setUpMoveToolCallbacks({
-      apiObjects: [draggedPoint],
-      hoveredId: 2,
-      selectedIds: [2],
-      settingsContext,
-    })
-
-    ;(rustContext.editSegments as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
-        kclSource: { text: 'grid preview' },
-        sceneGraphDelta: snappedSceneGraphDelta,
-        checkpointId: null,
-      })
-      .mockResolvedValueOnce({
-        kclSource: { text: 'grid commit' },
-        sceneGraphDelta: snappedSceneGraphDelta,
-        checkpointId: 123,
-      })
-
-    expect(onMouseDownSelection()).toBe(true)
-    onDragStart({
-      intersectionPoint: {
-        twoD: new Vector2(20, 20),
-        threeD: new Vector3(20, 20, 0),
-      },
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-    await onDrag({
-      intersectionPoint: {
-        twoD: new Vector2(20.12, 22.13),
-        threeD: new Vector3(20.12, 22.13, 0),
-      },
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(rustContext.editSegments.mock.calls[0]?.[2]).toEqual([
-      {
-        id: 2,
-        ctor: {
-          type: 'Point',
-          position: {
-            x: { type: 'Var', value: 20, units: 'Mm' },
-            y: { type: 'Var', value: 22.25, units: 'Mm' },
-          },
-        },
-      },
-    ])
-
-    await onDragEnd({
-      intersectionPoint: {
-        twoD: new Vector2(20.12, 22.13),
-        threeD: new Vector3(20.12, 22.13, 0),
-      },
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
-
-    expect(rustContext.editSegments).toHaveBeenCalledTimes(2)
-    expect(rustContext.editSegments.mock.calls[1]?.[2]).toEqual([
-      {
-        id: 2,
-        ctor: {
-          type: 'Point',
-          position: {
-            x: { type: 'Var', value: 20, units: 'Mm' },
-            y: { type: 'Var', value: 22.25, units: 'Mm' },
-          },
-        },
-      },
-    ])
-    expect(rustContext.editSegments.mock.calls[1]?.[4]).toBe(true)
-    expect(rustContext.addConstraint).not.toHaveBeenCalled()
-    expect(send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'update sketch outcome',
-        data: expect.objectContaining({ checkpointId: 123 }),
-      })
-    )
   })
 
   it('does not add a duplicate coincident constraint when re-snapping near the same line midpoint', async () => {

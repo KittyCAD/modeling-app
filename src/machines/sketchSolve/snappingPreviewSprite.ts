@@ -1,5 +1,5 @@
 import type { Group } from 'three'
-import { Sprite, SpriteMaterial, Vector2, Vector3 } from 'three'
+import { Sprite, Vector2, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
@@ -110,13 +110,8 @@ function getGridSnappingPreviewSprite(sketchSolveGroup: Group): Sprite {
 
   // A small diamond marks grid quantization without suggesting that clicking
   // will create a solver constraint.
-  const sprite = new Sprite(
-    new SpriteMaterial({
-      color: SKETCH_SELECTION_COLOR,
-      depthTest: false,
-      depthWrite: false,
-    })
-  )
+  const sprite = createConstraintBadgeSprite()
+  sprite.material.color.set(SKETCH_SELECTION_COLOR)
   sprite.material.rotation = Math.PI / 4
   sprite.name = SKETCH_SOLVE_GRID_SNAPPING_PREVIEW_SPRITE
   sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT

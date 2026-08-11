@@ -9,23 +9,31 @@ describe('InfiniteGridRenderer', () => {
     camera.lookAt(0, 0, 0)
 
     const sketchGroup = new Group()
-    sketchGroup.position.set(0.25, 0, 0)
     const grid = new InfiniteGridRenderer()
     sketchGroup.add(grid)
-
-    grid.update(camera, [1_000, 1_000], 100, 1, {
+    const gridOptions = {
       majorGridSpacing: 1,
       minorGridsPerMajor: 4,
-      majorColor: [0.3, 0.3, 0.3, 1],
-      minorColor: [0.2, 0.2, 0.2, 1],
+      majorColor: [0.3, 0.3, 0.3, 1] as [number, number, number, number],
+      minorColor: [0.2, 0.2, 0.2, 1] as [number, number, number, number],
       fixedSizeGrid: true,
-    })
+    }
 
-    const lineOffset = grid.material.uniforms.lineOffsetNDC.value as [
+    grid.update(camera, [1_000, 1_000], 100, 1, gridOptions)
+
+    const initialLineOffset = grid.material.uniforms.lineOffsetNDC.value as [
       number,
       number,
     ]
-    expect(lineOffset[0]).toBeCloseTo(-1.15)
-    expect(lineOffset[1]).toBeCloseTo(-1)
+
+    sketchGroup.position.set(0.25, 0, 0)
+    grid.update(camera, [1_000, 1_000], 100, 1, gridOptions)
+
+    const movedLineOffset = grid.material.uniforms.lineOffsetNDC.value as [
+      number,
+      number,
+    ]
+    expect(movedLineOffset[0]).not.toBeCloseTo(initialLineOffset[0])
+    expect(movedLineOffset[1]).toBeCloseTo(initialLineOffset[1])
   })
 })

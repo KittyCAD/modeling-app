@@ -11,7 +11,6 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
 import type {
   OnMoveCallbackArgs,
   SceneInfra,
@@ -73,7 +72,6 @@ import {
   isObjectSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  GRID_TARGET,
   type SnappingCandidate,
   allowSnapping,
   getCoincidentSegmentsForSnapTarget,
@@ -82,7 +80,6 @@ import {
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
-import { getGridSnapOptions as getToolGridSnapOptions } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 import {
   type SelectionBoxVisualState,
   findContainedSegments,
@@ -818,7 +815,6 @@ function getDragPointSnappingCandidate({
   sketchId,
   mousePosition,
   sceneInfra,
-  gridSnapOptions,
 }: {
   draggedEntityId: number | null
   selectedIds: number[]
@@ -826,7 +822,6 @@ function getDragPointSnappingCandidate({
   sketchId: number
   mousePosition: Coords2d
   sceneInfra: SceneInfra
-  gridSnapOptions?: GridSnapOptions
 }): SnappingCandidate | null {
   if (draggedEntityId === null) {
     return null
@@ -897,38 +892,35 @@ function getDragPointSnappingCandidate({
   // Find the closest point to snap to which is not already in the same
   // coincident point cluster as the dragged point.
   const candidate =
-    getSnappingCandidates(
-      mousePosition,
-      currentSketchObjects,
-      sceneInfra,
-      gridSnapOptions
-    ).find((candidate) => {
-      if (candidate.target.type === 'point') {
+    getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
+      (candidate) => {
+        if (candidate.target.type === 'point') {
+          return (
+            allowedPointIds.has(candidate.target.id) ||
+            !excludedPointIds.has(candidate.target.id)
+          )
+        }
+
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          (isPointSegment(snapTargetSegment) ||
+            isOwnedLineSegment(snapTargetSegment)) &&
+          snapTargetSegment.kind.segment.owner != null
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
         return (
-          allowedPointIds.has(candidate.target.id) ||
-          !excludedPointIds.has(candidate.target.id)
+          !excludedSegmentIds.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIds.has(snapTargetOwnerId))
         )
       }
-
-      const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
-      if (snapTargetSegmentId === null) {
-        return true
-      }
-
-      const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
-      const snapTargetOwnerId =
-        (isPointSegment(snapTargetSegment) ||
-          isOwnedLineSegment(snapTargetSegment)) &&
-        snapTargetSegment.kind.segment.owner != null
-          ? snapTargetSegment.kind.segment.owner
-          : null
-
-      return (
-        !excludedSegmentIds.has(snapTargetSegmentId) &&
-        (snapTargetOwnerId == null ||
-          !excludedSegmentIds.has(snapTargetOwnerId))
-      )
-    }) ?? null
+    ) ?? null
 
   return candidate
 }
@@ -1396,7 +1388,6 @@ export function createOnDragCallback({
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
-  getGridSnapOptions = () => undefined,
   sceneInfra,
   onClearDragSnapping,
   onUpdateDragSnapping,
@@ -1451,7 +1442,6 @@ export function createOnDragCallback({
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
-  getGridSnapOptions?: () => GridSnapOptions | undefined
   sceneInfra: SceneInfra
   onClearDragSnapping: () => void
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
@@ -1564,17 +1554,11 @@ export function createOnDragCallback({
             sketchId: contextData.sketchId,
             mousePosition: [twoD.x, twoD.y],
             sceneInfra,
-            gridSnapOptions: getGridSnapOptions(),
           })
       onUpdateDragSnapping(snappingCandidate)
 
-      const dragTarget =
-        snappingCandidate?.target.type === GRID_TARGET
-          ? new Vector2(...snappingCandidate.position)
-          : twoD
-
       // Calculate drag vector from last successful drag point to current position
-      const dragVec = dragTarget.clone().sub(getLastSuccessfulDragFromPoint())
+      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
@@ -1593,7 +1577,7 @@ export function createOnDragCallback({
       const dragAnchors = buildSegmentDragAnchors({
         draggedEntityId: entityUnderCursorId,
         objects,
-        target: dragTarget,
+        target: twoD,
         units,
       })
       const dragAnchorIds = new Set(
@@ -1627,7 +1611,7 @@ export function createOnDragCallback({
           objUnderCursor: obj,
           selectedObjects: objects,
           isEntityUnderCursor,
-          currentCursorPosition: dragTarget,
+          currentCursorPosition: twoD,
           dragVec: dragVec,
           units,
         })
@@ -1698,7 +1682,7 @@ export function createOnDragCallback({
             dragAnchors,
           })
           // Only advance the drag anchor on a valid solve.
-          setLastSuccessfulDragFromPoint(dragTarget.clone())
+          setLastSuccessfulDragFromPoint(twoD.clone())
           onNewSketchOutcome({
             ...result,
             writeToDisk: false,
@@ -1873,9 +1857,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
       context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
     return sketchSolveGroup instanceof Group ? sketchSolveGroup : null
   }
-
-  const getCurrentGridSnapOptions = () =>
-    getToolGridSnapOptions({ _parent: self }, context.sceneInfra)
 
   const clearDragSnappingState = () => {
     const sketchSolveGroup = getSketchSolveGroup()
@@ -2083,7 +2064,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     intersectionPoint.twoD.y,
                   ],
                   sceneInfra: context.sceneInfra,
-                  gridSnapOptions: getCurrentGridSnapOptions(),
                 })
               : null
 
@@ -2180,7 +2160,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
           } else if (
             snappingCandidate &&
             currentSceneGraphDelta &&
-            draggedEntityId !== null
+            draggedEntityId !== null &&
+            snapConstraints.length > 0
           ) {
             // The endpoint should snap
             const [x, y] = snappingCandidate.position
@@ -2534,7 +2515,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
-      getGridSnapOptions: getCurrentGridSnapOptions,
       sceneInfra: context.sceneInfra,
       onClearDragSnapping: clearDragSnappingState,
       onUpdateDragSnapping: updateDragSnappingState,

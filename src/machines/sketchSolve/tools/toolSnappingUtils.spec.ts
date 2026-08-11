@@ -79,7 +79,7 @@ function createGridSelf({
         },
       }),
     },
-  }
+  } as unknown as Parameters<typeof getBestSnappingCandidate>[0]['self']
 }
 
 describe('toolSnappingUtils', () => {

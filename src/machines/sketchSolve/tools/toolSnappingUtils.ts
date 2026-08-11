@@ -14,6 +14,10 @@ import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type {
+  SketchSolveContext,
+  SketchSolveMachineEvent,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   type SnappingCandidate,
   allowSnapping,
@@ -26,34 +30,15 @@ type ToolSelf = {
   _parent?: {
     getSnapshot?: () => {
       context?: {
-        rustContext?: {
-          settingsActor?: {
-            getSnapshot?: () => {
-              context?: {
-                modeling?: {
-                  snapToGrid?: { current: boolean }
-                  fixedSizeGrid?: { current: boolean }
-                  majorGridSpacing?: { current: number }
-                  minorGridsPerMajor?: { current: number }
-                  snapsPerMinor?: { current: number }
-                }
-              }
-            }
-          }
-        }
-        sketchExecOutcome?: {
-          sceneGraphDelta?: {
-            new_graph?: {
-              objects?: ApiObject[]
-            }
-          }
-        }
+        rustContext?: Pick<SketchSolveContext['rustContext'], 'settingsActor'>
+        sketchExecOutcome?: Partial<
+          NonNullable<SketchSolveContext['sketchExecOutcome']>
+        >
       }
     }
-    send?: (event: {
-      type: 'update hovered id'
-      data: { hoveredId: SketchSolveSelectionId | null }
-    }) => void
+    send?: (
+      event: Extract<SketchSolveMachineEvent, { type: 'update hovered id' }>
+    ) => void
   }
 }
 
@@ -72,24 +57,11 @@ export function getGridSnapOptions(
     return undefined
   }
 
-  const fixedSizeGrid = modelingSettings.fixedSizeGrid?.current
-  const majorGridSpacing = modelingSettings.majorGridSpacing?.current
-  const minorGridsPerMajor = modelingSettings.minorGridsPerMajor?.current
-  const snapsPerMinor = modelingSettings.snapsPerMinor?.current
-  if (
-    typeof fixedSizeGrid !== 'boolean' ||
-    typeof majorGridSpacing !== 'number' ||
-    typeof minorGridsPerMajor !== 'number' ||
-    typeof snapsPerMinor !== 'number'
-  ) {
-    return undefined
-  }
-
   return {
-    fixedSizeGrid,
-    majorGridSpacing,
-    minorGridsPerMajor,
-    snapsPerMinor,
+    fixedSizeGrid: modelingSettings.fixedSizeGrid.current,
+    majorGridSpacing: modelingSettings.majorGridSpacing.current,
+    minorGridsPerMajor: modelingSettings.minorGridsPerMajor.current,
+    snapsPerMinor: modelingSettings.snapsPerMinor.current,
     pixelsPerBaseUnit: sceneInfra.getPixelsPerBaseUnit(camera),
   }
 }

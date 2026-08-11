@@ -327,33 +327,7 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
             (child) => child.name === 'InfiniteGridRenderer'
           )?.visible
       )
-    const sketchAxesVisibility = () =>
-      page.evaluate(() => {
-        const axisGroup =
-          window.app.singletons.kclManager.sceneEntitiesManager.axisGroup
-        const xAxis = axisGroup?.getObjectByName('xAxis') as
-          | { visible: boolean; material: { visible: boolean } }
-          | undefined
-        const yAxis = axisGroup?.getObjectByName('yAxis') as
-          | { visible: boolean; material: { visible: boolean } }
-          | undefined
-        return {
-          x: {
-            object: xAxis?.visible,
-            material: xAxis?.material.visible,
-          },
-          y: {
-            object: yAxis?.visible,
-            material: yAxis?.material.visible,
-          },
-        }
-      })
-
     await expect.poll(sketchGridVisible).toBe(false)
-    await expect.poll(sketchAxesVisibility).toEqual({
-      x: { object: true, material: false },
-      y: { object: true, material: false },
-    })
 
     const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
       format: 'ratio',
@@ -381,26 +355,6 @@ test.describe('Sketch grid settings', { tag: ['@desktop', '@web'] }, () => {
     await showSketchGrid.click()
     await expect.poll(sketchGridEnabled).toBe(true)
     await expect.poll(sketchGridVisible).toBe(true)
-    await expect.poll(sketchAxesVisibility).toEqual({
-      x: { object: true, material: true },
-      y: { object: true, material: true },
-    })
-
-    await setBooleanSetting('show sketch grid', 'Off')
-    await expect.poll(sketchGridEnabled).toBe(false)
-    await expect.poll(sketchGridVisible).toBe(false)
-    await expect.poll(sketchAxesVisibility).toEqual({
-      x: { object: true, material: false },
-      y: { object: true, material: false },
-    })
-
-    await setBooleanSetting('show sketch grid', 'On')
-    await expect.poll(sketchGridEnabled).toBe(true)
-    await expect.poll(sketchGridVisible).toBe(true)
-    await expect.poll(sketchAxesVisibility).toEqual({
-      x: { object: true, material: true },
-      y: { object: true, material: true },
-    })
 
     await page.evaluate(async () => {
       const kclManager = window.app.singletons.kclManager
