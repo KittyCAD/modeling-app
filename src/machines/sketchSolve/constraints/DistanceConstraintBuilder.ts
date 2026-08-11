@@ -7,6 +7,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
   createDimensionLine,
+  createGuideLine,
   updateConstraintLinePositions,
   updateDimensionLine,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
@@ -46,7 +47,7 @@ export class DistanceConstraintBuilder {
   public init(obj: DistanceConstraint) {
     const group = createDimensionLine(obj, this.resources)
     this.createLeaderLines(group)
-    this.createGuideLine(group)
+    createGuideLine(group, this.resources, DISTANCE_CONSTRAINT_GUIDE_BODY_ROLE)
     return group
   }
 
@@ -115,15 +116,6 @@ export class DistanceConstraintBuilder {
       )
       this.updateGuideLine(group, guideSegment)
     }
-  }
-
-  private createGuideLine(group: Group) {
-    const geometry = new LineGeometry()
-    const guideLine = new Line2(geometry, this.resources.materials.default.line)
-    guideLine.userData.type = DISTANCE_CONSTRAINT_BODY
-    guideLine.userData.role = DISTANCE_CONSTRAINT_GUIDE_BODY_ROLE
-    guideLine.visible = false
-    group.add(guideLine)
   }
 
   private updateGuideLine(
