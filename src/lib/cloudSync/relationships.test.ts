@@ -208,6 +208,32 @@ describe('deriveCloudProjectRelationships', () => {
       }),
     ])
   })
+
+  test('uses sync metadata to attach a cached realization without a cloud id', () => {
+    const localRealization = realization({
+      localProjectPath: '/cloud/tutorial-project',
+      libraryType: 'cloud',
+      cloudProjectId: undefined,
+    })
+
+    expect(
+      deriveCloudProjectRelationships({
+        realizations: [localRealization],
+        remoteProjects: [{ id: 'remote-123', title: 'tutorial-project' }],
+        metadata: [metadata({ localProjectPath: '/cloud/tutorial-project' })],
+      })
+    ).toEqual([
+      expect.objectContaining({
+        remoteProjectId: 'remote-123',
+        canonicalRealization: expect.objectContaining({
+          realization: localRealization,
+        }),
+        localRealizations: [
+          expect.objectContaining({ realization: localRealization }),
+        ],
+      }),
+    ])
+  })
 })
 
 describe('classifyCloudProjectDuplicateRisk', () => {

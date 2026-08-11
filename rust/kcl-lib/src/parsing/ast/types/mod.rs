@@ -3584,7 +3584,12 @@ impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         self.object.rename_identifiers(old_name, new_name, excluded);
-        self.property.rename_identifiers(old_name, new_name, excluded);
+        // A non-computed property like the `bar` in `foo.bar` is a field or tag
+        // access, not a reference to a variable named `bar`, so it is not
+        // renamed.
+        if self.computed {
+            self.property.rename_identifiers(old_name, new_name, excluded);
+        }
     }
 }
 
@@ -5343,6 +5348,34 @@ startSketchOn(XY)
     }
 
     #[test]
+    fn test_rename_renames_computed_member_index_but_not_dot_property() {
+        // In `arr[key]` the index is a reference to the variable `key`, so it is renamed. In
+        // `obj.key` the property is a field access unrelated to the variable, so it is not,
+        // and neither is the `key` in the object literal.
+        let code = r#"key = 1
+arr = [10, 20, 30]
+obj = { key = 2, other = 3 }
+byIndex = arr[key]
+byField = obj.key + key
+"#;
+        let mut program = parse(code);
+        let pos = code.find("key").unwrap() + 1;
+
+        program.rename_symbol("idx", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"idx = 1
+arr = [10, 20, 30]
+obj = { key = 2, other = 3 }
+byIndex = arr[idx]
+byField = obj.key + idx
+"#
+        );
+    }
+
+    #[test]
     fn test_rename_in_math_in_std_function() {
         let code = r#"rise = 4.5
 run = 8
@@ -5445,6 +5478,37 @@ fn demo(a) {
   before = foo_initial
   foo = a
   after = foo
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_inside_if_then_branch() {
+        let code = r#"param1 = 1
+if true {
+  param1
+} else if false {
+  param1 + 1
+} else {
+  param1 + 2
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("param1").unwrap() + 1;
+
+        program.rename_symbol("height", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"height = 1
+if true {
+  height
+} else if false {
+  height + 1
+} else {
+  height + 2
 }
 "#
         );

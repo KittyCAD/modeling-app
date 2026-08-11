@@ -2800,6 +2800,20 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "elbowOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1053,
+            "end": 1069,
+            "moduleId": 0,
+            "start": 1053,
+            "type": "TagDeclarator",
+            "value": "elbowInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2833,6 +2847,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "to": [
               121.95327133894554,
               -21.187803661242402
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              80.00000000040197,
+              0.00000000024674722101870335
+            ],
+            "from": [
+              105.65717154707032,
+              24.534863933840352
+            ],
+            "radius": 35.500000000212964,
+            "tag": {
+              "commentStart": 1053,
+              "end": 1069,
+              "moduleId": 0,
+              "start": 1053,
+              "type": "TagDeclarator",
+              "value": "elbowInnerCircle"
+            },
+            "to": [
+              105.65717154707032,
+              24.534863933840352
             ],
             "type": "Circle",
             "units": "mm"
@@ -2957,6 +3001,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "to": [
             121.95327133894554,
             -21.187803661242402
+          ],
+          "type": "Circle",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            80.00000000040197,
+            0.00000000024674722101870335
+          ],
+          "from": [
+            105.65717154707032,
+            24.534863933840352
+          ],
+          "radius": 35.500000000212964,
+          "tag": {
+            "commentStart": 1053,
+            "end": 1069,
+            "moduleId": 0,
+            "start": 1053,
+            "type": "TagDeclarator",
+            "value": "elbowInnerCircle"
+          },
+          "to": [
+            105.65717154707032,
+            24.534863933840352
           ],
           "type": "Circle",
           "units": "mm"
@@ -3565,6 +3639,20 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2077,
+            "end": 2094,
+            "moduleId": 0,
+            "start": 2077,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -3598,6 +3686,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "to": [
               59.127884757715854,
               53.00197702905686
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.000000001934687767885464,
+              79.99999999965644
+            ],
+            "from": [
+              35.439335548127474,
+              77.9255130528234
+            ],
+            "radius": 35.500000000679215,
+            "tag": {
+              "commentStart": 2077,
+              "end": 2094,
+              "moduleId": 0,
+              "start": 2077,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              35.439335548127474,
+              77.9255130528234
             ],
             "type": "Circle",
             "units": "mm"
@@ -3731,6 +3849,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
           "to": [
             59.127884757715854,
             53.00197702905686
+          ],
+          "type": "Circle",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.000000001934687767885464,
+            79.99999999965644
+          ],
+          "from": [
+            35.439335548127474,
+            77.9255130528234
+          ],
+          "radius": 35.500000000679215,
+          "tag": {
+            "commentStart": 2077,
+            "end": 2094,
+            "moduleId": 0,
+            "start": 2077,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "to": [
+            35.439335548127474,
+            77.9255130528234
           ],
           "type": "Circle",
           "units": "mm"
@@ -4369,6 +4517,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.000000001934687767885464,
+              79.99999999965644
+            ],
+            "from": [
+              35.439335548127474,
+              77.9255130528234
+            ],
+            "radius": 35.500000000679215,
+            "tag": {
+              "commentStart": 2077,
+              "end": 2094,
+              "moduleId": 0,
+              "start": 2077,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              35.439335548127474,
+              77.9255130528234
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
@@ -4486,6 +4664,20 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "value": "flangeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 2077,
+            "end": 2094,
+            "moduleId": 0,
+            "start": 2077,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -4519,6 +4711,36 @@ description: Variables in memory after executing pipe-elbow-90deg.kcl
             "to": [
               59.127884757715854,
               53.00197702905686
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.000000001934687767885464,
+              79.99999999965644
+            ],
+            "from": [
+              35.439335548127474,
+              77.9255130528234
+            ],
+            "radius": 35.500000000679215,
+            "tag": {
+              "commentStart": 2077,
+              "end": 2094,
+              "moduleId": 0,
+              "start": 2077,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              35.439335548127474,
+              77.9255130528234
             ],
             "type": "Circle",
             "units": "mm"
