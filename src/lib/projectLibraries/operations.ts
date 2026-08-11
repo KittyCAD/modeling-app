@@ -40,18 +40,27 @@ export async function createProjectInLocalDirectory({
   requestedProjectName,
   requestedProjectTitle,
   wasmInstancePromise,
+  initialKclFile,
+  reuseExistingProject = false,
 }: {
   projectDirectoryPath: string
   requestedProjectName: string
   requestedProjectTitle: string
   wasmInstancePromise: Promise<ModuleType> | ModuleType
+  initialKclFile?: {
+    fileName: string
+    code: string
+  }
+  reuseExistingProject?: boolean
 }): Promise<Project> {
   const existingProjectNames =
     await getProjectDirectoryEntryNames(projectDirectoryPath)
-  const uniqueProjectName = getUniqueProjectName(
-    requestedProjectName,
-    projectEntriesFromNames(projectDirectoryPath, existingProjectNames)
-  )
+  const uniqueProjectName = reuseExistingProject
+    ? requestedProjectName
+    : getUniqueProjectName(
+        requestedProjectName,
+        projectEntriesFromNames(projectDirectoryPath, existingProjectNames)
+      )
   const uniqueProjectTitle = getProjectTitleFromUniqueDirectoryName({
     requestedProjectTitle,
     requestedProjectDirectoryName: requestedProjectName,
@@ -61,9 +70,9 @@ export async function createProjectInLocalDirectory({
   return createNewProjectDirectory(
     uniqueProjectName,
     await wasmInstancePromise,
+    initialKclFile?.code,
     undefined,
-    undefined,
-    undefined,
+    initialKclFile?.fileName,
     projectDirectoryPath,
     uniqueProjectTitle
   )

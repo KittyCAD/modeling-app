@@ -20,13 +20,15 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
-  const { settings, systemIOActor } = useApp()
+  const app = useApp()
+  const { settings, systemIOActor } = app
   const { kclManager } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
   const resetOnboardingWorkflow = () => {
     const props = {
+      app,
       onboardingStatus: onboardingStartPath,
       navigate,
       kclManager,

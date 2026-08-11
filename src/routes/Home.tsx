@@ -419,6 +419,7 @@ const Home = () => {
                   Element="button"
                   onClick={() => {
                     acceptOnboarding({
+                      app,
                       onboardingStatus,
                       navigate,
                       kclManager,

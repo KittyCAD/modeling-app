@@ -140,6 +140,11 @@ export interface ProjectLibraryCreateProjectInput {
   library: ProjectLibrary
   requestedProjectName: string
   requestedProjectTitle: string
+  initialKclFile?: {
+    fileName: string
+    code: string
+  }
+  reuseExistingProject?: boolean
 }
 
 export interface ProjectLibraryProjectInput {

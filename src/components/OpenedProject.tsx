@@ -248,6 +248,7 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
+            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,

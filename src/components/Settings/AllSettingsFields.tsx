@@ -44,7 +44,8 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout, systemIOActor, userFeatures } = useApp()
+    const app = useApp()
+    const { settings, layout, systemIOActor, userFeatures } = app
     const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
@@ -73,6 +74,7 @@ export const AllSettingsFields = forwardRef(
 
     async function restartOnboarding() {
       const props = {
+        app,
         onboardingStatus: onboardingStartPath,
         navigate,
         kclManager,

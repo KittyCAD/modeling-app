@@ -14,6 +14,7 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
+import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -34,7 +35,12 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import {
+  PATHS,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -320,6 +326,7 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
+  app: App
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
   systemIOActor: SystemIOActor
@@ -339,6 +346,44 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
     ? onboardingStartPath
     : deps.onboardingStatus
 
+  if (typeof window !== 'undefined' && !window.electron) {
+    const cloudTarget = deps.app
+      .getCreateProjectLibraryTargets()
+      .find((target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+    if (cloudTarget) {
+      const initialKclFile = coldPlateParts[0]
+      void Promise.resolve(
+        cloudTarget.createProject.run({
+          library: cloudTarget.library,
+          requestedProjectName: ONBOARDING_PROJECT_NAME,
+          requestedProjectTitle: ONBOARDING_PROJECT_NAME,
+          initialKclFile: {
+            fileName: initialKclFile.requestedFileName,
+            code: initialKclFile.requestedCode,
+          },
+          reuseExistingProject: true,
+        })
+      )
+        .then((project) => {
+          if (!project?.default_file) {
+            return Promise.reject(
+              new Error('Unable to create the onboarding project.')
+            )
+          }
+          return deps.navigate(
+            joinRouterPaths(
+              PATHS.FILE,
+              safeEncodeForRouterPaths(project.default_file),
+              PATHS.ONBOARDING,
+              onboardingStatus
+            )
+          )
+        })
+        .catch((error: unknown) => catchOnboardingWarnError(error, deps))
+      return
+    }
+  }
+
   /**
    * Bulk create the tutorial sample and navigate to the project.
    */
@@ -349,7 +394,7 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         ...part,
       })),
-      // Make a unique tutorial project each time
+      // Reset the reserved tutorial project.
       override: true,
       requestedProjectName: ONBOARDING_PROJECT_NAME,
       requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
@@ -537,7 +582,7 @@ export function TutorialRequestToast(
  * `acceptOnboarding` and show a warning toast.
  */
 export async function catchOnboardingWarnError(
-  err: Error,
+  err: unknown,
   props: OnboardingUtilDeps
 ) {
   if (err instanceof Error && err.message === ERROR_MUST_WARN) {
