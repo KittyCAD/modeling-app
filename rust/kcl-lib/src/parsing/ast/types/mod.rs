@@ -828,20 +828,20 @@ impl Program {
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) {
         // The position must be within the variable declaration.
         let mut old_name = None;
-        for item in &mut self.body {
+        for (index, item) in self.body.iter_mut().enumerate() {
             match item {
                 BodyItem::ImportStatement(stmt) => {
                     if let Some(var_old_name) = stmt.rename_symbol(new_name, pos) {
                         // A whole-module import (`import "m.kcl" as alias`) binds in the
                         // module namespace; list imports bind ordinary values.
                         let is_module = matches!(&stmt.selector, ImportSelector::None { .. });
-                        old_name = Some((var_old_name, is_module));
+                        old_name = Some((var_old_name, is_module, index));
                         break;
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
-                        old_name = Some((var_old_name, false));
+                        old_name = Some((var_old_name, false, index));
                         break;
                     }
                 }
@@ -849,17 +849,19 @@ impl Program {
             }
         }
 
-        if let Some((old_name, is_module)) = old_name {
-            // Rename bare references. The executor resolves a bare name to the value
-            // namespace first and falls back to the module namespace, so the same
-            // shadow-aware walk applies to a module's bare references: they stop being the
-            // module's at a value binding of the same name.
-            self.rename_identifiers(&old_name, new_name);
+        if let Some((old_name, is_module, decl_index)) = old_name {
+            // Rename references, starting at the declaration: the executor binds sequentially,
+            // so references before it resolve to something else (e.g. a same-named standard
+            // library function). The executor resolves a bare name to the value namespace
+            // first and falls back to the module namespace, so the same shadow-aware walk
+            // applies to a module's bare references: they stop being the module's at a value
+            // binding of the same name.
+            rename_identifiers_in_body(&mut self.body[decl_index..], &old_name, new_name);
             if is_module {
                 // Qualified references (`old::item`) resolve in the module namespace, which
                 // has no nested scopes (the executor rejects non-root imports), so rename
-                // heads everywhere.
-                rename_module_refs_in_body(&mut self.body, &old_name, new_name);
+                // heads everywhere after the import.
+                rename_module_refs_in_body(&mut self.body[decl_index..], &old_name, new_name);
             }
             return;
         }
@@ -1701,17 +1703,20 @@ fn rename_sketch_symbol_in_body(
         return false;
     };
 
-    // Rename the declaration and all uses inside the block.
+    // Rename the declaration and the uses inside the block after it; the executor evaluates
+    // block items in order, so references before the declaration resolve to an outer binding.
     if let Some(block) = sketch_block_mut_in_body(body, &sketch_name) {
-        for item in &mut block.items {
+        let mut decl_index = 0;
+        for (index, item) in block.items.iter_mut().enumerate() {
             if let BodyItem::VariableDeclaration(decl) = item
                 && decl.declaration.id.name == old_name
             {
                 decl.declaration.id.name = new_name.to_owned();
+                decl_index = index;
                 break;
             }
         }
-        rename_identifiers_in_body(&mut block.items, &old_name, new_name);
+        rename_identifiers_in_body(&mut block.items[decl_index..], &old_name, new_name);
     }
 
     // Rename references outside the block, within this scope: the sketch value exposes the
@@ -8105,6 +8110,62 @@ fn f(region) {
 fn f(region) {
   r = region(segments = [s.edgeOne])
   return r.tags.line1
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_fn_does_not_rename_calls_before_its_declaration() {
+        // Before the local `sin` is declared, `sin(0)` is the standard library function; the
+        // executor binds sequentially, so only references after the declaration are renamed.
+        let code = r#"before = sin(0)
+fn sin(x) {
+  return x
+}
+after = sin(1)
+"#;
+        let mut program = parse(code);
+        let pos = code.find("fn sin").unwrap() + "fn ".len() + 1;
+
+        program.rename_symbol("mySin", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"before = sin(0)
+fn mySin(x) {
+  return x
+}
+after = mySin(1)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_leaves_refs_before_it() {
+        // Inside the block, references before the declaration resolve to the outer `line1`,
+        // so only the declaration and references after it are renamed.
+        let code = r#"line1 = 99
+s = sketch(on = XY) {
+  coincident([line1.end, line1.start])
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  parallel([line1, line1])
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("edgeOne", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"line1 = 99
+s = sketch(on = XY) {
+  coincident([line1.end, line1.start])
+  edgeOne = line(start = [var 0, var 0], end = [var 10, var 0])
+  parallel([edgeOne, edgeOne])
 }
 "#
         );
