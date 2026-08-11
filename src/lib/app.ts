@@ -224,7 +224,8 @@ export class App implements AppSubsystems {
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
   private disposeProjectTitleSync: (() => void) | undefined
-  private openedProjectTitleChanged = false
+  private disposeProjectTitleUpdates: (() => void) | undefined
+  private projectLibraryRefreshPending = false
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -268,6 +269,32 @@ export class App implements AppSubsystems {
     )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
+
+    let handledProjectTitleUpdate = this.settings.projectTitle.updates.value
+    this.disposeProjectTitleUpdates = effect(() => {
+      const projectTitleUpdate = this.settings.projectTitle.updates.value
+      if (projectTitleUpdate === handledProjectTitleUpdate) {
+        return
+      }
+      handledProjectTitleUpdate = projectTitleUpdate
+      if (!projectTitleUpdate) {
+        return
+      }
+
+      const openedProject = this.project?.projectIORefSignal
+      if (openedProject?.value.path === projectTitleUpdate.projectPath) {
+        openedProject.value = {
+          ...openedProject.value,
+          title: projectTitleUpdate.title,
+        }
+      }
+
+      if (this.project) {
+        this.projectLibraryRefreshPending = true
+      } else {
+        invalidateProjectLibraryRealizations()
+      }
+    })
   }
 
   /**
@@ -436,19 +463,7 @@ export class App implements AppSubsystems {
       }
     })
 
-    let handledProjectTitleUpdate = this.settings.projectTitle.updates.value
     this.disposeProjectTitleSync = effect(() => {
-      const projectTitleUpdate = this.settings.projectTitle.updates.value
-      if (projectTitleUpdate !== handledProjectTitleUpdate) {
-        handledProjectTitleUpdate = projectTitleUpdate
-        if (projectTitleUpdate?.projectPath === projectIORefSignal.value.path) {
-          this.openedProjectTitleChanged = true
-          projectIORefSignal.value = {
-            ...projectIORefSignal.value,
-            title: projectTitleUpdate.title,
-          }
-        }
-      }
       const currentProject = projectIORefSignal.value
       if (
         this.settings.actor.getSnapshot().context.currentProject !==
@@ -471,6 +486,8 @@ export class App implements AppSubsystems {
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   dispose() {
     this.closeProject()
+    this.disposeProjectTitleUpdates?.()
+    this.disposeProjectTitleUpdates = undefined
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
     this.systemIOActor.stop()
@@ -492,8 +509,8 @@ export class App implements AppSubsystems {
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
-    if (this.openedProjectTitleChanged) {
-      this.openedProjectTitleChanged = false
+    if (this.projectLibraryRefreshPending) {
+      this.projectLibraryRefreshPending = false
       invalidateProjectLibraryRealizations()
     }
   }

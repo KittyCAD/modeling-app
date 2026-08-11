@@ -865,4 +865,64 @@ describe('project system', () => {
       app.dispose()
     }
   })
+
+  it('refreshes project libraries when a title update finishes after close', async () => {
+    const app = createAppForTest()
+
+    try {
+      const project = await app.openProject(mockProject)
+      const updates = app.settings.projectTitle.updates as Signal<
+        ProjectTitleUpdate | undefined
+      >
+
+      app.closeProject()
+      const invalidationBefore =
+        readProjectLibraryRealizationsInvalidation().global
+      updates.value = {
+        projectPath: project.projectIORefSignal.value.path,
+        title: 'Late project title',
+      }
+
+      expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+        invalidationBefore + 1
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('retains a late title refresh while another project is open', async () => {
+    const app = createAppForTest()
+
+    try {
+      const firstProject = await app.openProject(mockProject)
+      const secondProject = await app.openProject({
+        ...mockProject,
+        name: 'other-project',
+        path: '/some-dir/other-project',
+      })
+      const updates = app.settings.projectTitle.updates as Signal<
+        ProjectTitleUpdate | undefined
+      >
+      const invalidationBefore =
+        readProjectLibraryRealizationsInvalidation().global
+
+      updates.value = {
+        projectPath: firstProject.projectIORefSignal.value.path,
+        title: 'Late first project title',
+      }
+
+      expect(secondProject.projectIORefSignal.value.title).toBeUndefined()
+      expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+        invalidationBefore
+      )
+
+      app.closeProject()
+      expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+        invalidationBefore + 1
+      )
+    } finally {
+      app.dispose()
+    }
+  })
 })
