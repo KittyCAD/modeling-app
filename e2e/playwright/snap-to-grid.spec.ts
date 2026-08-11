@@ -85,27 +85,16 @@ test.describe(
       await editor.expectEditor.toContain('sketch001')
       await scene.settled()
 
-      await page.evaluate(() => {
-        const settings = window.app.settings.actor
-        const setModelingSetting = (setting: string, value: boolean | number) =>
-          settings.send({
-            type: `set.modeling.${setting}`,
-            data: { level: 'project', value },
-            doNotPersist: true,
-          } as never)
-
-        setModelingSetting('showSketchGrid', false)
-        setModelingSetting('snapToGrid', false)
-        setModelingSetting('majorGridSpacing', 1)
-        setModelingSetting('minorGridsPerMajor', 4)
-        setModelingSetting('snapsPerMinor', 1)
-      })
-
+      const waitForSettingsIdle = () =>
+        page.waitForFunction(() =>
+          window.app.settings.actor.getSnapshot().matches('idle')
+        )
       const commands = page.getByRole('button', { name: 'Commands' })
       const cameraProjection = await page.evaluate(
         () => window.app.settings.get().modeling.cameraProjection.current
       )
       if (cameraProjection !== 'orthographic') {
+        await waitForSettingsIdle()
         await commands.click()
         await page
           .getByRole('option', {
@@ -113,11 +102,13 @@ test.describe(
           })
           .click()
         await page.getByRole('option', { name: 'Orthographic' }).click()
+        await waitForSettingsIdle()
       }
       const fixedSizeGrid = await page.evaluate(
         () => window.app.settings.get().modeling.fixedSizeGrid.current
       )
       if (!fixedSizeGrid) {
+        await waitForSettingsIdle()
         await commands.click()
         await page
           .getByRole('option', {
@@ -125,30 +116,9 @@ test.describe(
           })
           .click()
         await page.getByRole('option', { name: 'On', exact: true }).click()
+        await waitForSettingsIdle()
       }
-
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const modeling = window.app.settings.get().modeling
-            return {
-              showSketchGrid: modeling.showSketchGrid.current,
-              snapToGrid: modeling.snapToGrid.current,
-              fixedSizeGrid: modeling.fixedSizeGrid.current,
-              majorGridSpacing: modeling.majorGridSpacing.current,
-              minorGridsPerMajor: modeling.minorGridsPerMajor.current,
-              snapsPerMinor: modeling.snapsPerMinor.current,
-            }
-          })
-        )
-        .toEqual({
-          showSketchGrid: false,
-          snapToGrid: false,
-          fixedSizeGrid: true,
-          majorGridSpacing: 1,
-          minorGridsPerMajor: 4,
-          snapsPerMinor: 1,
-        })
+      await scene.settled()
 
       await toolbar.openFeatureTreePane()
       const sketchOperation = await toolbar.getFeatureTreeOperation(
@@ -159,7 +129,18 @@ test.describe(
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await toolbar.closeFeatureTreePane()
 
-      const toggleSketchMenuItem = async (name: string) => {
+      const enableSketchMenuItem = async (
+        name: string,
+        setting: 'showSketchGrid' | 'snapToGrid'
+      ) => {
+        const isEnabled = () =>
+          page.evaluate(
+            (setting) => window.app.settings.get().modeling[setting].current,
+            setting
+          )
+        if (await isEnabled()) return
+
+        await waitForSettingsIdle()
         const [openSketchMenu] = scene.makeMouseHelpers(0.8, 0.2, {
           format: 'ratio',
         })
@@ -169,20 +150,11 @@ test.describe(
           .getByRole('button', { name })
         await expect(item).toBeVisible()
         await item.click()
+        await waitForSettingsIdle()
+        await expect.poll(isEnabled).toBe(true)
       }
-      await toggleSketchMenuItem('Show Sketch Grid')
-      await toggleSketchMenuItem('Snap to Grid')
-      await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const modeling = window.app.settings.get().modeling
-            return {
-              showSketchGrid: modeling.showSketchGrid.current,
-              snapToGrid: modeling.snapToGrid.current,
-            }
-          })
-        )
-        .toEqual({ showSketchGrid: true, snapToGrid: true })
+      await enableSketchMenuItem('Show Sketch Grid', 'showSketchGrid')
+      await enableSketchMenuItem('Snap to Grid', 'snapToGrid')
 
       const lineTool = page.getByRole('button', {
         name: 'line Line',
