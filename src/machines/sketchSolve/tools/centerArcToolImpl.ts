@@ -19,9 +19,10 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  type SnapTarget,
   applyConstraintsForSnapTarget,
+  GRID_TARGET,
   getConstraintsForSnapTarget,
+  type SnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   calculateArcSwapState,
@@ -256,7 +257,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
 
       if (!isEditInProgress) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
@@ -265,6 +266,11 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        // The third point sets an angle on an already-fixed radius. An
+        // arbitrary grid point usually is not on that circle, so projecting it
+        // would display a grid marker somewhere the arc cannot end.
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
         const endPoint = snappingCandidate?.position ?? mousePosition
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
@@ -385,7 +391,7 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
       const twoD = args.intersectionPoint?.twoD
       if (twoD) {
         const mousePosition = [twoD.x, twoD.y] as Coords2d
-        const snappingCandidate = getBestSnappingCandidate({
+        const candidate = getBestSnappingCandidate({
           self,
           sceneInfra: context.sceneInfra,
           sketchId: context.sketchId,
@@ -394,6 +400,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           getExcludedPointIds: (currentSketchObjects) =>
             getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
+        const snappingCandidate =
+          candidate?.target.type === GRID_TARGET ? null : candidate
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
           type: 'add point',

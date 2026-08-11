@@ -871,6 +871,21 @@ describe('project system', () => {
       expect(updateSketchGrid).toHaveBeenCalledTimes(1)
       expect(clearSceneAndBustCache).not.toHaveBeenCalled()
       expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      const currentTheme = app.settings.get().app.theme.current
+      app.settings.actor.send({
+        type: 'set.app.theme',
+        data: {
+          level: 'user',
+          value: currentTheme === 'dark' ? 'light' : 'dark',
+        },
+        doNotPersist: true,
+      })
+      await waitForSettingsIdle(app)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      })
     } finally {
       engineCommandManager.connection = previousConnection
       app.dispose()

@@ -867,9 +867,17 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const themeChanged = this.lastSettings.app.theme !== newTheme
     const newBackfaceColor = context.modeling.backfaceColor.current
+    const themeUpdate = this.singletons.kclManager
+      .updateTheme(newTheme)
+      .then(() => {
+        if (themeChanged) {
+          this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
+        }
+      })
     Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
+      themeUpdate,
       ...(this.singletons.kclManager.engineCommandManager.connection?.connected
         ? [
             this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
