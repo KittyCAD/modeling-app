@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import {
   EdgeTreatmentType,
   addBlend,
@@ -7,6 +8,7 @@ import {
   deleteEdgeTreatment,
   retrieveEdgeSelectionsFromOpArgs,
 } from '@src/lang/modifyAst/edges'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
 import {
   codeRefFromRange,
@@ -139,6 +141,46 @@ hidden002 = hide(sketch001)`
   // (see "should add a basic fillet call with edge selection (selectionV2)" below).
 
   describe('Testing addFillet', () => {
+    it('should insert a new radius variable when editing a fillet with edge references', async () => {
+      const call =
+        'fillet(solid001, edges = [{ sideFaces = [face001, face002] }], radius = 1)'
+      const code = `solid001 = cube(size = 10)
+fillet001 = ${call}`
+      const ast = assertParse(code, instanceInThisFile)
+      const callStart = code.indexOf(call)
+      const nodeToEdit = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(callStart, callStart + call.length)
+      )
+      const value = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addFillet({
+        ast,
+        artifactGraph: new Map(),
+        selection: { graphSelections: [], otherSelections: [] },
+        radius: {
+          ...value,
+          variableName: 'radius001',
+          variableDeclarationAst: createVariableDeclaration(
+            'radius001',
+            value.valueAst
+          ),
+          variableIdentifierAst: createLocalName('radius001'),
+          insertIndex: 0,
+        },
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('radius001 = 2')
+      expect(newCode).toContain('radius = radius001')
+    })
+
     it('should add a fillet call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -235,6 +277,71 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       expect(newCode).toContain('fillet(')
       expect(newCode).toContain('radius = 1')
       expect(newCode).toContain('edges = [{')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should resolve face API edges before inserting a new radius variable', async () => {
+      const codeWithTags = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        codeWithTags,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      expect(segment).toBeDefined()
+      if (!segment || segment.type !== 'segment') return
+      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+      if (err(commonFaces)) throw commonFaces
+      const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
+      expect(codeRefs?.length).toBeGreaterThan(0)
+
+      const value = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: commonFaces.slice(0, 2).map((face) => face.id),
+              },
+              codeRef: codeRefs![0],
+            },
+          ],
+          otherSelections: [],
+        },
+        radius: {
+          ...value,
+          variableName: 'radius001',
+          variableDeclarationAst: createVariableDeclaration(
+            'radius001',
+            value.valueAst
+          ),
+          variableIdentifierAst: createLocalName('radius001'),
+          insertIndex: 0,
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('radius001 = 2')
+      expect(newCode).toContain('fillet001 = fillet(extrude001')
+      expect(newCode).toContain('edges = [{')
+      expect(newCode).toContain('radius = radius001')
+      expect(newCode).not.toContain('getCommonEdge')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -531,6 +638,52 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
   })
 
   describe('Testing addChamfer', () => {
+    it('should insert a new length variable and add version when editing a chamfer', async () => {
+      const call =
+        'chamfer(solid001, edges = [{ sideFaces = [face001, face002] }], length = 1)'
+      const code = `solid001 = cube(size = 10)
+chamfer001 = ${call}`
+      const ast = assertParse(code, instanceInThisFile)
+      const callStart = code.indexOf(call)
+      const nodeToEdit = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(callStart, callStart + call.length)
+      )
+      const lengthValue = (await stringToKclExpression(
+        '3',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addChamfer({
+        ast,
+        artifactGraph: new Map(),
+        selection: { graphSelections: [], otherSelections: [] },
+        length: {
+          ...lengthValue,
+          variableName: 'length001',
+          variableDeclarationAst: createVariableDeclaration(
+            'length001',
+            lengthValue.valueAst
+          ),
+          variableIdentifierAst: createLocalName('length001'),
+          insertIndex: 0,
+        },
+        version,
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('length001 = 3')
+      expect(newCode).toContain('length = length001')
+      expect(newCode).toContain('version = 2')
+    })
+
     it('should add a chamfer call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,

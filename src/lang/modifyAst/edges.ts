@@ -81,6 +81,18 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 
+function insertCommandVariables(
+  values: (KclCommandValue | undefined)[],
+  ast: Node<Program>,
+  pathToNode?: PathToNode
+) {
+  for (const value of values) {
+    if (value) {
+      insertVariableAndOffsetPathToNode(value, ast, pathToNode)
+    }
+  }
+}
+
 export function addFillet({
   ast,
   artifactGraph,
@@ -110,6 +122,7 @@ export function addFillet({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const variableValues = [radius, version, tolerance]
 
   // When editing an existing fillet that already has edgeRefs, only update labeled args.
   // This avoids rebuilding from selection, which can fall back to deprecated tags/getCommonEdge.
@@ -126,6 +139,7 @@ export function addFillet({
         findKwArg('edges', existingCall) !== undefined ||
         findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
+        insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
         const newArgs = (existingCall.arguments ?? [])
           .filter((a) => getLabelName(a) !== 'tags')
           .map((a) => {
@@ -200,15 +214,7 @@ export function addFillet({
     modifiedAst = bodyData.modifiedAst
   }
 
-  if ('variableName' in radius && radius.variableName) {
-    insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
-  }
-  if (version && 'variableName' in version && version.variableName) {
-    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
-  }
-  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
-    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
-  }
+  insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
 
   const pathToNodes: PathToNode[] = []
 
@@ -297,6 +303,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -307,6 +314,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -318,8 +326,9 @@ export function addChamfer({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const variableValues = [length, secondLength, angle, version]
 
-  // When editing an existing chamfer that already has edgeRefs, only update length/secondLength/angle/tag.
+  // When editing an existing chamfer that already has edgeRefs, only update labeled arguments.
   if (mNodeToEdit) {
     const existingResult = getNodeFromPath(
       modifiedAst,
@@ -333,6 +342,7 @@ export function addChamfer({
         findKwArg('edges', existingCall) !== undefined ||
         findKwArg('edgeRefs', existingCall) !== undefined
       if (hasEdgeRefs) {
+        insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
         const newArgs = (existingCall.arguments ?? [])
           .filter((a) => getLabelName(a) !== 'tags')
           .map((a) => {
@@ -346,10 +356,15 @@ export function addChamfer({
               )
             if (name === 'angle' && angle != null)
               return createLabeledArg('angle', valueOrVariable(angle))
+            if (name === 'version' && version != null)
+              return createLabeledArg('version', valueOrVariable(version))
             if (name === 'tag' && tag)
               return createLabeledArg('tag', createTagDeclarator(tag))
             return a
           })
+        if (version && findKwArg('version', existingCall) === undefined) {
+          newArgs.push(createLabeledArg('version', valueOrVariable(version)))
+        }
         const call = createCallExpressionStdLibKw(
           'chamfer',
           existingCall.unlabeled,
@@ -410,20 +425,7 @@ export function addChamfer({
     modifiedAst = bodyData.modifiedAst
   }
 
-  // Insert variables for labeled arguments if provided
-  if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
-  }
-  if (
-    secondLength &&
-    'variableName' in secondLength &&
-    secondLength.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(secondLength, modifiedAst, mNodeToEdit)
-  }
-  if (angle && 'variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
-  }
+  insertCommandVariables(variableValues, modifiedAst, mNodeToEdit)
 
   const pathToNodes: PathToNode[] = []
   const secondLengthArgs = secondLength
@@ -433,6 +435,9 @@ export function addChamfer({
     ? [createLabeledArg('angle', valueOrVariable(angle))]
     : []
   const tagArgs = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
+  const versionArgs = version
+    ? [createLabeledArg('version', valueOrVariable(version))]
+    : []
 
   // Primitive indices describe the topology at selection time, so apply
   // legacy-only selections before face references mutate that topology.
@@ -444,6 +449,7 @@ export function addChamfer({
         ...secondLengthArgs,
         ...angleArgs,
         ...tagArgs,
+        ...versionArgs,
       ])
 
       const pathToNode = setCallInAst({
@@ -467,6 +473,7 @@ export function addChamfer({
         ...secondLengthArgs,
         ...angleArgs,
         ...tagArgs,
+        ...versionArgs,
       ])
 
       const pathToNode = setCallInAst({

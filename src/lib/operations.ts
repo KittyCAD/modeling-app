@@ -961,9 +961,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'secondLength', rustContext),
     extractKclArgument(code, operation, 'angle', rustContext),
+    extractKclArgument(code, operation, 'version', rustContext),
   ])
 
-  const [secondLength, angle] = optionalArgs.map((arg) =>
+  const [secondLength, angle, version] = optionalArgs.map((arg) =>
     'error' in arg ? undefined : arg
   )
 
@@ -978,6 +979,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     secondLength,
     angle,
     tag,
+    version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
