@@ -1,6 +1,15 @@
 import { DISTANCE_CONSTRAINT_ARROW } from '@src/clientSideScene/sceneConstants'
 import { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { getLineGuideSegment } from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
+import {
+  getDistanceEndPoints,
+  getLineGuideSegment,
+} from '@src/machines/sketchSolve/constraints/DistanceConstraintBuilder'
+import type { DistanceConstraint } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  createLineApiObject,
+  createPointApiObject,
+  createSceneGraphDelta,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import { BufferGeometry, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { describe, expect, it } from 'vitest'
@@ -49,5 +58,91 @@ describe('getLineGuideSegment', () => {
       line.end,
       new Vector3(15, 0, 0),
     ])
+  })
+})
+
+describe('getDistanceEndPoints', () => {
+  const constraint = {
+    id: 20,
+    kind: {
+      type: 'Constraint',
+      constraint: {
+        type: 'Distance',
+        segments: [10, 11],
+        distance: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  } as DistanceConstraint
+
+  it('starts each parallel-line leader on its finite segment', () => {
+    const objects = createSceneGraphDelta([
+      createPointApiObject({ id: 1, x: 0, y: 10 }),
+      createPointApiObject({ id: 2, x: 10, y: 10 }),
+      createPointApiObject({ id: 3, x: 5, y: 0 }),
+      createPointApiObject({ id: 4, x: 10, y: 0 }),
+      createLineApiObject({ id: 10, start: 1, end: 2 }),
+      createLineApiObject({ id: 11, start: 3, end: 4 }),
+    ]).new_graph.objects
+
+    expect(getDistanceEndPoints(constraint, objects)).toMatchObject({
+      p1: new Vector3(0, 10, 0),
+      p2: new Vector3(0, 0, 0),
+      leaderStart1: new Vector3(0, 10, 0),
+      leaderStart2: new Vector3(5, 0, 0),
+    })
+  })
+
+  it('starts both leaders at the measurement points when the lines reach them', () => {
+    const objects = createSceneGraphDelta([
+      createPointApiObject({ id: 1, x: 5, y: 10 }),
+      createPointApiObject({ id: 2, x: 10, y: 10 }),
+      createPointApiObject({ id: 3, x: 0, y: 0 }),
+      createPointApiObject({ id: 4, x: 10, y: 0 }),
+      createLineApiObject({ id: 10, start: 1, end: 2 }),
+      createLineApiObject({ id: 11, start: 3, end: 4 }),
+    ]).new_graph.objects
+
+    expect(getDistanceEndPoints(constraint, objects)).toMatchObject({
+      p1: new Vector3(5, 10, 0),
+      p2: new Vector3(5, 0, 0),
+      leaderStart1: new Vector3(5, 10, 0),
+      leaderStart2: new Vector3(5, 0, 0),
+    })
+  })
+
+  it('aligns the measurement points with the label without overextending', () => {
+    const objects = createSceneGraphDelta([
+      createPointApiObject({ id: 1, x: 0, y: 10 }),
+      createPointApiObject({ id: 2, x: 10, y: 10 }),
+      createPointApiObject({ id: 3, x: 5, y: 0 }),
+      createPointApiObject({ id: 4, x: 12, y: 0 }),
+      createLineApiObject({ id: 10, start: 1, end: 2 }),
+      createLineApiObject({ id: 11, start: 3, end: 4 }),
+    ]).new_graph.objects
+    const labelConstraint = {
+      ...constraint,
+      kind: {
+        ...constraint.kind,
+        constraint: {
+          ...constraint.kind.constraint,
+          labelPosition: {
+            x: { value: 3, units: 'Mm' },
+            y: { value: 5, units: 'Mm' },
+          },
+        },
+      },
+    } as DistanceConstraint
+
+    expect(getDistanceEndPoints(labelConstraint, objects)).toMatchObject({
+      p1: new Vector3(3, 10, 0),
+      p2: new Vector3(3, 0, 0),
+      leaderStart1: new Vector3(3, 10, 0),
+      leaderStart2: new Vector3(5, 0, 0),
+    })
   })
 })

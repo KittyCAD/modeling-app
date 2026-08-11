@@ -31,6 +31,8 @@ type LinePoints = { start: Vector3; end: Vector3 }
 type DistanceEndpointPositions = {
   p1: Vector3
   p2: Vector3
+  leaderStart1?: Vector3
+  leaderStart2?: Vector3
   guideSegment?: readonly [Vector3, Vector3]
 }
 
@@ -59,7 +61,14 @@ export class DistanceConstraintBuilder {
   ) {
     const points = getDistanceEndPoints(obj, objects)
     if (points) {
-      const { p1, p2, distance, guideSegment } = points
+      const {
+        p1,
+        p2,
+        distance,
+        leaderStart1 = p1,
+        leaderStart2 = p2,
+        guideSegment,
+      } = points
       const labelPosition = getDistanceLabelPosition(obj)
       const { start, end, perp } = getDirections(
         obj,
@@ -98,8 +107,8 @@ export class DistanceConstraintBuilder {
         start,
         end,
         perp,
-        p1,
-        p2,
+        leaderStart1,
+        leaderStart2,
         group,
         scale,
         isCollapsedZeroAxisDistance
@@ -282,7 +291,12 @@ export function getDistanceEndPoints(
 ) {
   const constraint = obj.kind.constraint
   const [p1Id, p2Id] = constraint.segments
-  const endpoints = getDistanceConstraintEndpointPositions(p1Id, p2Id, objects)
+  const endpoints = getDistanceConstraintEndpointPositions(
+    p1Id,
+    p2Id,
+    objects,
+    getDistanceLabelPosition(obj)
+  )
 
   if (endpoints) {
     return {
@@ -296,7 +310,8 @@ export function getDistanceEndPoints(
 function getDistanceConstraintEndpointPositions(
   firstId: number | 'ORIGIN',
   secondId: number | 'ORIGIN',
-  objects: ApiObject[]
+  objects: ApiObject[],
+  labelPosition?: Vector3
 ): DistanceEndpointPositions | null {
   const firstPoint = getDistanceConstraintPointPosition(firstId, objects)
   const secondPoint = getDistanceConstraintPointPosition(secondId, objects)
@@ -365,9 +380,15 @@ function getDistanceConstraintEndpointPositions(
   }
 
   if (firstLine && secondLine) {
+    const p1 = labelPosition
+      ? projectPointToLine(labelPosition, firstLine)
+      : firstLine.start
+    const p2 = projectPointToLine(p1, secondLine)
     return {
-      p1: firstLine.start,
-      p2: projectPointToLine(firstLine.start, secondLine),
+      p1,
+      p2,
+      leaderStart1: projectPointToLineSegment(p1, firstLine),
+      leaderStart2: projectPointToLineSegment(p2, secondLine),
     }
   }
 
@@ -447,6 +468,19 @@ function projectPointToLine(point: Vector3, line: LinePoints) {
 
   const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
   return line.start.clone().add(lineVector.multiplyScalar(t))
+}
+
+function projectPointToLineSegment(point: Vector3, line: LinePoints) {
+  const lineVector = line.end.clone().sub(line.start)
+  const lengthSq = lineVector.lengthSq()
+  if (lengthSq === 0) {
+    return line.start.clone()
+  }
+
+  const t = point.clone().sub(line.start).dot(lineVector) / lengthSq
+  return line.start
+    .clone()
+    .add(lineVector.multiplyScalar(Math.max(0, Math.min(1, t))))
 }
 
 export function getLineGuideSegment(
