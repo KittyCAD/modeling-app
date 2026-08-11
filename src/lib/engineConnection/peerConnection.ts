@@ -16,6 +16,8 @@ import {
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
 
+export const PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS = 10_000
+
 export function createOnIceCandidate({
   initiateConnectionExclusive,
   send,
@@ -161,17 +163,26 @@ export function createOnConnectionStateChange({
 }) {
   // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/connectionstatechange_event
   // Event type: generic Event type...
-  const onConnectionStateChange = (event: any) => {
+  let disconnectedTimeout: ReturnType<typeof setTimeout> | undefined
+
+  const clearDisconnectedTimeout = () => {
+    clearTimeout(disconnectedTimeout)
+    disconnectedTimeout = undefined
+  }
+
+  const onConnectionStateChange = (event: Event) => {
+    const peerConnection = event.target as RTCPeerConnection | undefined
     EngineDebugger.addLog({
       label: 'onConnectionStateChange',
       message: 'connectionstatechange',
-      metadata: { event, connectionState: event.target?.connectionState },
+      metadata: { event, connectionState: peerConnection?.connectionState },
     })
 
-    switch (event.target?.connectionState) {
+    switch (peerConnection?.connectionState) {
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
       case 'connected':
+        clearDisconnectedTimeout()
         dispatchEvent(
           new CustomEvent(EngineConnectionEvents.NewTrack, {
             detail: { conn: connection, mediaStream: connection.mediaStream },
@@ -181,14 +192,23 @@ export function createOnConnectionStateChange({
       case 'connecting':
         break
       case 'failed':
+        clearDisconnectedTimeout()
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
         tearDownManager({ peerConnectionFailed: true })
         break
       case 'disconnected':
-        dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
-        tearDownManager({ peerConnectionDisconnected: true })
+        disconnectedTimeout ??= setTimeout(() => {
+          disconnectedTimeout = undefined
+          if (peerConnection?.connectionState !== 'disconnected') {
+            return
+          }
+
+          dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
+          tearDownManager({ peerConnectionDisconnected: true })
+        }, PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
         break
       case 'closed':
+        clearDisconnectedTimeout()
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
         tearDownManager({ peerConnectionClosed: true })
         break
