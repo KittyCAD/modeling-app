@@ -901,8 +901,11 @@ impl Program {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        rename_identifiers_in_body(&mut self.body, old_name, new_name);
+    /// Rename all identifiers that have the old name to the new given name. Returns whether
+    /// the body rebinds the old name in the current environment; if-expression branches
+    /// execute in the current environment, so this propagates to the enclosing walk.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        rename_identifiers_in_body(&mut self.body, old_name, new_name)
     }
 
     /// Rename a symbol declared inside a sketch block, if `pos` is on such a declaration or on
@@ -1188,21 +1191,25 @@ impl BodyItem {
         }
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    /// Rename all identifiers that have the old name to the new given name. Returns whether
+    /// this item rebinds the old name for what follows it.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         match self {
             BodyItem::ImportStatement(_) => {
                 // Imports only bind names (item names, aliases, module names); they contain
-                // no references to rename.
+                // no references to rename. Whether they rebind the old name in the value
+                // namespace mirrors body_item_binds_name.
+                body_item_binds_name(self, old_name)
             }
             BodyItem::ExpressionStatement(expression_statement) => {
-                expression_statement.expression.rename_identifiers(old_name, new_name);
+                expression_statement.expression.rename_identifiers(old_name, new_name)
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
-                variable_declaration.rename_identifiers(old_name, new_name);
+                variable_declaration.rename_identifiers(old_name, new_name)
             }
-            BodyItem::TypeDeclaration(_) => {}
+            BodyItem::TypeDeclaration(_) => false,
             BodyItem::ReturnStatement(return_statement) => {
-                return_statement.argument.rename_identifiers(old_name, new_name);
+                return_statement.argument.rename_identifiers(old_name, new_name)
             }
         }
     }
@@ -1245,18 +1252,22 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
-/// Rename identifiers in body items, in order. Stops early once an item rebinds (shadows) the
-/// old name, since identifiers after it refer to the new binding, not the one being renamed.
-/// Identifiers in the rebinding item itself are still renamed, since a binding only takes effect
-/// after its own initializer (e.g. renaming outer `x` should rename the use in a shadowing local
-/// `x = x + 1`).
-fn rename_identifiers_in_body(body: &mut [BodyItem], old_name: &str, new_name: &str) {
+/// Rename identifiers in body items, in the executor's evaluation order. Stops as soon as
+/// something rebinds (shadows) the old name, since references evaluated after it refer to the
+/// new binding, not the one being renamed. Rebinding can happen mid-item: the executor binds
+/// tags, labels, and named function expressions the moment it evaluates them, so references
+/// after them in the same statement are left alone, while references before them are renamed
+/// (e.g. renaming outer `x` renames the use in a shadowing local `x = x + 1`, whose
+/// initializer evaluates before the binding). Returns whether the old name was rebound, which
+/// matters for if-expression branches: they execute in the current environment, so their
+/// bindings leak to the enclosing walk.
+fn rename_identifiers_in_body(body: &mut [BodyItem], old_name: &str, new_name: &str) -> bool {
     for item in body {
-        item.rename_identifiers(old_name, new_name);
-        if body_item_binds_name(item, old_name) {
-            return;
+        if item.rename_identifiers(old_name, new_name) {
+            return true;
         }
     }
+    false
 }
 
 /// Rename the head segments of qualified names (`old::item` becomes `new::item`) throughout
@@ -2275,11 +2286,27 @@ fn expr_binds_name(expr: &Expr, name: &str) -> bool {
         }
         Expr::UnaryExpression(unary_expr) => binary_part_binds_name(&unary_expr.argument, name),
         Expr::IfExpression(if_expr) => {
+            // Branches execute in the current environment, so their declarations bind here
+            // too; only one branch runs, but any branch binding conservatively counts.
             expr_binds_name(&if_expr.cond, name)
                 || if_expr
-                    .else_ifs
+                    .then_val
+                    .body
                     .iter()
-                    .any(|else_if| expr_binds_name(&else_if.cond, name))
+                    .any(|item| body_item_binds_name(item, name))
+                || if_expr.else_ifs.iter().any(|else_if| {
+                    expr_binds_name(&else_if.cond, name)
+                        || else_if
+                            .then_val
+                            .body
+                            .iter()
+                            .any(|item| body_item_binds_name(item, name))
+                })
+                || if_expr
+                    .final_else
+                    .body
+                    .iter()
+                    .any(|item| body_item_binds_name(item, name))
         }
         Expr::AscribedExpression(expr) => expr_binds_name(&expr.expr, name),
         Expr::SketchBlock(sketch_block) => sketch_block.arguments.iter().any(|a| expr_binds_name(&a.arg, name)),
@@ -2304,11 +2331,27 @@ fn binary_part_binds_name(part: &BinaryPart, name: &str) -> bool {
         }
         BinaryPart::ObjectExpression(obj) => obj.properties.iter().any(|p| expr_binds_name(&p.value, name)),
         BinaryPart::IfExpression(if_expr) => {
+            // See the Expr::IfExpression case: branch declarations bind the current
+            // environment.
             expr_binds_name(&if_expr.cond, name)
                 || if_expr
-                    .else_ifs
+                    .then_val
+                    .body
                     .iter()
-                    .any(|else_if| expr_binds_name(&else_if.cond, name))
+                    .any(|item| body_item_binds_name(item, name))
+                || if_expr.else_ifs.iter().any(|else_if| {
+                    expr_binds_name(&else_if.cond, name)
+                        || else_if
+                            .then_val
+                            .body
+                            .iter()
+                            .any(|item| body_item_binds_name(item, name))
+                })
+                || if_expr
+                    .final_else
+                    .body
+                    .iter()
+                    .any(|item| body_item_binds_name(item, name))
         }
         BinaryPart::AscribedExpression(expr) => expr_binds_name(&expr.expr, name),
     }
@@ -2500,56 +2543,44 @@ impl Expr {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    /// Rename all identifiers that have the old name to the new given name, following the
+    /// executor's evaluation order: returns true as soon as something rebinds the old name (a
+    /// tag declarator, an expression label, or a named function expression, which the
+    /// executor binds the moment it evaluates them), so that references evaluated after the
+    /// rebinding are left alone.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         match self {
-            Expr::Literal(_literal) => {}
+            Expr::Literal(_literal) => false,
             Expr::Name(identifier) => {
                 identifier.rename(old_name, new_name);
+                false
             }
-            Expr::TagDeclarator(_tag) => {
+            Expr::TagDeclarator(tag) => {
                 // TagDeclarators introduce new bindings. Renaming other symbols should not
-                // rewrite the tag's identifier, so we intentionally skip them here.
+                // rewrite the tag's identifier, but the executor binds the tag's name as soon
+                // as it is evaluated, shadowing the name being renamed from here on.
+                tag.name == old_name
             }
-            Expr::BinaryExpression(binary_expression) => {
-                binary_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::FunctionExpression(function_expression) => {
-                function_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::CallExpressionKw(call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::PipeExpression(pipe_expression) => {
-                pipe_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::PipeSubstitution(_) => {}
-            Expr::ArrayExpression(array_expression) => {
-                array_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::ArrayRangeExpression(array_range) => {
-                array_range.rename_identifiers(old_name, new_name);
-            }
-            Expr::ObjectExpression(object_expression) => {
-                object_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::MemberExpression(member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name);
-            }
-            Expr::UnaryExpression(unary_expression) => {
-                unary_expression.rename_identifiers(old_name, new_name);
-            }
+            Expr::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
+            Expr::FunctionExpression(function_expression) => function_expression.rename_identifiers(old_name, new_name),
+            Expr::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeExpression(pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Expr::PipeSubstitution(_) => false,
+            Expr::ArrayExpression(array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Expr::ArrayRangeExpression(array_range) => array_range.rename_identifiers(old_name, new_name),
+            Expr::ObjectExpression(object_expression) => object_expression.rename_identifiers(old_name, new_name),
+            Expr::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            Expr::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             Expr::IfExpression(expr) => expr.rename_identifiers(old_name, new_name),
             Expr::LabelledExpression(expr) => {
-                expr.expr.rename_identifiers(old_name, new_name);
+                // The label binds after its expression evaluates.
+                let bound = expr.expr.rename_identifiers(old_name, new_name);
+                bound || expr.label.name == old_name
             }
-            Expr::AscribedExpression(expr) => {
-                expr.expr.rename_identifiers(old_name, new_name);
-            }
-            Expr::SketchBlock(expr) => {
-                expr.rename_identifiers(old_name, new_name);
-            }
-            Expr::SketchVar(_) => {}
-            Expr::None(_) => {}
+            Expr::AscribedExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
+            Expr::SketchBlock(expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::SketchVar(_) => false,
+            Expr::None(_) => false,
         }
     }
 
@@ -2792,12 +2823,18 @@ impl SketchBlock {
         self.body.replace_value(source_range, new_value);
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         for arg in &mut self.arguments {
-            arg.arg.rename_identifiers(old_name, new_name);
+            if arg.arg.rename_identifiers(old_name, new_name) {
+                // A binding in an argument shadows the name for the block body too.
+                return true;
+            }
         }
 
+        // The block's declarations are scoped to the block (exposed as member references on
+        // the sketch value), so they don't rebind the enclosing environment.
         self.body.rename_identifiers(old_name, new_name);
+        false
     }
 }
 
@@ -2852,8 +2889,8 @@ impl Block {
         }
     }
 
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        rename_identifiers_in_body(&mut self.items, old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        rename_identifiers_in_body(&mut self.items, old_name, new_name)
     }
 
     /// Returns the body item that includes the given character position.
@@ -2998,40 +3035,25 @@ impl BinaryPart {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    /// Rename all identifiers that have the old name to the new given name, following the
+    /// executor's evaluation order; see [Expr::rename_identifiers].
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         match self {
-            BinaryPart::Literal(_literal) => {}
+            BinaryPart::Literal(_literal) => false,
             BinaryPart::Name(identifier) => {
                 identifier.rename(old_name, new_name);
+                false
             }
-            BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::CallExpressionKw(call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::MemberExpression(member_expression) => {
-                member_expression.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::ArrayExpression(e) => {
-                e.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::ArrayRangeExpression(e) => {
-                e.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::ObjectExpression(e) => {
-                e.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::IfExpression(if_expression) => {
-                if_expression.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::AscribedExpression(e) => {
-                e.expr.rename_identifiers(old_name, new_name);
-            }
-            BinaryPart::SketchVar(_) => {}
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::MemberExpression(member_expression) => member_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ArrayRangeExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::ObjectExpression(e) => e.rename_identifiers(old_name, new_name),
+            BinaryPart::IfExpression(if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(e) => e.expr.rename_identifiers(old_name, new_name),
+            BinaryPart::SketchVar(_) => false,
         }
     }
 }
@@ -3668,16 +3690,24 @@ impl CallExpressionKw {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    /// Rename all identifiers that have the old name to the new given name. The executor
+    /// evaluates arguments in order and binds tags immediately, so renaming stops at an
+    /// argument that rebinds the old name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         self.callee.rename(old_name, new_name);
 
-        if let Some(unlabeled) = &mut self.unlabeled {
-            unlabeled.rename_identifiers(old_name, new_name);
+        if let Some(unlabeled) = &mut self.unlabeled
+            && unlabeled.rename_identifiers(old_name, new_name)
+        {
+            return true;
         }
 
         for arg in &mut self.arguments {
-            arg.arg.rename_identifiers(old_name, new_name);
+            if arg.arg.rename_identifiers(old_name, new_name) {
+                return true;
+            }
         }
+        false
     }
 }
 
@@ -3866,7 +3896,7 @@ impl VariableDeclaration {
         None
     }
 
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         // The declaration that was just renamed (its id is already the new name): the variable
         // is not bound inside its own initializer, since the value is created before the
         // variable is bound, so references to the old name there are not to this variable. The
@@ -3879,10 +3909,13 @@ impl VariableDeclaration {
                 Expr::FunctionExpression(func) if func.name.as_ref().is_some_and(|n| n.name == new_name)
             );
             if !is_fn_sugar {
-                return;
+                return false;
             }
         }
-        self.declaration.init.rename_identifiers(old_name, new_name);
+        // The initializer evaluates before the variable is bound, so a rebinding inside it
+        // (e.g. a tag) takes effect first; either way the declaration's own id binds next.
+        let bound = self.declaration.init.rename_identifiers(old_name, new_name);
+        bound || self.declaration.id.name == old_name
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -4415,10 +4448,13 @@ impl ArrayExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         for element in &mut self.elements {
-            element.rename_identifiers(old_name, new_name);
+            if element.rename_identifiers(old_name, new_name) {
+                return true;
+            }
         }
+        false
     }
 }
 
@@ -4468,9 +4504,9 @@ impl ArrayRangeExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.start_element.rename_identifiers(old_name, new_name);
-        self.end_element.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        self.start_element.rename_identifiers(old_name, new_name)
+            || self.end_element.rename_identifiers(old_name, new_name)
     }
 }
 
@@ -4520,10 +4556,13 @@ impl ObjectExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         for property in &mut self.properties {
-            property.value.rename_identifiers(old_name, new_name);
+            if property.value.rename_identifiers(old_name, new_name) {
+                return true;
+            }
         }
+        false
     }
 }
 
@@ -4595,14 +4634,17 @@ impl Node<MemberExpression> {
 
 impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.object.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        if self.object.rename_identifiers(old_name, new_name) {
+            return true;
+        }
         // A non-computed property like the `bar` in `foo.bar` is a field or tag
         // access, not a reference to a variable named `bar`, so it is not
         // renamed.
         if self.computed {
-            self.property.rename_identifiers(old_name, new_name);
+            return self.property.rename_identifiers(old_name, new_name);
         }
+        false
     }
 }
 
@@ -4651,9 +4693,8 @@ impl BinaryExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.left.rename_identifiers(old_name, new_name);
-        self.right.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        self.left.rename_identifiers(old_name, new_name) || self.right.rename_identifiers(old_name, new_name)
     }
 }
 
@@ -4820,8 +4861,8 @@ impl UnaryExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.argument.rename_identifiers(old_name, new_name);
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        self.argument.rename_identifiers(old_name, new_name)
     }
 }
 
@@ -4909,10 +4950,14 @@ impl PipeExpression {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
         for statement in &mut self.body {
-            statement.rename_identifiers(old_name, new_name);
+            if statement.rename_identifiers(old_name, new_name) {
+                // A tag bound in an earlier pipe element shadows the name for later ones.
+                return true;
+            }
         }
+        false
     }
 }
 
@@ -5340,11 +5385,15 @@ impl FunctionExpression {
     /// Rename all identifiers that have the old name to the new given name.
     /// If the function's own name or one of its parameters shadows the old name, the body refers
     /// to that binding instead of the one being renamed, so there is nothing to rename.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        if self.binds_name(old_name) {
-            return;
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
+        // The executor binds a named function expression's name in the enclosing scope, so it
+        // rebinds the old name there; a parameter only shadows inside the body.
+        let name_binds = self.name.as_ref().is_some_and(|n| n.name == old_name);
+        if !self.binds_name(old_name) {
+            // The body is its own scope; its bindings don't leak into the enclosing walk.
+            self.body.rename_identifiers(old_name, new_name);
         }
-        self.body.rename_identifiers(old_name, new_name);
+        name_binds
     }
 
     /// Whether the function's own name (its recursive binding) or one of its parameters binds
@@ -6471,16 +6520,18 @@ foo()
     }
 
     #[test]
-    fn test_rename_renames_uses_within_the_shadowing_item() {
-        // The tag `$BEST` rebinds the outer name from its statement on, even though the
-        // statement is not a variable declaration. Uses of the outer name within that same
-        // statement are still renamed (consistent with a shadowing local's own initializer,
-        // e.g. `x = x + 1`); uses in later statements are not.
+    fn test_rename_stops_mid_statement_at_tag_binding() {
+        // The executor binds `$BEST` the moment it evaluates the tag, shadowing the outer
+        // name from that point in evaluation order: references evaluated before the tag (the
+        // `at` coordinate, evaluated in an earlier pipe element) are renamed; references
+        // after it (a later argument of the same call, a later pipe element, or a later
+        // statement) are not.
         let code = r#"BEST = 2
 
 fn foo() {
   startProfile(startSketchOn(XY), at = [0, BEST])
-    |> xLine(length = BEST, tag = $BEST)
+    |> xLine(tag = $BEST, length = BEST)
+    |> yLine(length = BEST)
     |> close()
   return BEST
 }
@@ -6500,10 +6551,49 @@ fn foo() {
 
 fn foo() {
   startProfile(startSketchOn(XY), at = [0, BETTER])
-    |> xLine(length = BETTER, tag = $BEST)
+    |> xLine(tag = $BEST, length = BEST)
+    |> yLine(length = BEST)
     |> close()
   return BEST
 }
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_stops_at_binding_in_if_branch() {
+        // If-expression branches execute in the current environment, so the tag bound inside
+        // the branch leaks; whether it binds depends on which branch runs, so renaming
+        // conservatively stops after the if expression.
+        let code = r#"foo = 1
+val = if true {
+  p = startProfile(startSketchOn(XY), at = [0, foo])
+    |> line(end = [1, 1], tag = $foo)
+    |> close()
+  5
+} else {
+  0
+}
+after = foo
+"#;
+        let mut program = parse(code);
+        let pos = code.find("foo").unwrap() + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+val = if true {
+  p = startProfile(startSketchOn(XY), at = [0, bar])
+    |> line(end = [1, 1], tag = $foo)
+    |> close()
+  5
+} else {
+  0
+}
+after = foo
 "#
         );
     }
