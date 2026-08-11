@@ -1009,10 +1009,19 @@ impl Backend {
 
         // Let's convert the position to a character index.
         let pos = position_to_char_index(params.position, current_code);
+        // Compare against the recast of the unmodified parse rather than the original text,
+        // so that pure formatting differences don't count as a rename.
+        let baseline = ast.recast_top(&Default::default(), 0);
         // Now let's perform the rename on the ast.
         ast.rename_symbol(new_name, pos);
         // Now recast it.
         let recast = ast.recast_top(&Default::default(), 0);
+        if recast == baseline {
+            // Nothing was renamed; the position isn't a supported rename target. Reporting
+            // this makes prepare_rename answer honestly and avoids returning a whole-file
+            // reformatting edit for a no-op rename.
+            return Ok(None);
+        }
 
         Ok(Some((current_code.to_string(), recast)))
     }

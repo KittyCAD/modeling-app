@@ -4323,6 +4323,54 @@ async fn test_kcl_lsp_prepare_rename() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_prepare_rename_unsupported_position() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"thing = 1
+other = thing"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // A reference isn't a supported rename position; renaming it does nothing, so
+    // prepare_rename reports it as not renameable...
+    let result = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 1, character: 9 },
+        })
+        .await
+        .unwrap();
+    assert_eq!(result, None);
+
+    // ...and rename produces no edit instead of a whole-file reformat.
+    let result = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 1, character: 9 },
+            },
+            new_name: "renamed".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+    assert_eq!(result, None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_document_color() {
     let server = kcl_lsp_server(false).await.unwrap();
 

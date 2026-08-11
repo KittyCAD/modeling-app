@@ -38,18 +38,22 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
 
     if new_name != *name {
         let mut prog = prog.clone();
+        let baseline = prog.recast_top(&Default::default(), 0);
         prog.rename_symbol(&new_name, ident.start);
         let recast = prog.recast_top(&Default::default(), 0);
 
-        let suggestion = Suggestion {
+        // Only offer a fix if renaming actually changed something; some positions (e.g. a
+        // function-local declaration) aren't supported rename targets, and an unchanged
+        // suggestion would be misleading.
+        let suggestion = (recast != baseline).then(|| Suggestion {
             title: format!("rename '{name}' to '{new_name}'"),
             insert: recast,
             source_range: prog.as_source_range(),
-        };
+        });
         findings.push(Z0001.at(
             format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            Some(suggestion),
+            suggestion,
         ));
         return Ok(findings);
     }
@@ -463,6 +467,30 @@ y = outer()
             "applied suggestion should match expected"
         );
         crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// A snake_case declaration local to a function isn't a supported rename target, so the
+    /// finding is reported without a suggestion instead of offering an unchanged edit.
+    #[tokio::test]
+    async fn z0001_unsupported_local_declaration_has_no_suggestion() {
+        let kcl = r#"
+fn f() {
+  local_val = 1
+  return local_val
+}
+y = f()
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let finding = lints.iter().find(|d| d.description == "found 'local_val'");
+        let Some(discovered) = finding else {
+            panic!("Expected a Z0001 finding for local_val; lints: {lints:?}")
+        };
+        assert!(
+            discovered.suggestion.is_none(),
+            "renaming a fn-local declaration isn't supported, so no suggestion should be offered; got {:?}",
+            discovered.suggestion
+        );
     }
 
     /// Renaming a snake_case declaration inside a sketch block via the Z0001 suggestion
