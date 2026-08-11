@@ -178,6 +178,11 @@ export function createOnConnectionStateChange({
       metadata: { event, connectionState: peerConnection?.connectionState },
     })
 
+    /**
+     * `disconnected` can be transient, so give this peer connection one grace
+     * period to recover. Each subsequent concrete state owns canceling that
+     * timer. If no state change occurs, the timeout tears the peer down.
+     */
     switch (peerConnection?.connectionState) {
       // From what I understand, only after have we done the ICE song and
       // dance is it safest to connect the video tracks / stream
@@ -189,7 +194,9 @@ export function createOnConnectionStateChange({
           })
         )
         break
+      case 'new':
       case 'connecting':
+        clearDisconnectedTimeout()
         break
       case 'failed':
         clearDisconnectedTimeout()
@@ -197,12 +204,8 @@ export function createOnConnectionStateChange({
         tearDownManager({ peerConnectionFailed: true })
         break
       case 'disconnected':
-        disconnectedTimeout ??= setTimeout(() => {
+        disconnectedTimeout = setTimeout(() => {
           disconnectedTimeout = undefined
-          if (peerConnection?.connectionState !== 'disconnected') {
-            return
-          }
-
           dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
           tearDownManager({ peerConnectionDisconnected: true })
         }, PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)

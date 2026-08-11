@@ -30,14 +30,16 @@ describe('createOnConnectionStateChange', () => {
   beforeEach(() => vi.useFakeTimers())
   afterEach(() => vi.useRealTimers())
 
-  it('allows a transient disconnection to recover', () => {
+  it('allows the same peer connection to recover', () => {
     const { peerConnection, tearDownManager } = setup()
 
     peerConnection.connectionState = 'disconnected'
     peerConnection.dispatchEvent(new Event('connectionstatechange'))
-    peerConnection.connectionState = 'connected'
+    peerConnection.connectionState = 'connecting'
     peerConnection.dispatchEvent(new Event('connectionstatechange'))
     vi.advanceTimersByTime(PEER_CONNECTION_DISCONNECTED_GRACE_PERIOD_MS)
+    peerConnection.connectionState = 'connected'
+    peerConnection.dispatchEvent(new Event('connectionstatechange'))
 
     expect(tearDownManager).not.toHaveBeenCalled()
   })
