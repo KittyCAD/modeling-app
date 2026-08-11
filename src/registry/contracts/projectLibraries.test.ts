@@ -20,6 +20,7 @@ import {
   updateProjectLibrarySettingAt,
 } from '@src/lib/projectLibraries'
 import {
+  combineProjectLibraryRealizationContributions,
   combineProjectLibrarySettingDefaultPolicies,
   combineProjectLibrarySettingDefaults,
   combineProjectLibraryTypes,
@@ -478,7 +479,7 @@ describe('project library default policies', () => {
 
 describe('combineProjectLibraryTypes', () => {
   test('merges duplicate library type contributions by type', () => {
-    const readEntries = async () => []
+    const readRealizations = async () => []
     const createProject = {
       run: async () => undefined,
     }
@@ -510,7 +511,7 @@ describe('combineProjectLibraryTypes', () => {
         {
           type: 'directory',
           title: 'Folder',
-          readEntries,
+          readRealizations,
           operations: {
             renameProject,
             deleteProject,
@@ -528,7 +529,7 @@ describe('combineProjectLibraryTypes', () => {
         renameProject,
         deleteProject,
       },
-      readEntries,
+      readRealizations,
     })
   })
 
@@ -599,7 +600,7 @@ describe('getHomeProjectEntriesForLibrary', () => {
           },
           {
             id: 'local:/projects/shared-bracket',
-            source: 'both',
+            source: 'local',
             status: 'synced',
             libraryIds: ['default-project-directory', 'external'],
             name: 'shared-bracket',
@@ -611,6 +612,83 @@ describe('getHomeProjectEntriesForLibrary', () => {
     ).toEqual([
       expect.objectContaining({
         id: 'local:/projects/shared-bracket',
+      }),
+    ])
+  })
+})
+
+describe('combineProjectLibraryRealizationContributions', () => {
+  test('combines realizations by normalized local path and preserves library membership', () => {
+    expect(
+      combineProjectLibraryRealizationContributions([
+        {
+          library: {
+            id: 'parent-library',
+            title: 'Parent',
+            path: '/projects',
+            type: 'directory',
+          },
+          name: 'bracket',
+          localProjectPath: '/projects/bracket/',
+          localProjectName: 'bracket',
+          readWriteAccess: true,
+        },
+        {
+          library: {
+            id: 'child-library',
+            title: 'Child',
+            path: '/projects/bracket',
+            type: 'directory',
+          },
+          name: 'bracket',
+          localProjectPath: '/projects/bracket',
+          localProjectName: 'bracket',
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'local:/projects/bracket',
+        localProjectPath: '/projects/bracket',
+        libraryIds: ['parent-library', 'child-library'],
+        libraryRefs: [
+          expect.objectContaining({ id: 'parent-library' }),
+          expect.objectContaining({ id: 'child-library' }),
+        ],
+      }),
+    ])
+  })
+
+  test('does not combine different local paths with the same cloud project id', () => {
+    expect(
+      combineProjectLibraryRealizationContributions([
+        {
+          libraryId: 'directory-library',
+          name: 'directory-copy',
+          localProjectPath: '/projects/directory-copy',
+          localProjectName: 'directory-copy',
+          cloudProjectId: 'remote-123',
+          readWriteAccess: true,
+        },
+        {
+          libraryId: 'cloud-library',
+          name: 'cloud-copy',
+          localProjectPath: '/cloud/cloud-copy',
+          localProjectName: 'cloud-copy',
+          cloudProjectId: 'remote-123',
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'local:/projects/directory-copy',
+        libraryIds: ['directory-library'],
+        cloudProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
+        id: 'local:/cloud/cloud-copy',
+        libraryIds: ['cloud-library'],
+        cloudProjectId: 'remote-123',
       }),
     ])
   })

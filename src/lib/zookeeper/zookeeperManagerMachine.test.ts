@@ -3,21 +3,22 @@ import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperCorrelation,
   type MlCopilotModeOption,
-  MlEphantConversationToMarkdown,
-  type MlEphantManagerContext,
-  type MlEphantManagerEvents,
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-  MlEphantSetupErrors,
-  mlEphantManagerMachine,
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerContext,
+  type ZookeeperManagerEvents,
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+  ZookeeperSetupErrors,
+  zookeeperManagerMachine,
   NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   parseMlCopilotModesResult,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
@@ -106,13 +107,33 @@ class ControllableSetupWebSocket extends EventTarget {
   }
 }
 
-type TestWebSocket = Pick<MlEphantManagerContext, 'ws'>['ws'] & TestSocket
+type TestWebSocket = Pick<ZookeeperManagerContext, 'ws'>['ws'] & TestSocket
 type SetupActorInput = {
-  event: Extract<MlEphantManagerEvents, { type: MlEphantManagerStates.Setup }>
-  context: MlEphantManagerContext
+  event: Extract<ZookeeperManagerEvents, { type: ZookeeperManagerStates.Setup }>
+  context: ZookeeperManagerContext
 }
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
+
+describe('createZookeeperCorrelation', () => {
+  it('creates a unique correlation ID and includes the Engine API call ID', () => {
+    const first = createZookeeperCorrelation('engine-api-call-id')
+    const second = createZookeeperCorrelation('engine-api-call-id')
+
+    expect(first.correlation_id).not.toBe(second.correlation_id)
+    expect(first.correlation_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    )
+    expect(first.engine_api_call_id).toBe('engine-api-call-id')
+  })
+
+  it('omits the Engine API call ID before an Engine session exists', () => {
+    expect(createZookeeperCorrelation(undefined)).not.toHaveProperty(
+      'engine_api_call_id'
+    )
+  })
+})
+
 const completedConversation: Conversation = {
   exchanges: [
     {
@@ -133,7 +154,7 @@ const completedConversation: Conversation = {
   ],
 }
 
-describe('mlEphantManagerMachine', () => {
+describe('zookeeperManagerMachine', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     ControllableSetupWebSocket.instances = []
@@ -221,10 +242,10 @@ describe('mlEphantManagerMachine', () => {
           disabled: false,
         },
       ]
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async () => ({
             ws,
@@ -239,16 +260,16 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerTransitions.ModesReceive,
+        type: ZookeeperManagerTransitions.ModesReceive,
         defaultMode: 'standard',
         modeOptions,
       })
@@ -269,10 +290,10 @@ describe('mlEphantManagerMachine', () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       let setupAttempts = 0
       let shouldFail = true
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(() => {
             setupAttempts += 1
@@ -292,7 +313,7 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
@@ -326,7 +347,7 @@ describe('mlEphantManagerMachine', () => {
       })
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
@@ -342,13 +363,13 @@ describe('mlEphantManagerMachine', () => {
 
       shouldFail = false
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       expect(setupAttempts).toBe(NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS * 2 + 1)
@@ -366,10 +387,10 @@ describe('mlEphantManagerMachine', () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       vi.useFakeTimers()
       let setupAttempts = 0
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(() => {
             setupAttempts += 1
@@ -385,7 +406,7 @@ describe('mlEphantManagerMachine', () => {
 
       try {
         actor.send({
-          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
           refParentSend: vi.fn(),
           conversationId: 'conversation-id',
         })
@@ -418,12 +439,12 @@ describe('mlEphantManagerMachine', () => {
 
     it('keeps a saved conversation id until the user explicitly clears it', async () => {
       const { fetchMock, reports } = stubClientErrorFetch()
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
-          >(() => Promise.reject(MlEphantSetupErrors.ConversationNotFound)),
+          >(() => Promise.reject(ZookeeperSetupErrors.ConversationNotFound)),
         },
       })
       const actor = createActor(machine, {
@@ -433,7 +454,7 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'saved-conversation-id',
       })
@@ -454,7 +475,7 @@ describe('mlEphantManagerMachine', () => {
       expect(reports[0]).toMatchObject({
         code: 'zookeeper_setup_error',
         error_name: 'Error',
-        message: MlEphantSetupErrors.ConversationNotFound,
+        message: ZookeeperSetupErrors.ConversationNotFound,
       })
 
       actor.stop()
@@ -464,10 +485,10 @@ describe('mlEphantManagerMachine', () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       vi.useFakeTimers()
       let setupAttempts = 0
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(() => {
             setupAttempts += 1
@@ -483,7 +504,7 @@ describe('mlEphantManagerMachine', () => {
 
       try {
         actor.send({
-          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
           refParentSend: vi.fn(),
           conversationId: 'conversation-id',
         })
@@ -503,7 +524,7 @@ describe('mlEphantManagerMachine', () => {
             progressEvent += 1
           ) {
             await vi.advanceTimersByTimeAsync(progressInterval)
-            actor.send({ type: MlEphantManagerTransitions.SetupProgress })
+            actor.send({ type: ZookeeperManagerTransitions.SetupProgress })
           }
           await vi.advanceTimersByTimeAsync(
             ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS -
@@ -525,7 +546,7 @@ describe('mlEphantManagerMachine', () => {
     it('recovers if a responsive websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
-      const actor = createActor(mlEphantManagerMachine, {
+      const actor = createActor(zookeeperManagerMachine, {
         input: {
           apiToken: 'token',
         },
@@ -533,7 +554,7 @@ describe('mlEphantManagerMachine', () => {
 
       try {
         actor.send({
-          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
           refParentSend: vi.fn(),
           conversationId: 'conversation-id',
         })
@@ -561,7 +582,7 @@ describe('mlEphantManagerMachine', () => {
           expect(
             actor
               .getSnapshot()
-              .matches(MlEphantManagerStates.WaitForContinueCheck)
+              .matches(ZookeeperManagerStates.WaitForContinueCheck)
           ).toBe(true)
         })
 
@@ -575,7 +596,7 @@ describe('mlEphantManagerMachine', () => {
         expect(
           actor
             .getSnapshot()
-            .matches(MlEphantManagerStates.WaitForContinueCheck)
+            .matches(ZookeeperManagerStates.WaitForContinueCheck)
         ).toBe(true)
 
         socket.receive({ pong: {} })
@@ -632,10 +653,10 @@ describe('mlEphantManagerMachine', () => {
           data: new Blob(['notes']),
         },
       ]
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async () => ({
             ws,
@@ -650,23 +671,23 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerStates.ContinueCheck,
+        type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.Ready)
+        state.matches(ZookeeperManagerStates.Ready)
       )
 
       expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
@@ -696,10 +717,10 @@ describe('mlEphantManagerMachine', () => {
   describe('ConversationClose', () => {
     it('stops setup without retrying when the browser goes offline', async () => {
       let setupAttempts = 0
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(() => {
             setupAttempts += 1
@@ -714,16 +735,16 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.Setup)
+        state.matches(ZookeeperManagerStates.Setup)
       )
 
       actor.send({
-        type: MlEphantManagerTransitions.NetworkOffline,
+        type: ZookeeperManagerTransitions.NetworkOffline,
       })
       await waitFor(actor, (state) => state.matches(S.Await))
 
@@ -740,10 +761,10 @@ describe('mlEphantManagerMachine', () => {
     it('closes a live socket and preserves the conversation when the browser goes offline', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       ws.readyState = WebSocket.OPEN
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async () => ({
             ws,
@@ -759,24 +780,24 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerStates.ContinueCheck,
+        type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles: [],
       })
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.Ready)
+        state.matches(ZookeeperManagerStates.Ready)
       )
 
       actor.send({
-        type: MlEphantManagerTransitions.NetworkOffline,
+        type: ZookeeperManagerTransitions.NetworkOffline,
       })
       await waitFor(actor, (state) => state.matches(S.Await))
 
@@ -796,10 +817,10 @@ describe('mlEphantManagerMachine', () => {
     it('clears conversation state on an intentional close', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       ws.readyState = WebSocket.OPEN
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async () => ({
             ws,
@@ -815,26 +836,26 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerStates.ContinueCheck,
+        type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles: [],
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.Ready)
+        state.matches(ZookeeperManagerStates.Ready)
       )
 
       actor.send({
-        type: MlEphantManagerTransitions.ConversationClose,
+        type: ZookeeperManagerTransitions.ConversationClose,
       })
 
       await waitFor(actor, (state) => state.matches(S.Await))
@@ -851,11 +872,11 @@ describe('mlEphantManagerMachine', () => {
     it('keeps recoverable context after an abrupt close', async () => {
       const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
-      let setupContext: MlEphantManagerContext | undefined
-      const machine = mlEphantManagerMachine.provide({
+      let setupContext: ZookeeperManagerContext | undefined
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async ({ input }) => {
             setupContext = input.context
@@ -874,26 +895,26 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerStates.ContinueCheck,
+        type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles: [],
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.Ready)
+        state.matches(ZookeeperManagerStates.Ready)
       )
 
       actor.send({
-        type: MlEphantManagerTransitions.AbruptClose,
+        type: ZookeeperManagerTransitions.AbruptClose,
       })
 
       await waitFor(actor, (state) => state.matches(S.Await))
@@ -906,13 +927,13 @@ describe('mlEphantManagerMachine', () => {
       expect(fetchMock).not.toHaveBeenCalled()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
@@ -926,10 +947,10 @@ describe('mlEphantManagerMachine', () => {
   describe('client-side actor errors', () => {
     it('reports local actor invocation failures', async () => {
       const { fetchMock, reports } = stubClientErrorFetch()
-      const machine = mlEphantManagerMachine.provide({
+      const machine = zookeeperManagerMachine.provide({
         actors: {
-          [MlEphantManagerStates.Setup]: fromPromise<
-            Partial<MlEphantManagerContext>,
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
             SetupActorInput
           >(async () => ({
             conversation: { exchanges: [] },
@@ -944,16 +965,16 @@ describe('mlEphantManagerMachine', () => {
       }).start()
 
       actor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
       })
 
       await waitFor(actor, (state) =>
-        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
       actor.send({
-        type: MlEphantManagerStates.ContinueCheck,
+        type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',
         projectFiles: [],
       })
@@ -975,7 +996,7 @@ describe('mlEphantManagerMachine', () => {
         throw new Error('Expected client error report stack')
       }
       expect(JSON.parse(report.stack)).toMatchObject({
-        source: 'MlEphantManagerMachine',
+        source: 'ZookeeperManagerMachine',
         conversationId: 'conversation-id',
       })
 
@@ -983,9 +1004,9 @@ describe('mlEphantManagerMachine', () => {
     })
   })
 
-  describe('MlEphantConversationToMarkdown', () => {
+  describe('ZookeeperConversationToMarkdown', () => {
     it('has undefined conversation, return empty string', async () => {
-      const output = MlEphantConversationToMarkdown(undefined)
+      const output = ZookeeperConversationToMarkdown(undefined)
       expect(output.length).toBe(0)
     })
     it('has conversation, return non-empty string', async () => {
@@ -1045,7 +1066,7 @@ describe('mlEphantManagerMachine', () => {
           },
         ],
       }
-      const output = MlEphantConversationToMarkdown(conversation)
+      const output = ZookeeperConversationToMarkdown(conversation)
 
       // All text is valid markdown so checking the validity is no-op.
       // All we can check is _some_ content made it through to the other side,
@@ -1084,7 +1105,7 @@ describe('mlEphantManagerMachine', () => {
           },
         ],
       }
-      const output = MlEphantConversationToMarkdown(conversation)
+      const output = ZookeeperConversationToMarkdown(conversation)
 
       expect(output).toContain('jordan was here')
       expect(output).toContain('interrupted')

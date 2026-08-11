@@ -97,7 +97,7 @@ export function getDefaultDirectoryProjectLibraryPath(
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
 
-function normalizeLibraryPath(path: string) {
+export function normalizeLibraryPath(path: string) {
   return path.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 

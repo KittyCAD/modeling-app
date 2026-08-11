@@ -37,7 +37,9 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
+  clearLegacyConflictCopyReferences,
   clearOutboxEntriesForProject as clearSyncDbOutboxEntriesForProject,
+  clearOutboxEntriesTouchingProject as clearSyncDbOutboxEntriesTouchingProject,
   deleteProjectMetadata,
   getAllOutboxEntries,
   getAllProjectMetadata,
@@ -74,12 +76,12 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   getProjectDirectoryNameFromTitle,
   getUniqueDuplicateProjectName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
-import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
@@ -1060,6 +1062,11 @@ async function clearOutboxEntriesForProject(projectPath: string) {
   await refreshPendingCount()
 }
 
+async function clearOutboxEntriesTouchingProject(projectPath: string) {
+  await clearSyncDbOutboxEntriesTouchingProject(projectPath)
+  await refreshPendingCount()
+}
+
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
@@ -1311,6 +1318,18 @@ type LocalProjectRealizationCandidate = {
   manifest?: ProjectManifest
 }
 
+async function localProjectRealizationCandidate(
+  projectPath: string
+): Promise<LocalProjectRealizationCandidate> {
+  return {
+    projectPath,
+    metadata: await getProjectMetadata(projectPath),
+    manifest: await collectLocalProjectFiles(projectPath)
+      .then(projectManifestFromFiles)
+      .catch(() => undefined),
+  }
+}
+
 async function getLocalProjectRealizationCandidatesByRemoteProjectId(
   projectDirectory: string,
   remoteProjectId: string,
@@ -1322,15 +1341,7 @@ async function getLocalProjectRealizationCandidatesByRemoteProjectId(
     preferredProjectName
   )
 
-  return Promise.all(
-    paths.map(async (projectPath) => ({
-      projectPath,
-      metadata: await getProjectMetadata(projectPath),
-      manifest: await collectLocalProjectFiles(projectPath)
-        .then(projectManifestFromFiles)
-        .catch(() => undefined),
-    }))
-  )
+  return Promise.all(paths.map(localProjectRealizationCandidate))
 }
 
 function canDeleteDuplicateLocalRealization({
@@ -1454,11 +1465,20 @@ export async function deleteCloudSyncLocalProjectRealizations(
       projectDirectory,
       projectId
     )
-  const selectedCandidate = candidates.find(
+  let selectedCandidate = candidates.find(
     (candidate) =>
       normalizePathForSync(candidate.projectPath) ===
       normalizedSelectedProjectPath
   )
+  if (
+    !selectedCandidate &&
+    (await exists(normalizedSelectedProjectPath).catch(() => false))
+  ) {
+    selectedCandidate = await localProjectRealizationCandidate(
+      normalizedSelectedProjectPath
+    )
+    candidates.unshift(selectedCandidate)
+  }
   const selectedManifest = selectedCandidate?.manifest
 
   for (const candidate of candidates) {
@@ -1481,6 +1501,53 @@ export async function deleteCloudSyncLocalProjectRealizations(
     }
 
     await detachLocalProjectRealization(candidate.projectPath)
+  }
+
+  await refreshPendingCount()
+}
+
+export async function deleteCloudSyncDuplicateProjectRealizations({
+  remoteProjectId,
+  canonicalProjectPath,
+  duplicateProjectPaths,
+}: {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  duplicateProjectPaths: readonly string[]
+}) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const normalizedCanonicalProjectPath = canonicalProjectPath
+    ? normalizePathForSync(canonicalProjectPath)
+    : undefined
+  if (!projectId) {
+    return
+  }
+
+  const selectedProjectPaths = Array.from(
+    new Set(duplicateProjectPaths.map(normalizePathForSync).filter(Boolean))
+  )
+
+  for (const projectPath of selectedProjectPaths) {
+    if (projectPath === normalizedCanonicalProjectPath) {
+      continue
+    }
+
+    const metadata = await getProjectMetadata(projectPath)
+    const projectTomlCloudProjectId = await readProjectTomlCloudProjectId(
+      projectPath
+    ).catch(() => undefined)
+    if (
+      metadata?.remoteProjectId !== projectId &&
+      projectTomlCloudProjectId !== projectId
+    ) {
+      continue
+    }
+
+    await deleteLocalProjectRealization(projectPath)
   }
 
   await refreshPendingCount()
@@ -1989,7 +2056,8 @@ async function deleteLegacyConflictCopy(
     return
   }
 
-  await clearOutboxEntriesForProject(conflictProjectPath)
+  await clearOutboxEntriesTouchingProject(conflictProjectPath)
+  await clearLegacyConflictCopyReferences(conflictProjectPath)
   await deleteProjectMetadata(conflictProjectPath)
   if (await exists(conflictProjectPath)) {
     await localFs.rm(conflictProjectPath, { recursive: true })

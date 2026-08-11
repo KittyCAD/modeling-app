@@ -22,6 +22,10 @@ segment from its start point to the intersection with the second segment,
 then turning at each intersection using `direction` until returning to the
 first segment.
 
+For a single closed segment such as a circle, pass only that segment.
+`intersectionIndex` and `direction` are unnecessary for one loop; use them
+to disambiguate a boundary traced from multiple segments.
+
 As a fallback, use the `point` parameter to select the closed boundary that
 contains a given point. When using a 2D point rather than a point from the
 sketch, provide the `sketch` parameter to specify which sketch the region is
@@ -37,8 +41,8 @@ refer to that point to create the region.
 |----------|------|-------------|----------|
 | `point` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | A fallback point that is within the region's boundary. | No |
 | `segments` | [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The first two segments that form the region's boundary. In case of a circle, the one circle segment that forms the region. This is the preferred way to create a region. | No |
-| `intersectionIndex` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is only used when the `segments` argument is provided. | No |
-| `direction` | [`string`](/docs/kcl-std/types/std-types-string) | `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is only used when the `segments` argument is provided. | No |
+| `intersectionIndex` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Index of the intersection of the first segment with the second segment to use as the region's boundary. The default is `-1`, which uses the last intersection. This is usually only needed when two or more `segments` are provided. | No |
+| `direction` | [`string`](/docs/kcl-std/types/std-types-string) | `CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is usually only needed when two or more `segments` are provided. | No |
 | `sketch` | [`any`](/docs/kcl-std/types/std-types-any) | The sketch that the region is from. This is required when point is a [`Point2d`](/docs/kcl-std/types/std-types-Point2d). | No |
 
 ### Returns

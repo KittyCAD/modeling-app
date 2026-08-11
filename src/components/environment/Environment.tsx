@@ -10,7 +10,7 @@ import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 export function EnvironmentChip() {
   const label = getEnvironmentLabel(env().VITE_ZOO_BASE_DOMAIN, [
     new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
-    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL ?? ''),
+    new URL(env().VITE_ZOOKEEPER_WEBSOCKET_URL ?? ''),
   ])
   const textClassName = isNonStandardEnvironment(label, !IS_STAGING_OR_DEBUG)
     ? 'text-destroy-80 dark:text-destroy-20 hover:text-destroy-90 dark:hover:text-destroy-10 focus:text-destroy-90 dark:focus:text-destroy-10'
@@ -101,7 +101,7 @@ export function EnvironmentDescription() {
           </p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
             <span className="flex-1 min-w-0 truncate">
-              {env().VITE_MLEPHANT_WEBSOCKET_URL}
+              {env().VITE_ZOOKEEPER_WEBSOCKET_URL}
             </span>
             <ActionButton
               Element="button"
@@ -112,7 +112,7 @@ export function EnvironmentDescription() {
                     groupId: 'application',
                     name: 'override-zookeeper',
                     argDefaultValues: {
-                      url: env().VITE_MLEPHANT_WEBSOCKET_URL,
+                      url: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
                     },
                   },
                 })
