@@ -1,11 +1,13 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
 import {
   animateArcEndPointListener as animateCenterArcEndPoint,
   type ToolActionArgs as CenterArcToolActionArgs,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
-import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import {
+  createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
+  createSceneGraphDelta,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 import {
   getBestSnappingCandidate,
   updateToolSnappingPreview,
@@ -39,17 +41,11 @@ type ClickCallback = (args: {
 function createListenerSceneInfra() {
   let onMove: MoveCallback | undefined
   let onClick: ClickCallback | undefined
-  const sceneInfra = {
-    setCallbacks: vi.fn(
-      (callbacks: { onMove: MoveCallback; onClick?: ClickCallback }) => {
-        onMove = callbacks.onMove
-        onClick = callbacks.onClick
-      }
-    ),
-    scene: {
-      getObjectByName: vi.fn(() => null),
-    },
-  } as unknown as SceneInfra
+  const sceneInfra = createMockSceneInfra()
+  vi.mocked(sceneInfra.setCallbacks).mockImplementation((callbacks) => {
+    onMove = callbacks.onMove as MoveCallback | undefined
+    onClick = callbacks.onClick as ClickCallback | undefined
+  })
 
   return {
     sceneInfra,
@@ -68,20 +64,16 @@ function createToolSelf() {
 }
 
 function createEditingContext() {
-  const editSegments = vi.fn().mockResolvedValue({
+  const rustContext = createMockRustContext()
+  const editSegments = vi.spyOn(rustContext, 'editSegments').mockResolvedValue({
     kclSource: { text: 'updated' },
     sceneGraphDelta: createSceneGraphDelta([]),
   })
 
   return {
     editSegments,
-    rustContext: {
-      editSegments,
-      settingsActor: {},
-    } as unknown as RustContext,
-    kclManager: {
-      fileSettings: { defaultLengthUnit: 'Mm' },
-    } as unknown as KclManager,
+    rustContext,
+    kclManager: createMockKclManager(),
   }
 }
 
