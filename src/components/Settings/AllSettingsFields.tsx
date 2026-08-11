@@ -4,8 +4,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ProjectTitleSettingsSection } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -28,7 +27,10 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
-import { acceptOnboarding } from '@src/routes/Onboarding/utils'
+import {
+  acceptOnboarding,
+  reportOnboardingStartFailure,
+} from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
@@ -48,19 +50,16 @@ export const AllSettingsFields = forwardRef(
   ) => {
     useSignals()
     const app = useApp()
-    const { settings, layout, systemIOActor, userFeatures } = app
-    const { kclManager } = useSingletons()
+    const { settings, layout, userFeatures } = app
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
     const userFeaturesContext = userFeatures.useContext()
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
-    const executingPath = useAbsoluteFilePath()
     const currentProject =
       app.projectSignal.value?.projectIORefSignal.value ??
       settings.actor.getSnapshot().context.currentProject
-
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
         .replace(PATHS.FILE, '')
@@ -78,16 +77,12 @@ export const AllSettingsFields = forwardRef(
       return projectPath
     }, [location.pathname, isFileSettings])
 
-    async function restartOnboarding() {
-      const props = {
+    function restartOnboarding() {
+      return acceptOnboarding({
+        app,
         onboardingStatus: onboardingStartPath,
         navigate,
-        kclManager,
-        systemIOActor,
-        settingsActor: settings.actor,
-        executingPath,
-      }
-      acceptOnboarding(props)
+      })
     }
 
     return (
@@ -176,7 +171,7 @@ export const AllSettingsFields = forwardRef(
             <ActionButton
               Element="button"
               onClick={() => {
-                restartOnboarding().catch(reportRejection)
+                void restartOnboarding().catch(reportOnboardingStartFailure)
               }}
               iconStart={{
                 icon: 'refresh',

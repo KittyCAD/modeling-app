@@ -248,12 +248,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
+            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
-            systemIOActor,
-            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -271,9 +269,6 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
-    kclManager,
-    systemIOActor,
-    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_revolve.kcl
+---
+// Pins that a solid revolved from a solved-sketch region is engine-addressable
+// by the id hide() sends. The rendered snapshot must show exactly ONE ring:
+// the outer one.
+// The hidden ring's source sketch remains visible as a small square outline:
+// a V2 sketch is a scene object of its own, and hiding the solid does not
+// hide it.
+sketchVisible = sketch(on = XZ) {
+  line1 = line(start = [var 20, var 0], end = [var 23, var 0])
+  line2 = line(start = [var 23, var 0], end = [var 23, var 3])
+  line3 = line(start = [var 23, var 3], end = [var 20, var 3])
+  line4 = line(start = [var 20, var 3], end = [var 20, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+ringVisible = revolve(region(point = [21.5, 1.5], sketch = sketchVisible), axis = Y)
+
+sketchHidden = sketch(on = XZ) {
+  line1 = line(start = [var 5, var 0], end = [var 8, var 0])
+  line2 = line(start = [var 8, var 0], end = [var 8, var 3])
+  line3 = line(start = [var 8, var 3], end = [var 5, var 3])
+  line4 = line(start = [var 5, var 3], end = [var 5, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+ringHidden = revolve(region(point = [6.5, 1.5], sketch = sketchHidden), axis = Y)
+
+hide(ringHidden)
