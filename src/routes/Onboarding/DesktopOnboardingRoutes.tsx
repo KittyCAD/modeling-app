@@ -55,13 +55,13 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
-function useOnboardingProjectName() {
-  return useApp().project?.name
+function useOnboardingProjectIO() {
+  const { project, systemIOActor } = useApp()
+  return { projectName: project?.name, systemIOActor }
 }
 
 function Welcome() {
-  const { systemIOActor } = useApp()
-  const projectName = useOnboardingProjectName()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -104,8 +104,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { systemIOActor } = useApp()
-  const projectName = useOnboardingProjectName()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -247,8 +246,7 @@ function ZookeeperPrompt() {
 }
 
 function FeatureTreePane() {
-  const { systemIOActor } = useApp()
-  const projectName = useOnboardingProjectName()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -385,8 +383,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { systemIOActor } = useApp()
-  const projectName = useOnboardingProjectName()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the zookeeper button if it's present
@@ -506,8 +503,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { systemIOActor } = useApp()
-  const projectName = useOnboardingProjectName()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 

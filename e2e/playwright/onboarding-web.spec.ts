@@ -38,7 +38,7 @@ async function replayOnboardingFromSettings(
 }
 
 test(
-  'Replay onboarding creates a deduplicated Personal Cloud tutorial',
+  'Replay onboarding creates a uniquely named Personal Cloud tutorial',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = []
@@ -85,6 +85,15 @@ test(
 
     await replayOnboardingFromSettings(page, 'tutorial-project')
     await expect.poll(() => apiCalls.creates.length).toBe(1)
+    expect(apiCalls.creates[0]).toContain('tutorial-project')
+    await expect
+      .poll(async () => {
+        const files = await readOpfsTextFiles(page, {
+          main: `${PROJECT_DIR}/tutorial-project/main.kcl`,
+        })
+        return files.main
+      })
+      .toContain('plateLength = 10')
     await page.evaluate(async (mainPath) => {
       await window.fsZds.writeFile(
         mainPath,
@@ -96,6 +105,14 @@ test(
     await replayOnboardingFromSettings(page, 'tutorial-project-1')
     await expect.poll(() => apiCalls.creates.length).toBe(2)
     expect(apiCalls.creates[1]).toContain('tutorial-project-1')
+    await expect
+      .poll(async () => {
+        const files = await readOpfsTextFiles(page, {
+          main: `${PROJECT_DIR}/tutorial-project-1/main.kcl`,
+        })
+        return files.main
+      })
+      .toContain('plateLength = 10')
 
     await page.getByTestId('onboarding-next').click()
     await expect(page).toHaveURL(
@@ -126,6 +143,13 @@ test(
         return files.replayMain
       })
       .toContain('plateLength = 12')
+    await expect
+      .poll(() =>
+        apiCalls.updates.some(
+          ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[1]
+        )
+      )
+      .toBe(true)
 
     const tutorialFiles = await readOpfsTextFiles(page, {
       originalMain: `${PROJECT_DIR}/tutorial-project/main.kcl`,

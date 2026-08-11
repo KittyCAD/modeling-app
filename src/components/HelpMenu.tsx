@@ -4,7 +4,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -12,7 +12,10 @@ import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { acceptOnboarding } from '@src/routes/Onboarding/utils'
+import {
+  acceptOnboarding,
+  reportOnboardingStartFailure,
+} from '@src/routes/Onboarding/utils'
 import { useNavigate } from 'react-router-dom'
 
 const HelpMenuDivider = () => (
@@ -21,22 +24,15 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu() {
   const app = useApp()
-  const { settings, systemIOActor } = app
-  const { kclManager } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
   const replayOnboardingWorkflow = () => {
-    const props = {
+    void acceptOnboarding({
       app,
       onboardingStatus: onboardingStartPath,
       navigate,
-      kclManager,
-      systemIOActor,
-      settingsActor: settings.actor,
-      executingPath: filePath,
-    }
-    acceptOnboarding(props)
+    }).catch(reportOnboardingStartFailure)
   }
 
   const cb = (data: WebContentSendPayload) => {

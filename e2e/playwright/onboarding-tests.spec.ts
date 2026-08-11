@@ -5,7 +5,6 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
     page,
     homePage,
     toolbar,
-    editor,
     tronApp,
   }) => {
     if (!tronApp) throw new Error('tronApp is missing.')
@@ -76,8 +75,8 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       })
     })
 
-    await test.step('Replaying onboarding from settings creates a deduplicated project', async () => {
-      await test.step('Reset onboarding from settings', async () => {
+    await test.step('Replaying onboarding from settings creates a uniquely named project', async () => {
+      await test.step('Replay onboarding from settings', async () => {
         await userMenuButton.click()
         await userMenuSettingsButton.click()
         await expect(settingsHeading).toBeVisible()
@@ -112,7 +111,7 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       })
     })
 
-    await test.step('Replaying onboarding from Help creates another deduplicated project', async () => {
+    await test.step('Replaying onboarding from Help creates another uniquely named project', async () => {
       await helpMenuButton.click()
       await helpMenuRestartOnboardingButton.click()
 

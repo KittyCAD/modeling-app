@@ -140,6 +140,7 @@ export interface ProjectLibraryCreateProjectInput {
   library: ProjectLibrary
   requestedProjectName: string
   requestedProjectTitle: string
+  /** Optional KCL file to write before publishing the new project. */
   initialKclFile?: {
     fileName: string
     code: string
