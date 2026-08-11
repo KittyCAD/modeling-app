@@ -71,6 +71,11 @@ import type {
 
 import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import {
+  getGridScaleFactor,
+  snapPointToGrid,
+} from '@src/clientSideScene/gridUtils'
+import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
+import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
   AXIS_GROUP,
@@ -258,6 +263,8 @@ export class SceneEntities {
 
     this.sketchSolveGroup.setRotationFromQuaternion(quaternion)
     this.sketchSolveGroup.position.copy(new Vector3(...origin))
+
+    this.createSketchAxis(zAxis, yAxis, origin)
   }
 
   onCamChange = async () => {
@@ -384,7 +391,7 @@ export class SceneEntities {
       x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
       y?.scale.set(factor, 1, 1)
-      this.updateInfiniteGrid()
+      this.updateSketchGrid()
     }
     const draftPoint = this.getDraftPoint()
     if (draftPoint) {
@@ -424,6 +431,8 @@ export class SceneEntities {
     up: [number, number, number],
     sketchPosition?: [number, number, number]
   ) {
+    this.removeSketchGrid()
+
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const axisPixelWidth = 1.6
@@ -484,61 +493,67 @@ export class SceneEntities {
     }
     this.sceneInfra.scene.add(this.axisGroup)
 
-    this.updateInfiniteGrid()
+    this.updateSketchGrid()
   }
 
-  private updateInfiniteGrid() {
-    const camera = this.sceneInfra.camControls.camera
-    if (camera instanceof OrthographicCamera) {
-      const settings = this.getSettings?.()
-      if (settings) {
-        const gridRenderer = this.sceneInfra.scene
-          .getObjectByName(AXIS_GROUP)
-          ?.children.find((child) => child instanceof InfiniteGridRenderer)
-        if (gridRenderer) {
-          const majorGridSpacing =
-            settings.modeling.majorGridSpacing.current ?? 1
-          const minorGridsPerMajor =
-            settings.modeling.minorGridsPerMajor.current ?? 4
+  updateSketchGrid() {
+    const gridRenderer = this.axisGroup?.children.find(
+      (child) => child instanceof InfiniteGridRenderer
+    )
+    if (!gridRenderer) return
 
-          const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
-            new Vector2()
-          )
-          // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
-          const isLight =
-            getResolvedTheme(this.sceneInfra.theme) === Themes.Light
-          const majorColor: [number, number, number, number] = isLight
-            ? [0.3, 0.3, 0.3, 1.0]
-            : [0.7, 0.7, 0.7, 1.0]
-          const minorColor: [number, number, number, number] = isLight
-            ? [0.2, 0.2, 0.2, 1.0]
-            : [0.9, 0.9, 0.9, 1.0]
-
-          const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
-          const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
-          const gridScaleFactor = getGridScaleFactor({
-            majorGridSpacing,
-            pixelsPerBaseUnit,
-            fixedSizeGrid,
-          })
-          gridRenderer.update(
-            camera,
-            [viewportSize.x, viewportSize.y],
-            pixelsPerBaseUnit,
-            gridScaleFactor,
-            {
-              majorGridSpacing,
-              minorGridsPerMajor,
-              majorColor,
-              minorColor,
-              fixedSizeGrid,
-            }
-          )
-        }
-      } else {
-        console.error('Settings not available for grid update')
-      }
+    const settings = this.getSettings?.()
+    if (!settings) {
+      gridRenderer.visible = false
+      console.error('Settings not available for grid update')
+      return
     }
+    if (!settings.modeling.showSketchGrid.current) {
+      gridRenderer.visible = false
+      return
+    }
+
+    const camera = this.sceneInfra.camControls.camera
+    if (!(camera instanceof OrthographicCamera)) {
+      gridRenderer.visible = false
+      return
+    }
+
+    const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
+    const minorGridsPerMajor = settings.modeling.minorGridsPerMajor.current ?? 4
+
+    const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+      new Vector2()
+    )
+    // Choose grid colors based on app theme: dark = existing colors, light = subtle gray
+    const isLight = getResolvedTheme(this.sceneInfra.theme) === Themes.Light
+    const majorColor: [number, number, number, number] = isLight
+      ? [0.3, 0.3, 0.3, 1.0]
+      : [0.7, 0.7, 0.7, 1.0]
+    const minorColor: [number, number, number, number] = isLight
+      ? [0.2, 0.2, 0.2, 1.0]
+      : [0.9, 0.9, 0.9, 1.0]
+
+    const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
+    const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+    const gridScaleFactor = getGridScaleFactor({
+      majorGridSpacing,
+      pixelsPerBaseUnit,
+      fixedSizeGrid,
+    })
+    gridRenderer.update(
+      camera,
+      [viewportSize.x, viewportSize.y],
+      pixelsPerBaseUnit,
+      gridScaleFactor,
+      {
+        majorGridSpacing,
+        minorGridsPerMajor,
+        majorColor,
+        minorColor,
+        fixedSizeGrid,
+      }
+    )
   }
 
   getDraftPoint() {
@@ -612,32 +627,24 @@ export class SceneEntities {
       return { point, snapped: false }
     }
 
-    const minorsPerMajor = settings.modeling.minorGridsPerMajor.current
-    const snapsPerMinor = settings.modeling.snapsPerMinor.current
-
-    let gridScaleFactor = 1
+    let pixelsPerBaseUnit = 1
+    let fixedSizeGrid = true
     if (this.sceneInfra.camControls.camera instanceof OrthographicCamera) {
-      const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(
+      pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(
         this.sceneInfra.camControls.camera
       )
-      const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
-      gridScaleFactor = getGridScaleFactor({
-        majorGridSpacing: settings.modeling.majorGridSpacing.current,
-        pixelsPerBaseUnit,
-        fixedSizeGrid,
-      })
+      fixedSizeGrid = settings.modeling.fixedSizeGrid.current
     } else {
       console.error("Camera is not orthographic, can't snap to grid")
     }
 
-    const multiplier = (minorsPerMajor * snapsPerMinor) / gridScaleFactor
-    return {
-      point: [
-        Math.round(point[0] * multiplier) / multiplier,
-        Math.round(point[1] * multiplier) / multiplier,
-      ],
-      snapped: true,
-    }
+    return snapPointToGrid(point, {
+      majorGridSpacing: settings.modeling.majorGridSpacing.current,
+      minorGridsPerMajor: settings.modeling.minorGridsPerMajor.current,
+      snapsPerMinor: settings.modeling.snapsPerMinor.current,
+      pixelsPerBaseUnit,
+      fixedSizeGrid,
+    })
   }
 
   setupNoPointsListener({
@@ -3749,7 +3756,10 @@ export class SceneEntities {
   }
 
   removeSketchGrid() {
-    if (this.axisGroup) this.sceneInfra.scene.remove(this.axisGroup)
+    if (!this.axisGroup) return
+    this.sceneInfra.scene.remove(this.axisGroup)
+    disposeGroupChildren(this.axisGroup)
+    this.axisGroup = null
   }
 
   tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
@@ -3760,8 +3770,7 @@ export class SceneEntities {
 
     // Remove all sketch tools
 
-    if (this.axisGroup && removeAxis)
-      this.sceneInfra.scene.remove(this.axisGroup)
+    if (removeAxis) this.removeSketchGrid()
     const sketchSegments = this.sceneInfra.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
@@ -4394,34 +4403,6 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
-}
-
-// returns the factor by which to multiply the grid depending on zoom level in non-fixed size mode
-function getGridScaleFactor(options: {
-  majorGridSpacing: number
-  pixelsPerBaseUnit: number
-  fixedSizeGrid: boolean
-}) {
-  let effectiveMajorSpacing = options.majorGridSpacing
-  let gridScaleFactor = 1
-  if (!options.fixedSizeGrid) {
-    // In non-fixed size mode, adjust major spacing based on current zoom level
-    let majorPx = effectiveMajorSpacing * options.pixelsPerBaseUnit
-    if (majorPx <= 0) {
-      return 1 // just in case to avoid division by zero or negative grid spacing
-    }
-
-    const minPx = 40
-    const maxPx = minPx * 10
-
-    // Multiply / divide by 10 until majorPx falls within [minPx, maxPx]
-    if (majorPx < minPx) {
-      gridScaleFactor = 10 ** Math.ceil(Math.log10(minPx / majorPx))
-    } else if (majorPx > maxPx) {
-      gridScaleFactor = 1 / 10 ** Math.ceil(Math.log10(majorPx / maxPx))
-    }
-  }
-  return gridScaleFactor
 }
 
 // Returns the 2D tangent direction vector at the end of the segmentGroup

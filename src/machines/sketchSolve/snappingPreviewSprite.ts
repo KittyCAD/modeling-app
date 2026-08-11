@@ -1,5 +1,5 @@
 import type { Group } from 'three'
-import { Sprite, Vector2, Vector3 } from 'three'
+import { Sprite, SpriteMaterial, Vector2, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
@@ -22,6 +22,7 @@ import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   type SnapTarget,
   type SnappingCandidate,
+  GRID_TARGET,
   X_AXIS_TARGET,
   Y_AXIS_TARGET,
 } from '@src/machines/sketchSolve/snapping'
@@ -30,6 +31,10 @@ export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_LINE =
   'sketch-solve-snapping-preview-line'
+export const SKETCH_SOLVE_GRID_SNAPPING_PREVIEW_SPRITE =
+  'sketch-solve-grid-snapping-preview-sprite'
+
+const GRID_SNAPPING_PREVIEW_SIZE_PX = 7
 
 // Updates the badge icon during dragging a point / drawing new lines,
 // when the dragged point is about to create a constraint on click.
@@ -48,6 +53,7 @@ export function updateSnappingPreviewSprite({
     getResolvedTheme(sceneInfra.theme),
     getBadgeTypeForSnappingTarget(snappingCandidate?.target)
   )
+  const gridSprite = getGridSnappingPreviewSprite(sketchSolveGroup)
   const scale = sceneInfra.getClientSceneScaleFactor(sketchSolveGroup)
   const previewLine = getSnappingPreviewLine(sketchSolveGroup)
   const axisSnapTarget = isAxisSnapTarget(snappingCandidate?.target)
@@ -68,9 +74,23 @@ export function updateSnappingPreviewSprite({
 
   if (!snappingCandidate) {
     sprite.visible = false
+    gridSprite.visible = false
     return
   }
 
+  if (snappingCandidate.target.type === GRID_TARGET) {
+    sprite.visible = false
+    gridSprite.position.set(
+      snappingCandidate.position[0],
+      snappingCandidate.position[1],
+      0
+    )
+    gridSprite.scale.setScalar(GRID_SNAPPING_PREVIEW_SIZE_PX * scale)
+    gridSprite.visible = true
+    return
+  }
+
+  gridSprite.visible = false
   sprite.position.set(
     snappingCandidate.position[0] - 25 * scale,
     snappingCandidate.position[1] + 25 * scale,
@@ -78,6 +98,32 @@ export function updateSnappingPreviewSprite({
   )
   sprite.scale.setScalar(CONSTRAINT_BADGE_SIZE_PX * scale)
   sprite.visible = true
+}
+
+function getGridSnappingPreviewSprite(sketchSolveGroup: Group): Sprite {
+  const existingObject = sketchSolveGroup.getObjectByName(
+    SKETCH_SOLVE_GRID_SNAPPING_PREVIEW_SPRITE
+  )
+  if (existingObject instanceof Sprite) {
+    return existingObject
+  }
+
+  // A small diamond marks grid quantization without suggesting that clicking
+  // will create a solver constraint.
+  const sprite = new Sprite(
+    new SpriteMaterial({
+      color: SKETCH_SELECTION_COLOR,
+      depthTest: false,
+      depthWrite: false,
+    })
+  )
+  sprite.material.rotation = Math.PI / 4
+  sprite.name = SKETCH_SOLVE_GRID_SNAPPING_PREVIEW_SPRITE
+  sprite.renderOrder = RENDER_ORDER.INVISIBLE_CONSTRAINT
+  sprite.layers.set(SKETCH_LAYER)
+  sprite.visible = false
+  sketchSolveGroup.add(sprite)
+  return sprite
 }
 
 function getSnappingPreviewSprite(

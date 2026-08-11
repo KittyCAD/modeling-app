@@ -619,6 +619,129 @@ describe('centerArcToolImpl', () => {
       }
     )
 
+    it('checkpoints the final edit directly when endpoints only snap to the grid', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      const editResult = {
+        kclSource: { text: 'grid-snapped-edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
+            currentArc,
+          ],
+          [4]
+        ),
+        checkpointId: 42,
+      }
+      editSegmentsSpy.mockResolvedValue(editResult)
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'grid' },
+          endSnapTarget: { type: 'grid' },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(editSegmentsSpy.mock.calls[0]?.[4]).toBe(true)
+      expect(addConstraintSpy).not.toHaveBeenCalled()
+      expect(result).toEqual(editResult)
+    })
+
+    it('queues only constraint-bearing targets after a grid-snapped endpoint', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      editSegmentsSpy.mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
+            currentArc,
+          ],
+          [4]
+        ),
+      })
+      addConstraintSpy.mockResolvedValue({
+        kclSource: { text: 'point-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [20]),
+      })
+
+      await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'grid' },
+          endSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(editSegmentsSpy.mock.calls[0]?.[4]).toBe(false)
+      expect(addConstraintSpy).toHaveBeenCalledTimes(1)
+      expect(addConstraintSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [3, 99],
+        },
+        expect.anything(),
+        true
+      )
+    })
+
     it('adds coincident constraints to the fixed and clicked endpoints when finalizing a swapped arc', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()

@@ -794,6 +794,89 @@ describe('project system', () => {
     }
   })
 
+  it('refreshes sketch grids without clearing the scene', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await waitForSettingsIdle(app)
+      await app.openProject(mockProject)
+
+      const updateSketchGrid = vi.spyOn(
+        kclManager.sceneEntitiesManager,
+        'updateSketchGrid'
+      )
+      const clearSceneAndBustCache = vi.spyOn(
+        kclManager.rustContext,
+        'clearSceneAndBustCache'
+      )
+      const executeCode = vi
+        .spyOn(kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: false,
+      } as typeof engineCommandManager.connection
+
+      const setGridSetting = async (
+        setting:
+          | 'showSketchGrid'
+          | 'fixedSizeGrid'
+          | 'majorGridSpacing'
+          | 'minorGridsPerMajor',
+        value: boolean | number
+      ) => {
+        app.settings.actor.send({
+          type: `set.modeling.${setting}`,
+          data: { level: 'user', value },
+          doNotPersist: true,
+        } as never)
+        await waitForSettingsIdle(app)
+      }
+
+      const modeling = app.settings.get().modeling
+      expect(modeling.showSketchGrid.default).toBe(false)
+      expect(modeling.showSketchGrid.current).toBe(false)
+      await setGridSetting('showSketchGrid', !modeling.showSketchGrid.current)
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting('fixedSizeGrid', !modeling.fixedSizeGrid.current)
+      await vi.waitFor(() => {
+        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+        expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+        expect(executeCode).toHaveBeenCalledTimes(1)
+      })
+
+      updateSketchGrid.mockClear()
+      clearSceneAndBustCache.mockClear()
+      executeCode.mockClear()
+
+      await setGridSetting(
+        'majorGridSpacing',
+        modeling.majorGridSpacing.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+
+      updateSketchGrid.mockClear()
+      await setGridSetting(
+        'minorGridsPerMajor',
+        modeling.minorGridsPerMajor.current + 1
+      )
+      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
+    }
+  })
+
   it('can open, close project', async () => {
     // Stub out File read and write implementations
     File.ioImplementations.read = () => Promise.resolve('')

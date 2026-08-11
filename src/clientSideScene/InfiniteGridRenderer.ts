@@ -206,7 +206,7 @@ export class InfiniteGridRenderer extends LineSegments<
       effectiveMajorSpacing * baseUnitToNDC[1],
     ]
 
-    const originNDC = new Vector3(0, 0, 0)
+    const originNDC = this.getWorldPosition(new Vector3())
     originNDC.project(camera)
     const gridLineNDC = [originNDC.x, originNDC.y]
     // Find the number of major grid lines (=gaps) to the left from this grid line
