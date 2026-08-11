@@ -9,7 +9,10 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import type { FileEntry } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
+import {
+  attachKclLspToCodeMirror,
+  getKclLspDocumentPath,
+} from '@src/lang/lsp/codeMirror'
 import type { LspService } from '@src/lang/lsp/registry/contract'
 import type { KclLspEditor } from '@src/lang/lsp/types'
 import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
@@ -32,6 +35,17 @@ type ProjectSnapshot = {
   file: FileEntry | null
 }
 
+/**
+ * What the live CodeMirror attachment was built for, so we can tell a redundant
+ * re-attach from one that would actually change something.
+ */
+type CodeMirrorAttachment = {
+  dispose: () => void
+  editor: KclLspEditor
+  client: LanguageServerClient
+  documentPath: string
+}
+
 type FileSnapshot = {
   filePath: string | null
   projectPath: string | null
@@ -49,7 +63,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
   let authSubscription: Subscription | undefined
   let kclManager: KclLspEditor | null = null
   let runtime: LspRuntime | null = null
-  let disposeCodeMirrorAttachment: (() => void) | undefined
+  let codeMirrorAttachment: CodeMirrorAttachment | undefined
   let currentProjectSnapshot: ProjectSnapshot | null = null
   let currentFileSnapshot: FileSnapshot | null = null
 
@@ -93,14 +107,14 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
     },
     onFileOpen: (filePath, projectPath) => {
       currentFileSnapshot = { filePath, projectPath }
-      const documentUri = filePathToUri(filePath || PROJECT_ENTRYPOINT)
+      const path = filePath || PROJECT_ENTRYPOINT
       forEachClient((client) => {
         client.textDocumentDidOpen({
           textDocument: {
-            uri: documentUri,
+            uri: filePathToUri(path),
             languageId: 'kcl',
             version: 1,
-            text: '',
+            text: documentTextFor(path),
           },
         })
       })
@@ -247,16 +261,32 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       return
     }
 
+    // The attachment wires one editor to one client for one document, so it only
+    // has to be rebuilt when one of those three changes — a swapped-in editor, a
+    // language server runtime restarted underneath us, or a file switch.
+    // Rebuilding it otherwise costs the editor a visible flash of unhighlighted
+    // code.
+    const documentPath = getKclLspDocumentPath(kclManager)
+    if (
+      codeMirrorAttachment?.editor === kclManager &&
+      codeMirrorAttachment.client === runtime.client &&
+      codeMirrorAttachment.documentPath === documentPath
+    ) {
+      return
+    }
+
     detachCodeMirror()
-    disposeCodeMirrorAttachment = attachKclLspToCodeMirror(
-      kclManager,
-      runtime.client
-    )
+    codeMirrorAttachment = {
+      dispose: attachKclLspToCodeMirror(kclManager, runtime.client),
+      editor: kclManager,
+      client: runtime.client,
+      documentPath,
+    }
   }
 
   function detachCodeMirror() {
-    disposeCodeMirrorAttachment?.()
-    disposeCodeMirrorAttachment = undefined
+    codeMirrorAttachment?.dispose()
+    codeMirrorAttachment = undefined
   }
 
   function replayCurrentProjectState() {
@@ -294,17 +324,31 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       return
     }
 
-    const documentUri = filePathToUri(file.path || PROJECT_ENTRYPOINT)
+    const path = file.path || PROJECT_ENTRYPOINT
     forEachClient((client) => {
       client.textDocumentDidOpen({
         textDocument: {
-          uri: documentUri,
+          uri: filePathToUri(path),
           languageId: 'kcl',
           version: 1,
-          text: '',
+          text: documentTextFor(path),
         },
       })
     })
+  }
+
+  /**
+   * The text to announce a document with. `didOpen` is a full-text sync on the
+   * server, so announcing a document the editor already holds as empty wipes the
+   * server's copy of it: diagnostics, folding ranges and semantic tokens all
+   * come back describing an empty file until something re-sends the real text.
+   */
+  function documentTextFor(path: string) {
+    if (!kclManager || getKclLspDocumentPath(kclManager) !== path) {
+      return ''
+    }
+
+    return kclManager.editorView.state.doc.toString()
   }
 
   function forEachClient(callback: (client: LanguageServerClient) => void) {
