@@ -1013,7 +1013,9 @@ impl Backend {
         // so that pure formatting differences don't count as a rename.
         let baseline = ast.recast_top(&Default::default(), 0);
         // Now let's perform the rename on the ast.
-        ast.rename_symbol(new_name, pos);
+        if let Err(message) = ast.rename_symbol(new_name, pos) {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(message));
+        }
         // Now recast it.
         let recast = ast.recast_top(&Default::default(), 0);
         if recast == baseline {

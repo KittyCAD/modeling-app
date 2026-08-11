@@ -39,13 +39,14 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
     if new_name != *name {
         let mut prog = prog.clone();
         let baseline = prog.recast_top(&Default::default(), 0);
-        prog.rename_symbol(&new_name, ident.start);
+        let renamed = prog.rename_symbol(&new_name, ident.start).is_ok();
         let recast = prog.recast_top(&Default::default(), 0);
 
-        // Only offer a fix if renaming actually changed something; some positions (e.g. a
-        // function-local declaration) aren't supported rename targets, and an unchanged
-        // suggestion would be misleading.
-        let suggestion = (recast != baseline).then(|| Suggestion {
+        // Only offer a fix if renaming was allowed (e.g. the camelCase name may already be
+        // taken) and actually changed something; some positions (e.g. a function-local
+        // declaration) aren't supported rename targets, and an unchanged suggestion would be
+        // misleading.
+        let suggestion = (renamed && recast != baseline).then(|| Suggestion {
             title: format!("rename '{name}' to '{new_name}'"),
             insert: recast,
             source_range: prog.as_source_range(),
@@ -467,6 +468,29 @@ y = outer()
             "applied suggestion should match expected"
         );
         crate::execution::parse_execute(&applied).await.unwrap();
+    }
+
+    /// When the camelCase name is already taken, the rename is refused and the finding is
+    /// reported without a suggestion, since applying it would change what references to the
+    /// existing binding resolve to.
+    #[tokio::test]
+    async fn z0001_no_suggestion_when_camel_case_name_taken() {
+        let kcl = r#"
+FOO_BAR = 1
+fooBar = 2
+x = FOO_BAR + fooBar
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let lints = prog.lint(lint_variables).unwrap();
+        let finding = lints.iter().find(|d| d.description == "found 'FOO_BAR'");
+        let Some(discovered) = finding else {
+            panic!("Expected a Z0001 finding for FOO_BAR; lints: {lints:?}")
+        };
+        assert!(
+            discovered.suggestion.is_none(),
+            "renaming FOO_BAR to fooBar collides with the existing fooBar, so no suggestion should be offered; got {:?}",
+            discovered.suggestion
+        );
     }
 
     /// A snake_case declaration local to a function isn't a supported rename target, so the

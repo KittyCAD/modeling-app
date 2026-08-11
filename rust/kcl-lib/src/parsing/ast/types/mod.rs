@@ -825,7 +825,21 @@ impl Program {
     }
 
     /// Rename the variable declaration at the given position.
-    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) {
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Result<(), String> {
+        // The new name must be usable as a binding name, and must not collide with a binding
+        // in the target's own scope (checked per target below). No capture analysis is done
+        // across scopes: renaming can still change what a reference resolves to when the new
+        // name shadows or is shadowed by a binding in a nested or enclosing scope (e.g.
+        // renaming a global to the name of some function's local leaves references inside
+        // that function resolving to the local). Detecting that would require resolving every
+        // reference in every scope between the renamed binding and its uses.
+        //
+        // On error, the program may be left partially renamed; callers reparse or clone, so a
+        // failed rename's program must be discarded.
+        if !is_valid_binding_name(new_name) {
+            return Err(format!("`{new_name}` is not a valid name"));
+        }
+
         // The position must be within the variable declaration.
         let mut old_name = None;
         for (index, item) in self.body.iter_mut().enumerate() {
@@ -850,6 +864,23 @@ impl Program {
         }
 
         if let Some((old_name, is_module, decl_index)) = old_name {
+            if old_name != new_name {
+                // A same-scope collision would change what other references resolve to. The
+                // module and value namespaces are separate, so each kind only collides with
+                // its own. The renamed item itself is excluded: it now binds the new name.
+                let collides = self.body.iter().enumerate().any(|(index, item)| {
+                    index != decl_index
+                        && if is_module {
+                            matches!(item, BodyItem::ImportStatement(import)
+                                if import.module_name().as_deref() == Some(new_name))
+                        } else {
+                            body_item_binds_name(item, new_name)
+                        }
+                });
+                if collides {
+                    return Err(format!("the name `{new_name}` is already in use in this scope"));
+                }
+            }
             // Rename references, starting at the declaration: the executor binds sequentially,
             // so references before it resolve to something else (e.g. a same-named standard
             // library function). The executor resolves a bare name to the value namespace
@@ -863,19 +894,19 @@ impl Program {
                 // heads everywhere after the import.
                 rename_module_refs_in_body(&mut self.body[decl_index..], &old_name, new_name);
             }
-            return;
+            return Ok(());
         }
 
         // It might be a declaration inside a sketch block, or a reference to one.
-        if self.rename_sketch_block_symbol(new_name, pos) {
-            return;
+        if self.rename_sketch_block_symbol(new_name, pos)? {
+            return Ok(());
         }
 
         // Okay so this was not a top level variable declaration.
         // But it might be a variable declaration inside a function or function params.
         // So we need to check that.
         let Some(ref mut item) = self.get_mut_body_item_for_position(pos) else {
-            return;
+            return Ok(());
         };
 
         // Recurse over the item.
@@ -890,19 +921,35 @@ impl Program {
         // Check if we have a function expression.
         if let Some(Expr::FunctionExpression(function_expression)) = &mut value {
             // Check if the params to the function expression contain the position.
-            for param in &mut function_expression.params {
-                let param_source_range: SourceRange = (&param.identifier).into();
-                if param_source_range.contains(pos) {
-                    let old_name = std::mem::replace(&mut param.identifier.name, new_name.to_owned());
-                    // Now rename all the identifiers in the function's body.
-                    function_expression.body.rename_identifiers(&old_name, new_name);
-                    return;
+            let target_index = function_expression
+                .params
+                .iter()
+                .position(|param| SourceRange::from(&param.identifier).contains(pos));
+            if let Some(target_index) = target_index {
+                // The parameter's scope is the other parameters plus the function body.
+                if function_expression.params[target_index].identifier.name != new_name
+                    && (function_expression
+                        .params
+                        .iter()
+                        .enumerate()
+                        .any(|(index, param)| index != target_index && param.identifier.name == new_name)
+                        || function_expression
+                            .body
+                            .body
+                            .iter()
+                            .any(|item| body_item_binds_name(item, new_name)))
+                {
+                    return Err(format!("the name `{new_name}` is already in use in this scope"));
                 }
+                let param = &mut function_expression.params[target_index];
+                let old_name = std::mem::replace(&mut param.identifier.name, new_name.to_owned());
+                // Now rename all the identifiers in the function's body.
+                function_expression.body.rename_identifiers(&old_name, new_name);
             }
         }
+        Ok(())
     }
 
-    /// Rename all identifiers that have the old name to the new given name.
     /// Rename all identifiers that have the old name to the new given name. Returns whether
     /// the body rebinds the old name in the current environment; if-expression branches
     /// execute in the current environment, so this propagates to the enclosing walk.
@@ -917,12 +964,16 @@ impl Program {
     /// member references on the sketch variable, and `.tags` member references on regions
     /// derived from the sketch, all within the scope where the sketch variable is declared.
     /// Returns false if `pos` doesn't resolve to a sketch block symbol.
-    fn rename_sketch_block_symbol(&mut self, new_name: &str, pos: usize) -> bool {
+    fn rename_sketch_block_symbol(&mut self, new_name: &str, pos: usize) -> Result<bool, String> {
         let mut candidates = self.sketch_symbol_candidates_at_pos(pos);
         if candidates.is_empty() {
-            return false;
+            return Ok(false);
         }
-        rename_sketch_symbol_in_body(&mut self.body, &mut candidates, new_name, pos, false)
+        let handled = rename_sketch_symbol_in_body(&mut self.body, &mut candidates, new_name, pos, false);
+        if let Some(error) = candidates.error.take() {
+            return Err(error);
+        }
+        Ok(handled)
     }
 
     /// Find what `pos` is on, as candidates for resolving a sketch block symbol: the
@@ -1005,6 +1056,7 @@ impl Program {
             tags_member: tags_member_at_pos.into_inner(),
             region: None,
             std_region_shadowed: false,
+            error: None,
         }
     }
 
@@ -1401,6 +1453,17 @@ fn rename_module_refs_binary_part(part: &mut BinaryPart, old_name: &str, new_nam
     }
 }
 
+/// Whether the string is usable as a binding name: it lexes as exactly one identifier token
+/// covering the whole string (which excludes keywords, literals, operators, and anything with
+/// whitespace or punctuation).
+fn is_valid_binding_name(name: &str) -> bool {
+    let Ok(tokens) = crate::parsing::token::lex(name, ModuleId::default()) else {
+        return false;
+    };
+    let tokens = tokens.as_slice();
+    tokens.len() == 1 && tokens[0].token_type == crate::parsing::token::TokenType::Word && tokens[0].value == name
+}
+
 /// Whether the block's body directly declares a variable with the given name.
 fn block_declares_name(block: &Block, name: &str) -> bool {
     block
@@ -1547,6 +1610,9 @@ struct SketchSymbolCandidates {
     /// function, so no provenance is inferred from them. Maintained with save/restore as the
     /// resolution enters and leaves scopes.
     std_region_shadowed: bool,
+    /// Set when the rename resolved to a target but was refused (e.g. the new name collides
+    /// in the target's scope); reported to the caller as an error.
+    error: Option<String>,
 }
 
 impl SketchSymbolCandidates {
@@ -1702,6 +1768,16 @@ fn rename_sketch_symbol_in_body(
     let Some((sketch_name, old_name)) = target else {
         return false;
     };
+
+    // The new name must not collide with a binding in the block, the target's own scope.
+    if old_name != new_name
+        && sketch_blocks_in_body(body).any(|(name, block)| {
+            name == sketch_name && block.items.iter().any(|item| body_item_binds_name(item, new_name))
+        })
+    {
+        candidates.error = Some(format!("the name `{new_name}` is already in use in this sketch"));
+        return true;
+    }
 
     // Rename the declaration and the uses inside the block after it; the executor evaluates
     // block items in order, so references before the declaration resolve to an outer binding.
@@ -6434,7 +6510,7 @@ byField = obj.key + key
         let mut program = parse(code);
         let pos = code.find("key").unwrap() + 1;
 
-        program.rename_symbol("idx", pos);
+        program.rename_symbol("idx", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6466,7 +6542,9 @@ angle = atan(rise / run)"#;
         assert_eq!(lit.raw, "8");
 
         // Rename it.
-        program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
+        program
+            .rename_symbol("yoyo", var_decl.as_source_range().start() + 1)
+            .unwrap();
 
         // Recast the program to a string.
         let formatted = program.recast_top(&Default::default(), 0);
@@ -6502,7 +6580,7 @@ foo()
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("BETTER", pos);
+        program.rename_symbol("BETTER", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6547,7 +6625,7 @@ fn foo() {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("BETTER", pos);
+        program.rename_symbol("BETTER", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6584,7 +6662,7 @@ after = foo
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6619,7 +6697,7 @@ fn demo(a) {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("foo_initial", pos);
+        program.rename_symbol("foo_initial", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6679,7 +6757,7 @@ total = accum(3)
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("addUp", pos);
+        program.rename_symbol("addUp", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6709,7 +6787,7 @@ fn helper() {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6735,7 +6813,7 @@ x = foo
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6762,7 +6840,7 @@ blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
         let mut program = parse(code);
         let pos = code.find("edge1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6792,7 +6870,7 @@ r = region(segments = [s.line1, s.line2])
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("line1Prime", pos);
+        program.rename_symbol("line1Prime", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6820,7 +6898,7 @@ result = line1
         let mut program = parse(code);
         let pos = code.rfind("line1 = 99").unwrap() + 1;
 
-        program.rename_symbol("topLine", pos);
+        program.rename_symbol("topLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6850,7 +6928,7 @@ result = line1
         let mut program = parse(code);
         let pos = code.find("line1 = line").unwrap() + 1;
 
-        program.rename_symbol("sketchLine", pos);
+        program.rename_symbol("sketchLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6913,7 +6991,7 @@ extrude(r, length = 5)
             code.find("s.line1").unwrap() + "s.".len() + 1,
         ] {
             let mut program = parse(code);
-            program.rename_symbol("line1Prime", pos);
+            program.rename_symbol("line1Prime", pos).unwrap();
 
             let formatted = program.recast_top(&Default::default(), 0);
             assert_eq!(formatted, expected);
@@ -6946,7 +7024,7 @@ d = rOther.tags.line1
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("coolLine", pos);
+        program.rename_symbol("coolLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6986,7 +7064,7 @@ result = line1
         let mut program = parse(code);
         let pos = code.find("line1 = 99").unwrap() + 1;
 
-        program.rename_symbol("topLine", pos);
+        program.rename_symbol("topLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7018,7 +7096,7 @@ part = makePart()
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("innerLine", pos);
+        program.rename_symbol("innerLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7057,7 +7135,7 @@ top = s.line1
         let mut program = parse(code);
         let pos = code.find("line1 = line(start = [var 5").unwrap() + 1;
 
-        program.rename_symbol("localLine", pos);
+        program.rename_symbol("localLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7100,7 +7178,7 @@ top = s.line1
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7135,7 +7213,7 @@ top = s.edgeOne
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("seg1", pos);
+        program.rename_symbol("seg1", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7166,7 +7244,7 @@ top = s.edgeOne
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7200,7 +7278,7 @@ top = s.edgeOne
         let mut program = parse(code);
         let pos = code.find("fn(line1").unwrap() + "fn(".len() + 1;
 
-        program.rename_symbol("newName", pos);
+        program.rename_symbol("newName", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7225,7 +7303,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7261,7 +7339,7 @@ b = s2.line1
         let mut program = parse(code);
         let pos = code.find("s2.line1").unwrap() + "s2.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7293,7 +7371,7 @@ s2 = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7317,7 +7395,7 @@ x = bar
         let mut program = parse(code);
         let pos = code.find("bar").unwrap() + 1;
 
-        program.rename_symbol("baz", pos);
+        program.rename_symbol("baz", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7346,7 +7424,7 @@ x = baz
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("newLen", pos);
+        program.rename_symbol("newLen", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7372,7 +7450,7 @@ x = bar
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("baz", pos);
+        program.rename_symbol("baz", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7394,7 +7472,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7429,7 +7507,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7461,7 +7539,7 @@ result = foo(1)
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("baz", pos);
+        program.rename_symbol("baz", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7490,7 +7568,7 @@ fn f(s) {
         let mut program = parse(code);
         let pos = code.find("s.line1").unwrap() + "s.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7512,7 +7590,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("s.line1").unwrap() + "s.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7538,7 +7616,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("line1 = line(start = [var 5").unwrap() + 1;
 
-        program.rename_symbol("localLine", pos);
+        program.rename_symbol("localLine", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7581,7 +7659,7 @@ b = r.tags.circle1
         // not derived from s1.
         let mut program = parse(code);
         let pos = code.find("circle1").unwrap() + 1;
-        program.rename_symbol("loop1", pos);
+        program.rename_symbol("loop1", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
             formatted,
@@ -7601,7 +7679,7 @@ b = r.tags.circle1
         // Renaming s2's segment updates r's tags, since r derives from s2.
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
             formatted,
@@ -7629,7 +7707,7 @@ y = alias::helper(alias::item)
         let mut program = parse(code);
         let pos = code.find("alias").unwrap() + 1;
 
-        program.rename_symbol("mod2", pos);
+        program.rename_symbol("mod2", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7654,7 +7732,7 @@ x = alias::item + item
         let mut program = parse(code);
         let pos = code.find("item = 1").unwrap() + 1;
 
-        program.rename_symbol("count", pos);
+        program.rename_symbol("count", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7682,7 +7760,7 @@ x = r.tags.line1
         let mut program = parse(code);
         let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7714,7 +7792,7 @@ fn f() {
         let mut program = parse(code);
         let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7745,7 +7823,7 @@ x = r.tags.line1
         let mut program = parse(code);
         let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7769,7 +7847,7 @@ result = foo
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7803,7 +7881,7 @@ result = foo
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7832,7 +7910,7 @@ x = foo + foo::item
         let mut program = parse(code);
         let pos = code.find("foo = 1").unwrap() + 1;
 
-        program.rename_symbol("bar", pos);
+        program.rename_symbol("bar", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7861,7 +7939,7 @@ b = foo + foo::item
         let mut program = parse(code);
         let pos = code.find("foo").unwrap() + 1;
 
-        program.rename_symbol("m2", pos);
+        program.rename_symbol("m2", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -7897,7 +7975,7 @@ b = r.tags.line1
         // Renaming s1's point segment updates r's tags: r derives from s1.
         let mut program = parse(code);
         let pos = code.find("point1").unwrap() + 1;
-        program.rename_symbol("anchor", pos);
+        program.rename_symbol("anchor", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
             formatted,
@@ -7918,7 +7996,7 @@ b = r.tags.line1
         // the point is a segment, so r does not derive from s2.
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
             formatted,
@@ -7950,7 +8028,7 @@ s = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("cfg.line1, var 0").unwrap() + "cfg.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7970,7 +8048,7 @@ s = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("return line1").unwrap() + "return ".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -7991,7 +8069,7 @@ s = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("line1 = 5").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -8009,7 +8087,7 @@ s = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("line1.end").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -8032,7 +8110,7 @@ fn f(s) {
         let mut program = parse(code);
         let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -8058,7 +8136,7 @@ x = r.tags.line1
         // Renaming from the declaration renames the member reference but not the tag.
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
             formatted,
@@ -8077,7 +8155,7 @@ x = r.tags.line1
         // Initiating from the tag reference resolves to nothing.
         let mut program = parse(code);
         let pos = code.find("r.tags.line1").unwrap() + "r.tags.".len() + 1;
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
     }
@@ -8098,7 +8176,7 @@ fn f(region) {
         let mut program = parse(code);
         let pos = code.find("line1").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -8128,7 +8206,7 @@ after = sin(1)
         let mut program = parse(code);
         let pos = code.find("fn sin").unwrap() + "fn ".len() + 1;
 
-        program.rename_symbol("mySin", pos);
+        program.rename_symbol("mySin", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -8156,7 +8234,7 @@ s = sketch(on = XY) {
         let mut program = parse(code);
         let pos = code.find("line1 = line").unwrap() + 1;
 
-        program.rename_symbol("edgeOne", pos);
+        program.rename_symbol("edgeOne", pos).unwrap();
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -8169,6 +8247,61 @@ s = sketch(on = XY) {
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_rejects_invalid_name() {
+        let code = r#"thing = 1
+result = thing
+"#;
+        for bad in ["my name", "123abc", "if", "a-b", "", "a::b"] {
+            let mut program = parse(code);
+            let pos = code.find("thing").unwrap() + 1;
+            let result = program.rename_symbol(bad, pos);
+            assert!(result.is_err(), "expected `{bad}` to be rejected");
+            // The name is validated before anything is renamed.
+            assert_eq!(program.recast_top(&Default::default(), 0), code);
+        }
+    }
+
+    #[test]
+    fn test_rename_rejects_colliding_name() {
+        // Renaming `a` to `b` would change what the existing references to `b` resolve to.
+        // Note that only the target's own scope is checked; capture across nested scopes
+        // (e.g. renaming a global to the name of some function's local) is not detected.
+        let code = r#"a = 1
+b = 2
+x = a + b
+"#;
+        let mut program = parse(code);
+        let pos = code.find('a').unwrap() + 1;
+        let result = program.rename_symbol("b", pos);
+        assert!(result.is_err(), "expected the collision with `b` to be rejected");
+    }
+
+    #[test]
+    fn test_rename_rejects_colliding_name_in_sketch_block() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 10, var 0], end = [var 10, var 10])
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1").unwrap() + 1;
+        let result = program.rename_symbol("line2", pos);
+        assert!(result.is_err(), "expected the collision with `line2` to be rejected");
+    }
+
+    #[test]
+    fn test_rename_rejects_colliding_param_name() {
+        let code = r#"fn f(a, b) {
+  return a + b
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("a,").unwrap() + 1;
+        let result = program.rename_symbol("b", pos);
+        assert!(result.is_err(), "expected the collision with `b` to be rejected");
     }
 
     /// Helper to create a comment NonCodeNode for tests.

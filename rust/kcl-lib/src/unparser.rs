@@ -3100,7 +3100,7 @@ fn ghi(part001) {
 }
 "#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("mySuperCoolPart", 6);
+        program.rename_symbol("mySuperCoolPart", 6).unwrap();
 
         let recasted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -3128,7 +3128,7 @@ fn ghi(part001) {
   return x
 }"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("newName", 7);
+        program.rename_symbol("newName", 7).unwrap();
 
         let recasted = program.recast_top(&Default::default(), 0);
         assert_eq!(
