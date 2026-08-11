@@ -924,11 +924,14 @@ mod sync {
     }
 
     #[test]
-    fn test_arc_arc_intersection() {
-        // Test case matching TypeScript test: two arcs that may or may not intersect
-        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0° to 90°)
-        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0° to 90°)
-        let result = arc_arc_intersection(
+    fn test_arc_arc_intersections_spans_do_not_overlap() {
+        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0 to 90 degrees)
+        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0 to 90 degrees)
+        // The underlying unit circles intersect at (0.5, +-sqrt(3)/2), but
+        // neither point is within both arcs' sweeps: (0.5, 0.866) is at 120
+        // degrees from arc2's center, and (0.5, -0.866) is at -60 degrees from
+        // arc1's center.
+        let intersections = arc_arc_intersections(
             Coords2d { x: 0.0, y: 0.0 }, // arc1 center
             Coords2d { x: 1.0, y: 0.0 }, // arc1 start
             Coords2d { x: 0.0, y: 1.0 }, // arc1 end
@@ -937,11 +940,30 @@ mod sync {
             Coords2d { x: 1.0, y: 1.0 }, // arc2 end
             EPSILON_POINT_ON_SEGMENT,
         );
-        // arc_arc_intersection may return None if no intersection, or Some(point)
-        // The test just verifies the function works without panicking
-        // In this case, the arcs may or may not intersect depending on geometry
-        // The important thing is that the function returns Option<Coords2d>
-        assert!(result.is_none() || result.is_some());
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
+    fn test_arc_arc_intersections_returns_point_on_both_arcs() {
+        // Same circles as above, but arc2 sweeps half the circle (0 to 180
+        // degrees), so the circle intersection at (0.5, sqrt(3)/2) is on both
+        // arcs: 60 degrees from arc1's center and 120 degrees from arc2's.
+        // The other circle intersection at (0.5, -sqrt(3)/2) is still outside
+        // both sweeps.
+        let intersections = arc_arc_intersections(
+            Coords2d { x: 0.0, y: 0.0 }, // arc1 center
+            Coords2d { x: 1.0, y: 0.0 }, // arc1 start
+            Coords2d { x: 0.0, y: 1.0 }, // arc1 end
+            Coords2d { x: 1.0, y: 0.0 }, // arc2 center
+            Coords2d { x: 2.0, y: 0.0 }, // arc2 start
+            Coords2d { x: 0.0, y: 0.0 }, // arc2 end
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 1);
+        assert!((intersections[0].x - 0.5).abs() < 1e-5);
+        assert!((intersections[0].y - 3.0_f64.sqrt() / 2.0).abs() < 1e-5);
     }
 
     #[test]
