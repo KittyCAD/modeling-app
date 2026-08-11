@@ -158,7 +158,7 @@ pub mod fn_call;
 mod freedom_analysis_tests;
 mod geometry;
 #[cfg(test)]
-mod hide_id_contract_pins;
+mod hide_id_contract_kcl_test_pins;
 mod id_generator;
 mod import;
 mod import_graph;
