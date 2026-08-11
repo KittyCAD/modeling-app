@@ -7,6 +7,7 @@ import {
   ExtrudeGeometry,
   Group,
   LineCurve3,
+  Material,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -193,6 +194,27 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
+
+function setAxisVisualVisibility(axis: Object3D | undefined, visible: boolean) {
+  if (!(axis instanceof Mesh)) {
+    return
+  }
+
+  // Keep the mesh raycastable while hiding only its rendered material.
+  axis.visible = true
+  if (axis.material instanceof Material) {
+    axis.material.visible = visible
+    return
+  }
+  if (isArray(axis.material)) {
+    axis.material.forEach((material) => {
+      if (!(material instanceof Material)) {
+        return
+      }
+      material.visible = visible
+    })
+  }
+}
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -504,12 +526,8 @@ export class SceneEntities {
     const showSketchGrid = settings?.modeling.showSketchGrid.current ?? false
     const xAxis = this.axisGroup?.getObjectByName(X_AXIS)
     const yAxis = this.axisGroup?.getObjectByName(Y_AXIS)
-    if (xAxis) {
-      xAxis.visible = showSketchGrid
-    }
-    if (yAxis) {
-      yAxis.visible = showSketchGrid
-    }
+    setAxisVisualVisibility(xAxis, showSketchGrid)
+    setAxisVisualVisibility(yAxis, showSketchGrid)
 
     if (!gridRenderer) {
       return

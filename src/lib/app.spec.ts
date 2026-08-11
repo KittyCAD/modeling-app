@@ -802,7 +802,6 @@ describe('project system', () => {
 
     try {
       await waitForSettingsIdle(app)
-      await app.openProject(mockProject)
 
       const updateSketchGrid = vi.spyOn(
         kclManager.sceneEntitiesManager,
@@ -834,6 +833,17 @@ describe('project system', () => {
         } as never)
         await waitForSettingsIdle(app)
       }
+
+      await setGridSetting(
+        'fixedSizeGrid',
+        !app.settings.get().modeling.fixedSizeGrid.default
+      )
+      await app.openProject(mockProject)
+      await Promise.resolve()
+
+      expect(updateSketchGrid).not.toHaveBeenCalled()
+      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
+      expect(executeCode).not.toHaveBeenCalled()
 
       const modeling = app.settings.get().modeling
       expect(modeling.showSketchGrid.default).toBe(false)
