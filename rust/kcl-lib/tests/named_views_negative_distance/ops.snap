@@ -1,80 +1,30 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed named_views_directed_parallel_up.kcl
+description: Operations executed named_views_negative_distance.kcl
 ---
 {
-  "rust/kcl-lib/tests/named_views_directed_parallel_up/input.kcl": [
+  "rust/kcl-lib/tests/named_views_negative_distance/input.kcl": [
     {
       "type": "StdLibCall",
-      "name": "view::directed",
+      "name": "view::oriented",
       "unlabeledArg": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          ]
+          "type": "Enum",
+          "enum_name": "Orientation",
+          "variant": "Front"
         },
         "sourceRange": []
       },
       "labeledArgs": {
-        "up": {
+        "distance": {
           "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              }
-            ]
+            "type": "Number",
+            "value": -50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
           },
           "sourceRange": []
         }

@@ -28,6 +28,21 @@ view is constructed, so their magnitudes carry no information and zoom
 comes from `distance`. Each must be a non-zero vector, and they must not
 be parallel or nearly parallel to each other; such arguments are errors.
 
+Every argument you pass must be a finite number; an infinite or undefined
+value, such as one produced by dividing by zero, is an error rather than
+a stored value no consumer could use.
+
+Lengths are recorded in millimeters whatever unit you write them in, so
+`distance = 2inch` is stored as 50.8mm. The view means the same thing
+either way; a tool that reads the view back reports millimeters.
+
+A `distance` is a separation, so it must be greater than zero. Zero would
+put the camera on the point it looks at, and a negative value would put it
+behind that point; both are errors rather than a camera nobody can
+resolve. A `target` is a point, so its coordinates may be negative. This
+applies to `target` as well; `direction` and `up` carry no unit at all,
+because only their ratio matters.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -35,7 +50,7 @@ be parallel or nearly parallel to each other; such arguments are errors.
 | `direction` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The direction the camera looks, from the camera toward the target. | Yes |
 | `up` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The camera's up direction. When omitted, `[0, 0, 1]`: the positive Z axis, which is the modeling app's world up. | No |
 | `target` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The point the camera looks at. When omitted, the view centers on the bounds of the model at activation. | No |
-| `distance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The distance from the camera to the target. When omitted, the view fits the model at activation. | No |
+| `distance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The distance from the camera to the target. Must be greater than zero. When omitted, the view fits the model at activation. | No |
 | `projection` | [`Projection`](/docs/kcl-std/types/std-view-Projection) | The camera projection. When omitted, the view is orthographic, so the same file renders identically in every consumer. | No |
 
 ### Returns

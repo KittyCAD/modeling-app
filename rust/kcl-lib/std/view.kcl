@@ -76,6 +76,19 @@ export type NamedView
 /// omit stays absent, and the consumer that activates the view resolves it
 /// against the model it is showing, so one view value is valid for any model.
 ///
+/// Every argument you do pass must be a finite number; an infinite or
+/// undefined value, such as one produced by dividing by zero, is an error
+/// rather than a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm. The view means the same thing
+/// either way; a tool that reads the view back reports millimeters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative.
+///
 /// ```kcl,norun
 /// @settings(experimentalFeatures = allow)
 ///
@@ -95,8 +108,8 @@ export fn oriented(
   /// The point the camera looks at. When omitted, the view centers on the
   /// bounds of the model at activation.
   target?: Point3d,
-  /// The distance from the camera to the target. When omitted, the view fits
-  /// the model at activation.
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
   distance?: number(Length),
   /// The camera projection. When omitted, the view is orthographic, so the
   /// same file renders identically in every consumer.
@@ -113,6 +126,21 @@ export fn oriented(
 /// view is constructed, so their magnitudes carry no information and zoom
 /// comes from `distance`. Each must be a non-zero vector, and they must not
 /// be parallel or nearly parallel to each other; such arguments are errors.
+///
+/// Every argument you pass must be a finite number; an infinite or undefined
+/// value, such as one produced by dividing by zero, is an error rather than
+/// a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm. The view means the same thing
+/// either way; a tool that reads the view back reports millimeters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative. This
+/// applies to `target` as well; `direction` and `up` carry no unit at all,
+/// because only their ratio matters.
 ///
 /// ```kcl,norun
 /// @settings(experimentalFeatures = allow)
@@ -137,8 +165,8 @@ export fn directed(
   /// The point the camera looks at. When omitted, the view centers on the
   /// bounds of the model at activation.
   target?: Point3d,
-  /// The distance from the camera to the target. When omitted, the view fits
-  /// the model at activation.
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
   distance?: number(Length),
   /// The camera projection. When omitted, the view is orthographic, so the
   /// same file renders identically in every consumer.

@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing named_views_directed_parallel_up.kcl
+description: Result of parsing named_views_units_in_inch_default_file.kcl
 ---
 {
   "Ok": {
@@ -14,7 +14,7 @@ description: Result of parsing named_views_directed_parallel_up.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "bad",
+            "name": "view",
             "start": 0,
             "type": "Identifier"
           },
@@ -26,7 +26,7 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "up",
+                  "name": "target",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -37,6 +37,19 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "raw": "1",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -58,28 +71,6 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                         "value": 0.0,
                         "suffix": "None"
                       }
-                    },
-                    {
-                      "argument": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "1",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
-                      "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
                     }
                   ],
                   "end": 0,
@@ -87,6 +78,30 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "distance",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "500",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 500.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -99,7 +114,7 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "directed",
+                "name": "oriented",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -123,53 +138,39 @@ description: Result of parsing named_views_directed_parallel_up.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 0,
-              "elements": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "0",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "0",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "5",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 5.0,
-                    "suffix": "None"
-                  }
-                }
-              ],
               "end": 0,
               "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "Front",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "view",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "Orientation",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              ],
               "start": 0,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "moduleId": 0,
@@ -200,10 +201,15 @@ description: Result of parsing named_views_directed_parallel_up.kcl
           "type": "Identifier"
         },
         "preComments": [
-          "// Pins the strict-error decision for view::directed: a direction parallel",
-          "// to the up vector leaves no plane to build the camera basis from, so the",
-          "// call errors instead of applying a fallback. The vectors differ in",
-          "// magnitude and sign; parallelism is checked on the normalized vectors."
+          "// Pins millimeter storage for the case most likely to mislead a consumer: a",
+          "// file whose default length unit is not millimeters, where the author writes",
+          "// bare numbers. Here `distance = 500` means 500 inches, and the view stores",
+          "// 12700 millimeters.",
+          "//",
+          "// Before lengths were canonicalized, this stored the number 500 tagged as a",
+          "// file-default length. A consumer that read the number and assumed",
+          "// millimeters would have placed the camera 25.4 times too close, and nothing",
+          "// in the value would have looked wrong."
         ],
         "properties": [
           {
@@ -230,6 +236,39 @@ description: Result of parsing named_views_directed_parallel_up.kcl
                 "end": 0,
                 "moduleId": 0,
                 "name": "allow",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "inch",
                 "start": 0,
                 "type": "Identifier"
               },

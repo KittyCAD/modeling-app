@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing named_views_oriented.kcl
+description: Variables in memory after executing named_views_units_in_inch_default_file.kcl
 ---
 {
-  "full": {
+  "view": {
     "type": "CameraView",
     "value": {
       "look": {
@@ -11,31 +11,19 @@ description: Variables in memory after executing named_views_oriented.kcl
         "orientation": "Front"
       },
       "target": {
-        "x": 0.0,
+        "x": 25.4,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
       "distance": {
-        "n": 500.0,
+        "n": 12700.0,
         "ty": {
           "mm": null,
           "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Perspective"
-    }
-  },
-  "minimal": {
-    "type": "CameraView",
-    "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Isometric"
-      },
-      "target": null,
-      "distance": null,
       "projection": "Orthographic"
     }
   }

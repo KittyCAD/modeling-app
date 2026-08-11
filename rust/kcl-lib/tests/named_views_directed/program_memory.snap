@@ -30,9 +30,9 @@ description: Variables in memory after executing named_views_directed.kcl
       "distance": {
         "n": 200.0,
         "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
         }
       },
       "projection": "Perspective"

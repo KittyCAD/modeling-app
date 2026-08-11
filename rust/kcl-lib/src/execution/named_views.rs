@@ -142,18 +142,74 @@ pub enum CameraLook {
 /// so that whether a program executes does not vary per call site.
 const MIN_DIRECTION_UP_ANGLE_SIN: f64 = 1e-6;
 
-/// An input rejected by [`CameraView::directed`]. Carries no source range;
-/// the std function that calls the constructor attaches the call's range.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum DirectedViewError {
+/// An input rejected by a [`CameraView`] constructor.
+///
+/// Each variant's `Display` text is the message the KCL author sees. The
+/// value that caused the rejection is deliberately absent from it: the
+/// std function attaches the call's source range, and miette renders the
+/// offending call, which locates the argument without repeating it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+pub(crate) enum CameraViewError {
+    /// A coordinate of `direction` is infinite or NaN.
+    #[error("`direction` must have finite coordinates.")]
+    NonFiniteDirection,
+    /// A coordinate of `up` is infinite or NaN.
+    #[error("`up` must have finite coordinates.")]
+    NonFiniteUp,
+    /// A coordinate of `target` is infinite or NaN.
+    #[error("`target` must have finite coordinates.")]
+    NonFiniteTarget,
+    /// `distance` is infinite or NaN.
+    #[error("`distance` must be a finite number.")]
+    NonFiniteDistance,
+    /// `distance` is zero or negative. Zero puts the camera on the point it
+    /// looks at, leaving no direction to look along; a negative value puts it
+    /// behind the target, which is not what the argument means.
+    #[error("`distance` must be greater than zero.")]
+    NonPositiveDistance,
     /// `direction` has length zero, so it does not name a direction.
+    #[error("`direction` must be a non-zero vector.")]
     ZeroDirection,
     /// `up` has length zero, so it does not name a direction.
+    #[error("`up` must be a non-zero vector.")]
     ZeroUp,
     /// `direction` and `up` are parallel or nearly parallel under
     /// [`MIN_DIRECTION_UP_ANGLE_SIN`], so they do not span the plane the
     /// camera basis is built from.
+    #[error("`direction` and `up` must not be parallel or nearly parallel.")]
     DirectionParallelToUp,
+}
+
+/// Returns whether every coordinate of `p` is finite. An infinite or NaN
+/// coordinate has no resolution rule a consumer could apply, so the
+/// constructors reject it rather than storing it.
+fn is_finite_point(p: &Point3d) -> bool {
+    p.x.is_finite() && p.y.is_finite() && p.z.is_finite()
+}
+
+/// Validates the fields both constructors accept.
+///
+/// A `target` may hold any finite coordinates, including negative ones, since
+/// it names a point in space. A `distance` must additionally be positive: it
+/// is a separation, and no camera is a negative distance from what it looks
+/// at. Finiteness is tested first, so a NaN distance reports as non-finite
+/// rather than as non-positive.
+fn check_shared_fields(target: Option<&Point3d>, distance: Option<&TyF64>) -> Result<(), CameraViewError> {
+    if let Some(target) = target
+        && !is_finite_point(target)
+    {
+        return Err(CameraViewError::NonFiniteTarget);
+    }
+    if let Some(distance) = distance {
+        if !distance.n.is_finite() {
+            return Err(CameraViewError::NonFiniteDistance);
+        }
+        // Also catches -0.0, which compares equal to 0.0.
+        if distance.n <= 0.0 {
+            return Err(CameraViewError::NonPositiveDistance);
+        }
+    }
+    Ok(())
 }
 
 /// The Euclidean length of `v`, with the coordinates read as plain numbers.
@@ -180,16 +236,21 @@ fn cross(a: &Point3d, b: &Point3d) -> Point3d {
 /// same value is valid for any model. Construction goes through
 /// [`CameraView::oriented`] and [`CameraView::directed`]; fields stay private
 /// so a value cannot bypass the validation those constructors apply.
+///
+/// Every length is stored in millimeters, whatever unit the author wrote.
+/// More than one consumer reads these values and some of them become engine
+/// commands, which are in millimeters, so one canonical unit removes the
+/// conversion convention those consumers would otherwise have to share.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CameraView {
     look: CameraLook,
-    /// The point the camera looks at. `None` means: center on the bounds of
-    /// the model at activation.
+    /// The point the camera looks at, in millimeters. `None` means: center on
+    /// the bounds of the model at activation.
     target: Option<Point3d>,
-    /// The distance from the camera to the target. `None` means: fit the
-    /// model at activation. Carries the author's numeric unit.
+    /// The distance from the camera to the target, in millimeters. `None`
+    /// means: fit the model at activation.
     distance: Option<TyF64>,
     projection: Projection,
     #[serde(skip)]
@@ -198,24 +259,29 @@ pub struct CameraView {
 
 impl CameraView {
     /// Creates a camera view that looks at the model from a standard
-    /// orientation. Total: every orientation with any combination of the
-    /// optional fields is a valid view. A `projection` of `None` applies the
+    /// orientation. Every orientation, with any combination of the optional
+    /// fields, is a valid view. A `projection` of `None` applies the
     /// orthographic default, so a file that never mentions projection renders
     /// identically in every consumer.
+    ///
+    /// Rejected inputs, each a distinct [`CameraViewError`] variant:
+    /// - a `target` with an infinite or NaN coordinate;
+    /// - an infinite or NaN `distance`.
     pub(crate) fn oriented(
         orientation: Orientation,
         target: Option<Point3d>,
         distance: Option<TyF64>,
         projection: Option<Projection>,
         meta: Vec<Metadata>,
-    ) -> Self {
-        CameraView {
+    ) -> Result<Self, CameraViewError> {
+        check_shared_fields(target.as_ref(), distance.as_ref())?;
+        Ok(CameraView {
             look: CameraLook::Oriented { orientation },
             target,
             distance,
             projection: projection.unwrap_or(Projection::Orthographic),
             meta,
-        }
+        })
     }
 
     /// Creates a camera view that looks along a custom direction.
@@ -225,11 +291,18 @@ impl CameraView {
     /// applies the world-Z default `[0, 0, 1]`. A `projection` of `None`
     /// applies the orthographic default, as in [`CameraView::oriented`].
     ///
-    /// Rejected inputs, each a distinct [`DirectedViewError`] variant:
+    /// Rejected inputs, each a distinct [`CameraViewError`] variant:
+    /// - a `direction` or `up` with an infinite or NaN coordinate;
+    /// - a `target` with an infinite or NaN coordinate;
+    /// - an infinite or NaN `distance`;
     /// - a `direction` of length zero;
     /// - an `up` of length zero;
     /// - a `direction` parallel or nearly parallel to `up`, under the fixed
     ///   threshold [`MIN_DIRECTION_UP_ANGLE_SIN`].
+    ///
+    /// Finiteness is checked before length, because normalizing an infinite
+    /// vector yields NaN coordinates that would then pass both the
+    /// zero-length and the parallelism check.
     pub(crate) fn directed(
         direction: Point3d,
         up: Option<Point3d>,
@@ -237,25 +310,32 @@ impl CameraView {
         distance: Option<TyF64>,
         projection: Option<Projection>,
         meta: Vec<Metadata>,
-    ) -> Result<Self, DirectedViewError> {
+    ) -> Result<Self, CameraViewError> {
         let up = up.unwrap_or(Point3d {
             x: 0.0,
             y: 0.0,
             z: 1.0,
             units: None,
         });
+        if !is_finite_point(&direction) {
+            return Err(CameraViewError::NonFiniteDirection);
+        }
+        if !is_finite_point(&up) {
+            return Err(CameraViewError::NonFiniteUp);
+        }
+        check_shared_fields(target.as_ref(), distance.as_ref())?;
         if norm(&direction) == 0.0 {
-            return Err(DirectedViewError::ZeroDirection);
+            return Err(CameraViewError::ZeroDirection);
         }
         if norm(&up) == 0.0 {
-            return Err(DirectedViewError::ZeroUp);
+            return Err(CameraViewError::ZeroUp);
         }
         let direction = direction.normalize();
         let up = up.normalize();
         // For unit vectors, the length of the cross product is the sine of
         // the angle between them.
         if norm(&cross(&direction, &up)) < MIN_DIRECTION_UP_ANGLE_SIN {
-            return Err(DirectedViewError::DirectionParallelToUp);
+            return Err(CameraViewError::DirectionParallelToUp);
         }
         Ok(CameraView {
             look: CameraLook::Directed { direction, up },
@@ -337,44 +417,171 @@ mod tests {
         Point3d { x, y, z, units: None }
     }
 
+    /// A length in millimeters, as both constructors receive `distance`.
+    fn mm(n: f64) -> TyF64 {
+        use crate::execution::types::NumericTypeExt;
+        TyF64::new(n, crate::execution::types::NumericType::mm())
+    }
+
+    /// Asserts that `directed` rejects these vectors with `expected`, with
+    /// every other argument absent. `#[track_caller]` reports the failing
+    /// case's own line, so each case below reads as its own test.
+    #[track_caller]
+    fn directed_rejects(direction: Point3d, up: Option<Point3d>, expected: CameraViewError) {
+        let actual = CameraView::directed(direction, up, None, None, None, vec![]).unwrap_err();
+        assert_eq!(actual, expected);
+    }
+
+    /// Asserts that `directed` accepts these vectors.
+    #[track_caller]
+    fn directed_accepts(direction: Point3d, up: Option<Point3d>) {
+        CameraView::directed(direction, up, None, None, None, vec![]).unwrap();
+    }
+
+    /// Asserts that both constructors treat this `target` and `distance`
+    /// identically, since they share one validation path. The `directed` call
+    /// passes a direction known to be valid, so only the shared fields decide
+    /// the outcome.
+    #[track_caller]
+    fn both_constructors_agree(target: Option<Point3d>, distance: Option<TyF64>, expected: Option<CameraViewError>) {
+        let from_oriented = CameraView::oriented(Orientation::Front, target, distance.clone(), None, vec![]).err();
+        let from_directed = CameraView::directed(dir(0.0, 1.0, 0.0), None, target, distance, None, vec![]).err();
+        assert_eq!(from_oriented, expected);
+        assert_eq!(from_directed, expected);
+    }
+
+    /// A non-finite coordinate is rejected whichever vector and whichever axis
+    /// carries it, for every non-finite value KCL arithmetic can produce
+    /// (`1 / 0` yields an infinity, and arithmetic on infinities yields NaN).
+    ///
+    /// Without these checks, normalizing an infinity produces NaN coordinates
+    /// that pass both the zero-length and the parallelism test, and the view
+    /// is stored with a NaN direction no consumer can resolve.
+    #[test]
+    fn directed_rejects_non_finite_vectors() {
+        use CameraViewError::NonFiniteDirection as BadDir;
+        use CameraViewError::NonFiniteUp as BadUp;
+        let ok_dir = dir(0.0, 1.0, 0.0);
+
+        directed_rejects(dir(f64::INFINITY, 0.0, 1.0), None, BadDir);
+        directed_rejects(dir(0.0, f64::INFINITY, 1.0), None, BadDir);
+        directed_rejects(dir(1.0, 0.0, f64::INFINITY), None, BadDir);
+        directed_rejects(dir(f64::NEG_INFINITY, 0.0, 1.0), None, BadDir);
+        directed_rejects(dir(0.0, f64::NEG_INFINITY, 1.0), None, BadDir);
+        directed_rejects(dir(1.0, 0.0, f64::NEG_INFINITY), None, BadDir);
+        directed_rejects(dir(f64::NAN, 0.0, 1.0), None, BadDir);
+        directed_rejects(dir(0.0, f64::NAN, 1.0), None, BadDir);
+        directed_rejects(dir(1.0, 0.0, f64::NAN), None, BadDir);
+
+        directed_rejects(ok_dir, Some(dir(f64::INFINITY, 0.0, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, f64::INFINITY, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, 0.0, f64::INFINITY)), BadUp);
+        directed_rejects(ok_dir, Some(dir(f64::NEG_INFINITY, 0.0, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, f64::NEG_INFINITY, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, 0.0, f64::NEG_INFINITY)), BadUp);
+        directed_rejects(ok_dir, Some(dir(f64::NAN, 0.0, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, f64::NAN, 1.0)), BadUp);
+        directed_rejects(ok_dir, Some(dir(0.0, 0.0, f64::NAN)), BadUp);
+    }
+
+    /// `target` and `distance` are stored verbatim by both constructors, so
+    /// both reject the same non-finite values and accept the same finite ones.
+    #[test]
+    fn both_constructors_agree_on_shared_fields() {
+        use CameraViewError::NonFiniteDistance as BadDistance;
+        use CameraViewError::NonFiniteTarget as BadTarget;
+        use CameraViewError::NonPositiveDistance as NotPositive;
+
+        both_constructors_agree(Some(dir(f64::INFINITY, 0.0, 0.0)), None, Some(BadTarget));
+        both_constructors_agree(Some(dir(0.0, f64::NEG_INFINITY, 0.0)), None, Some(BadTarget));
+        both_constructors_agree(Some(dir(0.0, 0.0, f64::NAN)), None, Some(BadTarget));
+        both_constructors_agree(None, Some(mm(f64::INFINITY)), Some(BadDistance));
+        both_constructors_agree(None, Some(mm(f64::NEG_INFINITY)), Some(BadDistance));
+        both_constructors_agree(None, Some(mm(f64::NAN)), Some(BadDistance));
+
+        // A distance is a separation, so it must be positive.
+        both_constructors_agree(None, Some(mm(0.0)), Some(NotPositive));
+        both_constructors_agree(None, Some(mm(-0.0)), Some(NotPositive));
+        both_constructors_agree(None, Some(mm(-50.0)), Some(NotPositive));
+        both_constructors_agree(None, Some(mm(f64::MIN_POSITIVE)), None);
+
+        // A target names a point, so negative coordinates are ordinary.
+        both_constructors_agree(Some(dir(-1.0, -2.0, -3.0)), None, None);
+        both_constructors_agree(None, None, None);
+        both_constructors_agree(Some(dir(1.0, 2.0, 3.0)), Some(mm(500.0)), None);
+    }
+
+    /// Finiteness is checked before length and parallelism, so an input that
+    /// is both non-finite and degenerate reports the non-finite cause. The
+    /// order matters: normalizing first would turn an infinity into NaN and
+    /// report the wrong reason, or none at all.
+    #[test]
+    fn non_finite_is_reported_before_degeneracy() {
+        // Non-finite and parallel to the default up [0, 0, 1].
+        directed_rejects(dir(0.0, 0.0, f64::INFINITY), None, CameraViewError::NonFiniteDirection);
+        // Non-finite up, with a direction that is itself zero-length.
+        directed_rejects(
+            dir(0.0, 0.0, 0.0),
+            Some(dir(0.0, 0.0, f64::NAN)),
+            CameraViewError::NonFiniteUp,
+        );
+        // A negative infinity is reported as non-finite rather than as
+        // non-positive, even though it satisfies `<= 0`.
+        both_constructors_agree(
+            None,
+            Some(mm(f64::NEG_INFINITY)),
+            Some(CameraViewError::NonFiniteDistance),
+        );
+    }
+
+    /// Each variant has its own message, so an error tells the author which
+    /// argument to change.
+    #[test]
+    fn error_messages_are_distinct() {
+        let all = [
+            CameraViewError::NonFiniteDirection,
+            CameraViewError::NonFiniteUp,
+            CameraViewError::NonFiniteTarget,
+            CameraViewError::NonFiniteDistance,
+            CameraViewError::NonPositiveDistance,
+            CameraViewError::ZeroDirection,
+            CameraViewError::ZeroUp,
+            CameraViewError::DirectionParallelToUp,
+        ];
+        let mut messages: Vec<String> = all.iter().map(|e| e.to_string()).collect();
+        messages.sort_unstable();
+        let count = messages.len();
+        messages.dedup();
+        assert_eq!(messages.len(), count, "every variant needs its own message");
+    }
+
     /// Each degenerate input is rejected with its own error variant.
     #[test]
     fn directed_rejects_degenerate_vectors() {
-        let err = |direction: Point3d, up: Option<Point3d>| {
-            CameraView::directed(direction, up, None, None, None, vec![]).unwrap_err()
-        };
+        use CameraViewError::DirectionParallelToUp as Parallel;
 
-        assert_eq!(err(dir(0.0, 0.0, 0.0), None), DirectedViewError::ZeroDirection);
-        assert_eq!(
-            err(dir(1.0, 0.0, 0.0), Some(dir(0.0, 0.0, 0.0))),
-            DirectedViewError::ZeroUp
-        );
+        directed_rejects(dir(0.0, 0.0, 0.0), None, CameraViewError::ZeroDirection);
+        directed_rejects(dir(1.0, 0.0, 0.0), Some(dir(0.0, 0.0, 0.0)), CameraViewError::ZeroUp);
         // Parallel and anti-parallel to the default up [0, 0, 1].
-        assert_eq!(err(dir(0.0, 0.0, 1.0), None), DirectedViewError::DirectionParallelToUp);
-        assert_eq!(err(dir(0.0, 0.0, -1.0), None), DirectedViewError::DirectionParallelToUp);
-        // Parallelism is checked on the normalized vectors, so a magnitude
-        // difference does not hide it.
-        assert_eq!(
-            err(dir(2.0, 2.0, 0.0), Some(dir(-5.0, -5.0, 0.0))),
-            DirectedViewError::DirectionParallelToUp
-        );
+        directed_rejects(dir(0.0, 0.0, 1.0), None, Parallel);
+        directed_rejects(dir(0.0, 0.0, -1.0), None, Parallel);
+        // Parallelism is checked on the normalized vectors, so neither a
+        // magnitude difference nor opposite signs hide it.
+        directed_rejects(dir(2.0, 2.0, 0.0), Some(dir(-5.0, -5.0, 0.0)), Parallel);
     }
 
     /// The parallel check applies the fixed threshold: the sine of the angle
     /// between the normalized vectors, compared against
-    /// `MIN_DIRECTION_UP_ANGLE_SIN`.
+    /// `MIN_DIRECTION_UP_ANGLE_SIN`. Against the default up `[0, 0, 1]`, a
+    /// direction `[s, 0, 1]` has a sine of approximately `s` for small `s`.
     #[test]
     fn directed_parallel_threshold_boundary() {
-        // Against up [0, 0, 1], a direction [s, 0, 1] has sine of the angle
-        // approximately s for small s.
-        let just_inside = dir(MIN_DIRECTION_UP_ANGLE_SIN * 0.5, 0.0, 1.0);
-        assert_eq!(
-            CameraView::directed(just_inside, None, None, None, None, vec![]).unwrap_err(),
-            DirectedViewError::DirectionParallelToUp
+        directed_rejects(
+            dir(MIN_DIRECTION_UP_ANGLE_SIN * 0.5, 0.0, 1.0),
+            None,
+            CameraViewError::DirectionParallelToUp,
         );
-
-        let just_outside = dir(MIN_DIRECTION_UP_ANGLE_SIN * 2.0, 0.0, 1.0);
-        assert!(CameraView::directed(just_outside, None, None, None, None, vec![]).is_ok());
+        directed_accepts(dir(MIN_DIRECTION_UP_ANGLE_SIN * 2.0, 0.0, 1.0), None);
     }
 
     /// Both stored vectors are normalized, and an omitted `up` becomes the

@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart named_views_directed_parallel_up.kcl
+description: Artifact graph flowchart named_views_units_are_millimeters.kcl
 extension: md
 snapshot_kind: binary
 ---
