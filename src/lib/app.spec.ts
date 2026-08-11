@@ -14,6 +14,7 @@ import {
   getDefaultCloudProjectLibrarySetting,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { readProjectLibraryRealizationsInvalidation } from '@src/lib/projectLibraries/registry/invalidation'
 import type { ProjectTitleUpdate } from '@src/lib/projectTitle'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
@@ -835,6 +836,8 @@ describe('project system', () => {
       const updates = app.settings.projectTitle.updates as Signal<
         ProjectTitleUpdate | undefined
       >
+      const invalidationBefore =
+        readProjectLibraryRealizationsInvalidation().global
       const previousProject = project.projectIORefSignal.value
       previousProject.title = 'Updated external project'
 
@@ -850,6 +853,14 @@ describe('project system', () => {
       expect(
         app.settings.actor.getSnapshot().context.currentProject?.title
       ).toBe('Updated external project')
+      expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+        invalidationBefore
+      )
+
+      app.closeProject()
+      expect(readProjectLibraryRealizationsInvalidation().global).toBe(
+        invalidationBefore + 1
+      )
     } finally {
       app.dispose()
     }

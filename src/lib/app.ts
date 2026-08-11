@@ -23,6 +23,7 @@ import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
@@ -223,6 +224,7 @@ export class App implements AppSubsystems {
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
   private disposeProjectTitleSync: (() => void) | undefined
+  private openedProjectTitleChanged = false
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -440,6 +442,7 @@ export class App implements AppSubsystems {
       if (projectTitleUpdate !== handledProjectTitleUpdate) {
         handledProjectTitleUpdate = projectTitleUpdate
         if (projectTitleUpdate?.projectPath === projectIORefSignal.value.path) {
+          this.openedProjectTitleChanged = true
           projectIORefSignal.value = {
             ...projectIORefSignal.value,
             title: projectTitleUpdate.title,
@@ -489,6 +492,10 @@ export class App implements AppSubsystems {
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
+    if (this.openedProjectTitleChanged) {
+      this.openedProjectTitleChanged = false
+      invalidateProjectLibraryRealizations()
+    }
   }
 
   syncUserFeaturesFromAuth = (

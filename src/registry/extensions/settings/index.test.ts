@@ -1,6 +1,5 @@
 import { Registry } from '@kittycad/registry'
 import type { Project } from '@src/lib/project'
-import { readProjectLibraryRealizationsInvalidation } from '@src/lib/projectLibraries/registry/invalidation'
 import { settingsService } from '@src/registry/contracts/settings'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
@@ -49,8 +48,6 @@ describe('settings extension', () => {
     registry.configure([settingsRegistryItem])
 
     const service = registry.get(settingsService).projectTitle
-    const invalidationBefore =
-      readProjectLibraryRealizationsInvalidation().global
     await service.updateTitle(project, 'Updated bracket')
 
     expect(desktopMocks.writeProjectTitleToProjectToml).toHaveBeenCalledWith(
@@ -62,9 +59,6 @@ describe('settings extension', () => {
       projectPath: project.path,
       title: 'Updated bracket',
     })
-    expect(readProjectLibraryRealizationsInvalidation().global).toBe(
-      invalidationBefore + 1
-    )
 
     registry[Symbol.dispose]()
   })
