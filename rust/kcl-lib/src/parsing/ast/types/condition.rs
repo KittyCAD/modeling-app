@@ -63,26 +63,6 @@ impl Node<IfExpression> {
 }
 
 impl IfExpression {
-    /// Rename all identifiers that have the old name to the new given name. Branches execute
-    /// in the current environment, so their bindings leak; since only one branch runs, each
-    /// branch is renamed independently of the others, but a binding in any branch
-    /// conservatively stops renaming after the if expression. Conditions evaluate in order
-    /// until one is true, so a binding in one stops everything after it.
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) -> bool {
-        if self.cond.rename_identifiers(old_name, new_name) {
-            return true;
-        }
-        let mut bound = self.then_val.rename_identifiers(old_name, new_name);
-        for else_if in &mut self.else_ifs {
-            if else_if.cond.rename_identifiers(old_name, new_name) {
-                return true;
-            }
-            bound |= else_if.then_val.rename_identifiers(old_name, new_name);
-        }
-        bound |= self.final_else.rename_identifiers(old_name, new_name);
-        bound
-    }
-
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.cond.replace_value(source_range, new_value.clone());
         for else_if in &mut self.else_ifs {
