@@ -1,5 +1,4 @@
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   UserFeaturesState,
@@ -99,7 +98,6 @@ export function loadHomeProjects(app: HomeLoaderApp) {
   app.systemIOActor.send({
     type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
   })
-  invalidateProjectLibraryRealizations()
   app.closeProject()
   app.settings.actor.send({
     type: 'clear.project',
