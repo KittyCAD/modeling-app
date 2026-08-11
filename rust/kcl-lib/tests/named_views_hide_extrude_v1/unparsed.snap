@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_extrude_v1.kcl
+---
+// Classic pipeline (V1) test, kept deliberately: a V1 extrude consumes its
+// profile, so the body answers to the profile's engine object id and no
+// sketch outline survives the hide -- contrast with named_views_hide_extrude,
+// where the solved sketch remains visible. The engine silently ignores
+// unknown ids, so the rendered snapshot is the only observer: it must show
+// exactly ONE box.
+boxVisible = startSketchOn(XY)
+  |> startProfile(at = [20, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> close()
+  |> extrude(length = 10)
+
+boxHidden = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> close()
+  |> extrude(length = 10)
+
+hide(boxHidden)

@@ -1,0 +1,35 @@
+// Pins that pattern instances of a solid extruded from a solved-sketch
+// region are engine-addressable by the ids hide() sends. The rendered
+// snapshot must show
+// the anchor box and no pattern instances; any surviving instance means an id
+// was silently ignored. The row's source sketch remains visible as a square
+// outline: a V2 sketch is a scene object of its own, and hiding the solids
+// does not hide it.
+rowSketch = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 5, var 0])
+  line2 = line(start = [var 5, var 0], end = [var 5, var 5])
+  line3 = line(start = [var 5, var 5], end = [var 0, var 5])
+  line4 = line(start = [var 0, var 5], end = [var 0, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+rowHidden = extrude(region(point = [2, 2], sketch = rowSketch), length = 5)
+  |> patternLinear3d(instances = 3, distance = 15, axis = [1, 0, 0])
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 0, var 30], end = [var 10, var 30])
+  line2 = line(start = [var 10, var 30], end = [var 10, var 40])
+  line3 = line(start = [var 10, var 40], end = [var 0, var 40])
+  line4 = line(start = [var 0, var 40], end = [var 0, var 30])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [5, 35], sketch = anchorSketch), length = 10)
+
+hide(rowHidden)
