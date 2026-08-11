@@ -62,7 +62,7 @@ export function ProjectTitleSettingsSection({
     <SettingsSection
       id={PROJECT_TITLE_SETTING_ID}
       title="Title"
-      description="The name shown for this project throughout Design Studio."
+      description="The name shown for this project."
     >
       <input
         {...noAutofillInputProps}

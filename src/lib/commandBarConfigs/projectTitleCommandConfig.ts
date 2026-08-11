@@ -38,7 +38,7 @@ export function createProjectTitleCommand({
   return {
     name: PROJECT_TITLE_COMMAND_NAME,
     displayName: 'Settings · project · title',
-    description: 'The name shown for this project throughout Design Studio.',
+    description: 'The name shown for this project.',
     groupId: 'settings',
     icon: 'settings',
     needsReview: false,
