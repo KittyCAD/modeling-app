@@ -217,6 +217,15 @@ export function createOnConnectionStateChange({
         tearDownManager({ peerConnectionClosed: true })
         break
       default:
+        EngineDebugger.addLog({
+          label: 'onConnectionStateChange',
+          message: 'connectionstatechange',
+          metadata: {
+            event,
+            connectionState: peerConnection?.connectionState,
+            unknown: true,
+          },
+        })
         break
     }
   }
