@@ -15,6 +15,7 @@ import {
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   handleSelectionBatch,
+  removeReferenceFromSelections,
   selectSketchPlane,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
@@ -1413,6 +1414,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph: ___artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1457,6 +1459,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1545,6 +1548,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: regionRightCodeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1588,6 +1592,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1612,6 +1617,43 @@ cube = extrude(cubeRegion, length = 10)
     expect(
       references.find((reference) => reference.label === 'Edge')?.code
     ).toBe('seg01')
+  })
+
+  test('includes selected default planes and lets them be removed', async () => {
+    const defaultPlaneSelection = {
+      id: 'default-plane-xy',
+      name: 'XY',
+    } as const
+    const references = await getSelectionReferences({
+      graphSelections: [],
+      defaultPlaneSelections: [defaultPlaneSelection],
+      enginePrimitives: [],
+      artifactGraph: new Map(),
+      engineCommandManager: null as never,
+      kclManager: null as never,
+      wasmInstance: null as never,
+    })
+
+    expect(references).toEqual([
+      {
+        id: 'plane:default-plane-xy',
+        label: 'XY Plane',
+        code: 'XY',
+        defaultPlaneSelection,
+      },
+    ])
+    expect(
+      removeReferenceFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [defaultPlaneSelection, 'x-axis'],
+        },
+        references[0]
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: ['x-axis'],
+    })
   })
 })
 
