@@ -11,6 +11,9 @@ pub(super) struct TraversalReturn<B, C = ()> {
     pub control_flow: ControlFlow<B, C>,
 }
 
+/// A request to replace or delete the nearest enclosing body item of the
+/// visited node. Only reliably delivered when paired with
+/// `ControlFlow::Break`; see [`dfs_mut`].
 #[derive(Default)]
 pub(super) enum MutateBodyItem {
     #[default]
@@ -78,7 +81,10 @@ impl<B, C> TraversalReturn<B, C> {
 /// is stopped immediately and the `ControlFlow` value is returned.
 ///
 /// A [`MutateBodyItem`] returned from `visit` applies to the nearest
-/// enclosing body item.
+/// enclosing body item and must be paired with `ControlFlow::Break` to be
+/// reliably applied. A request paired with `ControlFlow::Continue` may be
+/// dropped, depending on where in the enclosing body item's subtree it was
+/// returned, because traversing a subsequent node discards it.
 pub(super) fn dfs_mut<V: Visitor>(
     program: &mut ast::Node<ast::Program>,
     visitor: &mut V,
@@ -913,5 +919,122 @@ y = 3
                 "enter Program",
             ]),
         );
+    }
+
+    /// A visitor that requests a body item mutation when entering the nth
+    /// node of a given kind.
+    struct MutatingVisitor {
+        /// Trigger when entering the nth (1-based) node of this kind.
+        mutate_on: (&'static str, usize),
+        /// The mutation to request. Taken when triggered.
+        mutation: Option<MutateBodyItem>,
+        /// Whether to pair the request with `ControlFlow::Break`.
+        pair_with_break: bool,
+        enter_counts: HashMap<&'static str, usize>,
+    }
+
+    impl Visitor for MutatingVisitor {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue> {
+            let kind = kind_str(&node);
+            let count = self.enter_counts.entry(kind).and_modify(|c| *c += 1).or_insert(1);
+            if self.mutate_on == (kind, *count) {
+                let control_flow = if self.pair_with_break {
+                    ControlFlow::Break(())
+                } else {
+                    ControlFlow::Continue(())
+                };
+                return TraversalReturn {
+                    mutate_body_item: self.mutation.take().unwrap_or_default(),
+                    control_flow,
+                };
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut) {}
+    }
+
+    fn declared_names(program: &ast::Node<ast::Program>) -> Vec<String> {
+        program
+            .body
+            .iter()
+            .map(|item| match item {
+                ast::BodyItem::VariableDeclaration(decl) => decl.name().to_owned(),
+                _ => "<other>".to_owned(),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn mutate_paired_with_break_replaces_the_enclosing_body_item() {
+        let mut program = crate::parsing::top_level_parse("42\n").unwrap();
+        let replacement = crate::parsing::top_level_parse("answer = 42\n")
+            .unwrap()
+            .inner
+            .body
+            .remove(0);
+        let mut visitor = MutatingVisitor {
+            // Trigger from the literal inside the expression statement.
+            mutate_on: ("Literal", 1),
+            mutation: Some(MutateBodyItem::Mutate(Box::new(replacement))),
+            pair_with_break: true,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_break());
+        assert_eq!(declared_names(&program), ["answer"]);
+    }
+
+    #[test]
+    fn delete_paired_with_break_removes_the_enclosing_body_item() {
+        let mut program = crate::parsing::top_level_parse(
+            "\
+x = 1
+y = 2 + 3
+z = 4
+",
+        )
+        .unwrap();
+        let mut visitor = MutatingVisitor {
+            // Trigger from the left operand of y's init, partway through the
+            // statement's subtree.
+            mutate_on: ("Literal", 2),
+            mutation: Some(MutateBodyItem::Delete),
+            pair_with_break: true,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_break());
+        assert_eq!(declared_names(&program), ["x", "z"]);
+    }
+
+    /// A mutation request paired with `ControlFlow::Continue` is dropped when
+    /// the traversal visits another node before the enclosing body item
+    /// completes, which is why the documented contract requires pairing
+    /// mutation requests with `ControlFlow::Break`.
+    #[test]
+    fn delete_paired_with_continue_is_dropped() {
+        let mut program = crate::parsing::top_level_parse(
+            "\
+x = 1
+y = 2 + 3
+z = 4
+",
+        )
+        .unwrap();
+        let mut visitor = MutatingVisitor {
+            // Trigger from the left operand of y's init. Traversing the right
+            // operand discards the request.
+            mutate_on: ("Literal", 2),
+            mutation: Some(MutateBodyItem::Delete),
+            pair_with_break: false,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_continue());
+        assert_eq!(declared_names(&program), ["x", "y", "z"]);
     }
 }
