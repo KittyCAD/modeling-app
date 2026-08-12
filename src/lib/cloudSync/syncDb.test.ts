@@ -1,7 +1,11 @@
 import 'fake-indexeddb/auto'
 import {
   appendOutboxEntry,
+  clearLegacyConflictCopyReferences,
+  clearOutboxEntriesTouchingProject,
   getAllOutboxEntries,
+  getProjectMetadata,
+  putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
 import { deleteCloudSyncTestDatabase } from '@src/lib/cloudSync/testUtils'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -97,5 +101,108 @@ describe('cloud sync outbox persistence', () => {
         createdAt: '2026-07-28T12:00:00.000Z',
       },
     ])
+  })
+
+  it('clears queued work that touches a deleted project root', async () => {
+    const conflictCopyPath =
+      '/projects/bracket (cloud conflict 20260807T173344)'
+
+    await appendOutboxEntry({
+      projectPath: conflictCopyPath,
+      kind: 'upsert',
+      targetPath: `${conflictCopyPath}/main.kcl`,
+      createdAt: '2026-08-07T17:33:44.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket-restored',
+      kind: 'upsert',
+      targetPath: '/projects/bracket-restored',
+      sourcePath: conflictCopyPath,
+      createdAt: '2026-08-07T17:34:44.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/manual-fix',
+      kind: 'upsert',
+      targetPath: `${conflictCopyPath}/notes.txt`,
+      createdAt: '2026-08-07T17:35:44.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket (cloud conflict 20260807T173344)-copy',
+      kind: 'upsert',
+      targetPath:
+        '/projects/bracket (cloud conflict 20260807T173344)-copy/main.kcl',
+      createdAt: '2026-08-07T17:36:44.000Z',
+    })
+
+    await clearOutboxEntriesTouchingProject(conflictCopyPath)
+
+    const remainingEntries = await getAllOutboxEntries()
+    expect(remainingEntries).toHaveLength(1)
+    expect(remainingEntries).toMatchObject([
+      {
+        projectPath: '/projects/bracket (cloud conflict 20260807T173344)-copy',
+        kind: 'upsert',
+        targetPath:
+          '/projects/bracket (cloud conflict 20260807T173344)-copy/main.kcl',
+      },
+    ])
+  })
+
+  it('removes stale legacy conflict-copy paths from source project metadata', async () => {
+    const conflictCopyPath =
+      '/projects/bracket (cloud conflict 20260807T173344)'
+
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: '/projects/bracket',
+      projectName: 'bracket',
+      remoteProjectId: 'remote-123',
+      conflict: {
+        remoteRevision: 'rev-2',
+        remoteUpdatedAt: '2026-08-07T17:33:44.000Z',
+        createdAt: '2026-08-07T17:33:44.000Z',
+        conflictProjectPath: conflictCopyPath,
+      },
+      lastFailure: {
+        message: 'Cloud sync conflict: local and remote both changed.',
+        at: '2026-08-07T17:33:44.000Z',
+      },
+    })
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: '/projects/other',
+      projectName: 'other',
+      remoteProjectId: 'remote-456',
+      conflict: {
+        remoteRevision: 'rev-4',
+        remoteUpdatedAt: '2026-08-07T17:30:44.000Z',
+        createdAt: '2026-08-07T17:30:44.000Z',
+        conflictProjectPath: '/projects/other (cloud conflict 20260807T173044)',
+      },
+    })
+
+    await clearLegacyConflictCopyReferences(conflictCopyPath)
+
+    await expect(
+      getProjectMetadata('/projects/bracket')
+    ).resolves.toMatchObject({
+      localProjectPath: '/projects/bracket',
+      conflict: {
+        remoteRevision: 'rev-2',
+        remoteUpdatedAt: '2026-08-07T17:33:44.000Z',
+        createdAt: '2026-08-07T17:33:44.000Z',
+      },
+      lastFailure: {
+        message: 'Cloud sync conflict: local and remote both changed.',
+      },
+    })
+    expect(
+      (await getProjectMetadata('/projects/bracket'))?.conflict
+    ).not.toHaveProperty('conflictProjectPath')
+    await expect(getProjectMetadata('/projects/other')).resolves.toMatchObject({
+      conflict: {
+        conflictProjectPath: '/projects/other (cloud conflict 20260807T173044)',
+      },
+    })
   })
 })

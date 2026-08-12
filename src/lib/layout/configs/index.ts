@@ -1,5 +1,5 @@
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
-import { textToCADFocusConfig } from '@src/lib/layout/configs/textToCADFocus'
+import { zookeeperFocusConfig } from '@src/lib/layout/configs/zookeeperFocus'
 
 /**
  * Layouts that can be loaded by the user at runtime
@@ -7,7 +7,8 @@ import { textToCADFocusConfig } from '@src/lib/layout/configs/textToCADFocus'
  */
 const userLoadableLayouts = Object.freeze({
   default: defaultLayoutConfig,
-  ttc: textToCADFocusConfig,
+  zookeeper: zookeeperFocusConfig,
+  ttc: zookeeperFocusConfig,
 })
 
 function isUserLoadableLayoutKey(

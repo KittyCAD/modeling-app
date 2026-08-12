@@ -2183,6 +2183,36 @@ description: Variables in memory after executing teapot.kcl
           ],
           "type": "Circle",
           "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.030002777765042333,
+            26.00000000925922
+          ],
+          "from": [
+            4.529991666701971,
+            26.009999981481563
+          ],
+          "radius": 4.500000000000028,
+          "tag": {
+            "commentStart": 1098,
+            "end": 1105,
+            "moduleId": 0,
+            "start": 1098,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            4.529991666701971,
+            26.009999981481563
+          ],
+          "type": "Circle",
+          "units": "mm"
         }
       ],
       "on": {
@@ -7619,6 +7649,36 @@ description: Variables in memory after executing teapot.kcl
             "to": [
               6.030002777765032,
               26.0
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.030002777765042333,
+              26.00000000925922
+            ],
+            "from": [
+              4.529991666701971,
+              26.009999981481563
+            ],
+            "radius": 4.500000000000028,
+            "tag": {
+              "commentStart": 1098,
+              "end": 1105,
+              "moduleId": 0,
+              "start": 1098,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              4.529991666701971,
+              26.009999981481563
             ],
             "type": "Circle",
             "units": "mm"

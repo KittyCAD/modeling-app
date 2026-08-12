@@ -90,7 +90,7 @@ pub enum ArcPoint {
 
 /// Which point of a circle segment to get coordinates for
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CirclePoint {
+enum CirclePoint {
     Start,
     Center,
 }
@@ -187,7 +187,7 @@ pub struct ConstraintToMigrate {
 /// Semantic trim plan produced by analysis/planning before lowering to frontend operations.
 #[derive(Debug, Clone)]
 #[allow(clippy::large_enum_variant)]
-pub enum TrimPlan {
+enum TrimPlan {
     DeleteSegment {
         segment_id: ObjectId,
     },
@@ -814,7 +814,7 @@ pub fn perpendicular_distance_to_segment(point: Coords2d, segment_start: Coords2
 /// Helper to check if a point is on an arc segment (CCW from start to end)
 ///
 /// Returns true if the point is on the arc, false otherwise.
-pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: Coords2d, epsilon: f64) -> bool {
+fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: Coords2d, epsilon: f64) -> bool {
     // Calculate radius
     let radius = ((start.x - center.x) * (start.x - center.x) + (start.y - center.y) * (start.y - center.y)).sqrt();
 
@@ -864,7 +864,7 @@ pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: 
 /// Helper to calculate intersections between a line segment and an arc.
 ///
 /// Returns intersections sorted by the line segment parametric position.
-pub fn line_arc_intersections(
+fn line_arc_intersections(
     line_start: Coords2d,
     line_end: Coords2d,
     arc_center: Coords2d,
@@ -953,7 +953,7 @@ pub fn line_arc_intersections(
 /// Helper to calculate intersection between a line segment and an arc.
 ///
 /// Returns the first intersection point if found, None otherwise.
-pub fn line_arc_intersection(
+fn line_arc_intersection(
     line_start: Coords2d,
     line_end: Coords2d,
     arc_center: Coords2d,
@@ -971,7 +971,7 @@ pub fn line_arc_intersection(
 ///
 /// Returns intersections as `(t, point)` where `t` is the line parametric position:
 /// `point = line_start + t * (line_end - line_start)`, with `0 <= t <= 1`.
-pub fn line_circle_intersections(
+fn line_circle_intersections(
     line_start: Coords2d,
     line_end: Coords2d,
     circle_center: Coords2d,
@@ -1038,7 +1038,7 @@ pub fn line_circle_intersections(
 /// Returns `t` in `[0, 1)` where:
 /// - `t = 0` at circle start
 /// - increasing `t` moves CCW
-pub fn project_point_onto_circle(point: Coords2d, center: Coords2d, start: Coords2d) -> f64 {
+fn project_point_onto_circle(point: Coords2d, center: Coords2d, start: Coords2d) -> f64 {
     let normalize_angle = |angle: f64| -> f64 {
         if !angle.is_finite() {
             return angle;
@@ -1169,7 +1169,7 @@ fn project_point_onto_ccw_arc(point: Coords2d, arc_center: Coords2d, arc_start: 
 /// Helper to calculate all intersections between two arcs (via circle-circle intersection).
 ///
 /// Returns all valid points that lie on both arcs (0, 1, or 2).
-pub fn arc_arc_intersections(
+fn arc_arc_intersections(
     arc1_center: Coords2d,
     arc1_start: Coords2d,
     arc1_end: Coords2d,
@@ -1265,36 +1265,10 @@ pub fn arc_arc_intersections(
     candidates
 }
 
-/// Helper to calculate one intersection between two arcs (if any).
-///
-/// This is kept for compatibility with existing call sites/tests that expect
-/// a single optional intersection.
-pub fn arc_arc_intersection(
-    arc1_center: Coords2d,
-    arc1_start: Coords2d,
-    arc1_end: Coords2d,
-    arc2_center: Coords2d,
-    arc2_start: Coords2d,
-    arc2_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    arc_arc_intersections(
-        arc1_center,
-        arc1_start,
-        arc1_end,
-        arc2_center,
-        arc2_start,
-        arc2_end,
-        epsilon,
-    )
-    .first()
-    .copied()
-}
-
 /// Helper to calculate intersections between a full circle and an arc.
 ///
 /// Returns all valid intersection points on the arc (0, 1, or 2).
-pub fn circle_arc_intersections(
+fn circle_arc_intersections(
     circle_center: Coords2d,
     circle_radius: f64,
     arc_center: Coords2d,
@@ -1358,7 +1332,7 @@ pub fn circle_arc_intersections(
 /// Helper to calculate intersections between two full circles.
 ///
 /// Returns 0, 1 (tangent), or 2 intersection points.
-pub fn circle_circle_intersections(
+fn circle_circle_intersections(
     circle1_center: Coords2d,
     circle1_radius: f64,
     circle2_center: Coords2d,
@@ -1508,7 +1482,7 @@ pub fn get_position_coords_from_arc(
 }
 
 /// Helper to get point coordinates from a Circle segment by looking up the point object (native types)
-pub fn get_position_coords_from_circle(
+fn get_position_coords_from_circle(
     segment_obj: &Object,
     which: CirclePoint,
     objects: &[Object],
@@ -3159,7 +3133,7 @@ where
 /// Result of executing trim flow
 #[cfg(test)]
 #[derive(Debug, Clone)]
-pub struct TrimFlowResult {
+struct TrimFlowResult {
     pub kcl_code: String,
     pub invalidates_ids: bool,
 }
@@ -3180,7 +3154,7 @@ pub struct TrimFlowResult {
 /// Note: This function is only available for non-WASM builds (tests) and uses
 /// a mock executor context so tests can run without an engine token.
 #[cfg(all(not(target_arch = "wasm32"), test))]
-pub(crate) async fn execute_trim_flow(
+async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
     sketch_id: ObjectId,
@@ -3749,7 +3723,7 @@ fn spline_constraint_ids_to_delete(
     deletions.into_iter().collect()
 }
 
-pub(crate) fn build_trim_plan(
+fn build_trim_plan(
     trim_spawn_id: ObjectId,
     trim_spawn_coords: Coords2d,
     trim_spawn_segment: &Object,

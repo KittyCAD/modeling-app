@@ -1,0 +1,40 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints sketch_block_angle_constraint.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0007",
+      "title": "Legacy angle constraint can be converted to angleDimension",
+      "description": "The angle function does not identify a directed angle sector. Convert it to angleDimension to preserve the currently solved sector explicitly.",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "angle can be converted to an explicit angleDimension sector",
+    "pos": [
+      212,
+      227,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  },
+  {
+    "finding": {
+      "code": "Z0007",
+      "title": "Legacy angle constraint can be converted to angleDimension",
+      "description": "The angle function does not identify a directed angle sector. Convert it to angleDimension to preserve the currently solved sector explicitly.",
+      "experimental": false,
+      "family": "simplify"
+    },
+    "description": "angle can be converted to an explicit angleDimension sector",
+    "pos": [
+      239,
+      254,
+      0
+    ],
+    "overridden": false,
+    "suggestion": null
+  }
+]

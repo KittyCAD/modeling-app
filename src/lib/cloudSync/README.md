@@ -20,9 +20,29 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 - Windows: `%USERPROFILE%\Zoo\personal`
 - macOS: `~/Library/CloudStorage/Zoo/personal`, by macOS convention
 
+## Project identity terms
+
+- Project library: a configured source that can discover and operate on project storage.
+- Local realization: one concrete project folder on disk. One folder can belong to more than one library when library paths overlap.
+- Remote project: a cloud-side project record identified by its cloud project ID.
+- Cloud relationship: cloudSync-owned relationship between one remote project and zero or more local realizations.
+- Canonical realization: the preferred local folder for a cloud relationship.
+- Duplicate realization: a non-canonical local folder bound to the same remote project.
+- Home project view model: UI-ready card data derived from project-library realizations and cloudSync relationships.
+
+`projectLibraries` owns local realization discovery and library membership. It combines duplicate discovery results only by normalized local path so one folder can retain all of its library memberships. It must not combine different folders by cloud project ID.
+
+`cloudSync` owns cloud identity resolution, remote-project relationships, canonical selection, duplicate detection, and duplicate cleanup policy. Home renders these explicit relationships and available actions; Home must not infer identity, merge providers, or manufacture a combined local/remote project entry.
+
 ## Product Policies
 
 Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-facing model is library membership. A project is normally made cloud-backed by moving it into a cloud-type project library, and made local-only by moving it out of a cloud-type project library.
+
+### Duplicate local realizations
+
+Duplicate cleanup operates on local realizations, not Home entries. A local realization is eligible for silent deletion only when cloudSync can prove it is an exact non-canonical duplicate in a cloud-type library. Directory-library copies are never silently deleted. Pending, conflicted, unreadable, tombstoned, sync-excluded, or divergent realizations must remain visible for user review.
+
+Canonical selection prefers a clean cloud-library realization, then the newest clean synced realization, then a display-only fallback when every local realization is risky or incomplete. User-confirmed duplicate cleanup may delete selected duplicate paths, including risky ones, but must ignore the canonical path even if a caller includes it.
 
 ### Moving projects between libraries
 

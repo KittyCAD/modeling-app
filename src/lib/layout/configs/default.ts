@@ -21,7 +21,7 @@ export enum DefaultLayoutPaneID {
   Code = 'code',
   FeatureTree = 'feature-tree',
   Files = 'files',
-  TTC = 'ttc',
+  Zookeeper = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
 }
@@ -76,10 +76,10 @@ const primaryPane: Layout = {
     ...(isMobile()
       ? [
           {
-            id: DefaultLayoutPaneID.TTC,
+            id: DefaultLayoutPaneID.Zookeeper,
             label: 'Zookeeper',
             type: LayoutType.Simple,
-            areaType: AreaType.TTC,
+            areaType: AreaType.Zookeeper,
             icon: 'sparkles',
           } satisfies PaneChild,
         ]
@@ -174,10 +174,10 @@ const secondaryPane: Layout = {
   splitOrientation: 'block',
   children: [
     {
-      id: DefaultLayoutPaneID.TTC,
+      id: DefaultLayoutPaneID.Zookeeper,
       label: 'Zookeeper',
       type: LayoutType.Simple,
-      areaType: AreaType.TTC,
+      areaType: AreaType.Zookeeper,
       icon: 'sparkles',
     },
   ],

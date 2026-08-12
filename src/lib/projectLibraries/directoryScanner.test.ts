@@ -53,7 +53,8 @@ const mocks = vi.hoisted(() => {
       mkdirOrNOOP: vi.fn(),
     },
     cloudSyncDb: {
-      clearOutboxEntriesForProject: vi.fn(),
+      clearLegacyConflictCopyReferences: vi.fn(),
+      clearOutboxEntriesTouchingProject: vi.fn(),
       deleteProjectMetadata: vi.fn(),
     },
     fsZds: {
@@ -295,9 +296,12 @@ describe('directory project scanner', () => {
     expect(mocks.fsZds.rm).toHaveBeenCalledWith(conflictCopyPath, {
       recursive: true,
     })
-    expect(mocks.cloudSyncDb.clearOutboxEntriesForProject).toHaveBeenCalledWith(
-      conflictCopyPath
-    )
+    expect(
+      mocks.cloudSyncDb.clearOutboxEntriesTouchingProject
+    ).toHaveBeenCalledWith(conflictCopyPath)
+    expect(
+      mocks.cloudSyncDb.clearLegacyConflictCopyReferences
+    ).toHaveBeenCalledWith(conflictCopyPath)
     expect(mocks.cloudSyncDb.deleteProjectMetadata).toHaveBeenCalledWith(
       conflictCopyPath
     )
@@ -344,7 +348,10 @@ describe('directory project scanner', () => {
     )
     expect(mocks.trap.reportRejection).toHaveBeenCalledWith(deleteError)
     expect(
-      mocks.cloudSyncDb.clearOutboxEntriesForProject
+      mocks.cloudSyncDb.clearOutboxEntriesTouchingProject
+    ).not.toHaveBeenCalled()
+    expect(
+      mocks.cloudSyncDb.clearLegacyConflictCopyReferences
     ).not.toHaveBeenCalled()
     expect(mocks.cloudSyncDb.deleteProjectMetadata).not.toHaveBeenCalled()
   })
