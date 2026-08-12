@@ -2,6 +2,7 @@ use anyhow::Result;
 use ezpz::CircleSide;
 use ezpz::Constraint as SolverConstraint;
 use ezpz::LineSide;
+use ezpz::datatypes::Angle;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumDistance;
@@ -251,6 +252,7 @@ struct ArcVars {
     center: [SketchVarId; 2],
     start: [SketchVarId; 2],
     end: Option<[SketchVarId; 2]>,
+    direction: ArcDirection,
 }
 
 fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintKey {
@@ -411,22 +413,118 @@ fn shared_coincident_arc_endpoints(
     arc_b: ArcVars,
     constraints: &[SolverConstraint],
     range: crate::SourceRange,
-) -> Result<Option<(DatumPoint, DatumPoint)>, KclError> {
+) -> Result<Option<(SharedArcEndpoint, SharedArcEndpoint)>, KclError> {
     let (Some(end_a), Some(end_b)) = (arc_a.end, arc_b.end) else {
         return Ok(None);
     };
-    let points_a = [datum_point(arc_a.start, range)?, datum_point(end_a, range)?];
-    let points_b = [datum_point(arc_b.start, range)?, datum_point(end_b, range)?];
+    let points_a = [
+        SharedArcEndpoint {
+            point: datum_point(arc_a.start, range)?,
+            kind: ArcEndpointKind::Start,
+        },
+        SharedArcEndpoint {
+            point: datum_point(end_a, range)?,
+            kind: ArcEndpointKind::End,
+        },
+    ];
+    let points_b = [
+        SharedArcEndpoint {
+            point: datum_point(arc_b.start, range)?,
+            kind: ArcEndpointKind::Start,
+        },
+        SharedArcEndpoint {
+            point: datum_point(end_b, range)?,
+            kind: ArcEndpointKind::End,
+        },
+    ];
 
     for point_a in points_a {
         for point_b in points_b {
-            if points_are_constrained_coincident(point_a, point_b, constraints) {
+            if points_are_constrained_coincident(point_a.point, point_b.point, constraints) {
                 return Ok(Some((point_a, point_b)));
             }
         }
     }
 
     Ok(None)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ArcEndpointKind {
+    Start,
+    End,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SharedArcEndpoint {
+    point: DatumPoint,
+    kind: ArcEndpointKind,
+}
+
+fn shared_arc_tangent_angle_degrees(
+    endpoint_a: ArcEndpointKind,
+    direction_a: ArcDirection,
+    endpoint_b: ArcEndpointKind,
+    direction_b: ArcDirection,
+) -> f64 {
+    let endpoint_sign = |endpoint| match endpoint {
+        ArcEndpointKind::Start => -1,
+        ArcEndpointKind::End => 1,
+    };
+    let direction_sign = |direction| match direction {
+        ArcDirection::Ccw => 1,
+        ArcDirection::Cw => -1,
+    };
+
+    let radii_point_the_same_way = -(endpoint_sign(endpoint_a)
+        * endpoint_sign(endpoint_b)
+        * direction_sign(direction_a)
+        * direction_sign(direction_b))
+        == 1;
+    if radii_point_the_same_way { 0.0 } else { 180.0 }
+}
+
+#[cfg(test)]
+mod shared_arc_tangent_angle_tests {
+    use super::*;
+
+    #[test]
+    fn same_arc_directions_select_branch_from_endpoint_roles() {
+        for direction in [ArcDirection::Ccw, ArcDirection::Cw] {
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::End, direction, ArcEndpointKind::Start, direction,),
+                0.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::Start, direction, ArcEndpointKind::End, direction,),
+                0.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::Start, direction, ArcEndpointKind::Start, direction,),
+                180.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::End, direction, ArcEndpointKind::End, direction,),
+                180.0
+            );
+        }
+    }
+
+    #[test]
+    fn changing_one_arc_direction_selects_the_other_branch() {
+        for (endpoint_a, endpoint_b) in [
+            (ArcEndpointKind::Start, ArcEndpointKind::Start),
+            (ArcEndpointKind::Start, ArcEndpointKind::End),
+            (ArcEndpointKind::End, ArcEndpointKind::Start),
+            (ArcEndpointKind::End, ArcEndpointKind::End),
+        ] {
+            let same_direction =
+                shared_arc_tangent_angle_degrees(endpoint_a, ArcDirection::Ccw, endpoint_b, ArcDirection::Ccw);
+            let different_directions =
+                shared_arc_tangent_angle_degrees(endpoint_a, ArcDirection::Ccw, endpoint_b, ArcDirection::Cw);
+            assert_eq!(different_directions, 180.0 - same_direction);
+        }
+    }
 }
 
 fn constrainable_point_from_unsolved_segment(
@@ -4009,7 +4107,13 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     unsolved.object_id,
                 ))
             }
-            UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+            UnsolvedSegmentKind::Arc {
+                center,
+                start,
+                end,
+                direction,
+                ..
+            } => {
                 let (
                     UnsolvedExpr::Unknown(center_x),
                     UnsolvedExpr::Unknown(center_y),
@@ -4029,6 +4133,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: Some([*end_x, *end_y]),
+                        direction: *direction,
                     }),
                     unsolved.object_id,
                 ))
@@ -4051,6 +4156,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: None,
+                        direction: ArcDirection::Ccw,
                     }),
                     unsolved.object_id,
                 ))
@@ -4180,22 +4286,27 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             };
 
             if let Some((endpoint0, endpoint1)) = shared_endpoint {
-                let radius_line0 = DatumLineSegment::new(datum_point(circular0.center, range)?, endpoint0);
-                let radius_line1 = DatumLineSegment::new(datum_point(circular1.center, range)?, endpoint1);
+                let tangent_angle = shared_arc_tangent_angle_degrees(
+                    endpoint0.kind,
+                    circular0.direction,
+                    endpoint1.kind,
+                    circular1.direction,
+                );
                 let Some(sketch_state) = exec_state.sketch_block_mut() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "tangent() can only be used inside a sketch block".to_owned(),
                         vec![range],
                     )));
                 };
-                // When two arcs already share an endpoint, tangency at that
-                // point is exactly the requirement that their radii are
-                // collinear. This avoids the non-smooth absolute-radius
-                // branch in the general circle/circle tangent constraint.
-                sketch_state.solver_constraints.push(SolverConstraint::LinesAtAngle(
-                    radius_line0,
-                    radius_line1,
-                    AngleKind::Parallel,
+                // A shared-endpoint arc tangency requires collinear radii. Use
+                // the arcs' declared directions and endpoint roles to select
+                // the unique 0- or 180-degree branch that gives continuous
+                // traversal through the join.
+                sketch_state.solver_constraints.push(SolverConstraint::PointsAtAngle(
+                    endpoint0.point,
+                    datum_point(circular0.center, range)?,
+                    datum_point(circular1.center, range)?,
+                    AngleKind::Other(Angle::from_degrees(tangent_angle)),
                 ));
                 break 'circular_tangent;
             }
