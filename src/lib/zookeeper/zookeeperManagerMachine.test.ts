@@ -64,7 +64,6 @@ class ControllableSetupWebSocket extends EventTarget {
   readonly sentPayloads: string[] = []
   binaryType: BinaryType = 'blob'
   readyState = ControllableSetupWebSocket.CONNECTING
-  bufferedAmount = 0
 
   constructor(url: string) {
     super()
@@ -544,7 +543,7 @@ describe('zookeeperManagerMachine', () => {
       }
     })
 
-    it('recovers if a responsive websocket later stops responding', async () => {
+    it('allows slow setup progress and recovers if the websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
@@ -561,6 +560,9 @@ describe('zookeeperManagerMachine', () => {
         })
 
         const socket = ControllableSetupWebSocket.instances[0]
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS / 2
+        )
         socket.open()
         await vi.waitFor(() => {
           expect(socket.sentPayloads).toContain(
@@ -568,11 +570,10 @@ describe('zookeeperManagerMachine', () => {
           )
         })
 
-        for (let heartbeat = 0; heartbeat < 3; heartbeat += 1) {
-          await vi.advanceTimersByTimeAsync(20_000)
-          socket.receive({ pong: {} })
-        }
-        await vi.advanceTimersByTimeAsync(20_000)
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS / 2 +
+            ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
         socket.receive({
           conversation_id: {
             conversation_id: 'conversation-id',
@@ -589,17 +590,6 @@ describe('zookeeperManagerMachine', () => {
 
         expect(ControllableSetupWebSocket.instances).toHaveLength(1)
         expect(actor.getSnapshot().context.setupAttempt).toBe(0)
-
-        socket.bufferedAmount = 1
-        await vi.advanceTimersByTimeAsync(
-          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS * 2
-        )
-        expect(
-          actor
-            .getSnapshot()
-            .matches(ZookeeperManagerStates.WaitForContinueCheck)
-        ).toBe(true)
-        socket.bufferedAmount = 0
 
         await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
         vi.setSystemTime(Date.now() + ZOOKEEPER_HEARTBEAT_TIMEOUT_MS * 2)

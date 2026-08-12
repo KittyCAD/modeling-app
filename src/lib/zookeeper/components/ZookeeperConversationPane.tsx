@@ -3,7 +3,6 @@ import {
   type QueuedMessage,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
-import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
@@ -23,7 +22,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
@@ -60,9 +59,6 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
-  const [showManualConnect, setShowManualConnect] = useState(
-    typeof navigator !== 'undefined' && navigator.onLine === false
-  )
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
@@ -170,7 +166,7 @@ export const ZookeeperConversationPane = (props: {
     })
   }
 
-  const needsReconnect = abruptlyClosed || showManualConnect
+  const needsReconnect = abruptlyClosed
 
   const reconnect = useCallback(() => {
     if (isClearingChat.current) {
@@ -208,57 +204,29 @@ export const ZookeeperConversationPane = (props: {
     })
   }, [props.zookeeperManagerActor, props.theProject?.path])
 
-  const onReconnect = useCallback(() => {
-    setShowManualConnect(false)
-    reconnect()
-  }, [reconnect])
-
-  const onWindowOnlineOfflineParams = useMemo(
-    () => ({
-      close: () => {
-        // OS connectivity checks can flap under VPNs while this socket is healthy.
-        if (
-          props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
-          WebSocket.OPEN
-        ) {
-          return
-        }
-        reconnectAfterSavedConversationLookup.current = false
-        setShowManualConnect(true)
-        props.zookeeperManagerActor.send({
-          type: ZookeeperManagerTransitions.NetworkOffline,
-        })
-      },
-      connect: () => {
-        if (
-          props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
-          WebSocket.OPEN
-        ) {
-          return
-        }
-        onReconnect()
-      },
-    }),
-    [onReconnect, props.zookeeperManagerActor]
-  )
-  useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
-
   useEffect(() => {
-    if (typeof navigator === 'undefined' || navigator.onLine) {
-      return
+    // `navigator.onLine` can report false under VPNs. Let the WebSocket own
+    // disconnect detection and use an `online` event only as a reconnect hint.
+    const reconnectWhenOnline = () => {
+      // A browser event can fire even though the current connection is healthy.
+      // Replacing an open socket would interrupt the active conversation.
+      if (
+        props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
+        WebSocket.OPEN
+      ) {
+        return
+      }
+      reconnect()
     }
-    props.zookeeperManagerActor.send({
-      type: ZookeeperManagerTransitions.NetworkOffline,
-    })
-  }, [props.zookeeperManagerActor])
+
+    window.addEventListener('online', reconnectWhenOnline)
+    return () => window.removeEventListener('online', reconnectWhenOnline)
+  }, [props.zookeeperManagerActor, reconnect])
 
   useEffect(() => {
-    if (
-      !needsReconnect ||
-      setupFailed ||
-      showManualConnect ||
-      isClearingChatPending
-    ) {
+    // Abrupt closes retry automatically. Terminal setup failures wait for the
+    // user, while clear-chat owns its connection lifecycle until it completes.
+    if (!needsReconnect || setupFailed || isClearingChatPending) {
       return
     }
 
@@ -266,13 +234,7 @@ export const ZookeeperConversationPane = (props: {
     return () => {
       clearTimeout(timeoutReconnect)
     }
-  }, [
-    isClearingChatPending,
-    needsReconnect,
-    reconnect,
-    setupFailed,
-    showManualConnect,
-  ])
+  }, [isClearingChatPending, needsReconnect, reconnect, setupFailed])
 
   const onCancel = () => {
     props.zookeeperManagerActor.send({
@@ -660,12 +622,9 @@ export const ZookeeperConversationPane = (props: {
       onClickClearChat={() => {
         void onClickClearChat()
       }}
-      onReconnect={onReconnect}
-      connectionError={
-        showManualConnect ? 'No internet connection.' : closeReason
-      }
+      onReconnect={reconnect}
+      connectionError={closeReason}
       connectionFailed={setupFailed}
-      showManualConnect={showManualConnect}
       canClearChat={setupFailed && conversationId !== undefined}
       isClearingChat={isClearingChatPending}
       loadingMessage={

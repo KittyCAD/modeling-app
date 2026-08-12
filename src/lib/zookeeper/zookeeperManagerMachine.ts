@@ -204,10 +204,10 @@ export enum ZookeeperManagerTransitions {
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
-export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 30_000
+export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 60_000
 export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
 export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
-export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
+export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 120_000
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
@@ -901,6 +901,9 @@ export const zookeeperManagerMachine = setup({
         url,
         readyState: getWebSocketReadyStateLabel(ws.readyState),
       })
+      theRefParentSend({
+        type: ZookeeperManagerTransitions.SetupProgress,
+      })
 
       let maybeReplayedExchanges: Exchange[] = []
       let maybeModeOptions: MlCopilotModeOption[] | undefined
@@ -912,10 +915,13 @@ export const zookeeperManagerMachine = setup({
           let devCalledClose = false
           let attemptCanceled = false
 
-          // Any WS protocol messages will trigger the `api` heartbeat update.
+          // Anchor the timeout to the first unanswered ping. Repeated pings do
+          // not move that deadline, and any server message clears it below.
+          // A fixed deadline is used instead of `bufferedAmount`, which only
+          // describes Chromium's local send queue and can stay nonzero forever.
           let heartbeatSentAt: number | undefined
           const pingIntervalId = setInterval(() => {
-            if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount > 0) {
+            if (ws.readyState !== WebSocket.OPEN) {
               return
             }
             const now = Date.now()
@@ -937,13 +943,14 @@ export const zookeeperManagerMachine = setup({
                   })
                   return
                 }
+                // A large clock jump means the app was suspended and its timer
+                // ran late; start a fresh heartbeat instead of blaming the VPN.
                 heartbeatSentAt = undefined
-              } else {
-                return
               }
             }
             ws.send(JSON.stringify({ type: 'ping' }))
-            heartbeatSentAt = now
+            // Keep timing from the first ping until the server answers.
+            heartbeatSentAt ??= now
           }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           const cancelSetupAttempt = () => {
             if (attemptCanceled) {
@@ -978,6 +985,7 @@ export const zookeeperManagerMachine = setup({
             if (attemptCanceled) {
               return
             }
+            // Any server message proves the connection is still responsive.
             heartbeatSentAt = undefined
 
             let response: unknown
