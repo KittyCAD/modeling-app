@@ -426,6 +426,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
             crate::lint::checks::lint_legacy_angle,
+            crate::lint::checks::lint_legacy_angle_to_parallel,
         ];
         if options.z0006_enabled() {
             rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
@@ -435,6 +436,16 @@ impl Node<Program> {
         for rule in rules {
             findings.append(&mut self.lint(rule)?);
         }
+        // Z0008 is the more specific migration for statically parallel legacy
+        // angle constraints, so do not also offer the general Z0007 migration.
+        let parallel_angle_ranges = findings
+            .iter()
+            .filter(|finding| finding.finding.code == crate::lint::checks::Z0008.code)
+            .map(|finding| finding.pos)
+            .collect::<Vec<_>>();
+        findings.retain(|finding| {
+            finding.finding.code != crate::lint::checks::Z0007.code || !parallel_angle_ranges.contains(&finding.pos)
+        });
         Ok(findings)
     }
 
