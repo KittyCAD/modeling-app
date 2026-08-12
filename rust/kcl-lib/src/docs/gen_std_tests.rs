@@ -853,6 +853,26 @@ mod tests {
                 expected_text: "`[a, b, c]`",
                 expected_no_text: "[a, b, c]",
             },
+            // A type links to the page of the module that declares it, not to
+            // `std::types`. `Orientation` and `Projection` are declared in
+            // `std::view`; `Solid` keeps the `std-types-` form, so the rule is
+            // "ask the type where its page is" rather than "swap one module for
+            // another".
+            Test {
+                input: "Solid",
+                expected_text: "[`Solid`](/docs/kcl-std/types/std-types-Solid)",
+                expected_no_text: "Solid",
+            },
+            Test {
+                input: "Orientation",
+                expected_text: "[`Orientation`](/docs/kcl-std/types/std-view-Orientation)",
+                expected_no_text: "Orientation",
+            },
+            Test {
+                input: "Projection | Solid",
+                expected_text: "[`Projection`](/docs/kcl-std/types/std-view-Projection) or [`Solid`](/docs/kcl-std/types/std-types-Solid)",
+                expected_no_text: "Projection | Solid",
+            },
         ];
         for test in tests {
             let actual_text = cleanup_type_string(test.input, true, &kcl_std);

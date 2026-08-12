@@ -2675,6 +2675,20 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1490,
+            "end": 1507,
+            "moduleId": 0,
+            "start": 1490,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2708,6 +2722,36 @@ description: Variables in memory after executing pipe-straight.kcl
             "to": [
               60.59775023484809,
               23.514095059665124
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1490,
+              "end": 1507,
+              "moduleId": 0,
+              "start": 1490,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
             ],
             "type": "Circle",
             "units": "mm"
@@ -2801,6 +2845,20 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1490,
+            "end": 1507,
+            "moduleId": 0,
+            "start": 1490,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2834,6 +2892,36 @@ description: Variables in memory after executing pipe-straight.kcl
             "to": [
               60.59775023484809,
               23.514095059665124
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1490,
+              "end": 1507,
+              "moduleId": 0,
+              "start": 1490,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
             ],
             "type": "Circle",
             "units": "mm"
@@ -2967,6 +3055,36 @@ description: Variables in memory after executing pipe-straight.kcl
           "to": [
             60.59775023484809,
             23.514095059665124
+          ],
+          "type": "Circle",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.00000000000000000025506300303710433,
+            -0.0000000000000000001310786070815444
+          ],
+          "from": [
+            31.129873571889167,
+            -15.997842710759363
+          ],
+          "radius": 35.0,
+          "tag": {
+            "commentStart": 1490,
+            "end": 1507,
+            "moduleId": 0,
+            "start": 1490,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "to": [
+            31.129873571889167,
+            -15.997842710759363
           ],
           "type": "Circle",
           "units": "mm"
@@ -3484,6 +3602,36 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "type": "Circle",
             "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1490,
+              "end": 1507,
+              "moduleId": 0,
+              "start": 1490,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "type": "Circle",
+            "units": "mm"
           }
         ],
         "on": {
@@ -3574,6 +3722,20 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "pipeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 846,
+            "end": 861,
+            "moduleId": 0,
+            "start": 846,
+            "type": "TagDeclarator",
+            "value": "pipeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -3607,6 +3769,36 @@ description: Variables in memory after executing pipe-straight.kcl
             "to": [
               41.95228897317963,
               16.27898800781807
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0000000005101264330250895,
+              -0.0000000002621572877918648
+            ],
+            "from": [
+              31.129873573929668,
+              -15.99784271180799
+            ],
+            "radius": 35.000000001720636,
+            "tag": {
+              "commentStart": 846,
+              "end": 861,
+              "moduleId": 0,
+              "start": 846,
+              "type": "TagDeclarator",
+              "value": "pipeInnerCircle"
+            },
+            "to": [
+              31.129873573929668,
+              -15.99784271180799
             ],
             "type": "Circle",
             "units": "mm"
@@ -3749,6 +3941,36 @@ description: Variables in memory after executing pipe-straight.kcl
           "to": [
             41.95228897317963,
             16.27898800781807
+          ],
+          "type": "Circle",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0000000005101264330250895,
+            -0.0000000002621572877918648
+          ],
+          "from": [
+            31.129873573929668,
+            -15.99784271180799
+          ],
+          "radius": 35.000000001720636,
+          "tag": {
+            "commentStart": 846,
+            "end": 861,
+            "moduleId": 0,
+            "start": 846,
+            "type": "TagDeclarator",
+            "value": "pipeInnerCircle"
+          },
+          "to": [
+            31.129873573929668,
+            -15.99784271180799
           ],
           "type": "Circle",
           "units": "mm"
@@ -4245,6 +4467,20 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1490,
+            "end": 1507,
+            "moduleId": 0,
+            "start": 1490,
+            "type": "TagDeclarator",
+            "value": "flangeInnerCircle"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -4278,6 +4514,36 @@ description: Variables in memory after executing pipe-straight.kcl
             "to": [
               60.59775023484809,
               23.514095059665124
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000025506300303710433,
+              -0.0000000000000000001310786070815444
+            ],
+            "from": [
+              31.129873571889167,
+              -15.997842710759363
+            ],
+            "radius": 35.0,
+            "tag": {
+              "commentStart": 1490,
+              "end": 1507,
+              "moduleId": 0,
+              "start": 1490,
+              "type": "TagDeclarator",
+              "value": "flangeInnerCircle"
+            },
+            "to": [
+              31.129873571889167,
+              -15.997842710759363
             ],
             "type": "Circle",
             "units": "mm"
