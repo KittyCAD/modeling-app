@@ -105,9 +105,11 @@ export const useOnPageIdle = ({
               label: 'useOnPageIdle',
               message: 'Calling tearDown()',
             })
+            // Give the UI a chance to preserve the last decoded frame before
+            // tearDown closes the peer connection and ends the video track.
+            idleCallbackRef.current()
             // We do a full tear down at the moment.
             kclManager.engineCommandManager.tearDown()
-            idleCallbackRef.current()
           }
         }
       })()
