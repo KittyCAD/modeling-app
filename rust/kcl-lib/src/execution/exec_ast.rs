@@ -136,6 +136,7 @@ use crate::std::utils::normalize_rad;
 use crate::std::utils::vec2_dot;
 use crate::std::utils::vec2_len;
 use crate::std::utils::vec2_sub;
+use crate::walk::Visitable;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
@@ -2190,10 +2191,14 @@ fn reject_glob_import_clash(
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
 fn sketch_mode_should_skip(expr: &Expr) -> bool {
-    match expr {
-        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
-        _ => true,
+    fn contains_edited_sketch_block(node: crate::walk::Node<'_>) -> bool {
+        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+            return sketch_block.is_being_edited;
+        }
+        node.children().into_iter().any(contains_edited_sketch_block)
     }
+
+    !contains_edited_sketch_block(expr.into())
 }
 
 /// If the error is about an undefined name, and that name matches the name being defined,
