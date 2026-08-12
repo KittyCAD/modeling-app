@@ -166,6 +166,10 @@ impl<'a> StaticEvaluator<'a> {
         }
 
         let StaticBinding::Constant(declaration) = self.resolve_name(&name.name.name, name.into())? else {
+            // `StaticBinding::Runtime` means this name cannot be proven constant
+            // by this lint. For example, a function parameter (`@turns`) or a
+            // constant derived from it (`angle = turns * 180deg`) may have a
+            // different value on each call, so it is not safe to refactor.
             return None;
         };
         let declaration_range = SourceRange::from(declaration);
