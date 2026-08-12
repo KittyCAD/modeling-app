@@ -216,13 +216,28 @@ export const ZookeeperConversationPane = (props: {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
+        // OS connectivity checks can flap under VPNs while this socket is healthy.
+        if (
+          props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
+          WebSocket.OPEN
+        ) {
+          return
+        }
         reconnectAfterSavedConversationLookup.current = false
         setShowManualConnect(true)
         props.zookeeperManagerActor.send({
           type: ZookeeperManagerTransitions.NetworkOffline,
         })
       },
-      connect: onReconnect,
+      connect: () => {
+        if (
+          props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
+          WebSocket.OPEN
+        ) {
+          return
+        }
+        onReconnect()
+      },
     }),
     [onReconnect, props.zookeeperManagerActor]
   )

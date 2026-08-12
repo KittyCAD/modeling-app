@@ -70,6 +70,7 @@ type FakeZookeeperSnapshot = {
     conversationId?: string
     defaultMode?: MlCopilotModeId
     modeOptions?: MlCopilotModeOption[]
+    ws?: Pick<WebSocket, 'readyState'>
   }
   matches: (state: unknown) => boolean
 }
@@ -93,6 +94,7 @@ const createFakeActor = ({
   setupAttempt = 0,
   includeConversationId = true,
   conversationId = 'conversation-id',
+  ws,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
@@ -104,6 +106,7 @@ const createFakeActor = ({
   setupAttempt?: number
   includeConversationId?: boolean
   conversationId?: string
+  ws?: Pick<WebSocket, 'readyState'>
 } = {}): FakeZookeeperActor => {
   const snapshot: FakeZookeeperSnapshot = {
     value,
@@ -117,6 +120,7 @@ const createFakeActor = ({
       conversationId: includeConversationId ? conversationId : undefined,
       defaultMode,
       modeOptions,
+      ws,
     },
     matches: (state: unknown) => state === value,
   }
@@ -398,6 +402,29 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('ignores browser network events while the Zookeeper socket is open', () => {
+    const zookeeperManagerActor = createFakeActor({
+      awaitingResponse: false,
+      ws: { readyState: WebSocket.OPEN },
+    })
+
+    renderPane({ zookeeperManagerActor })
+
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+      window.dispatchEvent(new Event('online'))
+    })
+
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.NetworkOffline,
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+  })
+
   test('shows recovery while offline and reconnects when the browser comes online', async () => {
     vi.useFakeTimers()
     const zookeeperManagerActor = createFakeActor({

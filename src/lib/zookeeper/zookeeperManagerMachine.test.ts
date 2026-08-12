@@ -64,6 +64,7 @@ class ControllableSetupWebSocket extends EventTarget {
   readonly sentPayloads: string[] = []
   binaryType: BinaryType = 'blob'
   readyState = ControllableSetupWebSocket.CONNECTING
+  bufferedAmount = 0
 
   constructor(url: string) {
     super()
@@ -588,6 +589,17 @@ describe('zookeeperManagerMachine', () => {
 
         expect(ControllableSetupWebSocket.instances).toHaveLength(1)
         expect(actor.getSnapshot().context.setupAttempt).toBe(0)
+
+        socket.bufferedAmount = 1
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS * 2
+        )
+        expect(
+          actor
+            .getSnapshot()
+            .matches(ZookeeperManagerStates.WaitForContinueCheck)
+        ).toBe(true)
+        socket.bufferedAmount = 0
 
         await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
         vi.setSystemTime(Date.now() + ZOOKEEPER_HEARTBEAT_TIMEOUT_MS * 2)

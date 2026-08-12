@@ -915,7 +915,7 @@ export const zookeeperManagerMachine = setup({
           // Any WS protocol messages will trigger the `api` heartbeat update.
           let heartbeatSentAt: number | undefined
           const pingIntervalId = setInterval(() => {
-            if (ws.readyState !== WebSocket.OPEN) {
+            if (ws.readyState !== WebSocket.OPEN || ws.bufferedAmount > 0) {
               return
             }
             const now = Date.now()
@@ -938,10 +938,12 @@ export const zookeeperManagerMachine = setup({
                   return
                 }
                 heartbeatSentAt = undefined
+              } else {
+                return
               }
             }
             ws.send(JSON.stringify({ type: 'ping' }))
-            heartbeatSentAt ??= now
+            heartbeatSentAt = now
           }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           const cancelSetupAttempt = () => {
             if (attemptCanceled) {
