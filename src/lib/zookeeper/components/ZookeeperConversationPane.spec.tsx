@@ -427,6 +427,16 @@ describe('ZookeeperConversationPane', () => {
       })
     )
 
+    ws.readyState = WebSocket.CONNECTING
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+
     ws.readyState = WebSocket.CLOSED
     act(() => {
       window.dispatchEvent(new Event('offline'))

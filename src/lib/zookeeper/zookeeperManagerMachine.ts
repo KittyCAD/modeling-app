@@ -901,6 +901,7 @@ export const zookeeperManagerMachine = setup({
         url,
         readyState: getWebSocketReadyStateLabel(ws.readyState),
       })
+      // Give conversation replay a fresh inactivity window after a slow open.
       theRefParentSend({
         type: ZookeeperManagerTransitions.SetupProgress,
       })
@@ -915,10 +916,7 @@ export const zookeeperManagerMachine = setup({
           let devCalledClose = false
           let attemptCanceled = false
 
-          // Anchor the timeout to the first unanswered ping. Repeated pings do
-          // not move that deadline, and any server message clears it below.
-          // A fixed deadline is used instead of `bufferedAmount`, which only
-          // describes Chromium's local send queue and can stay nonzero forever.
+          // Any WS protocol messages will trigger the `api` heartbeat update.
           let heartbeatSentAt: number | undefined
           const pingIntervalId = setInterval(() => {
             if (ws.readyState !== WebSocket.OPEN) {
@@ -943,13 +941,10 @@ export const zookeeperManagerMachine = setup({
                   })
                   return
                 }
-                // A large clock jump means the app was suspended and its timer
-                // ran late; start a fresh heartbeat instead of blaming the VPN.
                 heartbeatSentAt = undefined
               }
             }
             ws.send(JSON.stringify({ type: 'ping' }))
-            // Keep timing from the first ping until the server answers.
             heartbeatSentAt ??= now
           }, ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
           const cancelSetupAttempt = () => {
@@ -985,7 +980,6 @@ export const zookeeperManagerMachine = setup({
             if (attemptCanceled) {
               return
             }
-            // Any server message proves the connection is still responsive.
             heartbeatSentAt = undefined
 
             let response: unknown

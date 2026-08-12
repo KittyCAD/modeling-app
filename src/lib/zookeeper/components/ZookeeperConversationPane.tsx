@@ -205,14 +205,15 @@ export const ZookeeperConversationPane = (props: {
   }, [props.zookeeperManagerActor, props.theProject?.path])
 
   useEffect(() => {
-    // `navigator.onLine` can report false under VPNs. Let the WebSocket own
-    // disconnect detection and use an `online` event only as a reconnect hint.
+    // Browser connectivity signals can be unreliable on spotty networks. Let
+    // the WebSocket own disconnect detection and use `online` as a reconnect hint.
     const reconnectWhenOnline = () => {
-      // A browser event can fire even though the current connection is healthy.
-      // Replacing an open socket would interrupt the active conversation.
+      const readyState =
+        props.zookeeperManagerActor.getSnapshot().context.ws?.readyState
+      // Do not replace a healthy socket or restart a connection in progress.
       if (
-        props.zookeeperManagerActor.getSnapshot().context.ws?.readyState ===
-        WebSocket.OPEN
+        readyState === WebSocket.OPEN ||
+        readyState === WebSocket.CONNECTING
       ) {
         return
       }
