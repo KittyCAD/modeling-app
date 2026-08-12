@@ -98,6 +98,36 @@ description: Variables in memory after executing washer.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0000000000015000002078467296,
+            0.0
+          ],
+          "from": [
+            0.101499999997,
+            0.0
+          ],
+          "radius": 0.1014999999985,
+          "tag": {
+            "commentStart": 903,
+            "end": 910,
+            "moduleId": 0,
+            "start": 903,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.101499999997,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -192,6 +222,20 @@ description: Variables in memory after executing washer.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 903,
+            "end": 910,
+            "moduleId": 0,
+            "start": 903,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -224,6 +268,36 @@ description: Variables in memory after executing washer.kcl
             },
             "to": [
               0.219000000002,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000015000002078467296,
+              0.0
+            ],
+            "from": [
+              0.101499999997,
+              0.0
+            ],
+            "radius": 0.1014999999985,
+            "tag": {
+              "commentStart": 903,
+              "end": 910,
+              "moduleId": 0,
+              "start": 903,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.101499999997,
               0.0
             ],
             "type": "Circle",

@@ -163,7 +163,7 @@ trimProfile = sketch(on = XY) {
   startOffsetGuide.end
 ]) == rotorBore / 2
   distance([line1.start, line1.end]) == lugSpacing / 3
-  angle([startOffsetGuide, line1]) == 10deg
+  angleDimension(lines = [startOffsetGuide, line1], sector = 1, labelPosition = [2.17in, -0.69in]) == 10deg
   distance([line2.start, line2.end]) == hubSpacing * 1.5
 }
 

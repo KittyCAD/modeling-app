@@ -40,11 +40,16 @@ export async function createProjectInLocalDirectory({
   requestedProjectName,
   requestedProjectTitle,
   wasmInstancePromise,
+  initialKclFile,
 }: {
   projectDirectoryPath: string
   requestedProjectName: string
   requestedProjectTitle: string
   wasmInstancePromise: Promise<ModuleType> | ModuleType
+  initialKclFile?: {
+    fileName: string
+    code: string
+  }
 }): Promise<Project> {
   const existingProjectNames =
     await getProjectDirectoryEntryNames(projectDirectoryPath)
@@ -61,9 +66,9 @@ export async function createProjectInLocalDirectory({
   return createNewProjectDirectory(
     uniqueProjectName,
     await wasmInstancePromise,
+    initialKclFile?.code,
     undefined,
-    undefined,
-    undefined,
+    initialKclFile?.fileName,
     projectDirectoryPath,
     uniqueProjectTitle
   )

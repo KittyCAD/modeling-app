@@ -112,6 +112,7 @@ pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
+pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -215,6 +216,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditAngleConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
@@ -235,11 +237,10 @@ pub mod front {
         // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
-            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
-            execute_trim_loop_with_context, get_next_trim_spawn, get_position_coords_for_line,
-            get_position_coords_from_arc, get_trim_spawn_terminations, is_point_on_arc, is_point_on_line_segment,
-            line_arc_intersection, line_segment_intersection, perpendicular_distance_to_segment,
-            project_point_onto_arc, project_point_onto_segment,
+            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, execute_trim_loop_with_context,
+            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc,
+            get_trim_spawn_terminations, is_point_on_line_segment, line_segment_intersection,
+            perpendicular_distance_to_segment, project_point_onto_arc, project_point_onto_segment,
         },
     };
 }

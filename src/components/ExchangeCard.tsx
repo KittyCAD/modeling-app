@@ -7,7 +7,7 @@ import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import ms from 'ms'
 import {
   type ComponentProps,

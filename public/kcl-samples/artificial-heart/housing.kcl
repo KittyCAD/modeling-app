@@ -213,7 +213,7 @@ sketch007 = sketch(on = XY) {
   line2 = line(start = [var 0.48in, var 0.75in], end = [var 0.53in, var 1.23in], construction = true)
   coincident([line2.start, arc1.center])
   coincident([line2.end, arc2.start])
-  angle([line2, line1]) == 6
+  angleDimension(lines = [line2, line1], sector = 1, labelPosition = [0.28in, 1.38in]) == 6
 }
 
 // Model the profile of the rear inlet bung, then sweep

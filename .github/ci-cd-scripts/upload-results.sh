@@ -1,10 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+grep --quiet '<testsuite' test-results/junit.xml || {
+  echo "ERROR: missing or malformed test-results/junit.xml"
+  exit 1
+}
+
 if [ -z "${TAB_API_URL:-}" ] || [ -z "${TAB_API_KEY:-}" ]; then
     echo "WARNING: TAB_API_URL and TAB_API_KEY must be set to analyze results"
-    grep --quiet 'failures="0"' test-results/junit.xml
-    exit 0
+    grep --quiet --extended-regexp 'failures="[1-9]' test-results/junit.xml && exit 1 || exit 0
 fi
 
 project="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
@@ -14,6 +18,7 @@ commit="${CI_COMMIT_SHA:-${GITHUB_SHA:-}}"
 
 echo "Uploading batch results:"
 curl --silent --request POST \
+  --header "User-Agent: GitHub-Actions/1.0" \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --form "project=${project}" \
   --form "suite=${suite}" \
@@ -36,13 +41,13 @@ cat test-results/tab.json
 echo
 
 if ! grep --quiet "block" test-results/tab.json; then
-  echo "ERROR: Invalid response from ${TAB_API_URL}"
-  grep --quiet 'failures="0"' test-results/junit.xml
-  exit 0
+  echo "ERROR: Invalid response from TAB_API_URL"
+  grep --quiet --extended-regexp 'failures="[1-9]' test-results/junit.xml && exit 1 || exit 0
 fi
 
 echo "Sharing updated report:"
 curl --silent --request POST \
+  --header "User-Agent: GitHub-Actions/1.0" \
   --header "Content-Type: application/json" \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --data "{

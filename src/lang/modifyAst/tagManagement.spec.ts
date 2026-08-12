@@ -145,6 +145,18 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
           getCommonEdge(faces = [seg01, capEnd001])
         ],
       )`
+  const regionWithAutoHole = `@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  bottom = line(start = [var -20mm, var -20mm], end = [var 20mm, var -20mm])
+  right = line(start = [var 20mm, var -20mm], end = [var 20mm, var 20mm])
+  top = line(start = [var 20mm, var 20mm], end = [var -20mm, var 20mm])
+  left = line(start = [var -20mm, var 20mm], end = [var -20mm, var -20mm])
+  hole = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+plateRegion = region(point = [10mm, 0mm], sketch = profile)
+plate = extrude(plateRegion, length = 5mm, tagEnd = $topCap)`
 
   describe('modifyAstWithTagsForSelection', () => {
     // ----------------------------------------
@@ -263,6 +275,57 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+    }, 5_000)
+    it('should resolve an auto-hole edge selection to region face tags', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        regionWithAutoHole,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const mappedHoleSegment = [...artifactGraph.values()].find((artifact) => {
+        if (artifact.type !== 'segment' || !artifact.originalSegId) {
+          return false
+        }
+        const originalSegment = artifactGraph.get(artifact.originalSegId)
+        if (originalSegment?.type !== 'segment') {
+          return false
+        }
+        const [start, end] = originalSegment.codeRef.range
+        return regionWithAutoHole.slice(start, end).includes('circle')
+      })
+      expect(mappedHoleSegment?.type).toBe('segment')
+      if (
+        mappedHoleSegment?.type !== 'segment' ||
+        !mappedHoleSegment.originalSegId
+      ) {
+        throw new Error('No mapped auto-hole segment found')
+      }
+      const originalHoleSegment = artifactGraph.get(
+        mappedHoleSegment.originalSegId
+      )
+      expect(originalHoleSegment?.type).toBe('segment')
+      if (originalHoleSegment?.type !== 'segment') {
+        throw new Error('No original auto-hole segment found')
+      }
+
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        {
+          artifact: originalHoleSegment,
+          codeRef: originalHoleSegment.codeRef,
+        },
+        artifactGraph,
+        instanceInThisFile
+      )
+      if (err(result)) {
+        throw result
+      }
+
+      expect(result.exprs).toHaveLength(2)
+      const tagExpressions = JSON.stringify(result.exprs)
+      expect(tagExpressions).toContain('plateRegion')
+      expect(tagExpressions).toContain('hole')
+      expect(tagExpressions).toContain('capStart001')
     }, 5_000)
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {

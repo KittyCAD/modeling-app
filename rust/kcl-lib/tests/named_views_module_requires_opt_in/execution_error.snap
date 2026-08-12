@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing named_views_module_requires_opt_in.kcl
+---
+KCL Semantic error
+
+  × semantic: Use of the enum `Orientation` is experimental and may change or
+  │ be removed.
+   ╭─[6:34]
+ 5 │ // (M01 decision 3).
+ 6 │ orientation = view::Orientation::Front
+   ·                                  ──┬──
+   ·                                    ╰── main
+   ╰────

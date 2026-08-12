@@ -785,8 +785,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538977142,
-            "y": -12.434004430890894,
+            "x": 75.6211753897714,
+            "y": -12.434004430890873,
             "z": 0.0
           },
           "relative": false
@@ -802,7 +802,7 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538977142,
+            "x": 75.6211753897714,
             "y": -126.73400443089086,
             "z": 0.0
           },
@@ -820,7 +820,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": 38.1,
-            "y": -126.73400443089086,
+            "y": -126.73400443089083,
             "z": 0.0
           },
           "relative": false

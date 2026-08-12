@@ -7,17 +7,13 @@ import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import {
-  ProjectSearchBar,
-  useProjectSearch,
-} from '@src/components/ProjectSearchBar'
+import { useProjectSearch } from '@src/components/ProjectSearchBar'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import {
   type ProjectStatus,
@@ -41,11 +37,8 @@ import {
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import {
-  getNextSearchParams,
-  getSortFunction,
-  getSortIcon,
-} from '@src/lib/sorting'
+import { shouldShowFreeCloudProjectTrainingDisclosure } from '@src/lib/projectLibraries/trainingDisclosure'
+import { getSortFunction } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -72,6 +65,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
@@ -80,10 +74,12 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { HomeHeader } from '@src/routes/HomeHeader'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
+  reportOnboardingStartFailure,
 } from '@src/routes/Onboarding/utils'
 import type { HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
@@ -96,11 +92,6 @@ import {
   useSearchParams,
 } from 'react-router-dom'
 
-type ReadWriteProjectState = {
-  value: boolean
-  error: unknown
-}
-
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 
 // This route only opens in the desktop context for now,
@@ -108,18 +99,9 @@ const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 const Home = () => {
   useSignals()
   const app = useApp()
-  const {
-    auth,
-    billing,
-    commands,
-    settings,
-    systemIOActor,
-    registry,
-    userFeatures,
-  } = app
+  const { auth, billing, commands, settings, registry, userFeatures } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
-  const executingPath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
 
@@ -159,6 +141,14 @@ const Home = () => {
     ...library,
     icon: projectLibraryTypes.get(library.type)?.icon ?? library.icon,
   }))
+  const projectLibraryRealizations = registry.optional(
+    projectLibraryRealizationsService
+  )
+  const projectLibraryWatchKey = projectLibraries
+    .map((library) =>
+      [library.id, library.type, library.path, library.source ?? ''].join(':')
+    )
+    .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -217,6 +207,14 @@ const Home = () => {
       },
     })
   }
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
+  useEffect(() => {
+    return projectLibraryRealizations?.watchConfiguredLibraries({
+      libraries: projectLibraries,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
+  }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
     app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
@@ -393,6 +391,12 @@ const Home = () => {
           setSearchParams={setSearchParams}
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
+          showFreeCloudProjectTrainingDisclosure={shouldShowFreeCloudProjectTrainingDisclosure(
+            {
+              library: selectedProjectLibrary,
+              hasSubscription: billingContext.hasSubscription,
+            }
+          )}
           className="col-start-2 -col-end-1"
         />
         <aside
@@ -405,14 +409,11 @@ const Home = () => {
                 <ActionButton
                   Element="button"
                   onClick={() => {
-                    acceptOnboarding({
+                    void acceptOnboarding({
+                      app,
                       onboardingStatus,
                       navigate,
-                      kclManager,
-                      systemIOActor,
-                      settingsActor,
-                      executingPath,
-                    })
+                    }).catch(reportOnboardingStartFailure)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
                   iconStart={{
@@ -607,128 +608,6 @@ const Home = () => {
         ]}
       />
     </div>
-  )
-}
-
-interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
-  title: string
-  library?: ProjectLibrary
-  showLibraryBackLink?: boolean
-  setQuery: (query: string) => void
-  sort: string
-  setSearchParams: (params: Record<string, string>) => void
-  readWriteProjectDir: ReadWriteProjectState
-  projectSearchKeybinding?: string
-}
-
-function HomeHeader({
-  title,
-  library,
-  showLibraryBackLink = false,
-  setQuery,
-  sort,
-  setSearchParams,
-  readWriteProjectDir,
-  projectSearchKeybinding,
-  ...rest
-}: HomeHeaderProps) {
-  const isSortByModified = sort?.includes('modified') || !sort || sort === null
-
-  return (
-    <section {...rest}>
-      <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
-        <div className="flex gap-8 items-center">
-          <div className="flex flex-col gap-1">
-            {library && showLibraryBackLink && (
-              <Link
-                to={PATHS.HOME}
-                className="text-sm text-chalkboard-70 underline underline-offset-2 dark:text-chalkboard-30"
-              >
-                All libraries
-              </Link>
-            )}
-            <h1 className="text-3xl font-bold">{title}</h1>
-          </div>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-          <ProjectSearchBar
-            setQuery={setQuery}
-            keybinding={projectSearchKeybinding}
-          />
-          <div className="flex gap-2 items-center">
-            <small>Sort by</small>
-            <ActionButton
-              Element="button"
-              data-testid="home-sort-by-name"
-              className={`text-xs border-primary/10 ${
-                !sort.includes('name')
-                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : ''
-              }`}
-              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-              iconStart={{
-                icon: getSortIcon(sort, 'name'),
-                bgClassName: 'bg-transparent',
-                iconClassName: !sort.includes('name')
-                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                  : '',
-              }}
-            >
-              Name
-            </ActionButton>
-            <ActionButton
-              Element="button"
-              data-testid="home-sort-by-modified"
-              className={`text-xs border-primary/10 ${
-                !isSortByModified
-                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : ''
-              }`}
-              onClick={() =>
-                setSearchParams(getNextSearchParams(sort, 'modified'))
-              }
-              iconStart={{
-                icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
-                bgClassName: 'bg-transparent',
-                iconClassName: !isSortByModified
-                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                  : '',
-              }}
-            >
-              Last Modified
-            </ActionButton>
-          </div>
-        </div>
-      </div>
-      {library ? (
-        <p className="my-4 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Loaded from{' '}
-          <Link
-            data-testid="project-directory-settings-link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-            className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-          >
-            {formatProjectLibraryPathForDisplay(library)}
-          </Link>
-        </p>
-      ) : null}
-      {!readWriteProjectDir.value && (
-        <section>
-          <div className="flex items-center select-none">
-            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
-              <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-                className="py-1 text-white underline underline-offset-2 text-sm"
-              >
-                Manage Project Libraries
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-    </section>
   )
 }
 
@@ -1069,20 +948,6 @@ function ProjectCardList({
       ))}
     </ul>
   )
-}
-
-/** Type narrowing function of unknown error to a string */
-function errorMessage(error: unknown): string {
-  if (error !== undefined && error instanceof Error) {
-    return error.message
-  }
-  if (error && typeof error === 'object') {
-    return JSON.stringify(error)
-  }
-  if (typeof error === 'string') {
-    return error
-  }
-  return 'Unknown error'
 }
 
 export default Home

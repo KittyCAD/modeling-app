@@ -3,7 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -131,11 +131,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
-    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(
@@ -246,12 +248,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
+            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
-            systemIOActor,
-            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -269,9 +269,6 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
-    kclManager,
-    systemIOActor,
-    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
