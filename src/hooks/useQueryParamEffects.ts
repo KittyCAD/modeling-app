@@ -14,7 +14,6 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { getProjectInfo } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
@@ -30,6 +29,7 @@ import {
 } from '@src/lib/projectLibraries'
 import { importProjectFilesIntoLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -183,7 +183,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
         const importedProject = await importProjectFilesIntoLocalDirectory({
           projectDirectoryPath: targetProjectDirectoryPath,
-          requestedProjectName: projectName,
+          requestedProjectName: getProjectDirectoryNameFromTitle(
+            projectName,
+            downloadedProject.projectName
+          ),
           requestedProjectTitle: projectName,
           files: downloadedProject.files,
           entrypointFilePath:
@@ -225,12 +228,10 @@ export function useQueryParamEffects(kclManager: KclManager) {
         app.systemIOActor.send({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
         })
-        const project = await getProjectInfo(
-          localCloudProject.projectPath,
-          await kclManager.wasmInstancePromise
-        )
         void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            localCloudProject.projectPath
+          )}`
         )
         return
       }

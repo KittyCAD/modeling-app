@@ -163,10 +163,16 @@ test(
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
     const publicProjectId = 'aquarium-shared-project'
-    const publicProjectTitle = 'Aquarium shared project'
+    const publicProjectTitle = 'Aquarium shared project #3 (sample)'
+    const publicProjectDirectoryName = 'aquarium-shared-project-3-sample'
+    const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
     const publicProjectFiles = {
       'main.kcl': 'aquariumShared = 1\n',
-      'project.toml': projectToml(publicProjectTitle, publicProjectId),
+      'project.toml': [
+        '[settings.meta]',
+        `id = "${publicProjectSettingsId}"`,
+        '',
+      ].join('\n'),
     }
     const personalCloudProject: CloudProject = {
       id: 'personal-cloud-copy',
@@ -228,24 +234,31 @@ test(
       .toBe(1)
     await expect
       .poll(() =>
-        opfsPathExists(page, `${PROJECT_DIR}/${publicProjectTitle}/main.kcl`)
+        opfsPathExists(
+          page,
+          `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`
+        )
       )
       .toBe(true)
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
-          projectToml: `${PROJECT_DIR}/${publicProjectTitle}/project.toml`,
+          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
         })
         return files.projectToml
       })
       .toContain('project_id = "personal-cloud-copy"')
 
     const files = await readOpfsTextFiles(page, {
-      main: `${PROJECT_DIR}/${publicProjectTitle}/main.kcl`,
-      projectToml: `${PROJECT_DIR}/${publicProjectTitle}/project.toml`,
+      main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
+      projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
     })
     expect(files.main).toContain('aquariumShared = 1')
-    expect(files.projectToml).not.toContain(publicProjectId)
+    const clonedProjectSettingsId = files.projectToml.match(
+      /\[settings\.meta\]\s*\nid = "([^"]+)"/
+    )?.[1]
+    expect(clonedProjectSettingsId).toBeDefined()
+    expect(clonedProjectSettingsId).not.toBe(publicProjectSettingsId)
     await expect(
       page.getByText('Unable to determine the project directory.')
     ).toHaveCount(0)
