@@ -158,7 +158,7 @@ function findThreePointArcCenter({
   return [center_x, center_y]
 }
 
-function resolveArcEndpoints({
+function resolveThreePointArcDirection({
   centerPoint,
   startPoint,
   endPoint,
@@ -168,11 +168,7 @@ function resolveArcEndpoints({
   startPoint: Coords2d
   endPoint: Coords2d
   throughPoint: Coords2d
-}): {
-  start: Coords2d
-  end: Coords2d
-  firstClickIsArcStart: boolean
-} {
+}): 'ccw' | 'cw' {
   const startFromCenter = subVec(startPoint, centerPoint)
   const endFromCenter = subVec(endPoint, centerPoint)
   const throughFromCenter = subVec(throughPoint, centerPoint)
@@ -185,18 +181,7 @@ function resolveArcEndpoints({
   const throughSpan = getAngleDiff(startAngle, throughAngle, true)
   const throughIsOnArc = throughSpan <= endSpan + EPSILON
 
-  if (throughIsOnArc) {
-    return {
-      start: startPoint,
-      end: endPoint,
-      firstClickIsArcStart: true,
-    }
-  }
-  return {
-    start: endPoint,
-    end: startPoint,
-    firstClickIsArcStart: false,
-  }
+  return throughIsOnArc ? 'ccw' : 'cw'
 }
 
 async function editArcWithThreePoints({
@@ -236,7 +221,7 @@ async function editArcWithThreePoints({
     return { error: 'Cannot create arc from collinear points' }
   }
 
-  const arcEndpoints = resolveArcEndpoints({
+  const direction = resolveThreePointArcDirection({
     centerPoint,
     startPoint,
     endPoint,
@@ -260,13 +245,14 @@ async function editArcWithThreePoints({
             y: { type: 'Var', value: roundOff(centerPoint[1]), units },
           },
           start: {
-            x: { type: 'Var', value: roundOff(arcEndpoints.start[0]), units },
-            y: { type: 'Var', value: roundOff(arcEndpoints.start[1]), units },
+            x: { type: 'Var', value: roundOff(startPoint[0]), units },
+            y: { type: 'Var', value: roundOff(startPoint[1]), units },
           },
           end: {
-            x: { type: 'Var', value: roundOff(arcEndpoints.end[0]), units },
-            y: { type: 'Var', value: roundOff(arcEndpoints.end[1]), units },
+            x: { type: 'Var', value: roundOff(endPoint[0]), units },
+            y: { type: 'Var', value: roundOff(endPoint[1]), units },
           },
+          direction,
         },
       },
     ],
@@ -788,32 +774,13 @@ export async function finalizeArcActor({
     return editResult
   }
 
-  const centerPoint = findThreePointArcCenter({
-    startPoint,
-    endPoint,
-    throughPoint,
-  })
-  if (!centerPoint) {
-    return { error: 'Cannot create arc from collinear points' }
-  }
-  const arcEndpoints = resolveArcEndpoints({
-    centerPoint,
-    startPoint,
-    endPoint,
-    throughPoint,
-  })
-
   const editedArc = editResult.sceneGraphDelta.new_graph.objects[arcId]
   if (!isArcSegment(editedArc)) {
     return { error: 'Failed to find arc after final edit' }
   }
 
-  const firstClickPointId = arcEndpoints.firstClickIsArcStart
-    ? editedArc.kind.segment.start
-    : editedArc.kind.segment.end
-  const lastClickPointId = arcEndpoints.firstClickIsArcStart
-    ? editedArc.kind.segment.end
-    : editedArc.kind.segment.start
+  const firstClickPointId = editedArc.kind.segment.start
+  const lastClickPointId = editedArc.kind.segment.end
 
   const newObjects = [...editResult.sceneGraphDelta.new_objects]
   let latestKclSource = editResult.kclSource

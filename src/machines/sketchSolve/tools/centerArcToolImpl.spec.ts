@@ -598,7 +598,7 @@ describe('centerArcToolImpl', () => {
 
     it.each<[string, boolean, number[]]>([
       ['unswapped', false, [1, 2]],
-      ['swapped', true, [1, 3]],
+      ['clockwise', true, [1, 2]],
     ])(
       'anchors the center and radius-defining endpoint when finalizing a %s arc without snaps',
       async (_name, arcIsSwapped, expectedAnchorIds) => {
@@ -629,7 +629,10 @@ describe('centerArcToolImpl', () => {
           [
             {
               id: 4,
-              ctor: expect.objectContaining({ type: 'Arc' }),
+              ctor: expect.objectContaining({
+                type: 'Arc',
+                direction: arcIsSwapped ? 'cw' : 'ccw',
+              }),
             },
           ],
           expect.anything(),
@@ -710,7 +713,7 @@ describe('centerArcToolImpl', () => {
       )
     })
 
-    it('adds coincident constraints to the fixed and clicked endpoints when finalizing a swapped arc', async () => {
+    it('adds coincident constraints to stable endpoints when finalizing a clockwise arc', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
       const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
@@ -782,7 +785,7 @@ describe('centerArcToolImpl', () => {
         7,
         {
           type: 'Coincident',
-          segments: [3, 77],
+          segments: [2, 77],
         },
         expect.anything()
       )
@@ -792,7 +795,7 @@ describe('centerArcToolImpl', () => {
         7,
         {
           type: 'Coincident',
-          segments: [2, 99],
+          segments: [3, 99],
         },
         expect.anything(),
         true

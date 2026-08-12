@@ -143,11 +143,13 @@ export function createArcApiObject({
   center,
   start,
   end,
+  direction,
 }: {
   id: number
   center: number
   start: number
   end: number
+  direction?: 'ccw' | 'cw'
 }): ApiObject {
   return {
     id,
@@ -175,6 +177,7 @@ export function createArcApiObject({
         },
         ctor_applicable: false,
         construction: false,
+        direction,
       },
     },
     label: '',
