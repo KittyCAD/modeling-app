@@ -2201,8 +2201,13 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).not.toBeInViewport()
     })
 
-    await test.step('Remove extrude from feature tree', async () => {
+    await test.step('Region stays hidden when removing extrude from feature tree', async () => {
       await toolbar.openFeatureTreePane()
+      const regionOp = toolbar.featureTreePane.getByRole('button', {
+        name: /^(Region|region001)$/,
+      })
+      await expect(regionOp).toHaveCount(0)
+
       const extrudeOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Extrude|extrude001)$/ })
         .first()
@@ -2210,18 +2215,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.removeFeatureTreeOperation(extrudeOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
-    })
-
-    await test.step('Remove region from feature tree and expect original code', async () => {
-      await toolbar.openFeatureTreePane()
-      const regionOp = toolbar.featureTreePane
-        .getByRole('button', { name: /^(Region|region001)$/ })
-        .first()
-      await expect(regionOp).toBeVisible()
-      await toolbar.removeFeatureTreeOperation(regionOp)
-      await scene.settled()
-      await editor.expectEditor.not.toContain('region(')
-      await editor.expectEditor.toContain(square, { shouldNormalise: true })
+      await editor.expectEditor.toContain('region(')
+      await expect(regionOp).toHaveCount(0)
     })
   })
 

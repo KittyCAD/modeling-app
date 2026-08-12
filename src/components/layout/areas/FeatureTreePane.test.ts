@@ -90,6 +90,17 @@ describe('buildOperationTree', () => {
     })
   })
 
+  it('omits regions while preserving neighboring features', () => {
+    const extrude = createStdLibCallOperation('extrude', [21, 40, 0])
+    const operationsByModule: OperationsByModule = {
+      map: {
+        0: [createStdLibCallOperation('region', [0, 20, 0]), extrude],
+      },
+    }
+
+    expect(buildOperationTree(operationsByModule, 0)).toEqual([extrude])
+  })
+
   it('deduplicates ModuleInstance when multiple modules import the same module', () => {
     const operationsByModule: OperationsByModule = {
       map: {
