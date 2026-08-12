@@ -285,11 +285,11 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     }))
 }
 
-fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
-    if ty.properties.doc_hidden {
-        return Ok(());
-    }
-
+/// Renders a type's documentation page to markdown, without resolving type
+/// links against the stdlib and without writing output. Split from
+/// `generate_type_from_kcl` so the rendering can be unit tested with a
+/// synthetic `TyData`.
+fn render_type_page(ty: &TyData, example_name: &str) -> Result<String> {
     check_deprecation_attrs(&ty.qual_name, &ty.properties)?;
 
     let hbs = init_handlebars()?;
@@ -298,22 +298,48 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, example_name))
         .collect();
+
+    let definition = if let Some(t) = ty.alias.as_ref() {
+        Some(format!("type {} = {t}", ty.preferred_name))
+    } else if !ty.variants.is_empty() {
+        let arms = ty
+            .variants
+            .iter()
+            .map(|v| format!("  | {}", v.name))
+            .collect::<Vec<_>>()
+            .join("\n");
+        Some(format!("type {} {{\n{arms}\n}}", ty.name))
+    } else {
+        None
+    };
 
     let data = json!({
         "name": ty.preferred_name,
         "module": mod_name_std(&ty.module_name),
-        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
+        "definition": definition,
         "summary": ty.summary.clone(),
         "description": ty.description.clone(),
         "deprecated": ty.properties.deprecated,
         "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
         "examples": examples,
+        "variants": ty.variants.iter().map(|v| json!({
+            "name": v.name,
+            "docs": v.docs,
+        })).collect::<Vec<_>>(),
     });
 
-    let output = hbs.render("kclType", &data)?;
+    Ok(hbs.render("kclType", &data)?)
+}
+
+fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, kcl_std: &ModData) -> Result<()> {
+    if ty.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let output = render_type_page(ty, &example_name)?;
     let output = cleanup_types(&output, kcl_std);
     write_doc_output(&file_name, &output)?;
 
@@ -621,6 +647,65 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
     }
 }
 
+/// Renders a synthetic enum type, constructed directly rather than parsed
+/// from a std file, so the variant rendering is covered even while std
+/// declares no enums.
+#[test]
+fn test_render_type_page_enum_variants() {
+    let mut ty = TyData {
+        name: "Direction".to_owned(),
+        preferred_name: "turns::Direction".to_owned(),
+        qual_name: "std::turns::Direction".to_owned(),
+        properties: Properties {
+            deprecated: false,
+            deprecated_since: None,
+            experimental: true,
+            doc_hidden: false,
+            exported: true,
+            impl_kind: crate::execution::annotations::Impl::Kcl,
+            doc_category: None,
+        },
+        alias: None,
+        variants: vec![
+            super::kcl_doc::TyVariantData {
+                name: "Clockwise".to_owned(),
+                docs: Some("Turns in the direction of a clock's hands.".to_owned()),
+            },
+            super::kcl_doc::TyVariantData {
+                name: "Counterclockwise".to_owned(),
+                docs: None,
+            },
+        ],
+        summary: Some("The direction of rotation.".to_owned()),
+        description: None,
+        examples: Vec::new(),
+        module_name: "turns".to_owned(),
+    };
+
+    let page = render_type_page(&ty, "std-turns-Direction").unwrap();
+
+    assert!(page.lines().count() > 10, "expected a full page, got:\n{page}");
+    assert!(page.contains("The direction of rotation."));
+    assert!(page.contains("**WARNING:** This type is experimental"));
+    assert!(
+        page.contains("type Direction {\n  | Clockwise\n  | Counterclockwise\n}"),
+        "expected the enum definition block, got:\n{page}"
+    );
+    assert!(page.contains("### Variants"));
+    assert!(
+        page.contains("| `Clockwise` | Turns in the direction of a clock's hands. |"),
+        "expected a table row with the variant's docs, got:\n{page}"
+    );
+    assert!(page.contains("| `Counterclockwise` |"));
+
+    // A type without variants must not render the section. The exact
+    // whitespace of real pages is pinned by test_generate_stdlib_markdown_docs.
+    ty.variants.clear();
+    let page = render_type_page(&ty, "std-turns-Direction").unwrap();
+    assert!(!page.contains("### Variants"));
+    assert!(!page.contains("Clockwise"));
+}
+
 #[test]
 fn test_generate_stdlib_markdown_docs() {
     let kcl_std = crate::docs::kcl_doc::walk_stdlib();
@@ -767,6 +852,26 @@ mod tests {
                 input: "[a, b, c]",
                 expected_text: "`[a, b, c]`",
                 expected_no_text: "[a, b, c]",
+            },
+            // A type links to the page of the module that declares it, not to
+            // `std::types`. `Orientation` and `Projection` are declared in
+            // `std::view`; `Solid` keeps the `std-types-` form, so the rule is
+            // "ask the type where its page is" rather than "swap one module for
+            // another".
+            Test {
+                input: "Solid",
+                expected_text: "[`Solid`](/docs/kcl-std/types/std-types-Solid)",
+                expected_no_text: "Solid",
+            },
+            Test {
+                input: "Orientation",
+                expected_text: "[`Orientation`](/docs/kcl-std/types/std-view-Orientation)",
+                expected_no_text: "Orientation",
+            },
+            Test {
+                input: "Projection | Solid",
+                expected_text: "[`Projection`](/docs/kcl-std/types/std-view-Projection) or [`Solid`](/docs/kcl-std/types/std-types-Solid)",
+                expected_no_text: "Projection | Solid",
             },
         ];
         for test in tests {

@@ -1,0 +1,19 @@
+@settings(kclVersion = 2.0)
+
+import casing from "casing.kcl"
+import pistonPole from "piston.kcl"
+
+hide([casing, pistonPole])
+
+export fn piston(pistonLength) {
+  assert(pistonLength, isGreaterThanOrEqual = 0)
+  assert(pistonLength, isLessThanOrEqual = 1600)
+  clone002 = clone(casing)
+    |> rotate(roll = 180deg, global = true)
+  clone001 = clone(pistonPole)
+    |> translate(y = 2000 + pistonLength)
+  return [clone001, clone002]
+}
+export pistonLength = 1999.8
+
+piston(pistonLength = 300)

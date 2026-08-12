@@ -197,6 +197,61 @@ extrude003 = extrude(profile004, length = 20)`
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
+
+    it('should support a whole 3D pattern selected from the feature tree as tools', async () => {
+      const code = `toolSketch = startSketchOn(XY)
+toolProfile = circle(toolSketch, center = [0, 0], radius = 1)
+toolSolid = extrude(toolProfile, length = 2)
+pattern001 = patternLinear3d(
+  toolSolid,
+  instances = 2,
+  distance = 5,
+  axis = X,
+)
+targetSketch = startSketchOn(XY)
+targetProfile = circle(targetSketch, center = [0, 0], radius = 2)
+targetSolid = extrude(targetProfile, length = 2)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const target = [...artifactGraph.values()]
+        .filter((artifact) => artifact.type === 'path')
+        .at(-1)
+      const pattern = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'pattern'
+      )
+      if (!target) {
+        throw new Error('Target path artifact not found in graph')
+      }
+      if (!pattern) {
+        throw new Error('Pattern artifact not found in graph')
+      }
+
+      const result = addSubtract({
+        ast,
+        artifactGraph,
+        solids: createSelectionFromArtifacts([target], artifactGraph),
+        tools: {
+          graphSelections: [{ artifact: pattern, codeRef: pattern.codeRef }],
+          otherSelections: [],
+        },
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        `${code}\nsolid001 = subtract(targetSolid, tools = pattern001)`
+      )
+      expect(
+        (await enginelessExecutor(result.modifiedAst, rustContextInThisFile))
+          .issues
+      ).toEqual([])
+    })
+
     it('should support find the first sweep in case of a method=NEW extrude on face', async () => {
       const carRotorWithExtraBody = `rotorDiameter = 12
 rotorInnerDiameter = 6

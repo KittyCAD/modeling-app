@@ -35,6 +35,7 @@ use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
 use crate::front::Angle;
 use crate::front::ArcCtor;
+use crate::front::ArcDirection;
 use crate::front::CircleCtor;
 use crate::front::ControlPointSplineCtor;
 use crate::front::Distance;
@@ -92,6 +93,8 @@ use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
+use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
@@ -137,6 +140,9 @@ const ARC_VARIABLE: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const ARC_DIRECTION_PARAM: &str = "direction";
+/// The name of the KCL std constant for a clockwise arc direction.
+const ARC_DIRECTION_CW_NAME: &str = "CW";
 const CIRCLE_FN: &str = "circle";
 const CIRCLE_VARIABLE: &str = "circle";
 const CIRCLE_START_PARAM: &str = "start";
@@ -150,6 +156,10 @@ const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
 const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
+const ANGLE_DIMENSION_FN: &str = "angleDimension";
+const ANGLE_LINES_PARAM: &str = "lines";
+const ANGLE_SECTOR_PARAM: &str = "sector";
+const ANGLE_INVERSE_PARAM: &str = "inverse";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -250,6 +260,12 @@ pub struct EditSegmentsOptions {
 pub struct EditDistanceConstraintLabelPositionOptions {
     /// Edited scene objects to keep anchored while previewing the label edit.
     pub anchor_segment_ids: Vec<ObjectId>,
+    /// Whether solver-updated initial guesses should be written back to KCL.
+    pub commit_solved_initial_guesses: bool,
+}
+
+/// Options for editing an angle constraint during sketch dragging.
+pub struct EditAngleConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -412,6 +428,24 @@ impl FrontendState {
             options.anchor_segment_ids,
         )
         .await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
+    /// Edit an angle constraint with optional solver writeback.
+    pub async fn edit_angle_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        angle: Angle,
+        options: EditAngleConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_commit_mode = self
+            .next_edit_commits_solver_solutions
+            .replace(options.commit_solved_initial_guesses);
+        let result = SketchApi::edit_angle_constraint(self, ctx, version, sketch, constraint_id, angle).await;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
         result
     }
@@ -1570,6 +1604,60 @@ impl SketchApi for FrontendState {
         .await
     }
 
+    async fn edit_angle_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        angle: Angle,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Angle(_),
+            }
+        ) {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object should be an angle constraint but it was {}",
+                object.kind.human_friendly_kind_with_article(),
+            ))));
+        }
+
+        let mut new_ast = self.program.ast.clone();
+        let (call, value) = self
+            .angle_constraint_ast_parts(&angle, &mut new_ast)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditAngleConstraint { call, value },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses,
+            },
+        )
+        .await
+    }
+
     /// Splitting a segment means creating a new segment, editing the old one, and then
     /// migrating a bunch of the constraints from the original segment to the new one
     /// (i.e. deleting them and re-adding them on the other segment).
@@ -2223,6 +2311,14 @@ impl FrontendState {
                 arg: center_ast,
             },
         ];
+        // Add direction kwarg if it's clockwise, since counterclockwise is the
+        // default.
+        if ctor.direction == Some(ArcDirection::Cw) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+            });
+        }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
@@ -2839,6 +2935,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                direction: ctor.direction,
                 construction: ctor.construction,
             },
         )?;
@@ -3677,72 +3774,12 @@ impl FrontendState {
         angle: Angle,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let &[l0_id, l1_id] = angle.lines.as_slice() else {
-            return Err(KclError::refactor(format!(
-                "Angle constraint must have exactly 2 lines, got {}",
-                angle.lines.len()
-            )));
-        };
         let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let line0_object = self
-            .scene_graph
-            .objects
-            .get(l0_id.0)
-            .ok_or_else(|| KclError::refactor(format!("Line not found: {l0_id:?}")))?;
-        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line0_object:?}")));
-        };
-        let Segment::Line(_) = line0_segment else {
-            return Err(KclError::refactor(format!(
-                "Only lines can be constrained to meet at an angle: {line0_object:?}",
-            )));
-        };
-        let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
-
-        let line1_object = self
-            .scene_graph
-            .objects
-            .get(l1_id.0)
-            .ok_or_else(|| KclError::refactor(format!("Line not found: {l1_id:?}")))?;
-        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line1_object:?}")));
-        };
-        let Segment::Line(_) = line1_segment else {
-            return Err(KclError::refactor(format!(
-                "Only lines can be constrained to meet at an angle: {line1_object:?}",
-            )));
-        };
-        let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
-
-        // Create the angle() call.
-        let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![l0_ast, l1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
+        let (angle_call_ast, angle_value_ast) = self.angle_constraint_ast_parts(&angle, new_ast)?;
         let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
             left: angle_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: angle.angle.value,
-                    suffix: angle.angle.units,
-                },
-                raw: format_number_literal(angle.angle.value, angle.angle.units, None).map_err(|_| {
-                    KclError::refactor(format!("Could not format numeric suffix: {:?}", angle.angle.units))
-                })?,
-                digest: None,
-            }))),
+            right: angle_value_ast,
             digest: None,
         })));
 
@@ -3753,6 +3790,96 @@ impl FrontendState {
             AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
         )?;
         Ok(sketch_block_ref)
+    }
+
+    fn angle_constraint_ast_parts(
+        &self,
+        angle: &Angle,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
+        let &[l0_id, l1_id] = angle.lines.as_slice() else {
+            return Err(KclError::refactor(format!(
+                "Angle constraint must have exactly 2 lines, got {}",
+                angle.lines.len()
+            )));
+        };
+
+        let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
+        let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
+        let lines_ast = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: vec![l0_ast, l1_ast],
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        if angle.inverse == Some(true) && angle.sector.is_none() {
+            return Err(KclError::refactor("Angle inverse requires an angle sector".to_owned()));
+        }
+
+        let uses_angle_dimension = angle.sector.is_some();
+        let mut arguments = if uses_angle_dimension {
+            vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_LINES_PARAM)),
+                arg: lines_ast.clone(),
+            }]
+        } else {
+            Default::default()
+        };
+
+        if let Some(sector) = angle.sector {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Number {
+                        value: f64::from(sector),
+                        suffix: NumericSuffix::None,
+                    },
+                    raw: sector.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if angle.inverse == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
+                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: true.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if let Some(label_position) = &angle.label_position {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            });
+        }
+
+        let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
+                ANGLE_DIMENSION_FN
+            } else {
+                ANGLE_FN
+            })),
+            unlabeled: (!uses_angle_dimension).then_some(lines_ast),
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let value = ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Number {
+                value: angle.angle.value,
+                suffix: angle.angle.units,
+            },
+            raw: format_number_literal(angle.angle.value, angle.angle.units, None)
+                .map_err(|_| KclError::refactor(format!("Could not format numeric suffix: {:?}", angle.angle.units)))?,
+            digest: None,
+        })));
+
+        Ok((call, value))
     }
 
     async fn add_tangent(
@@ -4963,7 +5090,8 @@ impl FrontendState {
                     | Constraint::HorizontalDistance(_)
                     | Constraint::VerticalDistance(_)
                     | Constraint::Radius(_)
-                    | Constraint::Diameter(_),
+                    | Constraint::Diameter(_)
+                    | Constraint::Angle(_),
             }
         ) {
             return Err(KclError::refactor(format!(
@@ -5439,6 +5567,12 @@ fn solid_output_index_for_sweep(
     sweep_id: ArtifactId,
     sweep_code_ref: &CodeRef,
 ) -> Option<usize> {
+    // Constituent sweeps are implementation details of one composite body,
+    // even when cloning gives them the same CodeRef as the composite root.
+    if downstream_composite_id_for_solid_source(artifact_graph, sweep_id).is_some() {
+        return None;
+    }
+
     let sibling_sweeps = artifact_graph
         .values()
         .filter_map(|artifact| match artifact {
@@ -5790,6 +5924,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        direction: Option<ArcDirection>,
         construction: Option<bool>,
     },
     EditCircle {
@@ -5802,6 +5937,10 @@ enum AstMutateCommand {
         construction: Option<bool>,
     },
     EditConstraintValue {
+        value: ast::BinaryPart,
+    },
+    EditAngleConstraint {
+        call: ast::BinaryPart,
         value: ast::BinaryPart,
     },
     EditDistanceConstraintLabelPosition {
@@ -6011,6 +6150,33 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
     }
 }
 
+fn is_angle_constraint_call_name(name: &str) -> bool {
+    matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
+}
+
+fn is_constraint_call_name(name: &str) -> bool {
+    matches!(
+        name,
+        DISTANCE_FN
+            | HORIZONTAL_DISTANCE_FN
+            | VERTICAL_DISTANCE_FN
+            | RADIUS_FN
+            | DIAMETER_FN
+            | ANGLE_FN
+            | ANGLE_DIMENSION_FN
+    )
+}
+
+fn constraint_supports_label_position(part: &mut ast::BinaryPart) -> Option<&mut BoxNode<CallExpressionKw>> {
+    if let ast::BinaryPart::CallExpressionKw(call) = part
+        && is_constraint_call_name(call.callee.name.name.as_str())
+    {
+        Some(call)
+    } else {
+        None
+    }
+}
+
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
     match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
@@ -6152,6 +6318,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             start,
             end,
             center,
+            direction,
             construction,
         } => {
             if let NodeMut::CallExpressionKw(call) = node {
@@ -6168,6 +6335,35 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
+                    }
+                }
+                // Handle direction kwarg
+                if let Some(direction_value) = direction {
+                    let direction_exists = call
+                        .arguments
+                        .iter()
+                        .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
+                    if direction_value.is_clockwise() {
+                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        if direction_exists {
+                            // Update existing direction kwarg
+                            for labeled_arg in &mut call.arguments {
+                                if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM) {
+                                    labeled_arg.arg = direction_ast.clone();
+                                }
+                            }
+                        } else {
+                            // Add new direction kwarg
+                            call.arguments.push(ast::LabeledArg {
+                                label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
+                                arg: direction_ast,
+                            });
+                        }
+                    } else {
+                        // Remove direction kwarg if it exists since
+                        // counterclockwise is the default
+                        call.arguments
+                            .retain(|arg| arg.label.as_ref().map(|id| id.name.as_str()) != Some(ARC_DIRECTION_PARAM));
                     }
                 }
                 // Handle construction kwarg
@@ -6315,11 +6511,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let left_is_constraint = matches!(
                     &binary_expr.left,
-                    ast::BinaryPart::CallExpressionKw(call)
-                        if matches!(
-                            call.callee.name.name.as_str(),
-                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
-                        )
+                    ast::BinaryPart::CallExpressionKw(call) if is_constraint_call_name(call.callee.name.name.as_str())
                 );
                 if left_is_constraint {
                     binary_expr.right = value.clone();
@@ -6330,17 +6522,43 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditAngleConstraint { call, value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_angle = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+                let right_is_angle = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+
+                match (left_is_angle, right_is_angle) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                let call = if let Some(call) = constraint_supports_label_position(&mut binary_expr.left) {
+                    call
+                } else if let Some(call) = constraint_supports_label_position(&mut binary_expr.right) {
+                    call
+                } else {
                     return TraversalReturn::new_continue(());
                 };
-                if !matches!(
-                    call.callee.name.name.as_str(),
-                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
-                ) {
-                    return TraversalReturn::new_continue(());
-                }
 
                 if let Some(label_arg) = call
                     .arguments
@@ -7210,6 +7428,73 @@ mod tests {
     }
 
     #[test]
+    fn composite_constituent_sweeps_are_not_solid_outputs() {
+        use kcl_api::artifact::ArtifactSweepMethod;
+        use kcl_api::artifact::CompositeSolid;
+        use kcl_api::artifact::CompositeSolidSubType;
+        use kcl_api::artifact::Sweep;
+        use kcl_api::artifact::SweepSubType;
+
+        let first_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let second_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let composite_id = ArtifactId::new(Uuid::new_v4());
+        let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+        let sweep = |id| {
+            Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Extrusion,
+                path_id: ArtifactId::new(Uuid::new_v4()),
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref: code_ref.clone(),
+                source_sweep_id: None,
+                trajectory_id: None,
+                method: ArtifactSweepMethod::New,
+                consumed: false,
+                pattern_ids: Vec::new(),
+            })
+        };
+        let mut artifacts = IndexMap::from([
+            (first_sweep_id, sweep(first_sweep_id)),
+            (second_sweep_id, sweep(second_sweep_id)),
+        ]);
+
+        let top_level_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, first_sweep_id, &code_ref),
+            Some(0)
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, second_sweep_id, &code_ref),
+            Some(1)
+        );
+
+        artifacts.insert(
+            composite_id,
+            Artifact::CompositeSolid(CompositeSolid {
+                id: composite_id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Union,
+                output_index: None,
+                solid_ids: vec![first_sweep_id, second_sweep_id],
+                tool_ids: Vec::new(),
+                code_ref,
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+        let composite_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, first_sweep_id, &CodeRef::default()),
+            None
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, second_sweep_id, &CodeRef::default()),
+            None
+        );
+    }
+
+    #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
 region001 = region(point = [0.1, 0.1], sketch = s)
@@ -8031,6 +8316,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -8082,6 +8368,7 @@ bad = missing_name
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segments = vec![ExistingSegmentCtor {
@@ -10595,6 +10882,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let (_src_delta, scene_delta) = frontend
@@ -10878,6 +11166,286 @@ sketch(on = XY) {
             panic!("Expected distance constraint");
         };
         assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_label_position() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2]) == 60deg
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_label_position_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1)
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2]) == 60deg
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_angle_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Angle {
+                    lines: vec![line2_id, line1_id],
+                    angle: Number {
+                        value: 60.0,
+                        units: NumericSuffix::Deg,
+                    },
+                    sector: Some(3),
+                    inverse: Some(false),
+                    label_position: Some(label_position.clone()),
+                    source: Default::default(),
+                },
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line2, line1], sector = 3, labelPosition = [10mm, 11mm]) == 60deg
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.lines, vec![line2_id, line1_id]);
+        assert_eq!(angle.sector, Some(3));
+        assert_eq!(angle.inverse, Some(false));
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angle([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let (src_delta, _) = frontend
+            .edit_angle_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Angle {
+                    lines: vec![line2_id, line1_id],
+                    angle: Number {
+                        value: 60.0,
+                        units: NumericSuffix::Deg,
+                    },
+                    sector: Some(3),
+                    inverse: Some(false),
+                    label_position: None,
+                    source: Default::default(),
+                },
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angleDimension(lines = [line2, line1], sector = 3)
+}
+"
+        );
 
         mock_ctx.close().await;
     }
@@ -12605,6 +13173,9 @@ splineSketch = sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
+            sector: None,
+            inverse: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, _) = frontend
@@ -13245,6 +13816,9 @@ sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
+            sector: None,
+            inverse: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -13260,6 +13834,74 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_angle_with_sector_uses_angle_dimension() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, line2_id],
+            angle: Number {
+                value: 270.0,
+                units: NumericSuffix::Deg,
+            },
+            sector: Some(1),
+            inverse: Some(true),
+            label_position: Some(Point2d {
+                x: Number {
+                    value: -0.73,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 0.75,
+                    units: NumericSuffix::Mm,
+                },
+            }),
+            source: Default::default(),
+        });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  angleDimension(
+  lines = [line1, line2],
+  sector = 1,
+  inverse = true,
+  labelPosition = [-0.73mm, 0.75mm],
+) == 270deg
+}
+"
+        );
+
         mock_ctx.close().await;
     }
 
@@ -14712,6 +15354,7 @@ sketch001 = sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            direction: None,
             construction: None,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
@@ -14727,6 +15370,120 @@ sketch001 = sketch(on = XY) {
             src_delta.text
         );
         assert!(!scene_delta.new_objects.is_empty());
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_arc_direction_flows_to_source() {
+        let initial_source = "@settings(defaultLengthUnit = mm)
+
+sketch001 = sketch(on = XY) {
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let point = |x: f64, y: f64| Point2d {
+            x: Expr::Var(Number {
+                value: x,
+                units: NumericSuffix::Mm,
+            }),
+            y: Expr::Var(Number {
+                value: y,
+                units: NumericSuffix::Mm,
+            }),
+        };
+
+        // Adding a clockwise arc writes its direction to the source.
+        let arc_ctor = ArcCtor {
+            start: point(5.0, 0.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, SegmentCtor::Arc(arc_ctor), None)
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW in source, got: {}",
+            src_delta.text
+        );
+        // The new objects are the end points, the center, and then the arc.
+        let arc_id = *scene_delta.new_objects.last().unwrap();
+
+        // Editing the arc's points preserves the clockwise direction. The
+        // edited points keep the same distance to the center so that the
+        // solver doesn't need to move anything.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Cw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            src_delta.text.contains("start = [var 0mm, var -5mm]"),
+            "Expected edited start point in source, got: {}",
+            src_delta.text
+        );
+        assert!(
+            src_delta.text.contains("direction = CW"),
+            "Expected direction = CW to be preserved in source, got: {}",
+            src_delta.text
+        );
+
+        // Editing the arc back to counterclockwise removes the direction
+        // argument since counterclockwise is the default.
+        let edited_ctor = ArcCtor {
+            start: point(0.0, -5.0),
+            end: point(0.0, 5.0),
+            center: point(0.0, 0.0),
+            direction: Some(ArcDirection::Ccw),
+            construction: None,
+        };
+        let (src_delta, _scene_delta) = frontend
+            .edit_segments(
+                &mock_ctx,
+                version,
+                sketch_id,
+                vec![ExistingSegmentCtor {
+                    id: arc_id,
+                    ctor: SegmentCtor::Arc(edited_ctor),
+                }],
+            )
+            .await
+            .unwrap();
+        assert!(
+            !src_delta.text.contains("direction"),
+            "Expected direction argument to be removed from source, got: {}",
+            src_delta.text
+        );
 
         ctx.close().await;
         mock_ctx.close().await;

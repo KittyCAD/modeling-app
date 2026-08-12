@@ -152,6 +152,14 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     if !relative_output_dir.exists() {
         std::fs::create_dir_all(&relative_output_dir).unwrap();
     }
+    // The current boolean implementation cannot subtract the lower-left rack
+    // mounting hole. Keep the legacy method until the engine supports it, but
+    // require exactly one warning so additional deprecations still fail and
+    // removing the workaround makes this exception fail too.
+    let expected_deprecation_warnings = match test_name {
+        "rack-blanking-panel" => 1,
+        _ => 0,
+    };
     Test {
         name: test_name.to_owned(),
         entry_point,
@@ -159,6 +167,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.
         skip_assert_artifact_graph: true,
+        expected_deprecation_warnings: Some(expected_deprecation_warnings),
     }
 }
 
