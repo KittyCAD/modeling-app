@@ -157,6 +157,7 @@ fn dfs_mut_body_item<V: Visitor>(
             }
         }
         ast::BodyItem::VariableDeclaration(node) => {
+            // TODO: Should we visit the VariableDeclarator and its Identifier?
             ret = dfs_mut_expr(&mut node.declaration.init, visitor);
             if ret.is_break() {
                 return ret;
@@ -166,6 +167,7 @@ fn dfs_mut_body_item<V: Visitor>(
         // none: an alias holds a `Type`, and enum variants are identifiers. The
         // visitor has already seen the statement itself above. `crate::walk` is the
         // traversal that reaches variants, and it does.
+        // TODO: Should we visit the name and enum variant Identifiers?
         ast::BodyItem::TypeDeclaration(_) => {}
         ast::BodyItem::ReturnStatement(node) => {
             ret = dfs_mut_expr(&mut node.argument, visitor);
@@ -187,11 +189,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
     }
     match expr {
         // Leaf nodes with no children to traverse.
-        ast::Expr::Literal(_)
-        | ast::Expr::Name(_)
-        | ast::Expr::TagDeclarator(_)
-        | ast::Expr::PipeSubstitution(_)
-        | ast::Expr::None(_) => {}
+        ast::Expr::Literal(_) | ast::Expr::TagDeclarator(_) | ast::Expr::PipeSubstitution(_) | ast::Expr::None(_) => {}
+        // TODO: Should we visit the Identifier and path segments?
+        ast::Expr::Name(_) => {}
         ast::Expr::BinaryExpression(node) => {
             ret = dfs_mut_binary_part(&mut node.left, visitor);
             if ret.is_break() {
@@ -203,6 +203,7 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::FunctionExpression(node) => {
+            // TODO: Should we visit the Parameters?
             // The function body is visited as a program node, like
             // if-expression branch blocks, so that scope-tracking visitors
             // can set up and tear down a scope for it.
@@ -212,6 +213,8 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::CallExpressionKw(node) => {
+            // TODO: Should we visit the callee Name and the argument label
+            // Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
@@ -274,6 +277,7 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::LabelledExpression(node) => {
+            // TODO: Should we visit the label Identifier?
             ret = dfs_mut_expr(&mut node.expr, visitor);
             if ret.is_break() {
                 return ret;
@@ -286,12 +290,14 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::SketchBlock(node) => {
+            // TODO: Should we visit the argument label Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
                     return ret;
                 }
             }
+            // TODO: Should we visit the inner Block node?
             let block = &mut node.body.inner;
             ret = dfs_mut_body(&mut block.items, &mut block.non_code_meta, visitor, ret);
             if ret.is_break() {
@@ -324,7 +330,12 @@ fn dfs_mut_binary_part<V: Visitor>(
     }
     match binary_part {
         // Leaf nodes with no children to traverse.
-        ast::BinaryPart::Literal(_) | ast::BinaryPart::Name(_) | ast::BinaryPart::SketchVar(_) => {}
+        ast::BinaryPart::Literal(_) => {}
+        // TODO: Should we visit the Identifier and path segments?
+        ast::BinaryPart::Name(_) => {}
+        // TODO: Should we visit the initial NumericLiteral, like the
+        // `ast::Expr::SketchVar` arm does?
+        ast::BinaryPart::SketchVar(_) => {}
         ast::BinaryPart::BinaryExpression(node) => {
             ret = dfs_mut_binary_part(&mut node.left, visitor);
             if ret.is_break() {
@@ -336,6 +347,8 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::CallExpressionKw(node) => {
+            // TODO: Should we visit the callee Name and the argument label
+            // Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
@@ -416,6 +429,7 @@ fn dfs_mut_if_expression<V: Visitor>(
         return ret;
     }
     for else_if in &mut node.else_ifs {
+        // TODO: Should we visit the ElseIf node itself?
         ret = dfs_mut_expr(&mut else_if.cond, visitor);
         if ret.is_break() {
             return ret;
@@ -437,6 +451,7 @@ fn dfs_mut_object_properties<V: Visitor>(
     mut ret: TraversalReturn<V::Break, V::Continue>,
 ) -> TraversalReturn<V::Break, V::Continue> {
     for property in properties {
+        // TODO: Should we visit the ObjectProperty node itself?
         ret = visitor.visit(NodeMut::from(&mut property.key));
         if ret.is_break() {
             return ret;
