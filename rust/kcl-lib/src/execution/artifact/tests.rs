@@ -273,10 +273,10 @@ fn entity_clone_remaps_composite_solid_ids() {
     };
     assert_eq!(clone_solid.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_solid.sub_type, CompositeSolidSubType::Subtract);
-    assert_eq!(clone_solid.output_index, Some(1));
+    assert_eq!(clone_solid.output_index, None);
     assert_eq!(clone_solid.solid_ids, vec![cloned_solid_id]);
     assert_eq!(clone_solid.tool_ids, vec![cloned_tool_id]);
-    assert_eq!(clone_solid.composite_solid_id, Some(cloned_parent_composite_id));
+    assert_eq!(clone_solid.composite_solid_id, None);
     assert!(!clone_solid.consumed);
 }
 

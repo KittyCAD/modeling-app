@@ -18,6 +18,46 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { expect } from 'vitest'
 
+export const clonedRegionBody = `@settings(kclVersion = 2.0)
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
+  line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
+  line3 = line(start = [var 3.1mm, var 4.36mm], end = [var 0.42mm, var 4.36mm])
+  line4 = line(start = [var 0.42mm, var 4.36mm], end = [var 0.42mm, var 0.91mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(rectangleSketch)
+region001 = region(segments = [
+  rectangleSketch.line4,
+  rectangleSketch.line1
+])
+cube1 = extrude(region001, length = 2)
+cube2 = clone(cube1)
+  |> translate(x = 5)`
+
+export function getClonedSweepEdges(artifactGraph: ArtifactGraph) {
+  const clonedSweep = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
+  )
+  if (!clonedSweep) return []
+
+  return clonedSweep.edgeIds
+    .map((edgeId) => artifactGraph.get(edgeId))
+    .filter(
+      (artifact): artifact is Extract<Artifact, { type: 'sweepEdge' }> =>
+        artifact?.type === 'sweepEdge'
+    )
+}
+
 export async function enginelessExecutor(
   ast: Node<Program>,
   rustContext: RustContext,
