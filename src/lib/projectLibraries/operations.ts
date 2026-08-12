@@ -129,6 +129,23 @@ export async function importProjectFilesIntoLocalDirectory({
     `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
   )
   const projectPath = fsZds.join(projectDirectoryPath, uniqueProjectName)
+  const relativeProjectPath = fsZds.relative(
+    fsZds.resolve(projectDirectoryPath),
+    fsZds.resolve(projectPath)
+  )
+  if (
+    !relativeProjectPath ||
+    relativeProjectPath === '..' ||
+    relativeProjectPath.startsWith(`..${fsZds.sep}`) ||
+    relativeProjectPath.includes(fsZds.sep) ||
+    relativeProjectPath === fsZds.resolve(relativeProjectPath)
+  ) {
+    return Promise.reject(
+      new Error(
+        `The shared project contained an invalid project directory name: "${requestedProjectName}".`
+      )
+    )
+  }
 
   await fsZds.mkdir(temporaryProjectPath, { recursive: true })
   try {

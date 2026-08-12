@@ -163,8 +163,8 @@ test(
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
     const publicProjectId = 'aquarium-shared-project'
-    const publicProjectTitle = 'Aquarium shared project #3 (sample)'
-    const publicProjectDirectoryName = 'aquarium-shared-project-3-sample'
+    const publicProjectTitle = '!!!'
+    const publicProjectDirectoryName = 'shared-project'
     const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
     const publicProjectFiles = {
       'main.kcl': 'aquariumShared = 1\n',
@@ -192,8 +192,7 @@ test(
             status: 200,
             contentType: 'application/zip',
             headers: {
-              'content-disposition':
-                'attachment; filename="aquarium-shared-project.zip"',
+              'content-disposition': 'attachment; filename="...zip"',
             },
             body: publicProjectArchive,
           })
@@ -262,6 +261,7 @@ test(
     await expect(
       page.getByText('Unable to determine the project directory.')
     ).toHaveCount(0)
+    await expectProjectFileRoute(page)
   }
 )
 

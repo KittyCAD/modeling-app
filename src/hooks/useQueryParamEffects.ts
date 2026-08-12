@@ -185,7 +185,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
           projectDirectoryPath: targetProjectDirectoryPath,
           requestedProjectName: getProjectDirectoryNameFromTitle(
             projectName,
-            downloadedProject.projectName
+            'shared-project'
           ),
           requestedProjectTitle: projectName,
           files: downloadedProject.files,
