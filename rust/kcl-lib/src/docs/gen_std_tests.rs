@@ -854,14 +854,19 @@ mod tests {
                 expected_no_text: "[a, b, c]",
             },
             // A type links to the page of the module that declares it, not to
-            // `std::types`. `Orientation` and `Projection` are declared in
-            // `std::view`; `Solid` keeps the `std-types-` form, so the rule is
-            // "ask the type where its page is" rather than "swap one module for
-            // another".
+            // `std::types`. `CameraView`, `Orientation` and `Projection` are
+            // declared in `std::view`; `Solid` keeps the `std-types-` form, so
+            // the rule is "ask the type where its page is" rather than "swap one
+            // module for another".
             Test {
                 input: "Solid",
                 expected_text: "[`Solid`](/docs/kcl-std/types/std-types-Solid)",
                 expected_no_text: "Solid",
+            },
+            Test {
+                input: "CameraView",
+                expected_text: "[`CameraView`](/docs/kcl-std/types/std-view-CameraView)",
+                expected_no_text: "CameraView",
             },
             Test {
                 input: "Orientation",
