@@ -6,9 +6,11 @@ import { useEffect, useRef } from 'react'
 
 export const useOnPageIdle = ({
   startCallback,
+  beforeIdleTeardown,
   idleCallback,
 }: {
   startCallback: () => void
+  beforeIdleTeardown: () => void
   idleCallback: () => void
 }) => {
   const { settings } = useApp()
@@ -18,6 +20,7 @@ export const useOnPageIdle = ({
   const { state: modelingMachineState } = useModelingContext()
   const intervalId = useRef<NodeJS.Timeout | null>(null)
   const startCallbackRef = useRef(startCallback)
+  const beforeIdleTeardownRef = useRef(beforeIdleTeardown)
   const idleCallbackRef = useRef(idleCallback)
   const modelingMachineStateRef = useRef(modelingMachineState)
   const idleTimeMsRef = useRef(Number(streamIdleMode))
@@ -36,6 +39,10 @@ export const useOnPageIdle = ({
   useEffect(() => {
     startCallbackRef.current = startCallback
   }, [startCallback])
+
+  useEffect(() => {
+    beforeIdleTeardownRef.current = beforeIdleTeardown
+  }, [beforeIdleTeardown])
 
   useEffect(() => {
     idleCallbackRef.current = idleCallback
@@ -105,11 +112,10 @@ export const useOnPageIdle = ({
               label: 'useOnPageIdle',
               message: 'Calling tearDown()',
             })
-            // Give the UI a chance to preserve the last decoded frame before
-            // tearDown closes the peer connection and ends the video track.
-            idleCallbackRef.current()
+            beforeIdleTeardownRef.current()
             // We do a full tear down at the moment.
             kclManager.engineCommandManager.tearDown()
+            idleCallbackRef.current()
           }
         }
       })()
