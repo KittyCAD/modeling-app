@@ -140,6 +140,10 @@ describe('useOnPageIdle', () => {
       hookMocks.state.kclManager.engineCommandManager.tearDown
     ).toHaveBeenCalledTimes(1)
     expect(idleCallback).toHaveBeenCalledTimes(1)
+    expect(idleCallback.mock.invocationCallOrder[0]).toBeLessThan(
+      hookMocks.state.kclManager.engineCommandManager.tearDown.mock
+        .invocationCallOrder[0]
+    )
 
     unmount()
   })
