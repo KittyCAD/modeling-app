@@ -15874,6 +15874,41 @@ fn build() {
     }
 
     #[test]
+    fn test_add_variable_declaration_in_function_body_ignores_parameters() {
+        // Locals in the function body are avoided: thing1 is taken, so the
+        // generated name is thing2. But find_defined_names only sees the
+        // block's body items, not the function's parameters, so the generated
+        // name collides with the thing2 parameter. This pins the current
+        // behavior.
+        // TODO: Should function parameters be included in the scope used for
+        // name generation?
+        let code = "\
+fn build(thing2) {
+  thing1 = 1
+  10 + 20
+  return thing1 + thing2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "thing".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "thing2", "locals are avoided, but parameters are not");
+    }
+
+    #[test]
     fn test_add_variable_declaration_in_if_branch_uses_branch_scope() {
         let code = "\
 x = 1
