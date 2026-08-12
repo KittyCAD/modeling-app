@@ -739,16 +739,16 @@ describe('centerArcToolImpl', () => {
         center: 1,
         start: 2,
         end: 3,
-        startX: 0,
-        startY: 10,
+        startX: 10,
+        startY: 0,
       })
       ;(rustContext.editSegments as any).mockResolvedValue({
         kclSource: { text: 'edit' },
         sceneGraphDelta: createSceneGraphDelta(
           [
             createPointApiObject({ id: 1, x: 0, y: 0 }),
-            createPointApiObject({ id: 2, x: 0, y: 10 }),
-            createPointApiObject({ id: 3, x: 10, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
             editedArc,
           ],
           [4]
