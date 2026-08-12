@@ -15769,4 +15769,185 @@ sk = sketch() {
         };
         assert_eq!(decl.name(), "foo2");
     }
+
+    /// Get the function body of the variable declaration at `ast.body[index]`.
+    fn function_body_at(ast: &ast::Node<ast::Program>, index: usize) -> &ast::Node<ast::Program> {
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[index] else {
+            panic!("expected a variable declaration");
+        };
+        let ast::Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected a function expression");
+        };
+        &func.body
+    }
+
+    /// Get the then-branch block of the if-expression initializing the
+    /// variable declaration at `ast.body[index]`.
+    fn then_block_at(ast: &ast::Node<ast::Program>, index: usize) -> &ast::Node<ast::Program> {
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[index] else {
+            panic!("expected a variable declaration");
+        };
+        let ast::Expr::IfExpression(if_expr) = &decl.declaration.init else {
+            panic!("expected an if expression");
+        };
+        &if_expr.then_val
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_function_body_uses_function_scope() {
+        // The generated name must come from the function body's scope, where
+        // thing1 is taken. Before dfs_mut visited function bodies as program
+        // nodes, the top-level scope was used instead, generating thing1 and
+        // colliding with the local.
+        let code = "\
+fn build() {
+  thing1 = 1
+  10 + 20
+  return thing1
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "thing".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "thing2");
+        let body = &function_body_at(&ast, 0).body;
+        assert_eq!(body.len(), 3);
+        let ast::BodyItem::VariableDeclaration(decl) = &body[1] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "thing2");
+        // Siblings are untouched.
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "thing1");
+        assert!(matches!(&body[2], ast::BodyItem::ReturnStatement(_)));
+    }
+
+    #[test]
+    fn test_delete_node_in_function_body_preserves_leading_comment() {
+        // Before the shared body traversal, MutateBodyItem::Delete was
+        // silently dropped inside function bodies, so this reported success
+        // without deleting anything.
+        let code = "\
+fn build() {
+  a = 1
+  // keep me
+  b = 2
+  return a
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::VariableDeclaration(b_decl) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(b_decl.name(), "b");
+        let source_ref = SourceRef::new(SourceRange::from(&b_decl.declaration.init), None);
+        mutate_ast_node_by_source_ref(&mut ast, &source_ref, AstMutateCommand::DeleteNode).unwrap();
+        let body = &function_body_at(&ast, 0).body;
+        assert_eq!(body.len(), 2, "expected b to be deleted");
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "a");
+        let ast::BodyItem::ReturnStatement(_) = &body[1] else {
+            panic!("expected the return statement to remain");
+        };
+        assert!(
+            body[1].get_comments().iter().any(|c| c.contains("keep me")),
+            "expected the deleted item's leading comment to migrate to the next item, got: {:?}",
+            body[1].get_comments()
+        );
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_if_branch_uses_branch_scope() {
+        let code = "\
+x = 1
+y = if x > 0 {
+  q1 = 1
+  foo(q1)
+  q1
+} else {
+  2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &then_block_at(&ast, 1).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration { prefix: "q".to_owned() },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "q2");
+        let body = &then_block_at(&ast, 1).body;
+        assert_eq!(body.len(), 3);
+        let ast::BodyItem::VariableDeclaration(decl) = &body[1] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "q2");
+        // Siblings are untouched.
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "q1");
+        assert!(matches!(&body[2], ast::BodyItem::ExpressionStatement(_)));
+    }
+
+    #[test]
+    fn test_delete_node_in_if_branch_preserves_leading_comment() {
+        // Before the shared body traversal, MutateBodyItem::Delete was
+        // silently dropped inside if-expression branch blocks.
+        let code = "\
+y = if true {
+  a = 1
+  // keep me
+  b = 2
+  a + b
+} else {
+  2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::VariableDeclaration(b_decl) = &then_block_at(&ast, 0).body[1] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(b_decl.name(), "b");
+        let source_ref = SourceRef::new(SourceRange::from(&b_decl.declaration.init), None);
+        mutate_ast_node_by_source_ref(&mut ast, &source_ref, AstMutateCommand::DeleteNode).unwrap();
+        let body = &then_block_at(&ast, 0).body;
+        assert_eq!(body.len(), 2, "expected b to be deleted");
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "a");
+        let ast::BodyItem::ExpressionStatement(_) = &body[1] else {
+            panic!("expected the tail expression to remain");
+        };
+        assert!(
+            body[1].get_comments().iter().any(|c| c.contains("keep me")),
+            "expected the deleted item's leading comment to migrate to the next item, got: {:?}",
+            body[1].get_comments()
+        );
+    }
 }
