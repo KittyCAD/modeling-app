@@ -15729,4 +15729,44 @@ sketch001 = sketch(on = XY) {
         ctx.close().await;
         mock_ctx.close().await;
     }
+
+    #[test]
+    fn test_add_variable_declaration_uses_top_level_scope_after_sketch_block() {
+        // A non-target sketch block appears before the target so that the
+        // traversal enters and leaves it before reaching the target. The
+        // generated name must come from the top-level scope, where foo1 is
+        // taken, not the sketch's scope, where no foo names are taken. This
+        // is a regression test: dfs_mut used to visit the sketch block twice,
+        // pushing its scope twice but popping it once, leaving the sketch
+        // scope on top of the defined-names stack for the rest of the
+        // traversal.
+        let code = "\
+foo1 = 1
+sk = sketch() {
+  p = var 1.5
+}
+7 + 8
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &ast.body[2] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "foo".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "foo2");
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[2] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "foo2");
+    }
 }
