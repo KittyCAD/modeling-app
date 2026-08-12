@@ -380,10 +380,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onPageIdleParams = useMemo(
     () => ({
       startCallback: onPageIdleStartCb,
-      idleCallback: () => {
-        isIdle.current = true
+      beforeIdleTeardown: () => {
         if (!videoRef.current || !canvasRef.current) return
         showFreezeFrame(videoRef.current, canvasRef.current)
+      },
+      idleCallback: () => {
+        isIdle.current = true
       },
     }),
     [onPageIdleStartCb]
