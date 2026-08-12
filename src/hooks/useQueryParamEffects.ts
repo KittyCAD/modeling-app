@@ -1,6 +1,7 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -13,6 +14,7 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
@@ -24,7 +26,10 @@ import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   getDefaultDirectoryProjectLibraryPath,
+  isPersonalCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { importProjectFilesIntoLocalDirectory } from '@src/lib/projectLibraries/operations'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -74,10 +79,24 @@ export function useQueryParamEffects(kclManager: KclManager) {
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
-  function getCurrentCloudLibraryPath() {
+  async function getCloudLibraryPathForSharedProject() {
     const currentProject = app.project?.projectIORefSignal.value
-    return currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
-      ? currentProject.libraryPath
+    if (currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE) {
+      return currentProject.libraryPath
+    }
+
+    if (isDesktop()) {
+      return undefined
+    }
+
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
+    const personalCloudLibrary = app.settings
+      .get()
+      .app.libraries.current.find(isPersonalCloudProjectLibrarySetting)
+    return personalCloudLibrary
+      ? getCloudProjectLibraryMaterializationDirectoryPath(
+          personalCloudLibrary
+        ).catch(() => undefined)
       : undefined
   }
 
@@ -136,7 +155,63 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const targetProjectDirectoryPath = getCurrentCloudLibraryPath()
+      const targetProjectDirectoryPath =
+        await getCloudLibraryPathForSharedProject()
+      if (cancelled) {
+        return
+      }
+      if (targetProjectDirectoryPath && !isDesktop()) {
+        const projectName = await getPublicProjectNameById(projectId)
+        if (err(projectName)) {
+          clearProjectIdSearchParam()
+          toast.error(projectName.message)
+          return
+        }
+        if (cancelled) {
+          return
+        }
+
+        const downloadedProject = await downloadProjectById(projectId)
+        if (err(downloadedProject)) {
+          clearProjectIdSearchParam()
+          toast.error(downloadedProject.message)
+          return
+        }
+        if (cancelled) {
+          return
+        }
+
+        const importedProject = await importProjectFilesIntoLocalDirectory({
+          projectDirectoryPath: targetProjectDirectoryPath,
+          requestedProjectName: projectName,
+          requestedProjectTitle: projectName,
+          files: downloadedProject.files,
+          entrypointFilePath:
+            downloadedProject.entrypointFilePath ?? PROJECT_ENTRYPOINT,
+          wasmInstancePromise: kclManager.wasmInstancePromise,
+        })
+        invalidateProjectLibraryRealizations()
+        await app.registry
+          .get(cloudSyncService)
+          .startProjectSync(importedProject.path)
+        app.systemIOActor.send({
+          type: SystemIOMachineEvents.setProjectDirectoryPath,
+          data: {
+            requestedProjectDirectoryPath: targetProjectDirectoryPath,
+          },
+        })
+        await waitForIdleState({ systemIOActor: app.systemIOActor })
+        if (cancelled) {
+          return
+        }
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            importedProject.default_file
+          )}`
+        )
+        return
+      }
+
       const localCloudProject = targetProjectDirectoryPath
         ? await app.registry
             .get(cloudSyncService)
@@ -150,10 +225,12 @@ export function useQueryParamEffects(kclManager: KclManager) {
         app.systemIOActor.send({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
         })
+        const project = await getProjectInfo(
+          localCloudProject.projectPath,
+          await kclManager.wasmInstancePromise
+        )
         void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            localCloudProject.projectPath
-          )}`
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
         )
         return
       }
