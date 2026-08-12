@@ -1180,7 +1180,7 @@ impl From<&BodyItem> for SourceRange {
 
 /// Collect all names that are defined (bound) by this body item, in order. Used so that
 /// order-aware rename excludes a name only for items after the one that binds it.
-fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
+pub(crate) fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
     let mut out = Vec::new();
     match item {
         BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
