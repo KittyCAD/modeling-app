@@ -19,7 +19,10 @@ import {
   selectSketchPlane,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlaneSelection,
+  Selection,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -1622,8 +1625,8 @@ cube = extrude(cubeRegion, length = 10)
   test('includes selected default planes and lets them be removed', async () => {
     const defaultPlaneSelection = {
       id: 'default-plane-xy',
-      name: 'XY',
-    } as const
+      name: 'xy',
+    } as unknown as DefaultPlaneSelection
     const references = await getSelectionReferences({
       graphSelections: [],
       defaultPlaneSelections: [defaultPlaneSelection],

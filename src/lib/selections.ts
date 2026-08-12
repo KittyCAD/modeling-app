@@ -89,6 +89,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
 } from '@src/lib/constants'
+import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr, reportRejection } from '@src/lib/trap'
@@ -948,12 +949,15 @@ export async function getSelectionReferences({
   wasmInstance: ModuleType
 }): Promise<SelectionReference[]> {
   const references: SelectionReference[] = defaultPlaneSelections.map(
-    (selection) => ({
-      id: `plane:${selection.id}`,
-      label: `${selection.name} Plane`,
-      code: selection.name,
-      defaultPlaneSelection: selection,
-    })
+    (selection) => {
+      const planeName = defaultPlaneNameToKcl(selection.name)
+      return {
+        id: `plane:${selection.id}`,
+        label: `${planeName} Plane`,
+        code: planeName,
+        defaultPlaneSelection: selection,
+      }
+    }
   )
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
   const graphSelectionByEntityId = new Map<string, Selection>(
@@ -1198,7 +1202,7 @@ export async function getEventForSelectWithPoint(
       data: {
         selectionType: 'defaultPlaneSelection',
         selection: {
-          name: foundDefaultPlane[0] as DefaultPlaneStr,
+          name: defaultPlaneNameToKcl(foundDefaultPlane[0] as PlaneName),
           id: data.entity_id,
         },
       },
