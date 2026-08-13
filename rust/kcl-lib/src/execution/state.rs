@@ -75,10 +75,12 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
-    /// The deepest machine-executor call depth reached anywhere in this
-    /// execution (across modules and callbacks). Used to survey real-world
-    /// depth against the runaway guard's limit; see
-    /// `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
+    /// The deepest machine-executor call depth reached by executions sharing
+    /// this state: the root module, its callbacks, and module bodies executed
+    /// inline on it. Imported modules pre-executed in parallel run on cloned
+    /// state whose counter is dropped, so their depths are not aggregated
+    /// here. Used to survey real-world depth against the runaway guard's
+    /// limit; see `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
     pub(crate) machine_depth_high_water: usize,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
