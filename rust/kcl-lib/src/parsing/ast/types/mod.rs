@@ -324,19 +324,32 @@ impl CodeBlock for Node<Program> {
 }
 
 fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let value = kcl_version.parse::<f64>().map_err(|_| {
-        KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            format!("Unexpected KCL version value: `{kcl_version}`; expected a number, e.g. `2.0`"),
-            vec![],
-        ))
-    })?;
+    let version = kcl_version.parse::<crate::KclVersion>()?;
+    let (value, raw) = match version {
+        crate::KclVersion::V1 | crate::KclVersion::V2 => {
+            let value = kcl_version.parse::<f64>().map_err(|_| {
+                KclError::new_semantic(crate::errors::KclErrorDetails::new(
+                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
+                    vec![],
+                ))
+            })?;
+            (
+                LiteralValue::Number {
+                    value,
+                    suffix: NumericSuffix::None,
+                },
+                kcl_version.to_owned(),
+            )
+        }
+        crate::KclVersion::V3Preview => (
+            LiteralValue::String(version.as_str().to_owned()),
+            format!("\"{}\"", version.as_str()),
+        ),
+    };
 
     Ok(Expr::Literal(Box::new(Node::no_src(Literal {
-        value: LiteralValue::Number {
-            value,
-            suffix: NumericSuffix::None,
-        },
-        raw: kcl_version.to_owned(),
+        value,
+        raw,
         digest: None,
     }))))
 }
@@ -5271,6 +5284,33 @@ startSketchOn(XY)"#,
         let err = program.meta_settings().unwrap_err();
 
         assert!(err.get_message().contains("Unrecognized version 99.123"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_accepts_preview_kcl_version_string() {
+        let program =
+            crate::parsing::top_level_parse(r#"@settings(kclVersion = "3.0-preview", defaultLengthUnit = mm)"#)
+                .unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V3Preview);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_change_kcl_version_writes_preview_as_string() {
+        let program = crate::parsing::top_level_parse("startSketchOn(XY)").unwrap();
+
+        let new_program = program.change_kcl_version(Some("3.0-preview".to_owned())).unwrap();
+
+        assert_eq!(
+            new_program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = "3.0-preview")
+
+startSketchOn(XY)
+"#
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
