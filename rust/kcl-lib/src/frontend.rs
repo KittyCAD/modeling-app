@@ -87,10 +87,6 @@ use crate::frontend::sketch::SegmentCtor;
 use crate::frontend::sketch::SketchApi;
 use crate::frontend::sketch::SketchCtor;
 use crate::frontend::sketch::Vertical;
-use crate::frontend::traverse::MutateBodyItem;
-use crate::frontend::traverse::TraversalReturn;
-use crate::frontend::traverse::Visitor;
-use crate::frontend::traverse::dfs_mut;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::parsing::ast::types::BoxNode;
@@ -100,6 +96,10 @@ use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
+use crate::walk::traverse::MutateBodyItem;
+use crate::walk::traverse::TraversalReturn;
+use crate::walk::traverse::Visitor;
+use crate::walk::traverse::dfs_mut;
 
 pub(crate) mod api;
 pub(crate) mod modify;
@@ -117,7 +117,6 @@ struct SketchCheckpoint {
     point_freedom_cache: HashMap<ObjectId, Freedom>,
     mock_memory: Option<SketchModeState>,
 }
-mod traverse;
 pub(crate) mod trim;
 
 struct ArcSizeConstraintParams {
