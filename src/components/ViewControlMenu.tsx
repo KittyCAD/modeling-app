@@ -33,9 +33,7 @@ export function useViewControlMenuItems() {
   )
 
   const settingsValues = settings.useSettings()
-  const shouldLockView =
-    modelingState.matches('Sketch') &&
-    !settingsValues.app.allowOrbitInSketchMode.current
+  const shouldLockView = false
 
   const sketching = modelingState.matches('Sketch')
   const snapToGrid = settingsValues.modeling.snapToGrid.current

@@ -432,6 +432,10 @@ export class CameraControls {
     this._isCamMovingCallback = cb
   }
 
+  setEngineCameraAnimationInProgress(isMoving: boolean) {
+    this._isCamMovingCallback(isMoving, true)
+  }
+
   public readonly cameraChange = new LegacySignal()
 
   onWindowResize = () => {

@@ -1771,12 +1771,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
   const [getLabelsWrapper, setLabelsWrapper] = createGetSet<HTMLElement | null>(
     null
   )
-  const [getBoxDiv, setBoxDiv] = createGetSet<HTMLElement | null>(null)
-  const [getVerticalLine, setVerticalLine] = createGetSet<HTMLElement | null>(
-    null
-  )
-  const [getHorizontalLine, setHorizontalLine] =
-    createGetSet<HTMLElement | null>(null)
   const selectionBoxState: SelectionBoxVisualState = {
     getSelectionBoxObject,
     setSelectionBoxObject,
@@ -1784,12 +1778,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
     setSelectionBoxGroup,
     getLabelsWrapper,
     setLabelsWrapper,
-    getBoxDiv,
-    setBoxDiv,
-    getVerticalLine,
-    setVerticalLine,
-    getHorizontalLine,
-    setHorizontalLine,
   }
 
   const clearConstraintHoverPopupTimer = (

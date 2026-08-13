@@ -1809,7 +1809,7 @@ sketch001 = sketch(on = YZ) {
       )
     })
 
-    it('disables camera orbit controls in sketch solve mode', async () => {
+    it('uses engine-owned camera orbit controls in sketch solve mode', async () => {
       const {
         instance,
         kclManager,
@@ -1865,9 +1865,9 @@ sketch001 = sketch(on = YZ) {
         )
       })
 
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
-        'clientToEngine'
+        'engineToClient'
       )
     })
   })

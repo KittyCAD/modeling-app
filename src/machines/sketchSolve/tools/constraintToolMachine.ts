@@ -290,9 +290,6 @@ function createSelectionBoxVisualState(): SelectionBoxVisualState {
   let selectionBoxObject: CSS2DObject | null = null
   let selectionBoxGroup: Group | null = null
   let labelsWrapper: HTMLElement | null = null
-  let boxDiv: HTMLElement | null = null
-  let verticalLine: HTMLElement | null = null
-  let horizontalLine: HTMLElement | null = null
 
   return {
     getSelectionBoxObject: () => selectionBoxObject,
@@ -306,18 +303,6 @@ function createSelectionBoxVisualState(): SelectionBoxVisualState {
     getLabelsWrapper: () => labelsWrapper,
     setLabelsWrapper: (value) => {
       labelsWrapper = value
-    },
-    getBoxDiv: () => boxDiv,
-    setBoxDiv: (value) => {
-      boxDiv = value
-    },
-    getVerticalLine: () => verticalLine,
-    setVerticalLine: (value) => {
-      verticalLine = value
-    },
-    getHorizontalLine: () => horizontalLine,
-    setHorizontalLine: (value) => {
-      horizontalLine = value
     },
   }
 }

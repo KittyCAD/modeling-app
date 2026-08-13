@@ -4,6 +4,8 @@ import {
   calculateLabelPositioning,
   calculateLabelStyles,
   calculateSelectionBoxProperties,
+  calculateSelectionRectangleCorners,
+  calculateSelectionTailEndpoint,
   doesLineSegmentIntersectBox,
   isIntersectionSelectionMode,
   project3DToScreen,
@@ -83,6 +85,46 @@ describe('calculateBoxBounds', () => {
     expect(bounds.min.y).toBe(-20)
     expect(bounds.max.x).toBe(30)
     expect(bounds.max.y).toBe(40)
+  })
+})
+
+describe('calculateSelectionRectangleCorners', () => {
+  it('creates the sketch-plane rectangle implied by opposite drag corners', () => {
+    const corners = calculateSelectionRectangleCorners(
+      new Vector3(2, 3, 7),
+      new Vector3(-4, 9, -2)
+    )
+
+    expect(corners.map((point) => point.toArray())).toEqual([
+      [2, 3, 0],
+      [-4, 3, 0],
+      [-4, 9, 0],
+      [2, 9, 0],
+    ])
+  })
+})
+
+describe('calculateSelectionTailEndpoint', () => {
+  it('extends from the drag start away from an upward selection by 12 pixels', () => {
+    const endpoint = calculateSelectionTailEndpoint(
+      new Vector3(2, 3, 0),
+      new Vector3(8, 13, 0),
+      new Vector2(100, 200),
+      new Vector2(100, 300)
+    )
+
+    expect(endpoint.toArray()).toEqual([2, 1.8, 0])
+  })
+
+  it('extends in the opposite direction for a downward selection', () => {
+    const endpoint = calculateSelectionTailEndpoint(
+      new Vector3(2, 13, 0),
+      new Vector3(8, 3, 0),
+      new Vector2(100, 300),
+      new Vector2(100, 200)
+    )
+
+    expect(endpoint.toArray()).toEqual([2, 14.2, 0])
   })
 })
 

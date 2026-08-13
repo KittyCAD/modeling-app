@@ -665,3 +665,15 @@ code,
   background-image: url("/mleyphun.jpg");
   background-size: cover;
 }
+
+.selection-box-label-backdrop {
+  padding: 1px 2px;
+  border-radius: 2px;
+  background-color: oklch(var(--_chalkboard-10) / 0.88);
+  box-shadow: 0 0 3px 2px oklch(var(--_chalkboard-10) / 0.88);
+}
+
+.dark .selection-box-label-backdrop {
+  background-color: oklch(var(--_chalkboard-100) / 0.88);
+  box-shadow: 0 0 3px 2px oklch(var(--_chalkboard-100) / 0.88);
+}

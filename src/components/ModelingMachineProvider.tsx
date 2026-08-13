@@ -1,5 +1,4 @@
 import { useAppState } from '@src/AppState'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
@@ -54,7 +53,6 @@ export const ModelingMachineProvider = ({
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
-    app: { allowOrbitInSketchMode },
     modeling: {
       defaultUnit,
       cameraProjection,
@@ -309,36 +307,6 @@ export const ModelingMachineProvider = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.engineCommandManager.connection, modelingSend])
-
-  useEffect(() => {
-    const inSketchMode = modelingState.matches('Sketch')
-
-    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
-    if (!allowOrbitInSketchMode.current) {
-      const targetId = modelingState.context.sketchDetails?.animateTargetId
-      if (inSketchMode && targetId) {
-        letEngineAnimateAndSyncCamAfter(
-          kclManager.engineCommandManager,
-          targetId
-        )
-          .then(() => {})
-          .catch((e) => {
-            console.error(
-              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
-            )
-            console.error(e)
-          })
-      }
-    }
-
-    // While you are in sketch mode you should be able to control the enable rotate
-    // Once you exit it goes back to normal
-    if (inSketchMode) {
-      kclManager.sceneInfra.camControls.enableRotate =
-        allowOrbitInSketchMode.current
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [allowOrbitInSketchMode.current])
 
   useModelingMachineCommands({
     machineId: 'modeling',

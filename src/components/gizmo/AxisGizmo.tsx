@@ -1,9 +1,8 @@
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { ColorRepresentation, Intersection } from 'three'
@@ -26,10 +25,7 @@ import {
 } from 'three'
 
 export default function AxisGizmo() {
-  const { settings } = useApp()
   const { kclManager } = useSingletons()
-  const { state: modelingState } = useModelingContext()
-  const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
@@ -37,25 +33,6 @@ export default function AxisGizmo() {
   const disableOrbitRef = useRef(false)
   const isPointerOverRef = useRef(false)
   const isHoverRefreshPausedRef = useRef(false)
-
-  // Temporary fix for #4040:
-  // Disable gizmo orbiting in sketch mode
-  // This effect updates disableOrbitRef whenever the user
-  // toggles between Sketch mode and 3D mode
-  useEffect(() => {
-    disableOrbitRef.current =
-      modelingState.matches('Sketch') &&
-      !settingsValues.app.allowOrbitInSketchMode.current
-    if (wrapperRef.current) {
-      wrapperRef.current.style.filter = disableOrbitRef.current
-        ? 'grayscale(100%)'
-        : 'none'
-      wrapperRef.current.style.cursor = disableOrbitRef.current
-        ? 'not-allowed'
-        : 'auto'
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
 
   useEffect(() => {
     if (!canvasRef.current || !wrapperRef.current) {
