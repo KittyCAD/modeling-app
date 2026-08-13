@@ -28,6 +28,7 @@ export enum ClientErrorCode {
   DesktopRenderProcessGone = 'desktop_render_process_gone',
   EngineDisconnect = 'engine_disconnect',
   SystemIOError = 'system_io_error',
+  ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',
