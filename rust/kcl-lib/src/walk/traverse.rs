@@ -6,7 +6,7 @@ use std::ops::ControlFlow;
 use crate::parsing::ast::types as ast;
 use crate::walk::NodeMut;
 
-pub(super) struct TraversalReturn<B, C = ()> {
+pub(crate) struct TraversalReturn<B, C = ()> {
     pub mutate_body_item: MutateBodyItem,
     pub control_flow: ControlFlow<B, C>,
 }
@@ -15,7 +15,7 @@ pub(super) struct TraversalReturn<B, C = ()> {
 /// visited node. Only reliably delivered when paired with
 /// `ControlFlow::Break`; see [`dfs_mut`].
 #[derive(Default)]
-pub(super) enum MutateBodyItem {
+pub(crate) enum MutateBodyItem {
     #[default]
     None,
     Mutate(Box<ast::BodyItem>),
@@ -28,7 +28,7 @@ impl MutateBodyItem {
     }
 }
 
-pub(super) trait Visitor {
+pub(crate) trait Visitor {
     type Break;
     type Continue;
 
@@ -85,7 +85,7 @@ impl<B, C> TraversalReturn<B, C> {
 /// reliably applied. A request paired with `ControlFlow::Continue` may be
 /// dropped, depending on where in the enclosing body item's subtree it was
 /// returned, because traversing a subsequent node discards it.
-pub(super) fn dfs_mut<V: Visitor>(
+pub(crate) fn dfs_mut<V: Visitor>(
     program: &mut ast::Node<ast::Program>,
     visitor: &mut V,
 ) -> ControlFlow<V::Break, V::Continue> {
