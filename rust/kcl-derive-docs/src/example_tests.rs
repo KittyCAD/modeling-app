@@ -332,6 +332,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-fillet-0",
     "std-solid-fillet-1",
     "std-solid-fillet-2",
+    "std-solid-fillet-3",
     "std-solid-hollow-0",
     "std-solid-hollow-1",
     "std-solid-patternTransform-0",
