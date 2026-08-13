@@ -206,8 +206,7 @@ export function useQueryParamEffects() {
     let shouldCreateDefaultWebProject = false
     const samplePath = commandData.argDefaultValues?.sample
     const requestedProjectName = commandData.argDefaultValues?.projectName
-    const shouldCreateWebSampleProject =
-      !isDesktop() &&
+    const shouldCreateSampleProject =
       commandData.name === 'add-kcl-file-to-project' &&
       commandData.groupId === 'application' &&
       commandData.argDefaultValues?.source === 'kcl-samples' &&
@@ -215,7 +214,7 @@ export function useQueryParamEffects() {
       (requestedProjectName === 'browser' ||
         requestedProjectName === DEFAULT_WEB_PROJECT_NAME)
 
-    if (shouldCreateWebSampleProject) {
+    if (shouldCreateSampleProject) {
       let cancelled = false
 
       void (async () => {
@@ -236,14 +235,20 @@ export function useQueryParamEffects() {
           )
         }
 
-        const downloadedSample = await downloadKclSample(samplePath)
+        const downloadedSample = await downloadKclSample(
+          samplePath,
+          isDesktop() ? '.' : ''
+        )
         if (cancelled) {
           return
         }
 
         const importedProject = await projectLibraryTarget.createProject.run({
           library: projectLibraryTarget.library,
-          requestedProjectName: downloadedSample.requestedProjectName,
+          requestedProjectName: getProjectDirectoryNameFromTitle(
+            downloadedSample.sample.title,
+            downloadedSample.requestedProjectName
+          ),
           requestedProjectTitle: downloadedSample.sample.title,
           initialProject: downloadedSample.initialProject,
         })

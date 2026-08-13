@@ -13,6 +13,15 @@ describe('KCL samples', () => {
     expect(findKclSample('telemetry-antenna/main.kcl')).toBeUndefined()
   })
 
+  it('downloads current samples from the current asset directory', async () => {
+    const fetchMock = vi.fn(async () => new Response('// Angle Gauge\n'))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await downloadKclSample('angle-gauge/main.kcl')
+
+    expect(fetchMock).toHaveBeenCalledWith('/kcl-samples/angle-gauge/main.kcl')
+  })
+
   it('downloads legacy samples used by old deep links', async () => {
     const code = '// Aircraft telemetry antenna plate\n'
     const fetchMock = vi.fn(async () => new Response(code))

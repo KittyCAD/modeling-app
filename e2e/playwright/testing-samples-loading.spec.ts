@@ -142,21 +142,21 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   })
 })
 
-test.describe('Query parameter command', { tag: '@web' }, () => {
+test.describe('Query parameter command', { tag: ['@web', '@desktop'] }, () => {
   test('should create a legacy sample in the default project library', async ({
     page,
     toolbar,
     editor,
   }) => {
-    await closeOnboardingModalIfPresent(page)
-
     const sampleTitle = 'Aircraft telemetry antenna plate'
     const sampleSlug = 'telemetry-antenna'
+    const projectSlug = 'aircraft-telemetry-antenna-plate'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+    await closeOnboardingModalIfPresent(page)
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
-    await expect(page).toHaveURL(/telemetry-antenna%2Fmain\.kcl$/)
+    await expect(page).toHaveURL(new RegExp(`${projectSlug}%2Fmain\\.kcl$`))
   })
 })
