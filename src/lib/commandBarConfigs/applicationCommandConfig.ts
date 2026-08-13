@@ -11,11 +11,7 @@ import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  downloadKclSample,
-  everyKclSample,
-  findKclSample,
-} from '@src/lib/kclSamples'
+import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
   getEXTNoPeriod,
@@ -38,40 +34,70 @@ import type { ActorRefFrom } from 'xstate'
 
 function onSubmitKCLSampleCreation({
   sample,
+  kclSample,
   uniqueNameIfNeeded,
   systemIOActor,
   isProjectNew,
 }: {
   sample: string
+  kclSample: ReturnType<typeof findKclSample>
   uniqueNameIfNeeded: string
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   isProjectNew: boolean
 }) {
+  if (!kclSample) {
+    toast.error(
+      'The command could not be submitted, unable to find Zoo sample.'
+    )
+    return
+  }
+  const pathParts = webSafePathSplit(sample)
+  const projectPathPart = pathParts[0]
+  const files = kclSample.files
+
+  const filePromises = files.map((file) => {
+    const sampleCodeUrl =
+      (isDesktop() ? '.' : '') +
+      `/kcl-samples/${encodeURIComponent(
+        projectPathPart
+      )}/${encodeURIComponent(file)}`
+    return fetch(sampleCodeUrl).then((response) => {
+      return {
+        response,
+        file,
+        projectName: projectPathPart,
+      }
+    })
+  })
+
+  const requestedFiles: RequestedKCLFile[] = []
   // If any fetches fail from the KCL Code download we will instantly reject
   // No cleanup required since the fetch response is in memory
   // TODO: Try to catch if there is a failure then delete the root folder and show error
-  void downloadKclSample(sample, isDesktop() ? '.' : '')
-    .then(({ initialProject, requestedProjectName }) => {
-      const decoder = new TextDecoder()
-      const requestedFiles: RequestedKCLFile[] = initialProject.files.map(
-        (file) => ({
-          requestedCode: decoder.decode(file.requestedData),
-          requestedFileName: file.requestedFileName,
+  Promise.all(filePromises)
+    .then(async (responses) => {
+      for (let i = 0; i < responses.length; i++) {
+        const response = responses[i]
+        const code = await response.response.text()
+        requestedFiles.push({
+          requestedCode: code,
+          requestedFileName: response.file,
           requestedProjectName: uniqueNameIfNeeded,
         })
-      )
+      }
 
       /**
        * When adding assemblies to an existing project create the assembly into a unique sub directory
        */
       if (!isProjectNew) {
         requestedFiles.forEach((requestedFile) => {
+          const subDirectoryName = projectPathPart
           const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
             systemIOActor.getSnapshot().context,
             { projectFolderName: requestedFile.requestedProjectName }
           )
           const uniqueSubDirectoryName = getUniqueProjectName(
-            requestedProjectName,
+            subDirectoryName,
             firstLevelDirectories
           )
           requestedFile.requestedProjectName = joinOSPaths(
@@ -144,6 +170,7 @@ export function createApplicationCommands({
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
+              kclSample,
               uniqueNameIfNeeded,
               systemIOActor: app.systemIOActor,
               isProjectNew,
@@ -374,6 +401,7 @@ export function createApplicationCommands({
         )
         onSubmitKCLSampleCreation({
           sample: data.sample,
+          kclSample,
           uniqueNameIfNeeded,
           systemIOActor: app.systemIOActor,
           isProjectNew: true,

@@ -16,8 +16,7 @@ export const findKclSample = (pathFromProjectDirectoryToFirstFile: string) => {
 }
 
 export async function downloadKclSample(
-  pathFromProjectDirectoryToFirstFile: string,
-  assetRoot = ''
+  pathFromProjectDirectoryToFirstFile: string
 ) {
   const currentSample = findKclSample(pathFromProjectDirectoryToFirstFile)
   const sample =
@@ -42,7 +41,7 @@ export async function downloadKclSample(
   const files = await Promise.all(
     sample.files.map(async (file) => {
       const response = await fetch(
-        `${assetRoot}/${assetDirectory}/${encodeURIComponent(
+        `/${assetDirectory}/${encodeURIComponent(
           requestedProjectName
         )}/${encodeURIComponent(file)}`
       )

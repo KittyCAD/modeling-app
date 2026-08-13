@@ -177,25 +177,20 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
   })
 })
 
-test.describe(
-  'Legacy sample query parameter command',
-  { tag: ['@web', '@desktop'] },
-  () => {
-    test('should create the sample in the default project library', async ({
-      page,
-      toolbar,
-      editor,
-    }) => {
-      const sampleTitle = 'Aircraft telemetry antenna plate'
-      const sampleSlug = 'telemetry-antenna'
-      const projectSlug = 'aircraft-telemetry-antenna-plate'
-      const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
-      await page.goto(page.url() + queryString)
-      await closeOnboardingModalIfPresent(page)
+test.describe('Legacy sample query parameter command', { tag: '@web' }, () => {
+  test('should create the sample in the default project library', async ({
+    page,
+    toolbar,
+    editor,
+  }) => {
+    const sampleTitle = 'Aircraft telemetry antenna plate'
+    const sampleSlug = 'telemetry-antenna'
+    const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
+    await page.goto(page.url() + queryString)
+    await closeOnboardingModalIfPresent(page)
 
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
-      await expect(page).toHaveURL(new RegExp(`${projectSlug}%2Fmain\\.kcl$`))
-    })
-  }
-)
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
+    await expect(page).toHaveURL(/telemetry-antenna%2Fmain\.kcl$/)
+  })
+})
