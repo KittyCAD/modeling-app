@@ -483,12 +483,6 @@ async fn inner_extrude(
             ),
             _ => (Some(extrudable.id_to_extrude(exec_state, &args, false).await?), None),
         };
-        if to.is_some() && sketch_or_face_id.is_none() {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Edge specifiers cannot be extruded to a reference".to_owned(),
-                vec![args.source_range],
-            )));
-        }
         let concrete_target = || {
             sketch_or_face_id.ok_or_else(|| {
                 KclError::new_semantic(KclErrorDetails::new(
@@ -632,7 +626,8 @@ async fn inner_extrude(
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target()?.into())
+                        .maybe_target(sketch_or_face_id.map(Into::into))
+                        .maybe_target_reference(target_reference.clone())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
                                 x: LengthUnit(point[0].to_mm()),
@@ -646,7 +641,8 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target()?.into())
+                        .maybe_target(sketch_or_face_id.map(Into::into))
+                        .maybe_target_reference(target_reference.clone())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -683,7 +679,8 @@ async fn inner_extrude(
                     };
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target()?.into())
+                            .maybe_target(sketch_or_face_id.map(Into::into))
+                            .maybe_target_reference(target_reference.clone())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(plane_id),
                                 entity_reference: None,
@@ -697,7 +694,8 @@ async fn inner_extrude(
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target()?.into())
+                            .maybe_target(sketch_or_face_id.map(Into::into))
+                            .maybe_target_reference(target_reference.clone())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(edge_id),
                                 entity_reference: None,
@@ -711,7 +709,8 @@ async fn inner_extrude(
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target()?.into())
+                            .maybe_target(sketch_or_face_id.map(Into::into))
+                            .maybe_target_reference(target_reference.clone())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(face_id),
                                 entity_reference: None,
@@ -723,7 +722,8 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target()?.into())
+                        .maybe_target(sketch_or_face_id.map(Into::into))
+                        .maybe_target_reference(target_reference.clone())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(sketch_ref.id),
                             entity_reference: None,
@@ -734,7 +734,8 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target()?.into())
+                        .maybe_target(sketch_or_face_id.map(Into::into))
+                        .maybe_target_reference(target_reference.clone())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(solid.id),
                             entity_reference: None,
@@ -748,7 +749,8 @@ async fn inner_extrude(
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target()?.into())
+                            .maybe_target(sketch_or_face_id.map(Into::into))
+                            .maybe_target_reference(target_reference.clone())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(tagged_edge_or_face_id),
                                 entity_reference: None,
@@ -762,7 +764,8 @@ async fn inner_extrude(
                     let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target()?.into())
+                            .maybe_target(sketch_or_face_id.map(Into::into))
+                            .maybe_target_reference(target_reference.clone())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: None,
                                 entity_reference: Some(EntityReference::Edge {
