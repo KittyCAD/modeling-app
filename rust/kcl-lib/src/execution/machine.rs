@@ -1186,7 +1186,7 @@ async fn step_block(
                     index += 1;
                     continue;
                 }
-                ctx.exec_type_declaration(ty, exec_state)?;
+                ctx.exec_type_declaration(ty, body_type, exec_state)?;
                 last = None;
                 index += 1;
             }
