@@ -1278,7 +1278,14 @@ async fn step_block_kick(
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
 ) -> Result<Control, KclError> {
-    let kont = konts.pop().expect("block was just pushed");
+    let Some(kont) = konts.pop() else {
+        let message = "machine executor: step_block_kick with no continuation on the stack";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            Vec::new(),
+        )));
+    };
     step_block(kont, None, konts, exec_state, ctx).await
 }
 
