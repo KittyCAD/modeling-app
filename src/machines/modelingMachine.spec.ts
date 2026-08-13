@@ -1807,6 +1807,7 @@ sketch001 = sketch(on = YZ) {
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
         'engineToClient'
       )
+      expect(kclManager.sceneInfra.camControls.cameraOrbitOverride).toBeNull()
     })
 
     it('uses engine-owned camera orbit controls in sketch solve mode', async () => {
@@ -1868,6 +1869,9 @@ sketch001 = sketch(on = YZ) {
       expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
         'engineToClient'
+      )
+      expect(kclManager.sceneInfra.camControls.cameraOrbitOverride).toBe(
+        'trackball'
       )
     })
   })

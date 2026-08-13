@@ -1541,6 +1541,14 @@ export const modelingMachine = setup({
       camControls.enablePan = true
       camControls.enableRotate = true
       camControls.syncDirection = 'engineToClient'
+      camControls.cameraOrbitOverride = null
+    },
+    'set sketch solve camera controls': ({ context }) => {
+      const camControls = context.kclManager.sceneInfra.camControls
+      camControls.enablePan = true
+      camControls.enableRotate = true
+      camControls.syncDirection = 'engineToClient'
+      camControls.cameraOrbitOverride = 'trackball'
     },
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
@@ -2226,6 +2234,12 @@ export const modelingMachine = setup({
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
         try {
+          const camControls = kclManager.sceneInfra.camControls
+          camControls.syncDirection = 'clientToEngine'
+          if (camControls.configuredCameraOrbit === 'spherical') {
+            await camControls.tweenToSphericalOrbitOrientation()
+          }
+
           // When cancelling the sketch mode we should disable sketch mode within the engine.
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
@@ -2233,13 +2247,11 @@ export const modelingMachine = setup({
             cmd: { type: 'sketch_mode_disable' },
           })
 
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -6446,7 +6458,7 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: ['restore modeling camera controls'],
+      entry: ['set sketch solve camera controls'],
       initial: 'active',
       states: {
         active: {

@@ -18,6 +18,7 @@ import {
 } from 'three'
 
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -106,6 +107,7 @@ class CameraRateLimiter {
 export class CameraControls {
   engineCommandManager: ConnectionManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  cameraOrbitOverride: CameraOrbitType | null = null
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -200,6 +202,15 @@ export class CameraControls {
     return this.camera instanceof OrthographicCamera
       ? 'orthographic'
       : 'perspective'
+  }
+  private get cameraOrbit(): CameraOrbitType | undefined {
+    return (
+      this.cameraOrbitOverride ??
+      this.getSettings?.().modeling.cameraOrbit.current
+    )
+  }
+  get configuredCameraOrbit(): CameraOrbitType | undefined {
+    return this.getSettings?.().modeling.cameraOrbit.current
   }
   set engineCameraProjection(projection: CameraProjectionType) {
     if (projection === 'orthographic') {
@@ -1223,6 +1234,50 @@ export class CameraControls {
       duration
     )
   }
+
+  async tweenToSphericalOrbitOrientation(duration = 500): Promise<void> {
+    const eyeDirection = this.camera.position
+      .clone()
+      .sub(this.target)
+      .normalize()
+    const globalUp = new Vector3(0, 0, 1)
+    const targetUp =
+      Math.abs(eyeDirection.dot(globalUp)) > 0.999
+        ? new Vector3(0, Math.sign(eyeDirection.z) || 1, 0)
+        : globalUp
+    const targetQuaternion = _lookAt(
+      this.camera.position,
+      this.target,
+      targetUp
+    )
+
+    if (this.camera.quaternion.angleTo(targetQuaternion) > deg2Rad(0.1)) {
+      await this.tweenCameraToQuaternion(
+        targetQuaternion,
+        this.target.clone(),
+        duration
+      )
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            quaternion: this.camera.quaternion,
+            position: this.camera.position,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
+    })
+  }
+
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
@@ -1390,7 +1445,7 @@ export class CameraControls {
           )
     if (
       initialInteractionType === 'rotate' &&
-      this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
+      this.cameraOrbit === 'trackball'
     ) {
       return 'rotatetrackball'
     }
@@ -1461,9 +1516,7 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
         if (this.enableRotate) {
           const orbitMode =
-            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-              ? 'rotatetrackball'
-              : 'rotate'
+            this.cameraOrbit === 'trackball' ? 'rotatetrackball' : 'rotate'
           this.moveSender.send(() => {
             this.doMove(orbitMode, [ev.center.x, ev.center.y])
           })
@@ -1484,9 +1537,7 @@ export class CameraControls {
         velocity > 0
       ) {
         const orbitMode =
-          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-            ? 'rotatetrackball'
-            : 'rotate'
+          this.cameraOrbit === 'trackball' ? 'rotatetrackball' : 'rotate'
 
         const decayInterval = setInterval(() => {
           const decayedVelocity = velocity - velocityFlickDecay
