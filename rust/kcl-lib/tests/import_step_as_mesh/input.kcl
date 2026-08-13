@@ -1,3 +1,0 @@
-@settings(experimentalFeatures = allow)
-@(targetRepresentation = mesh)
-import "cube.step" as cube

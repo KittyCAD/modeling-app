@@ -267,14 +267,17 @@ fn set_target_representation(
     representation: &str,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
+    const MESH: &str = "mesh";
+    const BREP: &str = "brep";
+    const ALL_OPTIONS: [&str; 2] = [MESH, BREP];
     let target_representation = match representation {
-        "mesh" => kcmc::format::step::TargetRepresentation::Mesh,
-        "brep" => kcmc::format::step::TargetRepresentation::Brep,
+        MESH => kcmc::format::step::TargetRepresentation::Mesh,
+        BREP => kcmc::format::step::TargetRepresentation::Brep,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Unknown target representation: {representation}, expected one of: {}",
-                    annotations::IMPORT_TARGET_REPRESENTATION_VALUES.join(", ")
+                    ALL_OPTIONS.join(", ")
                 ),
                 vec![source_range],
             )));
@@ -542,7 +545,7 @@ mod test {
         };
         assert_eq!(
             opts.target_representation,
-            kcmc::format::step::TargetRepresentation::Brep
+            kcmc::format::step::TargetRepresentation::Brep,
         );
 
         // no format, options
@@ -569,7 +572,7 @@ mod test {
             "`lengthUnit` option cannot be applied",
         );
         assert_annotation_error(
-            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = mesh)\nimport '../foo.obj' as foo",
+            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = brep)\nimport '../foo.obj' as foo",
             "../foo.obj",
             "`targetRepresentation` option cannot be applied",
         );

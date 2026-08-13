@@ -42,7 +42,6 @@ pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
     [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];
 pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 pub(crate) const IMPORT_TARGET_REPRESENTATION: &str = "targetRepresentation";
-pub(super) const IMPORT_TARGET_REPRESENTATION_VALUES: [&str; 2] = ["mesh", "brep"];
 
 pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
