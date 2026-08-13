@@ -8,7 +8,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type * as XState from 'xstate'
 
 const mocks = vi.hoisted(() => ({
-  filePath: '/file/tutorial-project/main.kcl',
+  filePath: vi.fn<() => string | undefined>(
+    () => '/file/tutorial-project/main.kcl'
+  ),
   navigate: vi.fn(),
   settingsActor: {},
   settingsSend: vi.fn(),
@@ -16,7 +18,7 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
-  useAbsoluteFilePath: () => mocks.filePath,
+  useAbsoluteFilePath: () => mocks.filePath(),
 }))
 
 vi.mock('@src/lib/boot', () => ({
@@ -44,34 +46,67 @@ vi.mock('react-hot-toast', () => ({
 
 import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
+function createDeferred() {
+  let resolve = () => {}
+  const promise = new Promise<void>((resolvePromise) => {
+    resolve = resolvePromise
+  })
+  return { promise, resolve }
+}
+
 describe('onboarding navigation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.filePath.mockReturnValue('/file/tutorial-project/main.kcl')
+    mocks.settingsWaitFor.mockResolvedValue(undefined)
   })
 
   it('returns home after completing onboarding', async () => {
+    const idleBeforeUpdate = createDeferred()
+    const idleAfterUpdate = createDeferred()
+    mocks.settingsWaitFor
+      .mockReturnValueOnce(idleBeforeUpdate.promise)
+      .mockReturnValueOnce(idleAfterUpdate.promise)
     const { result } = renderHook(() => useDismiss())
 
     act(() => {
       result.current('completed')
     })
 
+    expect(mocks.settingsSend).not.toHaveBeenCalled()
+    idleBeforeUpdate.resolve()
+    await waitForAssertion(() => {
+      expect(mocks.settingsSend).toHaveBeenCalledWith({
+        type: 'set.app.onboardingStatus',
+        data: { level: 'user', value: 'completed' },
+      })
+    })
+    expect(mocks.navigate).not.toHaveBeenCalled()
+    idleAfterUpdate.resolve()
     await waitForAssertion(() => {
       expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
     })
     expect(mocks.settingsWaitFor).toHaveBeenCalledTimes(2)
-    expect(mocks.settingsWaitFor.mock.invocationCallOrder[0]).toBeLessThan(
-      mocks.settingsSend.mock.invocationCallOrder[0]
-    )
-    expect(mocks.settingsSend.mock.invocationCallOrder[0]).toBeLessThan(
-      mocks.settingsWaitFor.mock.invocationCallOrder[1]
-    )
-    expect(mocks.settingsWaitFor.mock.invocationCallOrder[1]).toBeLessThan(
-      mocks.navigate.mock.invocationCallOrder[0]
-    )
   })
 
-  it('returns to the tutorial project when onboarding is dismissed', async () => {
+  it('returns home after onboarding is dismissed', async () => {
+    const { result } = renderHook(() => useDismiss())
+
+    act(() => {
+      result.current()
+    })
+
+    await waitForAssertion(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
+    })
+    expect(mocks.settingsSend).toHaveBeenCalledWith({
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: 'dismissed' },
+    })
+  })
+
+  it('can dismiss onboarding when no file path is available', async () => {
+    mocks.filePath.mockReturnValue(undefined)
     const { result } = renderHook(() => useDismiss())
 
     act(() => {
@@ -79,9 +114,7 @@ describe('onboarding navigation', () => {
     })
 
     await waitForAssertion(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith(mocks.filePath, {
-        replace: true,
-      })
+      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
     })
   })
 
@@ -93,7 +126,7 @@ describe('onboarding navigation', () => {
     })
 
     expect(mocks.navigate).toHaveBeenCalledWith(
-      `${mocks.filePath}/onboarding/desktop/scene`,
+      `${mocks.filePath()}/onboarding/desktop/scene`,
       { replace: true }
     )
   })
