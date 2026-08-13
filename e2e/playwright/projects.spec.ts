@@ -1692,7 +1692,7 @@ test(
   {
     tag: ['@desktop'],
   },
-  async ({ page, toolbar }) => {
+  async ({ homePage, page, toolbar }) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1720,13 +1720,12 @@ test(
         await expect.poll(() => page.url()).not.toBe(urlBefore)
       }
       await nextButton.click()
+      await homePage.expectIsCurrentPage()
+      await expect(homePage.tutorialBtn).not.toBeVisible()
+      await page.goBack()
       await expect(page).not.toHaveURL(/\/onboarding\//)
-
-      await page.getByTestId('project-sidebar-toggle').click()
-    })
-
-    await test.step('Should go home after onboarding is completed', async () => {
-      await page.getByTestId('app-logo').click()
+      await page.goForward()
+      await homePage.expectIsCurrentPage()
     })
 
     await test.step('Should show the original project called wrist brace', async () => {

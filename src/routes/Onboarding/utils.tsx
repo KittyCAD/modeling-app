@@ -130,7 +130,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    void navigate(targetRoute)
+    void navigate(targetRoute, { replace: true })
   }, [filePath, newStatus, navigate, settings])
 }
 
@@ -149,17 +149,24 @@ export function useDismiss() {
         return new Error('filePath is undefined')
       }
 
-      settings.send({
-        type: 'set.app.onboardingStatus',
-        data: { level: 'user', value: dismissalType },
-      })
       waitFor(settings.actor, (state) => state.matches('idle'))
+        .then(() => {
+          settings.send({
+            type: 'set.app.onboardingStatus',
+            data: { level: 'user', value: dismissalType },
+          })
+          return waitFor(settings.actor, (state) => state.matches('idle'))
+        })
         .then(() => {
           if (!filePath) {
             return Promise.reject(new Error('bug: filePath is undefined'))
           }
 
-          void navigate(filePath)
+          if (dismissalType === 'completed') {
+            void navigate(PATHS.HOME, { replace: true })
+          } else {
+            void navigate(filePath, { replace: true })
+          }
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {

@@ -115,7 +115,9 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''))
+    void navigate(requestedPath + (search ? `?${search}` : ''), {
+      replace: requestedPath.includes(String(PATHS.ONBOARDING)),
+    })
   }
 
   /**

@@ -96,15 +96,19 @@ test(
       })
       .toContain('plateLength = 10')
 
-    await page.keyboard.press('Escape')
-    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-    await expect.poll(() => page.url()).not.toContain('/onboarding')
-    await page.getByTestId('app-logo').click()
+    await page.goto(
+      `/file/${encodeURIComponent(
+        `${PROJECT_DIR}/tutorial-project/main.kcl`
+      )}/onboarding/desktop/conclusion`
+    )
+    await page.getByTestId('onboarding-next').click()
+    await expect(page).toHaveURL(/\/home$/)
     await expect(
       page.getByRole('heading', {
         name: /^(Project Libraries|Personal Cloud)$/,
       })
     ).toBeVisible()
+    await expect(page.getByTestId('home-tutorial-button')).not.toBeVisible()
     const tutorialProjectLink = page.getByTestId('project-link').filter({
       has: page
         .getByTestId('project-title')
@@ -199,5 +203,9 @@ test(
       `project_id = "${TUTORIAL_PROJECT_IDS[1]}"`
     )
     expect(apiCalls.creates).toHaveLength(2)
+
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+    await expect.poll(() => page.url()).not.toContain('/onboarding')
   }
 )
