@@ -1,15 +1,16 @@
 import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import {
   createNewProjectDirectory,
   getProjectInfo,
   isPathNotFoundError,
 } from '@src/lib/desktop'
-import {
-  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import {
   prepareProjectTomlForDuplication,
@@ -62,6 +63,7 @@ export async function createProjectInLocalDirectory({
   requestedProjectTitle,
   wasmInstancePromise,
   initialKclFile,
+  initialProject,
 }: {
   projectDirectoryPath: string
   requestedProjectName: string
@@ -71,6 +73,7 @@ export async function createProjectInLocalDirectory({
     fileName: string
     code: string
   }
+  initialProject?: ProjectLibraryInitialProject
 }): Promise<Project> {
   const existingProjectNames =
     await getProjectDirectoryEntryNames(projectDirectoryPath)
@@ -83,6 +86,17 @@ export async function createProjectInLocalDirectory({
     requestedProjectDirectoryName: requestedProjectName,
     uniqueProjectDirectoryName: uniqueProjectName,
   })
+
+  if (initialProject) {
+    return createProjectFromFilesInLocalDirectory({
+      projectDirectoryPath,
+      requestedProjectName,
+      projectName: uniqueProjectName,
+      projectTitle: uniqueProjectTitle,
+      initialProject,
+      wasmInstancePromise,
+    })
+  }
 
   return createNewProjectDirectory(
     uniqueProjectName,
@@ -95,40 +109,26 @@ export async function createProjectInLocalDirectory({
   )
 }
 
-export async function importProjectFilesIntoLocalDirectory({
+async function createProjectFromFilesInLocalDirectory({
   projectDirectoryPath,
   requestedProjectName,
-  requestedProjectTitle,
-  files,
-  entrypointFilePath,
+  projectName,
+  projectTitle,
+  initialProject,
   wasmInstancePromise,
 }: {
   projectDirectoryPath: string
   requestedProjectName: string
-  requestedProjectTitle: string
-  files: readonly {
-    requestedFileName: string
-    requestedData: Uint8Array<ArrayBuffer>
-  }[]
-  entrypointFilePath: string
+  projectName: string
+  projectTitle: string
+  initialProject: ProjectLibraryInitialProject
   wasmInstancePromise: Promise<ModuleType> | ModuleType
 }): Promise<Project> {
-  const existingProjectNames =
-    await getProjectDirectoryEntryNames(projectDirectoryPath)
-  const uniqueProjectName = getUniqueProjectName(
-    requestedProjectName,
-    projectEntriesFromNames(projectDirectoryPath, existingProjectNames)
-  )
-  const uniqueProjectTitle = getProjectTitleFromUniqueDirectoryName({
-    requestedProjectTitle,
-    requestedProjectDirectoryName: requestedProjectName,
-    uniqueProjectDirectoryName: uniqueProjectName,
-  })
   const temporaryProjectPath = fsZds.join(
     projectDirectoryPath,
     `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
   )
-  const projectPath = fsZds.join(projectDirectoryPath, uniqueProjectName)
+  const projectPath = fsZds.join(projectDirectoryPath, projectName)
   const relativeProjectPath = fsZds.relative(
     fsZds.resolve(projectDirectoryPath),
     fsZds.resolve(projectPath)
@@ -149,7 +149,7 @@ export async function importProjectFilesIntoLocalDirectory({
 
   await fsZds.mkdir(temporaryProjectPath, { recursive: true })
   try {
-    for (const file of files) {
+    for (const file of initialProject.files) {
       if (file.requestedFileName === PROJECT_SETTINGS_FILE_NAME) {
         continue
       }
@@ -180,7 +180,7 @@ export async function importProjectFilesIntoLocalDirectory({
       await fsZds.writeFile(targetPath, file.requestedData)
     }
 
-    const sourceProjectToml = files.find(
+    const sourceProjectToml = initialProject.files.find(
       (file) => file.requestedFileName === PROJECT_SETTINGS_FILE_NAME
     )
     const projectTomlWithEntrypoint =
@@ -188,11 +188,11 @@ export async function importProjectFilesIntoLocalDirectory({
         sourceProjectToml
           ? new TextDecoder().decode(sourceProjectToml.requestedData)
           : '',
-        entrypointFilePath
+        initialProject.entrypointFilePath
       )
     const projectToml = prepareProjectTomlForDuplication(
       projectTomlWithEntrypoint,
-      uniqueProjectTitle,
+      projectTitle,
       v4()
     )
     if (isErr(projectToml)) {

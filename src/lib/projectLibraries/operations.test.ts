@@ -1,5 +1,5 @@
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { importProjectFilesIntoLocalDirectory } from '@src/lib/projectLibraries/operations'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -10,7 +10,7 @@ beforeAll(async () => {
   })
 })
 
-describe('importProjectFilesIntoLocalDirectory', () => {
+describe('createProjectInLocalDirectory', () => {
   it('rejects project names outside the selected library', async () => {
     const testRoot = `/tmp/shared-project-import-${crypto.randomUUID()}`
     const projectDirectoryPath = fsZds.join(testRoot, 'library')
@@ -18,17 +18,19 @@ describe('importProjectFilesIntoLocalDirectory', () => {
 
     try {
       await expect(
-        importProjectFilesIntoLocalDirectory({
+        createProjectInLocalDirectory({
           projectDirectoryPath,
           requestedProjectName: '..',
           requestedProjectTitle: 'Unsafe project',
-          files: [
-            {
-              requestedFileName: 'main.kcl',
-              requestedData: new TextEncoder().encode('x = 1\n'),
-            },
-          ],
-          entrypointFilePath: 'main.kcl',
+          initialProject: {
+            files: [
+              {
+                requestedFileName: 'main.kcl',
+                requestedData: new TextEncoder().encode('x = 1\n'),
+              },
+            ],
+            entrypointFilePath: 'main.kcl',
+          },
           wasmInstancePromise: {} as ModuleType,
         })
       ).rejects.toThrow('invalid project directory name')
