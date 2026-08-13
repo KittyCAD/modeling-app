@@ -6,6 +6,7 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createExpressionStatement,
+  createIdentifier,
   createImportAsSelector,
   createImportStatement,
   createLabeledArg,
@@ -402,10 +403,12 @@ export function addModuleImport({
   ast,
   path,
   localName,
+  representation,
 }: {
   ast: Node<Program>
   path: string
   localName: string
+  representation?: 'mesh' | 'brep'
 }): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
@@ -417,6 +420,33 @@ export function addModuleImport({
     createImportAsSelector(localName),
     { type: 'Kcl', filename: path }
   )
+  if (representation) {
+    importStatement.outerAttrs = [
+      {
+        type: 'Annotation',
+        name: null,
+        properties: [
+          {
+            type: 'ObjectProperty',
+            key: createIdentifier('targetRepresentation'),
+            value: createLocalName(representation),
+            start: 0,
+            end: 0,
+            moduleId: 0,
+            outerAttrs: [],
+            preComments: [],
+            commentStart: 0,
+          },
+        ],
+        start: 0,
+        end: 0,
+        moduleId: 0,
+        outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
+      },
+    ]
+  }
   const lastImportIndex = modifiedAst.body.findLastIndex(
     (v) => v.type === 'ImportStatement'
   )

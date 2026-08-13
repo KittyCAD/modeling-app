@@ -14,6 +14,7 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
+  addModuleImport,
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
@@ -288,6 +289,27 @@ describe('Testing addSketchTo', () => {
   |> line(end = "default")
 `)
   })
+})
+
+describe('Testing addModuleImport', () => {
+  const emptyProgram = () =>
+    assertParse('@settings(experimentalFeatures = allow)\n', instanceInThisFile)
+
+  it.each(['mesh', 'brep'] as const)(
+    'adds the %s STEP representation annotation',
+    (representation) => {
+      const result = addModuleImport({
+        ast: emptyProgram(),
+        path: 'cube.step',
+        localName: 'cube',
+        representation,
+      })
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
+        `@settings(experimentalFeatures = allow)\n\n@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
+      )
+    }
+  )
 })
 
 function giveSketchFnCallTagTestHelper(
