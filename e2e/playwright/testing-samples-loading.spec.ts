@@ -142,21 +142,60 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
   })
 })
 
-test.describe('Query parameter command', { tag: ['@web', '@desktop'] }, () => {
-  test('should create a legacy sample in the default project library', async ({
+test.describe('Query parameter command', { tag: '@web' }, () => {
+  test('applies the ttc layout without opening the command palette', async ({
+    page,
+    cmdBar,
+  }) => {
+    await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const layout = window.app.layout.get()
+          return 'sizes' in layout ? layout.sizes : []
+        })
+      )
+      .toEqual([0, 50, 50])
+    await cmdBar.expectState({ stage: 'commandBarClosed' })
+  })
+
+  test('should add sample to demo project', async ({
     page,
     toolbar,
     editor,
   }) => {
-    const sampleTitle = 'Aircraft telemetry antenna plate'
-    const sampleSlug = 'telemetry-antenna'
-    const projectSlug = 'aircraft-telemetry-antenna-plate'
+    await closeOnboardingModalIfPresent(page)
+
+    const sampleTitle = 'Socket Head Cap Screw'
+    const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
-    await closeOnboardingModalIfPresent(page)
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
-    await expect(page).toHaveURL(new RegExp(`${projectSlug}%2Fmain\\.kcl$`))
   })
 })
+
+test.describe(
+  'Legacy sample query parameter command',
+  { tag: ['@web', '@desktop'] },
+  () => {
+    test('should create the sample in the default project library', async ({
+      page,
+      toolbar,
+      editor,
+    }) => {
+      const sampleTitle = 'Aircraft telemetry antenna plate'
+      const sampleSlug = 'telemetry-antenna'
+      const projectSlug = 'aircraft-telemetry-antenna-plate'
+      const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
+      await page.goto(page.url() + queryString)
+      await closeOnboardingModalIfPresent(page)
+
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
+      await expect(page).toHaveURL(new RegExp(`${projectSlug}%2Fmain\\.kcl$`))
+    })
+  }
+)

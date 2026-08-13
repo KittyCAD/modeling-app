@@ -573,6 +573,10 @@ export function createApplicationCommands({
             name: 'Zookeeper focus',
             value: 'zookeeper',
           },
+          {
+            name: 'Zookeeper focus (legacy URL)',
+            value: 'ttc',
+          },
         ] satisfies { name: string; value: keyof typeof userLoadableLayouts }[],
       },
     },
