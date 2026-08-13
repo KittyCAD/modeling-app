@@ -1272,7 +1272,7 @@ impl ExecState {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
 #[ts(export)]
 pub enum KclVersion {
     #[default]
@@ -1280,6 +1280,8 @@ pub enum KclVersion {
     V1,
     #[serde(rename = "2.0")]
     V2,
+    #[serde(rename = "3.0-preview")]
+    V3Preview,
 }
 
 impl KclVersion {
@@ -1287,6 +1289,7 @@ impl KclVersion {
         match self {
             Self::V1 => "1.0",
             Self::V2 => "2.0",
+            Self::V3Preview => "3.0-preview",
         }
     }
 }
@@ -1298,10 +1301,13 @@ impl FromStr for KclVersion {
         match s {
             "1" | "1.0" | "1.0.0" => Ok(Self::V1),
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
             other => Err(KclError::new_semantic(KclErrorDetails {
                 source_ranges: Default::default(),
                 backtrace: Default::default(),
-                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+                message: format!(
+                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
+                ),
             })),
         }
     }
@@ -1609,7 +1615,7 @@ impl MetaSettings {
                     updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
-                    let value = annotations::expect_number(&p.inner.value)?;
+                    let value = annotations::expect_kcl_version(&p.inner.value)?;
                     self.kcl_version = value.parse()?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
@@ -1667,6 +1673,7 @@ mod tests {
         assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
         assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
         assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
         // No such version.
         KclVersion::from_str("99.123").unwrap_err();
     }
@@ -1675,6 +1682,10 @@ mod tests {
     fn kcl_version_serializes_as_canonical_setting_value() {
         assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
         assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(
+            serde_json::to_string(&KclVersion::V3Preview).unwrap(),
+            r#""3.0-preview""#
+        );
     }
 
     #[test]

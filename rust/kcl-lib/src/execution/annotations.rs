@@ -258,16 +258,24 @@ pub(super) fn many_of(
         .collect::<Result<Vec<&str>, KclError>>()
 }
 
-// Returns the unparsed number literal.
-pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
-    if let Expr::Literal(lit) = expr
-        && let LiteralValue::Number { .. } = &lit.value
-    {
-        return Ok(lit.raw.clone());
+/// Returns a KCL version.
+/// Usually a number, but may have a trailing string suffix like 'preview' with a '-' divider,
+/// e.g. 3.0-preview.
+pub(super) fn expect_kcl_version(expr: &Expr) -> Result<String, KclError> {
+    if let Expr::Literal(lit) = expr {
+        return match &lit.value {
+            LiteralValue::Number { .. } => Ok(lit.raw.clone()),
+            LiteralValue::String(value) => Ok(value.clone()),
+            LiteralValue::Bool(_) => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Unexpected KCL version value, expected a number or string, e.g., `2.0` or `\"3.0-preview\"`"
+                    .to_owned(),
+                vec![expr.into()],
+            ))),
+        };
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
-        "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
+        "Unexpected KCL version value, expected a number or string, e.g., `2.0` or `\"3.0-preview\"`".to_owned(),
         vec![expr.into()],
     )))
 }
