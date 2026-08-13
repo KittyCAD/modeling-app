@@ -55,7 +55,6 @@ export class ToolbarFixture {
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
   gizmo!: Locator
-  gizmoDisabled!: Locator
   experimentalFeaturesMenu!: Locator
   loadButton!: Locator
   /** User button for the user sidebar menu */
@@ -106,12 +105,7 @@ export class ToolbarFixture {
     this.featureTreePane = page.locator('#operations-list-pane')
     this.fileCreateToast = page.getByText('Successfully created')
 
-    // Note to test writers: having two locators like this is preferable to one
-    // which changes another el property because it means our test "signal" is
-    // completely decoupled from the elements themselves. It means the same
-    // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
-    this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
     this.experimentalFeaturesMenu = page.getByTestId(
       'experimental-features-menu'
@@ -153,7 +147,8 @@ export class ToolbarFixture {
   }
 
   waitUntilSketchingReady = async () => {
-    await expect(this.gizmoDisabled).toBeVisible()
+    await expect(this.exitSketchBtn).toBeVisible()
+    await expect(this.exitSketchBtn).toBeEnabled()
   }
 
   startSketchThenCallbackThenWaitUntilReady = async (

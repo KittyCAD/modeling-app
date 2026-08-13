@@ -248,6 +248,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     page,
     homePage,
     toolbar,
+    scene,
   }) => {
     /**
      * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
@@ -261,6 +262,7 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled()
 
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
     await expect(toolbar.startSketchBtn).toBeVisible()
