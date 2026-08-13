@@ -610,7 +610,7 @@ impl ExecState {
         self.global
             .deprecation_version_override
             .as_deref()
-            .unwrap_or(&self.mod_local.settings.kcl_version)
+            .unwrap_or(self.mod_local.settings.kcl_version.as_str())
     }
 
     #[cfg(test)]
@@ -1268,15 +1268,27 @@ impl ExecState {
     }
 
     pub(crate) fn kcl_version(&self) -> KclVersion {
-        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+        self.mod_local.settings.kcl_version
     }
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
 pub enum KclVersion {
     #[default]
+    #[serde(rename = "1.0")]
     V1,
+    #[serde(rename = "2.0")]
     V2,
+}
+
+impl KclVersion {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::V1 => "1.0",
+            Self::V2 => "2.0",
+        }
+    }
 }
 
 impl FromStr for KclVersion {
@@ -1559,7 +1571,7 @@ pub struct MetaSettings {
     pub default_length_units: UnitLength,
     pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
-    pub kcl_version: String,
+    pub kcl_version: KclVersion,
 }
 
 impl Default for MetaSettings {
@@ -1568,7 +1580,7 @@ impl Default for MetaSettings {
             default_length_units: UnitLength::Millimeters,
             default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
-            kcl_version: "1.0".to_owned(),
+            kcl_version: KclVersion::default(),
         }
     }
 }
@@ -1598,7 +1610,7 @@ impl MetaSettings {
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
-                    self.kcl_version = value;
+                    self.kcl_version = value.parse()?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
@@ -1633,8 +1645,11 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use uuid::Uuid;
 
+    use super::KclVersion;
     use super::ModuleArtifactState;
     use crate::NodePath;
     use crate::NodePathExt;
@@ -1645,6 +1660,22 @@ mod tests {
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
+
+    #[test]
+    fn kcl_version_parses_supported_spellings() {
+        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
+        // No such version.
+        KclVersion::from_str("99.123").unwrap_err();
+    }
+
+    #[test]
+    fn kcl_version_serializes_as_canonical_setting_value() {
+        assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+    }
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {

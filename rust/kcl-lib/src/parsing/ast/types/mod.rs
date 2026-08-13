@@ -5218,7 +5218,7 @@ startSketchOn(XY)
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -5246,7 +5246,7 @@ startSketchOn(XY)"#;
         let meta_settings = result.unwrap();
 
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -5257,6 +5257,20 @@ startSketchOn(XY)"#;
 startSketchOn(XY)
 "#
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_rejects_unsupported_kcl_version() {
+        let program = crate::parsing::top_level_parse(
+            r#"@settings(kclVersion = 99.123)
+
+startSketchOn(XY)"#,
+        )
+        .unwrap();
+
+        let err = program.meta_settings().unwrap_err();
+
+        assert!(err.get_message().contains("Unrecognized version 99.123"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
