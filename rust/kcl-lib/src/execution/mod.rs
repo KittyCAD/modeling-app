@@ -1020,8 +1020,10 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
-            executor_kind: Default::default(),
-            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            // Imported modules execute on this cloned context; keep them on
+            // the executor selected for the run instead of the default.
+            executor_kind: self.executor_kind,
+            machine_call_depth_limit: self.machine_call_depth_limit,
         }
     }
 
@@ -2301,6 +2303,18 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[test]
+    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
+        // Imported modules execute on a context created by
+        // clone_with_fresh_execution_batch. They must stay on the executor
+        // selected for the run instead of silently reverting to the default.
+        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+        ctx.machine_call_depth_limit = 123;
+        let cloned = ctx.clone_with_fresh_execution_batch();
+        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
+        assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
