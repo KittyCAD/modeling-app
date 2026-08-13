@@ -5751,12 +5751,14 @@ fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-                value: index as f64,
-                suffix: NumericSuffix::None,
-                raw: index.to_string(),
-                digest: None,
-            })))),
+            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+                ast::NumericLiteral {
+                    value: index as f64,
+                    suffix: NumericSuffix::None,
+                    raw: index.to_string(),
+                    digest: None,
+                },
+            )))),
         }],
         digest: None,
         non_code_meta: Default::default(),

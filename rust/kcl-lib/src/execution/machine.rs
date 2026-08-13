@@ -678,7 +678,11 @@ fn unwind_exit(
                 // this).
                 exec_state.push_op(Operation::GroupEnd);
             }
-            other => cleanup(other, exec_state),
+            other => {
+                if let Err(cleanup_err) = cleanup(other, exec_state) {
+                    return Err(unwind_error(cleanup_err, konts, exec_state));
+                }
+            }
         }
     }
     Ok(cf)
@@ -720,7 +724,11 @@ fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecSta
                 // GroupEnd (a historical asymmetry with the exit path).
                 sketch_body_cleanup(*sb, exec_state);
             }
-            other => cleanup(other, exec_state),
+            other => {
+                // Keep the original error; a boundary-in-cleanup internal
+                // error is secondary here and debug_assert covers development.
+                let _ = cleanup(other, exec_state);
+            }
         }
     }
     e
@@ -728,7 +736,11 @@ fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecSta
 
 /// Restore ambient state for a non-boundary continuation popped during
 /// unwinding. Continuations without ambient state are simply dropped.
-fn cleanup(kont: Kont, exec_state: &mut ExecState) {
+///
+/// Boundary continuations are handled by the unwind loops before they get
+/// here; one reaching this function is a machine bug, reported as an internal
+/// error rather than a panic.
+fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
     match kont {
         Kont::BlockSeq { in_flight, .. } => {
             if let InFlight::Declaration { prev_being_declared } = in_flight {
@@ -760,8 +772,13 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) {
         // abandon the rest of the iteration.
         | Kont::Resume(_) => {}
         // Handled by the unwind loops directly.
-        Kont::CallBoundary(_) | Kont::SketchBody(_) => unreachable!("boundaries are handled by the unwind loops"),
+        Kont::CallBoundary(_) | Kont::SketchBody(_) => {
+            let message = "machine executor: boundary continuation reached non-boundary cleanup";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message.to_owned(), Vec::new())));
+        }
     }
+    Ok(())
 }
 
 /// Restore the ambient state wrapped around a sketch-block body, in the
