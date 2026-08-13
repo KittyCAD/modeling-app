@@ -36,6 +36,7 @@ use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
 use crate::std::RegionBehavior;
 use crate::std::StaleRegionPolicy;
+use crate::std::region_consumption::PendingRegionConsumption;
 use crate::std::region_consumption::prepare_region_consumption;
 use crate::std::region_consumption::record_consumed_regions;
 use crate::std::region_consumption::validate_region_args_not_consumed;
@@ -523,6 +524,7 @@ impl FunctionSource {
                 should_track_operation,
                 is_calling_into_stdlib,
                 face_tag_names,
+                pending_region_consumption,
             },
             args,
         ))
@@ -596,6 +598,7 @@ impl FunctionSource {
             should_track_operation,
             is_calling_into_stdlib,
             face_tag_names,
+            pending_region_consumption,
         } = state;
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
@@ -661,6 +664,7 @@ pub(super) struct CallState {
     should_track_operation: bool,
     is_calling_into_stdlib: bool,
     face_tag_names: Vec<String>,
+    pending_region_consumption: Option<PendingRegionConsumption>,
 }
 
 impl FunctionBody {
