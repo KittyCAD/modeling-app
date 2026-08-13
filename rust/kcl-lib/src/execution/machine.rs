@@ -1001,7 +1001,10 @@ async fn step_eval(
             let inner = EvalRequest {
                 node: EvalNode::Expr(node.expr.clone()),
                 metadata,
-                decl_name: None,
+                // The recursive executor forwards its statement_kind to the
+                // labelled inner expression, so `x = label: fn() {}` still
+                // sees the declaration name.
+                decl_name,
                 annotations: Vec::new(),
             };
             konts.push(Kont::LabelDone { node });
