@@ -2882,10 +2882,9 @@ impl VariableDeclaration {
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        // Skip the init for the variable with the new name since it is the one we are renaming.
-        if self.declaration.id.name != new_name {
-            self.declaration.init.rename_identifiers(old_name, new_name, excluded);
-        }
+        // This is also called on the declaration being renamed itself; its init must be walked
+        // too so that a renamed function's recursive calls are updated.
+        self.declaration.init.rename_identifiers(old_name, new_name, excluded);
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -4334,9 +4333,14 @@ impl FunctionExpression {
     /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
     /// Parameter names are excluded for the whole body; local variable names are excluded only for
     /// references that appear after their declaration (so use-before-local-declaration is still renamed).
+    /// The function's own name is also excluded: inside the body it refers to this function
+    /// (recursion), not to an outer binding being renamed.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
-        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        let mut excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        if self.name.as_ref().is_some_and(|name| name.name == old_name) {
+            excluded_for_body.push(old_name);
+        }
         self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
     }
 
@@ -5611,6 +5615,100 @@ result = myFunc()
   return 1
 }
 result = yourFunc()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_fn_renames_recursive_calls() {
+        let code = r#"fn accum(n) {
+  return accum(n)
+}
+total = accum(3)
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("addUp", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn addUp(n) {
+  return addUp(n)
+}
+total = addUp(3)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn() {
+        let code = r#"foo = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn_but_updates_uses() {
+        let code = r#"foo = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return foo + myFunc()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return bar + myFunc()
+  }
+  return foo()
+}
 "#
         );
     }
