@@ -2852,11 +2852,28 @@ fn find_termination_in_direction(
         }
     }
 
-    // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
+    // A coincident point belonging to another segment can occupy the trim segment's
+    // own endpoint (for example, a line endpoint constrained onto an arc endpoint).
+    // Treat that as the arc/line endpoint termination. Returning it as an interior
+    // coincident termination makes build_trim_plan split the segment and leaves a
+    // zero-length piece behind.
     let endpoint = match direction {
         TrimDirection::Left => trim_curve.start,
         TrimDirection::Right => trim_curve.end,
     };
+    if !is_circle_segment && closest_candidate.candidate_type == CandidateType::Coincident {
+        let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
+        let coord_distance = ((closest_candidate.point.x - endpoint.x).squared()
+            + (closest_candidate.point.y - endpoint.y).squared())
+        .sqrt();
+        if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT || coord_distance < EPSILON_POINT_ON_SEGMENT {
+            return Ok(TrimTermination::SegEndPoint {
+                trim_termination_coords: endpoint,
+            });
+        }
+    }
+
+    // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
     if !is_circle_segment && closest_candidate.candidate_type == CandidateType::Endpoint {
         let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
         if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
@@ -4048,6 +4065,36 @@ fn build_trim_plan(
         constraint_ids
     };
 
+    // Find point-to-segment constraints whose point occupies an endpoint being
+    // trimmed off this segment. The point may be owned by a different segment,
+    // so looking only for constraints that reference our endpoint ID misses it.
+    let find_body_coincident_constraints_at_endpoint =
+        |segment_id: ObjectId, endpoint_coords: Coords2d| -> Vec<ObjectId> {
+            objects
+                .iter()
+                .filter_map(|obj| {
+                    let ObjectKind::Constraint {
+                        constraint: Constraint::Coincident(coincident),
+                    } = &obj.kind
+                    else {
+                        return None;
+                    };
+                    if !coincident.contains_segment(segment_id) {
+                        return None;
+                    }
+                    coincident
+                        .segment_ids()
+                        .filter(|id| *id != segment_id)
+                        .filter_map(|point_id| get_point_coords_from_native(objects, point_id, default_unit))
+                        .any(|point| {
+                            ((point.x - endpoint_coords.x).squared() + (point.y - endpoint_coords.y).squared()).sqrt()
+                                < EPSILON_POINT_ON_SEGMENT
+                        })
+                        .then_some(obj.id)
+                })
+                .collect()
+        };
+
     let find_midpoint_constraints_for_segment = |segment_id: ObjectId| -> Vec<ObjectId> {
         objects
             .iter()
@@ -4203,6 +4250,10 @@ fn build_trim_plan(
         } else {
             Vec::new()
         };
+        let trimmed_endpoint_coords = match endpoint_to_change {
+            EndpointChanged::Start => load_curve_handle(trim_spawn_segment, objects, default_unit)?.start,
+            EndpointChanged::End => load_curve_handle(trim_spawn_segment, objects, default_unit)?.end,
+        };
 
         let point_axis_constraint_ids_to_delete = if let Some(point_id) = endpoint_point_id {
             objects
@@ -4312,6 +4363,10 @@ fn build_trim_plan(
             all_constraint_ids_to_delete.push(constraint_id);
         }
         all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
+        all_constraint_ids_to_delete.extend(find_body_coincident_constraints_at_endpoint(
+            trim_spawn_id,
+            trimmed_endpoint_coords,
+        ));
         all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
         all_constraint_ids_to_delete.extend(find_midpoint_constraints_for_segment(trim_spawn_id));
 
@@ -4319,6 +4374,8 @@ fn build_trim_plan(
         // When trimming an endpoint, the distance constraint no longer makes sense
         let distance_constraint_ids = find_distance_constraints_for_segment(trim_spawn_id);
         all_constraint_ids_to_delete.extend(distance_constraint_ids);
+        all_constraint_ids_to_delete.sort_unstable();
+        all_constraint_ids_to_delete.dedup();
 
         let coincident_target_id = coincident_data
             .intersecting_endpoint_point_id
