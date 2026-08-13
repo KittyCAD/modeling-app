@@ -178,14 +178,18 @@ pub(super) fn format_from_annotations(
             annotations::IMPORT_LENGTH_UNIT => {
                 set_length_unit(&mut result, annotations::expect_ident(&p.value)?, p.as_source_range())?;
             }
+            annotations::IMPORT_TARGET_REPRESENTATION => {
+                set_target_representation(&mut result, annotations::expect_ident(&p.value)?, p.as_source_range())?;
+            }
             annotations::IMPORT_FORMAT => {}
             _ => {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
-                        "Unexpected annotation for import, expected one of: {}, {}, {}",
+                        "Unexpected annotation for import, expected one of: {}, {}, {}, {}",
                         annotations::IMPORT_FORMAT,
                         annotations::IMPORT_COORDS,
-                        annotations::IMPORT_LENGTH_UNIT
+                        annotations::IMPORT_LENGTH_UNIT,
+                        annotations::IMPORT_TARGET_REPRESENTATION
                     ),
                     vec![p.as_source_range()],
                 )));
@@ -255,6 +259,39 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
         }
     }
 
+    Ok(())
+}
+
+fn set_target_representation(
+    fmt: &mut InputFormat3d,
+    representation: &str,
+    source_range: SourceRange,
+) -> Result<(), KclError> {
+    let target_representation = match representation {
+        "mesh" => kcmc::format::step::TargetRepresentation::Mesh,
+        "brep" => kcmc::format::step::TargetRepresentation::Brep,
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Unknown target representation: {representation}, expected one of: {}",
+                    annotations::IMPORT_TARGET_REPRESENTATION_VALUES.join(", ")
+                ),
+                vec![source_range],
+            )));
+        }
+    };
+
+    let InputFormat3d::Step(opts) = fmt else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "`{}` option cannot be applied to the specified format",
+                annotations::IMPORT_TARGET_REPRESENTATION
+            ),
+            vec![source_range],
+        )));
+    };
+
+    opts.target_representation = target_representation;
     Ok(())
 }
 
@@ -459,6 +496,44 @@ mod test {
             )
         );
 
+        // STEP defaults are unchanged when no target representation is given.
+        let text = "@()\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!(fmt, get_import_format_from_extension("step").unwrap());
+
+        // STEP target representation.
+        let text = "@(targetRepresentation = mesh)\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        let InputFormat3d::Step(opts) = fmt else {
+            panic!("expected STEP import options");
+        };
+        assert_eq!(
+            opts.target_representation,
+            kcmc::format::step::TargetRepresentation::Mesh
+        );
+
+        let text = "@(targetRepresentation = brep)\nimport '../foo.step' as foo";
+        let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
+        let attrs = parsed.body[0].get_attrs();
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
+            .unwrap()
+            .unwrap();
+        let InputFormat3d::Step(opts) = fmt else {
+            panic!("expected STEP import options");
+        };
+        assert_eq!(
+            opts.target_representation,
+            kcmc::format::step::TargetRepresentation::Brep
+        );
+
         // no format, options
         let text = "@(coords = vulkan, lengthUnit = ft)\nimport '../foo.obj' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
@@ -481,6 +556,16 @@ mod test {
             "@(format = gltf, lengthUnit = ft)\nimport '../foo.txt' as foo",
             "../foo.txt",
             "`lengthUnit` option cannot be applied",
+        );
+        assert_annotation_error(
+            "@(targetRepresentation = mesh)\nimport '../foo.obj' as foo",
+            "../foo.obj",
+            "`targetRepresentation` option cannot be applied",
+        );
+        assert_annotation_error(
+            "@(targetRepresentation = voxels)\nimport '../foo.step' as foo",
+            "../foo.step",
+            "Unknown target representation",
         );
         // err - no format, options, but no options for specified format
         assert_annotation_error(
