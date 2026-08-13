@@ -1110,6 +1110,9 @@ async fn step_apply(
         }
         Kont::RangeStartDone { node } => {
             let start = applied.expect_value()?;
+            // Match the recursive executor: a bad start is reported before
+            // the end element is ever evaluated.
+            node.validate_range_start(&start)?;
             let end = EvalRequest::expr(&node.end_element);
             konts.push(Kont::RangeEndDone { node, start });
             Ok(Control::Eval(Box::new(end)))

@@ -6565,6 +6565,7 @@ impl Node<ArrayRangeExpression> {
             )
             .await?;
         let start_val_for_build = control_continue!(start_val);
+        self.validate_range_start(&start_val_for_build)?;
         let metadata = Metadata::from(&self.end_element);
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
@@ -6572,6 +6573,23 @@ impl Node<ArrayRangeExpression> {
         let end_val = control_continue!(end_val);
         self.build_range(start_val_for_build, end_val, exec_state)
             .map(KclValue::continue_)
+    }
+
+    /// Validate the evaluated start endpoint, preserving the original error
+    /// ordering: a bad start is reported before the end element is ever
+    /// evaluated. Shared by both executors; `build_range` re-checks it,
+    /// which is redundant but keeps `build_range` total on its own.
+    pub(super) fn validate_range_start(&self, start_val: &KclValue) -> Result<(), KclError> {
+        if start_val.as_ty_f64().is_none() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Expected number for range start but found {}",
+                    start_val.human_friendly_type()
+                ),
+                vec![self.into()],
+            )));
+        }
+        Ok(())
     }
 
     /// Build the range value from evaluated endpoints. The evaluation-free
