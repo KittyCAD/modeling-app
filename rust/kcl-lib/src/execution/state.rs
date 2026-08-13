@@ -1272,11 +1272,12 @@ impl ExecState {
     }
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum KclVersion {
     #[default]
     V1,
     V2,
+    V3,
 }
 
 impl FromStr for KclVersion {
@@ -1286,10 +1287,11 @@ impl FromStr for KclVersion {
         match s {
             "1" | "1.0" | "1.0.0" => Ok(Self::V1),
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            "3" | "3.0" | "3.0.0" => Ok(Self::V3),
             other => Err(KclError::new_semantic(KclErrorDetails {
                 source_ranges: Default::default(),
                 backtrace: Default::default(),
-                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+                message: format!("Unrecognized version {other}. Valid versions are 1.0, 2.0, and 3.0"),
             })),
         }
     }

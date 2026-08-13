@@ -92,6 +92,8 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
 /// ```
 /// ```kcl,sketchSolve
+/// // This example shows rolling ball fillets, a new type of fillet
+/// // available with KCL 3.
 /// @settings(kclVersion = 3.0, experimentalFeatures = allow)
 /// 
 /// sketch001 = sketch(on = XY) {
@@ -147,7 +149,6 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///          getCommonEdge(faces = [seg02, seg01]),
 ///          getCommonEdge(faces = [seg02, seg03])
 ///        ],
-///        version = 2,
 ///      )
 ///   |> rotate(yaw = 70deg, pitch = 10deg)
 /// ```
@@ -175,11 +176,13 @@ export fn fillet(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
-  @(experimental = true) version?: number(Count) = 1,
+  /// On KCL 2.0 and before, the default is 1.
+  /// On KCL 3.0 and later, the default is 2.
+  @(experimental = true) version?: number(Count),
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.

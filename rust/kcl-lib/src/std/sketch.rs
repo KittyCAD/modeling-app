@@ -2969,7 +2969,7 @@ async fn inner_region(
     let kcl_version = exec_state.kcl_version();
     let region_version = match kcl_version {
         KclVersion::V1 => RegionVersion::V0,
-        KclVersion::V2 => RegionVersion::V1,
+        KclVersion::V2 | KclVersion::V3 => RegionVersion::V1,
     };
 
     let (sketch_or_segment, region_mapping) = match (point, segments) {
