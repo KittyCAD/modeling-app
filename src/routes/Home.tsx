@@ -103,7 +103,7 @@ const Home = () => {
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
 
   useEffect(() => {
     if (!keymap) {
