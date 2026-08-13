@@ -129,12 +129,14 @@ export function useQueryParamEffects() {
 
       const projectLibraryTarget = app.getCreateProjectLibraryTargets()[0]
       if (!projectLibraryTarget) {
-        throw new Error('No writable project library is available.')
+        return Promise.reject(
+          new Error('No writable project library is available.')
+        )
       }
 
       const projectName = await getPublicProjectNameById(projectId)
       if (err(projectName)) {
-        throw projectName
+        return Promise.reject(projectName)
       }
       if (cancelled) {
         return
@@ -142,7 +144,7 @@ export function useQueryParamEffects() {
 
       const downloadedProject = await downloadProjectById(projectId)
       if (err(downloadedProject)) {
-        throw downloadedProject
+        return Promise.reject(downloadedProject)
       }
       if (cancelled) {
         return
@@ -162,7 +164,7 @@ export function useQueryParamEffects() {
         },
       })
       if (!importedProject?.default_file) {
-        throw new Error('Unable to create the shared project.')
+        return Promise.reject(new Error('Unable to create the shared project.'))
       }
       if (cancelled) {
         return
