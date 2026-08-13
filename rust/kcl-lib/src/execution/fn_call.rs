@@ -2318,7 +2318,7 @@ plane = startSketchOn(XY)
 
         exec_ctxt.run(&program, &mut exec_state).await.unwrap();
 
-        assert_eq!(exec_state.mod_local.settings.kcl_version, "1.0");
+        assert_eq!(exec_state.mod_local.settings.kcl_version, crate::KclVersion::V1);
         let warnings = exec_state
             .issues()
             .iter()

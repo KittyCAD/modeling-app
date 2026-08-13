@@ -1045,6 +1045,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectName,
           requestedProjectTitle,
           initialKclFile,
+          initialProject,
         }) => {
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
@@ -1058,6 +1059,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             requestedProjectTitle,
             wasmInstancePromise,
             initialKclFile,
+            initialProject,
           })
           refreshLocalCloudProjectEntries()
 

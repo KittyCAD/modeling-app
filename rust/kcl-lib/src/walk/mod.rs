@@ -3,6 +3,7 @@
 mod ast_node;
 mod ast_visitor;
 mod ast_walk;
+pub(crate) mod traverse;
 
 pub(crate) use ast_node::AstNodeError;
 pub(crate) use ast_node::Node;
