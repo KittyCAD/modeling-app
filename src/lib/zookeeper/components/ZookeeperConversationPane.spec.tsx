@@ -404,7 +404,7 @@ beforeAll(async () => {
 describe('ZookeeperConversationPane', () => {
   test('shows browser offline recovery without replacing a live connection', () => {
     const ws = Object.assign(new EventTarget(), {
-      readyState: WebSocket.OPEN as WebSocket['readyState'],
+      readyState: WebSocket.OPEN,
     })
     const zookeeperManagerActor = createFakeActor({
       awaitingResponse: false,
