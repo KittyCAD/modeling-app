@@ -5557,6 +5557,52 @@ s = sketch(on = XY) {
     }
 
     #[test]
+    fn test_rename_of_declaration_inside_sketch_block_is_a_no_op() {
+        // Renaming a variable declared inside a sketch block is intentionally not supported;
+        // the rename must be a no-op. Supporting it would mean also updating references to
+        // tags, both of the sketch itself and of its regions.
+        //
+        // The same-named top-level `line1` pins that the attempt doesn't rename the outer
+        // binding instead.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_reference_inside_sketch_block_is_a_no_op() {
+        // Like test_rename_of_declaration_inside_sketch_block_is_a_no_op, but with the cursor
+        // on a reference to the block-local variable instead of its declaration.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1.end").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
     fn test_rename_fn_declaration_keeps_expression_name_in_sync() {
         // An `fn name() {}` declaration stores the name on both the declarator and the function
         // expression (see the parser's `declaration`). Renaming the declaration must update both;
