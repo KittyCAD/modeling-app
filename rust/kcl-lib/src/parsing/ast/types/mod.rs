@@ -2827,6 +2827,15 @@ impl Node<VariableDeclaration> {
         if declaration_source_range.contains(pos) {
             let old_name = self.declaration.id.name.clone();
             self.declaration.id.name = new_name.to_string();
+            // An `fn name() {}` declaration also stores its name on the function expression
+            // (see the parser's `declaration`). Keep it in sync so the declaration doesn't
+            // look like it still binds the old name.
+            if let Expr::FunctionExpression(func) = &mut self.declaration.init
+                && let Some(fn_name) = &mut func.name
+                && fn_name.name == old_name
+            {
+                fn_name.name = new_name.to_string();
+            }
             return Some(old_name);
         }
 
@@ -5539,6 +5548,69 @@ s = sketch(on = XY) {
   foo = line(start = [var 0, var 0], end = [var 10, var 0])
   after = foo
 }
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_fn_declaration_keeps_expression_name_in_sync() {
+        // An `fn name() {}` declaration stores the name on both the declarator and the function
+        // expression (see the parser's `declaration`). Renaming the declaration must update both;
+        // otherwise the declaration looks like it still binds the old name, which would stop the
+        // rename before reaching later call sites.
+        let code = r#"fn helper() {
+  return 1
+}
+a = helper()
+b = helper()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("helper").unwrap() + 1;
+
+        program.rename_symbol("assist", pos);
+
+        let BodyItem::VariableDeclaration(decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected function expression")
+        };
+        assert_eq!(func.name.as_ref().unwrap().name, "assist");
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn assist() {
+  return 1
+}
+a = assist()
+b = assist()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_declaration_keeps_differing_fn_expression_name() {
+        // In `myFunc = fn recursiveName() {}` the declarator and the function expression's name
+        // are separate bindings. Renaming the declaration must not touch the function
+        // expression's name.
+        let code = r#"myFunc = fn recursiveName() {
+  return 1
+}
+result = myFunc()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("myFunc").unwrap() + 1;
+
+        program.rename_symbol("yourFunc", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"yourFunc = fn recursiveName() {
+  return 1
+}
+result = yourFunc()
 "#
         );
     }
