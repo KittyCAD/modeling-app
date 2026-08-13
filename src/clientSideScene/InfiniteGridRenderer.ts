@@ -1,96 +1,106 @@
-import type { Camera } from 'three'
-import { Vector3 } from 'three'
-import { OrthographicCamera } from 'three'
-import { GLSL3, LineSegments } from 'three'
-import { BufferGeometry, RawShaderMaterial } from 'three'
+import type { OrthographicCamera } from 'three'
+import {
+  BufferGeometry,
+  GLSL3,
+  Matrix4,
+  Mesh,
+  PerspectiveCamera,
+  RawShaderMaterial,
+  Vector3,
+} from 'three'
+
+type GridCamera = OrthographicCamera | PerspectiveCamera
 
 const vertexShader = `precision highp float;
 
-uniform int verticalLines;
-uniform int horizontalLines;
-uniform vec2 viewportPx; // (drawing buffer width, height) in pixels
-
-uniform vec2 lineGapNDC;
-uniform vec2 lineOffsetNDC;
-uniform int minorsPerMajor;
-
-out float vLineType;
-
-// snap to .25 or .75 pixels to avoid line flickering. Could also use thicker lines or snap lineOffsetNDC
-float snapToPixel(float ndcCoord, float viewport)
-{
-	// NDC [-1, 1] -> pixels [0, viewport]
-	float px = (ndcCoord * 0.5 + 0.5) * viewport;
-
-	// base pixel index
-	float base = floor(px);
-
-	// fractional part [0,1)
-	float frac = px - base;
-
-	// choose 0.25 if frac < 0.5, otherwise 0.75
-	float snapped = base + (frac < 0.5 ? 0.25 : 0.75);
-
-	// back to NDC
-	return (snapped / viewport - 0.5) * 2.0;
-}
+out vec2 vNdc;
 
 void main()
 {
-	int totalVerticalVerts = verticalLines * 2;
-	bool isVertical = gl_VertexID < totalVerticalVerts;
+	vec2 positions[3] = vec2[](
+		vec2(-1.0, -1.0),
+		vec2(3.0, -1.0),
+		vec2(-1.0, 3.0)
+	);
 
-	vec2 screenPos;
-
-	if (isVertical)
-	{
-		int lineIndex = gl_VertexID / 2;
-		int vertIndex = gl_VertexID % 2;
-
-		float screenX = lineOffsetNDC.x + float(lineIndex) * lineGapNDC.x;
-		float screenY = (vertIndex == 0) ? -1.0 : 1.0;
-		screenX = snapToPixel(screenX, viewportPx.x);
-		screenPos = vec2(screenX, screenY);
-
-		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
-	}
-	else
-	{
-		int lineIndex = (gl_VertexID - totalVerticalVerts) / 2;
-		int vertIndex = (gl_VertexID - totalVerticalVerts) % 2;
-
-		float screenX = (vertIndex == 0) ? -1.0 : 1.0;
-		float screenY = lineOffsetNDC.y + float(lineIndex) * lineGapNDC.y;
-		screenY = snapToPixel(screenY, viewportPx.y);
-		screenPos = vec2(screenX, screenY);
-
-		vLineType = lineIndex % minorsPerMajor == 0 ? 1.0 : 0.0;
-	}
-
-	gl_Position = vec4(screenPos, 0.0, 1.0);
+	vNdc = positions[gl_VertexID];
+	gl_Position = vec4(vNdc, 0.0, 1.0);
 }`
 
 const fragmentShader = `precision highp float;
 
-in float vLineType;
+in vec2 vNdc;
 out vec4 fragColor;
 
+uniform mat4 uClipToGrid;
+uniform bool uPerspective;
+uniform float uMinorSpacing;
+uniform float uMajorSpacing;
 uniform vec4 uMajorColor;
 uniform vec4 uMinorColor;
 
+vec3 clipToGrid(float ndcZ)
+{
+	vec4 point = uClipToGrid * vec4(vNdc, ndcZ, 1.0);
+	return point.xyz / point.w;
+}
+
+float gridCoverage(vec2 point, float spacing)
+{
+	vec2 coordinate = point / spacing;
+	vec2 distanceToLine = abs(fract(coordinate + 0.5) - 0.5);
+	vec2 derivative = max(fwidth(coordinate), vec2(1e-6));
+	vec2 coverage = 1.0 - smoothstep(vec2(0.0), derivative, distanceToLine);
+
+	// Fade a family of grid lines when its spacing falls below a pixel.
+	vec2 spacingPixels = 1.0 / derivative;
+	coverage *= smoothstep(vec2(1.0), vec2(2.0), spacingPixels);
+
+	return max(coverage.x, coverage.y);
+}
+
 void main()
 {
-	fragColor = vLineType > 0.5 ? uMajorColor : uMinorColor;
+	// Unproject two points on this fragment's camera ray into grid-local space.
+	vec3 rayStart = clipToGrid(-1.0);
+	vec3 rayPoint = clipToGrid(0.0);
+	vec3 rayDirection = rayPoint - rayStart;
+
+	// The grid plane is local z = 0.
+	if (abs(rayDirection.z) < 1e-7)
+	{
+		discard;
+	}
+
+	float distanceAlongRay = -rayStart.z / rayDirection.z;
+	// Perspective rays must not draw the plane behind the camera. Orthographic
+	// rays may intersect before the near clip when the plane is tilted; the grid
+	// is an overlay, so those intersections should still be rendered.
+	if (uPerspective && distanceAlongRay < 0.0)
+	{
+		discard;
+	}
+
+	vec3 gridPoint = rayStart + distanceAlongRay * rayDirection;
+	float minorCoverage = gridCoverage(gridPoint.xy, uMinorSpacing);
+	float majorCoverage = gridCoverage(gridPoint.xy, uMajorSpacing);
+	float coverage = max(minorCoverage, majorCoverage);
+
+	if (coverage <= 0.001)
+	{
+		discard;
+	}
+
+	vec4 color = mix(uMinorColor, uMajorColor, majorCoverage);
+	fragColor = vec4(color.rgb, color.a * coverage);
 }`
 
 /**
- * Renders an infinite grid by rendering LINES with a custom shader that doesn't use geometry.
- * This avoids recreating / uploading geometry buffers on each frame, or having a complicated pool/reuse logic of geometries,
- * it's simpler to just calculate the line positions by vertexId.
- * "ndc" here means native device coordinates, the range [-1, 1] which is easier to work with when covering
- * the visible screen.
+ * Renders an infinite grid by intersecting each fragment's camera ray with the
+ * object's local z = 0 plane. Grid lines are evaluated in local x/y coordinates,
+ * so parent translation and rotation are reflected in the rendered grid.
  */
-export class InfiniteGridRenderer extends LineSegments<
+export class InfiniteGridRenderer extends Mesh<
   BufferGeometry,
   RawShaderMaterial
 > {
@@ -100,27 +110,22 @@ export class InfiniteGridRenderer extends LineSegments<
   constructor() {
     const geometry = new BufferGeometry()
     geometry.name = 'InfiniteGridGeometry'
+    geometry.setDrawRange(0, 3)
 
     const material = new RawShaderMaterial({
       glslVersion: GLSL3,
       vertexShader,
       fragmentShader,
       uniforms: {
-        verticalLines: { value: 50 },
-        horizontalLines: { value: 50 },
-        cameraPos: { value: [0.0, 0.0] },
-        worldToScreenX: { value: 0.1 },
-        worldToScreenY: { value: 0.1 },
-        minorSpacing: { value: 1.0 },
-        majorSpacing: { value: 4.0 },
-        viewportPx: { value: [1.0, 1.0] },
-        lineGapNDC: { value: [1.0, 1.0] },
-        lineOffsetNDC: { value: [-1.0, -1.0] },
-        minorsPerMajor: { value: 4 },
+        uClipToGrid: { value: new Matrix4() },
+        uPerspective: { value: false },
+        uMinorSpacing: { value: 1.0 },
+        uMajorSpacing: { value: 4.0 },
         uMajorColor: { value: [0.3, 0.3, 0.3, 1.0] },
         uMinorColor: { value: [0.2, 0.2, 0.2, 1.0] },
       },
       transparent: false,
+      alphaToCoverage: true,
       depthTest: false,
       depthWrite: false,
     })
@@ -131,13 +136,46 @@ export class InfiniteGridRenderer extends LineSegments<
     this.renderOrder = -10
     this.frustumCulled = false
     this.raycast = () => {
-      // Disable raycasting: there are no vertices so it wouldn't work anyway, we also don't want to pick the grid
+      // The full-screen triangle is only a rendering implementation detail and
+      // should not become a sketch pick target.
     }
   }
 
+  /**
+   * Returns the projected size of one grid-local unit in logical/CSS pixels.
+   * The larger grid basis projection keeps adaptive spacing stable when one
+   * basis direction is strongly foreshortened by camera rotation.
+   */
+  getPixelsPerBaseUnit(
+    camera: GridCamera,
+    viewportSize: [number, number]
+  ): number {
+    camera.updateMatrixWorld()
+    camera.updateProjectionMatrix()
+    this.updateWorldMatrix(true, false)
+
+    const origin = this.localToWorld(new Vector3()).project(camera)
+    const xUnit = this.localToWorld(new Vector3(1, 0, 0)).project(camera)
+    const yUnit = this.localToWorld(new Vector3(0, 1, 0)).project(camera)
+    const logicalViewportWidth = viewportSize[0] / window.devicePixelRatio
+    const logicalViewportHeight = viewportSize[1] / window.devicePixelRatio
+
+    const projectedLength = (point: Vector3) =>
+      Math.hypot(
+        ((point.x - origin.x) * logicalViewportWidth) / 2,
+        ((point.y - origin.y) * logicalViewportHeight) / 2
+      )
+
+    const pixelsPerBaseUnit = Math.max(
+      projectedLength(xUnit),
+      projectedLength(yUnit)
+    )
+
+    return Number.isFinite(pixelsPerBaseUnit) ? pixelsPerBaseUnit : 1
+  }
+
   update(
-    camera: Camera,
-    viewportSize: [number, number],
+    camera: GridCamera,
     pixelsPerBaseUnit: number,
     gridScaleFactor: number,
     options: {
@@ -148,102 +186,56 @@ export class InfiniteGridRenderer extends LineSegments<
       fixedSizeGrid: boolean
     }
   ) {
-    if (!(camera instanceof OrthographicCamera)) {
-      console.log(
-        'Only orthographic cameras are supported for GridHelperInfinite'
-      )
-      return
-    }
-
-    // Needed for unproject to work correctly. Other option would be to use mesh.onBeforeRender
     camera.updateMatrixWorld()
     camera.updateProjectionMatrix()
+    this.updateWorldMatrix(true, false)
 
     let effectiveMajorSpacing = options.majorGridSpacing
     let effectiveMinorGridsPerMajor = options.minorGridsPerMajor
     let minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
 
-    const viewportWidthPx = viewportSize[0]
-    const viewportHeightPx = viewportSize[1]
-
     if (!options.fixedSizeGrid) {
       effectiveMajorSpacing *= gridScaleFactor
-      // Update minorSpacing because effectiveMajorSpacing changed
       minorSpacing = effectiveMajorSpacing / options.minorGridsPerMajor
     }
 
     const majorSpacingPx = effectiveMajorSpacing * pixelsPerBaseUnit
-    let minorSpacingPx = minorSpacing * pixelsPerBaseUnit
+    const minorSpacingPx = minorSpacing * pixelsPerBaseUnit
 
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
 
     if (options.fixedSizeGrid) {
-      // If major grid would be too dense on screen, hide the grid entirely
+      // If major grid would be too dense on screen, hide the grid entirely.
       if (majorSpacingPx < this.minMajorGridPixelSpacing) {
         this.visible = false
         return
       }
 
-      // If minors are too small, collapse to majors only by using major spacing
+      // If minors are too small, collapse to majors only by using major spacing.
       if (minorSpacingPx < this.minMinorGridPixelSpacing) {
         effectiveMinorSpacing = effectiveMajorSpacing
-        effectiveMinorGridsPerMajor = 1 // No minors, only majors
+        effectiveMinorGridsPerMajor = 1
       }
     }
 
-    const baseUnitToNDC = [
-      (pixelsPerBaseUnit / viewportWidthPx) * 2 * window.devicePixelRatio,
-      (pixelsPerBaseUnit / viewportHeightPx) * 2 * window.devicePixelRatio,
-    ]
-
-    const lineGapNDC = [
-      effectiveMinorSpacing * baseUnitToNDC[0],
-      effectiveMinorSpacing * baseUnitToNDC[1],
-    ]
-    const majorGapNDC = [
-      effectiveMajorSpacing * baseUnitToNDC[0],
-      effectiveMajorSpacing * baseUnitToNDC[1],
-    ]
-
-    const originNDC = this.getWorldPosition(new Vector3())
-    originNDC.project(camera)
-    const gridLineNDC = [originNDC.x, originNDC.y]
-    // Find the number of major grid lines (=gaps) to the left from this grid line
-    const bottomLeft = [-1, -1]
-
-    const numberOfGaps = [
-      Math.ceil((gridLineNDC[0] - bottomLeft[0]) / majorGapNDC[0]),
-      Math.ceil((gridLineNDC[1] - bottomLeft[1]) / majorGapNDC[1]),
-    ]
-    const lineOffsetNDC = [
-      gridLineNDC[0] - numberOfGaps[0] * majorGapNDC[0],
-      gridLineNDC[1] - numberOfGaps[1] * majorGapNDC[1],
-    ]
-
-    // We need as many lines as to cover the whole screen
-    const gridAreaSizeNDC = [1 - lineOffsetNDC[0], 1 - lineOffsetNDC[1]]
-    const lineCount = [
-      Math.ceil(gridAreaSizeNDC[0] / lineGapNDC[0]),
-      Math.ceil(gridAreaSizeNDC[1] / lineGapNDC[1]),
-    ]
-
     const material = this.material
-    material.uniforms.verticalLines.value = lineCount[0]
-    material.uniforms.horizontalLines.value = lineCount[1]
-    material.uniforms.viewportPx.value = [viewportWidthPx, viewportHeightPx]
-    material.uniforms.lineGapNDC.value = lineGapNDC
-    material.uniforms.lineOffsetNDC.value = lineOffsetNDC
-    material.uniforms.minorsPerMajor.value = effectiveMinorGridsPerMajor
+    const clipToGrid = material.uniforms.uClipToGrid.value as Matrix4
+    clipToGrid
+      .copy(this.matrixWorld)
+      .invert()
+      .multiply(camera.matrixWorld)
+      .multiply(camera.projectionMatrixInverse)
 
-    if (options?.majorColor) {
-      material.uniforms.uMajorColor.value = options.majorColor
-    }
-    if (options?.minorColor) {
+    material.uniforms.uMinorSpacing.value = effectiveMinorSpacing
+    material.uniforms.uMajorSpacing.value = effectiveMajorSpacing
+    material.uniforms.uPerspective.value = camera instanceof PerspectiveCamera
+
+    if (effectiveMinorGridsPerMajor === 1) {
+      material.uniforms.uMinorColor.value = options.majorColor
+    } else {
       material.uniforms.uMinorColor.value = options.minorColor
     }
-
-    const totalVertices = lineCount[0] * 2 + lineCount[1] * 2
-    this.geometry.setDrawRange(0, totalVertices)
+    material.uniforms.uMajorColor.value = options.majorColor
   }
 }
