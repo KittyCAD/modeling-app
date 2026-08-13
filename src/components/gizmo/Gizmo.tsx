@@ -1,4 +1,4 @@
-import { Popover } from '@headlessui/react'
+import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
@@ -13,6 +13,7 @@ import { Vector3 } from 'three'
 
 const NORMAL_TO_SKETCH_DOT_TOLERANCE = Math.cos((0.5 * Math.PI) / 180)
 const CLIENT_SCENE_FADE_DURATION_MS = 300
+const ORIENT_TO_SKETCH_FADE_DURATION_MS = 200
 
 export default function Gizmo() {
   const { settings } = useApp()
@@ -30,20 +31,23 @@ export default function Gizmo() {
   const [isNormalToSketch, setIsNormalToSketch] = useState(true)
   const [isAnimatingToSketch, setIsAnimatingToSketch] = useState(false)
 
-  const updateIsNormalToSketch = useCallback(() => {
+  const getIsNormalToSketch = useCallback(() => {
     if (!sketchSolveInit) {
-      setIsNormalToSketch(true)
-      return
+      return true
     }
     const cameraDirection = kclManager.sceneInfra.camControls.camera
       .getWorldDirection(new Vector3())
       .normalize()
     const sketchNormal = new Vector3(...sketchSolveInit.zAxis).normalize()
-    setIsNormalToSketch(
+    return (
       Math.abs(cameraDirection.dot(sketchNormal)) >=
-        NORMAL_TO_SKETCH_DOT_TOLERANCE
+      NORMAL_TO_SKETCH_DOT_TOLERANCE
     )
   }, [kclManager.sceneInfra.camControls.camera, sketchSolveInit])
+
+  const updateIsNormalToSketch = useCallback(() => {
+    setIsNormalToSketch(getIsNormalToSketch())
+  }, [getIsNormalToSketch])
 
   useEffect(() => {
     const cameraChange = kclManager.sceneInfra.camControls.cameraChange
@@ -72,24 +76,41 @@ export default function Gizmo() {
       )
     } finally {
       if (shouldFade) camControls.setEngineCameraAnimationInProgress(false)
-      setIsAnimatingToSketch(false)
+      const isNowNormalToSketch = getIsNormalToSketch()
+      setIsNormalToSketch(isNowNormalToSketch)
+      if (isNowNormalToSketch) {
+        setTimeout(
+          () => setIsAnimatingToSketch(false),
+          ORIENT_TO_SKETCH_FADE_DURATION_MS
+        )
+      } else {
+        setIsAnimatingToSketch(false)
+      }
     }
-  }, [isAnimatingToSketch, kclManager, targetId])
+  }, [getIsNormalToSketch, isAnimatingToSketch, kclManager, targetId])
 
   return (
-    <div className="relative flex flex-col items-center gap-1">
-      {inSketchMode && (
+    <div className="relative">
+      <Transition
+        show={inSketchMode && !isNormalToSketch && Boolean(targetId)}
+        enter="transition-opacity duration-200"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-200"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
         <button
           type="button"
-          className="pointer-events-auto whitespace-nowrap px-2 py-1 text-xs"
-          disabled={isNormalToSketch || !targetId || isAnimatingToSketch}
+          className="pointer-events-auto absolute right-0 bottom-full mb-2 whitespace-nowrap px-2 py-1 text-xs"
+          disabled={isAnimatingToSketch}
           onClick={() => {
             animateNormalToSketch().catch(reportRejection)
           }}
         >
-          Normal to Sketch
+          Orient to Sketch
         </button>
-      )}
+      </Transition>
       <div className="relative">
         {gizmoType === 'axis' ? <AxisGizmo /> : <CubeGizmo />}
         <GizmoDropdown items={menuItems} />

@@ -37,6 +37,8 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
+const AREA_SELECT_DASH_SIZE_PX = 4
+const AREA_SELECT_GAP_SIZE_PX = 3
 
 export type SelectionBoxVisualState = {
   getSelectionBoxObject: () => CSS2DObject | null
@@ -314,12 +316,30 @@ export function calculateSelectionTailEndpoint(
   return startPoint.clone().add(new Vector3(0, tailDirection * tailLength, 0))
 }
 
+export function calculateLocalUnitsPerScreenPixel(
+  localCorners: [Vector3, Vector3, Vector3, Vector3],
+  projectedCorners: [Vector2, Vector2, Vector2, Vector2]
+): number {
+  let localPerimeter = 0
+  let projectedPerimeter = 0
+  for (let index = 0; index < localCorners.length; index++) {
+    const nextIndex = (index + 1) % localCorners.length
+    localPerimeter += localCorners[index].distanceTo(localCorners[nextIndex])
+    projectedPerimeter += projectedCorners[index].distanceTo(
+      projectedCorners[nextIndex]
+    )
+  }
+
+  return projectedPerimeter > 1e-6 ? localPerimeter / projectedPerimeter : 1
+}
+
 function updateSelectionBoxGeometry(
   group: Group,
   corners: [Vector3, Vector3, Vector3, Vector3],
   tailEndpoint: Vector3,
   isIntersectionBox: boolean,
-  viewportSize: Vector2
+  viewportSize: Vector2,
+  localUnitsPerScreenPixel: number
 ): void {
   const positions = corners.flatMap((point) => [point.x, point.y, point.z])
   const outline = group.getObjectByName(SELECTION_BOX_OUTLINE)
@@ -328,6 +348,10 @@ function updateSelectionBoxGeometry(
     outline.computeLineDistances()
     if (outline.material instanceof LineMaterial) {
       outline.material.dashed = isIntersectionBox
+      outline.material.dashSize =
+        AREA_SELECT_DASH_SIZE_PX * localUnitsPerScreenPixel
+      outline.material.gapSize =
+        AREA_SELECT_GAP_SIZE_PX * localUnitsPerScreenPixel
       outline.material.resolution.copy(viewportSize)
       outline.material.needsUpdate = true
     }
@@ -420,8 +444,8 @@ export function updateSelectionBox({
         linewidth: AREA_SELECT_BORDER_WIDTH * window.devicePixelRatio,
         worldUnits: false,
         dashed: isIntersectionBox,
-        dashSize: 4,
-        gapSize: 3,
+        dashSize: AREA_SELECT_DASH_SIZE_PX,
+        gapSize: AREA_SELECT_GAP_SIZE_PX,
         depthTest: false,
         depthWrite: false,
         resolution: viewportSize,
@@ -467,6 +491,18 @@ export function updateSelectionBox({
     const localStart = transformToLocalSpace(startPoint3D, sketchSceneGroup)
     const localCurrent = transformToLocalSpace(currentPoint3D, sketchSceneGroup)
     const corners = calculateSelectionRectangleCorners(localStart, localCurrent)
+    const worldCorners = corners.map((corner) => {
+      const worldCorner = corner.clone()
+      if (sketchSceneGroup) sketchSceneGroup.localToWorld(worldCorner)
+      return worldCorner
+    }) as [Vector3, Vector3, Vector3, Vector3]
+    const projectedCorners = worldCorners.map((corner) =>
+      project3DToScreen(corner, camera, viewportSize)
+    ) as [Vector2, Vector2, Vector2, Vector2]
+    const localUnitsPerScreenPixel = calculateLocalUnitsPerScreenPixel(
+      corners,
+      projectedCorners
+    )
     const startEdgeEndWorld = corners[3].clone()
     if (sketchSceneGroup) {
       sketchSceneGroup.localToWorld(startEdgeEndWorld)
@@ -489,7 +525,8 @@ export function updateSelectionBox({
         corners,
         tailEndpoint,
         isIntersectionBox,
-        viewportSize
+        viewportSize,
+        localUnitsPerScreenPixel
       )
     }
 

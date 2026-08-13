@@ -1,4 +1,5 @@
 import {
+  calculateLocalUnitsPerScreenPixel,
   calculateLabelStyles,
   calculateSelectionRectangleCorners,
   calculateSelectionTailEndpoint,
@@ -82,6 +83,46 @@ describe('calculateSelectionTailEndpoint', () => {
     )
 
     expect(endpoint.toArray()).toEqual([2, 14.2, 0])
+  })
+})
+
+describe('calculateLocalUnitsPerScreenPixel', () => {
+  it('converts the rectangle perimeter from local units to screen pixels', () => {
+    const localCorners: [Vector3, Vector3, Vector3, Vector3] = [
+      new Vector3(0, 0, 0),
+      new Vector3(10, 0, 0),
+      new Vector3(10, 5, 0),
+      new Vector3(0, 5, 0),
+    ]
+    const projectedCorners: [Vector2, Vector2, Vector2, Vector2] = [
+      new Vector2(0, 0),
+      new Vector2(100, 0),
+      new Vector2(100, 50),
+      new Vector2(0, 50),
+    ]
+
+    expect(
+      calculateLocalUnitsPerScreenPixel(localCorners, projectedCorners)
+    ).toBeCloseTo(0.1)
+  })
+
+  it('accounts for foreshortening using the projected perimeter', () => {
+    const localCorners: [Vector3, Vector3, Vector3, Vector3] = [
+      new Vector3(0, 0, 0),
+      new Vector3(10, 0, 0),
+      new Vector3(10, 10, 0),
+      new Vector3(0, 10, 0),
+    ]
+    const projectedCorners: [Vector2, Vector2, Vector2, Vector2] = [
+      new Vector2(0, 0),
+      new Vector2(100, 0),
+      new Vector2(100, 20),
+      new Vector2(0, 20),
+    ]
+
+    expect(
+      calculateLocalUnitsPerScreenPixel(localCorners, projectedCorners)
+    ).toBeCloseTo(1 / 6)
   })
 })
 
