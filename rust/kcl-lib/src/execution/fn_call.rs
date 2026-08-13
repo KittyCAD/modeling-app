@@ -238,7 +238,7 @@ impl Node<CallExpressionKw> {
                 //
                 // TODO: Use the name that the function was defined
                 // with, not the identifier it was used with.
-                e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
+                e.add_unwind_location(Some(fn_name.to_string()), callsite)
             })?;
 
         let result = return_value.ok_or_else(move || {
