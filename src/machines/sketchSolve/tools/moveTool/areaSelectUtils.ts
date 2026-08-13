@@ -6,6 +6,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { isArray } from '@src/lib/utils'
 import { TAU, getAngleDiff } from '@src/lib/utils2d'
 import {
   getArcPoints,
@@ -21,6 +22,7 @@ import {
   DoubleSide,
   Float32BufferAttribute,
   Group,
+  Material,
   Mesh,
   MeshBasicMaterial,
   type OrthographicCamera,
@@ -35,7 +37,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
-const LABEL_VERTICAL_OFFSET = 12
 
 export type SelectionBoxVisualState = {
   getSelectionBoxObject: () => CSS2DObject | null
@@ -77,30 +78,6 @@ export function project3DToScreen(
 }
 
 /**
- * Calculates the bounding box in screen space from two screen points.
- * Pure function that determines the min/max bounds of a selection box.
- *
- * @param point1 - First screen point
- * @param point2 - Second screen point
- * @returns Object containing min and max bounds of the box
- */
-export function calculateBoxBounds(
-  point1: Vector2,
-  point2: Vector2
-): { min: Vector2; max: Vector2 } {
-  return {
-    min: new Vector2(
-      Math.min(point1.x, point2.x),
-      Math.min(point1.y, point2.y)
-    ),
-    max: new Vector2(
-      Math.max(point1.x, point2.x),
-      Math.max(point1.y, point2.y)
-    ),
-  }
-}
-
-/**
  * Determines the area selection mode based on drag direction.
  * Pure function that returns true for intersection mode (right-to-left drag),
  * false for contains mode (left-to-right drag).
@@ -114,176 +91,6 @@ export function isIntersectionSelectionMode(
   currentPoint: Vector2
 ): boolean {
   return startPoint.x > currentPoint.x
-}
-
-/**
- * Pure function: Calculates all selection box properties from 3D points
- * Returns all computed values needed to render and position the selection box
- */
-export function calculateSelectionBoxProperties(
-  startPoint3D: Vector3,
-  currentPoint3D: Vector3,
-  camera: OrthographicCamera | PerspectiveCamera,
-  viewportSize: Vector2
-): {
-  widthPx: number
-  heightPx: number
-  boxMinPx: Vector2
-  boxMaxPx: Vector2
-  startPx: Vector2
-  currentPx: Vector2
-  isIntersectionBox: boolean
-  isDraggingUpward: boolean
-  borderStyle: 'dashed' | 'solid'
-  center3D: Vector3
-} {
-  const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
-  const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
-
-  const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
-    startPx,
-    currentPx
-  )
-
-  const widthPx = boxMaxPx.x - boxMinPx.x
-  const heightPx = boxMaxPx.y - boxMinPx.y
-
-  const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
-  const isDraggingUpward = startPx.y > currentPx.y
-  const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
-
-  const center3D = new Vector3()
-    .addVectors(startPoint3D, currentPoint3D)
-    .multiplyScalar(0.5)
-
-  return {
-    widthPx,
-    heightPx,
-    boxMinPx,
-    boxMaxPx,
-    startPx,
-    currentPx,
-    isIntersectionBox,
-    isDraggingUpward,
-    borderStyle,
-    center3D,
-  }
-}
-
-/**
- * Pure function: Calculates label positioning relative to box center
- * Determines where labels should be positioned based on drag start point
- */
-export function calculateLabelPositioning(
-  startPx: Vector2,
-  boxMinPx: Vector2,
-  boxMaxPx: Vector2,
-  isDraggingUpward: boolean
-): {
-  offsetX: number
-  offsetY: number
-  finalOffsetY: number
-  startX: number
-  startY: number
-} {
-  const centerPx = new Vector2(
-    (boxMinPx.x + boxMaxPx.x) / 2,
-    (boxMinPx.y + boxMaxPx.y) / 2
-  )
-
-  const offsetX = startPx.x - centerPx.x
-  const offsetY = startPx.y - centerPx.y
-
-  const verticalOffset = isDraggingUpward
-    ? LABEL_VERTICAL_OFFSET
-    : -LABEL_VERTICAL_OFFSET
-  const finalOffsetY = offsetY + verticalOffset
-
-  const startX = offsetX
-  const startY = offsetY
-
-  return {
-    offsetX,
-    offsetY,
-    finalOffsetY,
-    startX,
-    startY,
-  }
-}
-
-/**
- * Pure function: Calculates corner line styles and positions
- * Determines how corner lines should be positioned and sized
- */
-export function calculateCornerLineStyles(
-  startX: number,
-  startY: number,
-  lineExtensionSize: number,
-  borderWidth: number
-): {
-  verticalLine: {
-    height: string
-    bottom?: string
-    top?: string
-    left?: string
-    right?: string
-  }
-  horizontalLine: {
-    width: string
-    left?: string
-    right?: string
-    top?: string
-    bottom?: string
-  }
-} {
-  const verticalLine: {
-    height: string
-    bottom?: string
-    top?: string
-    left?: string
-    right?: string
-  } = {
-    height: `${lineExtensionSize}px`,
-  }
-
-  if (startY > 0) {
-    verticalLine.bottom = `-${lineExtensionSize + borderWidth}px`
-  } else {
-    verticalLine.top = `-${lineExtensionSize + borderWidth}px`
-  }
-
-  if (startX > 0) {
-    verticalLine.right = `-${borderWidth}px`
-  } else {
-    verticalLine.left = `-${borderWidth}px`
-  }
-
-  const horizontalLine: {
-    width: string
-    left?: string
-    right?: string
-    top?: string
-    bottom?: string
-  } = {
-    width: `${lineExtensionSize}px`,
-  }
-
-  if (startX < 0) {
-    horizontalLine.left = `-${lineExtensionSize + borderWidth}px`
-  } else {
-    horizontalLine.right = `-${lineExtensionSize + borderWidth}px`
-  }
-
-  if (startY > 0) {
-    horizontalLine.bottom = `-${borderWidth}px`
-  } else {
-    horizontalLine.top = `-${borderWidth}px`
-  }
-
-  return {
-    verticalLine,
-    horizontalLine,
-  }
 }
 
 /**
@@ -577,12 +384,9 @@ export function updateSelectionBox({
     renderer.domElement.clientHeight
   )
 
-  const properties = calculateSelectionBoxProperties(
-    startPoint3D,
-    currentPoint3D,
-    camera,
-    viewportSize
-  )
+  const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
+  const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
+  const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
 
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   const sketchSceneGroup =
@@ -615,7 +419,7 @@ export function updateSelectionBox({
         color: selectionBoxColor,
         linewidth: AREA_SELECT_BORDER_WIDTH * window.devicePixelRatio,
         worldUnits: false,
-        dashed: properties.isIntersectionBox,
+        dashed: isIntersectionBox,
         dashSize: 4,
         gapSize: 3,
         depthTest: false,
@@ -675,7 +479,7 @@ export function updateSelectionBox({
     const tailEndpoint = calculateSelectionTailEndpoint(
       localStart,
       localCurrent,
-      properties.startPx,
+      startPx,
       projectedStartEdgeEnd
     )
     const group = selectionBoxState.getSelectionBoxGroup()
@@ -684,14 +488,14 @@ export function updateSelectionBox({
         group,
         corners,
         tailEndpoint,
-        properties.isIntersectionBox,
+        isIntersectionBox,
         viewportSize
       )
     }
 
     currentSelectionBoxObject.position.copy(tailEndpoint)
 
-    const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
+    const labelStyles = calculateLabelStyles(isIntersectionBox)
     const currentLabelsWrapper = selectionBoxState.getLabelsWrapper()
     if (currentLabelsWrapper) {
       updateLabelStylesInDom(currentLabelsWrapper, labelStyles)
@@ -709,9 +513,9 @@ export function removeSelectionBox(
     currentSelectionBoxGroup.traverse((child) => {
       if (child instanceof Mesh || child instanceof Line2) {
         child.geometry.dispose()
-        if (Array.isArray(child.material)) {
+        if (isArray(child.material)) {
           child.material.forEach((material) => {
-            material.dispose()
+            if (material instanceof Material) material.dispose()
           })
         } else {
           child.material.dispose()
