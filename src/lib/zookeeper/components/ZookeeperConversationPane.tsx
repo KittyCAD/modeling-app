@@ -59,6 +59,7 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
+  const [showManualConnect, setShowManualConnect] = useState(false)
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
@@ -86,6 +87,9 @@ export const ZookeeperConversationPane = (props: {
   })
   const conversationId = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.conversationId
+  })
+  const ws = useSelector(props.zookeeperManagerActor, (actor) => {
+    return actor.context.ws
   })
   const isSettingUp = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.matches(ZookeeperManagerStates.Setup)
@@ -204,10 +208,22 @@ export const ZookeeperConversationPane = (props: {
     })
   }, [props.zookeeperManagerActor, props.theProject?.path])
 
+  const onReconnect = useCallback(() => {
+    setShowManualConnect(false)
+    if (showManualConnect) {
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.NetworkOffline,
+      })
+    }
+    reconnect()
+  }, [props.zookeeperManagerActor, reconnect, showManualConnect])
+
   useEffect(() => {
-    // Browser connectivity signals can be unreliable on spotty networks. Let
-    // the WebSocket own disconnect detection and use `online` as a reconnect hint.
+    // Browser connectivity signals can be unreliable on spotty networks. An
+    // offline event shows recovery without automatically closing the socket.
+    const showOfflineRecovery = () => setShowManualConnect(true)
     const reconnectWhenOnline = () => {
+      setShowManualConnect(false)
       const readyState =
         props.zookeeperManagerActor.getSnapshot().context.ws?.readyState
       // Do not replace a healthy socket or restart a connection in progress.
@@ -220,9 +236,19 @@ export const ZookeeperConversationPane = (props: {
       reconnect()
     }
 
+    window.addEventListener('offline', showOfflineRecovery)
     window.addEventListener('online', reconnectWhenOnline)
-    return () => window.removeEventListener('online', reconnectWhenOnline)
+    return () => {
+      window.removeEventListener('offline', showOfflineRecovery)
+      window.removeEventListener('online', reconnectWhenOnline)
+    }
   }, [props.zookeeperManagerActor, reconnect])
+
+  useEffect(() => {
+    const dismissOfflineRecovery = () => setShowManualConnect(false)
+    ws?.addEventListener('message', dismissOfflineRecovery)
+    return () => ws?.removeEventListener('message', dismissOfflineRecovery)
+  }, [ws])
 
   useEffect(() => {
     // Abrupt closes retry automatically. Terminal setup failures wait for the
@@ -623,9 +649,12 @@ export const ZookeeperConversationPane = (props: {
       onClickClearChat={() => {
         void onClickClearChat()
       }}
-      onReconnect={reconnect}
-      connectionError={closeReason}
+      onReconnect={onReconnect}
+      connectionError={
+        showManualConnect ? 'No internet connection.' : closeReason
+      }
       connectionFailed={setupFailed}
+      showManualConnect={showManualConnect}
       canClearChat={setupFailed && conversationId !== undefined}
       isClearingChat={isClearingChatPending}
       loadingMessage={

@@ -70,7 +70,7 @@ type FakeZookeeperSnapshot = {
     conversationId?: string
     defaultMode?: MlCopilotModeId
     modeOptions?: MlCopilotModeOption[]
-    ws?: Pick<WebSocket, 'readyState'>
+    ws?: EventTarget & { readyState: WebSocket['readyState'] }
   }
   matches: (state: unknown) => boolean
 }
@@ -106,7 +106,7 @@ const createFakeActor = ({
   setupAttempt?: number
   includeConversationId?: boolean
   conversationId?: string
-  ws?: Pick<WebSocket, 'readyState'>
+  ws?: EventTarget & { readyState: WebSocket['readyState'] }
 } = {}): FakeZookeeperActor => {
   const snapshot: FakeZookeeperSnapshot = {
     value,
@@ -402,10 +402,10 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('uses browser network events only as reconnect hints', () => {
-    const ws: { readyState: WebSocket['readyState'] } = {
-      readyState: WebSocket.OPEN,
-    }
+  test('shows browser offline recovery without replacing a live connection', () => {
+    const ws = Object.assign(new EventTarget(), {
+      readyState: WebSocket.OPEN as WebSocket['readyState'],
+    })
     const zookeeperManagerActor = createFakeActor({
       awaitingResponse: false,
       ws,
@@ -415,9 +415,12 @@ describe('ZookeeperConversationPane', () => {
 
     act(() => {
       window.dispatchEvent(new Event('offline'))
-      window.dispatchEvent(new Event('online'))
     })
 
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'No internet connection.'
+    )
+    expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
     expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
       type: ZookeeperManagerTransitions.NetworkOffline,
     })
@@ -426,6 +429,30 @@ describe('ZookeeperConversationPane', () => {
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
       })
     )
+
+    act(() => {
+      ws.dispatchEvent(new MessageEvent('message'))
+    })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
+    fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
+    expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.NetworkOffline,
+    })
+    expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: zookeeperManagerActor.send,
+      conversationId: 'conversation-id',
+    })
+    zookeeperManagerActor.send.mockClear()
+
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalled()
 
     ws.readyState = WebSocket.CONNECTING
     act(() => {
