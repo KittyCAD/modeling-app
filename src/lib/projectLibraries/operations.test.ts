@@ -1,7 +1,9 @@
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
