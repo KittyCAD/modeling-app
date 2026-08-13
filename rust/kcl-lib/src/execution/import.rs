@@ -448,6 +448,15 @@ mod test {
 
     #[test]
     fn annotations() {
+        let (_, issues) = crate::Program::parse("@(targetRepresentation = mesh)\nimport '../foo.step' as foo")
+            .expect("program should parse");
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, crate::errors::Severity::Error);
+        assert_eq!(
+            issues[0].message,
+            "Use of the `targetRepresentation` import annotation is experimental and may change or be removed."
+        );
+
         // no annotations
         assert!(
             format_from_annotations(&[], &TypedPath::from("../foo.txt"), SourceRange::default(),)
@@ -506,7 +515,8 @@ mod test {
         assert_eq!(fmt, get_import_format_from_extension("step").unwrap());
 
         // STEP target representation.
-        let text = "@(targetRepresentation = mesh)\nimport '../foo.step' as foo";
+        let text =
+            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = mesh)\nimport '../foo.step' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
         let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
@@ -520,7 +530,8 @@ mod test {
             kcmc::format::step::TargetRepresentation::Mesh
         );
 
-        let text = "@(targetRepresentation = brep)\nimport '../foo.step' as foo";
+        let text =
+            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = brep)\nimport '../foo.step' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
         let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.step"), SourceRange::default())
@@ -558,12 +569,12 @@ mod test {
             "`lengthUnit` option cannot be applied",
         );
         assert_annotation_error(
-            "@(targetRepresentation = mesh)\nimport '../foo.obj' as foo",
+            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = mesh)\nimport '../foo.obj' as foo",
             "../foo.obj",
             "`targetRepresentation` option cannot be applied",
         );
         assert_annotation_error(
-            "@(targetRepresentation = voxels)\nimport '../foo.step' as foo",
+            "@settings(experimentalFeatures = allow)\n@(targetRepresentation = voxels)\nimport '../foo.step' as foo",
             "../foo.step",
             "Unknown target representation",
         );

@@ -2,5 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing import_step_as_mesh.kcl
 ---
+@settings(experimentalFeatures = allow)
+
 @(targetRepresentation = mesh)
 import "cube.step" as cube
