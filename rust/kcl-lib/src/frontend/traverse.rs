@@ -11,6 +11,9 @@ pub(super) struct TraversalReturn<B, C = ()> {
     pub control_flow: ControlFlow<B, C>,
 }
 
+/// A request to replace or delete the nearest enclosing body item of the
+/// visited node. Only reliably delivered when paired with
+/// `ControlFlow::Break`; see [`dfs_mut`].
 #[derive(Default)]
 pub(super) enum MutateBodyItem {
     #[default]
@@ -29,11 +32,17 @@ pub(super) trait Visitor {
     type Break;
     type Continue;
 
-    /// Called when encountering a node for the first time, before its children.
+    /// Called when entering a node, before any of its children. Each node in
+    /// the traversal is visited exactly once.
     fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue>;
 
-    /// Called after all children of the node have been visited and the
-    /// traversal has completed this subtree.
+    /// Called when leaving a node, after all of its children have been
+    /// visited. This is paired with [`Visitor::visit`] so that state can be
+    /// set up when entering a node and torn down when leaving it.
+    ///
+    /// If the traversal stops early due to a `ControlFlow::Break`, it aborts
+    /// immediately, and `finish` is not called for the node that broke or for
+    /// any nodes that were entered but not yet left.
     fn finish(&mut self, node: NodeMut);
 }
 
@@ -65,25 +74,63 @@ impl<B, C> TraversalReturn<B, C> {
     }
 }
 
-/// Pre-order DFS traversal of the AST, applying `f` to each node. If `f`
-/// returns `ControlFlow::Break`, the traversal is stopped and the `ControlFlow`
-/// value is returned.
+/// DFS traversal of the AST. Each node is visited exactly once with
+/// [`Visitor::visit`], pre-order, before its children, and
+/// [`Visitor::finish`] is called on it, post-order, after all of its children
+/// have been visited. If `visit` returns `ControlFlow::Break`, the traversal
+/// is stopped immediately and the `ControlFlow` value is returned.
+///
+/// A [`MutateBodyItem`] returned from `visit` applies to the nearest
+/// enclosing body item and must be paired with `ControlFlow::Break` to be
+/// reliably applied. A request paired with `ControlFlow::Continue` may be
+/// dropped, depending on where in the enclosing body item's subtree it was
+/// returned, because traversing a subsequent node discards it.
 pub(super) fn dfs_mut<V: Visitor>(
     program: &mut ast::Node<ast::Program>,
     visitor: &mut V,
 ) -> ControlFlow<V::Break, V::Continue> {
-    let node = NodeMut::from(&mut *program);
-    let mut ret = visitor.visit(node);
+    dfs_mut_program(program, visitor).control_flow
+}
+
+/// Traverse a program node: visit it, traverse its body items, then finish
+/// it.
+fn dfs_mut_program<V: Visitor>(
+    program: &mut ast::Node<ast::Program>,
+    visitor: &mut V,
+) -> TraversalReturn<V::Break, V::Continue> {
+    let mut ret = visitor.visit(NodeMut::from(&mut *program));
     if ret.is_break() {
-        return ret.control_flow;
+        return ret;
     }
+    // A body item mutation returned from visiting the program node itself is
+    // meaningless since a program is not a body item. Drop it rather than
+    // letting it escape to an enclosing body item.
+    ret.mutate_body_item = MutateBodyItem::None;
+    let inner = &mut program.inner;
+    ret = dfs_mut_body(&mut inner.body, &mut inner.non_code_meta, visitor, ret);
+    if ret.is_break() {
+        return ret;
+    }
+    visitor.finish(NodeMut::from(&mut *program));
+    ret
+}
+
+/// Traverse the body items of a block, applying any body item mutations
+/// requested by the visitor. `ret` is the traversal state to return when the
+/// body is empty.
+fn dfs_mut_body<V: Visitor>(
+    body: &mut Vec<ast::BodyItem>,
+    non_code_meta: &mut ast::NonCodeMeta,
+    visitor: &mut V,
+    mut ret: TraversalReturn<V::Break, V::Continue>,
+) -> TraversalReturn<V::Break, V::Continue> {
     let mut remove_index = None;
-    for (i, body_item) in program.body.iter_mut().enumerate() {
+    for (i, body_item) in body.iter_mut().enumerate() {
         ret = dfs_mut_body_item(body_item, visitor);
         match ret.mutate_body_item.take() {
             MutateBodyItem::None => {}
             MutateBodyItem::Mutate(new_body_item) => {
-                // Allow the function to mutate the body item to a different
+                // Allow the visitor to mutate the body item to a different
                 // variant of the enum.
                 *body_item = *new_body_item;
             }
@@ -94,24 +141,16 @@ pub(super) fn dfs_mut<V: Visitor>(
         }
     }
     if let Some(index) = remove_index {
-        let inner = &mut program.inner;
-        delete_body_item_preserving_pre_comments(&mut inner.body, &mut inner.non_code_meta, index);
+        delete_body_item_preserving_pre_comments(body, non_code_meta, index);
     }
-    if ret.is_break() {
-        return ret.control_flow;
-    }
-    let node = NodeMut::from(&mut *program);
-    visitor.finish(node);
-
-    ret.control_flow
+    ret
 }
 
 fn dfs_mut_body_item<V: Visitor>(
     body_item: &mut ast::BodyItem,
     visitor: &mut V,
 ) -> TraversalReturn<V::Break, V::Continue> {
-    let node = NodeMut::from(&mut *body_item);
-    let mut ret = visitor.visit(node);
+    let mut ret = visitor.visit(NodeMut::from(&mut *body_item));
     if ret.is_break() {
         return ret;
     }
@@ -124,6 +163,7 @@ fn dfs_mut_body_item<V: Visitor>(
             }
         }
         ast::BodyItem::VariableDeclaration(node) => {
+            // TODO: Should we visit the VariableDeclarator and its Identifier?
             ret = dfs_mut_expr(&mut node.declaration.init, visitor);
             if ret.is_break() {
                 return ret;
@@ -133,6 +173,7 @@ fn dfs_mut_body_item<V: Visitor>(
         // none: an alias holds a `Type`, and enum variants are identifiers. The
         // visitor has already seen the statement itself above. `crate::walk` is the
         // traversal that reaches variants, and it does.
+        // TODO: Should we visit the name and enum variant Identifiers?
         ast::BodyItem::TypeDeclaration(_) => {}
         ast::BodyItem::ReturnStatement(node) => {
             ret = dfs_mut_expr(&mut node.argument, visitor);
@@ -141,30 +182,23 @@ fn dfs_mut_body_item<V: Visitor>(
             }
         }
     }
+    visitor.finish(NodeMut::from(&mut *body_item));
     ret
 }
 
 fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalReturn<V::Break, V::Continue> {
-    let node = NodeMut::from(&mut *expr);
-    let mut ret = visitor.visit(node);
+    // Note: This conversion dispatches to the node inside the enum variant,
+    // e.g. an `Expr::Literal` is visited as a `NodeMut::Literal`.
+    let mut ret = visitor.visit(NodeMut::from(&mut *expr));
     if ret.is_break() {
         return ret;
     }
     match expr {
-        ast::Expr::Literal(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
-        ast::Expr::Name(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
-        ast::Expr::TagDeclarator(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
+        // Leaf nodes with no children to traverse.
+        ast::Expr::Literal(_) | ast::Expr::TagDeclarator(_) | ast::Expr::PipeSubstitution(_) | ast::Expr::None(_) => {}
+        // TODO: Should we visit the Identifier and path segments?
+        ast::Expr::Name(_) => {}
         ast::Expr::BinaryExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_binary_part(&mut node.left, visitor);
             if ret.is_break() {
                 return ret;
@@ -173,34 +207,20 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             if ret.is_break() {
                 return ret;
             }
-            let node = NodeMut::from(&mut **node);
-            visitor.finish(node);
         }
         ast::Expr::FunctionExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+            // TODO: Should we visit the Parameters?
+            // The function body is visited as a program node, like
+            // if-expression branch blocks, so that scope-tracking visitors
+            // can set up and tear down a scope for it.
+            ret = dfs_mut_program(&mut node.body, visitor);
             if ret.is_break() {
                 return ret;
             }
-            for body_item in &mut node.body.body {
-                ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                // TODO: sketch-api: handle MutateBodyItem::Delete.
-                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = *new_body_item;
-                }
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            let node = NodeMut::from(&mut **node);
-            visitor.finish(node);
         }
         ast::Expr::CallExpressionKw(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
+            // TODO: Should we visit the callee Name and the argument label
+            // Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
@@ -209,10 +229,6 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::PipeExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             for expr in &mut node.body {
                 ret = dfs_mut_expr(expr, visitor);
                 if ret.is_break() {
@@ -220,14 +236,7 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 }
             }
         }
-        ast::Expr::PipeSubstitution(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
         ast::Expr::ArrayExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             for expr in &mut node.elements {
                 ret = dfs_mut_expr(expr, visitor);
                 if ret.is_break() {
@@ -236,10 +245,6 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::ArrayRangeExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.start_element, visitor);
             if ret.is_break() {
                 return ret;
@@ -250,26 +255,12 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::ObjectExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+            ret = dfs_mut_object_properties(&mut node.properties, visitor, ret);
             if ret.is_break() {
                 return ret;
-            }
-            for property in &mut node.properties {
-                ret = visitor.visit(NodeMut::from(&mut property.key));
-                if ret.is_break() {
-                    return ret;
-                }
-                ret = dfs_mut_expr(&mut property.value, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
             }
         }
         ast::Expr::MemberExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.object, visitor);
             if ret.is_break() {
                 return ret;
@@ -280,144 +271,56 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
             }
         }
         ast::Expr::UnaryExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_binary_part(&mut node.argument, visitor);
             if ret.is_break() {
                 return ret;
             }
         }
         ast::Expr::IfExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+            ret = dfs_mut_if_expression(node, visitor);
             if ret.is_break() {
                 return ret;
             }
-            ret = dfs_mut_expr(&mut node.cond, visitor);
-            if ret.is_break() {
-                return ret;
-            }
-            visitor.visit(NodeMut::from(&mut *node.then_val));
-            for body_item in &mut node.then_val.body {
-                ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                // TODO: sketch-api: handle MutateBodyItem::Delete.
-                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = *new_body_item;
-                }
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            visitor.finish(NodeMut::from(&mut *node.then_val));
-            for else_if in &mut node.else_ifs {
-                ret = dfs_mut_expr(&mut else_if.cond, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
-                visitor.visit(NodeMut::from(&mut *else_if.then_val));
-                for body_item in &mut else_if.then_val.body {
-                    ret = dfs_mut_body_item(body_item, visitor);
-                    // Allow the function to mutate the body item to a different
-                    // variant of the enum.
-                    // TODO: sketch-api: handle MutateBodyItem::Delete.
-                    if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                        *body_item = *new_body_item;
-                    }
-                    if ret.is_break() {
-                        return ret;
-                    }
-                }
-                visitor.finish(NodeMut::from(&mut *else_if.then_val));
-            }
-            visitor.visit(NodeMut::from(&mut *node.final_else));
-            for body_item in &mut node.final_else.body {
-                ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                // TODO: sketch-api: handle MutateBodyItem::Delete.
-                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = *new_body_item;
-                }
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            visitor.finish(NodeMut::from(&mut *node.final_else));
         }
         ast::Expr::LabelledExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
+            // TODO: Should we visit the label Identifier?
             ret = dfs_mut_expr(&mut node.expr, visitor);
             if ret.is_break() {
                 return ret;
             }
         }
         ast::Expr::AscribedExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.expr, visitor);
             if ret.is_break() {
                 return ret;
             }
         }
         ast::Expr::SketchBlock(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
+            // TODO: Should we visit the argument label Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
                     return ret;
                 }
             }
-            let mut remove_index = None;
-            for (i, body_item) in node.body.items.iter_mut().enumerate() {
-                ret = dfs_mut_body_item(body_item, visitor);
-                match ret.mutate_body_item.take() {
-                    MutateBodyItem::None => {}
-                    MutateBodyItem::Mutate(new_body_item) => {
-                        // Allow the function to mutate the body item to a different
-                        // variant of the enum.
-                        *body_item = *new_body_item;
-                    }
-                    MutateBodyItem::Delete => remove_index = Some(i),
-                }
-                if ret.is_break() {
-                    break;
-                }
-            }
-            if let Some(index) = remove_index {
-                let block = &mut node.body.inner;
-                delete_body_item_preserving_pre_comments(&mut block.items, &mut block.non_code_meta, index);
-            }
+            // TODO: Should we visit the inner Block node?
+            let block = &mut node.body.inner;
+            ret = dfs_mut_body(&mut block.items, &mut block.non_code_meta, visitor, ret);
             if ret.is_break() {
                 return ret;
             }
-            let node = NodeMut::from(&mut **node);
-            visitor.finish(node);
         }
         ast::Expr::SketchVar(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             if let Some(initial) = &mut node.initial {
                 ret = visitor.visit(NodeMut::from(&mut **initial));
                 if ret.is_break() {
                     return ret;
                 }
+                visitor.finish(NodeMut::from(&mut **initial));
             }
         }
-        ast::Expr::None(_) => {}
     }
+    visitor.finish(NodeMut::from(&mut *expr));
     ret
 }
 
@@ -425,23 +328,21 @@ fn dfs_mut_binary_part<V: Visitor>(
     binary_part: &mut ast::BinaryPart,
     visitor: &mut V,
 ) -> TraversalReturn<V::Break, V::Continue> {
-    let node = NodeMut::from(&mut *binary_part);
-    let mut ret = visitor.visit(node);
+    // Note: This conversion dispatches to the node inside the enum variant,
+    // e.g. a `BinaryPart::Literal` is visited as a `NodeMut::Literal`.
+    let mut ret = visitor.visit(NodeMut::from(&mut *binary_part));
     if ret.is_break() {
         return ret;
     }
     match binary_part {
-        ast::BinaryPart::Literal(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
-        ast::BinaryPart::Name(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-        }
+        // Leaf nodes with no children to traverse.
+        ast::BinaryPart::Literal(_) => {}
+        // TODO: Should we visit the Identifier and path segments?
+        ast::BinaryPart::Name(_) => {}
+        // TODO: Should we visit the initial NumericLiteral, like the
+        // `ast::Expr::SketchVar` arm does?
+        ast::BinaryPart::SketchVar(_) => {}
         ast::BinaryPart::BinaryExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_binary_part(&mut node.left, visitor);
             if ret.is_break() {
                 return ret;
@@ -452,10 +353,8 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::CallExpressionKw(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
+            // TODO: Should we visit the callee Name and the argument label
+            // Identifiers?
             for (_, arg) in &mut node.iter_arguments_mut() {
                 ret = dfs_mut_expr(arg, visitor);
                 if ret.is_break() {
@@ -464,20 +363,12 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::UnaryExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_binary_part(&mut node.argument, visitor);
             if ret.is_break() {
                 return ret;
             }
         }
         ast::BinaryPart::MemberExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.object, visitor);
             if ret.is_break() {
                 return ret;
@@ -488,10 +379,6 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::ArrayExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             for expr in &mut node.elements {
                 ret = dfs_mut_expr(expr, visitor);
                 if ret.is_break() {
@@ -500,10 +387,6 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::ArrayRangeExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.start_element, visitor);
             if ret.is_break() {
                 return ret;
@@ -514,91 +397,75 @@ fn dfs_mut_binary_part<V: Visitor>(
             }
         }
         ast::BinaryPart::ObjectExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+            ret = dfs_mut_object_properties(&mut node.properties, visitor, ret);
             if ret.is_break() {
                 return ret;
-            }
-            for property in &mut node.properties {
-                ret = visitor.visit(NodeMut::from(&mut property.key));
-                if ret.is_break() {
-                    return ret;
-                }
-                ret = dfs_mut_expr(&mut property.value, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
             }
         }
         ast::BinaryPart::IfExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+            ret = dfs_mut_if_expression(node, visitor);
             if ret.is_break() {
                 return ret;
             }
-            ret = dfs_mut_expr(&mut node.cond, visitor);
-            if ret.is_break() {
-                return ret;
-            }
-            visitor.visit(NodeMut::from(&mut *node.then_val));
-            for body_item in &mut node.then_val.body {
-                ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                // TODO: sketch-api: handle MutateBodyItem::Delete.
-                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = *new_body_item;
-                }
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            visitor.finish(NodeMut::from(&mut *node.then_val));
-            for else_if in &mut node.else_ifs {
-                ret = dfs_mut_expr(&mut else_if.cond, visitor);
-                if ret.is_break() {
-                    return ret;
-                }
-                visitor.visit(NodeMut::from(&mut *else_if.then_val));
-                for body_item in &mut else_if.then_val.body {
-                    ret = dfs_mut_body_item(body_item, visitor);
-                    // Allow the function to mutate the body item to a different
-                    // variant of the enum.
-                    // TODO: sketch-api: handle MutateBodyItem::Delete.
-                    if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                        *body_item = *new_body_item;
-                    }
-                    if ret.is_break() {
-                        return ret;
-                    }
-                }
-                visitor.finish(NodeMut::from(&mut *else_if.then_val));
-            }
-            visitor.visit(NodeMut::from(&mut *node.final_else));
-            for body_item in &mut node.final_else.body {
-                ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                // TODO: sketch-api: handle MutateBodyItem::Delete.
-                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = *new_body_item;
-                }
-                if ret.is_break() {
-                    return ret;
-                }
-            }
-            visitor.finish(NodeMut::from(&mut *node.final_else));
         }
         ast::BinaryPart::AscribedExpression(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
-            if ret.is_break() {
-                return ret;
-            }
             ret = dfs_mut_expr(&mut node.expr, visitor);
             if ret.is_break() {
                 return ret;
             }
         }
-        ast::BinaryPart::SketchVar(node) => {
-            ret = visitor.visit(NodeMut::from(&mut **node));
+    }
+    visitor.finish(NodeMut::from(&mut *binary_part));
+    ret
+}
+
+/// Traverse the children of an if-expression: its condition and each branch
+/// block. The if-expression node itself has already been visited by the
+/// caller.
+fn dfs_mut_if_expression<V: Visitor>(
+    node: &mut ast::Node<ast::IfExpression>,
+    visitor: &mut V,
+) -> TraversalReturn<V::Break, V::Continue> {
+    let mut ret = dfs_mut_expr(&mut node.cond, visitor);
+    if ret.is_break() {
+        return ret;
+    }
+    ret = dfs_mut_program(&mut node.then_val, visitor);
+    if ret.is_break() {
+        return ret;
+    }
+    for else_if in &mut node.else_ifs {
+        // TODO: Should we visit the ElseIf node itself?
+        ret = dfs_mut_expr(&mut else_if.cond, visitor);
+        if ret.is_break() {
+            return ret;
+        }
+        ret = dfs_mut_program(&mut else_if.then_val, visitor);
+        if ret.is_break() {
+            return ret;
+        }
+    }
+    dfs_mut_program(&mut node.final_else, visitor)
+}
+
+/// Traverse the properties of an object expression. Each property's key is a
+/// leaf; its value is a full expression. `ret` is the traversal state to
+/// return when there are no properties.
+fn dfs_mut_object_properties<V: Visitor>(
+    properties: &mut [ast::Node<ast::ObjectProperty>],
+    visitor: &mut V,
+    mut ret: TraversalReturn<V::Break, V::Continue>,
+) -> TraversalReturn<V::Break, V::Continue> {
+    for property in properties {
+        // TODO: Should we visit the ObjectProperty node itself?
+        ret = visitor.visit(NodeMut::from(&mut property.key));
+        if ret.is_break() {
+            return ret;
+        }
+        visitor.finish(NodeMut::from(&mut property.key));
+        ret = dfs_mut_expr(&mut property.value, visitor);
+        if ret.is_break() {
+            return ret;
         }
     }
     ret
@@ -712,4 +579,462 @@ fn pre_comments_to_non_code_nodes(comments: &[String]) -> Vec<ast::Node<ast::Non
         i += 1;
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use std::collections::HashSet;
+
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+    use crate::SourceRange;
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum Event {
+        Enter(&'static str, Option<SourceRange>),
+        Exit(&'static str, Option<SourceRange>),
+    }
+
+    impl Event {
+        /// Render as "enter Kind" or "exit Kind", without the source range.
+        fn kind(&self) -> String {
+            match self {
+                Event::Enter(kind, _) => format!("enter {kind}"),
+                Event::Exit(kind, _) => format!("exit {kind}"),
+            }
+        }
+    }
+
+    /// A visitor that records the order of visit and finish calls, optionally
+    /// breaking when entering the nth node of a given kind.
+    #[derive(Default)]
+    struct EventVisitor {
+        events: Vec<Event>,
+        /// When Some((kind, n)), return `ControlFlow::Break` when entering
+        /// the nth (1-based) node of the given kind.
+        break_on: Option<(&'static str, usize)>,
+        enter_counts: HashMap<&'static str, usize>,
+    }
+
+    impl Visitor for EventVisitor {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue> {
+            let kind = kind_str(&node);
+            let range = SourceRange::try_from(&node).ok();
+            self.events.push(Event::Enter(kind, range));
+            let count = self.enter_counts.entry(kind).and_modify(|c| *c += 1).or_insert(1);
+            if self.break_on == Some((kind, *count)) {
+                return TraversalReturn::new_break(());
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, node: NodeMut) {
+            let kind = kind_str(&node);
+            let range = SourceRange::try_from(&node).ok();
+            self.events.push(Event::Exit(kind, range));
+        }
+    }
+
+    fn kind_str(node: &NodeMut) -> &'static str {
+        match node {
+            NodeMut::Program(_) => "Program",
+            NodeMut::ImportStatement(_) => "ImportStatement",
+            NodeMut::ExpressionStatement(_) => "ExpressionStatement",
+            NodeMut::VariableDeclaration(_) => "VariableDeclaration",
+            NodeMut::TypeDeclaration(_) => "TypeDeclaration",
+            NodeMut::ReturnStatement(_) => "ReturnStatement",
+            NodeMut::VariableDeclarator(_) => "VariableDeclarator",
+            NodeMut::NumericLiteral(_) => "NumericLiteral",
+            NodeMut::Literal(_) => "Literal",
+            NodeMut::TagDeclarator(_) => "TagDeclarator",
+            NodeMut::Identifier(_) => "Identifier",
+            NodeMut::Name(_) => "Name",
+            NodeMut::BinaryExpression(_) => "BinaryExpression",
+            NodeMut::FunctionExpression(_) => "FunctionExpression",
+            NodeMut::CallExpressionKw(_) => "CallExpressionKw",
+            NodeMut::PipeExpression(_) => "PipeExpression",
+            NodeMut::PipeSubstitution(_) => "PipeSubstitution",
+            NodeMut::ArrayExpression(_) => "ArrayExpression",
+            NodeMut::ArrayRangeExpression(_) => "ArrayRangeExpression",
+            NodeMut::ObjectExpression(_) => "ObjectExpression",
+            NodeMut::MemberExpression(_) => "MemberExpression",
+            NodeMut::UnaryExpression(_) => "UnaryExpression",
+            NodeMut::IfExpression(_) => "IfExpression",
+            NodeMut::ElseIf(_) => "ElseIf",
+            NodeMut::LabelledExpression(_) => "LabelledExpression",
+            NodeMut::AscribedExpression(_) => "AscribedExpression",
+            NodeMut::SketchBlock(_) => "SketchBlock",
+            NodeMut::Block(_) => "Block",
+            NodeMut::SketchVar(_) => "SketchVar",
+            NodeMut::Parameter(_) => "Parameter",
+            NodeMut::ObjectProperty(_) => "ObjectProperty",
+            NodeMut::KclNone(_) => "KclNone",
+        }
+    }
+
+    fn traverse(code: &str) -> (ControlFlow<(), ()>, Vec<Event>) {
+        traverse_with_break(code, None)
+    }
+
+    fn traverse_with_break(code: &str, break_on: Option<(&'static str, usize)>) -> (ControlFlow<(), ()>, Vec<Event>) {
+        let mut program = crate::parsing::top_level_parse(code).unwrap();
+        let mut visitor = EventVisitor {
+            break_on,
+            ..Default::default()
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        (control_flow, visitor.events)
+    }
+
+    fn event_kinds(events: &[Event]) -> Vec<String> {
+        events.iter().map(Event::kind).collect()
+    }
+
+    fn kinds(expected: &[&str]) -> Vec<String> {
+        expected.iter().map(|s| (*s).to_owned()).collect()
+    }
+
+    /// Assert that enter/exit events nest like balanced brackets, i.e. each
+    /// node's exit comes after all of its children's exits, every entered
+    /// node is exited, and no node is entered more than once. This is what a
+    /// visitor that sets up state in visit() and tears it down in finish()
+    /// relies on.
+    fn assert_balanced_and_unique(events: &[Event]) {
+        let mut stack: Vec<(&'static str, Option<SourceRange>)> = Vec::new();
+        let mut entered: HashSet<(&'static str, Option<SourceRange>)> = HashSet::new();
+        for event in events {
+            match event {
+                Event::Enter(kind, range) => {
+                    assert!(
+                        entered.insert((kind, *range)),
+                        "node visited more than once: {kind} {range:?}"
+                    );
+                    stack.push((kind, *range));
+                }
+                Event::Exit(kind, range) => {
+                    let top = stack
+                        .pop()
+                        .unwrap_or_else(|| panic!("finish without a matching visit: {kind} {range:?}"));
+                    assert_eq!(
+                        top,
+                        (*kind, *range),
+                        "finish does not match the most recently entered node"
+                    );
+                }
+            }
+        }
+        assert!(stack.is_empty(), "nodes entered but never finished: {stack:?}");
+    }
+
+    #[test]
+    fn statements_and_expressions_pair_visit_and_finish_in_order() {
+        let (control_flow, events) = traverse(
+            "\
+x = 1 + 2 * 3
+foo(x)
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Literal",
+                "exit Literal",
+                "exit BinaryExpression",
+                "exit BinaryExpression",
+                "exit VariableDeclaration",
+                "enter ExpressionStatement",
+                "enter CallExpressionKw",
+                "enter Name",
+                "exit Name",
+                "exit CallExpressionKw",
+                "exit ExpressionStatement",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn if_expression_branch_blocks_are_traversed_as_programs() {
+        let (control_flow, events) = traverse("y = if true { 1 } else { 2 }\n");
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter IfExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Program",
+                "enter ExpressionStatement",
+                "enter Literal",
+                "exit Literal",
+                "exit ExpressionStatement",
+                "exit Program",
+                "enter Program",
+                "enter ExpressionStatement",
+                "enter Literal",
+                "exit Literal",
+                "exit ExpressionStatement",
+                "exit Program",
+                "exit IfExpression",
+                "exit VariableDeclaration",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn function_body_is_traversed_as_a_program() {
+        let (control_flow, events) = traverse(
+            "\
+fn add(a, b) {
+  return a + b
+}
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter FunctionExpression",
+                "enter Program",
+                "enter ReturnStatement",
+                "enter BinaryExpression",
+                "enter Name",
+                "exit Name",
+                "enter Name",
+                "exit Name",
+                "exit BinaryExpression",
+                "exit ReturnStatement",
+                "exit Program",
+                "exit FunctionExpression",
+                "exit VariableDeclaration",
+                "exit Program",
+            ]),
+        );
+    }
+
+    #[test]
+    fn every_node_is_visited_once_with_balanced_nesting() {
+        let (control_flow, events) = traverse(
+            "\
+x = 1 + 2 * 3
+arr = [x, 2]
+obj = { a = x, b = 2 }
+m = obj.a
+u = -x
+piped = x |> foo(%)
+r = if x > 1 { 1 } else if x > 0 { 2 } else { 3 }
+fn f(a) {
+  return a
+}
+c = f(1)
+sk = sketch() {
+  p = var 1.5
+}
+",
+        );
+        assert!(control_flow.is_continue());
+        assert_balanced_and_unique(&events);
+        let count = |kind: &str| {
+            events
+                .iter()
+                .filter(|e| matches!(e, Event::Enter(k, _) if *k == kind))
+                .count()
+        };
+        // The top-level program, three if-expression branch blocks, and the
+        // function body.
+        assert_eq!(count("Program"), 5);
+        assert_eq!(count("SketchBlock"), 1);
+        assert_eq!(count("SketchVar"), 1);
+        // The sketch var's initial value.
+        assert_eq!(count("NumericLiteral"), 1);
+        assert_eq!(count("PipeSubstitution"), 1);
+        // Object property keys are visited as identifiers.
+        assert_eq!(count("Identifier"), 2);
+    }
+
+    #[test]
+    fn break_aborts_traversal_immediately() {
+        let (control_flow, events) = traverse_with_break(
+            "\
+x = 1 + 2
+y = 3
+",
+            // Break when entering the literal 2.
+            Some(("Literal", 2)),
+        );
+        assert!(control_flow.is_break());
+        // No finish() for the node that broke or any of its ancestors, and no
+        // visits after the break.
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter BinaryExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Literal",
+            ]),
+        );
+    }
+
+    #[test]
+    fn break_when_entering_if_branch_block_aborts() {
+        let (control_flow, events) = traverse_with_break(
+            "y = if true { 1 } else { 2 }\n",
+            // Break when entering the then-branch block.
+            Some(("Program", 2)),
+        );
+        assert!(control_flow.is_break());
+        assert_eq!(
+            event_kinds(&events),
+            kinds(&[
+                "enter Program",
+                "enter VariableDeclaration",
+                "enter IfExpression",
+                "enter Literal",
+                "exit Literal",
+                "enter Program",
+            ]),
+        );
+    }
+
+    /// A visitor that requests a body item mutation when entering the nth
+    /// node of a given kind.
+    struct MutatingVisitor {
+        /// Trigger when entering the nth (1-based) node of this kind.
+        mutate_on: (&'static str, usize),
+        /// The mutation to request. Taken when triggered.
+        mutation: Option<MutateBodyItem>,
+        /// Whether to pair the request with `ControlFlow::Break`.
+        pair_with_break: bool,
+        enter_counts: HashMap<&'static str, usize>,
+    }
+
+    impl Visitor for MutatingVisitor {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue> {
+            let kind = kind_str(&node);
+            let count = self.enter_counts.entry(kind).and_modify(|c| *c += 1).or_insert(1);
+            if self.mutate_on == (kind, *count) {
+                let control_flow = if self.pair_with_break {
+                    ControlFlow::Break(())
+                } else {
+                    ControlFlow::Continue(())
+                };
+                return TraversalReturn {
+                    mutate_body_item: self.mutation.take().unwrap_or_default(),
+                    control_flow,
+                };
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut) {}
+    }
+
+    fn declared_names(program: &ast::Node<ast::Program>) -> Vec<String> {
+        program
+            .body
+            .iter()
+            .map(|item| match item {
+                ast::BodyItem::VariableDeclaration(decl) => decl.name().to_owned(),
+                _ => "<other>".to_owned(),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn mutate_paired_with_break_replaces_the_enclosing_body_item() {
+        let mut program = crate::parsing::top_level_parse("42\n").unwrap();
+        let replacement = crate::parsing::top_level_parse("answer = 42\n")
+            .unwrap()
+            .inner
+            .body
+            .remove(0);
+        let mut visitor = MutatingVisitor {
+            // Trigger from the literal inside the expression statement.
+            mutate_on: ("Literal", 1),
+            mutation: Some(MutateBodyItem::Mutate(Box::new(replacement))),
+            pair_with_break: true,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_break());
+        assert_eq!(declared_names(&program), ["answer"]);
+    }
+
+    #[test]
+    fn delete_paired_with_break_removes_the_enclosing_body_item() {
+        let mut program = crate::parsing::top_level_parse(
+            "\
+x = 1
+y = 2 + 3
+z = 4
+",
+        )
+        .unwrap();
+        let mut visitor = MutatingVisitor {
+            // Trigger from the left operand of y's init, partway through the
+            // statement's subtree.
+            mutate_on: ("Literal", 2),
+            mutation: Some(MutateBodyItem::Delete),
+            pair_with_break: true,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_break());
+        assert_eq!(declared_names(&program), ["x", "z"]);
+    }
+
+    /// A mutation request paired with `ControlFlow::Continue` is dropped when
+    /// the traversal visits another node before the enclosing body item
+    /// completes, which is why the documented contract requires pairing
+    /// mutation requests with `ControlFlow::Break`.
+    #[test]
+    fn delete_paired_with_continue_is_dropped() {
+        let mut program = crate::parsing::top_level_parse(
+            "\
+x = 1
+y = 2 + 3
+z = 4
+",
+        )
+        .unwrap();
+        let mut visitor = MutatingVisitor {
+            // Trigger from the left operand of y's init. Traversing the right
+            // operand discards the request.
+            mutate_on: ("Literal", 2),
+            mutation: Some(MutateBodyItem::Delete),
+            pair_with_break: false,
+            enter_counts: Default::default(),
+        };
+        let control_flow = dfs_mut(&mut program, &mut visitor);
+        assert!(control_flow.is_continue());
+        assert_eq!(declared_names(&program), ["x", "y", "z"]);
+    }
 }
