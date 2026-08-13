@@ -2410,7 +2410,6 @@ impl Node<SketchBlock> {
                 self,
             ));
         };
-        let mut sketch_block_state = sketch_block_state;
 
         let return_value = self
             .finalize_sketch_block(
@@ -2446,8 +2445,6 @@ impl Node<SketchBlock> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        let range = SourceRange::from(self);
-
         if !exec_state.sketch_mode() {
             // Evaluate arguments.
             //
@@ -2690,9 +2687,6 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let range = SourceRange::from(self);
-        let metadata = Metadata {
-            source_range: SourceRange::from(self),
-        };
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
