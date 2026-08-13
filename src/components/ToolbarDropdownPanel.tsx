@@ -1,4 +1,6 @@
 import { Popover } from '@headlessui/react'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { reportRejection } from '@src/lib/trap'
 import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { useEffect, useId, useRef } from 'react'
 
@@ -50,6 +52,78 @@ function isPanelAnchoredToButton(panelRect: DOMRect, buttonRect: DOMRect) {
       anchorTolerance
 
   return horizontallyCentered && verticallyAttached
+}
+
+function rectToReport(rect: DOMRect) {
+  return {
+    height: rect.height,
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+  }
+}
+
+function cssSupports(property: string, value: string) {
+  return typeof CSS !== 'undefined' && typeof CSS.supports === 'function'
+    ? CSS.supports(property, value)
+    : false
+}
+
+function isPopoverOpen(panel: HTMLElement) {
+  try {
+    return panel.matches(':popover-open')
+  } catch {
+    return undefined
+  }
+}
+
+function reportUnresolvedAnchor(
+  panel: HTMLElement,
+  button: HTMLElement,
+  panelRect: DOMRect,
+  buttonRect: DOMRect
+) {
+  const buttonStyle = window.getComputedStyle(button)
+  const panelComputedStyle = window.getComputedStyle(panel)
+  const buttonAnchorName = buttonStyle.getPropertyValue('anchor-name')
+  const panelPositionAnchor =
+    panelComputedStyle.getPropertyValue('position-anchor')
+
+  void reportClientError({
+    code: ClientErrorCode.ToolbarDropdownAnchorPositioningError,
+    errorName: 'ToolbarDropdownAnchorPositioningError',
+    message: 'Toolbar dropdown CSS anchor positioning did not resolve.',
+    dedupeKey: 'ToolbarDropdownPanel:unresolved-css-anchor',
+    extra: {
+      source: 'ToolbarDropdownPanel',
+      buttonRect: rectToReport(buttonRect),
+      panelRect: rectToReport(panelRect),
+      computedAnchorStyles: {
+        buttonAnchorNameSet: Boolean(buttonAnchorName),
+        panelPositionAnchorSet: Boolean(panelPositionAnchor),
+        anchorNamesMatch:
+          Boolean(buttonAnchorName) && buttonAnchorName === panelPositionAnchor,
+        panelPosition: panelComputedStyle.position,
+        panelInsetBlockStart:
+          panelComputedStyle.getPropertyValue('inset-block-start'),
+        panelInsetInlineStart:
+          panelComputedStyle.getPropertyValue('inset-inline-start'),
+        panelTransform: panelComputedStyle.transform,
+      },
+      cssSupport: {
+        anchorName: cssSupports('anchor-name', '--toolbar-dropdown'),
+        positionAnchor: cssSupports('position-anchor', '--toolbar-dropdown'),
+        anchorFunction: cssSupports('inset-block-start', 'anchor(end)'),
+      },
+      triggerOnboardingId: button.getAttribute('data-onboarding-id'),
+      panelIsPopoverOpen: isPopoverOpen(panel),
+      viewport: {
+        devicePixelRatio: window.devicePixelRatio,
+        height: window.innerHeight,
+        width: window.innerWidth,
+      },
+    },
+  }).catch(reportRejection)
 }
 
 function positionPanelFromButton(panel: HTMLElement, button: HTMLElement) {
@@ -156,6 +230,7 @@ export function ToolbarDropdownPanel({
         const panelRect = panel.getBoundingClientRect()
         const buttonRect = button.getBoundingClientRect()
         if (!isPanelAnchoredToButton(panelRect, buttonRect)) {
+          reportUnresolvedAnchor(panel, button, panelRect, buttonRect)
           positionPanelFromButton(panel, button)
           return
         }

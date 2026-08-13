@@ -4,6 +4,18 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { ToolbarDropdownPanel } from '@src/components/ToolbarDropdownPanel'
 
+const mocks = vi.hoisted(() => ({
+  reportClientError: vi.fn(async () => {}),
+}))
+
+vi.mock('@src/lib/clientErrors', () => ({
+  ClientErrorCode: {
+    ToolbarDropdownAnchorPositioningError:
+      'toolbar_dropdown_anchor_positioning_error',
+  },
+  reportClientError: mocks.reportClientError,
+}))
+
 const originalHidePopover = Object.getOwnPropertyDescriptor(
   HTMLElement.prototype,
   'hidePopover'
@@ -29,7 +41,11 @@ function Dropdown({ label }: { label: string }) {
 
   return (
     <>
-      <button ref={buttonRef} type="button">
+      <button
+        ref={buttonRef}
+        type="button"
+        data-onboarding-id={`${label.toLowerCase()}-dropdown-button`}
+      >
         {label}
       </button>
       <ToolbarDropdownPanel buttonRef={buttonRef} open>
@@ -41,6 +57,7 @@ function Dropdown({ label }: { label: string }) {
 
 describe('ToolbarDropdownPanel', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
     Object.defineProperties(HTMLElement.prototype, {
       hidePopover: { configurable: true, value: vi.fn() },
       showPopover: { configurable: true, value: vi.fn() },
@@ -70,6 +87,14 @@ describe('ToolbarDropdownPanel', () => {
   })
 
   test('connects each trigger and panel with a unique explicit anchor', async () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement) {
+        return this.tagName === 'BUTTON'
+          ? new DOMRect(100, 100, 40, 30)
+          : new DOMRect(20, 146, 200, 100)
+      }
+    )
+
     const { container } = render(
       <>
         <Dropdown label="First" />
@@ -94,6 +119,7 @@ describe('ToolbarDropdownPanel', () => {
       secondAnchor
     )
     expect(firstAnchor).not.toBe(secondAnchor)
+    expect(mocks.reportClientError).not.toHaveBeenCalled()
   })
 
   test('falls back to trigger geometry when native anchoring does not resolve', async () => {
@@ -117,5 +143,42 @@ describe('ToolbarDropdownPanel', () => {
 
     expect(panel.style.left).toBe('440px')
     expect(panel.style.top).toBe('166px')
+    expect(mocks.reportClientError).toHaveBeenCalledWith({
+      code: 'toolbar_dropdown_anchor_positioning_error',
+      errorName: 'ToolbarDropdownAnchorPositioningError',
+      message: 'Toolbar dropdown CSS anchor positioning did not resolve.',
+      dedupeKey: 'ToolbarDropdownPanel:unresolved-css-anchor',
+      extra: expect.objectContaining({
+        source: 'ToolbarDropdownPanel',
+        buttonRect: {
+          height: 30,
+          left: 520,
+          top: 120,
+          width: 40,
+        },
+        panelRect: {
+          height: 100,
+          left: 0,
+          top: 0,
+          width: 200,
+        },
+        cssSupport: {
+          anchorName: true,
+          positionAnchor: true,
+          anchorFunction: true,
+        },
+        computedAnchorStyles: expect.objectContaining({
+          buttonAnchorNameSet: true,
+          panelPositionAnchorSet: true,
+          anchorNamesMatch: true,
+        }),
+        triggerOnboardingId: 'tools-dropdown-button',
+        viewport: expect.objectContaining({
+          devicePixelRatio: window.devicePixelRatio,
+          height: window.innerHeight,
+          width: window.innerWidth,
+        }),
+      }),
+    })
   })
 })
