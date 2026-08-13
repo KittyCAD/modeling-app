@@ -698,17 +698,20 @@ impl ExecState {
         Ok(())
     }
 
-    /// Returns true if we're executing in sketch mode for the current module.
-    /// In sketch mode, we still want to execute the prelude and other stdlib
-    /// modules as normal, so it can vary per module within a single overall
-    /// execution.
     /// The deepest machine-executor call depth reached in this execution.
-    /// Only the test harnesses' depth survey reads this today.
-    #[cfg(test)]
+    /// The machine maintains the counter in all builds; today only the test
+    /// harnesses' depth survey reads it.
+    // Unused outside test builds, but kept available so release diagnostics
+    // can read the counter the machine already maintains.
+    #[allow(dead_code)]
     pub(crate) fn machine_depth_high_water(&self) -> usize {
         self.global.machine_depth_high_water
     }
 
+    /// Returns true if we're executing in sketch mode for the current module.
+    /// In sketch mode, we still want to execute the prelude and other stdlib
+    /// modules as normal, so it can vary per module within a single overall
+    /// execution.
     pub(crate) fn sketch_mode(&self) -> bool {
         self.mod_local.sketch_mode
             && match &self.mod_local.path {
