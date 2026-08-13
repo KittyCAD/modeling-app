@@ -2991,7 +2991,7 @@ fn ty_decl(i: &mut TokenSlice) -> ModalResult<BoxNode<TypeDeclaration>> {
 
         ParseContext::experimental("type aliases", ty.as_source_range());
 
-        TypeDeclarationDefinition::Alias { ty: Box::new(ty) }
+        TypeDeclarationDefinition::Alias { ty: BoxNode::new(ty) }
     } else if peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         if let Some(args_range) = args_range {

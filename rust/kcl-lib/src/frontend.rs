@@ -2315,7 +2315,7 @@ impl FrontendState {
         if ctor.direction == Some(ArcDirection::Cw) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
-                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+                arg: ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
             });
         }
         // Add construction kwarg if construction is Some(true)
@@ -3806,7 +3806,7 @@ impl FrontendState {
 
         let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
         let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
-        let lines_ast = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let lines_ast = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: vec![l0_ast, l1_ast],
             digest: None,
             non_code_meta: Default::default(),
@@ -3829,7 +3829,7 @@ impl FrontendState {
         if let Some(sector) = angle.sector {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Number {
                         value: f64::from(sector),
                         suffix: NumericSuffix::None,
@@ -3843,7 +3843,7 @@ impl FrontendState {
         if angle.inverse == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: true.to_string(),
                     digest: None,
@@ -3858,7 +3858,7 @@ impl FrontendState {
             });
         }
 
-        let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
                 ANGLE_DIMENSION_FN
             } else {
@@ -3869,7 +3869,7 @@ impl FrontendState {
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let value = ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
                 value: angle.angle.value,
                 suffix: angle.angle.units,
@@ -5746,12 +5746,12 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
 }
 
 fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceId")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
+            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
                 value: index as f64,
                 suffix: NumericSuffix::None,
                 raw: index.to_string(),
@@ -6347,7 +6347,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         .iter()
                         .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
                     if direction_value.is_clockwise() {
-                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        let direction_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
                         if direction_exists {
                             // Update existing direction kwarg
                             for labeled_arg in &mut call.arguments {
@@ -14310,7 +14310,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 face_decl,
             ))));
         let face_source = source_from_ast(&ast);
