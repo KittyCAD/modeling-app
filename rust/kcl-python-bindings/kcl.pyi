@@ -53,6 +53,7 @@ __all__ = [
     "SnapshotOptions",
     "StepExportOptions",
     "StepImportOptions",
+    "StepImportTargetRepresentation",
     "StepPresentation",
     "StlExportOptions",
     "StlImportOptions",
@@ -600,6 +601,12 @@ class SketchConstraintReport:
     @property
     def errors(self) -> builtins.list[SketchConstraintStatus]: ...
     @property
+    def warnings(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution warnings collected while computing
+        the constraint report.
+        """
+    @property
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
@@ -893,6 +900,20 @@ class PlyStorage(enum.Enum):
     BinaryBigEndian = ...
     r"""
     Encode payload as binary using big endian.
+    """
+
+@typing.final
+class StepImportTargetRepresentation(enum.Enum):
+    r"""
+    After importing, how should this model's data be represented?
+    """
+    Mesh = ...
+    r"""
+    Mesh of 2D geometry
+    """
+    Brep = ...
+    r"""
+    Boundary representation
     """
 
 @typing.final

@@ -664,6 +664,19 @@ s1 = sketch(on = YZ) {
   line1.end.at[1] == 7
 """
 
+warning_sketch_code = """
+@settings(defaultLengthUnit = mm)
+
+warningSketch = sketch(on = XY) {
+  horizontalLine = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  verticalLine = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  coincident([horizontalLine.end, verticalLine.start])
+  horizontal(horizontalLine)
+  vertical(verticalLine)
+  angle([horizontalLine, verticalLine]) == 90deg
+}
+"""
+
 
 @requires_engine
 @pytest.mark.asyncio
@@ -707,6 +720,18 @@ async def test_sketch_constraint_status_mixed():
     assert len(report.errors) == 0
     assert report.is_complete is True
     assert report.kcl_error is None
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_includes_execution_warnings():
+    report = await execute_with_retries(
+        kcl.get_sketch_constraint_status_code, warning_sketch_code
+    )
+    assert report.total_sketches() == 1
+    assert len(report.warnings) == 1
+    assert "Instead of constraining to 90deg" in report.warnings[0]
+    assert "constraint to Perpendicular" in report.warnings[0]
 
 
 @pytest.mark.asyncio
