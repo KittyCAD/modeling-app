@@ -112,6 +112,7 @@ pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
+pub use execution::KclVersion;
 pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
