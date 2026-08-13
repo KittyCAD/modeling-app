@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
@@ -13,7 +12,6 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
   getPublicProjectNameById,
@@ -21,19 +19,14 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
-import {
-  CLOUD_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
-} from '@src/lib/projectLibraries'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -54,7 +47,7 @@ export type CreateFileSchemaMethodOptional = Omit<
  * `?createFile`
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
-export function useQueryParamEffects(kclManager: KclManager) {
+export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()
@@ -73,13 +66,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
     !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
     searchParams.has(CMD_GROUP_QUERY_PARAM)
-
-  function getCurrentCloudLibraryPath() {
-    const currentProject = app.project?.projectIORefSignal.value
-    return currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
-      ? currentProject.libraryPath
-      : undefined
-  }
 
   /**
    * Watches for legacy `?create-file` hook, which share links currently use.
@@ -136,34 +122,21 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const targetProjectDirectoryPath = getCurrentCloudLibraryPath()
-      const localCloudProject = targetProjectDirectoryPath
-        ? await app.registry
-            .get(cloudSyncService)
-            .ensureProjectLocallySynced(projectId, targetProjectDirectoryPath)
-            .catch(() => undefined)
-        : undefined
+      await waitFor(app.settings.actor, (state) => state.matches('idle'))
       if (cancelled) {
         return
       }
-      if (localCloudProject) {
-        app.systemIOActor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
-        void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            localCloudProject.projectPath
-          )}`
+
+      const projectLibraryTarget = app.getCreateProjectLibraryTargets()[0]
+      if (!projectLibraryTarget) {
+        return Promise.reject(
+          new Error('No writable project library is available.')
         )
-        return
       }
 
-      const reservedProjectDestination =
-        await getReservedProjectDestination(projectId)
-      if (err(reservedProjectDestination)) {
-        clearProjectIdSearchParam()
-        toast.error(reservedProjectDestination.message)
-        return
+      const projectName = await getPublicProjectNameById(projectId)
+      if (err(projectName)) {
+        return Promise.reject(projectName)
       }
       if (cancelled) {
         return
@@ -171,43 +144,37 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
       const downloadedProject = await downloadProjectById(projectId)
       if (err(downloadedProject)) {
-        clearProjectIdSearchParam()
-        toast.error(downloadedProject.message)
-        return
+        return Promise.reject(downloadedProject)
       }
       if (cancelled) {
         return
       }
 
-      const files = !isDesktop()
-        ? downloadedProject.files.map((file) => ({
-            ...file,
-            requestedProjectName:
-              reservedProjectDestination.requestedProjectName,
-            requestedFileName: fsZds.join(
-              reservedProjectDestination.requestedSubDirectoryName,
-              file.requestedFileName
-            ),
-          }))
-        : downloadedProject.files
-      const requestedFileNameWithExtension =
-        !isDesktop() && downloadedProject.entrypointFilePath
-          ? fsZds.join(
-              reservedProjectDestination.requestedSubDirectoryName,
-              downloadedProject.entrypointFilePath
-            )
-          : downloadedProject.entrypointFilePath
-
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
-        data: {
-          files,
-          requestedProjectName: reservedProjectDestination.requestedProjectName,
-          requestedFileNameWithExtension,
+      const importedProject = await projectLibraryTarget.createProject.run({
+        library: projectLibraryTarget.library,
+        requestedProjectName: getProjectDirectoryNameFromTitle(
+          projectName,
+          'shared-project'
+        ),
+        requestedProjectTitle: projectName,
+        initialProject: {
+          files: downloadedProject.files,
+          entrypointFilePath:
+            downloadedProject.entrypointFilePath ?? PROJECT_ENTRYPOINT,
         },
       })
+      if (!importedProject?.default_file) {
+        return Promise.reject(new Error('Unable to create the shared project.'))
+      }
+      if (cancelled) {
+        return
+      }
 
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      void navigate(
+        `${PATHS.FILE}/${safeEncodeForRouterPaths(
+          importedProject.default_file
+        )}`
+      )
     })().catch((error) => {
       if (cancelled) {
         return
@@ -224,74 +191,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldOpenProjectId, setSearchParams, authState])
-
-  async function getReservedProjectDestination(projectId: string): Promise<
-    | {
-        requestedProjectName: string
-        requestedSubDirectoryName: string
-      }
-    | Error
-  > {
-    const projectName = await getPublicProjectNameById(projectId)
-    if (projectName instanceof Error) {
-      return projectName
-    }
-
-    await waitFor(app.settings.actor, (state) => state.matches('idle'))
-
-    const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
-      app.settings.get().app.libraries.current
-    )
-    if (!projectDirectoryPath) {
-      return new Error('Unable to determine the project directory.')
-    }
-
-    if (isDesktop()) {
-      const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
-      const requestedProjectName = getUniqueProjectName(
-        projectName,
-        projectDirectoryEntries.map((name) => ({
-          name,
-          path: fsZds.join(projectDirectoryPath, name),
-          children: [],
-        }))
-      )
-      await fsZds.mkdir(
-        fsZds.join(projectDirectoryPath, requestedProjectName),
-        {
-          recursive: true,
-        }
-      )
-      return {
-        requestedProjectName,
-        requestedSubDirectoryName: projectName,
-      }
-    }
-
-    const requestedProjectName =
-      app.settings.actor.getSnapshot().context.currentProject?.name ??
-      DEFAULT_WEB_PROJECT_NAME
-    const requestedSubDirectoryName = getUniqueProjectName(
-      projectName,
-      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
-        projectFolderName: requestedProjectName,
-      })
-    )
-    await fsZds.mkdir(
-      fsZds.join(
-        projectDirectoryPath,
-        requestedProjectName,
-        requestedSubDirectoryName
-      ),
-      { recursive: true }
-    )
-
-    return {
-      requestedProjectName,
-      requestedSubDirectoryName,
-    }
-  }
 
   /**
    * Generic commands are triggered by query parameters
