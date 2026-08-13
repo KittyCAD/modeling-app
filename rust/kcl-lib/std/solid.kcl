@@ -110,11 +110,6 @@ export fn fillet(
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
   tag?: TagDecl,
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
   /// What version of the fillet algorithm to use. Defaults to 1.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
@@ -266,11 +261,6 @@ export fn chamfer(
   angle?: number(Angle),
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
   /// What version of the fillet algorithm to use. Defaults to 1.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
@@ -975,11 +965,6 @@ export fn union(
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -1038,11 +1023,6 @@ export fn intersect(
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -1198,11 +1178,6 @@ export fn subtract(
   tools: [Solid],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
 ): [Solid] {}
 
 /// Set the appearance of a solid, imported geometry, or plane. This does not work on sketches or individual paths.
@@ -1620,11 +1595,6 @@ export fn split(
   keepTools?: bool,
   /// The tools to split the target bodies along.
   tools?: [Solid],
-  /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
-  /// If true, revert to older engine SSI algorithm.
-  /// Defaults to false.
-  @(deprecated_since = "2.0")
-  legacyMethod?: bool,
 ): [Solid; 1+] {}
 
 

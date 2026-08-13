@@ -819,16 +819,6 @@ export default {
         "deprecatedSince": null
       },
       {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
-      },
-      {
         "name": "version",
         "ty": "number(_)",
         "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
@@ -1866,16 +1856,6 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
-      },
-      {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
       },
       {
         "name": "version",
@@ -4812,16 +4792,6 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
-      },
-      {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
       }
     ]
   },
@@ -7902,16 +7872,6 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
-      },
-      {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
       }
     ]
   },
@@ -8265,16 +8225,6 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
-      },
-      {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
       }
     ]
   },
@@ -8666,16 +8616,6 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
-      },
-      {
-        "name": "legacyMethod",
-        "ty": "bool",
-        "docs": "You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false.",
-        "required": false,
-        "special": false,
-        "experimental": false,
-        "deprecated": false,
-        "deprecatedSince": "2.0"
       }
     ]
   },
