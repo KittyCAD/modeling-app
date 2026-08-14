@@ -102,6 +102,82 @@ pub enum ArtifactSweepMethod {
     Merge,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+/// API-owned camera orientation used by named-view artifacts, equivalent to
+/// the KCL enum `std::view::Orientation`. Keeping it here means the wire model
+/// does not depend on kcl-lib's execution types.
+pub enum ArtifactOrientation {
+    Front,
+    Back,
+    Left,
+    Right,
+    Top,
+    Bottom,
+    Isometric,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+/// API-owned camera projection used by named-view artifacts, equivalent to the
+/// KCL enum `std::view::Projection`. See [`ArtifactOrientation`].
+pub enum ArtifactProjection {
+    Orthographic,
+    Perspective,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+/// API-owned visibility baseline used by named-view artifacts, equivalent to
+/// the KCL enum `std::view::Visibility`. `Show` means every object is visible
+/// except those the view's hide list names; `Hide` means the reverse.
+pub enum ArtifactVisibility {
+    Show,
+    Hide,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(tag = "type", rename_all = "camelCase")]
+/// Where a named view's camera looks from: one variant per KCL constructor
+/// function, so a stored view can never carry both a curated orientation and a
+/// custom direction.
+pub enum ArtifactCameraLook {
+    /// A curated orientation, from `view::oriented`.
+    Oriented { orientation: ArtifactOrientation },
+    /// A custom look direction, from `view::directed`. Both vectors are
+    /// directions rather than positions, so their `units` are absent, and both
+    /// are already normalized.
+    Directed {
+        direction: ArtifactPoint3d,
+        up: ArtifactPoint3d,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+/// API-owned camera intent used by named-view artifacts. It mirrors kcl-lib's
+/// `CameraView` JSON shape while keeping kcl-api independent of execution
+/// internals, as [`ArtifactPlaneInfo`] does for planes.
+///
+/// The values are intent, not a snapshot of engine camera state: an absent
+/// field is resolved by whichever consumer activates the view. Every length is
+/// in millimeters, converted when the view was constructed.
+pub struct ArtifactCameraView {
+    pub look: ArtifactCameraLook,
+    /// The point the camera looks at, in millimeters. Absent means: center on
+    /// the bounds of the model at activation.
+    pub target: Option<ArtifactPoint3d>,
+    /// The distance from the camera to the target, in millimeters. Absent
+    /// means: fit the model at activation.
+    pub distance: Option<f64>,
+    pub projection: ArtifactProjection,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -495,6 +571,35 @@ pub struct GdtAnnotationArtifact {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+/// A named view declared in KCL by `view::named`: a display name, camera intent
+/// and the objects the view shows or hides.
+///
+/// The view is data for a consumer to activate later, so this artifact holds no
+/// engine geometry and its creation sends no engine command. The objects are
+/// named by ARTIFACT id, so a consumer resolves each one through the artifact
+/// graph; an extruded solid's engine id differs from its artifact id, and the
+/// translation belongs to whoever applies the view.
+pub struct NamedViewArtifact {
+    pub id: ArtifactId,
+    /// The display name the author gave the view. Required, and unique among
+    /// the views declared by the same module.
+    pub name: String,
+    pub camera: ArtifactCameraView,
+    /// Whether objects start visible or hidden, which decides which of the two
+    /// lists below can act.
+    pub baseline: ArtifactVisibility,
+    /// Artifacts the view shows. Meaningful under a `Hide` baseline, where they
+    /// are the only visible objects.
+    pub show_ids: Vec<ArtifactId>,
+    /// Artifacts the view hides. Meaningful under a `Show` baseline, where they
+    /// are the only hidden objects.
+    pub hide_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Pattern {
     pub id: ArtifactId,
     pub sub_type: PatternSubType,
@@ -542,6 +647,7 @@ pub enum Artifact {
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
     GdtAnnotation(GdtAnnotationArtifact),
+    NamedView(NamedViewArtifact),
     Pattern(Pattern),
 }
 
@@ -568,6 +674,7 @@ impl Artifact {
             Self::EdgeCutEdge(a) => a.id,
             Self::Helix(a) => a.id,
             Self::GdtAnnotation(a) => a.id,
+            Self::NamedView(a) => a.id,
             Self::Pattern(a) => a.id,
         }
     }
@@ -594,6 +701,7 @@ impl Artifact {
             Self::EdgeCutEdge(_) => None,
             Self::Helix(a) => Some(&a.code_ref),
             Self::GdtAnnotation(a) => Some(&a.code_ref),
+            Self::NamedView(a) => Some(&a.code_ref),
             Self::Pattern(a) => Some(&a.code_ref),
         }
     }

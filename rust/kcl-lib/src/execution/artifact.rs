@@ -174,6 +174,11 @@ fn merge_artifacts(old: &mut Artifact, new: Artifact) -> Option<Artifact> {
         Artifact::EdgeCutEdge(_) => Some(new),
         Artifact::Helix(a) => merge_helix(a, new),
         Artifact::GdtAnnotation(a) => merge_gdt_annotation(a, new),
+        // One `view::named` call supplies every field, so nothing accumulates.
+        // Replacing wholesale keeps `show_ids`/`hide_ids` exactly as that call
+        // wrote them; unioning would mix in ids from an earlier execution of the
+        // same call site, which reuses the same artifact id.
+        Artifact::NamedView(_) => Some(new),
         Artifact::Pattern(a) => merge_pattern(a, new),
     }
 }
@@ -880,6 +885,16 @@ fn remap_artifact_for_clone(
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
         }),
+        // A named view has no engine entity, so it can never appear in a
+        // clone's id map, and `clone()` takes only a sketch, solid or imported
+        // geometry as its source. This arm exists because the match is
+        // exhaustive: returning the artifact unchanged makes it a no-op re-insert
+        // rather than inventing a second view, which would carry a duplicate
+        // name. The assertion is a tripwire if the assumption ever breaks.
+        Artifact::NamedView(_) => {
+            debug_assert!(false, "a named view is not reachable from a cloned body");
+            artifact.clone()
+        }
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
