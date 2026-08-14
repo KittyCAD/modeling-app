@@ -204,6 +204,26 @@ export function addSubtract({
     return toolVars
   }
 
+  const targetExprKeys = new Set(
+    vars.exprs.map((expr) =>
+      JSON.stringify([
+        expr,
+        expr.type === 'PipeSubstitution' ? vars.pathIfPipe : undefined,
+      ])
+    )
+  )
+  const hasSharedBody = toolVars.exprs.some((expr) =>
+    targetExprKeys.has(
+      JSON.stringify([
+        expr,
+        expr.type === 'PipeSubstitution' ? toolVars.pathIfPipe : undefined,
+      ])
+    )
+  )
+  if (hasSharedBody) {
+    return new Error('Please check your selections')
+  }
+
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const toolsExpr = createVariableExpressionsArray(toolVars.exprs)
   if (toolsExpr === null) {
