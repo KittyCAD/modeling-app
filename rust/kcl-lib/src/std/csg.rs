@@ -1,8 +1,7 @@
 //! Constructive Solid Geometry (CSG) operations.
 
-use std::collections::HashSet;
-
 use anyhow::Result;
+use itertools::Itertools;
 use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -68,13 +67,33 @@ fn validate_unique_boolean_inputs<'a>(
     operation: &str,
     source_range: crate::SourceRange,
 ) -> Result<(), KclError> {
-    let mut solid_ids = HashSet::new();
-    if solids.into_iter().all(|solid| solid_ids.insert(solid.id)) {
+    if solids.into_iter().map(|solid| solid.id).all_unique() {
         return Ok(());
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
         format!("The {operation} operation cannot use the same body more than once. Please check your selections."),
+        vec![source_range],
+    )))
+}
+
+fn validate_disjoint_boolean_inputs(
+    targets: &[Solid],
+    tools: &[Solid],
+    operation: &str,
+    source_range: crate::SourceRange,
+) -> Result<(), KclError> {
+    if targets
+        .iter()
+        .all(|target| tools.iter().all(|tool| target.id != tool.id))
+    {
+        return Ok(());
+    }
+
+    Err(KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "The {operation} operation cannot use the same body as both a target and a tool. Please check your selections."
+        ),
         vec![source_range],
     )))
 }
@@ -294,7 +313,9 @@ pub(crate) async fn inner_subtract(
 ) -> Result<Vec<Solid>, KclError> {
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
-    validate_unique_boolean_inputs(combined_solids.iter(), "subtraction", args.source_range)?;
+    validate_unique_boolean_inputs(solids.iter(), "subtraction", args.source_range)?;
+    validate_unique_boolean_inputs(tools.iter(), "subtraction", args.source_range)?;
+    validate_disjoint_boolean_inputs(&solids, &tools, "subtraction", args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
     let target_ids = solids.iter().map(|s| s.id).collect::<Vec<_>>();
@@ -417,7 +438,11 @@ pub(crate) async fn inner_imprint(
     if let Some(tools) = tools.as_ref() {
         validate_solids_not_consumed(tools, exec_state, args.source_range)?;
     }
-    validate_unique_boolean_inputs(targets.iter().chain(tools.iter().flatten()), "split", args.source_range)?;
+    validate_unique_boolean_inputs(targets.iter(), "split", args.source_range)?;
+    if let Some(tools) = tools.as_ref() {
+        validate_unique_boolean_inputs(tools.iter(), "split", args.source_range)?;
+        validate_disjoint_boolean_inputs(&targets, tools, "split", args.source_range)?;
+    }
 
     let body_out_id = exec_state.next_uuid();
 
@@ -561,24 +586,71 @@ part002 = cube(pos = [-9, -9], scale = 2)
 alias = part001
 "#;
 
-        for (operation, operation_name) in [
-            ("result = union([part001, part001])", "union"),
-            ("result = union([part001, alias])", "union"),
-            ("result = part001 + part001", "union"),
-            ("result = part001 | part001", "union"),
-            ("result = intersect([part001, part001])", "intersection"),
-            ("result = part001 & part001", "intersection"),
-            ("result = subtract(part001, tools = [part001])", "subtraction"),
+        for (operation, expected_message) in [
+            (
+                "result = union([part001, part001])",
+                "The union operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = union([part001, alias])",
+                "The union operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = part001 + part001",
+                "The union operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = part001 | part001",
+                "The union operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = intersect([part001, part001])",
+                "The intersection operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = part001 & part001",
+                "The intersection operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = subtract(part001, tools = [part001])",
+                "The subtraction operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
+            (
+                "result = subtract(part001, tools = [alias])",
+                "The subtraction operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
             (
                 "result = subtract([part001, part001], tools = [part002])",
-                "subtraction",
+                "The subtraction operation cannot use the same body more than once. Please check your selections.",
             ),
-            ("result = subtract(part001, tools = [part001, part002])", "subtraction"),
-            ("result = subtract(part001, tools = [part002, part002])", "subtraction"),
-            ("result = part001 - part001", "subtraction"),
-            ("result = split(part001, tools = [part001])", "split"),
-            ("result = split([part001, part001])", "split"),
-            ("result = split(part001, tools = [part002, part002])", "split"),
+            (
+                "result = subtract(part001, tools = [part001, part002])",
+                "The subtraction operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
+            (
+                "result = subtract(part001, tools = [part002, part002])",
+                "The subtraction operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = part001 - part001",
+                "The subtraction operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
+            (
+                "result = split(part001, tools = [part001])",
+                "The split operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
+            (
+                "result = split(part001, tools = [alias])",
+                "The split operation cannot use the same body as both a target and a tool. Please check your selections.",
+            ),
+            (
+                "result = split([part001, part001])",
+                "The split operation cannot use the same body more than once. Please check your selections.",
+            ),
+            (
+                "result = split(part001, tools = [part002, part002])",
+                "The split operation cannot use the same body more than once. Please check your selections.",
+            ),
         ] {
             let code = format!("{SETUP}\n{operation}");
             let ctx = crate::ExecutorContext::new_mock(None).await;
@@ -587,12 +659,7 @@ alias = part001
             ctx.close().await;
 
             assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
-            assert_eq!(
-                err.error.message(),
-                format!(
-                    "The {operation_name} operation cannot use the same body more than once. Please check your selections."
-                )
-            );
+            assert_eq!(err.error.message(), expected_message);
         }
     }
 

@@ -1,0 +1,5 @@
+body = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5)
+  |> extrude(length = 10)
+
+result = subtract(body, tools = [body])
