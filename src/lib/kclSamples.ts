@@ -1,5 +1,4 @@
 import kclSamplesManifest from '@public/kcl-samples/manifest.json'
-import legacyKclSamplesManifest from '@public/kcl-samples-legacy/manifest.json'
 import { webSafePathSplit } from '@src/lib/paths'
 
 export const kclSamplesManifestWithNoMultipleFiles = kclSamplesManifest.filter(
@@ -16,20 +15,13 @@ export const findKclSample = (pathFromProjectDirectoryToFirstFile: string) => {
 }
 
 export async function downloadKclSample(
-  pathFromProjectDirectoryToFirstFile: string
+  pathFromProjectDirectoryToFirstFile: string,
+  { assetUrlPrefix = '' }: { assetUrlPrefix?: string } = {}
 ) {
-  const currentSample = findKclSample(pathFromProjectDirectoryToFirstFile)
-  const sample =
-    currentSample ??
-    legacyKclSamplesManifest.find(
-      (sample) =>
-        sample.pathFromProjectDirectoryToFirstFile ===
-        pathFromProjectDirectoryToFirstFile
-    )
+  const sample = findKclSample(pathFromProjectDirectoryToFirstFile)
   if (!sample) {
     return Promise.reject(new Error("Couldn't find KCL sample."))
   }
-  const assetDirectory = currentSample ? 'kcl-samples' : 'kcl-samples-legacy'
 
   const requestedProjectName = webSafePathSplit(
     sample.pathFromProjectDirectoryToFirstFile
@@ -41,7 +33,7 @@ export async function downloadKclSample(
   const files = await Promise.all(
     sample.files.map(async (file) => {
       const response = await fetch(
-        `/${assetDirectory}/${encodeURIComponent(
+        `${assetUrlPrefix}/kcl-samples/${encodeURIComponent(
           requestedProjectName
         )}/${encodeURIComponent(file)}`
       )
