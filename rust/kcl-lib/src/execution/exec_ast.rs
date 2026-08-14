@@ -1796,12 +1796,7 @@ impl ExecutorContext {
         metadata: &Metadata,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, KclError> {
-        let being_declared = exec_state.mod_local.being_declared.clone();
-        let value = name
-            .get_result(exec_state, self)
-            .await
-            .map_err(|e| var_in_own_ref_err(e, &being_declared))?
-            .clone();
+        let value = name.get_result(exec_state, self).await?;
         if let KclValue::Module { value: module_id, meta } = value {
             Ok(self
                 .exec_module_for_result(module_id, exec_state, metadata.source_range)
@@ -3066,10 +3061,10 @@ impl Node<Name> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
-        let being_declared = exec_state.mod_local.being_declared.clone();
-        self.get_result_inner(exec_state, ctx)
-            .await
-            .map_err(|e| var_in_own_ref_err(e, &being_declared))
+        // Await first so being_declared is read only on the error path,
+        // instead of cloned before every lookup.
+        let result = self.get_result_inner(exec_state, ctx).await;
+        result.map_err(|e| var_in_own_ref_err(e, &exec_state.mod_local.being_declared))
     }
 
     async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -3080,13 +3075,12 @@ impl Node<Name> {
             )));
         }
 
-        let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
-
         if self.path.is_empty() {
             if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
                 return Ok(item_value);
             }
 
+            let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
             let not_defined = match exec_state.stack().get(&mod_name, self.into()) {
                 Ok(module) => return Ok(module),
                 Err(err) => err,
@@ -3166,6 +3160,7 @@ impl Node<Name> {
             return item_value;
         }
 
+        let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
         let mod_exported = exports.contains(&mod_name);
         let mod_value = exec_state
             .stack()
