@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   systemIOSend: vi.fn(),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock('@src/hooks/useFileSystemWatcher', () => ({
   useFileSystemWatcher: mocks.fileSystemWatcher,
 }))
