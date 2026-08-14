@@ -296,9 +296,9 @@ pub(crate) async fn inner_subtract(
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
     validate_unique_boolean_inputs(combined_solids.iter(), "subtraction", args.source_range)?;
 
+    let solid_out_id = exec_state.next_uuid();
     let target_ids = solids.iter().map(|s| s.id).collect::<Vec<_>>();
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
-    let solid_out_id = exec_state.next_uuid();
 
     if args.ctx.no_engine_commands().await {
         let mut solid = solids[0].clone();

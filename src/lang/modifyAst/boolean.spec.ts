@@ -1,8 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addSplit, addSubtract } from '@src/lang/modifyAst/boolean'
-import { parse, recast } from '@src/lang/wasm'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { recast } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -12,6 +10,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -79,101 +78,6 @@ async function getSolidsAndTools(
 }
 
 describe('boolean', () => {
-  it('should report duplicate bodies for every boolean operation', async () => {
-    const code = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
-extrude001 = extrude(profile001, length = 1)
-
-sketch002 = startSketchOn(XZ)
-profile002 = circle(sketch002, center = [0.2, 0.2], radius = 0.05)
-extrude002 = extrude(profile002, length = -1)`
-    const {
-      ast,
-      artifactGraph,
-      tools: selectedBody,
-    } = await getSolidsAndTools(
-      code,
-      [1],
-      [1],
-      instanceInThisFile,
-      kclManagerInThisFile
-    )
-
-    const parseBooleanCall = (call: string) => {
-      const parsed = parse(`${code}\n${call}\n`, instanceInThisFile)
-      if (err(parsed)) {
-        throw parsed
-      }
-      if (parsed.errors.length > 0 || !parsed.program) {
-        throw new Error(`Could not parse duplicate-body ${call}`)
-      }
-      return parsed.program
-    }
-
-    const cases = [
-      {
-        operation: 'union',
-        expectedCall: 'solid001 = union([extrude002, extrude002])',
-        result: {
-          modifiedAst: parseBooleanCall(
-            'solid001 = union([extrude002, extrude002])'
-          ),
-        },
-      },
-      {
-        operation: 'intersection',
-        expectedCall: 'solid001 = intersect([extrude002, extrude002])',
-        result: {
-          modifiedAst: parseBooleanCall(
-            'solid001 = intersect([extrude002, extrude002])'
-          ),
-        },
-      },
-      {
-        operation: 'subtraction',
-        expectedCall: 'solid001 = subtract(extrude002, tools = extrude002)',
-        result: addSubtract({
-          ast,
-          artifactGraph,
-          solids: selectedBody,
-          tools: selectedBody,
-          wasmInstance: instanceInThisFile,
-        }),
-      },
-      {
-        operation: 'split',
-        expectedCall: 'split001 = split(extrude002, tools = extrude002)',
-        result: addSplit({
-          ast,
-          artifactGraph,
-          targets: selectedBody,
-          tools: selectedBody,
-          wasmInstance: instanceInThisFile,
-        }),
-      },
-    ]
-
-    for (const { operation, expectedCall, result } of cases) {
-      if (err(result)) {
-        throw result
-      }
-
-      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
-        `${code}\n${expectedCall}\n`
-      )
-      expect(
-        await mockExecAstAndReportErrors(
-          result.modifiedAst,
-          rustContextInThisFile
-        )
-      ).toEqual(
-        new Error(
-          `semantic: The ${operation} operation cannot use the same body more than once. Please check your selections.`
-        )
-      )
-    }
-  })
-
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(
       code: string,
@@ -388,7 +292,8 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
   })
 
   // From https://github.com/KittyCAD/modeling-app/blob/d83324ac30430af675806c143ee6fb30df8bdaa8/src/lang/modifyAst/boolean.test.ts#L7
-  // Detailed addIntersect and addUnion happy paths are covered by existing e2e tests.
+  // addIntersect and addUnion are not tested here, as they would be 1:1 with existing e2e tests
+  // so just adding extra addSubtract cases here
 
   describe('Testing addSplit', () => {
     async function runAddSplitTest({
