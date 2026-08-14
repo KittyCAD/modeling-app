@@ -647,9 +647,14 @@ fillet001 = fillet(perforatedPlate, tags = plateRegion.tags.bottomEdge, radius =
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain(
-        'fillet001 = fillet(cube1, tags = getOppositeEdge(region001.tags.line2), radius = 1)'
-      )
+      expect(newCode).toContain(`fillet001 = fillet(
+  cube1,
+  tags = getCommonEdge(faces = [
+    region001.tags.line2,
+    cube1.faces.capEnd001
+  ]),
+  radius = 1,
+)`)
       const { artifactGraph: modifiedArtifactGraph } =
         await getAstAndArtifactGraph(
           newCode,

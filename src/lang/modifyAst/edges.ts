@@ -42,6 +42,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
@@ -786,6 +787,15 @@ function getTagsExprsFromSelection(
         !edgeContext.isClone &&
         segmentArtifact.originalSegId
       ) {
+        const commonFaces = getCommonFacesForEdge(edgeArtifact, artifactGraph)
+        const selectedPath = artifactGraph.get(edgeContext.selectedSweep.pathId)
+        const needsStableMappedTag =
+          (!err(commonFaces) &&
+            commonFaces.some(
+              (face) => face.sweepId !== edgeContext.selectedSweep.id
+            )) ||
+          (selectedPath?.type === 'path' &&
+            Boolean(selectedPath.compositeSolidId))
         const mappedSegments = [...artifactGraph.values()].filter(
           (artifact) =>
             artifact.type === 'segment' &&
@@ -799,10 +809,15 @@ function getTagsExprsFromSelection(
           modifiedAst,
           wasmInstance
         )
-        if (mappedSegments.length === 1 && directTagExpr) {
+        if (
+          needsStableMappedTag &&
+          mappedSegments.length === 1 &&
+          directTagExpr
+        ) {
           // A unique mapped region tag identifies the selected edge directly,
-          // or through its opposite wrapper. Rebuilding it from faces can fail
-          // after booleans or later sweeps.
+          // or through its opposite wrapper. Use it only where rebuilding from
+          // faces can fail after booleans or across sweeps; ordinary extrusion
+          // edges retain their face-based references for sequential edge cuts.
           tagsExprs.push(getEdgeTagCall(directTagExpr, edgeArtifact))
           continue
         }
