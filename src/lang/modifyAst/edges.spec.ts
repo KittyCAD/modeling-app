@@ -199,8 +199,11 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
     })
 
     // https://github.com/KittyCAD/modeling-app/issues/12984
-    it('should qualify an inherited cap with its owning boolean body', async () => {
-      const code = `@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+    it(
+      'should fillet a segment that meets an inherited cap',
+      { timeout: 30_000 },
+      async () => {
+        const code = `@settings(kclVersion = 2.0, defaultLengthUnit = mm)
 
 plateSketch = sketch(on = XY) {
   bottomEdge = line(start = [var -20mm, var -15mm], end = [var 20mm, var -15mm])
@@ -228,64 +231,139 @@ sketch001 = sketch(on = face001) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = -12mm)`
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const inheritedCapSegment = [...artifactGraph.values()].find(
-        (artifact) => {
-          if (artifact.type !== 'segment') {
-            return false
-          }
-          const faces = getCommonFacesForEdge(artifact, artifactGraph)
-          if (err(faces)) {
-            return false
-          }
-          const sweep = getSweepArtifactFromSelection(
-            { artifact, codeRef: artifact.codeRef },
-            artifactGraph
+        const { artifactGraph, ast } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const circleCall =
+          'circle(start = [var 8mm, var 0mm], center = [var 0mm, var 0mm])'
+        const sourceCircle = [...artifactGraph.values()].find(
+          (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+            artifact.type === 'segment' &&
+            !artifact.originalSegId &&
+            code.slice(artifact.codeRef.range[0], artifact.codeRef.range[1]) ===
+              circleCall
+        )
+        if (!sourceCircle) {
+          throw new Error('Expected to find the source circle segment')
+        }
+        const selectedCircularEdge = [...artifactGraph.values()].find(
+          (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+            artifact.type === 'segment' &&
+            artifact.originalSegId === sourceCircle.id
+        )
+        if (!selectedCircularEdge) {
+          throw new Error('Expected to find the mapped circular edge')
+        }
+
+        const selectedSweep = getSweepArtifactFromSelection(
+          {
+            artifact: selectedCircularEdge,
+            codeRef: selectedCircularEdge.codeRef,
+          },
+          artifactGraph
+        )
+        if (err(selectedSweep)) {
+          throw selectedSweep
+        }
+        expect(
+          code.slice(
+            selectedSweep.codeRef.range[0],
+            selectedSweep.codeRef.range[1]
           )
-          if (err(sweep)) {
-            return false
-          }
-          return faces.some(
+        ).toBe('extrude(region001, length = -12mm)')
+
+        const commonFaces = getCommonFacesForEdge(
+          selectedCircularEdge,
+          artifactGraph
+        )
+        if (err(commonFaces)) {
+          throw commonFaces
+        }
+        expect(commonFaces).toHaveLength(2)
+        expect(
+          commonFaces.some(
+            (face) => face.type === 'wall' && face.sweepId === selectedSweep.id
+          )
+        ).toBe(true)
+        expect(
+          commonFaces.some(
             (face) =>
               face.type === 'cap' &&
               face.subType === 'end' &&
-              face.sweepId !== sweep.id
+              face.sweepId !== selectedSweep.id
           )
+        ).toBe(true)
+
+        const radius = (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection: createSelectionFromArtifacts(
+            [selectedCircularEdge],
+            artifactGraph
+          ),
+          radius,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) {
+          throw result
         }
-      )
-      if (!inheritedCapSegment) {
-        throw new Error(
-          'Expected a segment between the new wall and inherited cap'
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        const expectedCode = `@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+
+plateSketch = sketch(on = XY) {
+  bottomEdge = line(start = [var -20mm, var -15mm], end = [var 20mm, var -15mm])
+  rightEdge = line(start = [var 20mm, var -15mm], end = [var 20mm, var 15mm])
+  topEdge = line(start = [var 20mm, var 15mm], end = [var -20mm, var 15mm])
+  leftEdge = line(start = [var -20mm, var 15mm], end = [var -20mm, var -15mm])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+}
+plateRegion = region(segments = [
+  plateSketch.bottomEdge,
+  plateSketch.rightEdge
+])
+plateBody = extrude(plateRegion, length = 6mm, tagEnd = $capEnd001)
+
+cutterSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 13mm, var 10mm], center = [var 10mm, var 10mm])
+}
+cutterRegion = region(segments = [cutterSketch.circle1])
+cutterBody = extrude(cutterRegion, length = 6mm, method = NEW)
+perforatedPlate = subtract(plateBody, tools = cutterBody)
+
+face001 = faceOf(perforatedPlate, face = END)
+sketch001 = sketch(on = face001) {
+  circle1 = circle(start = [var 8mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = -12mm)
+fillet001 = fillet(extrude001, tags = region001.tags.circle1, radius = 1)
+`
+        expect(newCode).toBe(expectedCode)
+
+        await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const filletArtifacts = [
+          ...kclManagerInThisFile.artifactGraph.values(),
+        ].filter(
+          (artifact) =>
+            artifact.type === 'edgeCut' && artifact.subType === 'fillet'
         )
+        expect(filletArtifacts).toHaveLength(1)
+        expect(filletArtifacts[0]).toMatchObject({
+          consumedEdgeId: selectedCircularEdge.id,
+        })
       }
-
-      const radius = (await stringToKclExpression(
-        '1',
-        rustContextInThisFile
-      )) as KclCommandValue
-      const result = addFillet({
-        ast,
-        artifactGraph,
-        selection: createSelectionFromArtifacts(
-          [inheritedCapSegment],
-          artifactGraph
-        ),
-        radius,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) {
-        throw result
-      }
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('perforatedPlate.faces.capEnd001')
-      expect(newCode).not.toContain('extrude001.faces.capEnd001')
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+    )
 
     // https://github.com/KittyCAD/modeling-app/issues/12421
     it('should add a fillet to an edge on a cloned body', async () => {

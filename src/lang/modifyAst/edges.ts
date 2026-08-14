@@ -43,6 +43,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
@@ -759,6 +760,38 @@ function getTagsExprsFromSelection(
       )
       if (err(variable)) continue
       tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+    }
+
+    if (edge.artifact?.type === 'segment') {
+      const selectedFaces = getCommonFacesForEdge(edge.artifact, artifactGraph)
+      const edgeContext = resolveEdgeSelectionContext(
+        modifiedAst,
+        edge,
+        artifactGraph,
+        wasmInstance,
+        nodeToEdit
+      )
+      if (
+        !err(selectedFaces) &&
+        !err(edgeContext) &&
+        selectedFaces.some(
+          (face) => face.sweepId !== edgeContext.selectedSweep.id
+        )
+      ) {
+        const directTagExpr = getRegionSketchTagExprFromSourceSurface(
+          edgeContext.sourceSweep,
+          edge.artifact,
+          artifactGraph,
+          modifiedAst,
+          wasmInstance
+        )
+        if (directTagExpr) {
+          // getCommonEdge cannot combine faces from different source sketches.
+          // A mapped region segment's tag already identifies this edge directly.
+          tagsExprs.push(directTagExpr)
+          continue
+        }
+      }
     }
 
     const result = modifyAstWithTagsForSelection(
