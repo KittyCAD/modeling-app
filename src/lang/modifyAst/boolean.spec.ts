@@ -197,7 +197,11 @@ extrude002 = extrude(profile002, length = -1)`
             break
         }
 
-        expect(result).toEqual(new Error('Please check your selections'))
+        expect(result).toEqual(
+          new Error(
+            'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
+          )
+        )
       }
     )
 
@@ -265,7 +269,11 @@ extrude002 = extrude(profile002, length = -1)`
                 wasmInstance: instanceInThisFile,
               })
 
-        expect(result).toEqual(new Error('Please check your selections'))
+        expect(result).toEqual(
+          new Error(
+            'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
+          )
+        )
       }
     )
   })

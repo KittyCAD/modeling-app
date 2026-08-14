@@ -24,7 +24,8 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-const BOOLEAN_SELECTION_ERROR_MESSAGE = 'Please check your selections'
+const BOOLEAN_SELECTION_ERROR_MESSAGE =
+  'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
 
 type BooleanSelectionGroup = {
   selections: Selections
