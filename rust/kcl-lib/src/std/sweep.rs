@@ -13,6 +13,7 @@ use serde::Serialize;
 
 use super::DEFAULT_TOLERANCE_MM;
 use super::args::TyF64;
+use crate::KclVersion;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
@@ -204,50 +205,77 @@ async fn inner_sweep(
         InnerSweepPath::Helix(helix) => helix.value,
     });
 
-    let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
-        // Default case when the user doesn't give any flags at all.
-        (None, None, None) => ProfileTransform::RelativeTo(match version {
-            // We default to algorithm v1 if no choice was made.
-            None | Some(1) => RelativeTo::TrajectoryCurve,
-            // 0 means "let engine choose". Engine currently chooses version 1.
-            Some(0) => RelativeTo::TrajectoryCurve,
-            // Algorithm version 2 defaults to SketchPlane.
-            Some(2) => RelativeTo::SketchPlane,
-            // Error on unknown algorithm.
-            Some(other) => {
-                return Err(KclError::new_argument(KclErrorDetails::new(
-                    format!("Invalid version {}", other),
-                    vec![args.source_range],
-                )));
-            }
-        }),
+    let profile_transform = if exec_state.kcl_version() >= KclVersion::V3Preview {
+        if relative_to.is_some() {
+            return Err(KclError::new_argument(KclErrorDetails::new(
+                "The `relativeTo` arg is removed as of KCL 3.0".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        // From Nick Boone (mechanical engineer) on what he finds intuitive:
+        // - `translateProfileToPath` should default to false.
+        // - `orientProfilePerpendicular` should default to false,
+        //    unless `translateProfileToPath` is true, in which case both should be true
+        let translate_profile_to_path = translate_profile_to_path.unwrap_or_default();
+        let orient_profile_perpendicular = orient_profile_perpendicular.unwrap_or(translate_profile_to_path);
+        ProfileTransform::SeparateFlags {
+            translate_profile_to_path,
+            orient_profile_perpendicular,
+        }
+    } else {
+        match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {
+            // Default case when the user doesn't give any flags at all.
+            (None, None, None) => ProfileTransform::RelativeTo(match version {
+                // We default to algorithm v1 if no choice was made.
+                None | Some(1) => RelativeTo::TrajectoryCurve,
+                // 0 means "let engine choose". Engine currently chooses version 1.
+                Some(0) => RelativeTo::TrajectoryCurve,
+                // Algorithm version 2 defaults to SketchPlane.
+                Some(2) => RelativeTo::SketchPlane,
+                // Error on unknown algorithm.
+                Some(other) => {
+                    return Err(KclError::new_argument(KclErrorDetails::new(
+                        format!("Invalid version {}", other),
+                        vec![args.source_range],
+                    )));
+                }
+            }),
 
-        // If the "new" profile transformation args are set.
-        (None, translate, orient) => ProfileTransform::SeparateFlags {
-            translate_profile_to_path: translate.unwrap_or_default(),
-            orient_profile_perpendicular: orient.unwrap_or_default(),
-        },
+            // If the "new" profile transformation args are set.
+            (None, translate, orient) => ProfileTransform::SeparateFlags {
+                translate_profile_to_path: translate.unwrap_or_default(),
+                orient_profile_perpendicular: orient.unwrap_or_default(),
+            },
 
-        // RelativeTo was set, but none of its replacements were.
-        (Some(relative_to), None, None) => ProfileTransform::RelativeTo(match relative_to.as_str() {
-            "sketchPlane" => RelativeTo::SketchPlane,
-            "trajectoryCurve" => RelativeTo::TrajectoryCurve,
-            _ => {
-                return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
-                    "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
-                    vec![args.source_range],
-                )));
-            }
-        }),
+            // RelativeTo was set, but none of its replacements were.
+            (Some(relative_to), None, None) => ProfileTransform::RelativeTo(match relative_to.as_str() {
+                "sketchPlane" => RelativeTo::SketchPlane,
+                "trajectoryCurve" => RelativeTo::TrajectoryCurve,
+                _ => {
+                    return Err(KclError::new_syntax(crate::errors::KclErrorDetails::new(
+                        "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+            }),
 
-        // RelativeTo was set, but also one of its replacements was.
-        // This is an error.
-        (Some(_relative_to), _, _) => {
-            return Err(KclError::new_argument(crate::errors::KclErrorDetails::new(
+            // RelativeTo was set, but also one of its replacements was.
+            // This is an error.
+            (Some(_relative_to), _, _) => {
+                return Err(KclError::new_argument(crate::errors::KclErrorDetails::new(
                     "If you provide 'relativeTo', you cannot provide 'translateProfileToPath' or 'orientProfilePerpendicular'. Those arguments replace 'relativeTo', please use them instead.".to_owned(),
                     vec![args.source_range],
                 )));
+            }
         }
+    };
+
+    // On KCL 3.0 and later, sweep algorithm version defaults to v2.
+    let version = if exec_state.kcl_version() >= KclVersion::V3Preview {
+        version.or(Some(2))
+    } else {
+        // On KCL 2.0 and earlier, no change.
+        version
     };
 
     let mut solids = Vec::new();

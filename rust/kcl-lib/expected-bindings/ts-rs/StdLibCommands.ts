@@ -8365,7 +8365,7 @@ export default {
       {
         "name": "relativeTo",
         "ty": "string",
-        "docs": "Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
+        "docs": "Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Removed as of KCL 3.0 and later.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -8425,7 +8425,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm).",
+        "docs": "What version of the sweeping algorithm to use. On KCL version 2.0 and lower, this defaults to 1. On KCL version 3.0 and greater, this defaults to 2. 0 means unspecified, the Zoo engine will choose an algorithm version.",
         "required": false,
         "special": false,
         "experimental": false,
