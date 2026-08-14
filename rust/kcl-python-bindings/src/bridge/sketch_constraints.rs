@@ -81,6 +81,14 @@ pub struct SketchConstraintReport {
     /// the constraint report.
     #[pyo3(get)]
     pub warnings: Vec<String>,
+    /// Rendered non-fatal KCL execution errors collected while computing the
+    /// constraint report.
+    #[pyo3(get)]
+    pub execution_errors: Vec<String>,
+    /// Rendered fatal KCL execution issues collected while computing the
+    /// constraint report.
+    #[pyo3(get)]
+    pub execution_fatals: Vec<String>,
     #[pyo3(get)]
     pub is_complete: bool,
     #[pyo3(get)]
@@ -103,6 +111,8 @@ impl From<kcl_lib::SketchConstraintReport> for SketchConstraintReport {
             over_constrained: r.over_constrained.into_iter().map(Into::into).collect(),
             errors: r.errors.into_iter().map(Into::into).collect(),
             warnings: Vec::new(),
+            execution_errors: Vec::new(),
+            execution_fatals: Vec::new(),
             is_complete: true,
             kcl_error: None,
         }
