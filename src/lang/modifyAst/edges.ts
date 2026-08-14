@@ -847,21 +847,30 @@ export function retrieveEdgeSelectionsFromOpArgs(
   const graphSelections: Selection[] = []
   const unmatchedEdgeEntityIds: string[] = []
   for (const v of tagValues) {
-    if (!(v.type == 'Uuid' && v.value)) {
-      console.warn('Face value is not a TagIdentifier', v)
+    const artifactId =
+      v.type === 'Uuid'
+        ? v.value
+        : v.type === 'TagIdentifier'
+          ? v.artifact_id
+          : null
+    if (!artifactId) {
+      console.warn('Edge value does not resolve to an artifact', v)
       continue
     }
 
     const artifact = getArtifactOfTypes(
-      { key: v.value, types: ['segment', 'sweepEdge', 'primitiveEdge'] },
+      {
+        key: artifactId,
+        types: ['segment', 'sweepEdge', 'primitiveEdge'],
+      },
       artifactGraph
     )
     if (err(artifact)) {
       console.warn(
         'No artifact found for face tag, will try primitive fallback',
-        v.value
+        artifactId
       )
-      unmatchedEdgeEntityIds.push(v.value)
+      unmatchedEdgeEntityIds.push(artifactId)
       continue
     }
 
