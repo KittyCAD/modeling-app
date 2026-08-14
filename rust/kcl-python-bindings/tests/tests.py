@@ -742,9 +742,17 @@ async def test_sketch_constraint_status_includes_execution_warnings():
         kcl.get_sketch_constraint_status_code, warning_sketch_code
     )
     assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
     assert len(report.warnings) == 1
     assert "Instead of constraining to 90deg" in report.warnings[0]
     assert "constraint to Perpendicular" in report.warnings[0]
+    assert len(report.execution_errors) == 0
+    assert len(report.execution_fatals) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
 
 
 @requires_engine
@@ -753,11 +761,17 @@ async def test_sketch_constraint_status_includes_non_fatal_execution_errors():
     report = await execute_with_retries(
         kcl.get_sketch_constraint_status_code, error_sketch_code
     )
-    assert report.is_complete is True
-    assert report.kcl_error is None
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert len(report.warnings) == 0
     assert len(report.execution_errors) == 1
     assert "expects an unlabeled first argument" in report.execution_errors[0]
     assert len(report.execution_fatals) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
 
 
 @pytest.mark.asyncio
