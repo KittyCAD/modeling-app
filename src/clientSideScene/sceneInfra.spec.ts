@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 
 function makeSceneInfraForCallbacksTest() {
   return new SceneInfra(
@@ -62,5 +63,52 @@ describe('SceneInfra non-primary mouse buttons', () => {
     )
 
     expect(onClick).not.toHaveBeenCalled()
+  })
+})
+
+describe('SceneInfra camera-owned mouse gestures', () => {
+  it('still starts sketch selection on an unmodified left drag', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const solverMouseDownSelection = vi.fn(() => true)
+    sceneInfra.camControls.interactionGuards =
+      cameraMouseDragGuards['Trackpad Friendly']
+    sceneInfra.camControls.cameraOrbitOverride = 'trackball'
+    sceneInfra.setCallbacks({
+      onMouseDownSelection: solverMouseDownSelection,
+    })
+
+    sceneInfra.onMouseDown(
+      new MouseEvent('mousedown', {
+        button: 0,
+        buttons: 1,
+      })
+    )
+
+    expect(solverMouseDownSelection).toHaveBeenCalledOnce()
+    expect(sceneInfra.selected).not.toBeNull()
+    expect(sceneInfra.areaSelect).toBeNull()
+  })
+
+  it('does not start sketch selection on Trackpad Friendly Option + left drag', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const solverMouseDownSelection = vi.fn(() => true)
+    sceneInfra.camControls.interactionGuards =
+      cameraMouseDragGuards['Trackpad Friendly']
+    sceneInfra.camControls.cameraOrbitOverride = 'trackball'
+    sceneInfra.setCallbacks({
+      onMouseDownSelection: solverMouseDownSelection,
+    })
+
+    sceneInfra.onMouseDown(
+      new MouseEvent('mousedown', {
+        altKey: true,
+        button: 0,
+        buttons: 1,
+      })
+    )
+
+    expect(solverMouseDownSelection).not.toHaveBeenCalled()
+    expect(sceneInfra.selected).toBeNull()
+    expect(sceneInfra.areaSelect).toBeNull()
   })
 })

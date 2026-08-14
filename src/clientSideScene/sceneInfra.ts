@@ -807,7 +807,13 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (event.button !== 0) {
+    if (
+      event.button !== 0 ||
+      // If camControls claims the event for some interaction,
+      // we ignore this event for sketch interaction.
+      // Eg. option + left drag in "Trackball friendly" navigation mode.
+      this.camControls.getInteractionType(event) !== 'none'
+    ) {
       return
     }
 
