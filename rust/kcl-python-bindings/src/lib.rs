@@ -98,13 +98,14 @@ fn add_execution_issues(
     report: &mut SketchConstraintReport,
     filename: &str,
     code: &str,
-    issues: &[kcl_lib::CompilationIssue],
+    issues: Vec<kcl_lib::CompilationIssue>,
 ) {
     for issue in issues {
-        let rendered = kcl_lib::render_compilation_issue_miette(filename, code, issue.clone());
-        if issue.severity.is_fatal() {
+        let severity = issue.severity;
+        let rendered = kcl_lib::render_compilation_issue_miette(filename, code, issue);
+        if severity.is_fatal() {
             report.execution_fatals.push(rendered);
-        } else if issue.severity.is_err() {
+        } else if severity.is_err() {
             report.execution_errors.push(rendered);
         } else {
             report.warnings.push(rendered);
@@ -391,7 +392,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
             let mut report: SketchConstraintReport = outcome.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, &outcome.issues);
+            add_execution_issues(&mut report, &filename, &code, outcome.issues);
             Ok(report)
         }
         Err(err) => {
@@ -400,7 +401,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             }
             let error_text = render_miette(err.clone(), &code);
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, &err.non_fatal);
+            add_execution_issues(&mut report, &filename, &code, err.non_fatal);
             report.is_complete = false;
             report.kcl_error = Some(KclErrorInfo {
                 phase: "execution".to_string(),
