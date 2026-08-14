@@ -1,4 +1,5 @@
 import { base64ToString } from '@src/lib/base64'
+import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -11,6 +12,8 @@ import {
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
+  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import {
   downloadProjectById,
@@ -19,6 +22,7 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
@@ -39,6 +43,35 @@ export type CreateFileSchemaMethodOptional = Omit<
   'method'
 > & {
   method?: 'newProject' | 'existingProject'
+}
+
+let pendingWebLayoutProjectCreation: Promise<string> | undefined
+
+async function createFreshWebLayoutProject(app: App) {
+  await waitForIdleState({ systemIOActor: app.systemIOActor })
+  await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+  const targets = app.getCreateProjectLibraryTargets()
+  const projectLibraryTarget =
+    targets.find(
+      (target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+    ) ?? targets[0]
+  if (!projectLibraryTarget) {
+    return Promise.reject(
+      new Error('No writable project library is available.')
+    )
+  }
+
+  const project = await projectLibraryTarget.createProject.run({
+    library: projectLibraryTarget.library,
+    requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
+    requestedProjectTitle: DEFAULT_WEB_PROJECT_NAME,
+  })
+  if (!project?.default_file) {
+    return Promise.reject(new Error('Unable to create a blank project.'))
+  }
+
+  return project.default_file
 }
 
 /**
@@ -202,6 +235,52 @@ export function useQueryParamEffects() {
     const rawCommandData = buildGenericCommandArgs(searchParams)
     if (!rawCommandData) return
     const commandData = rawCommandData
+    const shouldCreateWebLayoutProject =
+      !isDesktop() &&
+      commandData.groupId === 'application' &&
+      commandData.name === 'set-layout' &&
+      !app.project
+
+    if (shouldCreateWebLayoutProject) {
+      let cancelled = false
+      pendingWebLayoutProjectCreation ??= createFreshWebLayoutProject(app)
+
+      void pendingWebLayoutProjectCreation
+        .then((defaultFile) => {
+          if (cancelled) {
+            return
+          }
+
+          void navigate(
+            {
+              pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
+              search: searchParams.toString(),
+            },
+            { replace: true }
+          )
+        })
+        .catch((error) => {
+          pendingWebLayoutProjectCreation = undefined
+          if (!cancelled) {
+            toast.error(
+              err(error) ? error.message : 'Failed to create a blank project.'
+            )
+          }
+        })
+
+      return () => {
+        cancelled = true
+      }
+    }
+
+    if (
+      !isDesktop() &&
+      commandData.groupId === 'application' &&
+      commandData.name === 'set-layout'
+    ) {
+      pendingWebLayoutProjectCreation = undefined
+    }
+
     let shouldCreateDefaultWebProject = false
 
     // Web-only: prefill command data to automatically add to the demo project
@@ -300,6 +379,8 @@ export function useQueryParamEffects() {
             CMD_GROUP_QUERY_PARAM,
             CREATE_FILE_URL_PARAM,
             POOL_QUERY_PARAM,
+            SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+            LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
           ]
 
           return !reservedKeys.includes(key)

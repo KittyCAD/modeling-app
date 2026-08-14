@@ -67,7 +67,7 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
