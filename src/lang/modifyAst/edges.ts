@@ -42,7 +42,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
-  getCommonFacesForEdge,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
@@ -761,8 +760,19 @@ function getTagsExprsFromSelection(
       tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
     }
 
-    if (edge.artifact?.type === 'segment') {
-      const selectedFaces = getCommonFacesForEdge(edge.artifact, artifactGraph)
+    if (
+      edge.artifact?.type === 'segment' ||
+      (edge.artifact?.type === 'sweepEdge' &&
+        edge.artifact.subType === 'opposite')
+    ) {
+      const edgeArtifact = edge.artifact
+      const segmentArtifact =
+        edgeArtifact.type === 'segment'
+          ? edgeArtifact
+          : getArtifactOfTypes(
+              { key: edgeArtifact.segId, types: ['segment'] },
+              artifactGraph
+            )
       const edgeContext = resolveEdgeSelectionContext(
         modifiedAst,
         edge,
@@ -771,23 +781,29 @@ function getTagsExprsFromSelection(
         nodeToEdit
       )
       if (
-        !err(selectedFaces) &&
+        !err(segmentArtifact) &&
         !err(edgeContext) &&
-        selectedFaces.some(
-          (face) => face.sweepId !== edgeContext.selectedSweep.id
-        )
+        !edgeContext.isClone &&
+        segmentArtifact.originalSegId
       ) {
+        const mappedSegments = [...artifactGraph.values()].filter(
+          (artifact) =>
+            artifact.type === 'segment' &&
+            artifact.pathId === segmentArtifact.pathId &&
+            artifact.originalSegId === segmentArtifact.originalSegId
+        )
         const directTagExpr = getRegionSketchTagExprFromSourceSurface(
           edgeContext.sourceSweep,
-          edge.artifact,
+          edgeArtifact,
           artifactGraph,
           modifiedAst,
           wasmInstance
         )
-        if (directTagExpr) {
-          // getCommonEdge cannot combine faces from different source sketches.
-          // A mapped region segment's tag already identifies this edge directly.
-          tagsExprs.push(directTagExpr)
+        if (mappedSegments.length === 1 && directTagExpr) {
+          // A unique mapped region tag identifies the selected edge directly,
+          // or through its opposite wrapper. Rebuilding it from faces can fail
+          // after booleans or later sweeps.
+          tagsExprs.push(getEdgeTagCall(directTagExpr, edgeArtifact))
           continue
         }
       }
