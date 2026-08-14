@@ -219,9 +219,20 @@ jobs:
         run: |-
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
           pushd rust
+          # The recursive leg runs the full suite. The machine leg reruns
+          # only executor-sensitive tests: packages and modules that never
+          # construct an ExecutorContext (parsers, printers, ts-rs bindings
+          # codegen, ...) behave identically under both executors, so they
+          # run once. Exclusion-based so that a new execution test is
+          # machine-covered by default.
+          executor_filter=()
+          if [ "${{ matrix.executor }}" = "machine" ]; then
+            executor_filter=(-E "package(kcl-lib) and not (test(/^parsing::/) or test(/^unparser::/) or test(/^walk::/) or test(/^settings::/) or test(/^fs::/) or test(/^fmt::/) or test(/^tooling::/) or test(/^errors::/) or test(/export_bindings/))")
+          fi
           cargo nextest run \
             --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
             --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
+            "${executor_filter[@]}" \
             2>&1 | tee /tmp/github-actions.log || true  # let TAB determine failure
           popd
           .github/ci-cd-scripts/upload-results.sh
