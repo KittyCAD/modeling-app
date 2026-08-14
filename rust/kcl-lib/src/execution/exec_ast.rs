@@ -1787,6 +1787,46 @@ impl ExecutorContext {
         })
     }
 
+    /// Resolve a name to its value, running the module body first when the name
+    /// refers to a module. Flat (module execution happens in its own fresh
+    /// root); shared by both executors.
+    pub(super) async fn resolve_name_for_eval(
+        &self,
+        name: &Node<Name>,
+        metadata: &Metadata,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        let value = name
+            .get_result(exec_state, self)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))?
+            .clone();
+        if let KclValue::Module { value: module_id, meta } = value {
+            Ok(self
+                .exec_module_for_result(module_id, exec_state, metadata.source_range)
+                .await?
+                .unwrap_or_else(|| {
+                    exec_state.warn(
+                        CompilationIssue::err(
+                            metadata.source_range,
+                            "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
+                        ),
+                        annotations::WARN_MOD_RETURN_VALUE,
+                    );
+
+                    let mut new_meta = vec![metadata.to_owned()];
+                    new_meta.extend(meta);
+                    KclValue::KclNone {
+                        value: Default::default(),
+                        meta: new_meta,
+                    }
+                }))
+        } else {
+            Ok(value)
+        }
+    }
+
     #[async_recursion]
     pub(crate) async fn execute_expr<'a: 'async_recursion>(
         &self,
@@ -1800,37 +1840,10 @@ impl ExecutorContext {
             Expr::None(none) => KclValue::from(none).continue_(),
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
-            Expr::Name(name) => {
-                let being_declared = exec_state.mod_local.being_declared.clone();
-                let value = name
-                    .get_result(exec_state, self)
-                    .await
-                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
-                    .clone();
-                if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(
-                        module_id,
-                        exec_state,
-                        metadata.source_range
-                        ).await?.map(|v| v.continue_())
-                        .unwrap_or_else(|| {
-                            exec_state.warn(CompilationIssue::err(
-                                metadata.source_range,
-                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ),
-                        annotations::WARN_MOD_RETURN_VALUE);
-
-                            let mut new_meta = vec![metadata.to_owned()];
-                            new_meta.extend(meta);
-                            KclValue::KclNone {
-                                value: Default::default(),
-                                meta: new_meta,
-                            }.continue_()
-                        })
-                } else {
-                    value.continue_()
-                }
-            }
+            Expr::Name(name) => self
+                .resolve_name_for_eval(name, metadata, exec_state)
+                .await?
+                .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
@@ -3025,7 +3038,14 @@ impl BinaryPart {
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.map(KclValue::continue_),
+            BinaryPart::Name(name) => {
+                let metadata = Metadata {
+                    source_range: SourceRange::from(&**name),
+                };
+                ctx.resolve_name_for_eval(name, &metadata, exec_state)
+                    .await
+                    .map(KclValue::continue_)
+            }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
