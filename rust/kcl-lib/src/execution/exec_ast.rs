@@ -3177,18 +3177,23 @@ impl Node<MemberExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        let meta = Metadata {
-            source_range: SourceRange::from(self),
-        };
+        // Evaluate each child with its own source range so that diagnostics
+        // raised while evaluating a child (module errors, missing-return
+        // warnings) point at that child instead of the whole member
+        // expression.
+        //
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
+        let property_meta = Metadata {
+            source_range: SourceRange::from(&self.property),
+        };
         let property_result = Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
             self.into(),
             ctx,
-            &meta,
+            &property_meta,
             &[],
             StatementKind::Expression,
         )
@@ -3200,10 +3205,19 @@ impl Node<MemberExpression> {
             Err(EarlyReturn::Value(cf)) => return Ok(cf),
             Err(EarlyReturn::Error(err)) => return Err(err),
         };
+        let object_meta = Metadata {
+            source_range: SourceRange::from(&self.object),
+        };
         let object_cf = ctx
-            .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
+            .execute_expr(&self.object, exec_state, &object_meta, &[], StatementKind::Expression)
             .await?;
         let object = control_continue!(object_cf);
+
+        // Result values of the member access itself carry the whole
+        // expression's metadata.
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
+        };
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
