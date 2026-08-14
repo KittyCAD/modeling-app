@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_units_are_millimeters.kcl
+---
+// Pins that a stored view records every length in millimeters, whatever unit
+// the author wrote. More than one consumer reads these values and some become
+// engine commands, which are in millimeters, so one canonical unit removes a
+// conversion convention those consumers would otherwise have to share.
+//
+// The program memory snapshot is the assertion: 2inch is stored as 50.8, and
+// the inch and centimeter coordinates of each target are stored as their
+// millimeter equivalents. Every length written here is deliberately in a unit
+// other than millimeters, because a millimeter input cannot tell the two
+// storage conventions apart.
+@settings(experimentalFeatures = allow)
+
+// One unit throughout, on both length arguments.
+inches = view::oriented(view::Orientation::Front, target = [1inch, 2inch, 0inch], distance = 2inch)
+
+// Units mixed across the coordinates of one point: each coordinate converts
+// on its own, so all three below name the same distance from the origin.
+mixed = view::oriented(view::Orientation::Top, target = [1inch, 2.54cm, 25.4mm], distance = 10cm)
+
+// A direction carries no unit at all, so mixing units within it only has to
+// preserve the ratio between coordinates: this is the unit vector along x + y.
+direction = view::directed([1inch, 2.54cm, 0], distance = 1m)

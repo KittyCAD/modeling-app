@@ -596,6 +596,7 @@ fn might_be_legacy_sketch(value: &KclValue) -> bool {
         KclValue::TagIdentifier(_) => false,
         KclValue::TagDeclarator(_) => false,
         KclValue::GdtAnnotation { .. } => false,
+        KclValue::CameraView { .. } => false,
         KclValue::Plane { .. } => false,
         KclValue::Face { .. } => false,
         KclValue::BoundedEdge { .. } => false,
@@ -2317,7 +2318,7 @@ plane = startSketchOn(XY)
 
         exec_ctxt.run(&program, &mut exec_state).await.unwrap();
 
-        assert_eq!(exec_state.mod_local.settings.kcl_version, "1.0");
+        assert_eq!(exec_state.mod_local.settings.kcl_version, crate::KclVersion::V1);
         let warnings = exec_state
             .issues()
             .iter()

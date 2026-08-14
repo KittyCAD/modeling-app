@@ -6,6 +6,7 @@ use crate::ModuleId;
 use crate::exec::KclValue;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
+use crate::execution::CameraView;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Helix;
@@ -69,6 +70,9 @@ pub enum KclValueView {
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
     GdtAnnotation {
         value: Box<GdtAnnotation>,
+    },
+    CameraView {
+        value: Box<CameraView>,
     },
     Plane {
         value: Box<Plane>,
@@ -137,6 +141,7 @@ impl From<KclValue> for KclValueView {
             KclValue::TagIdentifier(tag_identifier) => KclValueView::TagIdentifier(tag_identifier),
             KclValue::TagDeclarator(node) => KclValueView::TagDeclarator(node),
             KclValue::GdtAnnotation { value } => KclValueView::GdtAnnotation { value },
+            KclValue::CameraView { value } => KclValueView::CameraView { value },
             KclValue::Plane { value } => KclValueView::Plane { value },
             KclValue::Face { value } => KclValueView::Face { value },
             KclValue::BoundedEdge { value, .. } => KclValueView::BoundedEdge { value },

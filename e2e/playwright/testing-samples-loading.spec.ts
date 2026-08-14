@@ -143,6 +143,23 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
 })
 
 test.describe('Query parameter command', { tag: '@web' }, () => {
+  test('applies the ttc layout without opening the command palette', async ({
+    page,
+    cmdBar,
+  }) => {
+    await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const layout = window.app.layout.get()
+          return 'sizes' in layout ? layout.sizes : []
+        })
+      )
+      .toEqual([0, 50, 50])
+    await cmdBar.expectState({ stage: 'commandBarClosed' })
+  })
+
   test('should add sample to demo project', async ({
     page,
     toolbar,

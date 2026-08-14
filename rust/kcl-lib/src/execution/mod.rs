@@ -44,6 +44,7 @@ pub use memory::EnvironmentRef;
 #[cfg(test)]
 pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
+pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
@@ -66,7 +67,7 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
@@ -166,6 +167,7 @@ pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
+mod named_views;
 mod sketch_solve;
 mod sketch_transpiler;
 mod solver_arc;
@@ -2194,6 +2196,13 @@ pub(crate) struct ExecTestResults {
 impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
+    }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
     }
 }
 
