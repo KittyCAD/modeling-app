@@ -18,9 +18,9 @@ vi.mock('@src/lang/wasmUtils', async () => {
   } satisfies typeof realImport
 })
 
-vi.mock('@xstate/react', () => ({
-  useSelector: () => ({ graphSelections: [], otherSelections: [] }),
-}))
+const mockUseSelector = vi.hoisted(() => vi.fn())
+
+vi.mock('@xstate/react', () => ({ useSelector: mockUseSelector }))
 
 vi.mock('@src/lib/selections', () => ({
   canSubmitSelectionArg: () => true,
@@ -51,6 +51,10 @@ describe('CommandBarSelectionMixedInput', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseSelector.mockReturnValue({
+      graphSelections: [],
+      otherSelections: [],
+    })
   })
 
   describe('clearSelectionFirst behavior', () => {
@@ -192,7 +196,7 @@ describe('CommandBarSelectionMixedInput', () => {
       expect(mockModelingSend).toHaveBeenCalledTimes(1)
     })
 
-    it('should set hasClearedSelection state after clearing', async () => {
+    it('should send the clear request before awaiting the empty selection', async () => {
       const app = App.getDefaultSystems()
       const executingEditor = new KclManager('some-file', '', {
         commandBar: app.commands.actor,
@@ -226,9 +230,124 @@ describe('CommandBarSelectionMixedInput', () => {
         })
       })
 
-      // The component should have set hasClearedSelection to true after clearing
-      // This is tested indirectly by verifying the clear command was sent
+      // The lifecycle tests below cover the actor's asynchronous selection update.
       expect(mockModelingSend).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not submit the stale selection before the clear is observed', async () => {
+      mockUseSelector.mockReturnValue({
+        graphSelections: [
+          {
+            codeRef: {
+              range: [0, 1, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      })
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
+      const mockModelingSend = vi.spyOn(
+        executingEditor.engineCommandManager,
+        'modelingSend'
+      )
+      const arg = createArg(true)
+
+      const { unmount } = render(
+        <CommandBarSelectionMixedInput
+          arg={arg}
+          stepBack={mockProps.stepBack}
+          onSubmit={mockProps.onSubmit}
+          executingEditor={executingEditor}
+        />
+      )
+
+      await waitFor(() => {
+        expect(mockModelingSend).toHaveBeenCalledWith({
+          type: 'Set selection',
+          data: { selectionType: 'singleCodeCursor' },
+        })
+      })
+      unmount()
+
+      expect(mockProps.onSubmit).not.toHaveBeenCalled()
+    })
+
+    it('submits a new selection after the clear is observed', async () => {
+      const previousSelection = {
+        graphSelections: [
+          {
+            codeRef: {
+              range: [0, 1, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+      const toolSelection = {
+        graphSelections: [
+          {
+            codeRef: {
+              range: [2, 3, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+      mockUseSelector.mockReturnValue(previousSelection)
+      const app = App.getDefaultSystems()
+      const executingEditor = new KclManager('some-file', '', {
+        commandBar: app.commands.actor,
+        settings: app.settings.actor,
+        wasmInstancePromise: app.wasmPromise,
+        engineCommandManager: app.engineCommandManager,
+        rustContext: app.rustContext,
+        projectPath: signal('some-project'),
+      })
+      const mockModelingSend = vi.spyOn(
+        executingEditor.engineCommandManager,
+        'modelingSend'
+      )
+      const arg = createArg(true)
+      const component = () => (
+        <CommandBarSelectionMixedInput
+          arg={arg}
+          stepBack={mockProps.stepBack}
+          onSubmit={mockProps.onSubmit}
+          executingEditor={executingEditor}
+        />
+      )
+
+      const { rerender, unmount } = render(component())
+
+      await waitFor(() => {
+        expect(mockModelingSend).toHaveBeenCalledWith({
+          type: 'Set selection',
+          data: { selectionType: 'singleCodeCursor' },
+        })
+      })
+
+      mockUseSelector.mockReturnValue({
+        graphSelections: [],
+        otherSelections: [],
+      })
+      rerender(component())
+      mockUseSelector.mockReturnValue(toolSelection)
+      rerender(component())
+      unmount()
+
+      expect(mockProps.onSubmit).toHaveBeenCalledTimes(1)
+      expect(mockProps.onSubmit).toHaveBeenCalledWith(toolSelection)
     })
   })
 })

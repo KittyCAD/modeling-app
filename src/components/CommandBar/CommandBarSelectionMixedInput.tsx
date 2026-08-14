@@ -41,7 +41,6 @@ export default function CommandBarSelectionMixedInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
   const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
-  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
@@ -105,6 +104,21 @@ export default function CommandBarSelectionMixedInput({
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
   }, [selectionsByType, selection, arg, isArgRequired])
+  const hasObservedSelectionClear = useRef(!arg.clearSelectionFirst)
+  const latestTeardownValues = useRef({
+    arg,
+    canSubmitSelection,
+    isArgRequired,
+    onSubmit,
+    selection,
+  })
+  latestTeardownValues.current = {
+    arg,
+    canSubmitSelection,
+    isArgRequired,
+    onSubmit,
+    selection,
+  }
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -112,6 +126,7 @@ export default function CommandBarSelectionMixedInput({
 
   // Clear selection in UI if needed
   useEffect(() => {
+    hasObservedSelectionClear.current = !arg.clearSelectionFirst
     if (arg.clearSelectionFirst) {
       engineCommandManager.modelingSend({
         type: 'Set selection',
@@ -119,9 +134,20 @@ export default function CommandBarSelectionMixedInput({
           selectionType: 'singleCodeCursor',
         },
       })
-      setHasClearedSelection(true)
     }
   }, [arg.clearSelectionFirst, engineCommandManager])
+
+  // Do not let unmount cleanup submit until the modeling actor has observed
+  // the clear; sending the event alone can leave the previous argument selected.
+  useEffect(() => {
+    if (
+      arg.clearSelectionFirst &&
+      selection.graphSelections.length === 0 &&
+      selection.otherSelections.length === 0
+    ) {
+      hasObservedSelectionClear.current = true
+    }
+  }, [arg.clearSelectionFirst, selection])
 
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
@@ -181,23 +207,32 @@ export default function CommandBarSelectionMixedInput({
   // and quickly save the current selection if we can
   useEffect(() => {
     return () => {
-      const resolvedSelection: Selections | undefined = isArgRequired
-        ? selection
-        : selection || {
+      const {
+        arg: latestArg,
+        canSubmitSelection: latestCanSubmitSelection,
+        isArgRequired: latestIsArgRequired,
+        onSubmit: latestOnSubmit,
+        selection: latestSelection,
+      } = latestTeardownValues.current
+      const resolvedSelection: Selections | undefined = latestIsArgRequired
+        ? latestSelection
+        : latestSelection || {
             graphSelections: [],
             otherSelections: [],
           }
 
       if (
-        !(arg.clearSelectionFirst && !hasClearedSelection) &&
-        canSubmitSelection &&
+        !(
+          latestArg.clearSelectionFirst && !hasObservedSelectionClear.current
+        ) &&
+        latestCanSubmitSelection &&
         resolvedSelection
       ) {
-        onSubmit(resolvedSelection)
+        latestOnSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasClearedSelection])
+  }, [])
 
   function handleChange() {
     inputRef.current?.focus()
