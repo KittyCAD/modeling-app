@@ -4803,6 +4803,73 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
+    /// Runs `main` with an empty imported module in mock execution and
+    /// returns the recorded compilation issues; the run may end in an error
+    /// (e.g. from operating on the module's missing return value).
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_member_ranges").unwrap();
+        tokio::fs::write(tmpdir.path().join("m.kcl"), "").await.unwrap();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: ExecutorSettings {
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        let _ = ctx.run(&program, &mut exec_state).await;
+        ctx.close().await;
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn backtrace_reports_fully_qualified_fn_names() {
         // An error inside a function called by a qualified name records the
