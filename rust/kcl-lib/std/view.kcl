@@ -1,0 +1,177 @@
+/// Named views: cameras and visibility sets defined in KCL.
+///
+/// A named view pairs a camera with a set of visible objects, so consumers
+/// such as the modeling app and STEP export can reproduce it. This version of
+/// the module provides the enums and opaque types named views are built from
+/// and the camera constructors `oriented` and `directed`; the view
+/// constructor arrives in a later version.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+import Point3d from "std::types"
+
+/// A standard camera orientation for a named view.
+///
+/// The six axis-aligned orientations name the side of the model the camera
+/// looks at; `Isometric` is the standard three-quarter view.
+@(experimental = true)
+export type Orientation {
+  /// The camera looks at the front of the model.
+  | Front
+  /// The camera looks at the back of the model.
+  | Back
+  /// The camera looks at the left side of the model.
+  | Left
+  /// The camera looks at the right side of the model.
+  | Right
+  /// The camera looks down at the top of the model.
+  | Top
+  /// The camera looks up at the bottom of the model.
+  | Bottom
+  /// The standard three-quarter view, showing three faces of the model at
+  /// once.
+  | Isometric
+}
+
+/// Whether a named view shows or hides objects by default.
+@(experimental = true)
+export type Visibility {
+  /// Objects are shown unless the view hides them.
+  | Show
+  /// Objects are hidden unless the view shows them.
+  | Hide
+}
+
+/// The camera projection of a named view.
+@(experimental = true)
+export type Projection {
+  /// An object's projected size is independent of its distance from the
+  /// camera, and parallel edges remain parallel; the convention of
+  /// engineering drawings.
+  | Orthographic
+  /// Apparent size decreases with distance from the camera, as a physical
+  /// camera sees; parallel edges converge toward vanishing points.
+  | Perspective
+}
+
+/// A camera viewpoint, stored as intent: what the camera looks at and from
+/// which direction, not a snapshot of engine camera state.
+///
+/// Values of this type are opaque; [`oriented`](/docs/kcl-std/functions/std-view-oriented)
+/// and [`directed`](/docs/kcl-std/functions/std-view-directed) produce them.
+@(impl = std_rust, experimental = true)
+export type CameraView
+
+/// A named view: a camera paired with the set of objects it shows or hides.
+///
+/// Values of this type are opaque. The constructor function that produces
+/// them arrives in a later version of this module.
+@(impl = std_rust, experimental = true)
+export type NamedView
+
+/// Create a camera view that looks at the model from a standard orientation.
+///
+/// The returned value stores intent, not resolved numbers: an argument you
+/// omit stays absent, and the consumer that activates the view resolves it
+/// against the model it is showing, so one view value is valid for any model.
+///
+/// Every argument you do pass must be a finite number; an infinite or
+/// undefined value, such as one produced by dividing by zero, is an error
+/// rather than a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm. The view means the same thing
+/// either way; a tool that reads the view back reports millimeters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative.
+///
+/// ```kcl,norun
+/// @settings(experimentalFeatures = allow)
+///
+/// isoView = view::oriented(view::Orientation::Isometric)
+///
+/// frontView = view::oriented(
+///   view::Orientation::Front,
+///   target = [0, 0, 0],
+///   distance = 500,
+///   projection = view::Projection::Perspective,
+/// )
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn oriented(
+  /// The standard orientation the camera looks from.
+  @orientation: Orientation,
+  /// The point the camera looks at. When omitted, the view centers on the
+  /// bounds of the model at activation.
+  target?: Point3d,
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
+  distance?: number(Length),
+  /// The camera projection. When omitted, the view is orthographic, so the
+  /// same file renders identically in every consumer.
+  projection?: Projection,
+): CameraView {}
+
+/// Create a camera view that looks along a custom direction.
+///
+/// The returned value stores intent, not resolved numbers: an argument you
+/// omit stays absent, and the consumer that activates the view resolves it
+/// against the model it is showing, so one view value is valid for any model.
+///
+/// `direction` and `up` set only directions: both are normalized when the
+/// view is constructed, so their magnitudes carry no information and zoom
+/// comes from `distance`. Each must be a non-zero vector, and they must not
+/// be parallel or nearly parallel to each other; such arguments are errors.
+/// Any angle above roughly 0.00006 degrees between the two is accepted, so
+/// only vectors that are parallel to within a rounding error are rejected.
+/// When that happens, choose an `up` that does not lie along `direction`.
+///
+/// Every argument you pass must be a finite number; an infinite or undefined
+/// value, such as one produced by dividing by zero, is an error rather than
+/// a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm, and a `target` coordinate is
+/// converted the same way. The view means the same thing either way; a tool
+/// that reads the view back reports millimeters. `direction` and `up` carry
+/// no unit at all, because only their ratio matters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative.
+///
+/// ```kcl,norun
+/// @settings(experimentalFeatures = allow)
+///
+/// overheadView = view::directed([0, 1, -2])
+///
+/// closeUp = view::directed(
+///   [-1, -1, -0.3],
+///   up = [0, 0, 1],
+///   target = [0, 0, 10],
+///   distance = 200,
+///   projection = view::Projection::Perspective,
+/// )
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn directed(
+  /// The direction the camera looks, from the camera toward the target.
+  @direction: Point3d,
+  /// The camera's up direction. When omitted, `[0, 0, 1]`: the positive Z
+  /// axis, which is the modeling app's world up.
+  up?: Point3d,
+  /// The point the camera looks at. When omitted, the view centers on the
+  /// bounds of the model at activation.
+  target?: Point3d,
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
+  distance?: number(Length),
+  /// The camera projection. When omitted, the view is orthographic, so the
+  /// same file renders identically in every consumer.
+  projection?: Projection,
+): CameraView {}

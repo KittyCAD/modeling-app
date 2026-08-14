@@ -14,6 +14,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
+use crate::execution::CameraView;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::Face;
@@ -166,6 +167,9 @@ pub enum KclValue {
     Helix {
         value: Box<Helix>,
     },
+    CameraView {
+        value: Box<CameraView>,
+    },
     ImportedGeometry(ImportedGeometry),
     Function {
         #[serde(serialize_with = "function_value_stub")]
@@ -208,13 +212,27 @@ pub struct NamedParam {
     pub deprecated_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
     pub ty: Option<Type>,
+    /// The `RuntimeType` that `ty` resolved to when the function declaration
+    /// executed, so the resolution happened in the scope where the signature
+    /// is written. `None` when `ty` is `None`. Populated by
+    /// [`FunctionSource::resolve_signature_types`].
+    pub resolved_ty: Option<RuntimeType>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionSource {
     pub input_arg: Option<(String, Option<Type>)>,
+    /// The `RuntimeType` that the input (unlabeled) argument's type resolved
+    /// to when the function declaration executed. `None` when the input
+    /// argument has no type annotation. Populated by
+    /// [`FunctionSource::resolve_signature_types`].
+    pub resolved_input_ty: Option<RuntimeType>,
     pub named_args: IndexMap<String, NamedParam>,
     pub return_type: Option<Node<Type>>,
+    /// The `RuntimeType` that `return_type` resolved to when the function
+    /// declaration executed. `None` when `return_type` is `None`. Populated
+    /// by [`FunctionSource::resolve_signature_types`].
+    pub resolved_return_ty: Option<RuntimeType>,
     pub deprecated: bool,
     /// Constraint on the KCL version at which this function is deprecated, e.g.
     /// "2.0". When the active `kclVersion` is at or after this, calls trigger a
@@ -244,8 +262,10 @@ impl FunctionSource {
 
         FunctionSource {
             input_arg,
+            resolved_input_ty: None,
             named_args,
             return_type: ast.return_type.clone(),
+            resolved_return_ty: None,
             deprecated: attrs.deprecated,
             deprecated_since: attrs.deprecated_since,
             experimental: attrs.experimental,
@@ -265,8 +285,10 @@ impl FunctionSource {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
+            resolved_input_ty: None,
             named_args,
             return_type: ast.return_type.clone(),
+            resolved_return_ty: None,
             deprecated: false,
             deprecated_since: None,
             experimental,
@@ -298,6 +320,7 @@ impl FunctionSource {
                     deprecated_since: p.deprecated_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
+                    resolved_ty: None,
                 },
             );
         }
@@ -307,6 +330,42 @@ impl FunctionSource {
 
     pub(crate) fn is_std(&self) -> bool {
         self.std_props.is_some()
+    }
+
+    /// Resolve every parameter type and the return type of this function's
+    /// signature into a `RuntimeType`, looking type names up in the current
+    /// environment.
+    ///
+    /// This must run while the function declaration executes, so that a type
+    /// name in a signature resolves in the scope where the signature is
+    /// written. Argument and return-value coercion consume the stored results
+    /// and perform no name resolution of their own. A name that does not
+    /// resolve is an error at the declaration, and an experimental type warns
+    /// here, once, rather than at every call.
+    pub(crate) fn resolve_signature_types(&mut self, exec_state: &mut ExecState) -> Result<(), KclError> {
+        for param in &self.ast.params {
+            let Some(ty) = &param.param_type else {
+                continue;
+            };
+            let resolved = RuntimeType::from_parsed(ty.inner.clone(), exec_state, ty.as_source_range(), false, false)
+                .map_err(|e| KclError::new_semantic(e.into()))?;
+            if param.labeled {
+                if let Some(named) = self.named_args.get_mut(&param.identifier.name) {
+                    named.resolved_ty = Some(resolved);
+                }
+            } else {
+                self.resolved_input_ty = Some(resolved);
+            }
+        }
+
+        if let Some(ret_ty) = &self.return_type {
+            self.resolved_return_ty = Some(
+                RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, false)
+                    .map_err(|e| KclError::new_semantic(e.into()))?,
+            );
+        }
+
+        Ok(())
     }
 }
 
@@ -552,6 +611,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
+            KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -588,6 +648,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
+            KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
@@ -640,6 +701,7 @@ impl KclValue {
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
+            KclValue::CameraView { value } => value.meta().to_vec(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
@@ -678,6 +740,7 @@ impl KclValue {
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
             | KclValue::Helix { .. }
+            | KclValue::CameraView { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Module { .. }
@@ -698,6 +761,7 @@ impl KclValue {
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
+            KclValue::CameraView { .. } => "a camera view".to_owned(),
             KclValue::ImportedGeometry(_) => "an imported geometry".to_owned(),
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
@@ -1215,6 +1279,7 @@ impl KclValue {
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
+            | KclValue::CameraView { .. }
             | KclValue::ImportedGeometry(_)
             | KclValue::Function { .. }
             | KclValue::Plane { .. }

@@ -324,19 +324,32 @@ impl CodeBlock for Node<Program> {
 }
 
 fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let value = kcl_version.parse::<f64>().map_err(|_| {
-        KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            format!("Unexpected KCL version value: `{kcl_version}`; expected a number, e.g. `2.0`"),
-            vec![],
-        ))
-    })?;
+    let version = kcl_version.parse::<crate::KclVersion>()?;
+    let (value, raw) = match version {
+        crate::KclVersion::V1 | crate::KclVersion::V2 => {
+            let value = kcl_version.parse::<f64>().map_err(|_| {
+                KclError::new_semantic(crate::errors::KclErrorDetails::new(
+                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
+                    vec![],
+                ))
+            })?;
+            (
+                LiteralValue::Number {
+                    value,
+                    suffix: NumericSuffix::None,
+                },
+                kcl_version.to_owned(),
+            )
+        }
+        crate::KclVersion::V3Preview => (
+            LiteralValue::String(version.as_str().to_owned()),
+            format!("\"{}\"", version.as_str()),
+        ),
+    };
 
     Ok(Expr::Literal(Box::new(Node::no_src(Literal {
-        value: LiteralValue::Number {
-            value,
-            suffix: NumericSuffix::None,
-        },
-        raw: kcl_version.to_owned(),
+        value,
+        raw,
         digest: None,
     }))))
 }
@@ -425,6 +438,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_legacy_angle,
         ];
         if options.z0006_enabled() {
             rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
@@ -886,39 +900,9 @@ impl Program {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    /// `excluded` lists names that must not be renamed (e.g. function params that shadow outer bindings).
+    /// See [`rename_identifiers_in_body`] for the scoping rules.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        for item in &mut self.body {
-            item.rename_identifiers(old_name, new_name, excluded);
-        }
-    }
-
-    /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
-    /// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
-    /// uses after the binding are not. We use `body_item_defined_names` so all bindings are
-    /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
-    /// names, etc.).
-    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
-        for item in &mut self.body {
-            let names_in_this = body_item_defined_names(&*item);
-            let shadowed_here = names_in_this.iter().any(|name| name == old_name);
-            let excluded_for_this: Vec<&str> = match item {
-                BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
-                _ => {
-                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-                    for n in &names_in_this {
-                        v.push(n.as_str());
-                    }
-                    v
-                }
-            };
-            item.rename_identifiers(old_name, new_name, &excluded_for_this);
-            excluded_owned.extend(names_in_this);
-            if shadowed_here {
-                break;
-            }
-        }
+        rename_identifiers_in_body(&mut self.body, old_name, new_name, excluded);
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1166,8 +1150,38 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
+/// Rename all identifiers in the body items that have the old name to the new given name.
+/// `excluded` lists names that must not be renamed (e.g. function params that shadow outer
+/// bindings). A name bound by a body item is excluded only for items that appear *after* the
+/// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
+/// uses after the binding are not. We use `body_item_defined_names` so all bindings are
+/// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
+/// names, etc.).
+fn rename_identifiers_in_body(items: &mut [BodyItem], old_name: &str, new_name: &str, excluded: &[&str]) {
+    let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+    for item in items {
+        let names_in_this = body_item_defined_names(&*item);
+        let shadowed_here = names_in_this.iter().any(|name| name == old_name);
+        let excluded_for_this: Vec<&str> = match item {
+            BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
+            _ => {
+                let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                for n in &names_in_this {
+                    v.push(n.as_str());
+                }
+                v
+            }
+        };
+        item.rename_identifiers(old_name, new_name, &excluded_for_this);
+        excluded_owned.extend(names_in_this);
+        if shadowed_here {
+            break;
+        }
+    }
+}
+
 /// Collect all names that are defined (bound) by this body item, in order. Used so that
-/// order-aware rename excludes a name only for items after the one that binds it.
+/// rename excludes a name only for items after the one that binds it.
 fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
     let mut out = Vec::new();
     match item {
@@ -1842,9 +1856,7 @@ impl Block {
     }
 
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        for item in &mut self.items {
-            item.rename_identifiers(old_name, new_name, excluded);
-        }
+        rename_identifiers_in_body(&mut self.items, old_name, new_name, excluded);
     }
 
     /// Returns the body item that includes the given character position.
@@ -2828,6 +2840,15 @@ impl Node<VariableDeclaration> {
         if declaration_source_range.contains(pos) {
             let old_name = self.declaration.id.name.clone();
             self.declaration.id.name = new_name.to_string();
+            // An `fn name() {}` declaration also stores its name on the function expression
+            // (see the parser's `declaration`). Keep it in sync so the declaration doesn't
+            // look like it still binds the old name.
+            if let Expr::FunctionExpression(func) = &mut self.declaration.init
+                && let Some(fn_name) = &mut func.name
+                && fn_name.name == old_name
+            {
+                fn_name.name = new_name.to_string();
+            }
             return Some(old_name);
         }
 
@@ -2874,10 +2895,9 @@ impl VariableDeclaration {
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        // Skip the init for the variable with the new name since it is the one we are renaming.
-        if self.declaration.id.name != new_name {
-            self.declaration.init.rename_identifiers(old_name, new_name, excluded);
-        }
+        // This is also called on the declaration being renamed itself; its init must be walked
+        // too so that a renamed function's recursive calls are updated.
+        self.declaration.init.rename_identifiers(old_name, new_name, excluded);
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -3583,7 +3603,12 @@ impl MemberExpression {
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         self.object.rename_identifiers(old_name, new_name, excluded);
-        self.property.rename_identifiers(old_name, new_name, excluded);
+        // A non-computed property like the `bar` in `foo.bar` is a field or tag
+        // access, not a reference to a variable named `bar`, so it is not
+        // renamed.
+        if self.computed {
+            self.property.rename_identifiers(old_name, new_name, excluded);
+        }
     }
 }
 
@@ -4321,11 +4346,15 @@ impl FunctionExpression {
     /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
     /// Parameter names are excluded for the whole body; local variable names are excluded only for
     /// references that appear after their declaration (so use-before-local-declaration is still renamed).
+    /// The function's own name is also excluded: inside the body it refers to this function
+    /// (recursion), not to an outer binding being renamed.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
-        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
-        self.body
-            .rename_identifiers_order_aware(old_name, new_name, &excluded_for_body);
+        let mut excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        if self.name.as_ref().is_some_and(|name| name.name == old_name) {
+            excluded_for_body.push(old_name);
+        }
+        self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
     }
 
     pub fn signature(&self) -> String {
@@ -5202,7 +5231,7 @@ startSketchOn(XY)
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -5230,13 +5259,54 @@ startSketchOn(XY)"#;
         let meta_settings = result.unwrap();
 
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_rejects_unsupported_kcl_version() {
+        let program = crate::parsing::top_level_parse(
+            r#"@settings(kclVersion = 99.123)
+
+startSketchOn(XY)"#,
+        )
+        .unwrap();
+
+        let err = program.meta_settings().unwrap_err();
+
+        assert!(err.get_message().contains("Unrecognized version 99.123"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_accepts_preview_kcl_version_string() {
+        let program =
+            crate::parsing::top_level_parse(r#"@settings(kclVersion = "3.0-preview", defaultLengthUnit = mm)"#)
+                .unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V3Preview);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_change_kcl_version_writes_preview_as_string() {
+        let program = crate::parsing::top_level_parse("startSketchOn(XY)").unwrap();
+
+        let new_program = program.change_kcl_version(Some("3.0-preview".to_owned())).unwrap();
+
+        assert_eq!(
+            new_program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = "3.0-preview")
 
 startSketchOn(XY)
 "#
@@ -5337,6 +5407,34 @@ startSketchOn(XY)
 
 // Above Code
 5
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_renames_computed_member_index_but_not_dot_property() {
+        // In `arr[key]` the index is a reference to the variable `key`, so it is renamed. In
+        // `obj.key` the property is a field access unrelated to the variable, so it is not,
+        // and neither is the `key` in the object literal.
+        let code = r#"key = 1
+arr = [10, 20, 30]
+obj = { key = 2, other = 3 }
+byIndex = arr[key]
+byField = obj.key + key
+"#;
+        let mut program = parse(code);
+        let pos = code.find("key").unwrap() + 1;
+
+        program.rename_symbol("idx", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"idx = 1
+arr = [10, 20, 30]
+obj = { key = 2, other = 3 }
+byIndex = arr[idx]
+byField = obj.key + idx
 "#
         );
     }
@@ -5444,6 +5542,303 @@ fn demo(a) {
   before = foo_initial
   foo = a
   after = foo
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_top_level_skips_sketch_block_binding_with_same_name() {
+        // The sketch block declares its own `line1`, so renaming the top-level `line1` must not
+        // touch references to the block-local binding.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("width", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+width = 99
+result = width
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_stops_after_shadowing_in_sketch_block() {
+        let code = r#"foo = 1
+
+s = sketch(on = XY) {
+  before = foo
+  foo = line(start = [var 0, var 0], end = [var 10, var 0])
+  after = foo
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("foo_initial", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"foo_initial = 1
+
+s = sketch(on = XY) {
+  before = foo_initial
+  foo = line(start = [var 0, var 0], end = [var 10, var 0])
+  after = foo
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_sketch_block_is_a_no_op() {
+        // Renaming a variable declared inside a sketch block is intentionally not supported;
+        // the rename must be a no-op. Supporting it would mean also updating references to
+        // tags, both of the sketch itself and of its regions.
+        //
+        // The same-named top-level `line1` pins that the attempt doesn't rename the outer
+        // binding instead.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_reference_inside_sketch_block_is_a_no_op() {
+        // Like test_rename_of_declaration_inside_sketch_block_is_a_no_op, but with the cursor
+        // on a reference to the block-local variable instead of its declaration.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1.end").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_fn_declaration_keeps_expression_name_in_sync() {
+        // An `fn name() {}` declaration stores the name on both the declarator and the function
+        // expression (see the parser's `declaration`). Renaming the declaration must update both;
+        // otherwise the declaration looks like it still binds the old name, which would stop the
+        // rename before reaching later call sites.
+        let code = r#"fn helper() {
+  return 1
+}
+a = helper()
+b = helper()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("helper").unwrap() + 1;
+
+        program.rename_symbol("assist", pos);
+
+        let BodyItem::VariableDeclaration(decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected function expression")
+        };
+        assert_eq!(func.name.as_ref().unwrap().name, "assist");
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn assist() {
+  return 1
+}
+a = assist()
+b = assist()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_declaration_keeps_differing_fn_expression_name() {
+        // In `myFunc = fn recursiveName() {}` the declarator and the function expression's name
+        // are separate bindings. Renaming the declaration must not touch the function
+        // expression's name.
+        let code = r#"myFunc = fn recursiveName() {
+  return 1
+}
+result = myFunc()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("myFunc").unwrap() + 1;
+
+        program.rename_symbol("yourFunc", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"yourFunc = fn recursiveName() {
+  return 1
+}
+result = yourFunc()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_fn_renames_recursive_calls() {
+        let code = r#"fn accum(n) {
+  return accum(n)
+}
+total = accum(3)
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("addUp", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn addUp(n) {
+  return addUp(n)
+}
+total = addUp(3)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn() {
+        let code = r#"foo = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn_but_updates_uses() {
+        let code = r#"foo = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return foo + myFunc()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return bar + myFunc()
+  }
+  return foo()
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_inside_if_then_branch() {
+        let code = r#"param1 = 1
+if true {
+  param1
+} else if false {
+  param1 + 1
+} else {
+  param1 + 2
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("param1").unwrap() + 1;
+
+        program.rename_symbol("height", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"height = 1
+if true {
+  height
+} else if false {
+  height + 1
+} else {
+  height + 2
 }
 "#
         );

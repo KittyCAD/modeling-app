@@ -1,0 +1,15 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_module_explicit_import.kcl
+---
+{
+  "__ty_Orientation": {
+    "type": "Type",
+    "experimental": true
+  },
+  "front": {
+    "type": "Enum",
+    "enum_name": "Orientation",
+    "variant": "Front"
+  }
+}

@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -204,6 +205,17 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
 /// Unified metadata stream for Z0006 and future execution-backed refactors.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -211,6 +223,14 @@ pub struct DirectTagFilletMeta {
 pub enum RefactorMetadata {
     EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
 }
 
 /// Artifact state for a single module.
@@ -450,6 +470,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -589,7 +610,7 @@ impl ExecState {
         self.global
             .deprecation_version_override
             .as_deref()
-            .unwrap_or(&self.mod_local.settings.kcl_version)
+            .unwrap_or(self.mod_local.settings.kcl_version.as_str())
     }
 
     #[cfg(test)]
@@ -1090,7 +1111,7 @@ impl ExecState {
             .iter()
             .filter_map(|m| match m {
                 RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
-                RefactorMetadata::DirectTagFillet(_) => None,
+                RefactorMetadata::DirectTagFillet(_) | RefactorMetadata::LegacyAngle(_) => None,
             })
             .collect()
     }
@@ -1102,7 +1123,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::LegacyAngle(_) => None,
                 RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
             })
             .collect()
@@ -1247,15 +1268,30 @@ impl ExecState {
     }
 
     pub(crate) fn kcl_version(&self) -> KclVersion {
-        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+        self.mod_local.settings.kcl_version
     }
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
+#[ts(export)]
 pub enum KclVersion {
     #[default]
+    #[serde(rename = "1.0")]
     V1,
+    #[serde(rename = "2.0")]
     V2,
+    #[serde(rename = "3.0-preview")]
+    V3Preview,
+}
+
+impl KclVersion {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::V1 => "1.0",
+            Self::V2 => "2.0",
+            Self::V3Preview => "3.0-preview",
+        }
+    }
 }
 
 impl FromStr for KclVersion {
@@ -1265,10 +1301,13 @@ impl FromStr for KclVersion {
         match s {
             "1" | "1.0" | "1.0.0" => Ok(Self::V1),
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
             other => Err(KclError::new_semantic(KclErrorDetails {
                 source_ranges: Default::default(),
                 backtrace: Default::default(),
-                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+                message: format!(
+                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
+                ),
             })),
         }
     }
@@ -1334,6 +1373,16 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .filter_map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => Some(*metadata),
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();
@@ -1528,7 +1577,7 @@ pub struct MetaSettings {
     pub default_length_units: UnitLength,
     pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
-    pub kcl_version: String,
+    pub kcl_version: KclVersion,
 }
 
 impl Default for MetaSettings {
@@ -1537,7 +1586,7 @@ impl Default for MetaSettings {
             default_length_units: UnitLength::Millimeters,
             default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
-            kcl_version: "1.0".to_owned(),
+            kcl_version: KclVersion::default(),
         }
     }
 }
@@ -1566,8 +1615,8 @@ impl MetaSettings {
                     updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
-                    let value = annotations::expect_number(&p.inner.value)?;
-                    self.kcl_version = value;
+                    let value = annotations::expect_kcl_version(&p.inner.value)?;
+                    self.kcl_version = value.parse()?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
@@ -1602,8 +1651,11 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use uuid::Uuid;
 
+    use super::KclVersion;
     use super::ModuleArtifactState;
     use crate::NodePath;
     use crate::NodePathExt;
@@ -1614,6 +1666,27 @@ mod tests {
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
+
+    #[test]
+    fn kcl_version_parses_supported_spellings() {
+        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
+        // No such version.
+        KclVersion::from_str("99.123").unwrap_err();
+    }
+
+    #[test]
+    fn kcl_version_serializes_as_canonical_setting_value() {
+        assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(
+            serde_json::to_string(&KclVersion::V3Preview).unwrap(),
+            r#""3.0-preview""#
+        );
+    }
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {

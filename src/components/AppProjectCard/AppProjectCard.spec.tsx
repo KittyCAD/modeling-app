@@ -1,12 +1,17 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import fsZds from '@src/lib/fs-zds'
-import { DIRECTORY_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import toast from 'react-hot-toast'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
@@ -56,6 +61,8 @@ function createProjectActions({
     canRename: () => true,
     canDelete: () => true,
     canMoveToLibrary: () => true,
+    canReviewDuplicateRealizations: (project) =>
+      Boolean(project.duplicateRealizations?.length),
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
@@ -64,6 +71,7 @@ function createProjectActions({
     delete: vi.fn().mockResolvedValue(undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn().mockResolvedValue(undefined),
+    deleteDuplicateRealizations: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -258,15 +266,69 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('does not show status badges for cards with both local and remote sources', () => {
+  test('shows duplicate copies badge and review action', async () => {
+    const deleteDuplicateRealizations = vi.fn().mockResolvedValue(undefined)
+    const projectActions = createProjectActions()
+    projectActions.deleteDuplicateRealizations = deleteDuplicateRealizations
     renderProjectCard({
+      projectActions,
       project: {
         ...cloudProject,
-        source: 'both',
+        duplicateRealizations: [
+          {
+            remoteProjectId: 'project-123',
+            canonicalProjectPath: '/projects/old-cloud-title',
+            localProjectPath: '/cloud/old-cloud-title-copy',
+            localProjectName: 'old-cloud-title-copy',
+            title: 'Old cloud title copy',
+            libraryIds: ['cloud-personal'],
+            libraryTitles: ['Personal Cloud'],
+            duplicateRisk: 'exact',
+            autoCleanupEligible: true,
+          },
+          {
+            remoteProjectId: 'project-123',
+            canonicalProjectPath: '/projects/old-cloud-title',
+            localProjectPath: '/files/old-cloud-title-copy',
+            localProjectName: 'old-cloud-title-copy',
+            title: 'Old cloud title directory copy',
+            libraryIds: ['directory-projects'],
+            libraryTitles: ['Projects'],
+            duplicateRisk: 'unknown',
+            autoCleanupEligible: false,
+          },
+        ],
       },
     })
 
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('project-duplicate-copies-badge')
+    ).toHaveTextContent('Duplicate copies')
+
+    fireEvent.contextMenu(screen.getByTestId('project-link'))
+    expect(
+      within(
+        screen.getByTestId('project-card-context-review-duplicate-copies')
+      ).getByLabelText('glasses')
+    ).toBeInTheDocument()
+    fireEvent.click(
+      screen.getByTestId('project-card-context-review-duplicate-copies')
+    )
+    expect(screen.getByText('/cloud/old-cloud-title-copy')).toBeInTheDocument()
+    expect(screen.getByText('/files/old-cloud-title-copy')).toBeInTheDocument()
+
+    const checkboxes = screen.getAllByRole('checkbox')
+    expect(checkboxes).toHaveLength(2)
+    fireEvent.click(checkboxes[0])
+
+    fireEvent.click(screen.getByTestId('delete-confirmation'))
+
+    await waitFor(() =>
+      expect(deleteDuplicateRealizations).toHaveBeenCalledWith(
+        expect.objectContaining({ id: cloudProject.id }),
+        ['/files/old-cloud-title-copy']
+      )
+    )
   })
 
   test.each([
@@ -311,7 +373,6 @@ describe('ProjectCard', () => {
       density: 'compact',
       project: {
         ...cloudProject,
-        source: 'both',
         status: 'conflicted',
         conflict: {
           conflictProjectPath: '/projects/old-cloud-title conflict',
@@ -358,6 +419,9 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('project-card-context-delete')).toHaveTextContent(
       'Delete project'
     )
+    expect(
+      screen.queryByTestId('project-card-context-review-duplicate-copies')
+    ).not.toBeInTheDocument()
   })
 
   test('opens move to library from the card context menu', () => {
@@ -382,8 +446,7 @@ describe('ProjectCard', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        libraryPath: '/projects',
-        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        deleteRemoteOnDelete: false,
       },
     })
 
@@ -418,7 +481,6 @@ describe('ProjectCard', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        source: 'both',
         syncFailure: {
           kind: 'remote-upload-forbidden',
           message: 'Cloud sync cannot upload local changes.',
@@ -430,14 +492,15 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
       'Cloud sync blocked'
     )
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Synced'
+    )
   })
 
   test('shows cloud sync blocked badge for upload permission failures', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        source: 'both',
         syncFailure: {
           kind: 'remote-upload-forbidden',
           message: 'Cloud sync cannot upload local changes.',
@@ -449,7 +512,9 @@ describe('ProjectCard', () => {
     expect(screen.getByTestId('cloud-sync-blocked-badge')).toHaveTextContent(
       'Cloud sync blocked'
     )
-    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Synced'
+    )
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {

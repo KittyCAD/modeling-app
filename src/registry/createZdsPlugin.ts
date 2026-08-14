@@ -1,12 +1,12 @@
+import type { Feature } from '@kittycad/lib'
 import {
-  type RegistryItem,
-  type RegistryItemDefinition,
   appendValueSpec,
   createPlugin,
   defineRegistryItem,
   provide,
+  type RegistryItem,
+  type RegistryItemDefinition,
 } from '@kittycad/registry'
-import type { Feature } from '@kittycad/lib'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import type {
   HideOnPlatformValue,
@@ -17,10 +17,33 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 type ZdsPluginDefault = 'core' | 'off'
 type ZdsPluginActivationSettingCategory = 'modeling' | 'plugins'
 
+export type ZdsPluginFeatureActivationPolicy = {
+  /**
+   * Feature flag that controls whether this plugin may become active.
+   */
+  feature: Feature
+  /**
+   * When true, feature-flagged users get the plugin enabled by default. Existing
+   * user preferences are preserved unless `forceEnabledOnPlatform` matches.
+   */
+  defaultEnabled?: boolean
+  /**
+   * On this platform, keep the plugin enabled whenever the feature is available.
+   * This is useful when a plugin is infrastructure rather than an optional tool.
+   */
+  forceEnabledOnPlatform?: HideOnPlatformValue
+  /**
+   * Prevent runtime activation when the feature is missing, even if persisted
+   * settings say the plugin should be active.
+   */
+  disableWithoutFeature?: boolean
+}
+
 export type ZdsPluginActivationSetting = {
   pluginId: string
   category: ZdsPluginActivationSettingCategory
   settingName: string
+  featurePolicy?: ZdsPluginFeatureActivationPolicy
 }
 
 export const zdsPluginActivationSettingsValueSpec =
@@ -47,6 +70,7 @@ type ZdsPluginActivationSettingSpec = {
    * a bespoke check per surface.
    */
   hideWithoutFeature?: Feature
+  featurePolicy?: ZdsPluginFeatureActivationPolicy
   userToml?: { sectionKey: string; tomlKey: string }
   projectToml?: { sectionKey: string; tomlKey: string }
 }
@@ -113,6 +137,7 @@ export function createZdsPlugin({
         pluginId: spec.id,
         category: activationSetting.category,
         settingName: activationSetting.settingName,
+        featurePolicy: activationSetting.featurePolicy,
       }),
     ],
   })

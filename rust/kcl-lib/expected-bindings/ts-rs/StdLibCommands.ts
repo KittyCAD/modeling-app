@@ -1880,7 +1880,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. On KCL 3.0 and later, the default is 2.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -6072,7 +6072,7 @@ export default {
       },
       {
         "name": "useOriginal",
-        "ty": "boolean",
+        "ty": "bool",
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
@@ -7153,7 +7153,7 @@ export default {
     "moduleName": "solver",
     "returnType": null,
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "2.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -7163,6 +7163,69 @@ export default {
         "docs": "The two line segments whose relative angle should match the value set with `==`, measured counterclockwise from the first line to the second, modulo 180 degrees. The order of the lines matters.",
         "required": true,
         "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "solver::angleDimension": {
+    "name": "angleDimension",
+    "preferredName": "solver::angleDimension",
+    "qualName": "std::solver::angleDimension",
+    "moduleName": "solver",
+    "returnType": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "lines",
+        "ty": "[Segment; 2]",
+        "docs": "The ordered pair of line segments whose selected angle sector should match the value set with `==`. A line's positive direction runs from its start point to its end point; its negative direction is the reverse.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "sector",
+        "ty": "number(_)",
+        "docs": "Which counterclockwise sweep about the line intersection to constrain: `1`, first line's positive direction to the second line's positive direction; `2`, second positive to first negative; `3`, first negative to second negative; or `4`, second negative to first positive.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "inverse",
+        "ty": "bool",
+        "docs": "Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "labelPosition",
+        "ty": "Point2d",
+        "docs": "The desired position of the constraint label.",
+        "required": false,
+        "special": false,
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
@@ -9037,6 +9100,122 @@ export default {
         "ty": "[number]",
         "docs": null,
         "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "view::directed": {
+    "name": "directed",
+    "preferredName": "view::directed",
+    "qualName": "std::view::directed",
+    "moduleName": "view",
+    "returnType": "CameraView",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "direction",
+        "ty": "Point3d",
+        "docs": "The direction the camera looks, from the camera toward the target.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "up",
+        "ty": "Point3d",
+        "docs": "The camera's up direction. When omitted, `[0, 0, 1]`: the positive Z axis, which is the modeling app's world up.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "target",
+        "ty": "Point3d",
+        "docs": "The point the camera looks at. When omitted, the view centers on the bounds of the model at activation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "distance",
+        "ty": "number(Length)",
+        "docs": "The distance from the camera to the target. Must be greater than zero. When omitted, the view fits the model at activation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "projection",
+        "ty": "Projection",
+        "docs": "The camera projection. When omitted, the view is orthographic, so the same file renders identically in every consumer.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "view::oriented": {
+    "name": "oriented",
+    "preferredName": "view::oriented",
+    "qualName": "std::view::oriented",
+    "moduleName": "view",
+    "returnType": "CameraView",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "orientation",
+        "ty": "Orientation",
+        "docs": "The standard orientation the camera looks from.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "target",
+        "ty": "Point3d",
+        "docs": "The point the camera looks at. When omitted, the view centers on the bounds of the model at activation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "distance",
+        "ty": "number(Length)",
+        "docs": "The distance from the camera to the target. Must be greater than zero. When omitted, the view fits the model at activation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "projection",
+        "ty": "Projection",
+        "docs": "The camera projection. When omitted, the view is orthographic, so the same file renders identically in every consumer.",
+        "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,
