@@ -160,7 +160,7 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
 
-  test('should add sample to demo project', async ({
+  test('creates a current sample in the default project library', async ({
     page,
     toolbar,
     editor,
@@ -174,5 +174,6 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
+    await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/)
   })
 })
