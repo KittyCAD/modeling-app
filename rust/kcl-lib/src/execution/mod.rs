@@ -4803,28 +4803,48 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
-    /// Runs `main` with an empty imported module in mock execution and
-    /// returns the recorded compilation issues; the run may end in an error
-    /// (e.g. from operating on the module's missing return value).
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
     async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
-        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_member_ranges").unwrap();
-        tokio::fs::write(tmpdir.path().join("m.kcl"), "").await.unwrap();
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
 
         let program = crate::Program::parse_no_errs(main).unwrap();
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
-            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
             settings: ExecutorSettings {
-                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                project_directory: Some(project_dir),
                 ..Default::default()
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
         };
         let mut exec_state = ExecState::new(&ctx);
-        let _ = ctx.run(&program, &mut exec_state).await;
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
         ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
         exec_state.issues().to_vec()
     }
 
