@@ -172,9 +172,15 @@ export type PathSubType = "sketch" | "region";
 
 export type Pattern = { id: ArtifactId, subType: PatternSubType, 
 /**
- * Geometry artifact that was the source of the pattern operation.
+ * Geometry artifacts that were the sources of the pattern operation, in
+ * input order.
  */
-sourceId: ArtifactId, 
+sourceIds: Array<ArtifactId>, 
+/**
+ * IDs of the top-level geometry returned by the pattern operation, in
+ * KCL output order. This includes both sources and copies.
+ */
+instanceIds: Array<ArtifactId>, 
 /**
  * IDs of copied top-level objects created by the pattern operation.
  */

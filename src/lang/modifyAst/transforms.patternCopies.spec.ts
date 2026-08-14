@@ -27,10 +27,11 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
       type: 'pattern',
       id: 'pattern-command-id',
       subType: 'linear',
-      sourceId: 'source-body-id',
+      sourceIds: ['source-body-id'],
+      instanceIds: ['source-body-id', 'copy-body-1', 'copy-body-2'],
       copyIds: ['copy-body-1', 'copy-body-2'],
-      copyFaceIds: [],
-      copyEdgeIds: [],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: ['copy-edge-1'],
       codeRef: {
         range: patternRange,
         pathToNode: patternPathToNode,
@@ -154,6 +155,33 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
 
     expect(recast(result.modifiedAst, instance)).toContain(
       'hidden001 = hide(pattern001[1])'
+    )
+  })
+
+  it('does not treat a pattern primitive id as the source body', async () => {
+    const { artifactGraph, ast, instance, pattern, patternRange } =
+      await getPatternFixture()
+    const result = addHide({
+      ast,
+      artifactGraph,
+      objects: {
+        graphSelections: [
+          {
+            artifact: pattern,
+            codeRef: {
+              range: patternRange,
+              pathToNode: pattern.codeRef.pathToNode,
+            },
+            engineEntityId: 'copy-face-1',
+          },
+        ],
+        otherSelections: [],
+      },
+      wasmInstance: instance,
+    })
+
+    expect(result).toEqual(
+      new Error('Selected entity is not a body instance in the pattern')
     )
   })
 

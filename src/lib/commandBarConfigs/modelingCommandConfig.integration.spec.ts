@@ -431,6 +431,35 @@ describe('Transform arguments', () => {
   })
 })
 
+describe('Pattern body arguments', () => {
+  it('accepts patterns for booleans but not as a helix cylinder', () => {
+    const subtractConfig = modelingMachineCommandConfig['Boolean Subtract']
+    const helixConfig = modelingMachineCommandConfig.Helix
+    if (
+      !subtractConfig ||
+      isArray(subtractConfig) ||
+      !helixConfig ||
+      isArray(helixConfig)
+    ) {
+      throw new Error('Expected single Boolean Subtract and Helix configs')
+    }
+
+    const toolsArg = subtractConfig.args?.tools
+    const cylinderArg = helixConfig.args?.cylinder
+    if (
+      !toolsArg ||
+      !('selectionTypes' in toolsArg) ||
+      !cylinderArg ||
+      !('selectionTypes' in cylinderArg)
+    ) {
+      throw new Error('Expected body selection arguments')
+    }
+
+    expect(toolsArg.selectionTypes).toContain('pattern')
+    expect(cylinderArg.selectionTypes).not.toContain('pattern')
+  })
+})
+
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
 describe('stdlib command arg derivation', () => {

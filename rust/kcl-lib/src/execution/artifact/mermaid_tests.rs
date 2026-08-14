@@ -247,7 +247,7 @@ impl ArtifactMermaidExt for Artifact {
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::GdtAnnotation(_) => Vec::new(),
-            Artifact::Pattern(a) => vec![a.source_id],
+            Artifact::Pattern(a) => a.source_ids.clone(),
         }
     }
 
@@ -390,7 +390,7 @@ impl ArtifactMermaidExt for Artifact {
             }
             Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => {
-                // Note: Don't include source_id since it's the parent.
+                // Note: Don't include source_ids since they're parents.
                 let mut ids = a.copy_ids.clone();
                 ids.extend(&a.copy_face_ids);
                 ids.extend(&a.copy_edge_ids);
@@ -1160,7 +1160,8 @@ fn pattern_traversal_links_source_and_copied_geometry() {
     let artifact = Artifact::Pattern(Pattern {
         id: ArtifactId::new(Uuid::new_v4()),
         sub_type: PatternSubType::Circular,
-        source_id,
+        source_ids: vec![source_id],
+        instance_ids: vec![source_id, copy_id],
         copy_ids: vec![copy_id],
         copy_face_ids: vec![copy_face_id],
         copy_edge_ids: vec![copy_edge_id],
@@ -1292,7 +1293,8 @@ fn duplicate_segment_key_is_none_for_non_segments() {
     let pattern = Artifact::Pattern(Pattern {
         id: ArtifactId::new(Uuid::new_v4()),
         sub_type: PatternSubType::Circular,
-        source_id: ArtifactId::new(Uuid::new_v4()),
+        source_ids: vec![ArtifactId::new(Uuid::new_v4())],
+        instance_ids: Vec::new(),
         copy_ids: Vec::new(),
         copy_face_ids: Vec::new(),
         copy_edge_ids: Vec::new(),

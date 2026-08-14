@@ -20,7 +20,9 @@ import {
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getPatternSelectionIndex,
 } from '@src/lang/std/artifactGraph'
+import { toUtf16 } from '@src/lang/errors'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
@@ -1280,6 +1282,9 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    if (patternExpr instanceof Error) {
+      return patternExpr
+    }
     if (patternExpr) {
       const key = outputExprKey(patternExpr)
       if (pushedNames[key]) {
@@ -1514,19 +1519,15 @@ function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
-): Expr | null {
+): Expr | null | Error {
   const artifact = selection.artifact
   if (artifact?.type !== 'pattern') {
     return null
   }
 
-  const patternIndex =
-    selection.patternIndex ??
-    (selection.engineEntityId
-      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : undefined)
-  if (patternIndex !== undefined && patternIndex < 0) {
-    return null
+  const patternIndex = getPatternSelectionIndex({ ...selection, artifact })
+  if (patternIndex instanceof Error) {
+    return patternIndex
   }
 
   const pathCandidates = [
@@ -1743,51 +1744,188 @@ export function getSketchVariableNameForSegment(
 // Go from the sketches argument in a KCL call declaration
 // to a list of graph selections, useful for edit flows.
 // Somewhat of an inverse of getVariableExprsFromSelection.
+function splitTopLevelArrayElements(source: string): string[] | undefined {
+  const openIndex = source.search(/\S/)
+  if (openIndex < 0 || source[openIndex] !== '[') return undefined
+
+  const elements: string[] = []
+  let elementStart = openIndex + 1
+  let depth = 0
+  let quote: '"' | "'" | undefined
+  let escaped = false
+  let lineComment = false
+  let blockComment = false
+
+  for (let index = openIndex + 1; index < source.length; index++) {
+    const char = source[index]
+    const next = source[index + 1]
+
+    if (lineComment) {
+      if (char === '\n') lineComment = false
+      continue
+    }
+    if (blockComment) {
+      if (char === '*' && next === '/') {
+        blockComment = false
+        index++
+      }
+      continue
+    }
+    if (quote) {
+      if (escaped) {
+        escaped = false
+      } else if (char === '\\') {
+        escaped = true
+      } else if (char === quote) {
+        quote = undefined
+      }
+      continue
+    }
+    if (char === '/' && next === '/') {
+      lineComment = true
+      index++
+      continue
+    }
+    if (char === '/' && next === '*') {
+      blockComment = true
+      index++
+      continue
+    }
+    if (char === '"' || char === "'") {
+      quote = char
+      continue
+    }
+    if (char === '[' || char === '(' || char === '{') {
+      depth++
+      continue
+    }
+    if (char === ')' || char === '}') {
+      depth--
+      continue
+    }
+    if (char === ']' && depth > 0) {
+      depth--
+      continue
+    }
+    if (char === ',' && depth === 0) {
+      elements.push(source.slice(elementStart, index))
+      elementStart = index + 1
+      continue
+    }
+    if (char === ']' && depth === 0) {
+      const finalElement = source.slice(elementStart, index)
+      if (finalElement.trim() || elements.length > 0) {
+        elements.push(finalElement)
+      }
+      return elements
+    }
+  }
+
+  return undefined
+}
+
+function getPatternSourceFromOpArg(
+  artifactId: string,
+  argText: string | undefined,
+  artifactGraph: ArtifactGraph,
+  code?: string
+):
+  | {
+      artifact: Extract<Artifact, { type: 'pattern' }>
+      patternIndex: number
+    }
+  | undefined {
+  if (!argText || !code) return undefined
+
+  for (const candidate of [...artifactGraph.values()].toReversed()) {
+    if (candidate.type !== 'pattern') continue
+
+    const callStart = toUtf16(candidate.codeRef.range[0], code)
+    const declarationPrefix: string = code.slice(0, callStart)
+    const declaredName: string | undefined = [
+      ...declarationPrefix.matchAll(/(?:^|\n)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/g),
+    ].at(-1)?.[1]
+    if (!declaredName) continue
+
+    const patternReference: RegExpExecArray | null = new RegExp(
+      `(?:^|[^A-Za-z0-9_])${declaredName}\\s*\\[\\s*(\\d+)\\s*\\]`
+    ).exec(argText)
+    if (!patternReference) continue
+
+    const patternIndex = Number(patternReference[1])
+    if (candidate.instanceIds[patternIndex] !== artifactId) {
+      continue
+    }
+
+    return { artifact: candidate, patternIndex }
+  }
+
+  return undefined
+}
+
 export function retrieveSelectionsFromOpArg(
   opArg: OpArg,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  code?: string
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
-  let artifactIds: string[] = []
+  let artifactEntries: Array<{ artifactId: string; argText?: string }> = []
+  const argText = code
+    ? code.slice(...opArg.sourceRange.map((offset) => toUtf16(offset, code)))
+    : undefined
+  const artifactIdFromValue = (value: OpArg['value']): string | undefined => {
+    if (
+      value.type === 'Solid' ||
+      value.type === 'Sketch' ||
+      value.type === 'Helix'
+    ) {
+      return value.value.artifactId
+    }
+    if (value.type === 'Segment' || value.type === 'ImportedGeometry') {
+      return value.artifact_id
+    }
+    if (value.type === 'Uuid') return value.value
+    if (value.type === 'TagIdentifier') return value.artifact_id ?? undefined
+    return undefined
+  }
   if (
     opArg.value.type === 'Solid' ||
     opArg.value.type === 'Sketch' ||
     opArg.value.type === 'Helix'
   ) {
-    artifactIds = [opArg.value.value.artifactId]
+    artifactEntries = [{ artifactId: opArg.value.value.artifactId, argText }]
   } else if (opArg.value.type === 'Segment') {
-    artifactIds = [opArg.value.artifact_id]
+    artifactEntries = [{ artifactId: opArg.value.artifact_id, argText }]
   } else if (opArg.value.type === 'Uuid') {
-    artifactIds = [opArg.value.value]
+    artifactEntries = [{ artifactId: opArg.value.value, argText }]
   } else if (opArg.value.type === 'ImportedGeometry') {
-    artifactIds = [opArg.value.artifact_id]
+    artifactEntries = [{ artifactId: opArg.value.artifact_id, argText }]
   } else if (opArg.value.type === 'Array') {
-    artifactIds = opArg.value.value.flatMap((v) => {
-      if (v.type === 'Solid' || v.type === 'Sketch' || v.type === 'Helix') {
-        return [v.value.artifactId]
-      }
-      if (v.type === 'Segment') {
-        return [v.artifact_id]
-      }
-      if (v.type === 'Uuid') {
-        return [v.value]
-      }
-      if (v.type === 'TagIdentifier' && v.artifact_id) {
-        return [v.artifact_id]
-      }
-      return []
+    const elementTexts = argText
+      ? splitTopLevelArrayElements(argText)
+      : undefined
+    artifactEntries = opArg.value.value.flatMap((value, index) => {
+      const artifactId = artifactIdFromValue(value)
+      return artifactId ? [{ artifactId, argText: elementTexts?.[index] }] : []
     })
   } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
-    artifactIds = [opArg.value.artifact_id]
+    artifactEntries = [{ artifactId: opArg.value.artifact_id, argText }]
   } else {
     return error
   }
 
   const graphSelections: Selection[] = []
-  for (const artifactId of artifactIds) {
+  for (const { artifactId, argText: elementText } of artifactEntries) {
+    const sourcePattern = getPatternSourceFromOpArg(
+      artifactId,
+      elementText,
+      artifactGraph,
+      code
+    )
     let artifact =
-      artifactGraph.get(artifactId) ??
-      getPatternArtifactForCopyId(artifactId, artifactGraph)
+      sourcePattern?.artifact ??
+      getPatternArtifactForCopyId(artifactId, artifactGraph) ??
+      artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
@@ -1817,10 +1955,24 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    graphSelections.push({
+    const graphSelection: Selection = {
       artifact,
       codeRef: codeRefs[0],
-    })
+    }
+    if (artifact.type === 'pattern' && artifactId !== artifact.id) {
+      graphSelection.engineEntityId = artifactId
+      const patternIndex =
+        sourcePattern?.patternIndex ??
+        getPatternSelectionIndex({
+          ...graphSelection,
+          artifact,
+        })
+      if (patternIndex instanceof Error || patternIndex === undefined) {
+        return new Error("Couldn't retrieve pattern instance from operation")
+      }
+      graphSelection.patternIndex = patternIndex
+    }
+    graphSelections.push(graphSelection)
   }
 
   if (graphSelections.length === 0) {

@@ -1,15 +1,31 @@
 import {
   type Artifact,
+  BODY_ARTIFACT_TYPES,
   coerceSelectionsToBody,
   getBodiesFromArtifactGraph,
   getCommonFacesForEdge,
+  getPatternSelectionIndex,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
+  isBodyArtifactType,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
+
+describe('body artifact types', () => {
+  it('includes patterns in the shared body classification', () => {
+    expect(BODY_ARTIFACT_TYPES).toEqual([
+      'path',
+      'sweep',
+      'compositeSolid',
+      'pattern',
+    ])
+    expect(isBodyArtifactType('pattern')).toBe(true)
+    expect(isBodyArtifactType('wall')).toBe(false)
+  })
+})
 
 const codeRef = {
   range: [0, 0, 0] as [number, number, number],
@@ -443,7 +459,8 @@ describe('coerceSelectionsToBody', () => {
       type: 'pattern',
       id: 'pattern-command-id',
       subType: 'linear',
-      sourceId: 'source-body-id',
+      sourceIds: ['source-body-id'],
+      instanceIds: ['source-body-id', 'copy-body-1', 'copy-body-2'],
       copyIds: ['copy-body-1', 'copy-body-2'],
       copyFaceIds: [],
       copyEdgeIds: [],
@@ -477,6 +494,147 @@ describe('coerceSelectionsToBody', () => {
     expect(result).not.toBeInstanceOf(Error)
     if (!(result instanceof Error)) {
       expect(result.graphSelections).toEqual(selections.graphSelections)
+    }
+  })
+
+  it('uses KCL output order for multi-source pattern selections', () => {
+    const pattern = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['source-a', 'source-b'],
+      instanceIds: [
+        'source-body-a',
+        'copy-a1',
+        'copy-a2',
+        'source-body-b',
+        'copy-b1',
+        'copy-b2',
+      ],
+      copyIds: ['copy-a1', 'copy-a2', 'copy-b1', 'copy-b2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    } satisfies Extract<Artifact, { type: 'pattern' }>
+
+    expect(
+      pattern.instanceIds.map((engineEntityId) =>
+        getPatternSelectionIndex({
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId,
+        })
+      )
+    ).toEqual([0, 1, 2, 3, 4, 5])
+    expect(
+      getPatternSelectionIndex({
+        artifact: pattern,
+        codeRef: pattern.codeRef,
+        patternIndex: pattern.instanceIds.length,
+      })
+    ).toEqual(
+      new Error(`Invalid pattern instance index: ${pattern.instanceIds.length}`)
+    )
+  })
+
+  it('preserves metadata while deduplicating pattern copies', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['source-body'],
+      instanceIds: ['source-body', 'copy-1', 'copy-2'],
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+
+    const firstCopy: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      engineEntityId: 'copy-1',
+      patternIndex: 1,
+    }
+    const secondCopy: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      patternIndex: 2,
+    }
+    const firstCopyByEntityId: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      engineEntityId: 'copy-1',
+    }
+    const firstCopyByIndex: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      patternIndex: 1,
+    }
+    const selections: Selections = {
+      graphSelections: [
+        firstCopy,
+        firstCopyByEntityId,
+        firstCopyByIndex,
+        secondCopy,
+        { ...secondCopy },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toEqual([firstCopy, secondCopy])
+    }
+  })
+
+  it('rejects pattern face and edge ids as body instance ids', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['source-body'],
+      instanceIds: ['source-body', 'copy-1', 'copy-2'],
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: ['copy-edge-1'],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+
+    for (const engineEntityId of ['copy-face-1', 'copy-edge-1']) {
+      const result = coerceSelectionsToBody(
+        {
+          graphSelections: [
+            {
+              artifact: pattern,
+              codeRef: pattern.codeRef,
+              engineEntityId,
+            },
+          ],
+          otherSelections: [],
+        },
+        artifactGraph
+      )
+
+      expect(result).toEqual(
+        new Error('Selected entity is not a body instance in the pattern')
+      )
     }
   })
 
@@ -580,7 +738,8 @@ describe('getBodiesFromArtifactGraph', () => {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'sweep-1',
+      sourceIds: ['sweep-1'],
+      instanceIds: ['sweep-1', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: ['copy-face-1'],
       copyEdgeIds: ['copy-edge-1'],
@@ -633,7 +792,8 @@ describe('getBodiesFromArtifactGraph', () => {
       type: 'pattern',
       id: 'pattern-1',
       subType: 'linear',
-      sourceId: 'path-1',
+      sourceIds: ['path-1'],
+      instanceIds: ['sweep-1', 'copy-1', 'copy-2'],
       copyIds: ['copy-1', 'copy-2'],
       copyFaceIds: [],
       copyEdgeIds: [],
@@ -650,6 +810,30 @@ describe('getBodiesFromArtifactGraph', () => {
     expect(result.get('sweep-1')).toBe(pattern)
     expect(result.get('copy-1')).toBe(pattern)
     expect(result.get('copy-2')).toBe(pattern)
+  })
+
+  it('includes every source and copy of a multi-source pattern in output order', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceIds: ['path-a', 'path-b'],
+      instanceIds: [
+        'sweep-a',
+        'copy-a1',
+        'copy-a2',
+        'sweep-b',
+        'copy-b1',
+        'copy-b2',
+      ],
+      copyIds: ['copy-a1', 'copy-a2', 'copy-b1', 'copy-b2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+    const result = getBodiesFromArtifactGraph(new Map([[pattern.id, pattern]]))
+
+    expect([...result.keys()]).toEqual(pattern.instanceIds)
   })
 })
 
