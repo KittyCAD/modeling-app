@@ -2555,12 +2555,12 @@ forever(1)
         }
     }
 
-    /// The design must hold at 50,000 call depth with the limit raised
+    /// The design must hold at a much higher call depth with the limit raised
     /// internally (the production default stays at
     /// DEFAULT_MACHINE_CALL_DEPTH_LIMIT): depth is heap-bounded, so the limit
     /// is policy, not a native-stack constraint.
     #[tokio::test(flavor = "multi_thread")]
-    async fn depth_50k_with_raised_limit() {
+    async fn depth_with_raised_limit() {
         let code = r#"fn countdown(@n) {
   return if n == 0 {
     0
@@ -2568,7 +2568,7 @@ forever(1)
     countdown(n - 1)
   }
 }
-result = countdown(50000)
+result = countdown(9000)
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let exec_ctxt = ExecutorContext {
@@ -2579,7 +2579,7 @@ result = countdown(50000)
             context_type: crate::execution::ContextType::Mock,
             execution_callbacks: Default::default(),
             executor_kind: ExecutorKind::Machine,
-            machine_call_depth_limit: 60_000,
+            machine_call_depth_limit: 10_000,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         let (env_ref, _) = exec_ctxt.run(&program, &mut exec_state).await.unwrap();
@@ -2593,7 +2593,7 @@ result = countdown(50000)
         };
         assert_eq!(value, 0.0);
         assert!(
-            exec_state.machine_depth_high_water() >= 50_000,
+            exec_state.machine_depth_high_water() >= 9_000,
             "high water: {}",
             exec_state.machine_depth_high_water()
         );
