@@ -110,14 +110,14 @@ impl ExecutorKind {
     /// applies to any context construction that consults it; unset or empty
     /// means [`ExecutorKind::default`]. Any other value is a configuration
     /// error and panics rather than silently running the wrong executor.
-    #[cfg(not(target_arch = "wasm32"))]
+    /// (Wasm builds have no environment, so this is always the default
+    /// there.)
     pub(crate) fn from_env() -> Self {
         Self::from_env_value(std::env::var("KCL_EXECUTOR").ok().as_deref())
     }
 
     /// The parsing half of [`Self::from_env`], split out so tests can drive
     /// it without touching the process environment.
-    #[cfg(not(target_arch = "wasm32"))]
     fn from_env_value(value: Option<&str>) -> Self {
         let Some(value) = value else {
             return ExecutorKind::default();

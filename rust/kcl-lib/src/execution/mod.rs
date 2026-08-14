@@ -1007,7 +1007,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1079,7 +1079,7 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1093,7 +1093,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1114,7 +1114,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
@@ -1128,7 +1128,7 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1182,9 +1182,6 @@ impl ExecutorContext {
             engine_addr,
         )
         .await?;
-        // Differential testing: unit tests run under both executors.
-        let mut ctx = ctx;
-        ctx.executor_kind = machine::ExecutorKind::from_env();
         Ok(ctx)
     }
 
@@ -2376,7 +2373,7 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -4902,7 +4899,7 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: machine::ExecutorKind::from_env(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&ctx);
