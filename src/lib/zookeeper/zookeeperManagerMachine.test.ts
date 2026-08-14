@@ -620,7 +620,7 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
+    it('continues with source files and changed project assets', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const interruptedConversation: Conversation = {
         exchanges: [
@@ -654,6 +654,11 @@ describe('zookeeperManagerMachine', () => {
           relPath: 'notes.txt',
           data: new Blob(['notes']),
         },
+        {
+          type: 'other',
+          relPath: 'unchanged.txt',
+          data: new Blob(['unchanged']),
+        },
       ]
       const machine = zookeeperManagerMachine.provide({
         actors: {
@@ -663,6 +668,10 @@ describe('zookeeperManagerMachine', () => {
           >(async () => ({
             ws,
             conversation: interruptedConversation,
+            projectAssetSignatures: {
+              'unchanged.txt':
+                'aaa8d3c8d74ad3e8f6b1772aa9c7e0eaa528cb42fc93599ce2f125b00d4c424c',
+            },
           })),
         },
       })
@@ -707,6 +716,14 @@ describe('zookeeperManagerMachine', () => {
           current_files: {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
             'notes.txt': Array.from(new TextEncoder().encode('notes')),
+          },
+          active_file: 'newFile.kcl',
+        }),
+        JSON.stringify({
+          type: 'project_context',
+          project_name: 'zoo-project',
+          current_files: {
+            'main.kcl': Array.from(new TextEncoder().encode('cube()')),
           },
           active_file: 'newFile.kcl',
         }),

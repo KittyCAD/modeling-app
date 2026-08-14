@@ -361,6 +361,7 @@ export interface ZookeeperManagerContext {
   awaitingResponse: boolean
   attachmentsLoadedForCurrentPrompt: boolean
   pendingBackendShutdown: boolean
+  projectAssetSignatures: Record<string, string>
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   cachedSetup?: {
@@ -391,6 +392,7 @@ export const zookeeperDefaultContext = (args: {
   awaitingResponse: false,
   attachmentsLoadedForCurrentPrompt: true,
   pendingBackendShutdown: false,
+  projectAssetSignatures: {},
   defaultMode: undefined,
   modeOptions: undefined,
 })
@@ -527,6 +529,88 @@ async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
     mimetype: file.type || 'application/octet-stream',
     data: Array.from(new Uint8Array(await file.arrayBuffer())),
   }
+}
+
+const ZOOKEEPER_PROJECT_ASSET_CHUNK_BYTES = 16 * 1024 * 1024
+const ZOOKEEPER_BUFFERED_AMOUNT_LOW_WATER_MARK = 1024 * 1024
+
+const isZookeeperSourceFile = (name: string) => /\.(kcl|md)$/i.test(name)
+
+async function waitForZookeeperSocketBuffer(ws: WebSocket) {
+  while (ws.bufferedAmount > ZOOKEEPER_BUFFERED_AMOUNT_LOW_WATER_MARK) {
+    if (ws.readyState !== WebSocket.OPEN) {
+      return Promise.reject(
+        new Error('WebSocket closed while uploading project files')
+      )
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+}
+
+async function zookeeperAssetSignature(data: ArrayBuffer) {
+  const digest = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, '0')
+  ).join('')
+}
+
+async function sendProjectFileChunks(args: {
+  ws: WebSocket
+  files: KittyCadLibFile[]
+  projectName?: string
+  activeFile?: string
+  previousAssetSignatures: Record<string, string>
+}) {
+  const sourceFiles: Record<string, number[]> = {}
+  const assetSignatures: Record<string, string> = {}
+  for (const file of args.files.filter((file) =>
+    isZookeeperSourceFile(file.name)
+  )) {
+    sourceFiles[file.name] = Array.from(
+      new Uint8Array(await file.data.arrayBuffer())
+    )
+  }
+
+  let assetChunk: Record<string, number[]> = {}
+  let assetChunkBytes = 0
+  const sendAssetChunk = async () => {
+    if (assetChunkBytes === 0) {
+      return
+    }
+    const request: MlCopilotProjectContextRequest = {
+      type: 'project_context',
+      project_name: args.projectName,
+      current_files: { ...sourceFiles, ...assetChunk },
+      ...(args.activeFile ? { active_file: args.activeFile } : {}),
+    }
+    args.ws.send(JSON.stringify(request))
+    assetChunk = {}
+    assetChunkBytes = 0
+    await waitForZookeeperSocketBuffer(args.ws)
+  }
+
+  for (const file of args.files.filter(
+    (file) => !isZookeeperSourceFile(file.name)
+  )) {
+    const data = await file.data.arrayBuffer()
+    const bytes = new Uint8Array(data)
+    const signature = await zookeeperAssetSignature(data)
+    assetSignatures[file.name] = signature
+    if (args.previousAssetSignatures[file.name] === signature) {
+      continue
+    }
+    if (
+      assetChunkBytes > 0 &&
+      assetChunkBytes + bytes.byteLength > ZOOKEEPER_PROJECT_ASSET_CHUNK_BYTES
+    ) {
+      await sendAssetChunk()
+    }
+    assetChunk[file.name] = Array.from(bytes)
+    assetChunkBytes += bytes.byteLength
+  }
+  await sendAssetChunk()
+
+  return { sourceFiles, assetSignatures }
 }
 
 export const ZookeeperConversationToMarkdown = (
@@ -841,6 +925,7 @@ export const zookeeperManagerMachine = setup({
         awaitingResponse: false,
         attachmentsLoadedForCurrentPrompt: true,
         pendingBackendShutdown: false,
+        projectAssetSignatures: {},
         cachedSetup: {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
@@ -1282,13 +1367,13 @@ export const zookeeperManagerMachine = setup({
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 
-      const filesAsByteArrays: Record<string, number[]> = {}
-
-      for (let file of requestData.files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
+      const { sourceFiles, assetSignatures } = await sendProjectFileChunks({
+        ws: context.ws,
+        files: requestData.files,
+        projectName: requestData.body.project_name,
+        activeFile: requestData.activeFile,
+        previousAssetSignatures: context.projectAssetSignatures,
+      })
 
       const additionalFiles =
         event.additionalFiles && event.additionalFiles.length > 0
@@ -1303,7 +1388,7 @@ export const zookeeperManagerMachine = setup({
         ...(requestData.body.source_ranges !== undefined
           ? { source_ranges: requestData.body.source_ranges }
           : {}),
-        current_files: filesAsByteArrays,
+        current_files: sourceFiles,
         ...(requestData.activeFile
           ? { active_file: requestData.activeFile }
           : {}),
@@ -1328,6 +1413,7 @@ export const zookeeperManagerMachine = setup({
         conversation,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
+        projectAssetSignatures: assetSignatures,
         attachmentsLoadedForCurrentPrompt:
           !event.additionalFiles || event.additionalFiles.length === 0,
       }
@@ -1348,7 +1434,6 @@ export const zookeeperManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, number[]> = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -1365,19 +1450,6 @@ export const zookeeperManagerMachine = setup({
         })
       })
 
-      for (let file of files) {
-        filesAsByteArrays[file.name] = Array.from(
-          new Uint8Array(await file.data.arrayBuffer())
-        )
-      }
-
-      const requestProjectContext: MlCopilotProjectContextRequest = {
-        type: 'project_context',
-        project_name: event.projectName,
-        current_files: filesAsByteArrays,
-        ...(event.activeFile ? { active_file: event.activeFile } : {}),
-      }
-
       const requestContinue: Extract<
         MlCopilotClientMessage,
         { type: 'system' }
@@ -1387,11 +1459,26 @@ export const zookeeperManagerMachine = setup({
       }
 
       context.ws.send(JSON.stringify(requestContinue))
+
+      const { sourceFiles, assetSignatures } = await sendProjectFileChunks({
+        ws: context.ws,
+        files,
+        projectName: event.projectName,
+        activeFile: event.activeFile,
+        previousAssetSignatures: context.projectAssetSignatures,
+      })
+      const requestProjectContext: MlCopilotProjectContextRequest = {
+        type: 'project_context',
+        project_name: event.projectName,
+        current_files: sourceFiles,
+        ...(event.activeFile ? { active_file: event.activeFile } : {}),
+      }
       context.ws.send(JSON.stringify(requestProjectContext))
 
       return {
         awaitingResponse: true,
         projectNameCurrentlyOpened: event.projectName,
+        projectAssetSignatures: assetSignatures,
       }
     }),
     [ZookeeperManagerTransitions.Cancel]: fromPromise(async function (
