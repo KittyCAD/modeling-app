@@ -179,6 +179,9 @@ test(
     await expect(page).toHaveURL(
       /tutorial-project-1%2Fmain\.kcl\/onboarding\/desktop\/prompt-to-edit-result/
     )
+    await expect(
+      page.getByRole('heading', { name: 'Result', exact: true })
+    ).toBeVisible()
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
