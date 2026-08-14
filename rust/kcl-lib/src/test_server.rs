@@ -226,7 +226,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         .map_err(ConnectionError::Establishing)?;
     // Differential testing: the simulation suite runs under both executors
     // (see the machine-executor CI job).
-    ctx.executor_kind = crate::execution::machine::ExecutorKind::from_test_env();
+    ctx.executor_kind = crate::execution::machine::ExecutorKind::from_env();
     Ok(ctx)
 }
 

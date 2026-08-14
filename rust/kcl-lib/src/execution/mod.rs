@@ -1184,7 +1184,7 @@ impl ExecutorContext {
         .await?;
         // Differential testing: unit tests run under both executors.
         let mut ctx = ctx;
-        ctx.executor_kind = machine::ExecutorKind::from_test_env();
+        ctx.executor_kind = machine::ExecutorKind::from_env();
         Ok(ctx)
     }
 
@@ -2187,7 +2187,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_test_env()).await
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_env()).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context

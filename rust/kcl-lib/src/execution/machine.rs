@@ -104,15 +104,33 @@ pub(crate) enum ExecutorKind {
 }
 
 impl ExecutorKind {
-    /// Test-harness selection of the executor via the `KCL_EXECUTOR` env var
-    /// (`machine` or `recursive`). Used only by test context factories so the
-    /// simulation suite can run under both executors; production contexts are
-    /// never configured from the environment.
+    /// Select the executor from the `KCL_EXECUTOR` environment variable:
+    /// `machine` or `recursive`, ASCII case-insensitive, surrounding
+    /// whitespace ignored. Setting the variable is an explicit opt-in and
+    /// applies to any context construction that consults it; unset or empty
+    /// means [`ExecutorKind::default`]. Any other value is a configuration
+    /// error and panics rather than silently running the wrong executor.
     #[cfg(not(target_arch = "wasm32"))]
-    pub(crate) fn from_test_env() -> Self {
-        match std::env::var("KCL_EXECUTOR").as_deref() {
-            Ok("machine") => ExecutorKind::Machine,
-            _ => ExecutorKind::Recursive,
+    pub(crate) fn from_env() -> Self {
+        Self::from_env_value(std::env::var("KCL_EXECUTOR").ok().as_deref())
+    }
+
+    /// The parsing half of [`Self::from_env`], split out so tests can drive
+    /// it without touching the process environment.
+    #[cfg(not(target_arch = "wasm32"))]
+    fn from_env_value(value: Option<&str>) -> Self {
+        let Some(value) = value else {
+            return ExecutorKind::default();
+        };
+        let value = value.trim();
+        if value.is_empty() {
+            ExecutorKind::default()
+        } else if value.eq_ignore_ascii_case("machine") {
+            ExecutorKind::Machine
+        } else if value.eq_ignore_ascii_case("recursive") {
+            ExecutorKind::Recursive
+        } else {
+            panic!("Invalid KCL_EXECUTOR value {value:?}; expected \"machine\" or \"recursive\"");
         }
     }
 }
@@ -2360,6 +2378,27 @@ async fn sketch_body_finish(
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn executor_kind_from_env_value_parses_explicit_selections() {
+        assert_eq!(ExecutorKind::from_env_value(Some("machine")), ExecutorKind::Machine);
+        assert_eq!(ExecutorKind::from_env_value(Some("recursive")), ExecutorKind::Recursive);
+        assert_eq!(ExecutorKind::from_env_value(Some(" Machine\t")), ExecutorKind::Machine);
+        assert_eq!(ExecutorKind::from_env_value(Some("RECURSIVE")), ExecutorKind::Recursive);
+    }
+
+    #[test]
+    fn executor_kind_from_env_value_defaults_when_unset_or_empty() {
+        assert_eq!(ExecutorKind::from_env_value(None), ExecutorKind::default());
+        assert_eq!(ExecutorKind::from_env_value(Some("")), ExecutorKind::default());
+        assert_eq!(ExecutorKind::from_env_value(Some(" \t ")), ExecutorKind::default());
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid KCL_EXECUTOR value")]
+    fn executor_kind_from_env_value_rejects_unknown_values() {
+        let _ = ExecutorKind::from_env_value(Some("machin"));
+    }
     use super::*;
     use crate::execution::parse_execute_with_executor_kind;
 
