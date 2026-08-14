@@ -1,6 +1,10 @@
 import { REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import {
+  resetRemoteProjectZookeeperConversation,
+  resolveRemoteProjectZookeeperConversation,
+} from '@src/lib/cloudSync/cloudApi'
 
 const ZOOKEEPER_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
@@ -13,6 +17,8 @@ export interface ZookeeperConversationStore {
     conversationId: string
   }) => Promise<void>
   deleteProjectConversationId: (projectId: string) => Promise<void>
+  resetProjectConversationId?: (projectId: string) => Promise<string>
+  requiresResolvedProjectConversation?: boolean
 }
 
 export const jsonToZookeeperConversations = (
@@ -20,7 +26,7 @@ export const jsonToZookeeperConversations = (
 ): ZookeeperConversations => {
   const conversations = new Map<string, string>()
   const untypedObject = JSON.parse(json)
-  for (let entry of Object.entries(untypedObject)) {
+  for (const entry of Object.entries(untypedObject)) {
     if (typeof entry[0] === 'string' && !REGEXP_UUIDV4.test(entry[0])) {
       console.warn(
         'Expected a project id string as a key (potentially bad format)'
@@ -91,4 +97,73 @@ export const zookeeperConversationStore: ZookeeperConversationStore = {
     conversations.delete(projectId)
     await writeZookeeperConversations(conversations)
   },
+}
+
+export const createCloudProjectZookeeperConversationStore = ({
+  cloudProjectId,
+  token,
+  localStore = zookeeperConversationStore,
+}: {
+  cloudProjectId: string
+  token?: string
+  localStore?: ZookeeperConversationStore
+}): ZookeeperConversationStore => {
+  const config = { enabled: true, token }
+
+  const resetProjectConversationId = async (projectId: string) => {
+    const expectedConversationId =
+      await localStore.getProjectConversationId(projectId)
+    if (expectedConversationId === undefined) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error('Cannot reset an unresolved cloud project conversation.')
+    }
+    const response = await resetRemoteProjectZookeeperConversation(
+      config,
+      cloudProjectId,
+      expectedConversationId
+    )
+    await localStore.saveProjectConversationId({
+      projectId,
+      conversationId: response.conversation_id,
+    })
+    return response.conversation_id
+  }
+
+  return {
+    requiresResolvedProjectConversation: true,
+    async getProjectConversationId(projectId) {
+      const localConversationId =
+        await localStore.getProjectConversationId(projectId)
+      const response = await resolveRemoteProjectZookeeperConversation(
+        config,
+        cloudProjectId,
+        localConversationId
+      ).catch((error: unknown) => {
+        if (localConversationId !== undefined) {
+          return { conversation_id: localConversationId }
+        }
+        throw error
+      })
+      await localStore.saveProjectConversationId({
+        projectId,
+        conversationId: response.conversation_id,
+      })
+      return response.conversation_id
+    },
+    async saveProjectConversationId({ projectId, conversationId }) {
+      const response = await resolveRemoteProjectZookeeperConversation(
+        config,
+        cloudProjectId,
+        conversationId
+      )
+      await localStore.saveProjectConversationId({
+        projectId,
+        conversationId: response.conversation_id,
+      })
+    },
+    async deleteProjectConversationId(projectId) {
+      await resetProjectConversationId(projectId)
+    },
+    resetProjectConversationId,
+  }
 }

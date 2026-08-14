@@ -102,6 +102,44 @@ export async function getRemoteProject(
   return cloudJson<RemoteProject>(config, `/user/projects/${projectId}`)
 }
 
+type ProjectZookeeperConversationResponse = {
+  conversation_id: string
+}
+
+export async function resolveRemoteProjectZookeeperConversation(
+  config: CloudSyncConfig,
+  projectId: string,
+  conversationId?: string
+) {
+  return cloudJson<ProjectZookeeperConversationResponse>(
+    config,
+    `/user/projects/${encodeURIComponent(projectId)}/zookeeper/conversations/resolve`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ conversation_id: conversationId }),
+    }
+  )
+}
+
+export async function resetRemoteProjectZookeeperConversation(
+  config: CloudSyncConfig,
+  projectId: string,
+  expectedConversationId: string
+) {
+  return cloudJson<ProjectZookeeperConversationResponse>(
+    config,
+    `/user/projects/${encodeURIComponent(projectId)}/zookeeper/conversations/reset`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        expected_conversation_id: expectedConversationId,
+      }),
+    }
+  )
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !isArray(value)
 }

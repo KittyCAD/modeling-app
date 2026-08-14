@@ -69,6 +69,8 @@ export const ZookeeperConversationPane = (props: {
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
+  const [savedProjectConversationLookupAttempt, retrySavedConversationLookup] =
+    useState(0)
   const savedProjectConversationLookupPath = useRef(props.theProject?.path)
   const actorConversationProjectPath = useRef(props.theProject?.path)
   const reconnectAfterSavedConversationLookup = useRef(false)
@@ -372,9 +374,14 @@ export const ZookeeperConversationPane = (props: {
       clearChatOperationGeneration.current === clearOperationGeneration
 
     const projectId = props.settings.meta.id.current
+    let freshConversationId: string | undefined
     try {
       if (projectId !== undefined && projectId !== uuidNIL) {
-        await props.conversationStore.deleteProjectConversationId(projectId)
+        freshConversationId = props.conversationStore.resetProjectConversationId
+          ? await props.conversationStore.resetProjectConversationId(projectId)
+          : await props.conversationStore
+              .deleteProjectConversationId(projectId)
+              .then(() => undefined)
       }
     } catch (error: unknown) {
       if (!isCurrentClearOperation()) {
@@ -395,7 +402,7 @@ export const ZookeeperConversationPane = (props: {
     steeredId.current = null
     setQueue([])
     savedProjectConversationLookupLoaded.current = true
-    savedProjectConversationId.current = undefined
+    savedProjectConversationId.current = freshConversationId
 
     let sub:
       | ReturnType<typeof props.zookeeperManagerActor.subscribe>
@@ -410,7 +417,7 @@ export const ZookeeperConversationPane = (props: {
       props.zookeeperManagerActor.send({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.zookeeperManagerActor.send,
-        conversationId: undefined,
+        conversationId: freshConversationId,
       })
       isClearingChat.current = false
       setIsClearingChatPending(false)
@@ -537,6 +544,7 @@ export const ZookeeperConversationPane = (props: {
     savedProjectConversationId.current = undefined
     const projectId = props.settings.meta.id.current
     let canceled = false
+    let retryTimeout: ReturnType<typeof setTimeout> | undefined
     const continueAfterSavedConversationLookup = () => {
       if (reconnectAfterSavedConversationLookup.current) {
         reconnect()
@@ -563,6 +571,15 @@ export const ZookeeperConversationPane = (props: {
           if (canceled || savedProjectConversationLookupLoaded.current) {
             return
           }
+          if (
+            props.conversationStore.requiresResolvedProjectConversation === true
+          ) {
+            reportRejection(error)
+            retryTimeout = setTimeout(() => {
+              retrySavedConversationLookup((attempt) => attempt + 1)
+            }, 3000)
+            return
+          }
           savedProjectConversationLookupLoaded.current = true
           savedProjectConversationId.current = undefined
           reportRejection(error)
@@ -581,9 +598,15 @@ export const ZookeeperConversationPane = (props: {
       isClearingChat.current = false
       reconnectAfterSavedConversationLookup.current = false
       subscriptionZookeeperManagerActor.unsubscribe()
+      clearTimeout(retryTimeout)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current, props.theProject?.path])
+  }, [
+    props.conversationStore,
+    savedProjectConversationLookupAttempt,
+    props.settings.meta.id.current,
+    props.theProject?.path,
+  ])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.

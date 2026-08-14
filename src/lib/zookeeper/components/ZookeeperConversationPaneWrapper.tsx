@@ -26,7 +26,10 @@ import {
   type ZookeeperManagerActor,
   ZookeeperManagerReactContext,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import {
+  createCloudProjectZookeeperConversationStore,
+  zookeeperConversationStore,
+} from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
@@ -42,7 +45,13 @@ import {
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -120,6 +129,17 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
     send: sendModeling,
     theProject,
   } = useModelingContext()
+  const openedProject = theProject.current
+  const conversationStore = useMemo(
+    () =>
+      openedProject?.cloudProjectId
+        ? createCloudProjectZookeeperConversationStore({
+            cloudProjectId: openedProject.cloudProjectId,
+            token,
+          })
+        : zookeeperConversationStore,
+    [openedProject?.cloudProjectId, token]
+  )
   const loaderFile = project?.executingFileEntry.value
   const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
 
@@ -382,7 +402,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   // Save the conversation id for the project id if necessary.
   useProjectIdToConversationId(
     zookeeperManagerActor,
-    zookeeperConversationStore,
+    conversationStore,
     settingsValues
   )
 
@@ -408,7 +428,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
       <ZookeeperConversationPane
         {...{
           zookeeperManagerActor: zookeeperManagerActor,
-          conversationStore: zookeeperConversationStore,
+          conversationStore,
           kclManager,
           contextModeling,
           sendModeling,
@@ -428,7 +448,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
               type: BillingTransition.UsageEnded,
             })
           },
-          theProject: theProject.current,
+          theProject: openedProject,
           loaderFile,
           settings: settingsValues,
           user,

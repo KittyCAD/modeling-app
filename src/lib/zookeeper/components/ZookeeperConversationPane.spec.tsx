@@ -951,6 +951,60 @@ describe('ZookeeperConversationPane', () => {
     })
   })
 
+  test('retries a required cloud conversation lookup before connecting', async () => {
+    vi.useFakeTimers()
+    const zookeeperManagerActor = createFakeActor({
+      conversation: undefined,
+      value: 'await',
+    })
+    const conversationStore = createFakeConversationStore()
+    conversationStore.requiresResolvedProjectConversation = true
+    vi.mocked(conversationStore.getProjectConversationId)
+      .mockRejectedValueOnce(new Error('temporary lookup failure'))
+      .mockResolvedValue('cloud-conversation-id')
+
+    try {
+      renderPane({
+        zookeeperManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+          cloudProjectId: 'cloud-project-id',
+        },
+      })
+
+      await act(async () => {
+        await Promise.resolve()
+      })
+      expect(conversationStore.getProjectConversationId).toHaveBeenCalledTimes(
+        1
+      )
+      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        })
+      )
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3000)
+      })
+
+      expect(conversationStore.getProjectConversationId).toHaveBeenCalledTimes(
+        2
+      )
+      expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'cloud-conversation-id',
+        })
+      )
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   test('clearing chat forgets the saved project conversation before starting a fresh one', async () => {
     const zookeeperManagerActor = createStatefulClearChatActor()
     const conversationStore = createFakeConversationStore({
@@ -992,6 +1046,43 @@ describe('ZookeeperConversationPane', () => {
         conversationId: 'old-conversation-id',
       })
     )
+  })
+
+  test('clearing a cloud chat reconnects to the replacement server conversation', async () => {
+    const zookeeperManagerActor = createStatefulClearChatActor()
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'old-conversation-id']]),
+    })
+    conversationStore.resetProjectConversationId = vi.fn(
+      async () => 'fresh-conversation-id'
+    )
+
+    renderPane({
+      zookeeperManagerActor,
+      conversationStore,
+      settingsMetaId: 'project-id',
+      theProject: {
+        name: 'sample-project',
+        path: '/tmp/sample-project',
+        cloudProjectId: 'cloud-project-id',
+      },
+    })
+    zookeeperManagerActor.send.mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+
+    await waitFor(() => {
+      expect(conversationStore.resetProjectConversationId).toHaveBeenCalledWith(
+        'project-id'
+      )
+      expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'fresh-conversation-id',
+        })
+      )
+    })
+    expect(conversationStore.deleteProjectConversationId).not.toHaveBeenCalled()
   })
 
   test('waits for the saved project conversation delete before starting a fresh one', async () => {
