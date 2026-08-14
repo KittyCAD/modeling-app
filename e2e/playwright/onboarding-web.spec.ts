@@ -38,6 +38,13 @@ async function replayOnboardingFromSettings(
   await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible()
 }
 
+async function expectBackDoesNotReopenOnboarding(page: Page) {
+  await page.goBack()
+  await expect(page).not.toHaveURL(/\/onboarding\//)
+  await page.goForward()
+  await expect(page).toHaveURL(/\/home$/)
+}
+
 test(
   'Replay onboarding creates a uniquely named Personal Cloud tutorial',
   { tag: '@web' },
@@ -96,15 +103,20 @@ test(
       })
       .toContain('plateLength = 10')
 
-    await page.keyboard.press('Escape')
-    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-    await expect.poll(() => page.url()).not.toContain('/onboarding')
-    await page.getByTestId('app-logo').click()
+    const conclusionUrl = `/file/${encodeURIComponent(
+      `${PROJECT_DIR}/tutorial-project/main.kcl`
+    )}/onboarding/desktop/conclusion`
+    await page.evaluate((url) => window.location.replace(url), conclusionUrl)
+    await expect(page).toHaveURL(/\/onboarding\/desktop\/conclusion$/)
+    await page.getByTestId('onboarding-next').click()
+    await expect(page).toHaveURL(/\/home$/)
+    await expectBackDoesNotReopenOnboarding(page)
     await expect(
       page.getByRole('heading', {
         name: /^(Project Libraries|Personal Cloud)$/,
       })
     ).toBeVisible()
+    await expect(page.getByTestId('home-tutorial-button')).not.toBeVisible()
     const tutorialProjectLink = page.getByTestId('project-link').filter({
       has: page
         .getByTestId('project-title')
@@ -160,14 +172,16 @@ test(
       await opfsPathExists(page, `${PROJECT_DIR}/tutorial-project/blank.kcl`)
     ).toBe(false)
 
-    await page.goto(
-      `/file/${encodeURIComponent(
-        `${PROJECT_DIR}/tutorial-project-1/main.kcl`
-      )}/onboarding/desktop/prompt-to-edit-result`
-    )
+    const promptResultUrl = `/file/${encodeURIComponent(
+      `${PROJECT_DIR}/tutorial-project-1/main.kcl`
+    )}/onboarding/desktop/prompt-to-edit-result`
+    await page.evaluate((url) => window.location.replace(url), promptResultUrl)
     await expect(page).toHaveURL(
       /tutorial-project-1%2Fmain\.kcl\/onboarding\/desktop\/prompt-to-edit-result/
     )
+    await expect(
+      page.getByRole('heading', { name: 'Result', exact: true })
+    ).toBeVisible()
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
@@ -199,5 +213,14 @@ test(
       `project_id = "${TUTORIAL_PROJECT_IDS[1]}"`
     )
     expect(apiCalls.creates).toHaveLength(2)
+
+    await page.keyboard.press('Escape')
+    await expect(page).toHaveURL(/\/home$/)
+    await expect(
+      page.getByRole('heading', {
+        name: /^(Project Libraries|Personal Cloud)$/,
+      })
+    ).toBeVisible()
+    await expectBackDoesNotReopenOnboarding(page)
   }
 )

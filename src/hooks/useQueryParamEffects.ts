@@ -21,6 +21,7 @@ import {
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
+import { downloadKclSample } from '@src/lib/kclSamples'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
@@ -282,6 +283,78 @@ export function useQueryParamEffects() {
     }
 
     let shouldCreateDefaultWebProject = false
+    const samplePath = commandData.argDefaultValues?.sample
+    const requestedProjectName = commandData.argDefaultValues?.projectName
+    const shouldCreateWebSampleProject =
+      !isDesktop() &&
+      commandData.name === 'add-kcl-file-to-project' &&
+      commandData.groupId === 'application' &&
+      commandData.argDefaultValues?.source === 'kcl-samples' &&
+      typeof samplePath === 'string' &&
+      (requestedProjectName === 'browser' ||
+        requestedProjectName === DEFAULT_WEB_PROJECT_NAME)
+
+    if (shouldCreateWebSampleProject) {
+      let cancelled = false
+
+      void (async () => {
+        await waitForIdleState({ systemIOActor: app.systemIOActor })
+        if (cancelled) {
+          return
+        }
+
+        await waitFor(app.settings.actor, (state) => state.matches('idle'))
+        if (cancelled) {
+          return
+        }
+
+        const projectLibraryTarget = app.getCreateProjectLibraryTargets()[0]
+        if (!projectLibraryTarget) {
+          return Promise.reject(
+            new Error('No writable project library is available.')
+          )
+        }
+
+        const downloadedSample = await downloadKclSample(samplePath)
+        if (cancelled) {
+          return
+        }
+
+        const importedProject = await projectLibraryTarget.createProject.run({
+          library: projectLibraryTarget.library,
+          requestedProjectName: downloadedSample.requestedProjectName,
+          requestedProjectTitle: downloadedSample.sample.title,
+          initialProject: downloadedSample.initialProject,
+        })
+        if (!importedProject?.default_file) {
+          return Promise.reject(
+            new Error('Unable to create the sample project.')
+          )
+        }
+        if (cancelled) {
+          return
+        }
+
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            importedProject.default_file
+          )}`
+        )
+      })().catch((error) => {
+        if (cancelled) {
+          return
+        }
+
+        cleanupQueryParams()
+        toast.error(
+          err(error) ? error.message : 'Failed to open the KCL sample.'
+        )
+      })
+
+      return () => {
+        cancelled = true
+      }
+    }
 
     // Web-only: prefill command data to automatically add to the demo project
     if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {

@@ -320,7 +320,7 @@ impl WebSocketTransport {
                                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
                                     cmd: ModelingCmd::ImportFiles { .. },
                                     cmd_id: _,
-                                }) | WebSocketRequest::ExecKclProject { .. }
+                                })
                             ) {
                                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
                             } else {
