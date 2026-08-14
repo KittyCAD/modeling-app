@@ -578,36 +578,12 @@ function modifyAstWithTagsForEdgeSelection(
             'Could not resolve the cap tag for the selected edge'
           )
         }
-
-        let capBodyExpr = edgeContext.selectedBodyExpr
-        if (selectedFace.sweepId !== edgeContext.selectedSweep.id) {
-          // A later sweep can meet a cap inherited from an earlier body. Resolve
-          // that owner without following its feature chain to the selected sweep.
-          const capSweep = getArtifactOfTypes(
-            { key: selectedFace.sweepId, types: ['sweep'] },
-            artifactGraph
-          )
-          if (err(capSweep)) {
-            return capSweep
-          }
-
-          const capContext = resolveSweepSelectionContext(
-            astClone,
-            capSweep,
-            artifactGraph,
-            wasmInstance,
-            options?.nodeToEdit,
-            false
-          )
-          if (err(capContext)) {
-            return capContext
-          }
-          capBodyExpr = capContext.selectedBodyExpr
-        }
-
         exprs.push(
           createMemberExpression(
-            createMemberExpression(structuredClone(capBodyExpr), 'faces'),
+            createMemberExpression(
+              structuredClone(edgeContext.selectedBodyExpr),
+              'faces'
+            ),
             tagName
           )
         )
