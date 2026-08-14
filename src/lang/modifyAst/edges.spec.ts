@@ -8,7 +8,11 @@ import {
   deleteEdgeTreatment,
   groupSelectionsByBodyAndAddTags,
 } from '@src/lang/modifyAst/edges'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  getCommonFacesForEdge,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
   type Artifact,
@@ -190,6 +194,95 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithFillet)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    // https://github.com/KittyCAD/modeling-app/issues/12984
+    it('should qualify an inherited cap with its owning boolean body', async () => {
+      const code = `@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+
+plateSketch = sketch(on = XY) {
+  bottomEdge = line(start = [var -20mm, var -15mm], end = [var 20mm, var -15mm])
+  rightEdge = line(start = [var 20mm, var -15mm], end = [var 20mm, var 15mm])
+  topEdge = line(start = [var 20mm, var 15mm], end = [var -20mm, var 15mm])
+  leftEdge = line(start = [var -20mm, var 15mm], end = [var -20mm, var -15mm])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+}
+plateRegion = region(segments = [plateSketch.bottomEdge, plateSketch.rightEdge])
+plateBody = extrude(plateRegion, length = 6mm, tagEnd = $capEnd001)
+
+cutterSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 13mm, var 10mm], center = [var 10mm, var 10mm])
+}
+cutterRegion = region(segments = [cutterSketch.circle1])
+cutterBody = extrude(cutterRegion, length = 6mm, method = NEW)
+perforatedPlate = subtract(plateBody, tools = cutterBody)
+
+face001 = faceOf(perforatedPlate, face = END)
+sketch001 = sketch(on = face001) {
+  circle1 = circle(start = [var 8mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+extrude001 = extrude(region001, length = -12mm)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const inheritedCapSegment = [...artifactGraph.values()].find(
+        (artifact) => {
+          if (artifact.type !== 'segment') {
+            return false
+          }
+          const faces = getCommonFacesForEdge(artifact, artifactGraph)
+          if (err(faces)) {
+            return false
+          }
+          const sweep = getSweepArtifactFromSelection(
+            { artifact, codeRef: artifact.codeRef },
+            artifactGraph
+          )
+          if (err(sweep)) {
+            return false
+          }
+          return faces.some(
+            (face) =>
+              face.type === 'cap' &&
+              face.subType === 'end' &&
+              face.sweepId !== sweep.id
+          )
+        }
+      )
+      if (!inheritedCapSegment) {
+        throw new Error(
+          'Expected a segment between the new wall and inherited cap'
+        )
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: createSelectionFromArtifacts(
+          [inheritedCapSegment],
+          artifactGraph
+        ),
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('perforatedPlate.faces.capEnd001')
+      expect(newCode).not.toContain('extrude001.faces.capEnd001')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
