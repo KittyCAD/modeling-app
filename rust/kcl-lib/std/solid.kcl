@@ -1099,7 +1099,7 @@ export fn patternCircular3d(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn union(
-  /// The solids to union.
+  /// The distinct solids to union. A body cannot appear more than once.
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1162,7 +1162,7 @@ export fn union(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn intersect(
-  /// The solids to intersect.
+  /// The distinct solids to intersect. A body cannot appear more than once.
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1320,9 +1320,9 @@ export fn intersect(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn subtract(
-  /// The solids to use as the base to subtract from.
+  /// The distinct solids to use as the base to subtract from. A body cannot also appear in `tools`.
   @solids: [Solid; 1+],
-  /// The solids to subtract.
+  /// The distinct solids to subtract. A body cannot also appear in `solids`.
   tools: [Solid],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1737,7 +1737,7 @@ export fn flipSurface(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn split(
-  /// The bodies to split
+  /// The distinct bodies to split. A body cannot also appear in `tools`.
   @targets: [Solid; 1+],
   /// Whether to merge the bodies into one after.
   /// Defaults to false.
@@ -1746,7 +1746,7 @@ export fn split(
   /// If true, they'll be kept.
   /// Defaults to false.
   keepTools?: bool,
-  /// The tools to split the target bodies along.
+  /// The distinct tools to split the target bodies along. A body cannot also appear in `targets`.
   tools?: [Solid],
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.

@@ -1,5 +1,7 @@
 //! Constructive Solid Geometry (CSG) operations.
 
+use std::collections::HashSet;
+
 use anyhow::Result;
 use kcl_error::CompilationIssue;
 use kcmc::ModelingCmd;
@@ -61,20 +63,27 @@ impl CsgAlgorithm {
     }
 }
 
-fn is_single_target_self_subtract(target_ids: &[uuid::Uuid], tool_ids: &[uuid::Uuid]) -> bool {
-    target_ids.len() == 1 && tool_ids.len() == 1 && target_ids[0] == tool_ids[0]
+fn validate_unique_boolean_inputs<'a>(
+    solids: impl IntoIterator<Item = &'a Solid>,
+    operation: &str,
+    source_range: crate::SourceRange,
+) -> Result<(), KclError> {
+    let mut solid_ids = HashSet::new();
+    if solids.into_iter().all(|solid| solid_ids.insert(solid.id)) {
+        return Ok(());
+    }
+
+    Err(KclError::new_semantic(KclErrorDetails::new(
+        format!("The {operation} operation cannot use the same body more than once. Please check your selections."),
+        vec![source_range],
+    )))
 }
 
 fn subtract_output_ids(
     solid_out_id: uuid::Uuid,
     target_ids: &[uuid::Uuid],
-    tool_ids: &[uuid::Uuid],
     extra_solid_ids: &[uuid::Uuid],
 ) -> Vec<uuid::Uuid> {
-    if is_single_target_self_subtract(target_ids, tool_ids) {
-        return Vec::new();
-    }
-
     let mut output_ids = if target_ids.len() == 1 {
         vec![solid_out_id]
     } else {
@@ -98,6 +107,7 @@ pub(crate) async fn inner_union(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+    validate_unique_boolean_inputs(solids.iter(), "union", args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
 
@@ -193,6 +203,7 @@ pub(crate) async fn inner_intersect(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+    validate_unique_boolean_inputs(solids.iter(), "intersection", args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
 
@@ -283,10 +294,11 @@ pub(crate) async fn inner_subtract(
 ) -> Result<Vec<Solid>, KclError> {
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
+    validate_unique_boolean_inputs(combined_solids.iter(), "subtraction", args.source_range)?;
 
-    let solid_out_id = exec_state.next_uuid();
     let target_ids = solids.iter().map(|s| s.id).collect::<Vec<_>>();
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
+    let solid_out_id = exec_state.next_uuid();
 
     if args.ctx.no_engine_commands().await {
         let mut solid = solids[0].clone();
@@ -337,7 +349,7 @@ pub(crate) async fn inner_subtract(
         );
     }
 
-    let output_ids = subtract_output_ids(solid_out_id, &target_ids, &tool_ids, &boolean_resp.extra_solid_ids);
+    let output_ids = subtract_output_ids(solid_out_id, &target_ids, &boolean_resp.extra_solid_ids);
     let new_solids = output_ids
         .into_iter()
         .map(|output_id| {
@@ -405,6 +417,7 @@ pub(crate) async fn inner_imprint(
     if let Some(tools) = tools.as_ref() {
         validate_solids_not_consumed(tools, exec_state, args.source_range)?;
     }
+    validate_unique_boolean_inputs(targets.iter().chain(tools.iter().flatten()), "split", args.source_range)?;
 
     let body_out_id = exec_state.next_uuid();
 
@@ -512,10 +525,9 @@ mod tests {
     fn subtract_output_ids_single_target_uses_command_id() {
         let output_id = test_uuid(100);
         let target_id = test_uuid(1);
-        let tool_id = test_uuid(2);
         let extra_id = test_uuid(3);
 
-        let output_ids = subtract_output_ids(output_id, &[target_id], &[tool_id], &[extra_id]);
+        let output_ids = subtract_output_ids(output_id, &[target_id], &[extra_id]);
 
         assert_eq!(output_ids, vec![output_id, extra_id]);
     }
@@ -524,22 +536,64 @@ mod tests {
     fn subtract_output_ids_multi_target_uses_response_ids_only() {
         let output_id = test_uuid(100);
         let target_ids = [test_uuid(1), test_uuid(2)];
-        let tool_id = test_uuid(3);
         let extra_ids = [test_uuid(4), test_uuid(5)];
 
-        let output_ids = subtract_output_ids(output_id, &target_ids, &[tool_id], &extra_ids);
+        let output_ids = subtract_output_ids(output_id, &target_ids, &extra_ids);
 
         assert_eq!(output_ids, extra_ids);
     }
 
-    #[test]
-    fn subtract_output_ids_self_subtract_returns_no_outputs() {
-        let output_id = test_uuid(100);
-        let target_id = test_uuid(1);
+    #[tokio::test(flavor = "multi_thread")]
+    async fn boolean_operations_reject_duplicate_bodies() {
+        const SETUP: &str = r#"
+fn cube(pos, scale) {
+  return startSketchOn(XY)
+    |> startProfile(at = [pos[0] - scale, pos[1] - scale])
+    |> line(endAbsolute = [pos[0] + scale, pos[1] - scale])
+    |> line(endAbsolute = [pos[0] + scale, pos[1] + scale])
+    |> line(endAbsolute = [pos[0] - scale, pos[1] + scale])
+    |> close()
+    |> extrude(length = 2 * scale)
+}
 
-        let output_ids = subtract_output_ids(output_id, &[target_id], &[target_id], &[]);
+part001 = cube(pos = [0, 0], scale = 10)
+part002 = cube(pos = [-9, -9], scale = 2)
+alias = part001
+"#;
 
-        assert!(output_ids.is_empty());
+        for (operation, operation_name) in [
+            ("result = union([part001, part001])", "union"),
+            ("result = union([part001, alias])", "union"),
+            ("result = part001 + part001", "union"),
+            ("result = part001 | part001", "union"),
+            ("result = intersect([part001, part001])", "intersection"),
+            ("result = part001 & part001", "intersection"),
+            ("result = subtract(part001, tools = [part001])", "subtraction"),
+            (
+                "result = subtract([part001, part001], tools = [part002])",
+                "subtraction",
+            ),
+            ("result = subtract(part001, tools = [part001, part002])", "subtraction"),
+            ("result = subtract(part001, tools = [part002, part002])", "subtraction"),
+            ("result = part001 - part001", "subtraction"),
+            ("result = split(part001, tools = [part001])", "split"),
+            ("result = split([part001, part001])", "split"),
+            ("result = split(part001, tools = [part002, part002])", "split"),
+        ] {
+            let code = format!("{SETUP}\n{operation}");
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+            ctx.close().await;
+
+            assert!(matches!(&err.error, KclError::Semantic { .. }), "{:?}", err.error);
+            assert_eq!(
+                err.error.message(),
+                format!(
+                    "The {operation_name} operation cannot use the same body more than once. Please check your selections."
+                )
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -1001,20 +1001,11 @@ fn pattern_artifact_updates(
     return_arr
 }
 
-fn is_single_target_self_subtract(target_ids: &[Uuid], tool_ids: &[Uuid]) -> bool {
-    target_ids.len() == 1 && tool_ids.len() == 1 && target_ids[0] == tool_ids[0]
-}
-
 fn boolean_subtract_output_artifact_ids(
     cmd_id: ArtifactId,
     target_ids: &[Uuid],
-    tool_ids: &[Uuid],
     extra_solid_ids: &[Uuid],
 ) -> Vec<ArtifactId> {
-    if is_single_target_self_subtract(target_ids, tool_ids) {
-        return Vec::new();
-    }
-
     let mut output_ids = if target_ids.len() == 1 {
         vec![cmd_id]
     } else {
@@ -2358,7 +2349,6 @@ fn artifacts_to_update(
                     new_solid_ids = boolean_subtract_output_artifact_ids(
                         id,
                         &subtract_cmd.target_ids,
-                        &subtract_cmd.tool_ids,
                         &subtract_resp.extra_solid_ids,
                     );
                 }
