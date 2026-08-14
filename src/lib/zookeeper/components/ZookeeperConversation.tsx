@@ -3,6 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import type { MlCopilotFileFetcher } from '@src/components/Thinking'
 import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
@@ -77,6 +78,7 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  onFetchAttachment?: MlCopilotFileFetcher
 }
 
 const getModeOption = (
@@ -694,6 +696,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )
     }

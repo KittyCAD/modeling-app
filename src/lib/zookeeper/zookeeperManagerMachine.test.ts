@@ -286,6 +286,33 @@ describe('zookeeperManagerMachine', () => {
       stubClientErrorFetch()
     })
 
+    it('requests attachment metadata when replaying a conversation', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+          conversationId: 'conversation-id',
+        })
+
+        await vi.waitFor(() => {
+          expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+        })
+        const url = new URL(ControllableSetupWebSocket.instances[0].url)
+        expect(url.searchParams.get('conversation_id')).toBe('conversation-id')
+        expect(url.searchParams.get('replay')).toBe('true')
+        expect(url.searchParams.get('replay_attachment_mode')).toBe(
+          'metadata_only'
+        )
+      } finally {
+        actor.stop()
+      }
+    })
+
     it('stops retrying and exposes a recoverable failure after repeated setup errors', async () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       let setupAttempts = 0

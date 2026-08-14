@@ -2,7 +2,7 @@ import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { Thinking } from '@src/components/Thinking'
+import { type MlCopilotFileFetcher, Thinking } from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
@@ -22,6 +22,7 @@ export type ExchangeCardProps = Exchange & {
   userAvatar?: string
   onClickClearChat: () => void
   isLastResponse: boolean
+  onFetchAttachment?: MlCopilotFileFetcher
 }
 
 type MlCopilotServerMessageError = Extract<
@@ -146,6 +147,7 @@ export const ExchangeCardStatus = (props: {
   startedAt: Date
   updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
+  onFetchAttachment?: MlCopilotFileFetcher
 }) => {
   const [triggerRender, setTriggerRender] = useState<number>(0)
   const thinker = (
@@ -153,6 +155,7 @@ export const ExchangeCardStatus = (props: {
       thoughts={props.responses}
       isDone={props.responses?.some((m) => 'delta' in m) || false}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
+      onFetchAttachment={props.onFetchAttachment}
     />
   )
 
@@ -451,7 +454,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
+  const isEndOfStream = isExchangeComplete(props.responses)
+  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(
+    !isEndOfStream
+  )
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
@@ -464,8 +470,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   useEffect(() => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
-
-  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -494,7 +498,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
 
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
-  const reasoningThoughts = props.responses.filter((r) => 'reasoning' in r)
+  const reasoningThoughts = props.responses.filter(
+    (r) => 'reasoning' in r || 'files' in r
+  )
 
   return (
     <div className={cssCard}>
@@ -514,6 +520,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
             onlyShowImmediateThought={false}
             startedAt={startedAt}
             updatedAt={updatedAt}
+            onFetchAttachment={props.onFetchAttachment}
           />
         </div>
       )}
@@ -542,6 +549,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               onlyShowImmediateThought={true}
               startedAt={startedAt}
               updatedAt={updatedAt}
+              onFetchAttachment={props.onFetchAttachment}
             />
           )}
         </div>

@@ -12,6 +12,10 @@ interface IRowCollapse {
   keyIndex: number
 }
 
+export type MlCopilotFileFetcher = (
+  file: MlCopilotFile
+) => Promise<MlCopilotFile>
+
 export const Generic = (props: { content: string }) => {
   return <div>{props.content}</div>
 }
@@ -378,12 +382,20 @@ const isImageMimetype = (mimetype: string): boolean => {
   return mimetype.startsWith('image/')
 }
 
+const isUnloadedAttachment = (file: MlCopilotFile): boolean =>
+  file.data.length === 0 &&
+  file.metadata?.attachment_prompt_id !== undefined &&
+  file.metadata.attachment_seq !== undefined &&
+  file.metadata.attachment_role !== undefined
+
 /**
  * Component for displaying an image file with error handling
  */
 const ImageFileItem = (props: {
   file: MlCopilotFile
   url: string | undefined
+  loadFailed: boolean
+  isLoading: boolean
   onDownload: (url: string, filename: string) => void
 }) => {
   const [imageError, setImageError] = useState(false)
@@ -392,15 +404,31 @@ const ImageFileItem = (props: {
     // Fallback to file icon if image fails to load
     return (
       <button
+        disabled={!props.url}
         onClick={() =>
           props.url && props.onDownload(props.url, props.file.name)
         }
-        className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
-        title={`Click to download ${props.file.name}`}
+        className="flex flex-row gap-2 items-center enabled:cursor-pointer enabled:hover:bg-chalkboard-20 dark:enabled:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+        title={
+          props.url
+            ? `Click to download ${props.file.name}`
+            : props.loadFailed
+              ? `Could not load ${props.file.name}`
+              : `Loading ${props.file.name}`
+        }
       >
         <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
         <span className="text-sm truncate">{props.file.name}</span>
-        <CustomIcon name="download" className="w-4 h-4 ml-auto flex-shrink-0" />
+        {props.isLoading || props.loadFailed ? (
+          <span className="ml-auto text-xs text-chalkboard-60">
+            {props.loadFailed ? 'Could not load' : 'Loading…'}
+          </span>
+        ) : (
+          <CustomIcon
+            name="download"
+            className="w-4 h-4 ml-auto flex-shrink-0"
+          />
+        )}
       </button>
     )
   }
@@ -426,21 +454,57 @@ const ImageFileItem = (props: {
   )
 }
 
-export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
-  const [objectUrls, setObjectUrls] = useState<string[]>([])
+export const FilesSnapshot = (props: {
+  files: MlCopilotFile[]
+  onFetchAttachment?: MlCopilotFileFetcher
+}) => {
+  const [files, setFiles] = useState(props.files)
+  const [failedFiles, setFailedFiles] = useState<Set<number>>(new Set())
+  const [objectUrls, setObjectUrls] = useState<(string | undefined)[]>([])
 
   useEffect(() => {
-    // Create object URLs for all files
-    const urls = props.files.map((file) =>
-      bytesToDataUrl(file.data, file.mimetype)
+    setFiles(props.files)
+    setFailedFiles(new Set())
+    const fetchAttachment = props.onFetchAttachment
+    if (!fetchAttachment) return
+
+    let canceled = false
+    props.files.forEach((file, index) => {
+      if (!isUnloadedAttachment(file)) return
+
+      fetchAttachment(file).then(
+        (fetchedFile) => {
+          if (canceled) return
+          setFiles((currentFiles) =>
+            currentFiles.map((currentFile, currentIndex) =>
+              currentIndex === index ? fetchedFile : currentFile
+            )
+          )
+        },
+        () => {
+          if (canceled) return
+          setFailedFiles((current) => new Set(current).add(index))
+        }
+      )
+    })
+
+    return () => {
+      canceled = true
+    }
+  }, [props.files, props.onFetchAttachment])
+
+  useEffect(() => {
+    const urls = files.map((file) =>
+      isUnloadedAttachment(file)
+        ? undefined
+        : bytesToDataUrl(file.data, file.mimetype)
     )
     setObjectUrls(urls)
 
-    // Cleanup object URLs when component unmounts
     return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url))
+      urls.forEach((url) => url && URL.revokeObjectURL(url))
     }
-  }, [props.files])
+  }, [files])
 
   const handleDownload = (url: string, filename: string) => {
     const link = document.createElement('a')
@@ -451,20 +515,16 @@ export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
     document.body.removeChild(link)
   }
 
-  const imageFiles = props.files.filter((file) =>
-    isImageMimetype(file.mimetype)
-  )
-  const otherFiles = props.files.filter(
-    (file) => !isImageMimetype(file.mimetype)
-  )
+  const imageFiles = files.filter((file) => isImageMimetype(file.mimetype))
+  const otherFiles = files.filter((file) => !isImageMimetype(file.mimetype))
 
   return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
-          {props.files.length === 1
+          {files.length === 1
             ? 'Zookeeper File'
-            : `Zookeeper Files (${props.files.length})`}
+            : `Zookeeper Files (${files.length})`}
         </ThoughtHeader>
       }
     >
@@ -472,33 +532,50 @@ export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
       <div className="min-w-0 max-w-full pt-4 pb-4 border-l pl-5 ml-3 b-3">
         <div className="flex max-w-full min-w-0 flex-col gap-3">
           {imageFiles.map((file, index) => {
-            const fileIndex = props.files.indexOf(file)
+            const fileIndex = files.indexOf(file)
             const url = objectUrls[fileIndex]
             return (
               <ImageFileItem
                 key={index}
                 file={file}
                 url={url}
+                loadFailed={failedFiles.has(fileIndex)}
+                isLoading={
+                  isUnloadedAttachment(file) && !failedFiles.has(fileIndex)
+                }
                 onDownload={handleDownload}
               />
             )
           })}
           {otherFiles.map((file, index) => {
-            const fileIndex = props.files.indexOf(file)
+            const fileIndex = files.indexOf(file)
             const url = objectUrls[fileIndex]
             return (
               <button
                 key={`other-${index}`}
+                disabled={!url}
                 onClick={() => url && handleDownload(url, file.name)}
-                className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
-                title={`Click to download ${file.name}`}
+                className="flex flex-row gap-2 items-center enabled:cursor-pointer enabled:hover:bg-chalkboard-20 dark:enabled:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+                title={
+                  url
+                    ? `Click to download ${file.name}`
+                    : failedFiles.has(fileIndex)
+                      ? `Could not load ${file.name}`
+                      : `Loading ${file.name}`
+                }
               >
                 <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
                 <span className="text-sm truncate">{file.name}</span>
-                <CustomIcon
-                  name="download"
-                  className="w-4 h-4 ml-auto flex-shrink-0"
-                />
+                {!url ? (
+                  <span className="ml-auto text-xs text-chalkboard-60">
+                    {failedFiles.has(fileIndex) ? 'Could not load' : 'Loading…'}
+                  </span>
+                ) : (
+                  <CustomIcon
+                    name="download"
+                    className="w-4 h-4 ml-auto flex-shrink-0"
+                  />
+                )}
               </button>
             )
           })}
@@ -519,6 +596,7 @@ const fromDataToComponent = (
     key?: string | number
     setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
     keyIndex: number
+    onFetchAttachment?: MlCopilotFileFetcher
   }
 ) => {
   if ('reasoning' in thought) {
@@ -695,7 +773,13 @@ const fromDataToComponent = (
   }
 
   if ('files' in thought) {
-    return <FilesSnapshot key={options.key} files={thought.files.files} />
+    return (
+      <FilesSnapshot
+        key={options.key}
+        files={thought.files.files}
+        onFetchAttachment={options.onFetchAttachment}
+      />
+    )
   }
 
   return null
@@ -705,6 +789,7 @@ export const Thinking = (props: {
   thoughts?: MlCopilotServerMessage[]
   isDone: boolean
   onlyShowImmediateThought: boolean
+  onFetchAttachment?: MlCopilotFileFetcher
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
   const isProgrammaticScrollRef = useRef(false)
@@ -789,6 +874,7 @@ export const Thinking = (props: {
       key: index,
       setAnyRowCollapse,
       keyIndex: index,
+      onFetchAttachment: props.onFetchAttachment,
     })
   })
 

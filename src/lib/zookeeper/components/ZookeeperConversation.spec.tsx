@@ -709,6 +709,61 @@ describe('ZookeeperConversation', () => {
     }
   })
 
+  test('fetches replayed files only after expanding a completed exchange', async () => {
+    const onFetchAttachment = vi.fn(() => new Promise<never>(() => {}))
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          responses: [
+            {
+              files: {
+                files: [
+                  {
+                    name: 'render.png',
+                    mimetype: 'image/png',
+                    data: [],
+                    metadata: {
+                      attachment_prompt_id: 'prompt-id',
+                      attachment_seq: '2',
+                      attachment_role: 'server',
+                    },
+                  },
+                ],
+              },
+            },
+            { end_of_stream: { whole_response: 'Done' } },
+          ],
+          deltasAggregated: 'Done',
+        },
+      ],
+    }
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        onFetchAttachment={onFetchAttachment}
+      />
+    )
+
+    expect(screen.getByText('See reasoning')).toBeInTheDocument()
+    expect(onFetchAttachment).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByText('See reasoning'))
+    await waitFor(() => expect(onFetchAttachment).toHaveBeenCalledOnce())
+  })
+
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'
 
