@@ -5,6 +5,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
+import { DEFAULT_BLANK_MAIN_KCL_CONTENTS } from '@src/lang/project'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -13,6 +14,12 @@ const clientErrorMocks = vi.hoisted(() => ({
 
 vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
+}))
+vi.mock('react-hot-toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }))
 
 import {
@@ -583,6 +590,73 @@ describe('KclManager diagnostics', () => {
 
     readSpy.mockRestore()
     watchSpy.mockRestore()
+  })
+
+  it('seeds blank main.kcl with the current KCL version', async () => {
+    const { kclManager } = createKclManagerTestHarness('')
+    const path = '/tmp/project/main.kcl'
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockResolvedValue('')
+    const writeSpy = vi
+      .spyOn(File.ioImplementations, 'write')
+      .mockResolvedValue(undefined)
+    const watchSpy = vi
+      .spyOn(File.ioImplementations, 'watch')
+      .mockImplementation(() => {})
+
+    await KclManager.fromFile(
+      new File(path, 101),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(writeSpy).toHaveBeenCalledWith(path, DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+    expect(kclManager.code).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+
+    readSpy.mockRestore()
+    writeSpy.mockRestore()
+    watchSpy.mockRestore()
+  })
+
+  it('seeds the default KCL version when the user clears main.kcl', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    kclManager.path = '/tmp/project/main.kcl'
+    await kclManager.wasmInstancePromise
+
+    vi.useFakeTimers()
+    kclManager.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: kclManager.editorView.state.doc.length,
+        insert: '',
+      },
+    })
+
+    expect(kclManager.code).toBe('')
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.code).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+  })
+
+  it('does not seed KCL version when clearing a non-main file', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    kclManager.path = '/tmp/project/other.kcl'
+    await kclManager.wasmInstancePromise
+
+    vi.useFakeTimers()
+    kclManager.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: kclManager.editorView.state.doc.length,
+        insert: '',
+      },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.code).toBe('')
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {

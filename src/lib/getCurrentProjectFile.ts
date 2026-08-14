@@ -7,6 +7,10 @@ import {
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import * as fs from 'fs/promises'
 
+import {
+  ensureDefaultKclVersionOnBlankMain,
+  isMainKclPath,
+} from '@src/lang/project'
 import { changeKclVersion } from '@src/lang/wasm'
 import { DEFAULT_KCL_VERSION, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isExtensionAnImportExtension } from '@src/lib/paths'
@@ -71,6 +75,7 @@ export default async function getCurrentProjectFile(
         await fs.writeFile(projectFile, newFileContents)
       }
 
+      await seedBlankMainKclOnDisk(projectFile, wasmInstance)
       return projectFile
     }
 
@@ -80,7 +85,9 @@ export default async function getCurrentProjectFile(
     if (gotMain.length === 0) {
       return path.join(sourcePath, kclFiles[0])
     }
-    return path.join(sourcePath, PROJECT_ENTRYPOINT)
+    const projectFile = path.join(sourcePath, PROJECT_ENTRYPOINT)
+    await seedBlankMainKclOnDisk(projectFile, wasmInstance)
+    return projectFile
   }
 
   // Check if the extension on what we are trying to open is a relevant file type.
@@ -128,5 +135,30 @@ import "${importFileName}" as ${alias}`
     return kclWrapperFilePath
   }
 
+  await seedBlankMainKclOnDisk(sourcePath, wasmInstance)
   return sourcePath
+}
+
+async function seedBlankMainKclOnDisk(
+  filePath: string,
+  wasmInstance: ModuleType
+) {
+  if (!isMainKclPath(filePath)) {
+    return
+  }
+  let contents: string
+  try {
+    contents = await fs.readFile(filePath, 'utf8')
+  } catch {
+    return
+  }
+  const seeded = ensureDefaultKclVersionOnBlankMain(
+    filePath,
+    contents,
+    wasmInstance
+  )
+  if (err(seeded) || seeded === contents) {
+    return
+  }
+  await fs.writeFile(filePath, seeded)
 }

@@ -13,6 +13,10 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import {
+  ensureDefaultKclVersionOnBlankMain,
+  isMainKclPath,
+} from '@src/lang/project'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -43,6 +47,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
@@ -653,6 +658,13 @@ const executionCompartment = new Compartment()
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
+function notifyDefaultKclVersionSeeded() {
+  toast.success(
+    `Set project to use the default version (KCL ${DEFAULT_KCL_VERSION}).`,
+    { duration: 5_000 }
+  )
+}
+
 const modelingMachineAnnotation = Annotation.define<boolean>()
 export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
@@ -1097,6 +1109,9 @@ export class KclManager extends File {
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  private timeoutSeedDefaultKclVersion:
+    | ReturnType<typeof setTimeout>
+    | undefined = undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -1529,6 +1544,59 @@ export class KclManager extends File {
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
+
+  /**
+   * When the user clears `main.kcl`, wait briefly and then write the default
+   * KCL version if the editor is still empty.
+   */
+  private seedDefaultKclVersionListener = EditorView.updateListener.of(
+    (update) => {
+      if (!update.docChanged) return
+      const isProgrammaticUpdate = update.transactions.some((tr) =>
+        Boolean(tr.annotation(updateOutsideEditorEvent.type))
+      )
+      if (isProgrammaticUpdate) {
+        return
+      }
+
+      this.scheduleSeedDefaultKclVersion(update.state.doc.toString())
+    }
+  )
+
+  private scheduleSeedDefaultKclVersion(code: string) {
+    clearTimeout(this.timeoutSeedDefaultKclVersion)
+    this.timeoutSeedDefaultKclVersion = undefined
+    if (!isMainKclPath(this.path) || code.trim() !== '') {
+      return
+    }
+
+    this.timeoutSeedDefaultKclVersion = setTimeout(() => {
+      this.applySeedDefaultKclVersion()
+    }, 1_000)
+  }
+
+  private applySeedDefaultKclVersion() {
+    this.timeoutSeedDefaultKclVersion = undefined
+    if (!isMainKclPath(this.path) || this._wasmInstance === null) {
+      return
+    }
+
+    const currentCode = this.code
+    const seeded = ensureDefaultKclVersionOnBlankMain(
+      this.path,
+      currentCode,
+      this._wasmInstance
+    )
+    if (err(seeded) || seeded === currentCode) {
+      return
+    }
+
+    this.updateCodeEditor(seeded, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    notifyDefaultKclVersionSeeded()
+  }
 
   /**
    * code mirror extension that clears modeling selection state when the document is empty
@@ -2044,6 +2112,7 @@ export class KclManager extends File {
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
       this.sketchCheckpointHistoryExtension,
+      this.seedDefaultKclVersionListener,
       this.clearSelectionsOnEmptyDoc,
     ]
   }
@@ -2066,12 +2135,34 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
+    let diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
-    const initialCode =
+    let initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
         ? normalizeLineEndings(recoverySnapshot.code)
         : diskCode
+
+    if (providedCode === undefined && isMainKclPath(file.path)) {
+      try {
+        const wasmInstance = await systemDeps.wasmInstancePromise
+        const seeded = ensureDefaultKclVersionOnBlankMain(
+          file.path,
+          initialCode,
+          wasmInstance
+        )
+        if (!err(seeded) && seeded !== initialCode) {
+          initialCode = seeded
+          await file.write(initialCode)
+          diskCode = initialCode
+          notifyDefaultKclVersionSeeded()
+        }
+      } catch (error) {
+        console.error(
+          'Failed to write default KCL version settings to blank main.kcl',
+          error
+        )
+      }
+    }
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
@@ -2166,6 +2257,7 @@ export class KclManager extends File {
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
+        this._wasmInstance = wasmInstance
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
@@ -2190,6 +2282,7 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
+    clearTimeout(this.timeoutSeedDefaultKclVersion)
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
