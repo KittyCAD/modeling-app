@@ -53,6 +53,7 @@ __all__ = [
     "SnapshotOptions",
     "StepExportOptions",
     "StepImportOptions",
+    "StepImportTargetRepresentation",
     "StepPresentation",
     "StlExportOptions",
     "StlImportOptions",
@@ -893,6 +894,20 @@ class PlyStorage(enum.Enum):
     BinaryBigEndian = ...
     r"""
     Encode payload as binary using big endian.
+    """
+
+@typing.final
+class StepImportTargetRepresentation(enum.Enum):
+    r"""
+    After importing, how should this model's data be represented?
+    """
+    Mesh = ...
+    r"""
+    Mesh of 2D geometry
+    """
+    Brep = ...
+    r"""
+    Boundary representation
     """
 
 @typing.final

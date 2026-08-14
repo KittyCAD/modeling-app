@@ -1,4 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
+import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -39,7 +40,7 @@ import {
   onUnhide,
   stdLibMap,
 } from '@src/lib/operations'
-import type { DefaultPlaneStr } from '@src/lib/planes'
+import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
@@ -1569,7 +1570,7 @@ const DefaultPlanes = ({
             data: {
               selectionType: 'defaultPlaneSelection',
               selection: {
-                name: foundDefaultPlane[0] as DefaultPlaneStr,
+                name: defaultPlaneNameToKcl(foundDefaultPlane[0] as PlaneName),
                 id: planeId,
               },
             },

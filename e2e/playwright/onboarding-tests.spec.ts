@@ -72,6 +72,11 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
       await test.step('Dismiss the onboarding', async () => {
         await prevButton.hover()
         await prevButton.click()
+        await homePage.expectIsCurrentPage()
+        await page.goBack()
+        await expect(page).not.toHaveURL(/\/onboarding\//)
+        await page.goForward()
+        await homePage.expectIsCurrentPage()
       })
     })
 
@@ -94,12 +99,10 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
 
       await test.step('Dismiss the onboarding', async () => {
         await page.keyboard.press('Escape')
-        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-        await expect.poll(() => page.url()).not.toContain('/onboarding')
+        await homePage.expectIsCurrentPage()
       })
 
       await test.step('Verify the replay project was created', async () => {
-        await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
           projectCards: [
@@ -122,12 +125,10 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
 
       await test.step('Dismiss the onboarding', async () => {
         await page.keyboard.press('Escape')
-        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-        await expect.poll(() => page.url()).not.toContain('/onboarding')
+        await homePage.expectIsCurrentPage()
       })
 
       await test.step('Verify another replay project was created', async () => {
-        await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
         await homePage.expectState({
           projectCards: [
