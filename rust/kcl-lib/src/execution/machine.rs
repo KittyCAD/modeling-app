@@ -1724,7 +1724,7 @@ async fn machine_call(
     // native stack, so this is policy, not a native-stack limit. It must
     // behave when raised to 50,000 or more.
     if exec_state.mod_local.machine_call_depth >= ctx.machine_call_depth_limit {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+        return Err(KclError::new_max_call_stack(KclErrorDetails::new(
             format!(
                 "Call depth limit ({}) exceeded. This usually means a function is recursing without a base case.",
                 ctx.machine_call_depth_limit

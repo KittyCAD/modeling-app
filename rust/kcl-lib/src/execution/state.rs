@@ -678,10 +678,14 @@ impl ExecState {
     pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
         // If you change this, make sure to test in WebAssembly in the app since
         // that's the limiting factor.
-        if self.mod_local.call_stack_size >= 50 {
-            return Err(KclError::MaxCallStack {
-                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
-            });
+        const LIMIT: usize = 50;
+        if self.mod_local.call_stack_size >= LIMIT {
+            return Err(KclError::new_max_call_stack(KclErrorDetails::new(
+                format!(
+                    "Call depth limit ({LIMIT}) exceeded. This usually means a function is recursing without a base case."
+                ),
+                vec![range],
+            )));
         }
         self.mod_local.call_stack_size += 1;
         Ok(())
