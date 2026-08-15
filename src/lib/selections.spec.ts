@@ -1491,7 +1491,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     expect(references[0].code).toBe('seg01')
   })
 
-  test('resolves graph-only region wall selections to generated tag references', async () => {
+  test('resolves graph-only region wall selections to body-qualified sketch tag references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
@@ -1571,7 +1571,7 @@ cube = extrude(cubeRegion, length = 10)
     expect(references).toHaveLength(1)
     expect(references[0]).toMatchObject({
       label: 'Face',
-      code: 'cubeRegion.tags.right',
+      code: 'cube.sketch.tags.right',
     })
   })
 

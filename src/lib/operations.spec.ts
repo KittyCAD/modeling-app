@@ -808,10 +808,10 @@ describe('operations.test.ts', () => {
         sizeArgument: 'length',
       },
     ])(
-      'retrieves a direct region tag when editing $operationName',
+      'retrieves a body-qualified sketch tag when editing $operationName',
       async ({ operationName, commandName, sizeArgument }) => {
         const { rustContext } = await buildTheWorldAndNoEngineConnection()
-        const code = `${operationName}001 = ${operationName}(extrude001, tags = region001.tags.line2, ${sizeArgument} = 5)`
+        const code = `${operationName}001 = ${operationName}(extrude001, tags = extrude001.sketch.tags.line2, ${sizeArgument} = 5)`
         const operation = stdlib(operationName)
         if (operation.type !== 'StdLibCall') {
           throw new Error('Expected operation to be a StdLibCall')
@@ -830,7 +830,7 @@ describe('operations.test.ts', () => {
               value: 'line2',
               artifact_id: 'segment-id',
             },
-            sourceRange: rangeOfText(code, 'region001.tags.line2'),
+            sourceRange: rangeOfText(code, 'extrude001.sketch.tags.line2'),
           },
           [sizeArgument]: {
             value: { type: 'Number', value: 5, ty: { type: 'Any' } },
