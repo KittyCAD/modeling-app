@@ -69,6 +69,33 @@ const preferredWorkflowPaneMap: Record<
 
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
   null
+let onboardingStatusPersistenceQueue: Promise<void> = Promise.resolve()
+let onboardingStatusPersistenceVersion = 0
+
+function queueOnboardingStatusPersistence(
+  settings: ReturnType<typeof useApp>['settings'],
+  value: OnboardingStatus,
+  options: { priority?: boolean } = {}
+) {
+  const version = ++onboardingStatusPersistenceVersion
+  const waitForPrevious = options.priority
+    ? Promise.resolve()
+    : onboardingStatusPersistenceQueue.catch(() => undefined)
+  const persist = waitForPrevious.then(async () => {
+    await waitFor(settings.actor, (state) => state.matches('idle'))
+    if (version !== onboardingStatusPersistenceVersion) {
+      return
+    }
+    settings.send({
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value },
+    })
+    await waitFor(settings.actor, (state) => state.matches('idle'))
+  })
+
+  onboardingStatusPersistenceQueue = persist.catch(reportRejection)
+  return persist
+}
 
 export function consumeRememberedOnboardingWorkflowPanes():
   | DefaultLayoutPaneID[]
@@ -121,10 +148,9 @@ export function useNextClick(newStatus: OnboardingStatus) {
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
-    settings.send({
-      type: 'set.app.onboardingStatus',
-      data: { level: 'user', value: newStatus },
-    })
+    void queueOnboardingStatusPersistence(settings, newStatus).catch(
+      reportRejection
+    )
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
     void navigate(targetRoute, { replace: true })
   }, [filePath, newStatus, navigate, settings])
@@ -140,24 +166,16 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      waitFor(settings.actor, (state) => state.matches('idle'))
-        .then(() => {
-          settings.send({
-            type: 'set.app.onboardingStatus',
-            data: { level: 'user', value: dismissalType },
-          })
-          return waitFor(settings.actor, (state) => state.matches('idle'))
-        })
-        .then(() => {
-          void navigate(PATHS.HOME, { replace: true })
-          toast.success(
-            'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
-            {
-              duration: 5_000,
-            }
-          )
-        })
-        .catch(reportRejection)
+      void queueOnboardingStatusPersistence(settings, dismissalType, {
+        priority: true,
+      }).catch(reportRejection)
+      void navigate(PATHS.HOME, { replace: true })
+      toast.success(
+        'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
+        {
+          duration: 5_000,
+        }
+      )
     },
     [settings, navigate]
   )

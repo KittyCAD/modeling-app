@@ -10,12 +10,19 @@ export interface RequestedNavigation {
 export function shouldNavigateToRequestedPath(
   request: RequestedNavigation
 ): boolean {
+  const isOnboardingNavigation = request.requestedPath.includes(
+    String(PATHS.ONBOARDING)
+  )
+  if (isOnboardingNavigation && request.currentPathname === PATHS.HOME) {
+    return false
+  }
+
   const onboardingHasEnded =
     request.onboardingStatus === 'completed' ||
     request.onboardingStatus === 'dismissed'
   const isStaleOnboardingNavigation =
     onboardingHasEnded &&
-    request.requestedPath.includes(String(PATHS.ONBOARDING)) &&
+    isOnboardingNavigation &&
     !request.currentPathname.includes(String(PATHS.ONBOARDING))
 
   return !isStaleOnboardingNavigation

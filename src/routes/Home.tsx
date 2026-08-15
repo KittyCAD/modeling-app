@@ -279,6 +279,11 @@ function useProjectLibraryDrag({
   )
 }
 
+type ReadWriteProjectState = {
+  value: boolean
+  error: unknown
+}
+
 function getReadWriteProjectDirectoryState(
   projects: readonly HomeProjectEntry[]
 ): ReadWriteProjectState {

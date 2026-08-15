@@ -28,6 +28,16 @@ describe('shouldNavigateToRequestedPath', () => {
     ).toBe(true)
   })
 
+  it('ignores stale onboarding navigation after returning home', () => {
+    expect(
+      shouldNavigateToRequestedPath({
+        currentPathname: '/home',
+        onboardingStatus: '/desktop',
+        requestedPath: '/file/tutorial-project%2Fmain.kcl/onboarding/desktop',
+      })
+    ).toBe(false)
+  })
+
   it('allows ordinary file navigation after onboarding ends', () => {
     expect(
       shouldNavigateToRequestedPath({
