@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+pub use kcl_api::KclObjectKind;
 use kcl_api::UnitLength;
 use serde::Serialize;
 use serde::Serializer;
@@ -57,34 +58,6 @@ use crate::std::StdFnProps;
 use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
-
-#[derive(Debug, Clone, Default, PartialEq, Serialize)]
-pub enum KclObjectKind {
-    #[default]
-    Default,
-    SketchTags {
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        deprecated_solid_tag_names: Vec<String>,
-    },
-}
-
-impl KclObjectKind {
-    pub(crate) fn is_default(&self) -> bool {
-        match self {
-            KclObjectKind::Default => true,
-            KclObjectKind::SketchTags { .. } => false,
-        }
-    }
-
-    pub(crate) fn deprecated_solid_tag_names(&self) -> &[String] {
-        match self {
-            Self::Default => &[],
-            Self::SketchTags {
-                deprecated_solid_tag_names,
-            } => deprecated_solid_tag_names,
-        }
-    }
-}
 
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq)]

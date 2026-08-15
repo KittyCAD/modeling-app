@@ -14,6 +14,7 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::KclObjectKind;
 pub use kcl_api::Operation;
 pub use kcl_api::artifact::Artifact;
 pub use kcl_api::artifact::ArtifactGraph;
@@ -28,9 +29,9 @@ pub use kcl_api::artifact::StartSketchOnFace;
 pub use kcl_api::artifact::StartSketchOnPlane;
 use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
-pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
 pub use kcl_value_view::KclValueView;
+use kcl_value_view::KclValueViewTs;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -319,6 +320,7 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
+    #[ts(as = "IndexMap<String, KclValueViewTs>")]
     pub variables: IndexMap<String, KclValueView>,
     /// Operations that have been performed in execution order, grouped by
     /// owning module id, for display in the Feature Tree.

@@ -1,8 +1,3 @@
-use std::collections::HashMap;
-
-use serde::Serialize;
-
-use crate::ModuleId;
 use crate::exec::KclValue;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
@@ -17,97 +12,32 @@ use crate::execution::SketchConstraint;
 use crate::execution::SketchVar;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
-use crate::execution::types::NumericType;
 use crate::parsing::ast::types::KclNone;
 use crate::parsing::ast::types::TagDeclarator;
 
-pub type KclObjectFields = HashMap<String, KclValueView>;
+pub type KclValueView = kcl_api::KclValueView<
+    SketchVar,
+    SketchConstraint,
+    TagIdentifier,
+    crate::parsing::ast::types::BoxNode<TagDeclarator>,
+    GdtAnnotation,
+    CameraView,
+    Plane,
+    Face,
+    BoundedEdge,
+    AbstractSegment,
+    Sketch,
+    Solid,
+    Helix,
+    ImportedGeometry,
+    KclNone,
+>;
 
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum KclValueView {
-    Uuid {
-        value: ::uuid::Uuid,
-    },
-    Bool {
-        value: bool,
-    },
-    Number {
-        value: f64,
-        ty: NumericType,
-    },
-    String {
-        value: String,
-    },
-    /// Exposed by nominal identity, not by the variant's representation.
-    Enum {
-        enum_name: String,
-        variant: String,
-    },
-    SketchVar {
-        value: Box<SketchVar>,
-    },
-    SketchConstraint {
-        value: Box<SketchConstraint>,
-    },
-    Tuple {
-        value: Vec<KclValueView>,
-    },
-    // An array where all values have a shared type (not necessarily the same principal type).
-    HomArray {
-        value: Vec<KclValueView>,
-    },
-    Object {
-        value: KclObjectFields,
-        constrainable: bool,
-        #[serde(default, skip_serializing_if = "super::kcl_value::KclObjectKind::is_default")]
-        #[ts(skip)]
-        object_kind: super::kcl_value::KclObjectKind,
-    },
-    TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
-    GdtAnnotation {
-        value: Box<GdtAnnotation>,
-    },
-    CameraView {
-        value: Box<CameraView>,
-    },
-    Plane {
-        value: Box<Plane>,
-    },
-    Face {
-        value: Box<Face>,
-    },
-    BoundedEdge {
-        value: BoundedEdge,
-    },
-    Segment {
-        value: Box<AbstractSegment>,
-    },
-    Sketch {
-        value: Box<Sketch>,
-    },
-    Solid {
-        value: Box<Solid>,
-    },
-    Helix {
-        value: Box<Helix>,
-    },
-    ImportedGeometry(ImportedGeometry),
-    Function {},
-    Module {
-        value: ModuleId,
-    },
-    #[ts(skip)]
-    Type {
-        experimental: bool,
-    },
-    KclNone {
-        value: KclNone,
-    },
-}
+#[allow(dead_code)]
+#[derive(ts_rs::TS)]
+#[ts(export, rename = "KclValueView")]
+pub(crate) struct KclValueViewTs(#[ts(inline)] KclValueView);
 
 impl From<KclValue> for KclValueView {
     fn from(full: KclValue) -> Self {

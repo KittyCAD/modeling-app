@@ -21,11 +21,9 @@ pyo3 = { version = "0.28.3", optional = true }
 pyo3-stub-gen = { version = "0.22.3", optional = true, default-features = false, features = ["either", "numpy", "ordered-float"] }
 schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
 serde = { workspace = true }
+serde_json = { workspace = true }
 ts-rs = { version = "12.0.1", features = ["uuid-impl", "url-impl", "chrono-impl", "indexmap-impl", "no-serde-warnings", "serde-json-impl"] }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
-
-[dev-dependencies]
-serde_json = { workspace = true }
 
 [lints]
 workspace = true

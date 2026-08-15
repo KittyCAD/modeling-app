@@ -26,6 +26,7 @@ use crate::execution::DefaultPlanes;
 use crate::execution::KclValueView;
 use crate::execution::OperationsByModule;
 use crate::execution::RefactorMetadata;
+use crate::execution::kcl_value_view::KclValueViewTs;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -148,6 +149,7 @@ pub struct KclErrorWithOutputs {
     pub non_fatal: Vec<CompilationIssue>,
     /// Variables in the top-level of the root module. Note that functions will
     /// have an invalid env ref.
+    #[ts(as = "IndexMap<String, KclValueViewTs>")]
     pub variables: IndexMap<String, KclValueView>,
     pub operations: OperationsByModule,
     // TODO: Remove this field.  Doing so breaks the ts-rs output for some
