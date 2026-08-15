@@ -86,7 +86,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]), radius = 1)`
+fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
+  radius = 1,
+)`
   const extrudedTriangleWithChamfer = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5, tag = $seg01)
@@ -94,7 +101,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
-chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]), length = 1)`
+chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
+  length = 1,
+)`
   const twoExtrudedTriangles = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5)
@@ -379,7 +393,7 @@ sketch001 = sketch(on = face001) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = -12mm)
-fillet001 = fillet(extrude001, tags = region001.tags.circle1, radius = 1)
+fillet001 = fillet(extrude001, tags = extrude001.sketch.tags.circle1, radius = 1)
 `
         expect(newCode).toBe(expectedCode)
 
@@ -512,7 +526,7 @@ sketch001 = sketch(on = face001) {
 }
 region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = -12mm)
-fillet001 = fillet(perforatedPlate, tags = plateRegion.tags.bottomEdge, radius = 1)
+fillet001 = fillet(perforatedPlate, tags = perforatedPlate.sketch.tags.bottomEdge, radius = 1)
 `
         expect(newCode).toBe(expectedCode)
 
@@ -557,8 +571,8 @@ fillet001 = fillet(perforatedPlate, tags = plateRegion.tags.bottomEdge, radius =
           instanceInThisFile
         )
         const expectedOppositeCode = expectedCode.replace(
-          'tags = plateRegion.tags.bottomEdge',
-          'tags = getOppositeEdge(plateRegion.tags.bottomEdge)'
+          'tags = perforatedPlate.sketch.tags.bottomEdge',
+          'tags = getOppositeEdge(perforatedPlate.sketch.tags.bottomEdge)'
         )
         expect(oppositeCode).toBe(expectedOppositeCode)
 
@@ -682,7 +696,7 @@ fillet001 = fillet(perforatedPlate, tags = plateRegion.tags.bottomEdge, radius =
       expect(newCode).toContain(`fillet001 = fillet(
   cube1,
   tags = getCommonEdge(faces = [
-    region001.tags.line2,
+    cube1.sketch.tags.line2,
     cube1.faces.capEnd001
   ]),
   radius = 1,
@@ -862,7 +876,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain(
-        'fillet001 = fillet(part, tags = getCommonEdge(faces = [boxRegion.tags.topEdge, capEnd001]), radius = 1)'
+        'fillet001 = fillet(part, tags = getOppositeEdge(part.sketch.tags.topEdge), radius = 1)'
       )
       await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
       expect(kclManagerInThisFile.errors).toEqual([])
@@ -1053,8 +1067,14 @@ extrude001 = extrude(
 fillet001 = fillet(
   extrude001,
   tags = [
-    getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
-    getCommonEdge(faces = [seg01, extrude001.faces.capStart001])
+    getCommonEdge(faces = [
+      extrude001.sketch.tags.seg01,
+      extrude001.faces.capEnd001
+    ]),
+    getCommonEdge(faces = [
+      extrude001.sketch.tags.seg01,
+      extrude001.faces.capStart001
+    ])
   ],
   radius = 1,
 )`)
@@ -1145,7 +1165,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
   radius = 1,
   tag = $myTag,
 )`
@@ -1192,7 +1215,10 @@ ${extrudedTriangle}`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`fillet001 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
   radius = 1,
   version = 2,
 )`)
@@ -1333,8 +1359,10 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       if (err(newCode)) throw newCode
 
       // Should have created two separate fillet calls, one for each body
-      expect(newCode).toContain('fillet001 = fillet(extrude001')
-      expect(newCode).toContain('fillet002 = fillet(extrude002')
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,`)
+      expect(newCode).toContain(`fillet002 = fillet(
+  extrude002,`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1373,7 +1401,8 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
 
       // Verify the fillet was added
-      expect(newCode).toContain('fillet001 = fillet(revolve001')
+      expect(newCode).toContain(`fillet001 = fillet(
+  revolve001,`)
       expect(newCode).toContain('radius = 0.5')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1570,8 +1599,14 @@ extrude001 = extrude(
 chamfer001 = chamfer(
   extrude001,
   tags = [
-    getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
-    getCommonEdge(faces = [seg01, extrude001.faces.capStart001])
+    getCommonEdge(faces = [
+      extrude001.sketch.tags.seg01,
+      extrude001.faces.capEnd001
+    ]),
+    getCommonEdge(faces = [
+      extrude001.sketch.tags.seg01,
+      extrude001.faces.capStart001
+    ])
   ],
   length = 1,
 )`)
@@ -1618,7 +1653,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
   length = 1,
   secondLength = 1.1,
 )`)
@@ -1666,7 +1704,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
@@ -1713,7 +1754,10 @@ ${extrudedTriangle}`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.seg01,
+    extrude001.faces.capEnd001
+  ]),
   length = 1,
   version = 2,
 )`)
@@ -1803,8 +1847,10 @@ ${extrudedTriangle}`
       if (err(newCode)) throw newCode
 
       // Should have created two separate chamfer calls, one for each body
-      expect(newCode).toContain('chamfer001 = chamfer(extrude001')
-      expect(newCode).toContain('chamfer002 = chamfer(extrude002')
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,`)
+      expect(newCode).toContain(`chamfer002 = chamfer(
+  extrude002,`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -1843,7 +1889,8 @@ ${extrudedTriangle}`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
 
       // Verify the chamfer was added
-      expect(newCode).toContain('chamfer001 = chamfer(revolve001')
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  revolve001,`)
       expect(newCode).toContain('length = 0.5')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -2096,7 +2143,7 @@ ${extrudedTriangle}`
         throw newCode
       }
       expect(newCode).toContain(`blend001 = blend([
-  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line1)),
+  getBoundedEdge(extrude001, edge = getOppositeEdge(extrude001.sketch.tags.line1)),
   getBoundedEdge(extrude002, edge = ${secondEdgeExpr})
 ])`)
 
@@ -2220,7 +2267,7 @@ surface001 = flipSurface(extrude002)
       expect(newCode).toContain(
         `blend001 = blend([
   getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1),
-  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line2))
+  getBoundedEdge(extrude001, edge = getOppositeEdge(extrude001.sketch.tags.line2))
 ])`
       )
 

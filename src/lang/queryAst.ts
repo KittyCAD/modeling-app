@@ -2463,6 +2463,19 @@ export function getSketchSegmentNameFromSourceSurface(
     return sweepInput.property.name.name
   }
 
+  if (sweepInput.type === 'Name' && selectedSegment) {
+    const sourceSegmentId =
+      selectedSegment.originalSegId ??
+      selectedSegment.sourceSegmentId ??
+      selectedSegment.id
+    return getSketchSegmentName(
+      ast,
+      sourceSegmentId,
+      artifactGraph,
+      wasmInstance
+    )
+  }
+
   if (sweepInput.type !== 'ArrayExpression') {
     return null
   }
