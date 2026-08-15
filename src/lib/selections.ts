@@ -613,17 +613,6 @@ function getDirectTagExprFromSourceSurface({
 }): Expr | null {
   const { artifactGraph, kclManager, wasmInstance } = context
 
-  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact,
-    taggedArtifact,
-    artifactGraph,
-    kclManager.ast,
-    wasmInstance
-  )
-  if (regionTagExpr) {
-    return regionTagExpr
-  }
-
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
     sourceSurfaceArtifact,
     taggedArtifact,
@@ -640,6 +629,17 @@ function getDirectTagExprFromSourceSurface({
       ),
       sketchSegmentName
     )
+  }
+
+  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
+    sourceSurfaceArtifact,
+    taggedArtifact,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (regionTagExpr) {
+    return regionTagExpr
   }
 
   const segmentArtifact = getSegmentArtifactForTagReference(

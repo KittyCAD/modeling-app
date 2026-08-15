@@ -331,7 +331,7 @@ extrude001 = extrude(region001, length = 100)`
       ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
 helix001 = helix(
   axis = getCommonEdge(faces = [
-    region001.tags.line1,
+    extrude001.sketch.tags.line1,
     extrude001.faces.capEnd001
   ]),
   revolutions = 1,

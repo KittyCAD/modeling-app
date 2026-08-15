@@ -479,16 +479,21 @@ function buildEdgeExpr(
   const sourceSurfaceArtifact = edgeContext.sourceSweep
   const sourceSurfaceExpr = edgeContext.selectedBodyExpr
 
-  // Region-based sketch-solve surface case: building region###.tags.line#.
-  const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
+  // Prefer a body-qualified sketch tag, including for region-backed sweeps.
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
     sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
-    wasmInstance
+    wasmInstance,
+    { fallbackToFirstSegment: false }
   )
-  if (regionSketchTagExpr && !edgeContext.isClone) {
-    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
+  if (sketchSegmentName) {
+    const sketchTagExpr = createSketchTagMemberExpression(
+      sourceSurfaceExpr,
+      sketchSegmentName
+    )
+    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
 
     return {
       modifiedAst: ast,
@@ -500,20 +505,16 @@ function buildEdgeExpr(
     }
   }
 
-  // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression.
-  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+  // Fall back to the region tag when the source segment cannot be resolved.
+  const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
     sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
     wasmInstance
   )
-  if (sketchSegmentName) {
-    const sketchTagExpr = createSketchTagMemberExpression(
-      sourceSurfaceExpr,
-      sketchSegmentName
-    )
-    const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
+  if (regionSketchTagExpr && !edgeContext.isClone) {
+    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
 
     return {
       modifiedAst: ast,
@@ -802,19 +803,32 @@ function getTagsExprsFromSelection(
             artifact.pathId === segmentArtifact.pathId &&
             artifact.originalSegId === segmentArtifact.originalSegId
         )
-        const directTagExpr = getRegionSketchTagExprFromSourceSurface(
+        const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
           edgeContext.sourceSweep,
           edgeArtifact,
           artifactGraph,
           modifiedAst,
-          wasmInstance
+          wasmInstance,
+          { fallbackToFirstSegment: false }
         )
+        const directTagExpr = sketchSegmentName
+          ? createSketchTagMemberExpression(
+              edgeContext.selectedBodyExpr,
+              sketchSegmentName
+            )
+          : getRegionSketchTagExprFromSourceSurface(
+              edgeContext.sourceSweep,
+              edgeArtifact,
+              artifactGraph,
+              modifiedAst,
+              wasmInstance
+            )
         if (
           needsStableMappedTag &&
           mappedSegments.length === 1 &&
           directTagExpr
         ) {
-          // A unique mapped region tag identifies the selected edge directly,
+          // A unique mapped sketch tag identifies the selected edge directly,
           // or through its opposite wrapper. Use it only where rebuilding from
           // faces can fail after booleans or across sweeps; ordinary extrusion
           // edges retain their face-based references for sequential edge cuts.
