@@ -61,7 +61,7 @@ describe('onboarding navigation', () => {
     mocks.settingsWaitFor.mockResolvedValue(undefined)
   })
 
-  it('returns home after completing onboarding', async () => {
+  it('returns home immediately after completing onboarding', async () => {
     const idleBeforeUpdate = createDeferred()
     const idleAfterUpdate = createDeferred()
     mocks.settingsWaitFor
@@ -73,6 +73,7 @@ describe('onboarding navigation', () => {
       result.current('completed')
     })
 
+    expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
     expect(mocks.settingsSend).not.toHaveBeenCalled()
     idleBeforeUpdate.resolve()
     await waitForAssertion(() => {
@@ -81,12 +82,10 @@ describe('onboarding navigation', () => {
         data: { level: 'user', value: 'completed' },
       })
     })
-    expect(mocks.navigate).not.toHaveBeenCalled()
     idleAfterUpdate.resolve()
     await waitForAssertion(() => {
-      expect(mocks.navigate).toHaveBeenCalledWith('/home', { replace: true })
+      expect(mocks.settingsWaitFor).toHaveBeenCalledTimes(2)
     })
-    expect(mocks.settingsWaitFor).toHaveBeenCalledTimes(2)
   })
 
   it('returns home after onboarding is dismissed', async () => {
