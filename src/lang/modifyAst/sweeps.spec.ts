@@ -1324,7 +1324,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude002 = extrude(profile002, to = rectangleSegmentA001)`
+        `extrude002 = extrude(profile002, to = extrude001.sketch.tags.rectangleSegmentA001)`
       )
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,

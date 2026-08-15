@@ -36,7 +36,6 @@ import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
   getNodeFromPath,
-  getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
@@ -1341,18 +1340,6 @@ function getEdgeProfileExprsFromSelection({
       continue
     }
 
-    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-      sourceSurfaceArtifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
-    if (regionSketchTagExpr && !edgeContext.isClone) {
-      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
-      continue
-    }
-
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       selection,
@@ -1367,7 +1354,34 @@ function getEdgeProfileExprsFromSelection({
       return new Error("Couldn't retrieve edge profile expression.")
     }
 
-    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
+    const insertedSketchSegmentName =
+      getSketchSegmentName(
+        modifiedAst,
+        edgeArtifact.segId,
+        artifactGraph,
+        wasmInstance
+      ) ??
+      (originalSegment && originalSegment.id !== edgeArtifact.segId
+        ? getSketchSegmentName(
+            modifiedAst,
+            originalSegment.id,
+            artifactGraph,
+            wasmInstance
+          )
+        : null)
+    if (!insertedSketchSegmentName) {
+      return new Error("Couldn't resolve the sweep edge's sketch tag.")
+    }
+
+    exprs.push(
+      getEdgeTagCall(
+        createSketchTagMemberExpression(
+          sourceSurfaceExpr,
+          insertedSketchSegmentName
+        ),
+        edgeArtifact
+      )
+    )
   }
 
   if (unresolvedPrimitiveEdgeSelections.length > 0) {

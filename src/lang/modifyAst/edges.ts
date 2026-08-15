@@ -29,7 +29,6 @@ import {
 import {
   createSketchTagMemberExpression,
   getNodeFromPath,
-  getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getSketchVariableNameForSegment,
@@ -506,27 +505,6 @@ function buildEdgeExpr(
     }
   }
 
-  // Fall back to the region tag when the source segment cannot be resolved.
-  const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact,
-    edgeArtifact,
-    artifactGraph,
-    ast,
-    wasmInstance
-  )
-  if (regionSketchTagExpr && !edgeContext.isClone) {
-    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
-
-    return {
-      modifiedAst: ast,
-      edgeExpr: createCallExpressionStdLibKw(
-        'getBoundedEdge',
-        structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', edgeExpr)]
-      ),
-    }
-  }
-
   // Regular case
   const tagResult = modifyAstWithTagsForSelection(
     ast,
@@ -817,13 +795,7 @@ function getTagsExprsFromSelection(
               edgeContext.selectedBodyExpr,
               sketchSegmentName
             )
-          : getRegionSketchTagExprFromSourceSurface(
-              edgeContext.sourceSweep,
-              edgeArtifact,
-              artifactGraph,
-              modifiedAst,
-              wasmInstance
-            )
+          : null
         if (
           needsStableMappedTag &&
           mappedSegments.length === 1 &&
