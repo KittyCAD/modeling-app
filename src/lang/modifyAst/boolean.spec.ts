@@ -1,6 +1,12 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { addSplit, addSubtract } from '@src/lang/modifyAst/boolean'
+import {
+  addIntersect,
+  addSplit,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
 import { recast } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -10,7 +16,6 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -78,6 +83,201 @@ async function getSolidsAndTools(
 }
 
 describe('boolean', () => {
+  describe('rejecting reused bodies', () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
+extrude001 = extrude(profile001, length = 1)
+
+sketch002 = startSketchOn(XZ)
+profile002 = circle(sketch002, center = [0.2, 0.2], radius = 0.05)
+extrude002 = extrude(profile002, length = -1)`
+
+    const reusedBodyCases = [
+      {
+        name: 'union solids',
+        operation: 'union',
+        solidIds: [1, 1],
+        toolIds: [],
+      },
+      {
+        name: 'intersect solids',
+        operation: 'intersect',
+        solidIds: [1, 1],
+        toolIds: [],
+      },
+      {
+        name: 'subtract targets and tools',
+        operation: 'subtract',
+        solidIds: [1],
+        toolIds: [1],
+      },
+      {
+        name: 'subtract targets',
+        operation: 'subtract',
+        solidIds: [1, 1],
+        toolIds: [0],
+      },
+      {
+        name: 'subtract tools',
+        operation: 'subtract',
+        solidIds: [0],
+        toolIds: [1, 1],
+      },
+      {
+        name: 'split targets and tools',
+        operation: 'split',
+        solidIds: [1],
+        toolIds: [1],
+      },
+      {
+        name: 'split targets',
+        operation: 'split',
+        solidIds: [1, 1],
+        toolIds: [],
+      },
+      {
+        name: 'split tools',
+        operation: 'split',
+        solidIds: [0],
+        toolIds: [1, 1],
+      },
+    ] satisfies Array<{
+      name: string
+      operation: 'union' | 'intersect' | 'subtract' | 'split'
+      solidIds: number[]
+      toolIds: number[]
+    }>
+
+    it.each(reusedBodyCases)(
+      'should reject reused bodies in $name',
+      async ({ operation, solidIds, toolIds }) => {
+        const { ast, artifactGraph, solids, tools } = await getSolidsAndTools(
+          code,
+          solidIds,
+          toolIds,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+
+        let result: ReturnType<typeof addUnion>
+        switch (operation) {
+          case 'union':
+            result = addUnion({
+              ast,
+              artifactGraph,
+              solids,
+              wasmInstance: instanceInThisFile,
+            })
+            break
+          case 'intersect':
+            result = addIntersect({
+              ast,
+              artifactGraph,
+              solids,
+              wasmInstance: instanceInThisFile,
+            })
+            break
+          case 'subtract':
+            result = addSubtract({
+              ast,
+              artifactGraph,
+              solids,
+              tools,
+              wasmInstance: instanceInThisFile,
+            })
+            break
+          case 'split':
+            result = addSplit({
+              ast,
+              artifactGraph,
+              targets: solids,
+              tools,
+              wasmInstance: instanceInThisFile,
+            })
+            break
+        }
+
+        expect(result).toEqual(
+          new Error(
+            'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
+          )
+        )
+      }
+    )
+
+    it.each(['union', 'intersect'] as const)(
+      'should allow distinct bodies for %s',
+      async (operation) => {
+        const { ast, artifactGraph, solids } = await getSolidsAndTools(
+          code,
+          [0, 1],
+          [],
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const result =
+          operation === 'union'
+            ? addUnion({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+            : addIntersect({
+                ast,
+                artifactGraph,
+                solids,
+                wasmInstance: instanceInThisFile,
+              })
+        if (err(result)) {
+          throw result
+        }
+
+        expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+          `${operation}([extrude001, extrude002])`
+        )
+      }
+    )
+
+    it.each(['subtract', 'split'] as const)(
+      'should reject the same variable-less pipe in %s targets and tools',
+      async (operation) => {
+        const pipeCode = `startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 1)`
+        const { ast, artifactGraph, solids, tools } = await getSolidsAndTools(
+          pipeCode,
+          [0],
+          [0],
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const result =
+          operation === 'subtract'
+            ? addSubtract({
+                ast,
+                artifactGraph,
+                solids,
+                tools,
+                wasmInstance: instanceInThisFile,
+              })
+            : addSplit({
+                ast,
+                artifactGraph,
+                targets: solids,
+                tools,
+                wasmInstance: instanceInThisFile,
+              })
+
+        expect(result).toEqual(
+          new Error(
+            'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
+          )
+        )
+      }
+    )
+  })
+
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(
       code: string,
@@ -292,8 +492,7 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
   })
 
   // From https://github.com/KittyCAD/modeling-app/blob/d83324ac30430af675806c143ee6fb30df8bdaa8/src/lang/modifyAst/boolean.test.ts#L7
-  // addIntersect and addUnion are not tested here, as they would be 1:1 with existing e2e tests
-  // so just adding extra addSubtract cases here
+  // The detailed addIntersect and addUnion behavior remains covered by the existing e2e tests.
 
   describe('Testing addSplit', () => {
     async function runAddSplitTest({

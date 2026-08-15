@@ -87,6 +87,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
 } from '@src/lib/constants'
+import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr, reportRejection } from '@src/lib/trap'
@@ -303,6 +304,7 @@ export type SelectionReference = {
   label: string
   code: string
   graphSelection?: Selection
+  defaultPlaneSelection?: DefaultPlaneSelection
   enginePrimitiveSelection?: EnginePrimitiveSelection
 }
 
@@ -921,6 +923,7 @@ function createExpressionReferences({
 
 export async function getSelectionReferences({
   graphSelections,
+  defaultPlaneSelections,
   enginePrimitives,
   artifactGraph,
   engineCommandManager,
@@ -928,13 +931,24 @@ export async function getSelectionReferences({
   wasmInstance,
 }: {
   graphSelections: Selection[]
+  defaultPlaneSelections: DefaultPlaneSelection[]
   enginePrimitives: EnginePrimitiveSelection[]
   artifactGraph: ArtifactGraph
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   wasmInstance: ModuleType
 }): Promise<SelectionReference[]> {
-  const references: SelectionReference[] = []
+  const references: SelectionReference[] = defaultPlaneSelections.map(
+    (selection) => {
+      const planeName = defaultPlaneNameToKcl(selection.name)
+      return {
+        id: `plane:${selection.id}`,
+        label: `${planeName} Plane`,
+        code: planeName,
+        defaultPlaneSelection: selection,
+      }
+    }
+  )
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
   const graphSelectionByEntityId = new Map<string, Selection>(
     graphSelections.flatMap((selection): [string, Selection][] => {
@@ -1074,11 +1088,19 @@ function isSameEnginePrimitiveSelection(
   return left.entityId === right.entityId
 }
 
+function isSameDefaultPlaneSelection(
+  left: DefaultPlaneSelection,
+  right: DefaultPlaneSelection
+) {
+  return left.id === right.id
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
   const graphSelectionToRemove = reference.graphSelection
+  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
   const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
 
   return {
@@ -1088,18 +1110,28 @@ export function removeReferenceFromSelections(
             !isSameGraphSelection(selection, graphSelectionToRemove)
         )
       : selections.graphSelections,
-    otherSelections: enginePrimitiveSelectionToRemove
-      ? selections.otherSelections.filter(
-          (selection) =>
-            !(
-              isEnginePrimitiveSelection(selection) &&
-              isSameEnginePrimitiveSelection(
-                selection,
-                enginePrimitiveSelectionToRemove
-              )
-            )
+    otherSelections: selections.otherSelections.filter((selection) => {
+      if (
+        defaultPlaneSelectionToRemove &&
+        isDefaultPlaneSelection(selection) &&
+        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
+      ) {
+        return false
+      }
+
+      if (
+        enginePrimitiveSelectionToRemove &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          enginePrimitiveSelectionToRemove
         )
-      : selections.otherSelections,
+      ) {
+        return false
+      }
+
+      return true
+    }),
   }
 }
 
@@ -1160,7 +1192,7 @@ export async function getEventForSelectWithPoint(
       data: {
         selectionType: 'defaultPlaneSelection',
         selection: {
-          name: foundDefaultPlane[0] as DefaultPlaneStr,
+          name: defaultPlaneNameToKcl(foundDefaultPlane[0] as PlaneName),
           id: data.entity_id,
         },
       },

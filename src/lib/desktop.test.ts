@@ -1,9 +1,10 @@
+import { tmpdir } from 'node:os'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
-import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -26,6 +27,9 @@ beforeAll(async () => {
   })
 })
 
+const createTempDirectoryPath = () =>
+  fsZds.join(tmpdir(), `create-project-${crypto.randomUUID()}`)
+
 describe('createNewProjectDirectory', () => {
   afterEach(async () => {
     await Promise.all(
@@ -37,7 +41,7 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('creates project.toml title metadata for new projects', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
@@ -64,7 +68,7 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('can create project directories with separate project titles', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const project = await createNewProjectDirectory(
@@ -94,8 +98,8 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('uses the default directory library when creating new projects from settings', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
-    const legacyProjectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
+    const legacyProjectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
     createdProjectDirectoryPaths.push(legacyProjectDirectoryPath)
 
@@ -127,7 +131,7 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const originalReadFile = fsZds.readFile
@@ -135,7 +139,7 @@ describe('createNewProjectDirectory', () => {
     fsZds.readFile = (async (filePath: string, options?: unknown) => {
       if (
         !hasThrownSerializedEnoent &&
-        filePath.endsWith(`/${PROJECT_SETTINGS_FILE_NAME}`)
+        fsZds.basename(filePath) === PROJECT_SETTINGS_FILE_NAME
       ) {
         hasThrownSerializedEnoent = true
         return Promise.reject(
@@ -174,7 +178,7 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('treats Electron ENOENT errors as missing project.toml metadata', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
     const originalReadFile = fsZds.readFile
@@ -182,7 +186,7 @@ describe('createNewProjectDirectory', () => {
     fsZds.readFile = (async (filePath: string, options?: unknown) => {
       if (
         !hasThrownElectronEnoent &&
-        filePath.endsWith(`/${PROJECT_SETTINGS_FILE_NAME}`)
+        fsZds.basename(filePath) === PROJECT_SETTINGS_FILE_NAME
       ) {
         hasThrownElectronEnoent = true
         return Promise.reject(
@@ -221,7 +225,7 @@ describe('createNewProjectDirectory', () => {
   })
 
   it('preserves project metadata when writing project settings', async () => {
-    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectDirectoryPath = createTempDirectoryPath()
     const projectPath = fsZds.join(projectDirectoryPath, 'test-1')
     createdProjectDirectoryPaths.push(projectDirectoryPath)
 
