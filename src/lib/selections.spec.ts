@@ -1386,7 +1386,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     }
   )
 
-  test('prefers adjacent/opposite edge references over primitive index references', async () => {
+  test('prefers body-qualified adjacent/opposite edge references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)
     const edgeArtifact = ___artifactGraph.get(
@@ -1427,10 +1427,12 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     })
 
     expect(references).toHaveLength(1)
-    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
+    expect(references[0].code).toBe(
+      'getNextAdjacentEdge(extrude001.sketch.tags.seg01)'
+    )
   })
 
-  test('prefers directly tagged swept face references over primitive index references', async () => {
+  test('prefers body-qualified swept face references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)
     const wallArtifact = ___artifactGraph.get(
@@ -1479,7 +1481,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     })
 
     expect(references).toHaveLength(1)
-    expect(references[0].code).toBe('seg01')
+    expect(references[0].code).toBe('extrude001.sketch.tags.seg01')
   })
 
   test('resolves graph-only region wall selections to body-qualified sketch tag references', async () => {
@@ -1565,7 +1567,7 @@ cube = extrude(cubeRegion, length = 10)
     })
   })
 
-  test('prefers directly tagged edge references over primitive index references', async () => {
+  test('prefers body-qualified edge references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)
     const segmentArtifact = ___artifactGraph.get(
@@ -1611,7 +1613,7 @@ cube = extrude(cubeRegion, length = 10)
 
     expect(
       references.find((reference) => reference.label === 'Edge')?.code
-    ).toBe('seg01')
+    ).toBe('extrude001.sketch.tags.seg01')
   })
 })
 

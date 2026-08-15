@@ -815,7 +815,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = getOppositeEdge(extrude001.sketch.tags.seg01),
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -888,7 +888,7 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getOppositeEdge(seg01),
+          axis = getOppositeEdge(extrude001.sketch.tags.seg01),
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1233,7 +1233,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,extrude001.faces.capEnd001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[extrude001.sketch.tags.seg01,extrude001.faces.capEnd001]), radius=5)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {

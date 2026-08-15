@@ -2392,6 +2392,28 @@ export function getSketchSegmentName(
     return directSegmentVarDec.node.declaration.id.name
   }
 
+  const segmentCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    !err(segmentCall) &&
+    segmentCall.node.type === 'CallExpressionKw' &&
+    isSketchSegmentCallName(segmentCall.node.callee.name.name)
+  ) {
+    const tagArg = segmentCall.node.arguments.find(
+      (arg) => arg.label?.name === 'tag'
+    )?.arg
+    if (tagArg?.type === 'TagDeclarator') {
+      return tagArg.value
+    }
+    if (tagArg?.type === 'Name') {
+      return tagArg.name.name
+    }
+  }
+
   return null
 }
 

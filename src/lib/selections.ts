@@ -30,13 +30,11 @@ import {
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
-  getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
@@ -631,15 +629,11 @@ function getDirectTagExprFromSourceSurface({
     )
   }
 
-  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact,
-    taggedArtifact,
-    artifactGraph,
-    kclManager.ast,
-    wasmInstance
-  )
-  if (regionTagExpr) {
-    return regionTagExpr
+  // A sweep edge must stay qualified to its body. If that cannot be
+  // resolved, let the primitive-index reference path handle it instead of
+  // degrading to an unqualified sketch tag.
+  if (taggedArtifact.type === 'sweepEdge') {
+    return null
   }
 
   const segmentArtifact = getSegmentArtifactForTagReference(
@@ -728,12 +722,10 @@ function createDirectTaggedEdgeReferenceExpr(
   return tagExpr
 }
 
-function createAdjacentOrOppositeEdgeReferenceExpr({
-  primitiveSelection,
-  artifactGraph,
-  kclManager,
-  wasmInstance,
-}: SelectionExpressionBuilderContext): Expr | null {
+function createAdjacentOrOppositeEdgeReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph } = context
   if (primitiveSelection.primitiveType !== 'edge') {
     return null
   }
@@ -758,19 +750,17 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
   if (err(sourceSurfaceArtifact)) {
     return null
   }
+  const sourceSurface = sourceSurfaceArtifact as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
 
-  const tagResult = modifyAstWithTagsForSelection(
-    kclManager.ast,
-    {
-      ...graphSelection,
-      artifact: edgeArtifact,
-      codeRef: graphSelection.codeRef,
-    },
-    artifactGraph,
-    wasmInstance,
-    ['oppositeAndAdjacentEdges']
-  )
-  const tagExpr = err(tagResult) ? null : tagResult.exprs[0]
+  const tagExpr = getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: sourceSurface,
+    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    taggedArtifact: edgeArtifact,
+    context,
+  })
   if (!tagExpr) {
     return null
   }
