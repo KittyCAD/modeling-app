@@ -1007,7 +1007,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1079,7 +1079,7 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1093,7 +1093,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1114,7 +1114,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
@@ -1128,7 +1128,7 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -2184,7 +2184,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_env()).await
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
@@ -2373,7 +2373,7 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -4899,7 +4899,7 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&ctx);

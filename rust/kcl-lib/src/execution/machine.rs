@@ -40,6 +40,7 @@
 //!   native frames per callback nesting level (bounded by the recursive
 //!   executor's call-stack cap, which still guards that path).
 
+use std::env;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
@@ -68,6 +69,7 @@ use crate::execution::state::SketchBlockState;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::ObjectId;
+use crate::kcl_runtime_flags;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -89,49 +91,108 @@ use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
 use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::UnaryExpression;
+use crate::runtime_flags::RuntimeFlagResolve;
+use crate::runtime_flags::resolve_from_sources;
+
+/// Environment variable selecting which executor implementation to use.
+const KCL_EXECUTOR_ENV_VAR: &str = "KCL_EXECUTOR";
 
 /// Which executor evaluates KCL. Crate-internal: set on
 /// [`ExecutorContext`] at construction time and immutable during a run.
 /// Cloning the context (fresh roots, `Args`) inherits the same kind, so every
 /// module and callback runs on the same executor.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+///
+/// Precedence: runtime flags > test override > `KCL_EXECUTOR` >
+/// [`ExecutorKind::resolve_default()`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ExecutorKind {
     /// The historical recursive tree-walking evaluator.
-    #[default]
     Recursive,
     /// The CEK machine in this module.
     Machine,
 }
 
-impl ExecutorKind {
-    /// Select the executor from the `KCL_EXECUTOR` environment variable:
-    /// `machine` or `recursive`, ASCII case-insensitive, surrounding
-    /// whitespace ignored. Setting the variable is an explicit opt-in and
-    /// applies to any context construction that consults it; unset or empty
-    /// means [`ExecutorKind::default`]. Any other value is a configuration
-    /// error and panics rather than silently running the wrong executor.
-    /// (Wasm builds have no environment, so this is always the default
-    /// there.)
-    pub(crate) fn from_env() -> Self {
-        Self::from_env_value(std::env::var("KCL_EXECUTOR").ok().as_deref())
+impl std::fmt::Display for ExecutorKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ExecutorKind::Recursive => write!(f, "recursive"),
+            ExecutorKind::Machine => write!(f, "machine"),
+        }
+    }
+}
+
+impl RuntimeFlagResolve for ExecutorKind {
+    fn on() -> Self {
+        Self::Machine
     }
 
-    /// The parsing half of [`Self::from_env`], split out so tests can drive
-    /// it without touching the process environment.
-    fn from_env_value(value: Option<&str>) -> Self {
-        let Some(value) = value else {
-            return ExecutorKind::default();
-        };
+    fn off() -> Self {
+        Self::Recursive
+    }
+
+    fn resolve_default() -> Self {
+        Self::Recursive
+    }
+
+    /// Select the executor from the `KCL_EXECUTOR` environment variable:
+    /// `machine` or `recursive`, ASCII case-insensitive, surrounding whitespace
+    /// ignored. Setting the variable is an explicit opt-in and applies to any
+    /// context construction that consults it; unset or empty means
+    /// [`ExecutorKind::default`]. Any other value is a configuration error that
+    /// warns and then uses the default. (Wasm builds have no environment, so
+    /// this is always the default there.)
+    fn parse_env_var(value: &str) -> Self {
         let value = value.trim();
         if value.is_empty() {
-            ExecutorKind::default()
+            Self::resolve_default()
         } else if value.eq_ignore_ascii_case("machine") {
             ExecutorKind::Machine
         } else if value.eq_ignore_ascii_case("recursive") {
             ExecutorKind::Recursive
         } else {
-            panic!("Invalid KCL_EXECUTOR value {value:?}; expected \"machine\" or \"recursive\"");
+            let def = Self::resolve_default();
+            // A mistyped value should not crash the process: warn and fall back
+            // to the default (the conservative choice for a misconfiguration).
+            Self::warn_once(|| {
+                format!(
+                    "Unsupported {KCL_EXECUTOR_ENV_VAR} value `{value}`; expected `recursive` or `machine`. Defaulting to `{def}`."
+                )
+            });
+            def
         }
+    }
+}
+
+impl ExecutorKind {
+    /// Resolve the active executor (see precedence on [`ExecutorKind`]).
+    pub(crate) fn resolve() -> Self {
+        let env_value = match env::var(KCL_EXECUTOR_ENV_VAR) {
+            Ok(value) => Some(value),
+            Err(env::VarError::NotPresent) => None,
+            Err(env::VarError::NotUnicode(value)) => {
+                // Invalid-unicode env var: warn and fall back rather than crash.
+                Self::warn_once(|| {
+                    let def = Self::resolve_default();
+                    format!(
+                        "{KCL_EXECUTOR_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `{def}`.",
+                        value.to_string_lossy()
+                    )
+                });
+                None
+            }
+        };
+
+        resolve_from_sources(kcl_runtime_flags().use_cek_executor, None, env_value.as_deref())
+    }
+
+    /// Emit a one-time configuration warning through `crate::log` (gated on
+    /// `ZOO_LOG`). `resolve`/`parse` run on every executor creation, so a
+    /// misconfigured `KCL_EXECUTOR` must not warn -- or allocate the message --
+    /// on every call. One guard suffices: only one kind of misconfiguration can
+    /// occur per process, since the env var holds a single value.
+    fn warn_once(make_message: impl FnOnce() -> String) {
+        static WARNED: std::sync::Once = std::sync::Once::new();
+        WARNED.call_once(|| crate::log::log(make_message()));
     }
 }
 
@@ -2381,24 +2442,23 @@ mod tests {
 
     #[test]
     fn executor_kind_from_env_value_parses_explicit_selections() {
-        assert_eq!(ExecutorKind::from_env_value(Some("machine")), ExecutorKind::Machine);
-        assert_eq!(ExecutorKind::from_env_value(Some("recursive")), ExecutorKind::Recursive);
-        assert_eq!(ExecutorKind::from_env_value(Some(" Machine\t")), ExecutorKind::Machine);
-        assert_eq!(ExecutorKind::from_env_value(Some("RECURSIVE")), ExecutorKind::Recursive);
+        assert_eq!(ExecutorKind::parse_env_var("machine"), ExecutorKind::Machine);
+        assert_eq!(ExecutorKind::parse_env_var("recursive"), ExecutorKind::Recursive);
+        assert_eq!(ExecutorKind::parse_env_var(" Machine\t"), ExecutorKind::Machine);
+        assert_eq!(ExecutorKind::parse_env_var("RECURSIVE"), ExecutorKind::Recursive);
     }
 
     #[test]
-    fn executor_kind_from_env_value_defaults_when_unset_or_empty() {
-        assert_eq!(ExecutorKind::from_env_value(None), ExecutorKind::default());
-        assert_eq!(ExecutorKind::from_env_value(Some("")), ExecutorKind::default());
-        assert_eq!(ExecutorKind::from_env_value(Some(" \t ")), ExecutorKind::default());
+    fn executor_kind_from_env_value_defaults_when_empty() {
+        assert_eq!(ExecutorKind::parse_env_var(""), ExecutorKind::resolve_default());
+        assert_eq!(ExecutorKind::parse_env_var(" \t "), ExecutorKind::resolve_default());
     }
 
     #[test]
-    #[should_panic(expected = "Invalid KCL_EXECUTOR value")]
-    fn executor_kind_from_env_value_rejects_unknown_values() {
-        let _ = ExecutorKind::from_env_value(Some("machin"));
+    fn executor_kind_from_env_value_defaults_when_unknown_value() {
+        assert_eq!(ExecutorKind::parse_env_var("machin"), ExecutorKind::resolve_default());
     }
+
     use super::*;
     use crate::execution::parse_execute_with_executor_kind;
 

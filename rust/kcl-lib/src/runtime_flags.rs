@@ -26,11 +26,13 @@ pub enum RuntimeFlag {
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 pub struct KclRuntimeFlags {
+    pub use_cek_executor: RuntimeFlag,
     pub use_new_lexer_parser: RuntimeFlag,
 }
 
 impl KclRuntimeFlags {
     pub const DEFAULT: Self = Self {
+        use_cek_executor: RuntimeFlag::Unset,
         use_new_lexer_parser: RuntimeFlag::Unset,
     };
 }
@@ -58,4 +60,31 @@ pub fn kcl_runtime_flags() -> KclRuntimeFlags {
         Ok(guard) => *guard,
         Err(poisoned) => *poisoned.into_inner(),
     }
+}
+
+pub(crate) trait RuntimeFlagResolve {
+    fn on() -> Self;
+    fn off() -> Self;
+    /// Not named `default()` so that it doesn't collide with
+    /// `Default::default()`.
+    fn resolve_default() -> Self;
+    fn parse_env_var(value: &str) -> Self;
+}
+
+pub(crate) fn resolve_from_sources<T: RuntimeFlagResolve>(
+    runtime_flag: RuntimeFlag,
+    test_override: Option<T>,
+    env_value: Option<&str>,
+) -> T {
+    match runtime_flag {
+        RuntimeFlag::On => return T::on(),
+        RuntimeFlag::Off => return T::off(),
+        RuntimeFlag::Unset => {}
+    }
+
+    if let Some(mode) = test_override {
+        return mode;
+    }
+
+    env_value.map(T::parse_env_var).unwrap_or_else(T::resolve_default)
 }
