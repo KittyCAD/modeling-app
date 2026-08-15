@@ -6118,6 +6118,9 @@ if true {
         assert_eq!(meta.non_code_nodes[&0][0].value(), "after 1");
     }
     #[test]
+    // The counter only exists with debug assertions; release test builds
+    // must still compile.
+    #[cfg(debug_assertions)]
     fn box_node_cow_clones_zero_for_parse_digest_node_paths() {
         // compute_digest and fill_node_paths mutate the AST in place through
         // BoxNode's copy-on-write DerefMut. On an exclusively owned tree
