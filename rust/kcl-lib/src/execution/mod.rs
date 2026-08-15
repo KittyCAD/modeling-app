@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -2203,6 +2204,18 @@ impl ExecTestResults {
     /// returned as an error, so this is the only place a test can see them.
     pub(crate) fn issues(&self) -> &[CompilationIssue] {
         self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 

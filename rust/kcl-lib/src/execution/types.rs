@@ -1504,9 +1504,10 @@ impl KclValue {
                 KclValue::CameraView { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
-            // No KclValue inhabits NamedView yet: its runtime value arrives
-            // with `view::named`.
-            PrimitiveType::NamedView => Err(self.into()),
+            PrimitiveType::NamedView => match self {
+                KclValue::NamedView { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Segment => match self {
                 KclValue::Segment { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1904,6 +1905,7 @@ impl KclValue {
             }
             KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
             KclValue::CameraView { .. } => Some(RuntimeType::Primitive(PrimitiveType::CameraView)),
+            KclValue::NamedView { .. } => Some(RuntimeType::Primitive(PrimitiveType::NamedView)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),

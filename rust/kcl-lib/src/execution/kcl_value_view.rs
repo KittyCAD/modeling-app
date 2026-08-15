@@ -11,6 +11,7 @@ use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Helix;
 use crate::execution::ImportedGeometry;
+use crate::execution::NamedViewValue;
 use crate::execution::Plane;
 use crate::execution::Sketch;
 use crate::execution::SketchConstraint;
@@ -73,6 +74,9 @@ pub enum KclValueView {
     },
     CameraView {
         value: Box<CameraView>,
+    },
+    NamedView {
+        value: Box<NamedViewValue>,
     },
     Plane {
         value: Box<Plane>,
@@ -142,6 +146,7 @@ impl From<KclValue> for KclValueView {
             KclValue::TagDeclarator(node) => KclValueView::TagDeclarator(node),
             KclValue::GdtAnnotation { value } => KclValueView::GdtAnnotation { value },
             KclValue::CameraView { value } => KclValueView::CameraView { value },
+            KclValue::NamedView { value } => KclValueView::NamedView { value },
             KclValue::Plane { value } => KclValueView::Plane { value },
             KclValue::Face { value } => KclValueView::Face { value },
             KclValue::BoundedEdge { value, .. } => KclValueView::BoundedEdge { value },

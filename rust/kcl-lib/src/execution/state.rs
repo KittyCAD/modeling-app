@@ -921,6 +921,38 @@ impl ExecState {
         self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
+    /// The declaring module and display name of every named view registered so
+    /// far. `view::named` needs these to reject a name that a view declared by
+    /// the same module already uses.
+    ///
+    /// Both artifact maps are scanned, because incremental re-execution divides
+    /// the views between them:
+    /// - a run that clears the scene empties `global.artifacts` beforehand, so
+    ///   every view it can see is one the current run registered into
+    ///   `mod_local.artifacts`;
+    /// - a run that only appends statements to an unchanged prefix does not
+    ///   re-execute that prefix, so the views the prefix declared stay in
+    ///   `global.artifacts` from the previous run while the appended
+    ///   declarations register into `mod_local.artifacts`.
+    ///
+    /// Reading one map alone would accept a duplicate name on one of those
+    /// paths and reject it on the other, which an author would see as the same
+    /// file being accepted while typed and rejected after an unrelated edit.
+    /// Neither path can report a view against its own earlier registration: a
+    /// re-executed declaration is only reached after `global.artifacts` was
+    /// cleared, and an appended declaration has no earlier registration.
+    pub(crate) fn registered_named_views(&self) -> impl Iterator<Item = (ModuleId, &str)> {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .filter_map(|artifact| match artifact {
+                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                _ => None,
+            })
+    }
+
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
     }
