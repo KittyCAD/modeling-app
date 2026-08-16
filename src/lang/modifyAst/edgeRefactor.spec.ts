@@ -1292,7 +1292,7 @@ describe('refactorZ0006Unified', () => {
       const n = norm(refactored)
       expect(n).toContain('gdt::straightness(')
       expect(n).toContain('edges = [')
-      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('sideFaces = [body.sketch.tags.e1, cap1]')
       expect(n).toContain('tolerance = 0.1mm')
       expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
     })
@@ -1349,8 +1349,8 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
       if (err(refactored)) throw refactored
       const n = norm(refactored)
       expect(n).toContain('first = gdt::straightness(')
-      expect(n).toContain('edges = [{')
-      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('edges = [')
+      expect(n).toContain('sideFaces = [base.sketch.tags.e1, cap1]')
       expect(n).toContain('second = gdt::straightness(')
       expect(n).toContain(
         'second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.2mm)'
@@ -1425,9 +1425,9 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
       const n = norm(refactored)
       expect(n).toContain('gdt::distance(')
       expect(n).toContain('from = {')
-      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('sideFaces = [body[0].sketch.tags.e1, cap1]')
       expect(n).toContain('to = {')
-      expect(n).toContain('sideFaces = [e2, cap1]')
+      expect(n).toContain('sideFaces = [body[1].sketch.tags.e2, cap1]')
       expect(n).toContain('tolerance = 0.1mm')
       expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
       expect(n).not.toContain('getCommonEdge(faces = [e2, cap1])')
@@ -1643,8 +1643,10 @@ part = bracket()
         kcl: SAMPLE_KCL,
         expected: [
           'extrude(length = 5, tagEnd = $capEnd001)',
-          'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'fillet(',
+          'radius = 1',
+          'edges = [',
+          'sideFaces = [body.sketch.tags.e1, capEnd001]',
         ],
       },
       {
@@ -1654,26 +1656,38 @@ part = bracket()
           'extrude(length = 5, tagEnd = $capEnd001)',
           'fillet(',
           'edges = [',
-          'sideFaces = [e1, capEnd001]',
+          'sideFaces = [body.sketch.tags.e1, capEnd001]',
         ],
       },
       {
         name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_NEXT_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: [
+          'fillet(',
+          'edges = [',
+          'body.sketch.tags.e1',
+          'body.sketch.tags.seg01',
+        ],
       },
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_PREVIOUS_ADJACENT_EDGE,
-        expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+        expected: [
+          'fillet(',
+          'edges = [',
+          'body.sketch.tags.e1',
+          'body.sketch.tags.seg01',
+        ],
       },
       {
         name: 'refactors getCommonEdge in fillet to edgeRefs with tag names (e1, cap1) not UUIDs',
         kcl: KCL_GET_COMMON_EDGE,
         expected: [
           'extrude(length = 5, tagEnd = $cap1)',
-          'fillet(radius = 1, edges = [',
-          'sideFaces = [e1, cap1]',
+          'fillet(',
+          'radius = 1',
+          'edges = [',
+          'sideFaces = [body.sketch.tags.e1, cap1]',
         ],
       },
     ]
@@ -1713,8 +1727,12 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
-        expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
+        expect(n).toMatch(
+          /to = \{ sideFaces = \[\s*cube\.sketch\.tags\.facetag0,\s*cube\.sketch\.tags\.facetag1\s*\] \}/
+        )
+        expect(n).not.toContain(
+          'getCommonEdge(faces = [cube.sketch.tags.facetag0, cube.sketch.tags.facetag1])'
+        )
       }
     )
 
@@ -1928,7 +1946,9 @@ surface001 = extrude(
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toMatch(
+          /to = \{ sideFaces = \[\s*cube\.sketch\.tags\.facetag0,\s*cube\.sketch\.tags\.facetag1\s*\] \}/
+        )
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -1998,7 +2018,9 @@ surface001 = extrude(
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
-        expect(n).toContain('fillet(radius = 1, edges = [')
+        expect(n).toContain('fillet(')
+        expect(n).toContain('radius = 1')
+        expect(n).toContain('edges = [')
         expect(n).toContain('sideFaces = [')
         // When edgeId metadata exists, extrude may get tagEnd added; fillet has edges with sideFaces tags.
       }
@@ -2041,7 +2063,7 @@ surface001 = extrude(
         expect(n).toContain('fillet(')
         expect(n).toContain('radius = 0.1')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [ baseRegion.tags.')
+        expect(n).toContain('sideFaces = [ solid001.sketch.tags.')
         expect(n).toContain('endFaces = [')
         expect(n).toMatch(/endFaces = \[\s*(?:startCap|cutRegion\.tags\.)/)
         expect(n).not.toContain(removed)
@@ -2058,8 +2080,8 @@ surface001 = extrude(
         expect(n).toContain('extrude(length = 5, tagEnd = $capEnd001)')
         expect(n).toContain('fillet(')
         expect(n).toContain('edges = [')
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-        expect(n).toContain('sideFaces = [e2, capEnd001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e1, capEnd001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e2, capEnd001]')
       }
     )
 
@@ -2194,12 +2216,13 @@ surface001 = extrude(
         }
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
-        // Assert full revolve line after successful refactor: axis = { sideFaces = [seg02, capEnd001] } (order may vary)
+        // Assert full revolve line after successful refactor. The wall tag is
+        // qualified to the sweep body; the cap tag may appear in either order.
         const revolveLineWithAxis =
-          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:seg02\s*,\s*capEnd001|capEnd001\s*,\s*seg02)\s*\]\s*\}\s*\)/
+          /revolve001\s*=\s*revolve\s*\(\s*profile001\s*,\s*angle\s*=\s*360deg\s*,\s*axis\s*=\s*\{\s*sideFaces\s*=\s*\[\s*(?:extrude001\.sketch\.tags\.seg02\s*,\s*capEnd001|capEnd001\s*,\s*extrude001\.sketch\.tags\.seg02)\s*\]\s*\}\s*,?\s*\)/
         expect(
           n,
-          'Refactored code should contain revolve line with axis and sideFaces = [seg02, capEnd001] (or [capEnd001, seg02])'
+          'Refactored code should body-qualify the sweep wall in the axis sideFaces'
         ).toMatch(revolveLineWithAxis)
       }
     )
@@ -2329,8 +2352,10 @@ surface001 = extrude(
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toContain('extrude(length = 5, tagStart = $capStart001)')
-        expect(n).toContain('fillet(radius = 1, edges = [')
-        expect(n).toContain('sideFaces = [e1, capStart001]')
+        expect(n).toContain('fillet(')
+        expect(n).toContain('radius = 1')
+        expect(n).toContain('edges = [')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e1, capStart001]')
       }
     )
 
@@ -2432,7 +2457,7 @@ surface001 = extrude(
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBeGreaterThanOrEqual(2)
-        expect(n).toContain('sideFaces = [e1, capStart001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e1, capStart001]')
       }
     )
 
@@ -2466,7 +2491,7 @@ surface001 = extrude(
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e1, capEnd001]')
       }
     )
 
@@ -2492,8 +2517,8 @@ surface001 = extrude(
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
         const n = norm(refactored)
         expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
-        expect(n).toContain('sideFaces = [e1, capEnd001]')
-        expect(n).toContain('sideFaces = [seg01, capStart001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.e1, capEnd001]')
+        expect(n).toContain('sideFaces = [body.sketch.tags.seg01, capStart001]')
         const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
           .length
         expect(sideFaceCount).toBe(2)
