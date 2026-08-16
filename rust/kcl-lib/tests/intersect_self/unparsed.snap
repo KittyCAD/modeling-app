@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of unparsing union_self.kcl
+description: Result of unparsing intersect_self.kcl
 ---
 body = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 5)
   |> extrude(length = 10)
 
-result = union([body, body])
+result = intersect([body, body])

@@ -5,70 +5,6 @@ description: Operations executed subtract_self.kcl
 {
   "rust/kcl-lib/tests/subtract_self/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "cube",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "pos": {
-            "value": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
-            },
-            "sourceRange": []
-          },
-          "scale": {
-            "value": {
-              "type": "Number",
-              "value": 10.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -90,16 +26,6 @@ description: Operations executed subtract_self.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
           },
           {
             "type": "PipeBodyItem",
@@ -125,7 +51,7 @@ description: Operations executed subtract_self.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 20.0,
+            "value": 10.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -148,25 +74,12 @@ description: Operations executed subtract_self.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          },
-          {
             "type": "PipeBodyItem",
-            "index": 6
+            "index": 2
           }
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -200,7 +113,7 @@ description: Operations executed subtract_self.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 1
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -210,7 +123,8 @@ description: Operations executed subtract_self.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "isError": true
     }
   ],
   "std::math": [

@@ -4796,7 +4796,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to intersect.",
+        "docs": "The distinct solids to intersect. A body cannot appear more than once.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7866,7 +7866,7 @@ export default {
       {
         "name": "targets",
         "ty": "[Solid; 1+]",
-        "docs": "The bodies to split",
+        "docs": "The distinct bodies to split. A body cannot also appear in `tools`.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -7896,7 +7896,7 @@ export default {
       {
         "name": "tools",
         "ty": "[Solid]",
-        "docs": "The tools to split the target bodies along.",
+        "docs": "The distinct tools to split the target bodies along. A body cannot also appear in `targets`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -8239,7 +8239,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 1+]",
-        "docs": "The solids to use as the base to subtract from.",
+        "docs": "The distinct solids to use as the base to subtract from. A body cannot also appear in `tools`.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8249,7 +8249,7 @@ export default {
       {
         "name": "tools",
         "ty": "[Solid]",
-        "docs": "The solids to subtract.",
+        "docs": "The distinct solids to subtract. A body cannot also appear in `solids`.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -8650,7 +8650,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to union.",
+        "docs": "The distinct solids to union. A body cannot appear more than once.",
         "required": true,
         "special": true,
         "experimental": false,

@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing split_self.kcl
+---
+KCL Semantic error
+
+  × semantic: The split operation cannot use the same body as both a target
+  │ and a tool. Please check your selections.
+   ╭─[5:10]
+ 4 │ 
+ 5 │ result = split(body, tools = [body])
+   ·          ─────────────┬─────────────┬
+   ·                       ╰── tests/split_self/input.kcl
+   ·                       ╰── tests/split_self/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The split operation cannot use the same body as both a
+        │ target and a tool. Please check your selections.
+         ╭─[5:10]
+       4 │
+       5 │ result = split(body, tools = [body])
+         ·          ─────────────┬─────────────
+         ·                       ╰── tests/split_self/input.kcl
+         ╰────

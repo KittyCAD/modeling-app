@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing subtract_self.kcl
+description: Result of parsing intersect_self.kcl
 ---
 {
   "Ok": {
@@ -248,47 +248,7 @@ description: Result of parsing subtract_self.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tools",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "body",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -298,7 +258,7 @@ description: Result of parsing subtract_self.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "subtract",
+                "name": "intersect",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -313,22 +273,50 @@ description: Result of parsing subtract_self.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "abs_path": false,
               "commentStart": 0,
+              "elements": [
+                {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "body",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "body",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              ],
               "end": 0,
               "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "body",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
             }
           },
           "moduleId": 0,

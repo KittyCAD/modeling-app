@@ -59,8 +59,8 @@ description: Artifact commands union_self.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -10.0,
-          "y": -10.0,
+          "x": 5.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -79,45 +79,19 @@ description: Artifact commands union_self.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.0,
-            "y": -10.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": 0.0,
+            "y": 0.0
           },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 10.0,
-            "y": 10.0,
-            "z": 0.0
+          "radius": 5.0,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
           },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
           "end": {
-            "x": -10.0,
-            "y": 10.0,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 360.0
           },
           "relative": false
         }
@@ -153,7 +127,7 @@ description: Artifact commands union_self.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 20.0,
+        "distance": 10.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -191,46 +165,6 @@ description: Artifact commands union_self.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "boolean_union",
-        "solid_ids": [
-          "[uuid]",
-          "[uuid]"
-        ],
-        "separate_bodies": false,
-        "tolerance": 0.0000001
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": null,
-            "rotate_angle_axis": {
-              "property": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "w": 45.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "scale": null
-          }
-        ]
       }
     }
   ]

@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands subtract_self.kcl
+description: Artifact commands intersect_self.kcl
 ---
 {
-  "rust/kcl-lib/tests/subtract_self/input.kcl": [
+  "rust/kcl-lib/tests/intersect_self/input.kcl": [
     {
       "cmdId": "[uuid]",
       "range": [],

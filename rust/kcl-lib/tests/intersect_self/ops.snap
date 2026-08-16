@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed union_self.kcl
+description: Operations executed intersect_self.kcl
 ---
 {
-  "rust/kcl-lib/tests/union_self/input.kcl": [
+  "rust/kcl-lib/tests/intersect_self/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",
@@ -83,7 +83,7 @@ description: Operations executed union_self.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "union",
+      "name": "intersect",
       "unlabeledArg": {
         "value": {
           "type": "Array",

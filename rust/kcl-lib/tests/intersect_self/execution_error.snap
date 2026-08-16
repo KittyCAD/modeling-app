@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing intersect_self.kcl
+---
+KCL Semantic error
+
+  × semantic: The intersection operation cannot use the same body more than
+  │ once. Please check your selections.
+   ╭─[5:10]
+ 4 │ 
+ 5 │ result = intersect([body, body])
+   ·          ───────────┬───────────┬
+   ·                     ╰── tests/intersect_self/input.kcl
+   ·                     ╰── tests/intersect_self/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The intersection operation cannot use the same body more
+        │ than once. Please check your selections.
+         ╭─[5:10]
+       4 │
+       5 │ result = intersect([body, body])
+         ·          ───────────┬───────────
+         ·                     ╰── tests/intersect_self/input.kcl
+         ╰────

@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing subtract_self.kcl
+---
+KCL Semantic error
+
+  × semantic: The subtraction operation cannot use the same body as both a
+  │ target and a tool. Please check your selections.
+   ╭─[5:10]
+ 4 │ 
+ 5 │ result = subtract(body, tools = [body])
+   ·          ───────────────┬──────────────┬
+   ·                         ╰── tests/subtract_self/input.kcl
+   ·                         ╰── tests/subtract_self/input.kcl
+   ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The subtraction operation cannot use the same body as both
+        │ a target and a tool. Please check your selections.
+         ╭─[5:10]
+       4 │
+       5 │ result = subtract(body, tools = [body])
+         ·          ───────────────┬──────────────
+         ·                         ╰── tests/subtract_self/input.kcl
+         ╰────

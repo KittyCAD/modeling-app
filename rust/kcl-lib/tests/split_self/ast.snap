@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of parsing subtract_self.kcl
+description: Result of parsing split_self.kcl
 ---
 {
   "Ok": {
@@ -298,7 +298,7 @@ description: Result of parsing subtract_self.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "subtract",
+                "name": "split",
                 "start": 0,
                 "type": "Identifier"
               },
