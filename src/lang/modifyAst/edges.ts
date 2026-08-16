@@ -486,7 +486,7 @@ function buildEdgeExpr(
     artifactGraph,
     ast,
     wasmInstance,
-    { fallbackToFirstSegment: false }
+    { fallbackToFirstSegment: false, resolveNamedSweepInput: true }
   )
   if (sketchSegmentName) {
     const sketchTagExpr = createSketchTagMemberExpression(
@@ -765,7 +765,7 @@ function getTagsExprsFromSelection(
         !err(segmentArtifact) &&
         !err(edgeContext) &&
         !edgeContext.isClone &&
-        segmentArtifact.originalSegId
+        (edgeArtifact.type === 'sweepEdge' || segmentArtifact.originalSegId)
       ) {
         const commonFaces = getCommonFacesForEdge(edgeArtifact, artifactGraph)
         const selectedPath = artifactGraph.get(edgeContext.selectedSweep.pathId)
@@ -776,11 +776,13 @@ function getTagsExprsFromSelection(
             )) ||
           (selectedPath?.type === 'path' &&
             Boolean(selectedPath.compositeSolidId))
+        const sourceSegmentId =
+          segmentArtifact.originalSegId ?? segmentArtifact.id
         const mappedSegments = [...artifactGraph.values()].filter(
           (artifact) =>
             artifact.type === 'segment' &&
-            artifact.pathId === segmentArtifact.pathId &&
-            artifact.originalSegId === segmentArtifact.originalSegId
+            artifact.pathId === edgeContext.selectedSweep.pathId &&
+            artifact.originalSegId === sourceSegmentId
         )
         const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
           edgeContext.sourceSweep,
@@ -788,7 +790,7 @@ function getTagsExprsFromSelection(
           artifactGraph,
           modifiedAst,
           wasmInstance,
-          { fallbackToFirstSegment: false }
+          { fallbackToFirstSegment: false, resolveNamedSweepInput: true }
         )
         const directTagExpr = sketchSegmentName
           ? createSketchTagMemberExpression(
@@ -914,28 +916,59 @@ export function createEdgeRefObjectExpression(
       ? tagsBaseExpr
       : tagsBaseExpr && owningBodyExpr
         ? createMemberExpression(structuredClone(owningBodyExpr), 'sketch')
-        : null
+        : owningBodyExpr
+          ? createMemberExpression(structuredClone(owningBodyExpr), 'sketch')
+          : null
+
+  const getTagsBaseExprForFace = (faceArtifact: Artifact): Expr | null => {
+    if (effectiveTagsBaseExpr || faceArtifact.type !== 'wall') {
+      return effectiveTagsBaseExpr
+    }
+
+    const sweepArtifact = artifactGraph.get(faceArtifact.sweepId)
+    if (sweepArtifact?.type !== 'sweep') return null
+    const bodyResult = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: sweepArtifact,
+            codeRef: sweepArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      currentAst,
+      wasmInstance,
+      undefined,
+      { lastChildLookup: false }
+    )
+    if (err(bodyResult) || bodyResult.exprs.length !== 1) return null
+
+    return createMemberExpression(bodyResult.exprs[0], 'sketch')
+  }
 
   const applyTagsBaseExprIfNeeded = (
     expr: Expr,
     faceArtifact: Artifact
   ): Expr => {
+    const tagsBaseExprForFace = getTagsBaseExprForFace(faceArtifact)
     if (
-      effectiveTagsBaseExpr != null &&
+      tagsBaseExprForFace != null &&
       expr.type === 'Name' &&
       faceArtifact.type !== 'cap'
     ) {
       return createMemberExpr(
-        createMemberExpr(structuredClone(effectiveTagsBaseExpr), 'tags'),
+        createMemberExpr(structuredClone(tagsBaseExprForFace), 'tags'),
         expr.name?.name ?? ''
       )
     }
     if (
-      effectiveTagsBaseExpr != null &&
+      tagsBaseExprForFace != null &&
       expr.type === 'Name' &&
       faceArtifact.type === 'cap'
     ) {
-      const bodyExpr = getBodyExprFromSketchTagsBaseExpr(effectiveTagsBaseExpr)
+      const bodyExpr = getBodyExprFromSketchTagsBaseExpr(tagsBaseExprForFace)
       if (bodyExpr) {
         return createMemberExpression(
           createMemberExpression(bodyExpr, 'faces'),
@@ -949,7 +982,8 @@ export function createEdgeRefObjectExpression(
   const getExistingSketchTagExprForFace = (
     faceArtifact: Artifact
   ): Expr | null => {
-    if (effectiveTagsBaseExpr == null || faceArtifact.type !== 'wall') {
+    const tagsBaseExprForFace = getTagsBaseExprForFace(faceArtifact)
+    if (tagsBaseExprForFace == null || faceArtifact.type !== 'wall') {
       return null
     }
 
@@ -968,7 +1002,7 @@ export function createEdgeRefObjectExpression(
     if (!segmentName) return null
 
     return createMemberExpression(
-      createMemberExpression(structuredClone(effectiveTagsBaseExpr), 'tags'),
+      createMemberExpression(structuredClone(tagsBaseExprForFace), 'tags'),
       segmentName
     )
   }
@@ -1443,20 +1477,20 @@ function findFilletChamferCallsToFixUnified(
           if (inner) {
             const innerCallee = getCalleeName(inner)
             if (isDeprecatedEdgeStdlib(innerCallee)) {
-              const edgeRefExpr = createEdgeRefFromGetCommonEdgeCall(inner)
-              if (edgeRefExpr) {
-                orderedEdgeRefExprs.push(edgeRefExpr)
-                continue
-              }
-
               const meta = edgeRefactorMetadata.find((m) =>
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
               if (hasFaceIds(meta)) {
                 orderedPayloads.push(edgeRefactorMetaToPayload(meta))
-              } else {
-                hasUnconvertedTagsElement = true
+                continue
               }
+
+              const edgeRefExpr = createEdgeRefFromGetCommonEdgeCall(inner)
+              if (edgeRefExpr) {
+                orderedEdgeRefExprs.push(edgeRefExpr)
+                continue
+              }
+              hasUnconvertedTagsElement = true
             } else {
               hasUnconvertedTagsElement = true
             }
