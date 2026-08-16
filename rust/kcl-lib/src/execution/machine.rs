@@ -102,8 +102,12 @@ const KCL_EXECUTOR_ENV_VAR: &str = "KCL_EXECUTOR";
 /// Cloning the context (fresh roots, `Args`) inherits the same kind, so every
 /// module and callback runs on the same executor.
 ///
-/// Precedence: runtime flags > test override > `KCL_EXECUTOR` >
-/// [`ExecutorKind::resolve_default()`].
+/// Precedence: runtime flags > `KCL_EXECUTOR` >
+/// [`ExecutorKind::resolve_default()`]. The shared resolver's test-override
+/// slot is deliberately unused here: tests pin a kind by passing it to the
+/// `ExecutorContext` they construct, and everything else must keep following
+/// `KCL_EXECUTOR` so the CI matrix genuinely runs the suite under both
+/// executors.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ExecutorKind {
     /// The historical recursive tree-walking evaluator.
@@ -182,6 +186,8 @@ impl ExecutorKind {
             }
         };
 
+        // The `None` is the test-override slot: unlike `LexerMode`, the
+        // executor never supplies one (see the type-level docs).
         resolve_from_sources(kcl_runtime_flags().use_cek_executor, None, env_value.as_deref())
     }
 
@@ -2459,7 +2465,80 @@ mod tests {
         assert_eq!(ExecutorKind::parse_env_var("machin"), ExecutorKind::resolve_default());
     }
 
+    fn set_runtime_executor_flag(flag: RuntimeFlag) {
+        crate::set_kcl_runtime_flags(KclRuntimeFlags {
+            use_cek_executor: flag,
+            ..Default::default()
+        });
+    }
+
+    fn reset_runtime_executor_flags() {
+        crate::set_kcl_runtime_flags(KclRuntimeFlags::DEFAULT);
+    }
+
+    /// Flags are process-global; setting them is race-free under nextest's
+    /// process-per-test isolation.
+    #[test]
+    fn runtime_flag_on_selects_machine_executor() {
+        set_runtime_executor_flag(RuntimeFlag::On);
+        assert_eq!(ExecutorKind::resolve(), ExecutorKind::Machine);
+        reset_runtime_executor_flags();
+    }
+
+    /// Must hold even on the CI machine leg (`KCL_EXECUTOR=machine`): the
+    /// runtime flag outranks the env var.
+    #[test]
+    fn runtime_flag_off_selects_recursive_executor() {
+        set_runtime_executor_flag(RuntimeFlag::Off);
+        assert_eq!(ExecutorKind::resolve(), ExecutorKind::Recursive);
+        reset_runtime_executor_flags();
+    }
+
+    #[test]
+    fn runtime_flag_takes_priority_over_env() {
+        assert_eq!(
+            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Off, None, Some("machine")),
+            ExecutorKind::Recursive
+        );
+        assert_eq!(
+            resolve_from_sources::<ExecutorKind>(RuntimeFlag::On, None, Some("recursive")),
+            ExecutorKind::Machine
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_allows_env_to_select_executor() {
+        assert_eq!(
+            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, Some("machine")),
+            ExecutorKind::Machine
+        );
+        assert_eq!(
+            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, Some("recursive")),
+            ExecutorKind::Recursive
+        );
+    }
+
+    #[test]
+    fn unset_runtime_flag_and_missing_env_selects_default_executor() {
+        assert_eq!(
+            resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, None),
+            ExecutorKind::Recursive
+        );
+    }
+
+    /// The ZDS feature flag controls exactly this: a context built through a
+    /// public constructor picks up the flag as its kind.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn runtime_flag_on_threads_machine_kind_into_mock_context() {
+        set_runtime_executor_flag(RuntimeFlag::On);
+        let ctx = ExecutorContext::new_mock(None).await;
+        assert_eq!(ctx.executor_kind, ExecutorKind::Machine);
+        reset_runtime_executor_flags();
+    }
+
     use super::*;
+    use crate::KclRuntimeFlags;
+    use crate::RuntimeFlag;
     use crate::execution::parse_execute_with_executor_kind;
 
     async fn run_machine(code: &str) -> Result<crate::execution::ExecTestResults, KclError> {
