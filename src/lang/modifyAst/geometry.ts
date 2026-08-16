@@ -16,8 +16,13 @@ import {
   groupSelectionsByBodyAndAddTags,
   insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
+  mutateAstWithTagForSketchSegment,
+  resolveEdgeSelectionContext,
+} from '@src/lang/modifyAst/tagManagement'
+import {
+  createSketchTagMemberExpression,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
@@ -185,6 +190,8 @@ export function getAxisExpression(
   if (axis) {
     return { generatedAxis: createLocalName(axis), modifiedAst }
   } else if (edge && artifactGraph) {
+    const axisSelection = edge.graphSelections[0]?.artifact
+
     // Direct segment case (sketch solve)
     const segmentAxisExpr = getVariableExprsFromSelection(
       edge,
@@ -201,25 +208,83 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
-    )
-    const tagResult = mutateAstWithTagForSketchSegment(
-      modifiedAst,
-      pathToAxisSelection,
-      wasmInstance
-    )
-    if (!err(tagResult)) {
-      modifiedAst = tagResult.modifiedAst
-      const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
-      if (!axisSelection) {
-        return new Error('Generated axis selection is missing.')
+    if (axisSelection?.type === 'segment') {
+      const pathToAxisSelection = getNodePathFromSourceRange(
+        modifiedAst,
+        edge.graphSelections[0]?.codeRef.range
+      )
+      const tagResult = mutateAstWithTagForSketchSegment(
+        modifiedAst,
+        pathToAxisSelection,
+        wasmInstance
+      )
+      if (!err(tagResult)) {
+        modifiedAst = tagResult.modifiedAst
+        const generatedAxis = getEdgeTagCall(tagResult.tag, axisSelection)
+        return { generatedAxis, modifiedAst }
       }
+    }
 
-      const generatedAxis = getEdgeTagCall(tag, axisSelection)
-      return { generatedAxis, modifiedAst }
+    if (axisSelection?.type === 'sweepEdge') {
+      const graphSelection = edge.graphSelections[0]
+      if (graphSelection) {
+        const edgeContext = resolveEdgeSelectionContext(
+          modifiedAst,
+          graphSelection,
+          artifactGraph,
+          wasmInstance,
+          nodeToEdit,
+          false
+        )
+        if (!err(edgeContext)) {
+          const existingSegmentName = getSketchSegmentNameFromSourceSurface(
+            edgeContext.sourceSweep,
+            axisSelection,
+            artifactGraph,
+            modifiedAst,
+            wasmInstance,
+            {
+              fallbackToFirstSegment: false,
+              resolveNamedSweepInput: true,
+            }
+          )
+          if (existingSegmentName) {
+            return {
+              generatedAxis: getEdgeTagCall(
+                createSketchTagMemberExpression(
+                  edgeContext.selectedBodyExpr,
+                  existingSegmentName
+                ),
+                axisSelection
+              ),
+              modifiedAst,
+            }
+          }
+
+          const pathToAxisSelection = getNodePathFromSourceRange(
+            modifiedAst,
+            graphSelection.codeRef.range
+          )
+          const tagResult = mutateAstWithTagForSketchSegment(
+            modifiedAst,
+            pathToAxisSelection,
+            wasmInstance
+          )
+          if (!err(tagResult)) {
+            modifiedAst = tagResult.modifiedAst
+            return {
+              generatedAxis: getEdgeTagCall(
+                createSketchTagMemberExpression(
+                  edgeContext.selectedBodyExpr,
+                  tagResult.tag
+                ),
+                axisSelection
+              ),
+              modifiedAst,
+            }
+          }
+        }
+      }
     }
 
     // Sweep edge case (both sketch v1 and sketch solve)

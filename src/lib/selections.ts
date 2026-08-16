@@ -619,7 +619,7 @@ function getDirectTagExprFromSourceSurface({
     artifactGraph,
     kclManager.ast,
     wasmInstance,
-    { fallbackToFirstSegment: false }
+    { fallbackToFirstSegment: false, resolveNamedSweepInput: true }
   )
   if (sourceSurfaceExpr && sketchSegmentName) {
     return createMemberExpression(

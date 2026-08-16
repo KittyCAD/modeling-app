@@ -7,6 +7,7 @@ import {
   deleteEdgeTreatment,
   EdgeTreatmentType,
   groupSelectionsByBodyAndAddTags,
+  retrieveEdgeSelectionsFromOpArgs,
 } from '@src/lang/modifyAst/edges'
 import {
   codeRefFromRange,
@@ -18,6 +19,7 @@ import {
   type Artifact,
   assertParse,
   type PathToNode,
+  pathToNodeFromRustNodePath,
   recast,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -70,6 +72,67 @@ afterAll(() => {
 })
 
 describe('edges.spec.ts', () => {
+  it('edits a body-qualified opposite sweep-edge fillet after execution', async () => {
+    const ast = assertParse(
+      `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -12mm, var -6mm], end = [var -12mm, var 6mm])
+  line2 = line(start = [var -12mm, var 6mm], end = [var 12mm, var 6mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 12mm, var 6mm], end = [var 12mm, var -6mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 12mm, var -6mm], end = [var -12mm, var -6mm])
+  coincident([line3.end, line4.start])
+}
+hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+extrude001 = extrude(region001, length = -12, tagEnd = $capEnd001, tagStart = $capStart001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [extrude001.sketch.tags.line2, extrude001.faces.capEnd001]), radius = 5)
+fillet002 = fillet(extrude001, tags = getCommonEdge(faces = [extrude001.sketch.tags.line2, extrude001.faces.capStart001]), radius = 5)`,
+      instanceInThisFile
+    )
+    await kclManagerInThisFile.executeAst({ ast })
+    expect(kclManagerInThisFile.errors).toEqual([])
+    const filletOperations = kclManagerInThisFile.operations.filter(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'fillet'
+    )
+    const secondFillet = filletOperations[1]
+    if (secondFillet?.type !== 'StdLibCall') {
+      throw new Error('Missing second fillet')
+    }
+    const selection = retrieveEdgeSelectionsFromOpArgs(
+      secondFillet.labeledArgs.tags,
+      kclManagerInThisFile.artifactGraph
+    )
+    expect(selection.graphSelections).toHaveLength(1)
+    expect(selection.graphSelections[0].artifact?.type).toBe('sweepEdge')
+    const radius = (await stringToKclExpression(
+      '2',
+      rustContextInThisFile
+    )) as KclCommandValue
+    const result = addFillet({
+      ast,
+      artifactGraph: kclManagerInThisFile.artifactGraph,
+      selection,
+      radius,
+      nodeToEdit: pathToNodeFromRustNodePath(secondFillet.nodePath),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    expect(newCode).toContain(`fillet002 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    extrude001.sketch.tags.line2,
+    extrude001.faces.capStart001
+  ]),
+  radius = 2,
+)`)
+    await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+    expect(kclManagerInThisFile.errors).toEqual([])
+  })
+
   const extrudedTriangle = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5)

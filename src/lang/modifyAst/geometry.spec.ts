@@ -326,19 +326,80 @@ extrude001 = extrude(region001, length = 100)`
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(
-        newCode
-      ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
+      expect(newCode).toContain(`extrude001 = extrude(region001, length = 100)
 helix001 = helix(
-  axis = getCommonEdge(faces = [
-    extrude001.sketch.tags.line1,
-    extrude001.faces.capEnd001
-  ]),
+  axis = getOppositeEdge(extrude001.sketch.tags.line1),
   revolutions = 1,
   angleStart = 2,
   radius = 3,
 )
 `)
+    })
+
+    it('should body-qualify a legacy sweep edge axis', async () => {
+      const code = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 100)
+  |> line(endAbsolute = [100, 0], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 100)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sourceSegment = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'segment' &&
+          code
+            .slice(artifact.codeRef.range[0], artifact.codeRef.range[1])
+            .includes('tag = $seg01')
+      )
+      const sweepEdge = [...artifactGraph.values()].find((artifact) => {
+        if (
+          artifact.type !== 'sweepEdge' ||
+          artifact.subType !== 'opposite' ||
+          sourceSegment?.type !== 'segment'
+        ) {
+          return false
+        }
+        const segment = artifactGraph.get(artifact.segId)
+        return (
+          segment?.type === 'segment' &&
+          (segment.id === sourceSegment.id ||
+            segment.originalSegId === sourceSegment.id)
+        )
+      })
+      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
+        throw new Error('Tagged opposite sweep edge not found')
+      }
+
+      const result = addHelix({
+        ast,
+        artifactGraph,
+        edge: createSelectionFromArtifacts([sweepEdge], artifactGraph),
+        revolutions: (await stringToKclExpression(
+          '20',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        angleStart: (await stringToKclExpression(
+          '0',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        radius: (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        'axis = getOppositeEdge(extrude001.sketch.tags.seg01)'
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should edit a standalone call on segment selection', async () => {

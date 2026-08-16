@@ -2375,23 +2375,6 @@ export function getSketchSegmentName(
     return null
   }
 
-  const directSegmentVarDec = getNodeFromPath<VariableDeclaration>(
-    ast,
-    segment.codeRef.pathToNode,
-    wasmInstance,
-    'VariableDeclaration'
-  )
-  if (
-    !err(directSegmentVarDec) &&
-    directSegmentVarDec.node.type === 'VariableDeclaration' &&
-    directSegmentVarDec.node.declaration.init.type === 'CallExpressionKw' &&
-    isSketchSegmentCallName(
-      directSegmentVarDec.node.declaration.init.callee.name.name
-    )
-  ) {
-    return directSegmentVarDec.node.declaration.id.name
-  }
-
   const segmentCall = getNodeFromPath<CallExpressionKw>(
     ast,
     segment.codeRef.pathToNode,
@@ -2412,6 +2395,23 @@ export function getSketchSegmentName(
     if (tagArg?.type === 'Name') {
       return tagArg.name.name
     }
+  }
+
+  const directSegmentVarDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    !err(directSegmentVarDec) &&
+    directSegmentVarDec.node.type === 'VariableDeclaration' &&
+    directSegmentVarDec.node.declaration.init.type === 'CallExpressionKw' &&
+    isSketchSegmentCallName(
+      directSegmentVarDec.node.declaration.init.callee.name.name
+    )
+  ) {
+    return directSegmentVarDec.node.declaration.id.name
   }
 
   return null
@@ -2436,7 +2436,10 @@ export function getSketchSegmentNameFromSourceSurface(
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  options: { fallbackToFirstSegment?: boolean } = {}
+  options: {
+    fallbackToFirstSegment?: boolean
+    resolveNamedSweepInput?: boolean
+  } = {}
 ): string | null {
   if (sourceSurfaceArtifact.type !== 'sweep') {
     return null
@@ -2488,7 +2491,11 @@ export function getSketchSegmentNameFromSourceSurface(
     return sweepInput.property.name.name
   }
 
-  if (sweepInput.type === 'Name' && selectedSegment) {
+  if (
+    options.resolveNamedSweepInput &&
+    sweepInput.type === 'Name' &&
+    selectedSegment
+  ) {
     const sourceSegmentId =
       selectedSegment.originalSegId ??
       selectedSegment.sourceSegmentId ??
