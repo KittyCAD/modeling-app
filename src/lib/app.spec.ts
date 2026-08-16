@@ -4,6 +4,7 @@ import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
+  KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
@@ -195,8 +196,12 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
+function expectedRuntimeFlags(
+  useNewLexerParser: 'On' | 'Off',
+  useCekExecutor: 'On' | 'Off' = 'Off'
+) {
   return JSON.stringify({
+    use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })
 }
@@ -350,6 +355,30 @@ describe('project system', () => {
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
         expectedRuntimeFlags('On')
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const wasmInstance = createRuntimeFlagsWasmInstance()
+    const wasmPromise = Promise.resolve(wasmInstance)
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise,
+      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
+    })
+
+    try {
+      await wasmPromise
+      wasmInstance.set_kcl_runtime_flags.mockClear()
+
+      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
+
+      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags('Off', 'On')
       )
     } finally {
       app.dispose()

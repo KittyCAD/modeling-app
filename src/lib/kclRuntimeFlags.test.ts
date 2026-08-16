@@ -1,5 +1,8 @@
 import type { Feature } from '@kittycad/lib'
-import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  KCL_CEK_EXECUTOR_FEATURE_FLAG,
+  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
+} from '@src/lib/constants'
 import {
   kclRuntimeFlagsFromUserFeatures,
   setKclRuntimeFlagsOnWasm,
@@ -20,7 +23,19 @@ describe('kcl runtime flags', () => {
         userFeaturesWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
       )
     ).toEqual({
+      use_cek_executor: 'Off',
       use_new_lexer_parser: 'On',
+    })
+  })
+
+  it('maps the enabled CEK executor feature to On', () => {
+    expect(
+      kclRuntimeFlagsFromUserFeatures(
+        userFeaturesWith(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
+      )
+    ).toEqual({
+      use_cek_executor: 'On',
+      use_new_lexer_parser: 'Off',
     })
   })
 
@@ -28,6 +43,7 @@ describe('kcl runtime flags', () => {
     expect(
       kclRuntimeFlagsFromUserFeatures(userFeaturesWith(new Set()))
     ).toEqual({
+      use_cek_executor: 'Off',
       use_new_lexer_parser: 'Off',
     })
   })
@@ -44,6 +60,7 @@ describe('kcl runtime flags', () => {
 
     expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
       JSON.stringify({
+        use_cek_executor: 'Off',
         use_new_lexer_parser: 'On',
       })
     )
