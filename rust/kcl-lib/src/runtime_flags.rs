@@ -23,10 +23,16 @@ pub enum RuntimeFlag {
 }
 
 /// Maps 1-1 to the KCL related flags added to the Admin portal and TS.
+///
+/// Fields missing from a deserialized payload become [`RuntimeFlag::Unset`],
+/// so a sender built before a flag existed falls back to Rust-side defaults
+/// instead of failing to parse.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 pub struct KclRuntimeFlags {
+    #[serde(default)]
     pub use_cek_executor: RuntimeFlag,
+    #[serde(default)]
     pub use_new_lexer_parser: RuntimeFlag,
 }
 
@@ -87,4 +93,27 @@ pub(crate) fn resolve_from_sources<T: RuntimeFlagResolve>(
     }
 
     env_value.map(T::parse_env_var).unwrap_or_else(T::resolve_default)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserializing_empty_flags_defaults_to_unset() {
+        let flags: KclRuntimeFlags = serde_json::from_str("{}").unwrap();
+        assert_eq!(flags, KclRuntimeFlags::DEFAULT);
+    }
+
+    #[test]
+    fn deserializing_partial_flags_defaults_missing_fields_to_unset() {
+        let flags: KclRuntimeFlags = serde_json::from_str(r#"{"use_new_lexer_parser":"On"}"#).unwrap();
+        assert_eq!(
+            flags,
+            KclRuntimeFlags {
+                use_cek_executor: RuntimeFlag::Unset,
+                use_new_lexer_parser: RuntimeFlag::On,
+            }
+        );
+    }
 }
