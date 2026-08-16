@@ -4,10 +4,16 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
+import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import {
+  kclRuntimeFlagsEqual,
+  kclRuntimeFlagsFromUserFeatures,
+  waitForSettledKclRuntimeFlags,
+} from '@src/lib/kclRuntimeFlags'
 import type { FileEntry } from '@src/lib/project'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
 import type { LspService } from '@src/lang/lsp/registry/contract'
@@ -16,6 +22,7 @@ import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
 import { LspWorker } from '@src/lang/lsp/workerTypes'
 import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
+import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 import type { Subscription } from 'xstate'
@@ -25,6 +32,8 @@ type LspRuntime = {
   worker: globalThis.Worker
   client: LanguageServerClient
   ready: boolean
+  /** The flags the worker was initialized with; null until Init is posted. */
+  kclRuntimeFlags: KclRuntimeFlags | null
 }
 
 type ProjectSnapshot = {
@@ -39,14 +48,20 @@ type FileSnapshot = {
 
 type CreateLspServiceOptions = {
   getAuth: () => AuthRegistryService
+  getUserFeatures: () => UserFeaturesRegistryService
 }
 
-export function createLspService({ getAuth }: CreateLspServiceOptions): {
+export function createLspService({
+  getAuth,
+  getUserFeatures,
+}: CreateLspServiceOptions): {
   service: LspService
   dispose: () => void
 } {
   let auth: AuthRegistryService | null = null
   let authSubscription: Subscription | undefined
+  let userFeatures: UserFeaturesRegistryService | null = null
+  let userFeaturesSubscription: Subscription | undefined
   let kclManager: KclLspEditor | null = null
   let runtime: LspRuntime | null = null
   let disposeCodeMirrorAttachment: (() => void) | undefined
@@ -57,6 +72,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
     attachKclManager: (manager) => {
       kclManager = manager
       ensureAuthSubscription()
+      ensureUserFeaturesSubscription()
       reconcileRuntime()
 
       return () => {
@@ -166,6 +182,19 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
     })
   }
 
+  function ensureUserFeaturesSubscription(): UserFeaturesRegistryService {
+    if (userFeatures) {
+      return userFeatures
+    }
+
+    const service = getUserFeatures()
+    userFeatures = service
+    userFeaturesSubscription = service.actor.subscribe(() => {
+      reconcileRuntime()
+    })
+    return service
+  }
+
   function reconcileRuntime() {
     const token = getAuthToken()
     if (!kclManager || !token || !canStartWorkerRuntime()) {
@@ -173,12 +202,29 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       return
     }
 
-    if (runtime?.token === token) {
+    if (runtime?.token === token && !runtimeFlagsChanged()) {
       return
     }
 
     stopRuntime()
     startRuntime(token)
+  }
+
+  /**
+   * True once the runtime was initialized with flags that no longer match the
+   * current user features. Restarting the worker is the only way to apply
+   * them: the LSP's ExecutorContext resolves the KCL executor from the flags
+   * at construction time, inside lsp_run_kcl.
+   */
+  function runtimeFlagsChanged() {
+    if (!runtime?.kclRuntimeFlags || !userFeatures) {
+      return false
+    }
+
+    return !kclRuntimeFlagsEqual(
+      runtime.kclRuntimeFlags,
+      kclRuntimeFlagsFromUserFeatures(userFeatures)
+    )
   }
 
   function canStartWorkerRuntime() {
@@ -214,25 +260,40 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
         },
       }),
       ready: false,
+      kclRuntimeFlags: null,
     }
 
     lspWorker.onmessage = (event) => {
       fromServer.add(event.data)
     }
 
-    const initEvent: KclWorkerOptions = {
-      wasmUrl: wasmUrl(),
-      token,
-      apiBaseUrl: withAPIBaseURL(''),
-    }
-
-    lspWorker.postMessage({
-      worker: LspWorker.Kcl,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
-
     runtime = nextRuntime
+
+    const features = ensureUserFeaturesSubscription()
+    void (async () => {
+      // Don't Init until the user-features fetch settles: the flags shipped
+      // here decide the worker's KCL executor and lexer. Client requests are
+      // queued in the meantime, so the LSP just starts a moment later.
+      const kclRuntimeFlags = await waitForSettledKclRuntimeFlags(features)
+      if (runtime !== nextRuntime) {
+        // The runtime was stopped or replaced while waiting.
+        return
+      }
+
+      nextRuntime.kclRuntimeFlags = kclRuntimeFlags
+      const initEvent: KclWorkerOptions = {
+        wasmUrl: wasmUrl(),
+        token,
+        apiBaseUrl: withAPIBaseURL(''),
+        kclRuntimeFlags,
+      }
+
+      lspWorker.postMessage({
+        worker: LspWorker.Kcl,
+        eventType: LspWorkerEventType.Init,
+        eventData: initEvent,
+      })
+    })().catch(reportRejection)
   }
 
   function stopRuntime() {
@@ -326,6 +387,9 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
       authSubscription?.unsubscribe()
       authSubscription = undefined
       auth = null
+      userFeaturesSubscription?.unsubscribe()
+      userFeaturesSubscription = undefined
+      userFeatures = null
       stopRuntime()
       kclManager = null
     },
