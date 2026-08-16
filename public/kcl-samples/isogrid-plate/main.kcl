@@ -1,0 +1,164 @@
+// Isogrid Plate
+// Isogrid is a type of partially hollowed-out structure formed usually from a single metal plate with integral triangular stiffening stringers.
+// Categories: Aerospace
+@settings(experimentalFeatures = allow, defaultLengthUnit = in)
+
+patternVertical = 4
+patternHorizontal = 3
+triangleSide = 2.5
+triangleHeight = sqrt(3) / 2 * triangleSide
+ribThickness = 0.125
+rimThickness = 0.25
+verticalDelta = ribThickness
+lateralDelta = ribThickness / (sqrt(3) / 2)
+patternStart = rimThickness - ((ceil(patternVertical / 2) - 0.5) * (sqrt(3) * ribThickness + triangleSide))
+patternStartHole = rimThickness - ((ceil(patternVertical / 2) - 0.5 + 1) * (sqrt(3) * ribThickness + triangleSide))
+pocketRadius = 0.250
+holeDepth = 0.5
+
+test = ceil(patternVertical / 2)
+verticalOffset = rimThickness + triangleHeight / 2 + ribThickness
+
+totalHeight = 2 * rimThickness + 2 * ribThickness + (patternVertical - 1) * ribThickness + patternVertical * (triangleHeight + 0.5 * ribThickness)
+totalWidth = 2 * rimThickness + patternHorizontal * (triangleSide + sqrt(3) * ribThickness)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -0.01in, var 0in], end = [var 10in, var 0in])
+  line2 = line(start = [var 10in, var 0in], end = [var 10in, var 10in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 10in, var 10in], end = [var 0in, var 10in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0in, var 10in], end = [var 0.07in, var 0.01in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  fixed([line4.end, [0, 0]])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+  distance([line1.start, line1.end]) == totalWidth
+  distance([line2.start, line2.end]) == totalHeight
+  line5 = line(start = [var 0.26in, var 0.25in], end = [var 9.75in, var 0.29in])
+  line6 = line(start = [var 9.32in, var 0.94in], end = [var 9.75in, var 9.73in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 9.75in, var 9.73in], end = [var 0.3in, var 10.39in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 0.34in, var 1.81in], end = [var 0.26in, var 0.25in])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+  vertical(line8)
+  horizontal(line5)
+  vertical(line6)
+  horizontal(line7)
+  line9 = line(start = [var 0in, var 2.17in], end = [var 0.26in, var 0.25in], construction = true)
+  line10 = line(start = [var 0.44in, var 0.5in], end = [var 1.4in, var 0in], construction = true)
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 8.45in, var 10in], end = [var 9.75in, var 9.73in], construction = true)
+  line12 = line(start = [var 9.19in, var 1.85in], end = [var 10.87in, var 9.23in], construction = true)
+  coincident([line11.end, line12.start])
+  horizontal(line12)
+  vertical(line11)
+  vertical(line10)
+  horizontal(line9)
+  coincident([line10.start, line8.end])
+  coincident([line7.start, line12.start])
+  coincident([line9.start, line4])
+  coincident([line10.end, line1])
+  coincident([line12.end, line2])
+  coincident([line11.start, line3])
+  equalLength([line11, line12])
+  equalLength([line9, line10])
+  distance([line10.start, line10.end]) == rimThickness
+  equalLength([line9, line12])
+}
+region001 = region(point = [127mm, 6.3525mm], sketch = sketch001)
+core = extrude(region001, length = 0.875)
+
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -10in, var 0.38in], end = [var -7in, var 0.38in])
+  line2 = line(start = [var -7in, var 0.38in], end = [var -8.5in, var 2.97in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -8.5in, var 2.97in], end = [var -10in, var 0.38in])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line3, line2])
+  horizontal(line1)
+  equalLength([line3, line1])
+  distance([line1.start, line1.end]) == triangleSide
+  line4 = line(start = [var -8.49in, var 2.86in], end = [var -8.46in, var 1.53in], construction = true)
+  line7 = line(start = [var -8.39in, var 1.28in], end = [var -8.49in, var 0.3in], construction = true)
+  vertical(line7)
+  vertical(line4)
+  coincident([line4.end, line7.start])
+  coincident([line7.end, line1])
+  equalLength([line4, line7])
+  coincident([line4.start, line3.start])
+  fixed([line7.start, [0, 0]])
+}
+region002 = region(point = [0, 0], sketch = sketch002)
+
+triangle = extrude(region002, length = 1)
+  |> fillet(
+       tags = [
+         getCommonEdge(faces = [
+           region002.tags.line3,
+           region002.tags.line1
+         ]),
+         getCommonEdge(faces = [
+           region002.tags.line2,
+           region002.tags.line1
+         ]),
+         getCommonEdge(faces = [
+           region002.tags.line3,
+           region002.tags.line2
+         ])
+       ],
+       radius = pocketRadius,
+     )
+triangleInverted = clone(triangle)
+  |> rotate(roll = 0, pitch = 0, yaw = 180)
+triangleLeft = translate(triangle, x = patternStart, y = verticalOffset)
+triangleRight = translate(triangleInverted, x = -(patternStart + triangleSide / 2 + ribThickness * sqrt(3) / 2), y = -(ribThickness * 0.5 + verticalOffset))
+triangles = concat(triangleLeft, items = triangleRight)
+  |> patternLinear3d(instances = ceil(patternHorizontal) + ceil(patternVertical / 2), distance = sqrt(3) * ribThickness + triangleSide, axis = [1, 0, 0])
+  |> patternLinear3d(instances = patternVertical, distance = triangleSide + sqrt(3) * ribThickness, axis = [1 / 2, sqrt(3) / 2, 0])
+
+coreCut = subtract(core, tools = triangles)
+
+region003 = region(point = [127mm, 0.0025mm], sketch = sketch001)
+rim = extrude(region003, length = 0.875)
+
+sketch003 = sketch(on = -XY) {
+  line1 = line(start = [var 0.01in, var 0.05in], end = [var 2.24in, var 10.75in])
+  line2 = line(start = [var 2.24in, var 10.75in], end = [var -10.48in, var 10.71in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -10.48in, var 10.71in], end = [var -10.95in, var -1.59in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -10.95in, var -1.59in], end = [var -1.3in, var 0.65in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line4)
+  vertical(line1)
+  horizontal(line2)
+  vertical(line3)
+  distance([line4.start, line4.end]) == totalWidth
+  distance([line1.start, line1.end]) == totalHeight
+  fixed([line4.end, [0, 0]])
+}
+region004 = region(point = [-0.0025mm, 127mm], sketch = sketch003)
+base = extrude(region004, length = .125)
+
+top = union(rim, coreCut)
+
+complete = union(top, base)
+
+sketch004 = sketch(on = offsetPlane(XY, offset = 0.875)) {
+  circle1 = circle(start = [var 0, var 0.125], center = [var 0in, var 0in])
+}
+region005 = region(point = [0, 0], sketch = sketch004)
+holes = extrude(region005, length = -holeDepth)
+  |> translate(x = patternStartHole + triangleSide / 2 + ribThickness * sqrt(3) / 2, y = ribThickness * 0.5 + rimThickness)
+  |> patternLinear3d(instances = ceil(patternHorizontal + 1) + ceil(patternVertical / 2), distance = sqrt(3) * ribThickness + triangleSide, axis = [1, 0, 0])
+  |> patternLinear3d(instances = patternVertical + 1, distance = triangleSide + sqrt(3) * ribThickness, axis = [1 / 2, sqrt(3) / 2, 0])
+
+holeCut = subtract([complete], tools = [holes])
