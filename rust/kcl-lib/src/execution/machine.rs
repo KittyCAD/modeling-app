@@ -108,6 +108,13 @@ const KCL_EXECUTOR_ENV_VAR: &str = "KCL_EXECUTOR";
 /// `ExecutorContext` they construct, and everything else must keep following
 /// `KCL_EXECUTOR` so the CI matrix genuinely runs the suite under both
 /// executors.
+///
+/// Selection is deliberately a process-global runtime flag rather than an
+/// `ExecutorSettings` field: TS reaches executor settings only through the
+/// user-settings `Configuration` schema (TOML / JsonSchema / generated docs),
+/// and settings participate in execution-cache comparison, so a transient
+/// rollout flag does not belong there. The app rebuilds the context per wasm
+/// call, so the global still yields per-execution capture.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ExecutorKind {
     /// The historical recursive tree-walking evaluator.
