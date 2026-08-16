@@ -4,4 +4,4 @@ import type { RuntimeFlag } from "./RuntimeFlag";
 /**
  * Maps 1-1 to the KCL related flags added to the Admin portal and TS.
  */
-export type KclRuntimeFlags = { use_new_lexer_parser: RuntimeFlag, };
+export type KclRuntimeFlags = { use_cek_executor: RuntimeFlag, use_new_lexer_parser: RuntimeFlag, };
