@@ -26,6 +26,30 @@ describe('PublishDialog', () => {
     vi.unstubAllGlobals()
   })
 
+  it('shows Aquarium review feedback and republishing guidance', () => {
+    render(
+      <Popover>
+        <PublishDialog
+          onSubmit={vi.fn()}
+          accountUrl="https://zoo.dev/account"
+          projectStatus={{
+            publicationStatus: 'changes_requested',
+            feedback: 'Add another view.',
+          }}
+        />
+      </Popover>
+    )
+
+    const aquariumStatus = screen.getByTestId('publish-dialog-aquarium-status')
+    expect(aquariumStatus).toHaveTextContent('Aquarium status')
+    expect(aquariumStatus).toHaveTextContent('Changes requested')
+    expect(aquariumStatus).toHaveTextContent('Reviewer feedback')
+    expect(aquariumStatus).toHaveTextContent('Add another view.')
+    expect(aquariumStatus).toHaveTextContent(
+      'Republishing will put the project back into the review queue.'
+    )
+  })
+
   it('registers the description editor with the Markdown keymap while focused', async () => {
     const unregisterActions = vi.fn()
     const registerActions = vi.fn((actions: MarkdownEditorActions) => {

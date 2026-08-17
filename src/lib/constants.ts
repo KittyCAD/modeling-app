@@ -237,9 +237,6 @@ export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 
-/** Toast id for the changes requested banner */
-export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
-
 /** Toast id for Zookeeper bulk file writes */
 export const ZOOKEEPER_FILE_WRITE_TOAST_ID = 'zookeeper-file-write-toast'
 
